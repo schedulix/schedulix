@@ -1,0 +1,17 @@
+///////////////////////////////////////////////////////////////////////////////
+// $Id: host_2.conf,v 1.2 2012/09/19 09:19:03 dieter Exp $
+//
+// copyright (c) 2002 topIT Informationstechnologie GmbH
+// all rights reserved
+//
+// sample configuration settings for SDMS jobserver
+//
+// see README for details
+///////////////////////////////////////////////////////////////////////////////
+
+// Repository interface settings
+
+RepoHost= localhost
+RepoPort= 2506
+RepoUser= "GLOBAL.'EXAMPLES'.'HOST_2'.'SERVER'"
+RepoPass= server

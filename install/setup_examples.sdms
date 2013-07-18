@@ -1,0 +1,5057 @@
+begin multicommand
+
+create or alter folder SYSTEM.EXAMPLES with group = PUBLIC;
+create or alter named resource resource.examples with group = public, usage = category;
+
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0010_SINGLEJOB'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0010_SINGLEJOB'.'SINGLEJOB'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "?:1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0010_SINGLEJOB'
+with
+	TEXT = 'Singlejob is a simple example which shows how to execute some commandline in the scheduler environment';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0010_SINGLEJOB'.'SINGLEJOB'
+with
+	TEXT = 'Singlejob is a simple example which shows how to execute some commandline in the scheduler environment';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0010_SINGLEJOB'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0010_SINGLEJOB',
+	job definition SYSTEM.'EXAMPLES'.'E0010_SINGLEJOB'.'SINGLEJOB'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0015_PARAMETERS'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = (
+		'FOLDER_NAME' = 'E0015_PARAMETERS'
+	);
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0015_PARAMETERS'.'PARAMETERS'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = (
+		'SUBMIT_PARAMETER',
+		'FOLDER_NAME',
+		'E0015_SCOPE_PARAMETER'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME"  "E0015_SCOPE_PARAMETER = $E0015_SCOPE_PARAMETER" "FOLDER_NAME = $FOLDER_NAME" "SUBMIT_PARAMETR = $SUBMIT_PARAMETER" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0015_PARAMETERS'.'PARAMETERS'
+alter parameter = (
+		'SUBMIT_PARAMETER'
+			PARAMETER default = 'SUBMIT_PARAMETER_VALUE',
+		'FOLDER_NAME'
+			PARAMETER,
+		'E0015_SCOPE_PARAMETER'
+			PARAMETER default = '* not yet defined *'
+	);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0015_PARAMETERS'
+with
+	TEXT = 'This example shows some methods of parameterizing jobs';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0015_PARAMETERS'.'PARAMETERS'
+with
+	TEXT = 'This example shows some methods of parameterizing jobs';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0015_PARAMETERS'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0015_PARAMETERS',
+	job definition SYSTEM.'EXAMPLES'.'E0015_PARAMETERS'.'PARAMETERS'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.'END'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.'SIMPLEBATCH'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.'START'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.'END'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.'START'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.'SIMPLEBATCH'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.'START'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.'END'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'
+with
+	TEXT = 'This example shows a simple batch, containing two jobs called "START" and "END".
+The latter job depends on the successful execution of the former one.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.'SIMPLEBATCH'
+with
+	TEXT = 'This example shows a simple batch, containing two jobs called "START" and "END".
+The latter job depends on the successful execution of the former one.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH',
+	job definition SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.'SIMPLEBATCH',
+	job definition SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.'START',
+	job definition SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.'END'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'BATCH_HIERARCHY'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	NOMASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD_1'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD_2'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD_3'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	NOMASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT_1'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT_2'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT_3'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'BATCH_HIERARCHY'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD_1'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD_2'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD_3'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT_1'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT_2'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT_3'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'
+with
+	TEXT = 'This examples demonstrates how to simplify dependencies using batch hierarchies.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'BATCH_HIERARCHY'
+with
+	TEXT = 'This examples demonstrates how to simplify dependencies using batch hierarchies.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY',
+	folder SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD',
+	folder SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT',
+	job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'BATCH_HIERARCHY',
+	job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD',
+	job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD_1',
+	job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD_2',
+	job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'LOAD'.'LOAD_3',
+	job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT',
+	job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT_1',
+	job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT_2',
+	job definition SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'.'REPORT'.'REPORT_3'
+);
+
+create or alter exit state definition 'BRANCH_A';
+
+create or alter exit state definition 'BRANCH_B';
+
+create or alter exit state definition 'BRANCH_C';
+
+create or alter exit state mapping 'BRANCH_ABC'
+with map = (
+		'FAILURE',
+	0,	'BRANCH_A',
+	1,	'BRANCH_B',
+	2,	'BRANCH_C',
+	3,	'FAILURE'
+);
+
+create or alter exit state profile 'BRANCH_ABC'
+with
+	default mapping = 'BRANCH_ABC',
+	states = (
+		'FAILURE' restartable,
+		'BRANCH_A' final,
+		'BRANCH_B' final,
+		'BRANCH_C' final
+	);
+create or alter folder SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_A'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_B'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_C'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'CONDITIONAL'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'END_PROCESSING'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = any,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'SELECT_BRANCH'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'BRANCH_ABC',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh CHOOSE -c "0=A:1=B:2=C:3=FAILURE"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_A'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'SELECT_BRANCH'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'BRANCH_A'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_B'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'SELECT_BRANCH'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'BRANCH_B'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_C'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'SELECT_BRANCH'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'BRANCH_C'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'END_PROCESSING'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_A'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		),
+	SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_B'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		),
+	SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_C'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'CONDITIONAL'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'SELECT_BRANCH'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_A'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_B'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_C'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'END_PROCESSING'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'
+with
+	TEXT = 'This example demonstrates how to implement conditional execution of jobs and batches (also called branching).';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'CONDITIONAL'
+with
+	TEXT = 'This example demonstrates how to implement conditional execution of jobs and batches (also called branching).';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL',
+	job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'SELECT_BRANCH',
+	job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'CONDITIONAL',
+	job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_A',
+	job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_B',
+	job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'BRANCH_C',
+	job definition SYSTEM.'EXAMPLES'.'E0030_CONDITIONAL'.'END_PROCESSING'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_1'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_2'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_3'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_COMPLETED'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	NOMASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'MILESTONE_BATCH'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'REPORT_1'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'REPORT_2'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'REPORT_3'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_COMPLETED'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_1'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		),
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_2'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		),
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_3'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'REPORT_1'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_COMPLETED'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'REPORT_2'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_COMPLETED'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'REPORT_3'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_COMPLETED'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'MILESTONE_BATCH'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_1'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_2'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_3'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_COMPLETED'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'REPORT_1'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'REPORT_2'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'REPORT_3'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'
+with
+	TEXT = 'This example demonstrates how to use batch objects as milestones to control the job flow.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'MILESTONE_BATCH'
+with
+	TEXT = 'This example demonstrates how to use batch objects as milestones to control the job flow.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH',
+	job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_1',
+	job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_2',
+	job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_3',
+	job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'LOAD_COMPLETED',
+	job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'MILESTONE_BATCH',
+	job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'REPORT_1',
+	job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'REPORT_2',
+	job definition SYSTEM.'EXAMPLES'.'E0040_MILESTONE_BATCH'.'REPORT_3'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'COMPLEX_CONDITION'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_A'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh LOAD_A -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_B'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh LOAD_B -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_C'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh LOAD_C -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_COMPLETED'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = any,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	NOMASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'MAIN_LOAD'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'REPORT'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'SELECT_LOAD'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'BRANCH_ABC',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh AUSWAHL  -c "0=A:1=B:2=C:3=FAILURE"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_A'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'SELECT_LOAD'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'BRANCH_A'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_B'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'SELECT_LOAD'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'BRANCH_B'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_C'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'SELECT_LOAD'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'BRANCH_C'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_COMPLETED'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_C'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		),
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_B'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		),
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_A'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'REPORT'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_COMPLETED'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		),
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'MAIN_LOAD'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'COMPLEX_CONDITION'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'SELECT_LOAD'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_C'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_COMPLETED'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'MAIN_LOAD'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'REPORT'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_B'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_A'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'
+with
+	TEXT = 'In this batch the job \'REPORT\' is executed as soon as one of the
+\'LOAD_n\' jobs reaches a state success AND the main_load
+job also terminates successfully';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'COMPLEX_CONDITION'
+with
+	TEXT = 'In this batch the job \'REPORT\' is executed as soon as one of the
+\'LOAD_n\' jobs reaches a state success AND the main_load
+job also terminates successfully';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION',
+	job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'SELECT_LOAD',
+	job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'COMPLEX_CONDITION',
+	job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_A',
+	job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_B',
+	job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_C',
+	job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'LOAD_COMPLETED',
+	job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'MAIN_LOAD',
+	job definition SYSTEM.'EXAMPLES'.'E0050_COMPLEX_CONDITION'.'REPORT'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEAP_THOUGHT'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = (
+		'WISDOM'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'sdms-set_variable --host $SDMSHOST --port $SDMSPORT --jid $JOBID --key $KEY WISDOM 42',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'JOBCOMM'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'TELL_ANSWER'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = (
+		'ANSWER'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "The universal answer is $ANSWER" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'TELL_ANSWER'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEAP_THOUGHT'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'JOBCOMM'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEAP_THOUGHT'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'TELL_ANSWER'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEAP_THOUGHT'
+alter parameter = (
+		'WISDOM'
+			RESULT
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'TELL_ANSWER'
+alter parameter = (
+		'ANSWER'
+			reference SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEAP_THOUGHT' ('WISDOM')
+	);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'
+with
+	TEXT = 'This example shows a possibility for jobs to communicate';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'JOBCOMM'
+with
+	TEXT = 'This example shows a possibility for jobs to communicate';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0060_JOBCOMM',
+	job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEAP_THOUGHT',
+	job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'JOBCOMM',
+	job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'TELL_ANSWER'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0070_DYNSUBMIT'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0070_DYNSUBMIT'.'CHILD'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" "Number $JOBTAG" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0070_DYNSUBMIT'.'DYNSUBMIT'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'dynsubmit.sh --host $SDMSHOST --port $SDMSPORT --id $JOBID --key $KEY --child THREAD',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0070_DYNSUBMIT'.'DYNSUBMIT'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0070_DYNSUBMIT'.'CHILD'
+		alias = THREAD
+		CHILDSUSPEND
+		nicevalue = 0
+		dynamic
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0070_DYNSUBMIT'
+with
+	TEXT = 'This example shows how jobs can be dynamically submitted under the control of the scheduling system.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0070_DYNSUBMIT'.'DYNSUBMIT'
+with
+	TEXT = 'This example shows how jobs can be dynamically submitted under the control of the scheduling system.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0070_DYNSUBMIT'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0070_DYNSUBMIT',
+	job definition SYSTEM.'EXAMPLES'.'E0070_DYNSUBMIT'.'CHILD',
+	job definition SYSTEM.'EXAMPLES'.'E0070_DYNSUBMIT'.'DYNSUBMIT'
+);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0075_LOADCONTROL'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0075_LOADCONTROL'.'SCOPE_UNITS'
+with
+	group = 'PUBLIC',
+	usage = SYSTEM;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0075_LOADCONTROL'.'SCOPE_UNITS' in GLOBAL.'EXAMPLES'.'LOCALHOST'.'SERVER'
+with
+	amount = 4,
+	group = 'PUBLIC',
+	online,
+	requestable amount = 1;
+
+create or alter footprint 'E0075_LOADCONTROL_1_UNIT'
+with
+	resources = (
+		RESOURCE.'EXAMPLES'.'E0075_LOADCONTROL'.'SCOPE_UNITS' NOKEEP amount = 1
+	);
+create or alter folder SYSTEM.'EXAMPLES'.'E0075_LOADCONTROL'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0075_LOADCONTROL'.'CHILD'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	footprint = 'E0075_LOADCONTROL_1_UNIT',
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0075_LOADCONTROL'.'SCOPE_UNITS'
+			amount = 1
+			NOKEEP
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" "Number $JOBTAG" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0075_LOADCONTROL'.'LOADCONTROL'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'dynsubmit.sh --host $SDMSHOST --port $SDMSPORT --id $JOBID --key $KEY --child THREAD',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0075_LOADCONTROL'.'LOADCONTROL'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0075_LOADCONTROL'.'CHILD'
+		alias = THREAD
+		CHILDSUSPEND
+		nicevalue = 0
+		dynamic
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0075_LOADCONTROL'
+with
+	TEXT = 'This example shows how to limit the number of parallel jobs using a scope system resource.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0075_LOADCONTROL'.'LOADCONTROL'
+with
+	TEXT = 'This example shows how to limit the number of parallel jobs using a scope system resource.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0075_LOADCONTROL'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0075_LOADCONTROL',
+	job definition SYSTEM.'EXAMPLES'.'E0075_LOADCONTROL'.'LOADCONTROL',
+	job definition SYSTEM.'EXAMPLES'.'E0075_LOADCONTROL'.'CHILD'
+);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'.'SCOPE_UNITS'
+with
+	group = 'PUBLIC',
+	usage = SYSTEM;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'.'SCOPE_UNITS' in GLOBAL.'EXAMPLES'.'LOCALHOST'.'SERVER'
+with
+	amount = 4,
+	group = 'PUBLIC',
+	online,
+	requestable amount = 1;
+create or alter folder SYSTEM.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'.'CHILD'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'.'SCOPE_UNITS'
+			amount = 1
+			KEEP
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" "Number $JOBTAG" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'.'LOADCONTROL_KEEP'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'dynsubmit.sh --host $SDMSHOST --port $SDMSPORT --id $JOBID --key $KEY --child THREAD',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'.'LOADCONTROL_KEEP'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'.'CHILD'
+		alias = THREAD
+		CHILDSUSPEND
+		nicevalue = 0
+		dynamic
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'
+with
+	TEXT = 'This example shows how to limit the number of parallel jobs using a scope system resource.
+Resources are kept during restartable state.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'.'LOADCONTROL_KEEP'
+with
+	TEXT = 'This example shows how to limit the number of parallel jobs using a scope system resource.
+Resources are kept during restartable state.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0076_LOADCONTROL_KEEP',
+	job definition SYSTEM.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'.'CHILD',
+	job definition SYSTEM.'EXAMPLES'.'E0076_LOADCONTROL_KEEP'.'LOADCONTROL_KEEP'
+);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0080_LOADBALANCE'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0080_LOADBALANCE'.'SCOPE_UNITS'
+with
+	group = 'PUBLIC',
+	usage = SYSTEM;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0080_LOADBALANCE'.'HOST'
+with
+	group = 'PUBLIC',
+	state profile = none,
+	usage = STATIC,
+	parameters = none;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0080_LOADBALANCE'.'SCOPE_UNITS' in GLOBAL.'EXAMPLES'.'HOST_1'.'SERVER'
+with
+	amount = 2,
+	group = 'PUBLIC',
+	online,
+	requestable amount = 1;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0080_LOADBALANCE'.'HOST' in GLOBAL.'EXAMPLES'.'HOST_1'.'SERVER'
+with
+	group = 'PUBLIC',
+	online;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0080_LOADBALANCE'.'SCOPE_UNITS' in GLOBAL.'EXAMPLES'.'HOST_2'.'SERVER'
+with
+	amount = 2,
+	group = 'PUBLIC',
+	online,
+	requestable amount = 1;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0080_LOADBALANCE'.'HOST' in GLOBAL.'EXAMPLES'.'HOST_2'.'SERVER'
+with
+	group = 'PUBLIC',
+	online;
+
+create or alter environment 'E0080_HOSTS'
+with
+	resources = (
+		RESOURCE.'EXAMPLES'.'E0080_LOADBALANCE'.'HOST'
+	);
+
+grant use, view on environment 'E0080_HOSTS' to public;
+create or alter folder SYSTEM.'EXAMPLES'.'E0080_LOADBALANCE'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0080_LOADBALANCE'.'CHILD'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'E0080_HOSTS',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0080_LOADBALANCE'.'SCOPE_UNITS'
+			amount = 1
+			NOKEEP
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" "Number $JOBTAG" "on $SCOPENAME"  -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0080_LOADBALANCE'.'LOADBALANCE'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'dynsubmit.sh --host $SDMSHOST --port $SDMSPORT --id $JOBID --key $KEY --child THREAD',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0080_LOADBALANCE'.'LOADBALANCE'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0080_LOADBALANCE'.'CHILD'
+		alias = THREAD
+		CHILDSUSPEND
+		nicevalue = 0
+		dynamic
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0080_LOADBALANCE'
+with
+	TEXT = 'This example is a small modification of the dynsubmit example. 
+It shows how jobs are distributed among suitable jobservers determined by the availability of resources.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0080_LOADBALANCE'.'LOADBALANCE'
+with
+	TEXT = 'This example is a small modification of the dynsubmit example. 
+It shows how jobs are distributed among suitable jobservers determined by the availability of resources.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0080_LOADBALANCE'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0080_LOADBALANCE',
+	job definition SYSTEM.'EXAMPLES'.'E0080_LOADBALANCE'.'CHILD',
+	job definition SYSTEM.'EXAMPLES'.'E0080_LOADBALANCE'.'LOADBALANCE'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0090_PIPELINE'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'INSTANCE'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	NOMASTER,
+	nicevalue = 0,
+	parameters = (
+		'SLEEPTIME',
+		'ONE'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'PIPELINE'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = (
+		'SUBMITDELAY',
+		'SLEEPTIME',
+		'CHILDREN'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'dynsubmit.sh --host $SDMSHOST --port $SDMSPORT --id $JOBID --key $KEY --child INSTANCE --delay $SUBMITDELAY',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'STEP_1'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = (
+		'SLEEPTIME'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'sleep $SLEEPTIME',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'STEP_2'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = (
+		'SLEEPTIME'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'sleep $SLEEPTIME',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'STEP_2'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'STEP_1'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'INSTANCE'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'STEP_1'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'STEP_2'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'PIPELINE'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'INSTANCE'
+		alias = INSTANCE
+		CHILDSUSPEND
+		nicevalue = 0
+		dynamic
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'INSTANCE'
+alter parameter = (
+		'SLEEPTIME'
+			PARAMETER default = '30',
+		'ONE'
+			CONSTANT = '1'
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'PIPELINE'
+alter parameter = (
+		'SUBMITDELAY'
+			PARAMETER default = '15',
+		'SLEEPTIME'
+			PARAMETER default = '30',
+		'CHILDREN'
+			SUM('ONE')
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'STEP_1'
+alter parameter = (
+		'SLEEPTIME'
+			PARAMETER default = '30'
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'STEP_2'
+alter parameter = (
+		'SLEEPTIME'
+			PARAMETER default = '30'
+	);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0090_PIPELINE'
+with
+	TEXT = 'This example shows that not only jobs but also entire batches can be dynamically submitted.
+
+For instance an ETL-process determines the number of partitions of a source system and for 
+each of the partitions an ETL Batch is dynamically submitted.
+
+The example is configured by two parameters.
+SLEEPTIME defines how long the jobs STEP_1 and STEP_2 sleep.
+
+SUBMITDELAY defines how much time is waited between two dynamic submits.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'PIPELINE'
+with
+	TEXT = 'This example shows that not only jobs but also entire batches can be dynamically submitted.
+
+For instance an ETL-process determines the number of partitions of a source system and for 
+each of the partitions an ETL Batch is dynamically submitted.
+
+The example is configured by two parameters.
+SLEEPTIME defines how long the jobs STEP_1 and STEP_2 sleep.
+
+SUBMITDELAY defines how much time is waited between two dynamic submits.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0090_PIPELINE'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0090_PIPELINE',
+	job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'INSTANCE',
+	job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'PIPELINE',
+	job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'STEP_1',
+	job definition SYSTEM.'EXAMPLES'.'E0090_PIPELINE'.'STEP_2'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0100_TRIGGER'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0100_TRIGGER'.'ON_FAILURE'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0100_TRIGGER'.'TRIGGER'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter trigger 'ON_FAILURE' on job definition SYSTEM.'EXAMPLES'.'E0100_TRIGGER'.'TRIGGER'
+with
+	condition = none,
+	nowarn,
+	nosuspend,
+	nomaster,
+	state = (
+		'FAILURE'
+	),
+	submitcount = 3,
+	submit SYSTEM.'EXAMPLES'.'E0100_TRIGGER'.'ON_FAILURE',
+	type = IMMEDIATE_MERGE;
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0100_TRIGGER'
+with
+	TEXT = 'This example shows how to trigger a job on failure of an other one.
+In practice the triggered job could send mail, open a trouble ticket or do
+other meaningfiul things.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0100_TRIGGER'.'TRIGGER'
+with
+	TEXT = 'This example shows how to trigger a job on failure of an other one.
+In practice the triggered job could send mail, open a trouble ticket or do
+other meaningfiul things.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0100_TRIGGER'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0100_TRIGGER',
+	job definition SYSTEM.'EXAMPLES'.'E0100_TRIGGER'.'TRIGGER',
+	job definition SYSTEM.'EXAMPLES'.'E0100_TRIGGER'.'ON_FAILURE',
+	trigger 'ON_FAILURE' on job definition SYSTEM.'EXAMPLES'.'E0100_TRIGGER'.'TRIGGER'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'.'MASTERTRIGGER'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'.'ON_SUCCESS'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'.'MASTERTRIGGER'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0010_SINGLEJOB'.'SINGLEJOB'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		dynamic
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'.'ON_SUCCESS'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		dynamic
+		translation = none
+		ignore dependency = none
+);
+
+create or alter trigger 'MASTER' on job definition SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'.'MASTERTRIGGER'
+with
+	group = 'PUBLIC',
+	condition = none,
+	nowarn,
+	nosuspend,
+	master,
+	state = (
+		'SUCCESS'
+	),
+	submitcount = 1,
+	submit SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'.'ON_SUCCESS',
+	type = BEFORE_FINAL;
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'
+with
+	TEXT = 'This example shows that triggers can be used to submit another master job (or batch).
+This way technically related but organizationally unrelated processes can be easily synchronized.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'.'MASTERTRIGGER'
+with
+	TEXT = 'This example shows that triggers can be used to submit another master job (or batch).
+This way technically related but organizationally unrelated processes can be easily synchronized.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER',
+	job definition SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'.'ON_SUCCESS',
+	job definition SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'.'MASTERTRIGGER',
+	trigger 'MASTER' on job definition SYSTEM.'EXAMPLES'.'E0105_MASTERTRIGGER'.'MASTERTRIGGER'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'.'ON_HOST_1'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@HOST_1',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" "on $SCOPENAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'.'ON_HOST_2'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@HOST_2',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" "on $SCOPENAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'.'SELECTSERVER'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'.'SELECTSERVER'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'.'ON_HOST_1'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'.'ON_HOST_2'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'
+with
+	TEXT = 'This example shows how environments can be used to select the (job)server where a job will run.
+It also shows that within one master batch different jobs can run on different jobservers.
+This means that processes running on different machines can be easily synchronized.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'.'SELECTSERVER'
+with
+	TEXT = 'This example shows how environments can be used to select the (job)server where a job will run.
+It also shows that within one master batch different jobs can run on different jobservers.
+This means that processes running on different machines can be easily synchronized.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER',
+	job definition SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'.'ON_HOST_1',
+	job definition SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'.'SELECTSERVER',
+	job definition SYSTEM.'EXAMPLES'.'E0110_SELECTSERVER'.'ON_HOST_2'
+);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK'.'SIMPLE_LOCK'
+with
+	group = 'PUBLIC',
+	usage = SYNCHRONIZING;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK'.'SIMPLE_LOCK' in GLOBAL.'EXAMPLES'
+with
+	group = 'PUBLIC',
+	online;
+create or alter folder SYSTEM.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK'.'JOB_S'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK'.'SIMPLE_LOCK'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = S
+			state mapping = none
+			expired = none
+			state = none
+	),
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK'.'JOB_X'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK'.'SIMPLE_LOCK'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = X
+			state mapping = none
+			expired = none
+			state = none
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK'
+with
+	TEXT = 'This example shows how the resource locking works.
+
+JOB_X allocates a resource with an exclusive lock.
+JOB_S allocate the same resource with a shared lock.
+
+When submitting a mix of those jobs, it becomes visible, that the shared locks
+are compatible, the exclusive lock isn\'t.
+It also shows, that the resource allocation is done in sequence of priority. It can happen,
+that a job needing a shared lock will have to wait (although it theoretically could allocate 
+the resource) because a Job needing an exclusive lock with higher priority is still waiting
+and vice versa.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK',
+	job definition SYSTEM.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK'.'JOB_X',
+	job definition SYSTEM.'EXAMPLES'.'E0120_SYNC_SIMPLE_LOCK'.'JOB_S'
+);
+
+create or alter resource state definition 'PHASE1';
+
+create or alter resource state definition 'PHASE2';
+
+create or alter resource state definition 'PHASE3';
+
+create or alter resource state profile 'THREE_PHASES'
+with
+	initial state = 'PHASE1',
+	states = (
+		'PHASE1',
+		'PHASE2',
+		'PHASE3'
+	);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'.'STATE_LOCK'
+with
+	group = 'PUBLIC',
+	state profile = 'THREE_PHASES',
+	usage = SYNCHRONIZING;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'.'STATE_LOCK' in GLOBAL.'EXAMPLES'
+with
+	group = 'PUBLIC',
+	online;
+
+create or alter resource state mapping 'PHASE_MODEL'
+with map = (
+		'SUCCESS' maps 'PHASE1' to 'PHASE2',
+		'SUCCESS' maps 'PHASE2' to 'PHASE3',
+		'SUCCESS' maps 'PHASE3' to 'PHASE1'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'.'JOB1X'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'.'STATE_LOCK'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = X
+			state mapping = 'PHASE_MODEL'
+			expired = none
+			state = (
+				'PHASE1'
+			)
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'.'JOB2X'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'.'STATE_LOCK'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = X
+			state mapping = 'PHASE_MODEL'
+			expired = none
+			state = (
+				'PHASE2'
+			)
+	),
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'.'JOB3X'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'.'STATE_LOCK'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = X
+			state mapping = 'PHASE_MODEL'
+			expired = none
+			state = (
+				'PHASE3'
+			)
+	),
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'
+with
+	TEXT = 'This example shows how unrelated jobs can be synchronized using stateful resources.
+regardless of the mix of jobs submitted, they will always be executed in a sequence
+JOB1X - JOB2X - JOB3X - JOB1X - ... and so on';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE',
+	job definition SYSTEM.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'.'JOB1X',
+	job definition SYSTEM.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'.'JOB2X',
+	job definition SYSTEM.'EXAMPLES'.'E0130_SYNC_RESOURCE_STATE'.'JOB3X'
+);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0140_TIMEOUT'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0140_TIMEOUT'.'LOCK'
+with
+	group = 'PUBLIC',
+	usage = SYNCHRONIZING;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0140_TIMEOUT'.'LOCK' in GLOBAL.'EXAMPLES'
+with
+	group = 'PUBLIC',
+	online;
+create or alter folder SYSTEM.'EXAMPLES'.'E0140_TIMEOUT'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0140_TIMEOUT'.'BLOCKER'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0140_TIMEOUT'.'LOCK'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = X
+			state mapping = none
+			expired = none
+			state = none
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0140_TIMEOUT'.'WAITER'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0140_TIMEOUT'.'LOCK'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = X
+			state mapping = none
+			expired = none
+			state = none
+	),
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	timeout = 1 MINUTE state 'FAILURE',
+	type = JOB,
+	workdir = none;
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0140_TIMEOUT'
+with
+	TEXT = 'This example shows the timeout functionality.
+If the job BLOCKER ist submitted before WAITER, the former will allocate a resource needed by the latter.
+WAITER then waits for the resource until it runs in a timeout.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0140_TIMEOUT'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0140_TIMEOUT',
+	job definition SYSTEM.'EXAMPLES'.'E0140_TIMEOUT'.'BLOCKER',
+	job definition SYSTEM.'EXAMPLES'.'E0140_TIMEOUT'.'WAITER'
+);
+
+create or alter resource state definition 'NEW';
+
+create or alter resource state definition 'TOUCHED';
+
+create or alter resource state profile 'TIMESTAMP'
+with
+	initial state = 'NEW',
+	states = (
+		'TOUCHED'
+	);
+
+create or alter resource state mapping 'TOUCH'
+with map = (
+		'SUCCESS' maps any to 'TOUCHED'
+);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0150_EXPIRATION'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0150_EXPIRATION'.'TIMESTAMP'
+with
+	group = 'PUBLIC',
+	state profile = 'TIMESTAMP',
+	usage = SYNCHRONIZING;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0150_EXPIRATION'.'TIMESTAMP' in GLOBAL.'EXAMPLES'
+with
+	group = 'PUBLIC',
+	online;
+create or alter folder SYSTEM.'EXAMPLES'.'E0150_EXPIRATION'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0150_EXPIRATION'.'CONSUMER'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0150_EXPIRATION'.'TIMESTAMP'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = N
+			state mapping = none
+			expired = 1 MINUTE
+			state = (
+				'TOUCHED'
+			)
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0150_EXPIRATION'.'PRODUCER'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0150_EXPIRATION'.'TIMESTAMP'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = X
+			state mapping = 'TOUCH'
+			expired = none
+			state = none
+	),
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0150_EXPIRATION'
+with
+	TEXT = 'This example shows a producer/consumer system.
+The producer touches a resource on termination.
+The consumer needs this resource with a timestamp not older than two minutes.
+So if both jobs are submitted, the consumer will run immediately after the producer finished.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0150_EXPIRATION'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0150_EXPIRATION',
+	job definition SYSTEM.'EXAMPLES'.'E0150_EXPIRATION'.'PRODUCER',
+	job definition SYSTEM.'EXAMPLES'.'E0150_EXPIRATION'.'CONSUMER'
+);
+
+create or alter exit state definition 'AGAIN';
+
+create or alter exit state mapping 'LOOP'
+with map = (
+			'FAILURE',
+		0,	'SUCCESS',
+		1,	'AGAIN',
+		2,	'FAILURE'
+);
+
+create or alter exit state profile 'LOOP_HEAD'
+with
+		states = (
+			'FAILURE' restartable,
+			'SUCCESS' final,
+			'AGAIN' final
+		);
+
+create or alter exit state profile 'LOOP_BODY'
+with
+		default mapping = 'LOOP',
+		states = (
+			'FAILURE' restartable,
+			'AGAIN' final,
+			'SUCCESS' final
+		);
+create or alter folder SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'.'BODY'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'LOOP_BODY',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=AGAIN:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'.'SIMPLE_LOOP'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'LOOP_HEAD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'.'SIMPLE_LOOP'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'.'BODY'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		dynamic
+		translation = none
+		ignore dependency = none
+);
+
+create or alter trigger 'BODY' on job definition SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'.'SIMPLE_LOOP'
+with
+	condition = none,
+	nowarn,
+	nosuspend,
+	nomaster,
+	state = (
+		'AGAIN'
+	),
+	submitcount = 5,
+	submit SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'.'BODY',
+	type = BEFORE_FINAL;
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'
+with
+	TEXT = 'This example is an implementation of  a simple while not AGAIN loop.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'.'SIMPLE_LOOP'
+with
+	TEXT = 'This example is an implementation of  a simple while not AGAIN loop.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP',
+	job definition SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'.'BODY',
+	job definition SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'.'SIMPLE_LOOP',
+	trigger 'BODY' on job definition SYSTEM.'EXAMPLES'.'E0170_SIMPLE_LOOP'.'SIMPLE_LOOP'
+);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'LOCK'
+with
+	group = 'PUBLIC',
+	usage = SYNCHRONIZING;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'LOCK' in GLOBAL.'EXAMPLES'
+with
+	group = 'PUBLIC',
+	online;
+create or alter folder SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'CRITICAL_REGION'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	NOMASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'CRITICAL_REGION_STICKY'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'LOCK'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'LOCK'
+			amount = 0
+			NOKEEP
+			STICKY
+			lockmode = X
+			state mapping = none
+			expired = none
+			state = none
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = '0',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'STEP_1'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'STEP_2'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'UNLOCK'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'LOCK'
+			amount = 0
+			NOKEEP
+			STICKY
+			lockmode = X
+			state mapping = none
+			expired = none
+			state = none
+	),
+	runtime = 1,
+	runtime final = 0,
+	run program = '0',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'CRITICAL_REGION'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'LOCK'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'STEP_2'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'STEP_1'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'UNLOCK'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'CRITICAL_REGION'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'CRITICAL_REGION'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'STEP_1'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'STEP_2'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'CRITICAL_REGION_STICKY'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'LOCK'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'CRITICAL_REGION'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'UNLOCK'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'
+with
+	TEXT = 'This Example shows how to protect a critical region of a batch using sticky resource allocations.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'CRITICAL_REGION_STICKY'
+with
+	TEXT = 'This Example shows how to protect a critical region of a batch using sticky resource allocations.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY',
+	job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'CRITICAL_REGION_STICKY',
+	job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'LOCK',
+	job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'CRITICAL_REGION',
+	job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'UNLOCK',
+	job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'STEP_1',
+	job definition SYSTEM.'EXAMPLES'.'E0190_CRITICAL_REGION_STICKY'.'STEP_2'
+);
+
+create or alter resource state definition 'LOCKED';
+
+create or alter resource state definition 'FREE';
+
+create or alter resource state profile 'LOCK'
+with
+	initial state = 'FREE',
+	states = (
+		'LOCKED',
+		'FREE'
+	);
+
+create or alter resource state mapping 'LOCK'
+with map = (
+		'SUCCESS' maps any to 'LOCKED'
+);
+
+create or alter resource state mapping 'UNLOCK'
+with map = (
+		'SUCCESS' maps any to 'FREE'
+);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'LOCK'
+with
+	group = 'PUBLIC',
+	state profile = 'LOCK',
+	usage = SYNCHRONIZING;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'LOCK' in GLOBAL.'EXAMPLES'
+with
+	group = 'PUBLIC',
+	online;
+create or alter folder SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'CRITICAL_REGION'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	NOMASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'CRITICAL_REGION_STATE'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'LOCK'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'LOCK'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = X
+			state mapping = 'LOCK'
+			expired = none
+			state = (
+				'FREE'
+			)
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = '0',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'STEP_1'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'STEP_2'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'UNLOCK'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'LOCK'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = X
+			state mapping = 'UNLOCK'
+			expired = none
+			state = none
+	),
+	runtime = 1,
+	runtime final = 0,
+	run program = '0',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'CRITICAL_REGION'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'LOCK'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'STEP_2'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'STEP_1'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'UNLOCK'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'CRITICAL_REGION'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'CRITICAL_REGION'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'STEP_1'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'STEP_2'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'CRITICAL_REGION_STATE'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'CRITICAL_REGION'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'LOCK'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'UNLOCK'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'
+with
+	TEXT = 'This Example shows how to protect a critical region of a batch using resource states.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'CRITICAL_REGION_STATE'
+with
+	TEXT = 'This Example shows how to protect a critical region of a batch using resource states.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE',
+	job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'CRITICAL_REGION_STATE',
+	job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'STEP_2',
+	job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'LOCK',
+	job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'UNLOCK',
+	job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'STEP_1',
+	job definition SYSTEM.'EXAMPLES'.'E0193_CRITICAL_REGION_STATE'.'CRITICAL_REGION'
+);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'LOCK'
+with
+	group = 'PUBLIC',
+	usage = SYNCHRONIZING;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'LOCK' in GLOBAL.'EXAMPLES'
+with
+	group = 'PUBLIC',
+	online;
+create or alter folder SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'CRITICAL_REGION'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	NOMASTER,
+	nicevalue = 0,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 1,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'CRITICAL_REGION_KEEP_FINAL'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'LOCK'
+			amount = 0
+			KEEP_FINAL
+			NOSTICKY
+			lockmode = X
+			state mapping = none
+			expired = none
+			state = none
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = '0',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'STEP_1'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'STEP_2'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'CRITICAL_REGION'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'CRITICAL_REGION_KEEP_FINAL'
+		mode = JOB_FINAL
+		unresolved = ERROR
+		condition = none
+		state = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'STEP_2'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'STEP_1'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'CRITICAL_REGION'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'STEP_1'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'STEP_2'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'CRITICAL_REGION_KEEP_FINAL'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'CRITICAL_REGION'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+create or alter comment on folder SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'
+with
+	TEXT = 'This Example shows how to protect a critical region of a batch using 
+KEEP_FINAL resource with a JOB_FINAL dependent sub batch.';
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'CRITICAL_REGION_KEEP_FINAL'
+with
+	TEXT = 'This Example shows how to protect a critical region of a batch using 
+KEEP_FINAL resource with a JOB_FINAL dependent sub batch.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL',
+	job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'CRITICAL_REGION',
+	job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'STEP_1',
+	job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'STEP_2',
+	job definition SYSTEM.'EXAMPLES'.'E0196_CRITICAL_REGION_KEEP_FINAL'.'CRITICAL_REGION_KEEP_FINAL'
+);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0220_KEEP_FINAL'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0220_KEEP_FINAL'.'THREADS'
+with
+	group = 'PUBLIC',
+	usage = SYSTEM;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0220_KEEP_FINAL'.'SUBTHREADS'
+with
+	group = 'PUBLIC',
+	usage = SYSTEM;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0220_KEEP_FINAL'.'THREADS' in GLOBAL.'EXAMPLES'
+with
+	amount = 2,
+	group = 'PUBLIC',
+	online;
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0220_KEEP_FINAL'.'SUBTHREADS' in GLOBAL.'EXAMPLES'
+with
+	amount = 8,
+	group = 'PUBLIC',
+	online;
+create or alter folder SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'.'KEEP_FINAL'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'dynsubmit.sh --host $SDMSHOST --port $SDMSPORT --id $JOBID --key $KEY --child THREAD',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'.'KEEP_FINAL_SUBTHREAD'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	NOMASTER,
+	priority = 50,
+	parameters = none,
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0220_KEEP_FINAL'.'SUBTHREADS'
+			amount = 1
+			NOKEEP
+	),
+	runtime = 1,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" "Thread $PARENT_JOBTAG" "Subthread $JOBTAG" -c "1=FAILURE:0=SUCCESS"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'.'KEEP_FINAL_THREAD'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	NOMASTER,
+	priority = 50,
+	parameters = (
+		'PARENT_JOBTAG'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0220_KEEP_FINAL'.'THREADS'
+			amount = 1
+			KEEP_FINAL
+	),
+	runtime = 1,
+	runtime final = 0,
+	run program = 'dynsubmit.sh --host $SDMSHOST --port $SDMSPORT --id $JOBID --key $KEY --child SUBTHREAD',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'.'KEEP_FINAL'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'.'KEEP_FINAL_THREAD'
+		alias = THREAD
+		CHILDSUSPEND
+		nicevalue = 0
+		dynamic
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'.'KEEP_FINAL_THREAD'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'.'KEEP_FINAL_SUBTHREAD'
+		alias = SUBTHREAD
+		CHILDSUSPEND
+		nicevalue = 0
+		dynamic
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'.'KEEP_FINAL_THREAD'
+alter parameter = (
+		'PARENT_JOBTAG'
+			CONSTANT = '$JOBTAG'
+	);
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL',
+	job definition SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'.'KEEP_FINAL',
+	job definition SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'.'KEEP_FINAL_SUBTHREAD',
+	job definition SYSTEM.'EXAMPLES'.'E0220_KEEP_FINAL'.'KEEP_FINAL_THREAD'
+);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0275_PROGRESS'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 0,
+	parameters = (
+		'PERC_PROCESSED',
+		'DETAIL_BOOKMARK'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS_1'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = (
+		'PERC_PROCESSED',
+		'STEP'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = '/bin/bash -c "P=0; while [ \\$P -lt 100 ]; do P=`expr \\$P + $STEP`; if [ \\$P -gt 100 ]; then P=100; fi; sleep 2; sdms-set_variable --host $SDMSHOST --port $SDMSPORT --jid $JOBID --key $KEY PERC_PROCESSED \\$P; done"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS_2'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = (
+		'STEP',
+		'PERC_PROCESSED'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = '/bin/bash -c "P=0; while [ \\$P -lt 100 ]; do P=`expr \\$P + $STEP`; if [ \\$P -gt 100 ]; then P=100; fi; sleep 2; sdms-set_variable --host $SDMSHOST --port $SDMSPORT --jid $JOBID --key $KEY PERC_PROCESSED \\$P; done"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS_3'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = (
+		'STEP',
+		'PERC_PROCESSED'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = '/bin/bash -c "P=0; while [ \\$P -lt 100 ]; do P=`expr \\$P + $STEP`; if [ \\$P -gt 100 ]; then P=100; fi; sleep 2; sdms-set_variable --host $SDMSHOST --port $SDMSPORT --jid $JOBID --key $KEY PERC_PROCESSED \\$P; done"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS_1'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS_2'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS_3'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS'
+alter parameter = (
+		'PERC_PROCESSED'
+			AVG('PERC_PROCESSED'),
+		'DETAIL_BOOKMARK'
+			CONSTANT = 'E0275_PROGRESS'
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS_1'
+alter parameter = (
+		'PERC_PROCESSED'
+			RESULT default = '0',
+		'STEP'
+			PARAMETER default = '5'
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS_2'
+alter parameter = (
+		'STEP'
+			PARAMETER default = '4',
+		'PERC_PROCESSED'
+			RESULT default = '0'
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS_3'
+alter parameter = (
+		'STEP'
+			PARAMETER default = '6',
+		'PERC_PROCESSED'
+			RESULT default = '0'
+	);
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0275_PROGRESS'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0275_PROGRESS',
+	job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS',
+	job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS_1',
+	job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS_2',
+	job definition SYSTEM.'EXAMPLES'.'E0275_PROGRESS'.'PROGRESS_3'
+);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'.'TEMPSPACE'
+with
+	group = 'PUBLIC',
+	state profile = none,
+	usage = SYSTEM,
+	parameters = (
+		'TEMPDIR' LOCAL_CONSTANT = '/tmp'
+	);
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'.'TEMPSPACE' in GLOBAL.'EXAMPLES'.'HOST_1'.'SERVER'
+with
+	amount = 100,
+	group = 'PUBLIC',
+	online,
+	factor = 1.0,
+	requestable amount = 100,
+	tag = none,
+	trace base = none,
+	trace interval = none,
+	parameter = (
+		'TEMPDIR' = '/tmp/host_1'
+	);
+
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'.'TEMPSPACE' in GLOBAL.'EXAMPLES'.'HOST_2'.'SERVER'
+with
+	amount = 100,
+	group = 'PUBLIC',
+	online,
+	factor = 1.0,
+	requestable amount = 100,
+	tag = none,
+	trace base = none,
+	trace interval = none,
+	parameter = (
+		'TEMPDIR' = '/tmp/host_2'
+	);
+
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'.'TEMPSPACE' in GLOBAL.'EXAMPLES'.'LOCALHOST'.'SERVER'
+with
+	amount = 100,
+	group = 'PUBLIC',
+	online,
+	factor = 1.0,
+	requestable amount = 100,
+	tag = none,
+	trace base = none,
+	trace interval = none,
+	parameter = (
+		'TEMPDIR' = '/tmp/localhost'
+	);
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'.'RESOURCE_VARIABLE'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = (
+		'TEMPDIR'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'.'TEMPSPACE'
+			amount = 1
+			NOKEEP
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "Mein tempdir = $TEMPDIR"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'.'RESOURCE_VARIABLE'
+alter parameter = (
+		'TEMPDIR'
+			reference resource RESOURCE.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'.'TEMPSPACE' ('TEMPDIR')
+	);
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'.'RESOURCE_VARIABLE'
+with
+	TEXT = 'This example shows the use of resource variables to provide resource specific information 
+to the job started.
+In this case a resource TEMPSPACE is allocated and the resource tells the job where this
+temporary space is located within the file system.';
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0280_RESOURCE_VARIABLE',
+	job definition SYSTEM.'EXAMPLES'.'E0280_RESOURCE_VARIABLE'.'RESOURCE_VARIABLE'
+);
+
+create or alter exit state definition 'YES';
+
+create or alter exit state definition 'NO';
+
+create or alter exit state mapping 'DEADLINE_CHECK'
+with map = (
+			'FAILURE',
+		0,	'SUCCESS',
+		1,	'SKIPPED',
+		2,	'FAILURE'
+);
+
+create or alter exit state profile 'DEADLINE_CHECK'
+with
+		default mapping = 'DEADLINE_CHECK',
+		states = (
+			'FAILURE' restartable broken,
+			'SUCCESS' final,
+			'SKIPPED' final unreachable
+		);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING'.'DEADLINE'
+with
+	group = 'PUBLIC',
+	state profile = 'TIMESTAMP',
+	usage = SYNCHRONIZING,
+	parameters = (
+		'DEADLINE' CONSTANT = '$TIMESTAMP'
+	);
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING'.'DEADLINE' in GLOBAL.'EXAMPLES'
+with
+	amount = 0,
+	group = 'PUBLIC',
+	online,
+	factor = 1.0,
+	requestable amount = 0,
+	tag = none,
+	trace base = none,
+	trace interval = none,
+	state = 'TOUCHED',
+	parameter = none;
+create or alter folder SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'DEADLINE_CHECK'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = (
+		'DEADLINE',
+		'EXPECTED_RUNTIME'
+	),
+	profile = 'DEADLINE_CHECK',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING'.'DEADLINE'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = N
+			state mapping = none
+			expired = none
+			state = none
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = 'sh -c "NOW=`date +%s`
+if [ `expr \\$NOW + $EXPECTED_RUNTIME` -gt $DEADLINE ]
+then
+    echo \'Deadline reached\' ; exit 1
+else
+    echo \'Ok to run\' ; exit 0
+fi"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'E0360_DEADLINE_SCHEDULING_SKIP'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 0,
+	parameters = (
+		'DEADLINE'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'JOB'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = (
+		'EXPECTED_RUNTIME'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 3600,
+	runtime final = 3600,
+	run program = 'SDMSpopup.sh "$JOBNAME"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'SET_DEADLINE'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = (
+		'DEADLINE'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'sh -c \'echo "whenever error disconnect 1
+ALTER RESOURCE RESOURCE.EXAMPLES.E0360_DEADLINE_SCHEDULING.DEADLINE in GLOBAL.EXAMPLES WITH TOUCH = \'"\'"\'\'$DEADLINE\'\'"\'"\';" | sdmsh -v\'',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'DEADLINE_CHECK'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'SET_DEADLINE'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'JOB'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'DEADLINE_CHECK'
+		mode = JOB_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'DEADLINE_CHECK'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'JOB'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'E0360_DEADLINE_SCHEDULING_SKIP'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'DEADLINE_CHECK'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'SET_DEADLINE'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'DEADLINE_CHECK'
+alter parameter = (
+		'DEADLINE'
+			reference resource RESOURCE.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING'.'DEADLINE' ('DEADLINE'),
+		'EXPECTED_RUNTIME'
+			reference child SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'JOB' ('EXPECTED_RUNTIME')
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'E0360_DEADLINE_SCHEDULING_SKIP'
+alter parameter = (
+		'DEADLINE'
+			PARAMETER default = 'T12:00'
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'JOB'
+alter parameter = (
+		'EXPECTED_RUNTIME'
+			CONSTANT = '$EXPRUNTIME'
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'SET_DEADLINE'
+alter parameter = (
+		'DEADLINE'
+			PARAMETER default = 'T12'
+	);
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP',
+	job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'DEADLINE_CHECK',
+	job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'E0360_DEADLINE_SCHEDULING_SKIP',
+	job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'JOB',
+	job definition SYSTEM.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING_SKIP'.'SET_DEADLINE'
+);
+
+create or alter exit state definition 'YES';
+
+create or alter exit state definition 'NO';
+
+create or alter exit state mapping 'DEADLINE_CHECK'
+with map = (
+			'FAILURE',
+		0,	'SUCCESS',
+		1,	'SKIPPED',
+		2,	'FAILURE'
+);
+
+create or alter exit state profile 'DEADLINE_CHECK'
+with
+		default mapping = 'DEADLINE_CHECK',
+		states = (
+			'FAILURE' restartable broken,
+			'SUCCESS' final,
+			'SKIPPED' final unreachable
+		);
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING'.'DEADLINE'
+with
+	group = 'PUBLIC',
+	state profile = 'TIMESTAMP',
+	usage = SYNCHRONIZING,
+	parameters = (
+		'DEADLINE' CONSTANT = '$TIMESTAMP'
+	);
+
+create or alter resource RESOURCE.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING'.'DEADLINE' in GLOBAL.'EXAMPLES'
+with
+	amount = 0,
+	group = 'PUBLIC',
+	online,
+	factor = 1.0,
+	requestable amount = 0,
+	tag = none,
+	trace base = none,
+	trace interval = none,
+	state = 'TOUCHED',
+	parameter = none;
+
+create or alter exit state profile 'STANDARD_NOSKIP'
+with
+		default mapping = 'UNIX',
+		states = (
+			'FAILURE' restartable broken,
+			'SUCCESS' final
+		);
+create or alter folder SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'DEADLINE_CHECK'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = (
+		'DEADLINE',
+		'EXPECTED_RUNTIME'
+	),
+	profile = 'DEADLINE_CHECK',
+	required = none,
+	rerun program = none,
+	resource = (
+		RESOURCE.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING'.'DEADLINE'
+			amount = 0
+			NOKEEP
+			NOSTICKY
+			lockmode = N
+			state mapping = none
+			expired = none
+			state = none
+	),
+	runtime = 0,
+	runtime final = 0,
+	run program = 'sh -c "NOW=`date +%s`
+if [ `expr \\$NOW + $EXPECTED_RUNTIME` -gt $DEADLINE ]
+then
+    echo \'Deadline reached\' ; exit 1
+else
+    echo \'Ok to run\' ; exit 0
+fi"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'E0365_DEADLINE_SCHEDULING_FAIL'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	errlog = none,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = none,
+	MASTER,
+	nicevalue = 0,
+	parameters = (
+		'DEADLINE'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime final = 0,
+	run program = none,
+	NOSUSPEND,
+	type = BATCH,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'JOB'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	NOMASTER,
+	priority = 50,
+	parameters = (
+		'EXPECTED_RUNTIME'
+	),
+	profile = 'STANDARD_NOSKIP',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 3600,
+	runtime final = 3600,
+	run program = 'SDMSpopup.sh "$JOBNAME"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'SET_DEADLINE'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = (
+		'DEADLINE'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'sh -c \'echo "whenever error disconnect 1
+ALTER RESOURCE RESOURCE.EXAMPLES.E0360_DEADLINE_SCHEDULING.DEADLINE in GLOBAL.EXAMPLES WITH TOUCH = \'"\'"\'\'$DEADLINE\'\'"\'"\';" | sdmsh -v\'',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'DEADLINE_CHECK'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'SET_DEADLINE'
+		mode = ALL_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'JOB'
+add or alter required = (
+	SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'DEADLINE_CHECK'
+		mode = JOB_FINAL
+		unresolved = ERROR
+		condition = none
+		state = (
+			'SUCCESS'
+		)
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'DEADLINE_CHECK'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'JOB'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'E0365_DEADLINE_SCHEDULING_FAIL'
+add or alter children = (
+	SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'SET_DEADLINE'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none,
+	SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'DEADLINE_CHECK'
+		alias = none
+		CHILDSUSPEND
+		nicevalue = 0
+		static
+		translation = none
+		ignore dependency = none
+);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'DEADLINE_CHECK'
+alter parameter = (
+		'DEADLINE'
+			reference resource RESOURCE.'EXAMPLES'.'E0360_DEADLINE_SCHEDULING'.'DEADLINE' ('DEADLINE'),
+		'EXPECTED_RUNTIME'
+			reference child SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'JOB' ('EXPECTED_RUNTIME')
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'E0365_DEADLINE_SCHEDULING_FAIL'
+alter parameter = (
+		'DEADLINE'
+			PARAMETER default = 'T12:00'
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'JOB'
+alter parameter = (
+		'EXPECTED_RUNTIME'
+			CONSTANT = '$EXPRUNTIME'
+	);
+
+alter job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'SET_DEADLINE'
+alter parameter = (
+		'DEADLINE'
+			PARAMETER default = 'T12'
+	);
+
+
+cleanup folder SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'
+with keep = (
+	folder SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL',
+	job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'DEADLINE_CHECK',
+	job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'E0365_DEADLINE_SCHEDULING_FAIL',
+	job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'JOB',
+	job definition SYSTEM.'EXAMPLES'.'E0365_DEADLINE_SCHEDULING_FAIL'.'SET_DEADLINE'
+);
+
+end multicommand;

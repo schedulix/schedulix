@@ -1,0 +1,256 @@
+#
+# $Id: server.conf.template,v 1.10.2.2 2013/04/19 11:05:23 dieter Exp $
+#
+# The server.conf file is the configuration file for the BICsuite Scheduling Server.
+# since this file contains unencrypted password information, it should be stored
+# read/(write) only for the user. The values in this template file are reasonable
+# for most systems. On very large systems some fine tuning will be necessary.
+#
+
+#
+# CalendarEntries: The maximum number of starttimes stored in the calendar
+#
+CalendarEntries=250
+
+#
+# CalendarHorizon: The default calendar horizon
+#
+CalendarHorizon=90
+
+#
+# If using an TLS/SSL Connection, does the client have to authenticate himself
+#
+ClientAuthorization=true
+
+#
+# CodePage: Which Character Set do we use. See the Java Documentation for more information
+#
+CodePage=latin1
+
+# CompatibilityLevel: defines the available features
+#                     valid values are: ENTERPRISE, PROFESSIONAL, BASIC
+#                     default depends on the licensed product
+#
+CompatibilityLevel=ENTERPRISE
+
+#
+# DbLoaders: Number of DB Loaders
+#            The default = min(#processors, 5)
+#            Increasing the number of DB Loaders can decrease startup times.
+#            Using a larger number than the number of physical processors in the server
+#            doesn't seem to speedup things substantially.
+#
+DbLoaders=2
+
+#
+# DbPasswd: The password needed to authenticate the server at the database engine
+#
+DbPasswd=NOT_SET
+
+#
+# DbUrl: The Java connection string needed for creating a session
+#        Consult the jdbc documentation for the database engine in use
+#
+# in case of Ingres, use something like:
+# DbUrl=jdbc:ingres://hostname:II7/dbname;
+#
+# in case of Postgres, use something like:
+# DbUrl=jdbc:postgresql:dbname
+#
+# in case of Mysql, use something like:
+# DbUrl=jdbc:mysql://hostname:port/dbname
+DbUrl=NOT_SET
+
+#
+# DbUser: The username needed to authenticate the server at the database engine
+DbUser=NOT_SET
+
+#
+# ExportVariables: 
+# ExportVariables
+#
+# GCWakeup: Time between two (server) garbage collections in minutes
+GCWakeup=240
+
+#
+# History: In Core Job History in minutes. Finished masters are kept in memory
+#          at least this long
+#
+History=14400
+
+#
+# Hostname: Hostname of the SDMSServer
+#
+Hostname=hostname.domain.de
+
+#
+# JdbcDriver: Name of the JDBC-Driver to load
+#
+# in case of Ingres, use something like:
+# JdbcDriver=com.ingres.jdbc.IngresDriver
+#
+# in case of Postgres, use something like:
+# JdbcDriver=org.postgresql.Driver
+#
+# in case of Mysql, use something like:
+# JdbcDriver=com.mysql.jdbc.Driver
+JdbcDriver=NOT_SET
+
+#
+# ParameterHandling:  Parameter handling - Parameters can be handled in either of three ways:
+# 
+#          1. Strict  "GetParameter()" returns an error if the parameter is not
+#                     defined in the direct scope of the job.
+# 
+#          2. Warn    A warning is written to the logfile if a parameter is not
+#                      defined in the direct scope of the job.
+#                      The parameter is resolved normally.
+# 
+#          3. Liberal The parameter is just resolved (the default)
+#
+ParameterHandling=liberal
+
+#
+# Port: Portnumber for Listener
+#
+Port=2506
+
+#
+# PriorityDelay: Number of minutes until priority increment (default 30)
+#                Aging can be switched of by setting PriorityDelay=0
+#
+PriorityDelay=1
+
+#
+# PriorityLowerBound: The minimum priority number a job can reach by aging
+#                     (lower numbers are higher priorities)
+#                     Priorities below the PriorityLowerBound can be assigned by 
+#                     an administrator.
+#
+PriorityLowerBound=10
+
+#
+# RunMode: production or test
+#          RunMode test enables some commands that are used for development purposes
+#          These commands are dangerous and can crash the server (deliberately)
+#
+RunMode=PRODUCTION
+
+#
+# ScheduleWakeup: Time until Wakeup of ScheduleThread in seconds
+#
+ScheduleWakeup=30
+
+#
+# ServicePort: The service port is a port to which an administrator can connect.
+#
+ServicePort=2505
+
+#
+# SessionTimeout: The number of seconds after which an idle session is disconnected.
+#                 The session timeout can be specified at connect time, as well be
+#                 altered within the session itself.
+#
+SessionTimeout=0
+
+#
+# SingleServer: true = immediate takeover
+#               false = warm standby
+#
+SingleServer=true
+
+#
+# SysPasswd: The password of user SYSTEM
+#
+SysPasswd=G0H0ME
+
+#
+# TimerHorizon: Time (in years) the TimerThread "looks in the future"
+#
+TimerHorizon=2
+
+#
+# TimerRecalc: Time (in days) the TimerThread recalculates intervals that have
+#              "fallen behind the horizon"
+#
+TimerRecalc=1
+
+#
+# TimerSuspendLimit: If for some reason the timer thread can't submit a job at the "official"
+#                    scheduled time (e.g. because the server was down), the timer thread will
+#                    submit the job as "suspended" if the scheduled time is more than
+#                    TimerSuspendLimit minutes ago.
+#
+TimerSuspendLimit=15
+
+#
+# TimerTimeout: Maximum Time (in seconds) a Time Schedule is alowed to calulate the next execution
+#               This is to avoid strange time scheduling setups to block the system by searching
+#		the next execution time for a very long time
+#
+TimerTimeout=10
+
+#
+# TimerWakeup: The number of seconds between two invocations of the timer thread.
+#
+TimerWakeup=30
+
+#
+# Trace level: Defines the kind of messages written to the server logfile
+#              The trace level can be altered at runtime using the command:
+#              ALTER SERVER WITH TRACE LEVEL = n
+#              Valid trace levels are:
+#              0: almost no output. Only Fatal Errors, Errors and Info Messages are logged
+#              1: A litte more verbose. Also Warnings are logged
+#              2: Messages are logged. This includes all issued commands.
+#              3: Debug information is logged. This produces an enormous amount of output
+#
+#              For most situations, a trace level 1 is OK
+#
+TraceLevel=1
+
+#
+# TriggerHardLimit: The TriggerHardLimit is the maximum number of times the same trigger
+#                   can fire within one master run. This variable is ment to prevent endless
+#                   loops and can be set to any reasonable number. Since it is internally stored
+#                   in a signed integer, the absolute maximum is 2^31 - 1.
+#
+TriggerHardLimit=100
+
+#
+# TriggerSoftLimit: If no retry count is specified (i.e. the retry count == 0), the maximum
+#                   number of times the same trigger can fire within one master run is defined
+#                   by the TriggerSoftLimit. The value can't exceed the vlue of TriggerHardLimit.
+#
+TriggerSoftLimit=50
+
+#
+# TxRetryCount: Retry Count for problematic Transactions. In some seldom cases a transaction
+#               runs into a recoverable error. In that case it is repeated up to TxRetryCount
+#               times
+#
+TxRetryCount=3
+
+#
+# UserExportVariables define the variables/parameters which are set in the 
+# environment of the executed process. These variables are added to the list
+# of variables defined by "ExportVariables". The names of the variables are
+# comma separated as in the example below.
+#     UserExportVariables=a,b,c, /* comments are permitted */ \
+#      /* if you want to continue, just mask the newline */ d,e,f, \
+#      g,h /* this was the last one */
+# UserExportVariables
+
+#
+# UserThreads: Number of concurrent sessions. These include the sessions of jobservers.
+#
+UserThreads=30
+
+#
+# WorkerThreads: Number of Worker Threads used for read only transactions like LIST and SHOW.
+#
+WorkerThreads=2
+
+#
+# End of File
+#

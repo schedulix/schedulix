@@ -1,0 +1,156 @@
+#!/bin/sh
+#
+# $Id: sdmsctl,v 1.19.2.1 2013/03/14 10:24:01 ronald Exp $
+#
+# Copyright (C) 2004-2006 independIT Integrative Technologies GmbH
+#
+
+print_usage()
+{
+	P=`basename $0`
+	echo "Usage: $P [start|stop]"
+}
+
+do_start()
+{
+	CMDSTRING="$BICSUITEJAVA_BS $BICSUITEJAVAFLAGS_BS -cp $BICSUITECLASSPATH de.independit.scheduler.BICServer $BICSUITECONFIG/server.conf $*"
+
+	TMPLOG=`ls -1rt $LOGFILE.* 2>/dev/null | tail -1`
+	ACTLOG=`ls -1rt $LOGFILE.* 2>/dev/null | tail -1`
+	$SCROLLLOG $LOGFILE $SCROLLLOGOPTS -o $PIDFILE -e $CMDSTRING
+
+	# we need to wait until the new Logfile has been created
+	while [ "$TMPLOG" = "$ACTLOG" ]; do
+		sleep 1
+		ACTLOG=`ls -1rt $LOGFILE.* 2>/dev/null | tail -1`
+	done
+	if $BICSUITEGREP -q 'Error locking pipe' $PIDFILE; then
+		tail -1 $PIDFILE
+		echo
+		exit 1
+	fi
+	CHILDPID=`head -1 $PIDFILE`
+	ACTLOG=`ls -1rt $LOGFILE.* | tail -1`
+	until $BICSUITEGREP ' SDMS -- Server -- Systems -- ready --' $ACTLOG >/dev/null; do
+		sleep 1
+		until $BICSUITEKILL -s 0 $CHILDPID >/dev/null 2>&1; do
+			sleep 1
+			cat $ACTLOG
+			exit 1
+		done
+	done
+
+	echo 'Server started'
+}
+
+ffuser()
+{
+	$BICSUITEFUSER $1 2>/dev/null | $BICSUITEGREP '[1-9][0-9]*'
+}
+
+wait_for_server()
+{
+	if ffuser $LOGFILE >/dev/null 2>&1; then
+		: do nothing
+	else
+		echo 'Server stopped'
+		exit 0
+	fi
+
+	I=0
+	while [ $I -lt $SDMSTIMEOUT ]; do
+		sleep 1
+		if ffuser $LOGFILE >/dev/null 2>&1; then
+			: do nothing
+		else
+			echo 'Server stopped'
+			exit 0
+		fi
+		I=`expr $I + 1`
+	done
+}
+
+do_disable_connect()
+{
+	echo 'alter server with disable connect;' \
+	    | $SDMSH -S $SDMSUSER "$SDMSPASS" $SDMSHOST $SDMSPORT -notls >/dev/null 2>&1 || return
+
+	I=0
+	while [ $I -lt $SDMSTIMEOUT ]; do
+		sleep 1
+		echo 'list sessions;' | $SDMSH $SDMSUSER "$SDMSPASS" $SDMSHOST $SDMSPORT -notls \
+			| awk '	BEGIN			{ i = 0; start = 0; }
+				# skip header
+				/^THIS/			{ start = 1; next; }
+				/^----/			{ next; }
+				# skip when not "started"
+				start == 0		{ next; }
+				# stop at empty line
+				/^[ 	]*$/		{ start = 0; next; }
+				# skip "me"
+				$1 == "*"		{ next; }
+				# skip jobserver
+				$9 == "JOBSERVER"	{ next; }
+				# count remaining sessions
+							{ i++; }
+				END			{ exit i; }'
+		NUM_CONNECT=$?
+		# echo "still having $NUM_CONNECT connections"
+		if [ $NUM_CONNECT -eq 0 ]; then
+			return;
+		fi
+		I=`expr $I + 1`
+	done
+}
+
+do_stop()
+{
+	# disable connects
+	do_disable_connect
+
+	# we should have the pid of our server. We could check then if it still exists
+	# this is a bit problematic though. Does anyone have a good idea?
+	echo 'stop server;' | $SDMSH -S $SDMSUSER "$SDMSPASS" $SDMSHOST $SDMSPORT -notls >/dev/null 2>&1 &
+	wait_for_server
+
+	echo 'stop server kill;' | $SDMSH -S $SDMSUSER "$SDMSPASS" $SDMSHOST $SDMSPORT -notls >/dev/null 2 >&1 &
+	wait_for_server
+
+	# now kill!
+	$BICSUITEFUSER -k $LOGFILE >/dev/null 2>&1
+	echo 'Server forcibly stopped'
+}
+
+# -----------------------------------------------------------------------------
+# main
+# -----------------------------------------------------------------------------
+
+if [ -z "$BICSUITECONFIG" ]; then
+	BICSUITECONFIG=$BICSUITEHOME/etc
+fi
+
+. $BICSUITEHOME/lib/functions.sh || exit 1
+
+LOGFILE=$BICSUITELOGDIR/BICserver.out
+PIDFILE=$BICSUITELOGDIR/BICserver.pid
+parse_server_conf 
+
+PATH=$PATH:/bin:/usr/bin:/sbin:/usr/sbin
+
+OPERATION=$1
+shift
+
+trap "rm -f $PIDFILE" 0 1 2 3
+
+case "$OPERATION" in
+	start)		ensure_pipe $LOGFILE;
+			do_start "$@" ;;
+
+	stop)		ensure_pipe $LOGFILE;
+			do_stop ;;
+
+	*)		print_usage ;
+			exit 1 ;;
+esac
+
+exit 0

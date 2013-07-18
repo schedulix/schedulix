@@ -1,0 +1,30 @@
+//
+// $Id: convenience.sdms,v 1.4.4.1 2013/03/16 10:35:53 dieter Exp $
+//
+// Copyright (c) 2006 independIT Integrative Technologies GmbH
+//
+
+begin_multicommand
+
+create or alter exit_state_definition 'FAILURE';
+
+create or alter exit_state_definition 'SKIPPED';
+
+create or alter exit_state_definition 'SUCCESS';
+
+create or alter exit_state_mapping 'UNIX'
+	with
+		map = (
+			'FAILURE',
+			0, 'SUCCESS',
+			1, 'FAILURE');
+
+create or alter exit_state_profile 'STANDARD'
+	with
+		states = (
+			'FAILURE' restartable broken,
+			'SUCCESS' final,
+			'SKIPPED' final unreachable),
+		default_mapping = 'UNIX';
+
+end_multicommand;

@@ -1,0 +1,124 @@
+//
+// $Id: Scanner.jlex,v 2.0 2004/04/19 15:25:42 ronald Exp $
+//
+// Copyright (C) 2002 topIT Informationstechnologie GmbH
+//
+// $Log: Scanner.jlex,v $
+// Revision 2.0  2004/04/19 15:25:42  ronald
+// Version 2.0 Started
+//
+// Revision 1.3  2002/10/22 00:10:48  ronald
+// Copyright Zeile ergaenzt
+//
+// Revision 1.2  2002/01/29 20:04:14  ronald
+// Added a few statements. Clean up a bit
+//
+// Revision 1.1  2001/10/25 12:15:45  ronald
+// Start of utility for collecting errormessages. We'll probably need a
+// perl/awk/python script for really generating the needed tables.
+//
+//
+
+import java.lang.*;
+import java.util.*;
+import java.io.*;
+
+%%
+
+%public
+%class Scanner
+%type int
+%yyeof
+%integer
+
+%line
+%column
+%unicode
+
+%{
+private static boolean debug = false;
+
+public static final int STRINGTOK  = 100000;
+public static final int MSGSTART   = 100001;
+public static final int IDENTIFIER = 100002;
+
+protected void comment(String text)
+{
+	if(debug) {
+		System.out.println("\tcomment: " + text);
+	}
+}
+
+public int yyline()
+{
+	return yyline + 1;
+}
+
+private int token;
+private Object value;
+
+public boolean advance() throws java.io.IOException
+{
+	token = yylex();
+	return (token != YYEOF);
+}
+
+public int token()
+{
+	return token;
+}
+
+public Object value() 
+{
+	return value;
+}
+
+public static void main(String argv[])
+{
+	int i;
+
+	for(i=0; i<argv.length; i++) {
+		try {
+			FileReader f = new FileReader(argv[i]);
+			Scanner s = new Scanner(f);
+			while(s.advance()) {
+				if(s.token() == MSGSTART)
+					System.err.println("\n>>>>>>>>>>Start SDMSMessage<<<<<<<<<<");
+				if(s.token() == STRINGTOK)
+					System.err.println("\"" + s.value().toString() + "\"");
+				if(s.token() == IDENTIFIER)
+					System.err.println(s.value());
+			}
+		} catch(IOException ioe) {
+			continue;
+		}
+	}
+}
+
+%}
+
+alpha	=	[a-zA-Z_]
+alnum	=	[a-zA-Z_0-9]
+ws	=	[ \t\n\r\b\015]+
+ident	=	{alpha}{alnum}*
+
+%state	STRING COMMENT SDMSMSG
+%%
+
+<YYINITIAL>"//".*		{ comment(yytext()); }
+<YYINITIAL>--.*			{ comment(yytext()); }
+<YYINITIAL>{ws}			{ /* do nothing */ }
+<YYINITIAL>"/*"			{ yybegin(COMMENT); }
+<YYINITIAL>SDMSMessage{ws}*\(	{ yybegin(SDMSMSG); return MSGSTART; }
+<YYINITIAL>.			{ return yytext().charAt(0); }
+<COMMENT>"*/"			{ yybegin(YYINITIAL); }
+<COMMENT>[^*]*			{ comment(yytext()); }
+<COMMENT>\*			{ comment(yytext()); }
+<SDMSMSG>\"			{ yybegin(STRING); value = new String(""); }
+<SDMSMSG>;			{ yybegin(YYINITIAL); }
+<SDMSMSG>{ident}		{ value = new String(yytext()); return IDENTIFIER; }
+<SDMSMSG>.			{ /* do nothing */ }
+<SDMSMSG>{ws}			{ /* do nothing */ }
+<STRING>[^\"]*			{ value = value.toString() + yytext(); }
+<STRING>\"			{ yybegin(SDMSMSG); return STRINGTOK; }
+

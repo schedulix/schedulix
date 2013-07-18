@@ -1,0 +1,22 @@
+#
+# $Id: jobserver.conf.template,v 1.2 2006/02/11 00:40:46 bernhard Exp $
+#
+# Copyright (C) 2006 independIT Integrative Technologies GmbH
+#
+
+#
+# The host to connect to
+#
+RepoHost=localhost
+#
+# The port to connect to
+#
+RepoPort=2506
+#
+# User name to login with
+#
+RepoUser=NOT_SET
+#
+# Password to login with
+#
+RepoPass=NOT_SET

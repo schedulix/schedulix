@@ -1,0 +1,41 @@
+#
+# Home directory of bicsuite installation tree
+# should be set already
+# BICSUITEHOME=/home/bicsuite/bicsuite
+#
+# As well as a pointer to the configuration files
+# BICSUITECONFIG=/home/bicsuite/etc
+#
+# Path to bicsuite programs and utilities
+#
+PATH=$PATH:$BICSUITEHOME/bin
+#
+# Valid Locale neccessary for jobservers to work correctly
+# (invalid pid errormessages if BIC_LOCALE is invalid)
+#
+BIC_LOCALE=en_US
+#
+# Extra options for scrolllog
+# e.g.
+# SCROLLLOGOPTS="-s 10 -l 250000"
+# which results in 10 segments of 250,000 lines each
+#
+SCROLLLOGOPTS=
+#
+# Directory where logfiles are stored
+#
+BICSUITELOGDIR=$BICSUITEHOME/log
+#
+# UNIX Commands to use
+# change if Commands found by PATH do not match
+#
+BICSUITEGREP=grep
+BICSUITEKILL=kill
+BICSUITEFUSER=fuser
+BICSUITEMKNOD=mknod
+WHOAMI=whoami
+#
+# Exports
+#
+export PATH BIC_LOCALE BICSUITELOGDIR SDMSHOST SDMSPORT
+

@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# $Id: sdms-tool,v 1.2.2.1 2013/03/14 10:24:01 ronald Exp $
+#
+# Copyright (C) 2006 independIT Integrative Technologies GmbH
+#
+if [ -z "$BICSUITECONFIG" ]; then
+	BICSUITECONFIG=$BICSUITEHOME/etc
+fi
+
+. $BICSUITECONFIG/java.conf || exit 1
+. $BICSUITECONFIG/bicsuite.conf || exit 1
+CLASS=`basename $0 | sed 's/sdms-//'`
+INFO="$0["`$WHOAMI`"@"`hostname`"]"
+$BICSUITEJAVA_TL $BICSUITEJAVAFLAGS_TL -cp $BICSUITEJAR de.independit.scheduler.tools.$CLASS --info $INFO "$@"

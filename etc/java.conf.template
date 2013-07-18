@@ -1,0 +1,42 @@
+#
+# Java and Java Flags for BICsuite server, jobserver and utilities
+#
+# Bicsuite JAR to use
+#
+BICSUITEJAR=$BICSUITEHOME/lib/BICsuite.jar
+#
+# CLASSPATH to use containing the path to jdbc driver and others if needed
+#
+BICSUITECLASSPATH=$BICSUITEJAR:/path/to/jdbc/jarfile
+#
+BICSUITEJAVA=`which java`
+# java used for BICsuite Server
+BICSUITEJAVA_BS=$BICSUITEJAVA
+# java used for BICsuite Jobserver
+BICSUITEJAVA_JS=$BICSUITEJAVA
+# java used for BICsuite Tools
+BICSUITEJAVA_TL=$BICSUITEJAVA
+# java used for BICsuite Proxy
+BICSUITEJAVA_PX=$BICSUITEJAVA
+#
+# Additional Java Flags to use
+#
+# java flags used for BICsuite Server
+#
+BICSUITEMEM=300
+#
+MAXMEM=${BICSUITEMEM}m
+STARTMEM=`expr $BICSUITEMEM / 2`m
+NEWSIZE=`expr $BICSUITEMEM / 16`m
+MEMSIZES="-Xmx${MAXMEM} -Xms${STARTMEM} -XX:NewSize=${NEWSIZE}"
+MEMFLAGS="-XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:CMSInitiatingOccupancyFraction=80 -XX:+DisableExplicitGC -XX:ParallelGCThreads=4"
+MEMDEBUG=""
+MEMCONF="$MEMSIZES $MEMFLAGS $MEMDEBUG"
+#
+BICSUITEJAVAFLAGS_BS="$MEMCONF"
+# java flags used for BICsuite Jobserver
+BICSUITEJAVAFLAGS_JS="-client -XX:ParallelGCThreads=2"
+# java flags used for BICsuite Tools
+BICSUITEJAVAFLAGS_TL="-client"
+# java flags used for BICsuite Proxy
+BICSUITEJAVAFLAGS_PX=""

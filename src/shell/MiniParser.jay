@@ -1,0 +1,468 @@
+%{
+//
+// $Id: MiniParser.jay,v 2.13.2.1 2013/03/14 10:25:30 ronald Exp $
+//
+// Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
+//
+// $Log: MiniParser.jay,v $
+// Revision 2.13.2.1  2013/03/14 10:25:30  ronald
+// Umstellung auf standard konforme package bezeichnungen
+//
+// Revision 2.13  2011/11/25 12:35:08  ronald
+// Kleine aenderungen wg gsdmsh
+//
+// Revision 2.12  2011/09/27 07:23:32  ronald
+// Gravierende Performanceverbesserung bei sehr grossen Statements
+//
+// Revision 2.11  2011/08/03 13:59:45  ronald
+// Bessere Handhabung von verbose und silent options
+//
+// Revision 2.10  2009/09/24 09:17:07  ronald
+// Versioned Dump eingebaut
+//
+// Revision 2.9  2008/05/08 16:36:23  ronald
+// sdmsh now exits with exit code 1 on connect error
+//
+// Revision 2.8  2007/10/26 10:20:12  ronald
+// Loads of documentation work
+//
+// Revision 2.7  2007/09/10 14:26:40  ronald
+// Access control for dump implemented
+// sdmsh flaw removed (didn't render prompt after dump)
+//
+// Revision 2.6  2007/09/10 09:47:25  ronald
+// Debug Ausgabe entfernt
+//
+// Revision 2.5  2007/08/27 14:11:17  ronald
+// Dump WIP
+//
+// Revision 2.4  2007/08/11 11:46:42  ronald
+// Dump beta
+//
+// Revision 2.3  2007/08/09 14:07:09  ronald
+// Dump WIP. Checkin wg. abgleich
+//
+// Revision 2.2  2007/04/25 17:14:38  ronald
+// Multicommand rollback implemented
+//
+// Revision 2.1  2007/01/05 12:46:45  ronald
+// prompt befehl zugefuegt
+//
+// Revision 2.0  2004/04/19 15:25:42  ronald
+// Version 2.0 Started
+//
+// Revision 1.7  2004/03/26 23:46:56  bernhard
+// MULTICOMMANDs may be empty now
+//
+// Revision 1.6  2004/03/24 12:23:21  ronald
+// Issue #269: irrecoverable syntax error
+//
+// Revision 1.5  2003/05/07 21:28:17  ronald
+// Mittels !command koennen nun Shell Kommandos ausgefuehrt werden.
+// Ist noch nicht Windows-Proof
+//
+// Revision 1.4  2002/11/18 20:41:17  ronald
+// Issue 111: vergessen die Outputstruktur anzulegen. Parser terminiert
+// nun bei desktop fehler.
+//
+// Revision 1.3  2002/11/13 09:49:01  ronald
+// Verbesserungen an sdmsh (echo on/off, timing on/off)
+//
+// Revision 1.2  2002/11/07 11:31:15  ronald
+// Multicommands eingebaut
+//
+// Revision 1.1  2002/11/04 20:18:21  ronald
+// sdmsh verbessert. versteht nun "include" und "whenever error ..."
+//
+//
+
+package de.independit.scheduler.shell;
+
+import java.io.*;
+import java.util.*;
+import java.lang.*;
+import java.util.regex.*;
+import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.server.repository.*;
+import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.output.*;
+
+public class MiniParser 
+{
+
+	private int stop = 0;
+	private boolean discOnError = false;
+	private int retVal = 0;
+	private static boolean printTime = false;
+	private static boolean printCmd = true;
+
+	private SDMSServerConnection sc = null;
+	private SDMSOutputRenderer or = null;
+	private String host;
+	private String port;
+	private String user;
+
+	private PrintStream out = System.out;
+
+	private boolean isDump = false;
+
+	private static final String S_SYNTAX_ERROR = "Syntax Error";
+
+	private static int stmtCtr = 0;
+	private static Vector stmtList = new Vector();
+
+%}
+
+%token 		DISCONNECT S_ERROR WHENEVER CONTINUE HELP PROMPT EOS
+%token <Long>	INTEGER NAN
+
+%token <String>	BMULTI EMULTI ECHOOFF ECHOON FILENOTFOUND FILESPEC INVALIDFILE ROLLBACK SHELLCMD STATEMENT STRING TIMINGON TIMINGOFF
+
+%type <Integer>	integer
+%type <String>	opt_rollback, opt_stmtlist, stmtlist, prompt
+
+%start cmdlist
+
+%%
+
+cmdlist:					{ /* Empty input is OK */ }
+	|	cmdlist STATEMENT	  	{ 
+						  String stmt = $2.toString();
+						  String ucStmt = stmt.toUpperCase();
+						  if (ucStmt.startsWith("DUMP ")) {
+							isDump = true;
+						  } else {
+						  	if (ucStmt.matches("^VERSION *[0-9][0-9]* *DUMP .*")) {
+								isDump = true;
+							} else {
+								isDump = false;
+							}
+						  }
+						  long bevor = System.currentTimeMillis();
+						  SDMSOutput output = sc.execute(stmt); 
+						  long after = System.currentTimeMillis();
+						  if(printTime)
+						  	out.println("Execution Time: " + (after - bevor));
+						  if(printCmd)
+						  	out.println(stmt);
+						  bevor = after;
+						  render(output);
+						  after = System.currentTimeMillis();
+						  if(printTime)
+						  	out.println("\nRender Time   : " + (after - bevor));
+						  // stmtList.add(new StatementStackElement(STATEMENT, stmt));
+						}
+	|	cmdlist DISCONNECT		{ try {
+							sc.finish();
+						  } catch(IOException e) { /* ignore */ } 
+						  if(stop == 0)
+						  	System.exit(0);
+						}
+	|	cmdlist whenever 		{ 
+						  	SDMSOutput o = new SDMSOutput();
+							o.setFeedback("End of Output");
+							render(o);
+						}
+	|	cmdlist FILENOTFOUND		{ SDMSOutput o = new SDMSOutput(); 
+						  o.setError(new SDMSOutputError("Desktop-0005", "File not found : " + $2.toString()));
+						  render(o);
+						}
+	|	cmdlist INVALIDFILE		{ SDMSOutput o = new SDMSOutput(); 
+						  o.setError(new SDMSOutputError("Desktop-0006", "Invalid File Specification: "
+											+ $2.toString() + " (missing quotes?)"));
+						  render(o);
+						}
+	|	cmdlist SHELLCMD		{ final Runtime rt = Runtime.getRuntime();
+						  	SDMSOutput o = new SDMSOutput();
+							String cmdarr[] = new String[3];
+							cmdarr[0] = "/bin/sh";
+							cmdarr[1] = "-c";
+							cmdarr[2] = $2;
+						  
+						  try {
+						  	Process p = rt.exec(cmdarr);
+						  	InputStream stdo = p.getInputStream();
+							InputStream stde = p.getErrorStream();
+							OutputStream stdi = p.getOutputStream();
+							stdi.close();				// we close input
+							process_output(stdo, stde);
+							o.setFeedback("End of Output");
+						  } catch(final IOException ioe) {
+							o.setError(new SDMSOutputError("Desktop-0006", "Couldn't start process : " +
+									ioe.toString()));
+						  }
+						  render(o);
+						  // stmtList.add(new StatementStackElement(SHELLCMD, $2));
+						}
+						  
+	|	cmdlist multicmd		{ /* do nothing */ }
+	|	cmdlist errtok			{ 
+						  String[] a = new String[1];
+						  a[0] = "valid SDMS(h) command";
+						  yyerror(S_SYNTAX_ERROR,a);
+						}
+	|	cmdlist HELP			{
+						  	SDMSOutput o = new SDMSOutput();
+							help();
+							o.setFeedback("End of Output");
+							render(o);
+						}
+	|	cmdlist ECHOON			{
+						  	SDMSOutput o = new SDMSOutput();
+							setPrintCmd();
+							o.setFeedback("End of Output");
+							render(o);
+						}
+	|	cmdlist ECHOOFF			{
+						  	SDMSOutput o = new SDMSOutput();
+							resetPrintCmd();
+							o.setFeedback("End of Output");
+							render(o);
+						}
+	|	cmdlist TIMINGON		{
+						  	SDMSOutput o = new SDMSOutput();
+							setPrintTime();
+							o.setFeedback("End of Output");
+							render(o);
+						}
+	|	cmdlist TIMINGOFF		{
+						  	SDMSOutput o = new SDMSOutput();
+							resetPrintTime();
+							o.setFeedback("End of Output");
+							render(o);
+						}
+	|	cmdlist prompt			{
+						  	SDMSOutput o = new SDMSOutput();
+							((SDMSLineRenderer) or).setPrompt($2);
+							o.setFeedback("End of Output");
+							render(o);
+						}
+
+
+multicmd:	BMULTI opt_stmtlist EMULTI opt_rollback	EOS {	
+						  long bevor = System.currentTimeMillis();
+						  SDMSOutput output = sc.execute($1 + "\n" + $2 + "\n" + $3 + $4);
+						  long after = System.currentTimeMillis();
+						  if(printTime)
+						  	out.println("Execution Time: " + (after - bevor));
+						  if(printCmd)
+						  	out.println($1 + "\n" + $2 + "\n" + $3 + $4);
+						  bevor = after;
+						  render(output);
+						  after = System.currentTimeMillis();
+						  if(printTime)
+						  	out.println("\nRender Time   : " + (after - bevor));
+						  // stmtList.add(new StatementStackElement(STATEMENT, $1 + "\n" + $2 + "\n" + $3));
+						}
+
+opt_rollback:					{ $$ = ";"; }
+	|	ROLLBACK			{ $$ = " ROLLBACK;"; }
+
+prompt:		PROMPT STRING			{ $$ = renderPrompt($2); }
+
+opt_stmtlist:					{ $$ = ""; }
+	|	stmtlist			{ $$ = $1; }
+
+stmtlist:	STATEMENT			{ $$ = $1; }
+	|	stmtlist STATEMENT		{ $$ = $1 + "\n" + $2; }
+
+whenever:	WHENEVER S_ERROR action		{ /* do nothing */ }
+	
+action:		DISCONNECT integer		{ discOnError = true; retVal = $2.intValue(); }
+	|	CONTINUE			{ discOnError = false; }
+
+integer:	INTEGER				{ if($1.longValue() <= Integer.MAX_VALUE)
+						  	$$ = new Integer ($1.intValue());
+						  else {
+							String[] a = new String[1];
+							a[0] = "VALID INTEGER (Integer out of bounds)";
+							yyerror(S_SYNTAX_ERROR, a);
+							$$ = $1;
+						  }
+						}
+	|	NAN				{ 
+							String[] a = new String[1];
+							a[0] = "VALID INTEGER (Integer out of bounds)";
+							yyerror(S_SYNTAX_ERROR, a);
+							$$ = $1;
+						}
+
+errtok:		S_ERROR				{ /* do nothing */ }
+	|	CONTINUE			{ /* do nothing */ }
+	|	INTEGER				{ /* do nothing */ }
+	|	NAN				{ /* do nothing */ }
+	|	EMULTI				{ /* do nothing */ }
+	|	FILESPEC			{ /* do nothing */ }
+%%
+
+public void setServerConnection(SDMSServerConnection s)	{ sc = s; }
+public void setPrintCmd(boolean verbose)		{ printCmd = verbose; }
+public void setOutputRenderer(SDMSOutputRenderer r)	{ or = r; }
+public SDMSOutputRenderer getOutputRenderer()		{ return or; }
+public void setEnvInfo(String h, int p, String u)	{ host = h; port = "" + p; user = u; }
+
+
+public void render(SDMSOutput o)
+	throws SDMSException
+{
+	if (isDump && o.error == null) {
+		String fn = (String) ((Vector) o.container.dataset.get(0)).get(1);
+		if (fn != null) {
+			try {
+				PrintStream p = new PrintStream(new FileOutputStream(fn));
+				p.print((String) ((Vector) o.container.dataset.get(0)).get(0));
+				p.close();
+				out.println("");
+			} catch (IOException ioe) {
+				out.println(ioe.toString() + "\n");
+			}
+		  	SDMSOutput oo = new SDMSOutput();
+			oo.setFeedback("Dump to " + fn + " completed");
+			or.render(out, oo);
+		} else {
+			or.render(out, o);
+		}
+		isDump = false;
+	} else {
+		or.render(out, o);
+	}
+	if(o.error != null) {
+		if(discOnError || o.error.code.startsWith("Desktop")) {
+			try {
+				sc.finish();
+			} catch(Exception e) {
+				// ignore
+			}
+			out.println("");
+			System.exit(retVal);
+		}
+	}
+}
+
+private String renderPrompt(String p)
+{
+	final int pl = p.length();
+	char[] ap = new char[pl];
+	p.getChars(0, pl, ap, 0);
+	StringBuffer b = new StringBuffer();
+
+	for (int i = 1; i < pl -1; ++i) {	// we skip the quotes
+		if (ap[i] == '%') {
+			++i;
+			switch (ap[i]) {
+				case 'H':
+					b.append(host);
+					break;
+				case 'P':
+					b.append(port);
+					break;
+				case 'U':
+					b.append(user);
+					break;
+				case '%':
+					b.append('%');
+					break;
+				default:
+					b.append('%');
+					b.append(ap[i]);
+					break;
+			}
+		} else {
+			b.append(ap[i]);
+		}
+	}
+
+	return b.toString();
+}
+
+private void process_output(InputStream stdo, InputStream stde)
+	throws IOException
+{
+	IOcatcher outC = new IOcatcher(stdo, out);
+	IOcatcher errC = new IOcatcher(stde, System.err);
+	outC.run();
+	errC.run();
+	while(true) {
+		try {
+			errC.join();
+			break;
+		} catch (InterruptedException e) {
+			// ignore
+		}
+	}
+	while(true) {
+		try {
+			outC.join();
+			break;
+		} catch (InterruptedException e) {
+			// ignore
+		}
+	}
+}
+
+public static void setPrintTime()	{ printTime = true; }
+public static void resetPrintTime()	{ printTime = false; }
+public static void setPrintCmd()	{ printCmd = true; }
+public static void resetPrintCmd()	{ printCmd = false; }
+
+public void help()
+{
+	out.println("Condensed Help Feature");
+	out.println("----------------------\n");
+	out.println("Internal sdmsh Commands:");
+	out.println("disconnect|bye|exit|quit         -- leaves the tool");
+	out.println("echo on|off                      -- controls whether the statementtext is printed or not");
+	out.println("help                             -- gives this output");
+	out.println("include '<filespec>'             -- reads sdms(h) commands from the given file");
+	out.println("prompt '<somestring>'            -- sets to prompt to the specified value");
+	out.println("                                    %H = hostname, %P = port, %U = user, %% = %");
+	out.println("timing on|off                    -- controls whether the actual time is printed or not");
+	out.println("whenever error ");
+	out.println("  continue|disconnect <integer>  -- specifies the behaviour of the program in case of an error");
+	out.println("!<shellcommand>                  -- executes the specified command. sdmsh has no intelligence");
+	out.println("                                    at all regarding terminal I/O");
+}
+
+public void setOutputStream(PrintStream out)
+{
+	this.out = out;
+}
+
+}
+
+class IOcatcher extends Thread {
+
+	BufferedReader br;
+	PrintStream out;
+
+	IOcatcher(InputStream i, PrintStream o)
+	{
+		br = new BufferedReader(new InputStreamReader(i));
+		out = o;
+	}
+
+	public void run()
+	{
+		String text;
+
+		try {
+			while ((text = br.readLine()) != null) {
+				out.println(text);
+			}
+		} catch (IOException ioe) {
+			out.println(ioe.toString());
+		}
+	}
+
+}
+
+class StatementStackElement {
+
+	public int type;
+	public String text;
+	
+	StatementStackElement(int t, String txt) {
+		type = t;
+		text = txt;
+	}
+}

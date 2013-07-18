@@ -1,0 +1,1289 @@
+//
+// $Id: Scanner.jlex,v 2.51.2.1 2013/03/14 10:24:47 ronald Exp $
+//
+// Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
+//
+// $Log: Scanner.jlex,v $
+// Revision 2.51.2.1  2013/03/14 10:24:47  ronald
+// Umstellung auf standard konforme package bezeichnungen
+//
+// Revision 2.51  2013/01/22 11:48:11  ronald
+// nextFloor liefert jetzt immer auch tatsaechlich ein Floor zurueck
+//
+// Revision 2.50  2012/07/02 14:51:24  ronald
+// Time Zone added to Schedule
+//
+// Revision 2.49  2012/02/14 09:24:29  ronald
+// Erweiterung der ESP um zwei Eigenschaften/State
+//
+// Revision 2.48  2012/02/06 09:46:31  ronald
+// Syntax fuer inherit grants implementiert
+//
+// Revision 2.47  2011/10/12 06:26:43  ronald
+// recursive audit in show submitted
+//
+// Revision 2.46  2011/10/10 12:38:29  ronald
+// Beautifying; Bessere Fehlermeldungen
+//
+// Revision 2.45  2011/09/09 05:17:56  ronald
+// mainSeId und parentSeId an Trigger zugefuegt
+//
+// Revision 2.44  2011/09/07 08:29:35  ronald
+// Umstellung auf ObjectURL part 1
+//
+// Revision 2.43  2011/09/01 08:31:35  ronald
+// Bugfixing and Object Monitoring enhancements
+//
+// Revision 2.42  2011/08/25 11:48:07  ronald
+// Filewatcher Definitionsschicht. Initial checkin
+//
+// Revision 2.41  2011/08/16 12:59:16  ronald
+// resume at/in. Nun auch fuer scheduling_hierarchy. WIP/Abgleich checkin
+//
+// Revision 2.40  2011/07/23 05:47:36  ronald
+// resource links & small bugfixes
+//
+// Revision 2.39  2011/06/29 13:34:05  ronald
+// manage select privileg implementiert
+//
+// Revision 2.38  2011/04/12 15:12:21  dieter
+// added future functionality in list submitted
+//
+// Revision 2.37  2011/03/08 13:50:43  ronald
+// Added system grants
+//
+// Revision 2.36  2010/03/15 07:41:38  ronald
+// Auditing Flag zugefuegt
+//
+// Revision 2.35  2009/05/07 13:34:41  ronald
+// Calendar work. WIP
+// expected finaltime added
+//
+// Revision 2.34  2009/03/31 07:59:47  ronald
+// Syntax fuer Infrastruktur auto-rerun eingebaut (WIP)
+//
+// Revision 2.33  2007/10/26 10:20:12  ronald
+// Loads of documentation work
+//
+// Revision 2.32  2007/09/12 07:56:04  ronald
+// Added a wildcard functionality to the dump alias (* matches any alias)
+//
+// Revision 2.31  2007/08/27 14:10:37  ronald
+// Dump WIP
+//
+// Revision 2.30  2007/08/06 09:46:25  ronald
+// Dump WIP. Checkin wg. Abgleich
+//
+// Revision 2.29  2007/04/27 14:36:48  ronald
+// Allocation factor implemented
+// bookkeeping improved (Is now easier to understand for the user)
+//
+// Revision 2.28  2007/04/25 17:14:38  ronald
+// Multicommand rollback implemented
+//
+// Revision 2.27  2007/04/24 16:45:23  ronald
+// Resource Trace eingebaut
+//
+// Revision 2.26  2006/06/16 16:56:59  ronald
+// Issue #357: Warn if trigger limit reached
+//
+// Revision 2.25  2006/03/22 15:10:01  ronald
+// Issue 341: Definition layer implementiert. WIP
+//
+// Revision 2.24  2006/03/17 16:36:12  ronald
+// Issue #341: Resource pools, WIP
+//
+// Revision 2.23  2006/03/06 20:15:47  ronald
+// Small bugfixing. better error message at connect error.
+//
+// Revision 2.22  2006/03/05 09:24:48  ronald
+// Issue 346: Kommando kann beim Connect gleich mitgegeben werden.
+// Issue 340: Syntax fuer Local Variables implementiert.
+//
+// Revision 2.21  2006/02/21 11:34:34  ronald
+// Parserumstellung bzw. optimierung. WIP. Bitte mittesten.
+//
+// Revision 2.20  2006/01/06 18:01:06  bernhard
+// Minor "consequencing" of previous syntax changes
+//
+// Revision 2.19  2005/11/10 09:36:42  ronald
+// MASTER_ID ist jetzt kein reserved word mehr
+//
+// Revision 2.18  2005/11/10 08:22:13  ronald
+// Parameterfilter eingebaut.
+//
+// Revision 2.17  2005/10/11 12:11:59  ronald
+// Dynamic aging und Job specific min priority eingebaut
+//
+// Revision 2.16  2005/07/13 07:01:30  ronald
+// Der Warncount kann nun zurueckgesetzt werden. Als Abfallprodukt kann
+// auch haendisch eine Warnung gesetzt werden.
+//
+// Revision 2.15  2005/06/27 16:02:40  ronald
+// Scanner symbol (add_or_alter) entfernt.
+//
+// Revision 2.14  2005/04/30 15:17:32  ronald
+// Issue #336: Broken flag im Profile. Teil 1: definition
+//
+// Revision 2.13  2005/04/22 14:04:33  ronald
+// 1. Issue #332: SC (Shared Compatible) Lock eingefuehrt
+// 2. Filter auf PENDING und FINAL Jobs implementiert (no Issue)
+//
+// Revision 2.12  2005/04/07 20:00:11  bernhard
+// "Luxury"-backlog-handling: none, last, all.
+// Individual suspend_limit for scheduled events
+//
+// Revision 2.11  2005/03/10 00:20:03  bernhard
+// Removed some unused items.
+// Typo fixed
+//
+// Revision 2.10  2004/12/15 00:16:44  bernhard
+// WIP: dump enhancements
+//
+// Revision 2.9  2004/11/22 09:21:01  ronald
+// Eliminated compiler warnings
+//
+// Revision 2.8  2004/11/11 16:48:36  ronald
+// Next step in creating docs, but still WIP.
+//
+// Revision 2.7  2004/11/09 08:18:33  ronald
+// Dokugenerierung WIP
+//
+// Revision 2.6  2004/10/28 13:01:45  ronald
+// Documentation generator. WIP
+//
+// Revision 2.5  2004/09/18 13:23:05  ronald
+// Issue #279: Resource Parameter. local constant zugefuegt. Show an den
+// Anforderungen des Frontends angepasst.
+//
+// Revision 2.4  2004/08/04 00:03:08  ronald
+// Asynchrone Trigger implementiert. Feinschliff noch notwendig
+//
+// Revision 2.3  2004/07/14 21:27:59  ronald
+// Issue #80: Expression Trigger. Teil I Infrastruktur
+//
+// Revision 2.2  2004/06/08 20:05:12  ronald
+// Issue #289: pipeline enhancements. Andere Semantik von Milestones.
+//
+// Revision 2.1  2004/06/03 14:32:53  dieter
+// submittag zugefügt
+//
+// Revision 2.0  2004/04/19 15:25:40  ronald
+// Version 2.0 Started
+//
+// Revision 1.111  2004/04/05 14:30:42  ronald
+// Issue #270: Es gibt nun ein execute privileg auf Scopes.
+//
+// Revision 1.110  2004/04/01 23:50:47  bernhard
+// Issue #263: DUMP "enhancements"
+//
+// Revision 1.109  2004/03/26 23:44:46  bernhard
+// Issue #263.2: DUMP ... WITH MULTICOMMAND
+//
+// Revision 1.108  2004/02/13 11:10:15  ronald
+// Fixed little bugs. Checkin wg. Abgleich.
+//
+// Revision 1.107  2004/02/13 10:28:42  ronald
+// Lasse auch GRANTS, nur nur GRANT als keyword zu
+//
+// Revision 1.106  2004/02/11 23:32:44  ronald
+// Privilege Checks (unvollstaendig) und Object Privileges eingebaut
+//
+// Revision 1.105  2004/02/08 10:50:03  dieter
+// Checkin der Arbeitswoche
+//
+// Revision 1.104  2003/12/15 15:15:47  ronald
+// Die unendliche schoenheit von
+// create user xxx with identified by ...
+// ersetzt durch das haesslige
+// create user xxx with password = ...
+//
+// Revision 1.103  2003/12/15 14:32:13  ronald
+// User und Group zugehoerigkeiten implementiert
+// Passwoerter werden als MD5 Checksum abgelegt
+//
+// Revision 1.102  2003/12/09 10:55:35  ronald
+// Grantee/Role nach User/Group geaendert
+//
+// Revision 1.101  2003/12/06 22:11:24  bernhard
+// Added (undocumented!) "performance of..." feature to "show interval"
+//
+// Revision 1.100  2003/08/18 09:23:30  ronald
+// Issue 228: Release resource wenn job in state FINAL
+//
+// Revision 1.99  2003/05/27 21:54:27  ronald
+// Filter for merged exit states added. (Issue 2??)
+//
+// Revision 1.98  2003/05/23 16:07:05  bernhard
+// Scope"Parameter" is now Scope"Config"
+//
+// Revision 1.97  2003/05/16 19:40:42  ronald
+// Finish Child trigger implemented. Eliminated some bugs (notably 182, 210,
+// 215).
+//
+// Revision 1.96  2003/05/03 08:31:46  ronald
+// Perl Renderer implementiert
+//
+// Revision 1.95  2003/04/15 18:14:00  ronald
+// GetParameter erweitert. Beim Abholen kann definiert werden wie "strict"
+// der Server reagieren soll.
+//
+// Revision 1.94  2003/04/15 08:32:34  ronald
+// Added check only option for submit job
+//
+// Revision 1.93  2003/04/10 09:05:36  ronald
+// Issue 142: Strict Parameters
+//
+// Revision 1.92  2003/03/03 23:31:12  ronald
+// Issue 9: Priorities eingebaut. Spalte nice in HierarchyInstance zugefuegt.
+//
+// Revision 1.91  2003/02/21 23:28:21  bernhard
+// Issue #193: added NOINVERSE for INTERVALs
+//
+// Revision 1.90  2003/02/09 19:21:22  ronald
+// Redesign of Trace System. Use SDMSThread.doTrace() now.
+//
+// Revision 1.89  2002/12/20 16:55:46  bernhard
+// Cleanup of systemDateFormat handling
+//
+// Revision 1.88  2002/12/08 23:14:39  ronald
+// Issue 125 (Alias fuer Kinder) implementiert
+//
+// Revision 1.87  2002/11/17 16:04:43  ronald
+// Grossteil (leider nicht alles) create or alter
+//
+// Revision 1.86  2002/11/15 14:09:52  ronald
+// Eine Nullbyte bedeutet nun ein FORCED END OF COMMAND (FORCED_EOC).
+// Damit koennen Haenger bei falschem Quoting abgefangen werden
+//
+// Revision 1.85  2002/11/13 09:52:14  ronald
+// Create or Alter implementiert (teilgetestet)
+//
+// Revision 1.84  2002/10/22 00:10:48  ronald
+// Copyright Zeile ergaenzt
+//
+// Revision 1.83  2002/10/20 10:18:06  ronald
+// Dependency Mode zugefuegt
+//
+// Revision 1.82  2002/10/12 19:27:04  bernhard
+// eliminated that annoying EPOCH thingy.
+// added SYNCTIME
+//
+// Revision 1.81  2002/09/30 21:18:26  ronald
+// Es gab noch einen Fehler im Falle eines Backslashes am Stringende.
+// Also policy: Backslahes sollten escaped auftreten, single backslashes
+// werden kulanterweise ebenfalls als Backslash interpretiert.
+//
+// Revision 1.80  2002/09/30 19:12:06  ronald
+// Backslash bug beseitigt
+//
+// Revision 1.79  2002/09/25 19:48:10  ronald
+// Issue 44: Object Documentation implementiert.
+// Fehlt noch dump und GUI Funktionalitaet
+//
+// Revision 1.78  2002/09/20 15:52:39  ronald
+// Issue 59: Touch von Resources implementiert
+//
+// Revision 1.77  2002/08/10 00:37:14  ronald
+// Parameter implemented.
+//
+// Revision 1.76  2002/07/28 22:10:01  bernhard
+// datetime_xxx removed (unused).
+// elaborated interval syntax
+//
+// Revision 1.75  2002/07/28 05:41:40  ronald
+// Fehler beim Parsen "zu grosse zahlen" behoben
+//
+// Revision 1.74  2002/07/25 14:12:09  ronald
+// Set State implementiert. Job Statement um den Status des Jobs zu setzen.
+// Job muss in einem PENDING state sein.
+//
+// Revision 1.73  2002/07/16 23:11:17  bernhard
+// changed OFFSET to DELAY.
+// some beautifying
+//
+// Revision 1.72  2002/07/12 10:36:49  ronald
+// Strings in WithItems durch Symbole ersetzt.
+// Rerun Recursive eingebaut.
+//
+// Revision 1.71  2002/07/12 08:21:29  ronald
+// 1. versioned list & show
+// 2. letzte drittel kill
+// 3. Bug in alter job definition
+//
+// Revision 1.70  2002/07/09 23:10:03  bernhard
+// made it a bit more "standardized" :(
+//
+// Revision 1.69  2002/07/09 11:12:53  ronald
+// Alter Job with exit state implementiert. New global parameters
+//
+// Revision 1.68  2002/07/06 20:02:53  ronald
+// Improved syntax error message
+//
+// Revision 1.67  2002/07/01 12:06:22  ronald
+// Resource Hierarchie eingefuehrt.
+//
+// Revision 1.66  2002/06/22 19:36:02  ronald
+// Trigger implementation part two
+//
+// Revision 1.65  2002/06/18 15:24:00  dieter
+// ignore dependency, trigger syntax first throw
+//
+// Revision 1.64  2002/06/08 20:32:13  ronald
+// 1. lots of keywords are now valid as identifier
+// 2. get/set Parameter syntax
+// 3. skeleton of Time Scheduling
+// 4. Few bugs in frontend
+//
+// Revision 1.63  2002/06/06 09:35:11  bernhard
+// added dump
+// some bugfixes
+//
+// Revision 1.62  2002/05/31 15:40:41  ronald
+// Unreachable, Server Startup
+//
+// Revision 1.61  2002/05/19 21:22:56  ronald
+// Implemented rerun, suspend and edit of commandlines
+//
+// Revision 1.60  2002/05/16 22:28:43  ronald
+// removed first from init. allowed @ and # as valid characters for identifiers
+//
+// Revision 1.59  2002/05/14 20:33:49  bernhard
+// Added ListDependencyHierarchy
+//
+// Revision 1.58  2002/05/14 17:46:46  ronald
+// Sync with Dieter. Bit of Scheduling, some fixes
+//
+// Revision 1.57  2002/05/07 19:28:06  ronald
+// Fully functional job filter part I
+//
+// Revision 1.56  2002/05/07 15:58:38  ronald
+// Added two filters and syntax
+//
+// Revision 1.55  2002/05/06 13:12:11  ronald
+// childTag zugefuegt, datum umformattiert
+//
+// Revision 1.54  2002/05/03 02:09:34  dieter
+// A lot of list job
+//
+// Revision 1.53  2002/04/30 16:05:38  ronald
+// Force token zugefuegt
+//
+// Revision 1.52  2002/04/30 01:10:00  ronald
+// Halbe alter Job + Fixes
+//
+// Revision 1.51  2002/04/29 17:10:59  dieter
+// parameter uppercase,
+// list dependency definition
+//
+// Revision 1.50  2002/04/29 07:57:57  ronald
+// Sort im Select eingebaut
+//
+// Revision 1.49  2002/04/26 21:39:30  ronald
+// Select erweitert. JOB_DEFINITION_HIERARCHY. Create Job bereinigt
+//
+// Revision 1.48  2002/04/26 15:40:16  dieter
+// job hierarchy, small fixes
+//
+// Revision 1.47  2002/04/23 14:43:10  ronald
+// Create and Alter Job preparations
+//
+// Revision 1.46  2002/04/14 08:51:43  ronald
+// forgot to copy select text :-(
+//
+// Revision 1.45  2002/04/12 16:48:35  ronald
+// list- and show footprint added. prepared implementation of select
+//
+// Revision 1.44  2002/04/08 04:39:42  ronald
+// Zwischenstand mit baustellen (TimeScheduling, AlterJobDefinition)
+//
+// Revision 1.43  2002/04/04 14:53:55  ronald
+// Ignored dependencies added
+//
+// Revision 1.42  2002/04/04 12:34:39  ronald
+// Resource state mapping added. Job Definition vervollstaendigt.
+// Resource state profile vervollstaendigt.
+//
+// Revision 1.41  2002/03/19 19:31:43  ronald
+// Tracing eingebaut
+//
+// Revision 1.40  2002/03/15 17:51:22  ronald
+// Resource Scheduling erweitert. Reiner Zwischenstand.
+//
+// Revision 1.39  2002/03/08 21:08:29  ronald
+// A lot of bugfixes. Non persistent classes
+//
+// Revision 1.37  2002/02/27 12:36:17  ronald
+// Time Scheduling Teil 2
+//
+// Revision 1.36  2002/02/23 10:25:59  ronald
+// Removed the sign for integers since we have _no_ negative values (so far).
+// This way we don't need checking for the sign within the nodes.
+// If we need negative values somewhere, we should parse an optional sign
+// as a token.
+//
+// Revision 1.35  2002/02/22 10:35:44  ronald
+// Resources implemented. Small bugs removed. Copy syntax.
+//
+// Revision 1.34  2002/02/21 01:11:06  ronald
+// Syntax for tree copies, Parameters, Indexes for pg, pg int8-literal problem
+//
+// Revision 1.32  2002/02/08 20:46:16  ronald
+// Testscript, disable connect, deregister
+//
+// Revision 1.31  2002/02/07 00:56:04  ronald
+// Zusammenfuehrung von Repository und Jobserver
+//
+// Revision 1.30  2002/02/01 20:35:37  ronald
+// Bugfixing, Purge of nonversioned objects
+//
+// Revision 1.29  2002/01/25 17:55:22  ronald
+// A lot of resource, a few bugs
+//
+// Revision 1.28  2002/01/20 01:45:52  dieter
+// Python renderer fpr use with Zope
+//
+// Revision 1.27  2002/01/19 11:58:30  ronald
+// Added pipeline flag
+//
+// Revision 1.24  2002/01/15 18:11:29  ronald
+// Submit job + Finish Job eingebaut. Little debugging
+//
+// Revision 1.23  2002/01/12 00:39:20  ronald
+// A lot of work on resources. Some bugs, bit of documentation.
+//
+// Revision 1.22  2002/01/08 13:52:08  ronald
+// Added a few tables (resources), improved error handling of parser
+//
+// Revision 1.21  2001/12/23 09:04:00  ronald
+// Folder, consistency checks, dependencies
+//
+// Revision 1.20  2001/12/14 19:00:21  dieter
+// List, Show JobDefs,
+// SDMSDesktop reconnect,
+// create jobdefs (childs),
+// ...
+//
+// Revision 1.19  2001/12/14 00:41:38  ronald
+// Create job definition zugefuegt
+//
+// Revision 1.18  2001/11/28 20:02:35  ronald
+// Exit State Translations neu implementiert.
+// Problem mit Errorhandling geloest.
+// Alte implementierung entfernt.
+//
+// Revision 1.16  2001/11/27 12:04:13  dieter
+// Remove unreachable state from exit state profile
+// implement folder
+// implement scope
+//
+// Revision 1.15  2001/11/09 20:15:27  ronald
+// Implemented multicommand. Moved otputbuffer from sysEnv to node.
+// Outputbusser is now called "result".
+// Implemented SDMSKey for multi-column keys
+//
+// Revision 1.14  2001/11/08 20:55:21  dieter
+// Exit State Profile implemented.
+// minor changes, enhancements and fixes.
+//
+// Revision 1.13  2001/11/03 23:27:29  dieter
+// SDMSDesktop etwas Leben eingehaucht.
+// Serial Renderer
+//
+// Revision 1.11  2001/10/23 21:16:14  ronald
+// Implemented roles (without grants so far)
+//
+// Revision 1.9  2001/10/20 12:42:08  ronald
+// Changed the syntax of the exit_status_profile, added restartable flag.
+//
+// Revision 1.7  2001/10/19 00:57:05  ronald
+// Cleaner implementation of named resource and exit status definition
+// functionality.
+// Rebuild all exceptions for using the SDMSMessage interface.
+//
+// Revision 1.6  2001/10/10 20:45:03  ronald
+// Changed Exception structure. Exceptions are now found in server.exception
+// Added Retry mechanism to Worker. Node.go()-method now throws exception.
+//
+// Revision 1.5  2001/10/08 07:57:20  ronald
+// Removed/Renamed NamedResource* and Repository* to SDMS...
+// Added a TestRun Node for easy testing.
+//
+// Revision 1.3  2001/09/28 05:01:27  ronald
+// SystemEnvironment wird an der go()-Methode der Nodes weitergereicht.
+// Erste Implementierung von Repository und RepositoryTable sowie
+// RepositoryObject classes.
+// Anpassungen der ServerThreads in Bezug auf DB-Connection.
+//
+// Revision 1.2  2001/09/20 19:33:57  ronald
+// Extended parser by a few Statements
+// Cleaned up the Threading a bit, added threadlock for sync'ing Threads
+// Corrected Documentation conform the developments in the parser
+// Sync with Dieter
+//
+// Revision 1.1  2001/09/17 23:09:32  ronald
+// Initial Checkin. Start of Server.
+//
+// Revision 1.2  2001/09/13 20:40:09  ronald
+// Parser now can read all examples from the Documentation
+// (contained in test.txt).
+//
+// Revision 1.1  2001/09/12 23:24:04  ronald
+// Initial checkin
+//
+//
+
+package de.independit.scheduler.server.parser;
+
+import java.io.*;
+import java.util.*;
+import java.text.SimpleDateFormat;
+
+import de.independit.scheduler.server.*;
+import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.server.exception.*;
+
+%%
+
+%public
+%class Scanner
+%implements de.independit.scheduler.server.parser.Parser.yyInput
+%type int
+%yyeof
+%integer
+
+// % line
+// % char
+// % full
+
+%unicode
+
+%init{
+	tokens = new HashMap();
+
+	tokens.put("ACTION",		new Integer(Parser.ACTION));
+	tokens.put("ACTIVE",		new Integer(Parser.ACTIVE));
+	tokens.put("ACTIVATE",		new Integer(Parser.ACTIVATE));
+	tokens.put("ADD",		new Integer(Parser.ADD));
+	tokens.put("AFTER",		new Integer(Parser.AFTER));
+	tokens.put("AGING",		new Integer(Parser.AGING));
+	tokens.put("ALIAS",		new Integer(Parser.ALIAS));
+	tokens.put("ALL",		new Integer(Parser.ALL));
+	tokens.put("ALTER",		new Integer(Parser.ALTER));
+	tokens.put("AMOUNT",		new Integer(Parser.AMOUNT));
+	tokens.put("AND",		new Integer(Parser.AND));
+	tokens.put("AT",		new Integer(Parser.AT));
+	tokens.put("ANY",		new Integer(Parser.ANY));
+	tokens.put("AUDIT",		new Integer(Parser.AUDIT));
+	tokens.put("AVG",		new Integer(Parser.AVG));
+	tokens.put("BACKUP",		new Integer(Parser.BACKUP));
+	tokens.put("BASE",		new Integer(Parser.BASE));
+	tokens.put("BATCH",		new Integer(Parser.BATCH));
+	tokens.put("BEFORE",		new Integer(Parser.BEFORE));
+	tokens.put("BROKEN",		new Integer(Parser.BROKEN));
+	tokens.put("BY",		new Integer(Parser.BY));
+	tokens.put("CALENDAR",		new Integer(Parser.CALENDAR));
+	tokens.put("CANCEL",		new Integer(Parser.CANCEL));
+	tokens.put("CANCELLED",		new Integer(Parser.CANCELLED));
+	tokens.put("CASCADE",		new Integer(Parser.CASCADE));
+	tokens.put("CATEGORIES",	new Integer(Parser.CATEGORY));
+	tokens.put("CATEGORY",		new Integer(Parser.CATEGORY));
+	tokens.put("CHANGE",		new Integer(Parser.CHANGE));
+	tokens.put("CHECK",		new Integer(Parser.CHECK));
+	tokens.put("CHILD",		new Integer(Parser.CHILD));
+	tokens.put("CHILDREN",		new Integer(Parser.CHILDREN));
+	tokens.put("CHILDSUSPEND",	new Integer(Parser.CHILDSUSPEND));
+	tokens.put("CHILDTAG",		new Integer(Parser.CHILDTAG));
+	tokens.put("CLEANUP",		new Integer(Parser.CLEANUP));
+	tokens.put("CLEAR",		new Integer(Parser.CLEAR));
+	tokens.put("COMMAND",		new Integer(Parser.COMMAND));
+	tokens.put("COMMENT",		new Integer(Parser.COMMENT));
+	tokens.put("CONDITION",		new Integer(Parser.CONDITION));
+	tokens.put("CONFIG",		new Integer(Parser.CONFIG));
+	tokens.put("CONNECT",		new Integer(Parser.CONNECT));
+	tokens.put("CONSTANT",		new Integer(Parser.CONSTANT));
+	tokens.put("CONTENT",		new Integer(Parser.CONTENT));
+	tokens.put("COPY",		new Integer(Parser.COPY));
+	tokens.put("COUNT",		new Integer(Parser.COUNT));
+	tokens.put("CREATE",		new Integer(Parser.CREATE));
+	tokens.put("CYCLE",		new Integer(Parser.CYCLE));
+	tokens.put("DAY",		new Integer(Parser.DAY));
+	tokens.put("DAYS",		new Integer(Parser.DAY));
+	tokens.put("DEFAULT",		new Integer(Parser.DEFAULT));
+	tokens.put("DEFER",		new Integer(Parser.DEFER));
+	tokens.put("DEFINITION",	new Integer(Parser.DEFINITION));
+	tokens.put("DEFINITIONS",	new Integer(Parser.DEFINITION));
+	tokens.put("DELAY",		new Integer(Parser.DELAY));
+	tokens.put("DELETE",		new Integer(Parser.DELETE));
+	tokens.put("DEPENDENCIES",	new Integer(Parser.DEPENDENCY));
+	tokens.put("DEPENDENCY",	new Integer(Parser.DEPENDENCY));
+	tokens.put("DEPLOY",		new Integer(Parser.DEPLOY));
+	tokens.put("DEREGISTER",	new Integer(Parser.DEREGISTER));
+	tokens.put("DIR",		new Integer(Parser.DIR));
+	tokens.put("DISABLE",		new Integer(Parser.DISABLE));
+	tokens.put("DISCONNECT",	new Integer(Parser.DISCONNECT));
+	tokens.put("DISTRIBUTION",	new Integer(Parser.DISTRIBUTION));
+	tokens.put("DROP",		new Integer(Parser.DROP));
+	tokens.put("DUMP",		new Integer(Parser.DUMP));
+	tokens.put("DURATION",		new Integer(Parser.DURATION));
+	tokens.put("DYNAMIC",		new Integer(Parser.DYNAMIC));
+	tokens.put("EDIT",		new Integer(Parser.EDIT));
+	tokens.put("EMBEDDED",		new Integer(Parser.EMBEDDED));
+	tokens.put("ENABLE",		new Integer(Parser.ENABLE));
+	tokens.put("ENDTIME",		new Integer(Parser.ENDTIME));
+	tokens.put("ENVIRONMENT",	new Integer(Parser.ENVIRONMENT));
+	tokens.put("ENVIRONMENTS",	new Integer(Parser.ENVIRONMENT));
+	tokens.put("ERRLOG",		new Integer(Parser.ERRLOG));
+	tokens.put("ERRLOGFILE",	new Integer(Parser.ERRLOG));
+	tokens.put("ERROR",		new Integer(Parser.ERROR_TOKEN));
+	tokens.put("EVENT",		new Integer(Parser.EVENT));
+	tokens.put("EVENTS",		new Integer(Parser.EVENT));
+	tokens.put("EXECUTE",		new Integer(Parser.EXECUTE));
+	tokens.put("EXIT",		new Integer(Parser.DISCONNECT));
+	tokens.put("EXISTING",		new Integer(Parser.EXISTING));
+	tokens.put("EXPAND",		new Integer(Parser.EXPAND));
+	tokens.put("EXPIRED",		new Integer(Parser.EXPIRED));
+	tokens.put("FACTOR",		new Integer(Parser.FACTOR));
+	tokens.put("FAILURE",		new Integer(Parser.FAILURE));
+	tokens.put("FATAL",		new Integer(Parser.FATAL));
+	tokens.put("FILTER",		new Integer(Parser.FILTER));
+	tokens.put("FINAL",		new Integer(Parser.FINAL));
+	tokens.put("FINISH",		new Integer(Parser.FINISH));
+	tokens.put("FINISHED",		new Integer(Parser.FINISHED));
+	tokens.put("FOLDER",		new Integer(Parser.FOLDER));
+	tokens.put("FOLDERS",		new Integer(Parser.FOLDER));
+	tokens.put("FOOTPRINT",		new Integer(Parser.FOOTPRINT));
+	tokens.put("FOOTPRINTS",	new Integer(Parser.FOOTPRINT));
+	tokens.put("FOR",		new Integer(Parser.FOR));
+	tokens.put("FORCE",		new Integer(Parser.FORCE));
+	tokens.put("FREEPCT",		new Integer(Parser.FREEPCT));
+	tokens.put("FROM",		new Integer(Parser.FROM));
+	tokens.put("FUTURE",		new Integer(Parser.FUTURE));
+	tokens.put("GET",		new Integer(Parser.GET));
+	tokens.put("GLOBAL",		new Integer(Parser.GLOBAL));
+	tokens.put("GRANT",		new Integer(Parser.GRANT));
+	tokens.put("GRANTS",		new Integer(Parser.GRANT));
+	tokens.put("GROUP",		new Integer(Parser.GROUP));
+	tokens.put("GROUPS",		new Integer(Parser.GROUP));
+	tokens.put("HEADER",		new Integer(Parser.HEADER));
+	tokens.put("HISTORY",		new Integer(Parser.HISTORY));
+	tokens.put("HOUR",		new Integer(Parser.HOUR));
+	tokens.put("HOURS",		new Integer(Parser.HOUR));
+	tokens.put("HORIZON",		new Integer(Parser.HORIZON));
+	tokens.put("IDENTIFIED",	new Integer(Parser.IDENTIFIED));
+	tokens.put("IGNORE",		new Integer(Parser.IGNORE));
+	tokens.put("IMMEDIATE",		new Integer(Parser.IMMEDIATE));
+	tokens.put("IMPORT",		new Integer(Parser.IMPORT));
+	tokens.put("IN",		new Integer(Parser.IN));
+	tokens.put("INACTIVE",		new Integer(Parser.INACTIVE));
+	tokens.put("INFINIT",		new Integer(Parser.INFINITE));
+	tokens.put("INFINITE",		new Integer(Parser.INFINITE));
+	tokens.put("INHERIT",		new Integer(Parser.INHERIT));
+	tokens.put("INFO",		new Integer(Parser.INFO));
+	tokens.put("INSTANCE",		new Integer(Parser.INSTANCE));
+	tokens.put("INSTANCES",		new Integer(Parser.INSTANCE));
+	tokens.put("INTERVAL",		new Integer(Parser.INTERVAL));
+	tokens.put("INTERVALS",		new Integer(Parser.INTERVAL));
+	tokens.put("INVERSE",		new Integer(Parser.INVERSE));
+	tokens.put("IS",		new Integer(Parser.IS));
+	tokens.put("ISX",		new Integer(Parser.ISX));
+	tokens.put("IX",		new Integer(Parser.IX));
+	tokens.put("JOB",		new Integer(Parser.JOB));
+	tokens.put("JOBS",		new Integer(Parser.JOB));
+	tokens.put("KEEP",		new Integer(Parser.KEEP));
+	tokens.put("KILL",		new Integer(Parser.KILL));
+	tokens.put("KILLED",		new Integer(Parser.KILLED));
+	tokens.put("LAST",		new Integer(Parser.LAST));
+	tokens.put("LEVEL",		new Integer(Parser.LEVEL));
+	tokens.put("LIBERAL",		new Integer(Parser.LIBERAL));
+	tokens.put("LIKE",		new Integer(Parser.LIKE));
+	tokens.put("LIMITS",		new Integer(Parser.LIMITS));
+	tokens.put("LINE",		new Integer(Parser.LINE));
+	tokens.put("LINK",		new Integer(Parser.LINK));
+	tokens.put("LIST",		new Integer(Parser.LIST));
+	tokens.put("LOCAL",		new Integer(Parser.LOCAL));
+	tokens.put("LOCKMODE",		new Integer(Parser.LOCKMODE));
+	tokens.put("LOGFILE",		new Integer(Parser.LOGFILE));
+	tokens.put("LOOPS",		new Integer(Parser.LOOPS));
+	tokens.put("MAIN",		new Integer(Parser.MAIN));
+	tokens.put("MANAGE",		new Integer(Parser.MANAGE));
+	tokens.put("MANAGED",		new Integer(Parser.MANAGED));
+	tokens.put("MAP",		new Integer(Parser.MAP));
+	tokens.put("MAPPING",		new Integer(Parser.MAPPING));
+	tokens.put("MAPPINGS",		new Integer(Parser.MAPPING));
+	tokens.put("MAPS",		new Integer(Parser.MAPS));
+	tokens.put("MASTER",		new Integer(Parser.MASTER));
+	tokens.put("MASTER_ID",		new Integer(Parser.MASTER_ID));
+	tokens.put("MAX",		new Integer(Parser.MAX));
+	tokens.put("MAXPCT",		new Integer(Parser.MAXPCT));
+	tokens.put("MERGE",		new Integer(Parser.MERGE));
+	tokens.put("MERGED",		new Integer(Parser.MERGED));
+	tokens.put("MILESTONE",		new Integer(Parser.MILESTONE));
+	tokens.put("MILESTONES",	new Integer(Parser.MILESTONE));
+	tokens.put("MIN",		new Integer(Parser.MIN));
+	tokens.put("MINPCT",		new Integer(Parser.MINPCT));
+	tokens.put("MINUTE",		new Integer(Parser.MINUTE));
+	tokens.put("MINUTES",		new Integer(Parser.MINUTE));
+	tokens.put("MODE",		new Integer(Parser.MODE));
+	tokens.put("MONITOR",		new Integer(Parser.MONITOR));
+	tokens.put("MONTH",		new Integer(Parser.MONTH));
+	tokens.put("MONTHS",		new Integer(Parser.MONTH));
+	tokens.put("MOVE",		new Integer(Parser.MOVE));
+	tokens.put("MULTICOMMAND",	new Integer(Parser.MULTICOMMAND));
+	tokens.put("MULTIPLIER",	new Integer(Parser.MULTIPLIER));
+	tokens.put("N",			new Integer(Parser.N));
+	tokens.put("NAME",		new Integer(Parser.NAME));
+	tokens.put("NICEVALUE",		new Integer(Parser.NICEVALUE));
+	tokens.put("NODE",		new Integer(Parser.NODE));
+	tokens.put("NODES",		new Integer(Parser.NODE));
+	tokens.put("NOINVERSE",		new Integer(Parser.NOINVERSE));
+	tokens.put("NOKEEP",		new Integer(Parser.NOKEEP));
+	tokens.put("NOMASTER",		new Integer(Parser.NOMASTER));
+	tokens.put("NOMERGE",		new Integer(Parser.NOMERGE));
+	tokens.put("NOMINALPCT",	new Integer(Parser.NOMINALPCT));
+	tokens.put("NONE",		new Integer(Parser.NONE));
+	tokens.put("NORESUME",		new Integer(Parser.NORESUME));
+	tokens.put("NOSTICKY",		new Integer(Parser.NOSTICKY));
+	tokens.put("NOSUSPEND",		new Integer(Parser.NOSUSPEND));
+	tokens.put("NOT",		new Integer(Parser.NOT));
+	tokens.put("NOTRACE",		new Integer(Parser.NOTRACE));
+	tokens.put("NOTRUNC",		new Integer(Parser.NOTRUNC));
+	tokens.put("NOWARN",		new Integer(Parser.NOWARN));
+	tokens.put("OBJECT",		new Integer(Parser.OBJECT));
+	tokens.put("OF",		new Integer(Parser.OF));
+	tokens.put("OFFLINE",		new Integer(Parser.OFFLINE));
+	tokens.put("ON",		new Integer(Parser.ON));
+	tokens.put("ONLINE",		new Integer(Parser.ONLINE));
+	tokens.put("ONLY",		new Integer(Parser.ONLY));
+	tokens.put("OPERATE",		new Integer(Parser.OPERATE));
+	tokens.put("OR",		new Integer(Parser.OR));
+	tokens.put("OWNER",		new Integer(Parser.OWNER));
+	tokens.put("PARENT",		new Integer(Parser.PARENT));
+	tokens.put("PARAMETER",		new Integer(Parser.PARAMETERS));
+	tokens.put("PARAMETERS",	new Integer(Parser.PARAMETERS));
+	tokens.put("PASSWORD",		new Integer(Parser.PASSWORD));
+	tokens.put("PATH",		new Integer(Parser.PATH));
+	tokens.put("PENDING",		new Integer(Parser.PENDING));
+	tokens.put("PERFORMANCE",	new Integer(Parser.PERFORMANCE));
+	tokens.put("PERL",		new Integer(Parser.PERL));
+	tokens.put("PID",		new Integer(Parser.PID));
+	tokens.put("POOL",		new Integer(Parser.POOL));
+	tokens.put("PRIORITY",		new Integer(Parser.PRIORITY));
+	tokens.put("PROFILE",		new Integer(Parser.PROFILE));
+	tokens.put("PROFILES",		new Integer(Parser.PROFILE));
+	tokens.put("PROTOCOL",		new Integer(Parser.PROTOCOL));
+	tokens.put("PUBLIC",		new Integer(Parser.PUBLIC));
+	tokens.put("PYTHON",		new Integer(Parser.PYTHON));
+	tokens.put("QUIT",		new Integer(Parser.DISCONNECT));
+	tokens.put("RAWPASSWORD",	new Integer(Parser.RAWPASSWORD));
+	tokens.put("REACHABLE",		new Integer(Parser.REACHABLE));
+	tokens.put("READ",		new Integer(Parser.READ));
+	tokens.put("REASSURE",		new Integer(Parser.REASSURE));
+	tokens.put("RECREATE",		new Integer(Parser.RECREATE));
+	tokens.put("RECURSIVE",		new Integer(Parser.RECURSIVE));
+	tokens.put("REFERENCE",		new Integer(Parser.REFERENCE));
+	tokens.put("REGISTER",		new Integer(Parser.REGISTER));
+	tokens.put("RENAME",		new Integer(Parser.RENAME));
+	tokens.put("RENICE",		new Integer(Parser.RENICE));
+	tokens.put("REQUIRED",		new Integer(Parser.REQUIRED));
+	tokens.put("RERUN",		new Integer(Parser.RERUN));
+	tokens.put("RESOURCE",		new Integer(Parser.RESOURCE));
+	tokens.put("RESOURCES",		new Integer(Parser.RESOURCE));
+	tokens.put("RESTARTABLE",	new Integer(Parser.RESTARTABLE));
+	tokens.put("RESTRICT",		new Integer(Parser.RESTRICT));
+	tokens.put("RESULT",		new Integer(Parser.RESULT));
+	tokens.put("RESUME",		new Integer(Parser.RESUME));
+	tokens.put("REVOKE",		new Integer(Parser.REVOKE));
+	tokens.put("ROLLBACK",		new Integer(Parser.ROLLBACK));
+	tokens.put("ROOT",		new Integer(Parser.ROOT));
+	tokens.put("RUN",		new Integer(Parser.RUN));
+	tokens.put("RUNNABLE",		new Integer(Parser.RUNNABLE));
+	tokens.put("RUNNING",		new Integer(Parser.RUNNING));
+	tokens.put("RUNTIME",		new Integer(Parser.RUNTIME));
+	tokens.put("S",			new Integer(Parser.S));
+	tokens.put("SC",		new Integer(Parser.SC));
+	tokens.put("SCHEDULE",		new Integer(Parser.SCHEDULE));
+	tokens.put("SCHEDULES",		new Integer(Parser.SCHEDULE));
+	tokens.put("SCOPE",		new Integer(Parser.SCOPE));
+	tokens.put("SCOPES",		new Integer(Parser.SCOPE));
+	tokens.put("SELECTION",		new Integer(Parser.SELECTION));
+	tokens.put("SERIAL",		new Integer(Parser.SERIAL));
+	tokens.put("SERVER",		new Integer(Parser.SERVER));
+	tokens.put("SERVERS",		new Integer(Parser.SERVER));
+	tokens.put("SESSION",		new Integer(Parser.SESSION));
+	tokens.put("SESSIONS",		new Integer(Parser.SESSION));
+	tokens.put("SET",		new Integer(Parser.SET));
+	tokens.put("SHOW",		new Integer(Parser.SHOW));
+	tokens.put("SHUTDOWN",		new Integer(Parser.SHUTDOWN));
+	tokens.put("SINGLE",		new Integer(Parser.SINGLE));
+	tokens.put("SORT",		new Integer(Parser.SORT));
+	tokens.put("STARTED",		new Integer(Parser.STARTED));
+	tokens.put("STARTING",		new Integer(Parser.STARTING));
+	tokens.put("STARTTIME",		new Integer(Parser.STARTTIME));
+	tokens.put("STATE",		new Integer(Parser.STATUS));
+	tokens.put("STATES",		new Integer(Parser.STATUS));
+	tokens.put("STATIC",		new Integer(Parser.STATIC));
+	tokens.put("STATUS",		new Integer(Parser.STATUS));
+	tokens.put("STICKY",		new Integer(Parser.STICKY));
+	tokens.put("STRICT",		new Integer(Parser.STRICT));
+	tokens.put("STOP",		new Integer(Parser.STOP));
+	tokens.put("SUBMIT",		new Integer(Parser.SUBMIT));
+	tokens.put("SUBMITCOUNT",	new Integer(Parser.SUBMITCOUNT));
+	tokens.put("SUBMITTAG",		new Integer(Parser.SUBMITTAG));
+	tokens.put("SUBMITTED",		new Integer(Parser.SUBMITTED));
+	tokens.put("SUM",		new Integer(Parser.SUM));
+	tokens.put("SUSPEND",		new Integer(Parser.SUSPEND));
+	tokens.put("SX",		new Integer(Parser.SX));
+	tokens.put("SYNCHRONIZING",	new Integer(Parser.SYNCHRONIZING));
+	tokens.put("SYNCTIME",		new Integer(Parser.SYNCTIME));
+	tokens.put("SYSTEM",		new Integer(Parser.SYSTEM));
+	tokens.put("TAG",		new Integer(Parser.TAG));
+	tokens.put("TEST",		new Integer(Parser.TEST));
+	tokens.put("TEXT",		new Integer(Parser.TEXT));
+	tokens.put("TIME",		new Integer(Parser.TIME));
+	tokens.put("TIMEOUT",		new Integer(Parser.TIMEOUT));
+	tokens.put("TIMESTAMP",		new Integer(Parser.TIMESTAMP));
+	tokens.put("TO",		new Integer(Parser.TO));
+	tokens.put("TOUCH",		new Integer(Parser.TOUCH));
+	tokens.put("TRACE",		new Integer(Parser.TRACE));
+	tokens.put("TRANSLATION",	new Integer(Parser.TRANSLATION));
+	tokens.put("TRANSLATIONS",	new Integer(Parser.TRANSLATION));
+	tokens.put("TREE",		new Integer(Parser.TREE));
+	tokens.put("TRIGGER",		new Integer(Parser.TRIGGER));
+	tokens.put("TRUNC",		new Integer(Parser.TRUNC));
+	tokens.put("TYPE",		new Integer(Parser.TYPE));
+	tokens.put("TYPES",		new Integer(Parser.TYPE));
+	tokens.put("UNREACHABLE",	new Integer(Parser.UNREACHABLE));
+	tokens.put("UNRESOLVED",	new Integer(Parser.UNRESOLVED));
+	tokens.put("URL",		new Integer(Parser.URL));
+	tokens.put("UPDATE",		new Integer(Parser.UPDATE));
+	tokens.put("USAGE",		new Integer(Parser.USAGE));
+	tokens.put("USE",		new Integer(Parser.USE));
+	tokens.put("USER",		new Integer(Parser.USER));
+	tokens.put("USERS",		new Integer(Parser.USER));
+	tokens.put("VALUE",		new Integer(Parser.VALUE));
+	tokens.put("VERSION",		new Integer(Parser.VERSION));
+	tokens.put("VIEW",		new Integer(Parser.VIEW));
+	tokens.put("WARN",		new Integer(Parser.WARN));
+	tokens.put("WARNING",		new Integer(Parser.WARNING));
+	tokens.put("WATCH",		new Integer(Parser.WATCH));
+	tokens.put("WATCHER",		new Integer(Parser.WATCHER));
+	tokens.put("WEEK",		new Integer(Parser.WEEK));
+	tokens.put("WEEKS",		new Integer(Parser.WEEK));
+	tokens.put("WITH",		new Integer(Parser.WITH));
+	tokens.put("WORKDIR",		new Integer(Parser.WORKDIR));
+	tokens.put("X",			new Integer(Parser.X));
+	tokens.put("XML",		new Integer(Parser.XML));
+	tokens.put("YEAR",		new Integer(Parser.YEAR));
+	tokens.put("YEARS",		new Integer(Parser.YEAR));
+	tokens.put("ZONE",		new Integer(Parser.ZONE));
+	stmt = new StringBuffer();
+/*
+*/
+%init}
+
+%{
+private static boolean debug = false;
+
+public int yyline()
+{
+	return yyline + 1;
+}
+
+private int token;
+private Token t;
+private Object value;
+private HashMap tokens;
+private StringBuffer stmt;
+private StringBuffer sel_stmt;
+private ConnectionEnvironment env;
+private final SimpleDateFormat df = (SimpleDateFormat) SystemEnvironment.staticSystemDateFormat.clone();
+private int selbrctr = 0;
+private boolean inMultiCmd = false;
+
+/** move to next token
+    @return false if positioned beyond tokens (EOF)
+    @throws IOException on input error
+*/
+public boolean advance() throws java.io.IOException
+{
+	token = yylex();
+	return (token != YYEOF);
+}
+
+/** classifies current token
+    should not be called if advance() returned false
+    @return current %token or single character
+*/
+public int token()
+{
+	return token;
+}
+
+public Token getToken()
+{
+	return t;
+}
+
+public void proto_input(String s)
+{
+	if (debug) {
+		System.err.println("Found Token ->" + s + "<-");
+	}
+	stmt.append(s);
+}
+
+public void unproto_input(String s)
+{
+	String tmp;
+	
+	int pos = stmt.lastIndexOf(s);
+	if(pos > 0) {
+		tmp = stmt.substring(pos + s.length());
+		tmp = stmt.substring(0,pos) + "**********" + tmp;		
+		stmt = new StringBuffer(tmp);
+	}	
+}
+
+public void tell_input()
+{
+	if (inMultiCmd) return;
+	int severity;
+	if(env.trace())	severity = SDMSThread.SEVERITY_INFO;
+	else 		severity = SDMSThread.SEVERITY_MESSAGE;
+	SDMSThread.doTrace(env, stmt.toString(), severity);
+	env.actstmt = new String(stmt);
+	stmt.delete(0, stmt.length());
+}
+
+public void setEnv(ConnectionEnvironment p_env)
+{
+	env = p_env;
+}
+
+/** associated with current token
+    should not be called after advance() returned false.
+    @return value for token();
+*/
+public Object value() 
+{
+	return t;
+}
+%}
+
+alpha	=	[a-zA-Z_@#]
+alnum	=	[a-zA-Z_0-9@#]
+dec	=	[0-9]
+sign	=	[-+]?
+exp	=	([eE]{sign}{dec}+)
+fp	=	({dec}+"."{dec}*{exp}?|"."{dec}+{exp}?|{dec}+{exp})
+ws	=	[ \t\n\r\b\015\u2028\u2029\u000B\u000C\u0085]
+nws_nsc	=	[^ \t\n\r\b\015\0\u2028\u2029\u000B\u000C\u0085;'()]
+uscore  =	(_|[ \n\t\r]*)
+brackets =	[()]
+delimiter =	[,.=+-]
+nulbyte =	\0
+cmpop	=	">"|"<"|">="|"<="|"=="|"<>"|"!="|"=~"|"!~"
+active =	[Aa][Cc][Tt][Ii][Vv][Ee]
+after =		[Aa][Ff][Tt][Ee][Rr]
+all =		[Aa][Ll][Ll]
+amount =	[Aa][Mm][Oo][Uu][Nn][Tt]
+backlog =	[Bb][Aa][Cc][Kk][Ll][Oo][Gg]
+before =	[Bb][Ee][Ff][Oo][Rr][Ee]
+begin =		[Bb][Ee][Gg][Ii][Nn]
+broken =	[Bb][Rr][Oo][Kk][Ee][Nn]
+change =	[Cc][Hh][Aa][Nn][Gg][Ee]
+child =		[Cc][Hh][Ii][Ll][Dd]
+code =		[Cc][Oo][Dd][Ee]
+constant =	[Cc][Oo][Nn][Ss][Tt][Aa][Nn][Tt]
+default =	[Dd][Ee][Ff][Aa][Uu][Ll][Tt]
+definition =	[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn]([Ss])?
+dependencx =	[Dd][Ee][Pp][Ee][Nn][Dd][Ee][Nn][Cc][Yy]
+dependencies =	[Dd][Ee][Pp][Ee][Nn][Dd][Ee][Nn][Cc][Ii][Ee][Ss]
+end =		[Ee][Nn][Dd]
+error =		[Ee][Rr][Rr][Oo][Rr]
+event =		[Ee][Vv][Ee][Nn][Tt]([Ss])?
+exec =		[Ee][Xx][Ee][Cc]
+exit =		[Ee][Xx][Ii][Tt]
+ext =		[Ee][Xx][Tt]
+fatal =		[Ff][Aa][Tt][Aa][Ll]
+final =		[Ff][Ii][Nn][Aa][Ll]
+finish =	[Ff][Ii][Nn][Ii][Ss][Hh]
+finished =	[Ff][Ii][Nn][Ii][Ss][Hh][Ee][Dd]
+free =		[Ff][Rr][Ee][Ee]
+get =		[Gg][Ee][Tt]
+global =	[Gg][Ll][Oo][Bb][Aa][Ll]
+handling =	[Hh][Aa][Nn][Dd][Ll][Ii][Nn][Gg]
+hierarchy =	[Hh][Ii][Ee][Rr][Aa][Rr][Cc][Hh][Yy]
+ignore =	[Ii][Gg][Nn][Oo][Rr][Ee]
+immediate =	[Ii][Mm][Mm][Ee][Dd][Ii][Aa][Tt][Ee]
+initial =	[Ii][Nn][Ii][Tt][Ii][Aa][Ll]
+job =		[Jj][Oo][Bb]([Ss])?
+keep =		[Kk][Ee][Ee][Pp]
+kill =		[Kk][Ii][Ll][Ll]
+limit =		[Ll][Ii][Mm][Ii][Tt]
+local =		[Ll][Oo][Cc][Aa][Ll]
+manage =	[Mm][Aa][Nn][Aa][Gg]([Ee])?
+mapping =	[Mm][Aa][Pp][Pp][Ii][Nn][Gg]([Ss])?
+merge =		[Mm][Ee][Rr][Gg][Ee]
+mode =		[Mm][Oo][Dd][Ee]
+multicommand =	[Mm][Uu][Ll][Tt][Ii][Cc][Oo][Mm][Mm][Aa][Nn][Dd]
+named =		[Nn][Aa][Mm][Ee][Dd]
+next =		[Nn][Ee][Xx][Tt]
+non =		[Nn][Oo][Nn]
+pid =		[Pp][Ii][Dd]
+profile =	[Pp][Rr][Oo][Ff][Ii][Ll][Ee]([Ss])?
+program =	[Pp][Rr][Oo][Gg][Rr][Aa][Mm]
+rerun =		[Rr][Ee][Rr][Uu][Nn]
+resource =	[Rr][Ee][Ss][Oo][Uu][Rr][Cc][Ee]
+resources =	[Rr][Ee][Ss][Oo][Uu][Rr][Cc][Ee][Ss]
+requestable =	[Rr][Ee][Qq][Uu][Ee][Ss][Tt][Aa][Bb][Ll][Ee]
+run =		[Rr][Uu][Nn]
+scheduled =	[Ss][Cc][Hh][Ee][Dd][Uu][Ll][Ee][Dd]
+select =	[Ss][Ee][Ll][Ee][Cc][Tt]
+server =	[Ss][Ee][Rr][Vv][Ee][Rr]
+status1 =	[Ss][Tt][Aa][Tt][Ee]([Ss])?
+status2 =	[Ss][Tt][Aa][Tt][Uu][Ss]
+state =		{status1}|{status2}
+submitting =	[Ss][Uu][Bb][Mm][Ii][Tt][Tt][Ii][Nn][Gg]
+suspend =	[Ss][Uu][Ss][Pp][Ee][Nn][Dd]
+synchronize =	[Ss][Yy][Nn][Cc][Hh][Rr][Oo][Nn][Ii][Zz][Ee]
+template =	[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]
+text =		[Tt][Ee][Xx][Tt]
+to =		[Tt][Oo]
+translation =	[Tt][Rr][Aa][Nn][Ss][Ll][Aa][Tt][Ii][Oo][Nn]([Ss])?
+user =		[Uu][Ss][Ee][Rr]
+until =		[Uu][Nn][Tt][Ii][Ll]
+wait =		[Ww][Aa][Ii][Tt]
+with =		[Ww][Ii][Tt][Hh]
+
+resourcex =		{resource}|{resources}
+after_final =		{after}{uscore}{final}
+all_final =		{all}{uscore}{final}
+backlog_handling =	{backlog}{uscore}{handling}
+before_final =		{before}{uscore}{final}
+bmulticmd =		{begin}{uscore}{multicommand}
+broken_active =		{broken}{uscore}{active}
+broken_finished =	{broken}{uscore}{finished}
+change_state =		{change}{uscore}{state}
+default_mapping =	{default}{uscore}{mapping}
+dependency =		{dependencx}|{dependencies}
+dependency_definition = {dependency}{uscore}{definition}
+dependency_hierarchy = 	{dependency}{uscore}{hierarchy}
+dependency_mode =	{dependency}{uscore}{mode}
+dependency_wait =	{dependency}{uscore}{wait}
+emulticmd =		{end}{uscore}{multicommand}
+error_text =		{error}{uscore}{text}
+exec_pid =		{exec}{uscore}{pid}
+exit_code =		{exit}{uscore}{code}
+exit_state =		{exit}{uscore}{state}
+exit_state_mapping =	{exit}{uscore}{state}{uscore}{mapping}
+exit_state_definition =	{exit}{uscore}{state}{uscore}{definition}
+exit_state_profile =	{exit}{uscore}{state}{uscore}{profile}
+exit_state_translation =	{exit}{uscore}{state}{uscore}{translation}
+ext_pid =		{ext}{uscore}{pid}
+finish_child =		{finish}{uscore}{child}
+free_amount =		{free}{uscore}{amount}
+get_next_job =		{get}{uscore}{next}{uscore}{job}
+ignore_dependency =	{ignore}{uscore}{dependency}
+immediate_local =	{immediate}{uscore}{local}
+immediate_merge =	{immediate}{uscore}{merge}
+initial_state =		{initial}{uscore}{state}
+job_definition =	{job}{uscore}{definition}
+job_definition_hierarchy =	{job}{uscore}{definition}{uscore}{hierarchy}
+job_final =		{job}{uscore}{final}
+job_server =		{job}{uscore}{server}
+job_state =		{job}{uscore}{state}
+keep_final =		{keep}{uscore}{final}
+kill_program =		{kill}{uscore}{program}
+local_constant =	{local}{uscore}{constant}
+manage_select =		{manage}{uscore}{select}
+merge_mode =		{merge}{uscore}{mode}
+merge_global =		{merge}{uscore}{global}
+merge_local =		{merge}{uscore}{local}
+named_resource =	{named}{uscore}{resourcex}
+non_fatal =		{non}{uscore}{fatal}
+requestable_amount =		{requestable}{uscore}{amount}
+resource_state =	{resource}{uscore}{state}
+resource_state_definition =	{resource}{uscore}{state}{uscore}{definition}
+resource_state_mapping =	{resource}{uscore}{state}{uscore}{mapping}
+resource_state_profile =	{resource}{uscore}{state}{uscore}{profile}
+resource_template =	{resource}{uscore}{template}
+resource_wait =		{resource}{uscore}{wait}
+run_program =		{run}{uscore}{program}
+rerun_program =		{rerun}{uscore}{program}
+scheduled_event =	{scheduled}{uscore}{event}
+state_profile =		{state}{uscore}{profile}
+status_mapping =	{state}{uscore}{mapping}
+suspend_limit =		{suspend}{uscore}{limit}
+submitting_user =	{submitting}{uscore}{user}
+synchronize_wait =	{synchronize}{uscore}{wait}
+to_kill =		{to}{uscore}{kill}
+until_final =		{until}{uscore}{final}
+until_finished =	{until}{uscore}{finished}
+
+%state	STRING COMMENT SELECT SELECTSTR
+%%
+
+<YYINITIAL>"//".*			{ /* do nothing */ break; }
+<YYINITIAL>--.*				{ /* do nothing */ break; }
+<YYINITIAL>{dec}+			{ proto_input(yytext());
+					  try {
+						value = new Long(yytext());
+						t = new Token(Parser.INTEGER, yytext(), value);
+					  } catch (NumberFormatException nfe) {
+						value = new Long(0);
+						t = new Token(Parser.NAN, yytext(), value);
+						return Parser.NAN;
+					  }
+					  return Parser.INTEGER;
+					}
+<YYINITIAL>{fp}				{ proto_input(yytext());
+					  try {
+						value = new Float(yytext());
+						t = new Token(Parser.FLOAT, yytext(), value);
+					  } catch (NumberFormatException nfe) {
+						value = new Float(0);	// as soon as we really need floats (we don't at the moment)
+						t = new Token(Parser.NAN, yytext(), value);
+						return Parser.NAN;	// this might be a problem
+					  }
+					  return Parser.FLOAT;
+					}
+<YYINITIAL>{nulbyte}			{ tell_input(); value = ""; t = new Token(Parser.FORCED_EOC, (String)  value);		return Parser.FORCED_EOC; }
+<YYINITIAL>{cmpop}			{ proto_input(yytext()); value = yytext(); t = new Token(Parser.CMPOP, yytext());	return Parser.CMPOP; }
+<YYINITIAL>{ws}				{ if(stmt.length() != 0) proto_input(yytext()); /* do nothing */ break; }
+<YYINITIAL>{after_final}		{ proto_input(yytext()); t = new Token(Parser.AFTER_FINAL, yytext());			return Parser.AFTER_FINAL; }
+<YYINITIAL>{all_final}			{ proto_input(yytext()); t = new Token(Parser.ALL_FINAL, yytext());			return Parser.ALL_FINAL; }
+<YYINITIAL>{backlog_handling}		{ proto_input(yytext()); t = new Token(Parser.BACKLOG_HANDLING, yytext());		return Parser.BACKLOG_HANDLING; }
+<YYINITIAL>{before_final}		{ proto_input(yytext()); t = new Token(Parser.BEFORE_FINAL, yytext());			return Parser.BEFORE_FINAL; }
+<YYINITIAL>{bmulticmd}			{ proto_input(yytext()); t = new Token(Parser.BMULTICMD, yytext()); inMultiCmd = true;	return Parser.BMULTICMD; }
+<YYINITIAL>{broken_active}		{ proto_input(yytext()); t = new Token(Parser.BROKEN_ACTIVE, yytext());			return Parser.BROKEN_ACTIVE; }
+<YYINITIAL>{broken_finished}		{ proto_input(yytext()); t = new Token(Parser.BROKEN_FINISHED, yytext());		return Parser.BROKEN_FINISHED; }
+<YYINITIAL>{change_state}		{ proto_input(yytext()); t = new Token(Parser.CHANGE_STATUS, yytext());			return Parser.CHANGE_STATUS; }
+<YYINITIAL>{default_mapping}		{ proto_input(yytext()); t = new Token(Parser.DEFAULT_MAPPING, yytext());		return Parser.DEFAULT_MAPPING; }
+<YYINITIAL>{dependency_definition}	{ proto_input(yytext()); t = new Token(Parser.DEPENDENCY_DEFINITION, yytext());		return Parser.DEPENDENCY_DEFINITION; }
+<YYINITIAL>{dependency_hierarchy}	{ proto_input(yytext()); t = new Token(Parser.DEPENDENCY_HIERARCHY, yytext());		return Parser.DEPENDENCY_HIERARCHY; }
+<YYINITIAL>{dependency_mode}		{ proto_input(yytext()); t = new Token(Parser.DEPENDENCY_MODE, yytext());		return Parser.DEPENDENCY_MODE; }
+<YYINITIAL>{dependency_wait}		{ proto_input(yytext()); t = new Token(Parser.DEPENDENCY_WAIT, yytext());		return Parser.DEPENDENCY_WAIT; }
+<YYINITIAL>{emulticmd}			{ proto_input(yytext()); t = new Token(Parser.EMULTICMD, yytext()); inMultiCmd = false;	return Parser.EMULTICMD; }
+<YYINITIAL>{error_text}			{ proto_input(yytext()); t = new Token(Parser.ERROR_TEXT, yytext());			return Parser.ERROR_TEXT; }
+<YYINITIAL>{exec_pid}			{ proto_input(yytext()); t = new Token(Parser.EXEC_PID, yytext());			return Parser.EXEC_PID; }
+<YYINITIAL>{exit_code}			{ proto_input(yytext()); t = new Token(Parser.EXIT_CODE, yytext());			return Parser.EXIT_CODE; }
+<YYINITIAL>{exit_state}			{ proto_input(yytext()); t = new Token(Parser.EXIT_STATUS, yytext());			return Parser.EXIT_STATUS; }
+<YYINITIAL>{exit_state_definition}	{ proto_input(yytext()); t = new Token(Parser.EXIT_STATUS_DEFINITION, yytext());	return Parser.EXIT_STATUS_DEFINITION; }
+<YYINITIAL>{exit_state_mapping}		{ proto_input(yytext()); t = new Token(Parser.EXIT_STATUS_MAPPING, yytext());		return Parser.EXIT_STATUS_MAPPING; }
+<YYINITIAL>{exit_state_profile}		{ proto_input(yytext()); t = new Token(Parser.EXIT_STATUS_PROFILE, yytext());		return Parser.EXIT_STATUS_PROFILE; }
+<YYINITIAL>{exit_state_translation}	{ proto_input(yytext()); t = new Token(Parser.EXIT_STATUS_TRANSLATION, yytext());	return Parser.EXIT_STATUS_TRANSLATION; }
+<YYINITIAL>{ext_pid}			{ proto_input(yytext()); t = new Token(Parser.EXT_PID, yytext());			return Parser.EXT_PID; }
+<YYINITIAL>{finish_child}		{ proto_input(yytext()); t = new Token(Parser.FINISH_CHILD, yytext());			return Parser.FINISH_CHILD; }
+<YYINITIAL>{free_amount}		{ proto_input(yytext()); t = new Token(Parser.FREE_AMOUNT, yytext());			return Parser.FREE_AMOUNT; }
+<YYINITIAL>{get_next_job}		{ proto_input(yytext()); t = new Token(Parser.GET_NEXT_JOB, yytext());			return Parser.GET_NEXT_JOB; }
+<YYINITIAL>{ignore_dependency}		{ proto_input(yytext()); t = new Token(Parser.IGNORE_DEPENDENCY, yytext());		return Parser.IGNORE_DEPENDENCY; }
+<YYINITIAL>{immediate_local}		{ proto_input(yytext()); t = new Token(Parser.IMMEDIATE_LOCAL, yytext());		return Parser.IMMEDIATE_LOCAL; }
+<YYINITIAL>{immediate_merge}		{ proto_input(yytext()); t = new Token(Parser.IMMEDIATE_MERGE, yytext());		return Parser.IMMEDIATE_MERGE; }
+<YYINITIAL>{initial_state}		{ proto_input(yytext()); t = new Token(Parser.INITIAL_STATUS, yytext());		return Parser.INITIAL_STATUS; }
+<YYINITIAL>{job_definition}		{ proto_input(yytext()); t = new Token(Parser.JOB_DEFINITION, yytext());		return Parser.JOB_DEFINITION; }
+<YYINITIAL>{job_definition_hierarchy}	{ proto_input(yytext()); t = new Token(Parser.JOB_DEFINITION_HIERARCHY, yytext());	return Parser.JOB_DEFINITION_HIERARCHY; }
+<YYINITIAL>{job_final}			{ proto_input(yytext()); t = new Token(Parser.JOB_FINAL, yytext());			return Parser.JOB_FINAL; }
+<YYINITIAL>{job_server}			{ proto_input(yytext()); t = new Token(Parser.JOB_SERVER, yytext());			return Parser.JOB_SERVER; }
+<YYINITIAL>{job_state}			{ proto_input(yytext()); t = new Token(Parser.JOB_STATUS, yytext());			return Parser.JOB_STATUS; }
+<YYINITIAL>{keep_final}			{ proto_input(yytext()); t = new Token(Parser.KEEP_FINAL, yytext());			return Parser.KEEP_FINAL; }
+<YYINITIAL>{kill_program}		{ proto_input(yytext()); t = new Token(Parser.KILL_PROGRAM, yytext());			return Parser.KILL_PROGRAM; }
+<YYINITIAL>{local_constant}		{ proto_input(yytext()); t = new Token(Parser.LOCAL_CONSTANT, yytext());		return Parser.LOCAL_CONSTANT; }
+<YYINITIAL>{manage_select}		{ proto_input(yytext()); t = new Token(Parser.MANAGE_SELECT, yytext());			return Parser.MANAGE_SELECT; }
+<YYINITIAL>{merge_global}		{ proto_input(yytext()); t = new Token(Parser.MERGE_GLOBAL, yytext());			return Parser.MERGE_GLOBAL; }
+<YYINITIAL>{merge_local}		{ proto_input(yytext()); t = new Token(Parser.MERGE_LOCAL, yytext());			return Parser.MERGE_LOCAL; }
+<YYINITIAL>{merge_mode}			{ proto_input(yytext()); t = new Token(Parser.MERGE_MODE, yytext());			return Parser.MERGE_MODE; }
+<YYINITIAL>{named_resource}		{ proto_input(yytext()); t = new Token(Parser.NAMED_RESOURCE, yytext());		return Parser.NAMED_RESOURCE; }
+<YYINITIAL>{non_fatal}			{ proto_input(yytext()); t = new Token(Parser.NONFATAL, yytext());			return Parser.NONFATAL; }
+<YYINITIAL>{requestable_amount}		{ proto_input(yytext()); t = new Token(Parser.REQUESTABLE_AMOUNT, yytext());		return Parser.REQUESTABLE_AMOUNT; }
+<YYINITIAL>{rerun_program}		{ proto_input(yytext()); t = new Token(Parser.RERUN_PROGRAM, yytext());			return Parser.RERUN_PROGRAM; }
+<YYINITIAL>{resource_state}		{ proto_input(yytext()); t = new Token(Parser.RESOURCE_STATUS, yytext());		return Parser.RESOURCE_STATUS; }
+<YYINITIAL>{resource_state_definition}	{ proto_input(yytext()); t = new Token(Parser.RESOURCE_STATUS_DEFINITION, yytext());	return Parser.RESOURCE_STATUS_DEFINITION; }
+<YYINITIAL>{resource_state_mapping}	{ proto_input(yytext()); t = new Token(Parser.RESOURCE_STATUS_MAPPING, yytext());	return Parser.RESOURCE_STATUS_MAPPING; }
+<YYINITIAL>{resource_state_profile}	{ proto_input(yytext()); t = new Token(Parser.RESOURCE_STATUS_PROFILE, yytext());	return Parser.RESOURCE_STATUS_PROFILE; }
+<YYINITIAL>{resource_template}		{ proto_input(yytext()); t = new Token(Parser.RESOURCE_TEMPLATE, yytext());		return Parser.RESOURCE_TEMPLATE; }
+<YYINITIAL>{resource_wait}		{ proto_input(yytext()); t = new Token(Parser.RESOURCE_WAIT, yytext());			return Parser.RESOURCE_WAIT; }
+<YYINITIAL>{run_program}		{ proto_input(yytext()); t = new Token(Parser.RUN_PROGRAM, yytext());			return Parser.RUN_PROGRAM; }
+<YYINITIAL>{scheduled_event}		{ proto_input(yytext()); t = new Token(Parser.SCHEDULED_EVENT, yytext());		return Parser.SCHEDULED_EVENT; }
+<YYINITIAL>{select}			{ proto_input(yytext());
+					  sel_stmt = new StringBuffer("SELECT ");
+					  yybegin(SELECT);
+					  selbrctr = 0;
+					  break;
+					}
+<YYINITIAL>{state_profile}		{ proto_input(yytext()); t = new Token(Parser.STATUS_PROFILE, yytext());		return Parser.STATUS_PROFILE; }
+<YYINITIAL>{status_mapping}		{ proto_input(yytext()); t = new Token(Parser.STATUS_MAPPING, yytext());		return Parser.STATUS_MAPPING; }
+<YYINITIAL>{submitting_user}		{ proto_input(yytext()); t = new Token(Parser.SUBMITTING_USER, yytext());		return Parser.SUBMITTING_USER; }
+<YYINITIAL>{suspend_limit}		{ proto_input(yytext()); t = new Token(Parser.SUSPEND_LIMIT, yytext());			return Parser.SUSPEND_LIMIT; }
+<YYINITIAL>{synchronize_wait}		{ proto_input(yytext()); t = new Token(Parser.SYNCHRONIZE_WAIT, yytext());		return Parser.SYNCHRONIZE_WAIT; }
+<YYINITIAL>{to_kill}			{ proto_input(yytext()); t = new Token(Parser.TO_KILL, yytext());			return Parser.TO_KILL; }
+<YYINITIAL>{until_final}		{ proto_input(yytext()); t = new Token(Parser.UNTIL_FINAL, yytext());			return Parser.UNTIL_FINAL; }
+<YYINITIAL>{until_finished}		{ proto_input(yytext()); t = new Token(Parser.UNTIL_FINISHED, yytext());		return Parser.UNTIL_FINISHED; }
+<YYINITIAL>{alpha}{alnum}*		{
+					  proto_input(yytext());
+					  value = new String(yytext()).toUpperCase();
+					  Integer i = (Integer) tokens.get(value);
+					  if(i != null) {
+						t = new Token(i, yytext(), value);
+						return i.intValue();
+					  }
+					  t = new Token(Parser.IDENTIFIER, yytext(), value);
+					  return Parser.IDENTIFIER;
+					}
+<YYINITIAL>\'				{ proto_input(yytext()); yybegin(STRING); value = new String(""); break; }
+<YYINITIAL>"/*"				{ yybegin(COMMENT); break; }
+<YYINITIAL>;				{ proto_input(yytext()); tell_input(); t = new Token(yytext().charAt(0), yytext());		return Parser.SECO; }
+<YYINITIAL>\*				{ proto_input(yytext()); t = new Token(yytext().charAt(0), yytext());	return yytext().charAt(0); }
+<YYINITIAL>{brackets}			{ proto_input(yytext()); t = new Token(yytext().charAt(0), yytext());	return yytext().charAt(0); }
+<YYINITIAL>{delimiter}			{ proto_input(yytext()); t = new Token(yytext().charAt(0), yytext());	return yytext().charAt(0); }
+<YYINITIAL>.				{ proto_input(yytext()); t = new Token(yytext().charAt(0), yytext());	return Parser.OTHER; }
+<STRING>\'				{ proto_input(value.toString());
+					  proto_input(yytext());
+					  yybegin(YYINITIAL);
+					  t = new Token(Parser.STRING, (String) value, value);
+					  return Parser.STRING;
+					}
+<STRING>\\\'				{ value = ((String) value) + "'"; break; }
+<STRING>\\\\				{ value = ((String) value) + "\\"; break; }
+<STRING>\\				{ value = ((String) value) + "\\"; break; }
+<STRING>[^\\\'\0]*			{ value = ((String) value) + new String(yytext()); break; }
+<STRING>{nulbyte}			{ tell_input(); value = ""; yybegin(YYINITIAL); t = new Token(Parser.FORCED_EOC, (String) value); return Parser.FORCED_EOC; }
+<COMMENT>"*/"				{ yybegin(YYINITIAL); break; }
+<COMMENT>[^*\0]*			{ /* do nothing */ break; }
+<COMMENT>\*				{ /* do nothing */ break; }
+<COMMENT>{nulbyte}			{ tell_input(); value = ""; yybegin(YYINITIAL); t = new Token(Parser.FORCED_EOC, (String) value); return Parser.FORCED_EOC; }
+<SELECT>{ws}				{ proto_input(yytext()); sel_stmt.append(yytext()); break; }
+<SELECT>{with}				{ yypushback(yytext().length());  // we put "with" back to be read again
+					  yybegin(YYINITIAL);
+					  value = new String(sel_stmt);
+					  t = new Token(Parser.SELECT, (String) value, value);
+					  return Parser.SELECT;
+					}
+<SELECT>{nws_nsc}			{ proto_input(yytext()); sel_stmt.append(yytext()); break; }
+<SELECT>\'				{ proto_input(yytext()); sel_stmt.append(yytext()); yybegin(SELECTSTR); break; }
+<SELECT>;				{ yybegin(YYINITIAL);
+					  yypushback(1);
+					  value = new String(sel_stmt);
+					  t = new Token(Parser.SELECT, (String) value, value);
+					  return Parser.SELECT;
+					}
+<SELECT>"("				{ proto_input(yytext()); sel_stmt.append(yytext()); selbrctr++; break; }
+<SELECT>")"				{ if (selbrctr == 0) {
+						yybegin(YYINITIAL);
+						yypushback(1);
+					  	value = new String(sel_stmt);
+						  t = new Token(Parser.SELECT, (String) value, value);
+						  return Parser.SELECT;
+					  } else
+						selbrctr--;
+					  proto_input(yytext());
+					  sel_stmt.append(yytext());
+					  break;
+					}
+<SELECT>{nulbyte}			{ tell_input(); value = ""; yybegin(YYINITIAL); t = new Token(Parser.FORCED_EOC, (String) value); return Parser.FORCED_EOC; }
+
+<SELECTSTR>\'				{ proto_input(yytext()); sel_stmt.append(yytext()); yybegin(SELECT); break; }
+<SELECTSTR>[^']*			{ proto_input(yytext()); sel_stmt.append(yytext()); break; }
+
+

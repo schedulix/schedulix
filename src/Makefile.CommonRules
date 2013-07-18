@@ -1,0 +1,69 @@
+#
+# Copyright (c) 2000-2013 "independIT Integrative Technologies GmbH"
+# 
+# BICsuite!OpenScheduler Enterprise Job Scheduling System
+# 
+# independIT Integrative Technologies GmbH [http://www.independit.de]
+# mailto:contact@independit.de
+# 
+# This file is part of BICsuite!OpenScheduler
+# 
+# BICsuite!OpenScheduler is is free software: 
+# you can redistribute it and/or modify it under the terms of the 
+# GNU Affero General Public License as published by the 
+# Free Software Foundation, either version 3 of the License, 
+# or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+JAY = $(SDMSHOME)/tools/bin/jay.linux
+SKELETON = $(SDMSHOME)/tools/lib/skeleton
+JLEX = $(SDMSHOME)/tools/bin/jflex
+AWK = /usr/bin/awk
+SED = sed
+
+JAVAC = javac -cp $(SDMSHOME)/src:$(SWTJAR)
+JAR = jar
+JARCREATEFLAGS = cmf
+JAVAH = javah
+
+ifdef DEBUG
+CXXFLAGS += -g3
+JAVAC_FLAGS = -g
+else
+CXXFLAGS += -O3
+JAVAC_FLAGS = -O
+endif
+
+commonsubdirs:
+	@for DIR in $(SUBDIRS); do \
+		if [ $$DIR != "." ]; then \
+			$(MAKE) -$(MAKEFLAGS) -C $$DIR all || exit; \
+		fi; \
+	done
+
+commonclean:
+	@for DIR in $(SUBDIRS); do \
+		if [ $$DIR != "." ]; then \
+			$(MAKE) -$(MAKEFLAGS) -C $$DIR clean || exit; \
+		fi; \
+	done
+	rm -f *~ *.class 
+
+%.class: %.java
+	$(JAVAC) $(JAVAC_FLAGS) $< 
+
+%.java: %.jay
+	$(JAY) $(JAY_FLAGS) $< < $(SKELETON) > $@
+
+%.java: %.jlex
+	$(JLEX) -d /tmp $<
+	$(SED) -e 's/zzCMapL\[zzInput\]/(((zzInput >= 0) \&\& (zzInput < zzCMapL.length)) ? zzCMapL\[zzInput\] : 0)/' /tmp/$@ >$@
+	rm -f /tmp/$@
+

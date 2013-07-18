@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# $Id: sdmsh,v 1.14.6.1 2013/03/14 10:24:01 ronald Exp $
+#
+# Copyright (C) 2002 topIT Informationstechnologie GmbH
+# Copyright (C) 2006 independIT Integrative Technologies GmbH
+#
+if [ -z "$BICSUITECONFIG" ]; then
+	BICSUITECONFIG=$BICSUITEHOME/etc
+fi
+
+. $BICSUITECONFIG/java.conf || exit 1
+. $BICSUITECONFIG/bicsuite.conf || exit 1
+INFO="sdmsh["`whoami`"@"`hostname`"]"
+
+$BICSUITEJAVA_TL $BICSUITEJAVAFLAGS_TL -cp $BICSUITEJAR de.independit.scheduler.sdmsh --info $INFO "$@"

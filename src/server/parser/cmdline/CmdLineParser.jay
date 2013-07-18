@@ -1,0 +1,181 @@
+%{
+//
+// $Id: CmdLineParser.jay,v 2.1.18.1 2013/03/14 10:24:54 ronald Exp $
+//
+// Copyright (C) 2002 topIT Informationstechnologie GmbH
+//
+// $Log: CmdLineParser.jay,v $
+// Revision 2.1.18.1  2013/03/14 10:24:54  ronald
+// Umstellung auf standard konforme package bezeichnungen
+//
+// Revision 2.1  2004/08/20 20:34:41  ronald
+// Bug entfernt (Server Abstuerz beim Parsen eines Commandlines mit newlines)
+// command separator wird nun auch richtig behandelt
+//
+// Revision 2.0  2004/04/19 15:25:40  ronald
+// Version 2.0 Started
+//
+// Revision 1.15  2004/02/29 14:15:47  ronald
+// Issue 255: Unbalanced Quote handling. The run command and rerun command
+// are now checked at create/alter time
+//
+// Revision 1.14  2004/02/28 07:32:16  ronald
+// Bug im "noprivcheck" handling behoben
+//
+// Revision 1.13  2003/12/17 21:56:44  ronald
+// Parser Strings Parser.S_SOMETHING nach der Klasse ParseStr ausgelagert
+//
+// Revision 1.12  2003/04/15 18:14:00  ronald
+// GetParameter erweitert. Beim Abholen kann definiert werden wie "strict"
+// der Server reagieren soll.
+//
+// Revision 1.11  2002/11/16 10:03:19  ronald
+// 1. Fehler beim Auswerten von Aggregate Variablen (Child Local wurde
+//    ignoriert) (Issue 103)
+// 2. fastAccess implementiert (look in own scope only). Der vollstaendige
+//    Search wird bei:
+//    - (mandatory) Parameter mit Default, ohne Wert
+//    - Referenz Parameter
+//
+// Revision 1.10  2002/10/22 00:10:48  ronald
+// Copyright Zeile ergaenzt
+//
+// Revision 1.9  2002/08/10 00:35:53  ronald
+// Only simple names for parameters are now allowed (no paths anymore).
+// This is now possible because parameters of type reference are now
+// implemented
+//
+// Revision 1.8  2002/07/12 08:21:29  ronald
+// 1. versioned list & show
+// 2. letzte drittel kill
+// 3. Bug in alter job definition
+//
+// Revision 1.7  2002/07/09 14:54:22  ronald
+// removed a shift/reduce conflict
+//
+// Revision 1.6  2002/07/09 13:50:13  ronald
+// Fehler im CmdLineParser (trailing spaces broke the parser)
+// Fehler in GetNextJob (If Job -> Error, delete from queue!)
+//
+// Revision 1.5  2002/06/17 20:41:40  ronald
+// Improved commandline parsing and parameter handling
+//
+// Revision 1.4  2002/06/04 19:03:29  ronald
+// Job connect, Dynamic submit
+//
+// Revision 1.3  2002/02/21 01:11:06  ronald
+// Syntax for tree copies, Parameters, Indexes for pg, pg int8-literal problem
+//
+// Revision 1.2  2002/02/15 08:06:15  ronald
+// Small improvements
+//
+// Revision 1.1  2002/02/03 20:55:32  ronald
+// Commandline Parser zugefuegt
+//
+//
+
+package de.independit.scheduler.server.parser.cmdline;
+
+import java.io.*;
+import java.util.*;
+import java.lang.*;
+import de.independit.scheduler.server.repository.*;
+import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.parser.*;
+import de.independit.scheduler.server.output.*;
+import de.independit.scheduler.server.*;
+
+public class CmdLineParser 
+{
+
+	private int stop = 0;
+	private SDMSSubmittedEntity sme = null;
+	private SystemEnvironment sysEnv = null;
+	private Long smeId = null;
+	private boolean checkOnly = false;
+%}
+
+%token <String> PARAM CHAR SQSTRING
+%token	SEPARATOR DQSTRING_START DQSTRING_END PARAMSTART PARAMEND DOT
+
+%type <Vector> parameterlist, param, dottedparam
+%type <String> executablename, charlist, dqstring, dqlist, parameter, optdqlist
+
+%start cmdline
+
+%%
+
+cmdline:					{ if(stop == 0) return null; }
+	|	executablename			{ Vector v = new Vector(); v.add($1); if(stop == 0) return v; }
+	|	executablename SEPARATOR parameterlist	{ $3.add(0, $1); if(stop == 0) return $3; }
+	|	executablename SEPARATOR 	{ Vector v = new Vector(); v.add($1); if(stop == 0) return v; }
+
+executablename:	charlist			{ $$ = $1; }
+
+parameterlist:	parameter 			{ $$ = new Vector(); $<Vector>$.add($1); }
+	|	parameterlist SEPARATOR parameter	{ $1.add($3); }
+	|	parameterlist SEPARATOR 	{ /* do nothing */ }
+
+parameter:	charlist			{ $$ = $1; }
+
+charlist:	CHAR				{ $$ = $1; }
+	|	SQSTRING			{ $$ = $1; }
+	|	dqstring			{ $$ = $1; }
+	|	param				{ $$ = resolve($1); }
+	|	charlist CHAR			{ $$ = $1.concat($2); }
+	|	charlist SQSTRING		{ $$ = $1.concat($2); }
+	|	charlist dqstring		{ $$ = $1.concat($2); }
+	|	charlist param			{ $$ = $1.concat(resolve($2)); }
+
+dqstring:	DQSTRING_START optdqlist DQSTRING_END	{ $$ = $2; }
+
+optdqlist:					{ $$ = new String(""); }
+	|	dqlist				{ $$ = $1; }
+
+dqlist:		CHAR				{ $$ = $1; }
+	|	param				{ $$ = resolve($1); }
+	|	dqlist CHAR			{ $$ = $1.concat($2); }
+	|	dqlist param			{ $$ = $1.concat(resolve($2)); }
+
+param:		PARAM				{ $$ = new Vector(); $<Vector>$.add($1); }
+	|	PARAMSTART dottedparam PARAMEND	{ $$ = $2; }
+
+dottedparam:	SQSTRING			{ $$ = new Vector(); $<Vector>$.add($1); }
+
+//	|	dottedparam DOT SQSTRING	{ $1.add($3); }
+
+
+
+%%
+
+public void set(SystemEnvironment e, SDMSSubmittedEntity sub)
+	throws SDMSException
+{
+	sysEnv = e;
+	sme = sub;
+	if(sme != null)
+		smeId = sub.getId(sysEnv);
+}
+
+public void setCheckOnly()
+{
+	checkOnly = true;
+}
+
+String resolve(Vector pv)
+	throws SDMSException
+{
+	if(checkOnly)	// we only check the correctness of the expression, so we fake variable lookups 
+		return new String ("x");
+	String rc;
+	String pn = (String) pv.remove(pv.size() - 1);
+
+	rc = sme.getVariableValue(sysEnv, pn, false, ParseStr.S_DEFAULT);	// full evaluation
+	if(rc == null) {
+		throw new NotFoundException(new SDMSMessage(sysEnv, "03206041627", "Parameter $1 not found", pn));
+	}
+	return rc;
+}
+
+
+}

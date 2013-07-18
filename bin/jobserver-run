@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# $Id: jobserver-run,v 1.13.6.1 2013/03/14 10:24:00 ronald Exp $
+#
+# Copyright (C) 2002/2003 topIT Informationstechnologie GmbH
+# Copyright (C) 2006 independIT Integrative Technologies GmbH
+#
+. $BICSUITEHOME/lib/functions.sh || exit 1
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BICSUITEHOME/lib
+export LD_LIBRARY_PATH
+
+CONFIGFILE=$1
+if [ "$CONFIGFILE" = "" ]
+then
+	echo "Missing Configfile !"
+	echo "usage: jobserver-run configfile [ pipename ]"
+	exit 1
+else
+	if [ "$CONFIGFILE" = "--version" ]; then
+		$BICSUITEJAVA_JS $BICSUITEJAVAFLAGS_JS -cp $BICSUITEJAR de.independit.scheduler.jobserver.JobServer --version
+		exit 0
+	else
+		if test -f $CONFIGFILE
+		then
+			: do nothing
+		else
+			echo "Configfile $CONFIGFILE does not exist or is not accessable!"
+			echo "usage: jobserver-run configfile [ pipename ]"
+			exit 1
+		fi
+	fi
+fi
+
+INFO='jobserver['`whoami`'@'`hostname`']'
+LOGFILE=$2
+if [ "$LOGFILE" = "" ]
+then
+	$BICSUITEJAVA_JS $BICSUITEJAVAFLAGS_JS -cp $BICSUITEJAR de.independit.scheduler.jobserver.JobServer "$@" "$INFO"
+else
+	ensure_pipe $LOGFILE
+	$SCROLLLOG $LOGFILE -e $BICSUITEJAVA_JS $BICSUITEJAVAFLAGS_JS -cp $BICSUITEJAR de.independit.scheduler.jobserver.JobServer $CONFIGFILE "$INFO"
+fi
