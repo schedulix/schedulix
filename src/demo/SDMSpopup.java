@@ -66,9 +66,9 @@ public class SDMSpopup
 		shell.setBackground(new Color(display, 255, 255, 255));
 		shell.setText("SDMSpopup");
 
-		final Image logo = new Image(display, "Images/independIT_logo_neu.png");
+		final Image logo = new Image(display, "Images/Logo.png");
 		final Image bullit = new Image(display,
-		                               "Images/independIT_bullit_large.png");
+		                               "Images/Bullit.png");
 
 		shell.setImage(bullit);
 

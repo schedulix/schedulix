@@ -41,7 +41,7 @@ import de.independit.scheduler.server.exception.*;
 public class AlterJob extends Node
 {
 
-	public final static String __version = "@(#) $Id: AlterJob.java,v 2.35.2.3 2013/03/22 14:01:55 dieter Exp $";
+	public final static String __version = "@(#) $Id: AlterJob.java,v 2.35.2.4 2013/07/19 06:45:20 dieter Exp $";
 
 	private Long jobId		= null;
 	private WithHash with		= null;
