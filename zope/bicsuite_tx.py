@@ -2,14 +2,14 @@
 # Copyright (c) 2000-2013 "independIT Integrative Technologies GmbH",
 # Authors: Ronald Jeninga, Dieter Stubler
 # 
-# BICsuite!Open Enterprise Job Scheduling System
+# schedulix Enterprise Job Scheduling System
 # 
 # independIT Integrative Technologies GmbH [http://www.independit.de]
 # mailto:contact@independit.de
 # 
-# This file is part of BICsuite!Open
+# This file is part of schedulix
 # 
-# BICsuite!Open is free software: 
+# schedulix is free software: 
 # you can redistribute it and/or modify it under the terms of the 
 # GNU Affero General Public License as published by the 
 # Free Software Foundation, either version 3 of the License, 
