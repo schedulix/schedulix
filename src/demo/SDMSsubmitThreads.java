@@ -104,9 +104,9 @@ public class SDMSsubmitThreads
 		final Shell shell = new Shell(display);
 		shell.setBackground(new Color(display, 255, 255, 255));
 		shell.setText("SDMSsubmitThreads");
-		final Image logo = new Image(display, "Images/independIT_logo_neu.png");
+		final Image logo = new Image(display, "Images/Logo.png");
 		final Image bullit = new Image(display,
-		                               "Images/independIT_bullit_large.png");
+		                               "Images/Bullit.png");
 		shell.setImage(bullit);
 		GridLayout gridLayout = new GridLayout(1, false);
 		gridLayout.marginHeight = 0;
