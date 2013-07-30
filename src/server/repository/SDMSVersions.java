@@ -40,7 +40,7 @@ public class SDMSVersions
 
 	public final static String __version = "@(#) $Id: SDMSVersions.java,v 2.8.2.1 2013/03/14 10:25:27 ronald Exp $";
 
-	Vector          versions;
+	Vector	versions;
 
 	LinkedList	o_v;
 
@@ -206,6 +206,10 @@ public class SDMSVersions
 		}
 		int s = versions.size();
 
+		long startVersion = 1;
+		if (s > 0)
+			startVersion = ((SDMSObject)(versions.elementAt(0))).validFrom;
+
 		while (s > 0 && ((SDMSObject)(versions.elementAt(0))).validTo < versionId) {
 			table.unIndex(env, (SDMSObject)(versions.elementAt(0)));
 			versions.remove (0);
@@ -219,7 +223,11 @@ public class SDMSVersions
 
 		if (s == 0)
 			table.hashMap.remove(id);
+		else
 
+			if (!table.isVersioned) {
+				((SDMSObject)(versions.elementAt(0))).validFrom = startVersion;
+			}
 	}
 
 	protected SDMSObject get (SystemEnvironment env)
