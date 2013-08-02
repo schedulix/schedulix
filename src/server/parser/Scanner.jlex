@@ -548,7 +548,6 @@ import de.independit.scheduler.server.exception.*;
 %public
 %class Scanner
 %implements de.independit.scheduler.server.parser.Parser.yyInput
-%type int
 %yyeof
 %integer
 

@@ -27,7 +27,6 @@ import java.io.*;
 
 %public
 %class Scanner
-%type int
 %yyeof
 %integer
 

@@ -26,7 +26,6 @@ import java.io.*;
 
 %public
 %class MiniParse
-%type int
 %yyeof
 %integer
 
