@@ -233,36 +233,6 @@ public class ShowNamedResource extends ShowCommented
 
 			r_container.addData(sysEnv, data);
 		}
-		rv = SDMSResourceTemplateTable.idx_nrId.getVector(sysEnv, nrId);
-		for(int i = 0; i < rv.size(); ++i) {
-			rt = (SDMSResourceTemplate) rv.get(i);
-			data = new Vector();
-
-			data.add(rt.getId(sysEnv));
-
-			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, rt.getSeId(sysEnv));
-			data.add(se.pathVector(sysEnv));
-			data.add("JOB");
-
-			g = SDMSGroupTable.getObject(sysEnv, rt.getOwnerId(sysEnv));
-			data.add(g.getName(sysEnv));
-
-			if(rt.getRsdId(sysEnv) != null) {
-				data.add(SDMSResourceStateDefinitionTable.getObject(sysEnv, rt.getRsdId(sysEnv)).getName(sysEnv));
-			} else {
-				data.add(null);
-			}
-			Integer someAmount;
-			someAmount = rt.getRequestableAmount(sysEnv);
-			data.add(someAmount == null ? (Object)"INFINITE" : (Object)someAmount);
-			someAmount = rt.getAmount(sysEnv);
-			data.add(someAmount == null ? (Object)"INFINITE" : (Object)someAmount);
-			data.add(someAmount == null ? (Object)"INFINITE" : (Object)someAmount);
-			data.add(rt.getIsOnline(sysEnv));
-			data.add(rt.getPrivileges(sysEnv).toString());
-
-			r_container.addData(sysEnv, data);
-		}
 		Collections.sort(r_container.dataset, r_container.getComparator(sysEnv, 2, 1));
 
 		v.add(r_container);
