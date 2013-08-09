@@ -85,11 +85,6 @@ public class DropNamedResource extends Node
 				SDMSResource r = (SDMSResource) rv.get(i);
 				r.delete(sysEnv);
 			}
-			rv = SDMSResourceTemplateTable.idx_nrId.getVector(sysEnv, nrId);
-			for(int i = 0; i < rv.size(); i++) {
-				SDMSResourceTemplate rt = (SDMSResourceTemplate) rv.get(i);
-				rt.delete(sysEnv);
-			}
 		}
 
 		nr.killParameters (sysEnv);
