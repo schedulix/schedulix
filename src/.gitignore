@@ -1,0 +1,4 @@
+*.class
+*.o
+jobserver/de_independit_scheduler_jobserver_Utils.h
+de/
