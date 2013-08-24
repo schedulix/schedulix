@@ -241,17 +241,38 @@ public abstract class HierarchyLister
 			SDMSPrivilege priv = co.getPrivileges(sysEnv);
 			if (!privCheck || priv.can(SDMSPrivilege.VIEW) || priv.can(SDMSPrivilege.CREATE_PARENT_CONTENT)) {
 				coId = co.getId(sysEnv);
-				if (checkValid(sysEnv, co)) {
+				if (checkValid(sysEnv, co) || checkChildren(sysEnv, co, privCheck))
 					objectsToList.add(co);
-				} else
+				else
 					didReject = true;
-				if((expandIds == null || expandIds.contains(coId)) && (!privCheck || priv.can(SDMSPrivilege.VIEW))) {
+				if((expandIds == null || expandIds.contains(coId)) && (!privCheck || priv.can(SDMSPrivilege.VIEW)))
 					if (add_children(sysEnv, oc, co, privCheck))
 						didReject = true;
-				}
 			}
 		}
 		return didReject;
+	}
+
+	private boolean checkChildren(SystemEnvironment sysEnv, SDMSProxy o, boolean privCheck)
+	throws SDMSException
+	{
+		Vector iv;
+		int i;
+		Long id = o.getId(sysEnv);
+		Long coId;
+		SDMSProxy co;
+
+		iv = getChildren(sysEnv, id);
+		for(i=0; i<iv.size(); i++) {
+			co = (SDMSProxy) iv.get(i);
+			SDMSPrivilege priv = co.getPrivileges(sysEnv);
+			if (!privCheck || priv.can(SDMSPrivilege.VIEW) || priv.can(SDMSPrivilege.CREATE_PARENT_CONTENT)) {
+				coId = co.getId(sysEnv);
+				if (checkValid(sysEnv, co) || checkChildren(sysEnv, co, privCheck))
+					return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean checkValid(SystemEnvironment sysEnv, SDMSProxy co)
