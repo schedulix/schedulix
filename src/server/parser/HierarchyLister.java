@@ -40,7 +40,7 @@ import de.independit.scheduler.server.parser.filter.*;
 public abstract class HierarchyLister
 {
 
-	public static final String __version = "@(#) $Id: HierarchyLister.java,v 2.11.2.1 2013/03/14 10:24:34 ronald Exp $";
+	public static final String __version = "@(#) $Id: HierarchyLister.java,v 2.11.2.3 2013/08/24 10:30:27 dieter Exp $";
 
 	Vector startpoint;
 	HashSet expandIds;

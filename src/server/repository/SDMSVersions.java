@@ -38,9 +38,9 @@ import de.independit.scheduler.server.util.*;
 public class SDMSVersions
 {
 
-	public final static String __version = "@(#) $Id: SDMSVersions.java,v 2.8.2.1 2013/03/14 10:25:27 ronald Exp $";
+	public final static String __version = "@(#) $Id: SDMSVersions.java,v 2.8.2.2 2013/07/30 07:49:09 dieter Exp $";
 
-	Vector	versions;
+	Vector	  versions;
 
 	LinkedList	o_v;
 

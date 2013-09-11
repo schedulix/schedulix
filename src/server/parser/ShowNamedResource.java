@@ -40,7 +40,7 @@ import de.independit.scheduler.server.output.*;
 public class ShowNamedResource extends ShowCommented
 {
 
-	public final static String __version = "@(#) $Id: ShowNamedResource.java,v 2.21.2.3 2013/06/18 09:49:36 ronald Exp $";
+	public final static String __version = "@(#) $Id: ShowNamedResource.java,v 2.21.2.4 2013/08/09 09:46:42 ronald Exp $";
 
 	private ObjectURL url;
 	HashSet expandIds;

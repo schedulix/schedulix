@@ -37,7 +37,7 @@ import de.independit.scheduler.server.exception.*;
 public class DropNamedResource extends Node
 {
 
-	public final static String __version = "@(#) $Id: DropNamedResource.java,v 2.7.14.2 2013/03/19 17:16:46 ronald Exp $";
+	public final static String __version = "@(#) $Id: DropNamedResource.java,v 2.7.14.3 2013/08/09 09:46:42 ronald Exp $";
 
 	private ObjectURL url;
 	private boolean cascade;
