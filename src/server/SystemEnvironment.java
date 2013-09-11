@@ -65,6 +65,7 @@ public class SystemEnvironment implements Cloneable
 	public static Server server;
 	public static SchedulingThread sched;
 	public static GarbageThread garb;
+	public static TriggerThread tt;
 	public static RenewTicketThread ticketThread;
 	public static TimerThread timer;
 	public static ThreadGroup utg;
@@ -107,6 +108,7 @@ public class SystemEnvironment implements Cloneable
 	public static int timerSuspendLimit;
 	public static int timerTimeout;
 	public static int gcWakeupInterval;
+	public static int ttWakeupInterval;
 	public static int triggerSoftLimit;
 	public static int triggerHardLimit;
 	public static int dbLoaders;
@@ -280,6 +282,7 @@ public class SystemEnvironment implements Cloneable
 		getExportVariables();
 		getScheduleWakeup();
 		getGCWakeup();
+		getTTWakeup();
 		getPriorityDelay();
 		getPriorityLB();
 		getSessionTimeout();
@@ -490,6 +493,14 @@ public class SystemEnvironment implements Cloneable
 		gcWakeupInterval = checkIntProperty(s_GCWakeupInterval, S_GCWAKEUP, 1, 240, 0,
 		                                    "Invalid wakeup interval for garbage collector : ");
 		props.setProperty(S_GCWAKEUP, "" + gcWakeupInterval);
+	}
+
+	private void getTTWakeup()
+	{
+		String s_TTWakeupInterval = props.getProperty(S_TTWAKEUP, "30");
+		ttWakeupInterval = checkIntProperty(s_TTWakeupInterval, S_TTWAKEUP, 10, 30, 0,
+		                                    "Invalid wakeup interval for trigger thread : ");
+		props.setProperty(S_TTWAKEUP, "" + ttWakeupInterval);
 	}
 
 	private void getPriorityDelay()

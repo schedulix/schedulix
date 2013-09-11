@@ -49,6 +49,7 @@ public class Server
 	private SchedulingThread wst;
 	private GarbageThread gst;
 	private TimerThread tt;
+	private TriggerThread trt;
 	private ThreadGroup wg;
 	private SyncFifo cmdQueue;
 	private SyncFifo roCmdQueue;
@@ -168,6 +169,18 @@ public class Server
 		gst.start();
 	}
 
+	private void initTT() throws SDMSException
+	{
+		trt = new TriggerThread(env, cmdQueue);
+		SystemEnvironment.tt = trt;
+	}
+
+	private void startTT() throws SDMSException
+	{
+		SDMSThread.doTrace(null, "Starting Trigger Thread", SDMSThread.SEVERITY_INFO);
+		trt.start();
+	}
+
 	private void initTimeScheduling() throws SDMSException
 	{
 		tt = new TimerThread(env, cmdQueue);
@@ -236,6 +249,12 @@ public class Server
 			if(wst.isAlive()) {
 				wst.do_stop();
 				SDMSThread.doTrace(null, "Stopped " + wst.toString(), SDMSThread.SEVERITY_INFO);
+			}
+		}
+		if(tt != null) {
+			if(tt.isAlive()) {
+				tt.do_stop();
+				SDMSThread.doTrace(null, "Stopped " + tt.toString(), SDMSThread.SEVERITY_INFO);
 			}
 		}
 		if(rtt != null) {
@@ -348,6 +367,7 @@ public class Server
 			initListener();
 			initScheduling();
 			initTimeScheduling();
+			initTT();
 			initGC();
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03202252202",
@@ -370,6 +390,12 @@ public class Server
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03206082124",
 			                          "Fatal exception while starting Time Scheduling:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+		}
+		try {
+			startTT();
+		} catch(SDMSException fe) {
+			SDMSThread.doTrace(null, (new SDMSMessage(env, "03407301455",
+			                          "Fatal exception while starting trigger thread:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
 		try {
 			startGC();
