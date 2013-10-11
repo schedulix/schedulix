@@ -1,68 +1,7 @@
 //
-// $Id: CmdLineScanner.jlex,v 2.4.6.1 2013/03/14 10:24:54 ronald Exp $
+// CmdLineScanner.jlex
 //
 // Copyright (C) 2002 topIT Informationstechnologie GmbH
-//
-// $Log: CmdLineScanner.jlex,v $
-// Revision 2.4.6.1  2013/03/14 10:24:54  ronald
-// Umstellung auf standard konforme package bezeichnungen
-//
-// Revision 2.4  2011/06/02 12:35:02  ronald
-// backslash doppelte quote wird nun richtig interpretiert
-//
-// Revision 2.3  2005/04/13 14:41:27  ronald
-// Fehler beim Quoten von Backslashes behoben
-//
-// Revision 2.2  2004/11/22 09:23:12  ronald
-// Eliminated compiler warnings
-//
-// Revision 2.1  2004/08/20 20:34:41  ronald
-// Bug entfernt (Server Abstuerz beim Parsen eines Commandlines mit newlines)
-// command separator wird nun auch richtig behandelt
-//
-// Revision 2.0  2004/04/19 15:25:40  ronald
-// Version 2.0 Started
-//
-// Revision 1.12  2004/02/29 14:15:47  ronald
-// Issue 255: Unbalanced Quote handling. The run command and rerun command
-// are now checked at create/alter time
-//
-// Revision 1.11  2004/02/28 07:32:16  ronald
-// Bug im "noprivcheck" handling behoben
-//
-// Revision 1.10  2003/02/09 19:21:22  ronald
-// Redesign of Trace System. Use SDMSThread.doTrace() now.
-//
-// Revision 1.9  2002/11/18 20:03:21  ronald
-// Issue 105: Dollars in der Commandline muessen escaped werden koennen
-//
-// Revision 1.8  2002/11/03 20:27:25  ronald
-// Auch backticks werden nun als (single) quotes betrachtet
-//
-// Revision 1.7  2002/10/22 00:10:48  ronald
-// Copyright Zeile ergaenzt
-//
-// Revision 1.6  2002/07/12 08:21:29  ronald
-// 1. versioned list & show
-// 2. letzte drittel kill
-// 3. Bug in alter job definition
-//
-// Revision 1.5  2002/07/09 13:50:13  ronald
-// Fehler im CmdLineParser (trailing spaces broke the parser)
-// Fehler in GetNextJob (If Job -> Error, delete from queue!)
-//
-// Revision 1.4  2002/06/17 20:41:40  ronald
-// Improved commandline parsing and parameter handling
-//
-// Revision 1.3  2002/05/29 10:37:12  bernhard
-// Minor changes to get rid of those annoying warnings
-//
-// Revision 1.2  2002/02/21 01:11:06  ronald
-// Syntax for tree copies, Parameters, Indexes for pg, pg int8-literal problem
-//
-// Revision 1.1  2002/02/03 20:55:32  ronald
-// Commandline Parser zugefuegt
-//
 //
 
 package de.independit.scheduler.server.parser.cmdline;

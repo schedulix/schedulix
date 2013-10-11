@@ -43,7 +43,6 @@ import de.independit.scheduler.server.timer.TimerUnit;
 public class SystemEnvironment implements Cloneable
 {
 
-	public final static String __version = "@(#) $Id: SystemEnvironment.java,v 2.49.2.6 2013/03/20 06:42:56 ronald Exp $";
 
 	public static final String S_OPEN         = "OPEN";
 	public static final String S_BASIC        = "BASIC";

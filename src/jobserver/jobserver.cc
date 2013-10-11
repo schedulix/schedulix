@@ -63,7 +63,7 @@ static void eval_args (const int argc, const char *const *const argv)
 	job.filnam = argv [2];
 }
 
-static char *const next_jobfile_entry (char *buf, char**const key, char**const value)
+static char *const next_jobfile_entry (char *buf, char* *const key, char* *const value)
 {
 	*key   = NULL;
 	*value = NULL;

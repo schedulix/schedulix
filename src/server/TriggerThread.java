@@ -42,7 +42,6 @@ import de.independit.scheduler.server.output.*;
 public class TriggerThread extends InternalSession
 {
 
-	public static final String __version = "@(#) $Id: TriggerThread.java,v 2.11.6.2 2013/09/11 10:03:43 ronald Exp $";
 
 	public final static String name = "TriggerThread";
 

@@ -30,6 +30,7 @@ import locale
 import time
 import re
 import threading
+import os
 
 try:
 	from M2Crypto import SSL
@@ -681,6 +682,69 @@ def sleep(s):
 
 def variant():
     return 'schedulix'
+
+def re_sub(pattern, replacement, text, count=0, flags=0):
+    return re.sub(pattern, replacement, text, count, flags)
+
+docs = [
+    {
+        'ICON' : 'pdficon_large.gif',
+        'TEXT' : variant() + '!Web Dokumentation',
+        'MODE' : 'DOC',
+        'FILE' : 'online_de.pdf',
+        'TYPE' : 'application/pdf',
+        'LANG' : 'de'
+    },
+    {
+        'ICON' : 'pdficon_large.gif',
+        'TEXT' : variant() + '!Web documentation',
+        'MODE' : 'DOC',
+        'FILE' : 'online_en.pdf',
+        'TYPE' : 'application/pdf',
+        'LANG' : 'en'
+    },
+    {
+        'ICON' : 'pdficon_large.gif',
+        'TEXT' : 'Beschreibung der ' + variant() + ' Kommandosprache',
+        'MODE' : 'DOC',
+        'FILE' : 'syntax_de.pdf',
+        'TYPE' : 'application/pdf',
+        'LANG' : 'de'
+    },
+#    {
+#        'ICON' : 'pdficon_large.gif',
+#        'TEXT' : variant() + ' Syntax documentation',
+#        'MODE' : 'DOC',
+#        'FILE' : 'syntax_en.pdf',
+#        'TYPE' : 'application/pdf',
+#        'LANG' : 'en'
+#    },
+    {
+        'ICON' : 'globe.jpg',
+        'TEXT' : variant() + ' Internet Biliothek',
+        'MODE' : 'URL',
+        'URL'  : 'http://www.independit.de/de/support/downloads',
+        'LANG' : 'de'
+    },
+    {
+        'ICON' : 'globe.jpg',
+        'TEXT' : variant() + ' Web Library',
+        'MODE' : 'URL',
+        'URL'  : 'http://www.independit.de/en/support/downloads',
+        'LANG' : 'en'
+    }
+]
+
+def getDocs():
+    return docs
+
+def readDoc(index):
+    doc = docs[index]
+    filename = os.environ['BICSUITEHOME'] + '/doc/' + doc['FILE']
+    f = open (filename, 'r')
+    data = f.read()
+    f.close()
+    return data
 
 # print SDMSCommand('localhost', 2506, 'DONALD', 'duck', 'create exit state definition xxx')
 # print SDMSCommand('localhost', 2506, 'DONALD', 'duck', 'rename exit state definition xxx to \'\'')

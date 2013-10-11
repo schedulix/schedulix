@@ -34,8 +34,6 @@ import java.net.*;
 public class HttpThread
 	extends Thread
 {
-	public static final String __version = "@(#) $Id: HttpThread.java,v 2.9.2.2 2013/05/23 08:02:15 ronald Exp $";
-
 	private static HttpThread httpThread = null;
 	private int port = 0;
 	private final Config cfg;
@@ -81,7 +79,7 @@ public class HttpThread
 		return true;
 	}
 
-	private String getFile(RandomAccessFile f, long limit, PrintWriter out)
+	private String getFile(RandomAccessFile f, long limit)
 	throws IOException
 	{
 		StringBuffer sb = new StringBuffer();
@@ -173,7 +171,7 @@ public class HttpThread
 
 					String s;
 					try {
-						s = getFile(f, limit, out);
+						s = getFile(f, limit);
 						if (s == null) {
 							printPreamble(out, 500, "Internal Server Error");
 							Trace.error("[HttpThread] ERROR: Internal error: getFile returned null");
