@@ -17,5 +17,25 @@ It can be obtained by doing a
 
 git clone https://github.org/schedulix/schedulix.git -b v2.5.1
 
+-------------------------------------------------------------------------------------------
+
+When upgrading from the stable 2.5.1 version to the current _unstable_ master branch,
+don't forget to upgrade the database schema (adapt these statements to the dialect of
+the dbms used):
+
+ALTER TABLE RESOURCE_REQUIREMENT
+ADD COLUMN STICKY_NAME VARCHAR(64) WITH NULL;
+
+ALTER TABLE RESOURCE_REQUIREMENT
+ADD COLUMN STICKY_PARENT DECIMAL(20) WITH NULL;
+
+ALTER TABLE RESOURCE_ALLOCATION
+ADD COLUMN STICKY_NAME VARCHAR(64) WITH NULL;
+
+ALTER TABLE RESOURCE_ALLOCATION
+ADD COLUMN STICKY_PARENT DECIMAL(20) WITH NULL;
+
+And create the new table MASTER_ALLOCATION (see sql directory)
+
 
 Happy Hacking :-)
