@@ -35,10 +35,11 @@ EXEC = $(SDMSHOME)/bin/scrolllog
 
 DISTRIB = $(EXEC)
 
-.PHONY: all subdirs distrib clean new
+.PHONY: all generate subdirs distrib clean new
 
 all: subdirs distrib
 
+generate:
 
 subdirs: commonsubdirs
 

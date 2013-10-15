@@ -58,11 +58,13 @@ LIB_FILE = $(LIB_PATH)/libBICsuite.so
 
 DISTRIB = $(BIN_FILE) $(LIB_FILE)
 
-.PHONY: all subdirs distrib clean new
+.PHONY: all generate subdirs distrib clean new
 
 all: subdirs distrib $(CLASSES)
 
 subdirs: commonsubdirs
+
+generate:
 
 distrib: $(DISTRIB)
 

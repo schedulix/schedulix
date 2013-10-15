@@ -32,6 +32,8 @@ SUBDIRS = .
 
 all: subdirs $(CLASSES)
 
+generate:
+
 new: clean all
 
 subdirs: commonsubdirs

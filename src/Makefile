@@ -35,7 +35,7 @@ COMPANY = $(shell grep 'static const char \*const company' jobserver/libcommon.c
 JAR_FILE = $(SDMSHOME)/lib/BICsuite.jar
 MANIFEST = /tmp/sdms.manifest
 
-all: prereq subdirs $(CLASSES) $(JAR_FILE)
+all: prereq generate subdirs $(CLASSES) $(JAR_FILE)
 
 new: clean all
 
@@ -53,6 +53,8 @@ prereq:
 			ln -s $(SDMSHOME)/src/$${fff} de/independit/scheduler/$${fff}; \
 		fi; \
 	done
+
+generate: commongensubdirs
 
 clean: commonclean
 	rm -f $(JAR_FILE) $(MANIFEST)

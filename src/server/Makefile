@@ -30,9 +30,11 @@ CLASSES = UserConnection.class ListenThread.class WorkerThread.class \
 
 SUBDIRS = parser util repository exception output dump timer
 
-all: subdirs $(CLASSES)
+all: generate subdirs $(CLASSES)
 
 new: clean all
+
+generate: commongensubdirs
 
 subdirs: commonsubdirs
 

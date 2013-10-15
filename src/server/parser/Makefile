@@ -129,7 +129,7 @@ all: generate subdirs $(BASECLASSES) $(NODECLASSES) $(HELPERCLASSES)
 
 new: clean all
 
-generate: Parser.java Scanner.java
+generate: commongensubdirs Parser.java Scanner.java
 
 subdirs: commonsubdirs
 

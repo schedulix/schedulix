@@ -57,6 +57,7 @@ GENTABLES = \
 	KillJob \
 	NamedEnvironment \
 	NamedResource \
+	MasterAllocation \
 	Member \
 	ObjectComment \
 	ParameterDefinition \
@@ -121,6 +122,8 @@ SUBDIRS = .
 all: subdirs $(GENPY) $(GENCLASSES) $(NOGENCLASSES) $(CLASSES)
 
 new: clean all
+
+generate: 
 
 subdirs: commonsubdirs
 

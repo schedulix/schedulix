@@ -30,6 +30,7 @@ all: subdirs $(CLASSES)
 
 new: clean all
 
+generate:
 
 subdirs: commonsubdirs
 

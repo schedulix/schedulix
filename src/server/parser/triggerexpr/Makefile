@@ -26,13 +26,17 @@ CLASSES = ExprParser.class ExprScanner.class
 
 SUBDIRS = .
 
-all: subdirs $(CLASSES) $(NODECLASSES)
+all: generate subdirs $(CLASSES) $(NODECLASSES)
 
 new: clean all
+
+generate: commongensubdirs ExprParser.java ExprScanner.java
 
 subdirs: commonsubdirs
 
 clean: commonclean
+	rm -f ExprParser.java ExprScanner.java y.output
+	rm -f *~
 
 include $(SDMSHOME)/src/Makefile.CommonRules
 

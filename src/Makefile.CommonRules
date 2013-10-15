@@ -56,6 +56,13 @@ commonclean:
 	done
 	rm -f *~ *.class 
 
+commongensubdirs:
+	@for DIR in $(SUBDIRS); do \
+		if [ $$DIR != "." ]; then \
+			$(MAKE) -$(MAKEFLAGS) -C $$DIR generate || exit; \
+		fi; \
+	done
+
 %.class: %.java
 	$(JAVAC) $(JAVAC_FLAGS) $< 
 
