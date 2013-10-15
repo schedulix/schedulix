@@ -1,0 +1,494 @@
+%{
+//
+// $Id: ExprParser.jay,v 1.8.14.1 2013/03/14 10:25:16 ronald Exp $
+//
+// Copyright (C) 2004 independIT Integrative Technologies GmbH
+//
+// $Log: ExprParser.jay,v $
+// Revision 1.8.14.1  2013/03/14 10:25:16  ronald
+// Umstellung auf standard konforme package bezeichnungen
+//
+// Revision 1.8  2007/12/04 10:57:38  ronald
+// Bugfixes and Trace Info
+//
+// Revision 1.7  2007/12/03 09:20:08  ronald
+// Small improvements. Start support for Datatype DATE. Version info
+//
+// Revision 1.6  2007/11/09 11:19:27  ronald
+// Doku verbesserungen
+// Conditional Resources
+//
+// Revision 1.5  2005/02/08 13:59:51  ronald
+// minor beautifying
+//
+// Revision 1.4  2004/10/06 06:51:38  ronald
+// WIP. Resource Variablen. Joblocal/Folderlocal Resources. Checkin wg. Abgleich
+//
+// Revision 1.3  2004/08/11 11:12:01  ronald
+// Variablen zugefuegt
+//
+// Revision 1.2  2004/07/23 09:32:49  ronald
+// #Issue 80: Expression Trigger. Einige grundsaetzliche Verbesserungen
+//
+// Revision 1.1  2004/07/14 21:27:59  ronald
+// Issue #80: Expression Trigger. Teil I Infrastruktur
+//
+//
+
+package de.independit.scheduler.server.parser.triggerexpr;
+
+import java.io.*;
+import java.util.*;
+import java.lang.*;
+import java.math.*;
+import java.text.*;
+import de.independit.scheduler.server.repository.*;
+import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.parser.*;
+import de.independit.scheduler.server.output.*;
+import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.server.*;
+
+public class ExprParser 
+{
+
+	private int stop = 0;
+	private SDMSSubmittedEntity sme = null;
+	private SDMSResource r = null;
+	private SDMSTrigger t = null;
+	private SDMSTriggerQueue tq = null;
+	private SystemEnvironment sysEnv = null;
+	private SDMSScope evalScope = null;
+	public boolean checkOnly = false;
+
+	// Names of Trigger Variables
+	public static final String S_TIMES_CHECKED = "TIMES_CHECKED";
+	public static final String S_TIMES_FIRED   = "TIMES_FIRED";
+
+	private static final String emptyString = "";
+
+%}
+
+%token <String>	STRING IDENTIFIER PARAMETER JPARAMETER RPARAMETER TPARAMETER
+%token <BigDecimal> NUMBER
+%token <Boolean> BOOLEAN
+%token EQ GT GE LT LE NE MATCHES NOMATCH
+%token DIV MINUS MOD PLUS TIMES
+%token ABS AND DATE FIELD INT LOWERCASE NOT OR ROUND SUBSTR STR TRIM UPPERCASE
+
+%type <ParseObject>	expression function literal
+%type <ParseObject>	operand term
+%type <Boolean>	booloperand boolterm boolexp
+%type <Integer>	addop multop comparison
+
+%start triggerexp
+
+%%
+triggerexp:						{ if(stop == 0) return new Boolean(true); }
+	|	boolexp					{ if(stop == 0) return($1); }
+
+boolexp:	boolterm				{ $$ = $1; }
+	|	boolexp OR boolterm			{ $$ = new Boolean($1.booleanValue() || $3.booleanValue()); }
+
+boolterm:	booloperand				{ $$ = $1; }
+	|	boolterm AND booloperand		{ $$ = new Boolean($1.booleanValue() && $3.booleanValue()); }
+
+booloperand:	'(' boolexp ')'				{ $$ = $2; }
+	|	NOT booloperand				{ $$ = new Boolean(! $2.booleanValue()); }
+	|	expression comparison expression	{ $$ = $1.compare($3, $2, checkOnly); }
+	|	BOOLEAN					{ $$ = $1; }
+
+expression:	term					{ $$ = $1; }
+	|	expression addop term			{ $$ = $1.add($3, $2, checkOnly); }
+
+term:		operand					{ $$ = $1; }
+	|	term multop operand			{ $$ = $1.mult($3, $2, checkOnly); }
+
+addop:		PLUS					{ $$ = new Integer(PLUS); }
+	|	MINUS					{ $$ = new Integer(MINUS); }
+
+multop:		TIMES					{ $$ = new Integer(TIMES); }
+	|	DIV					{ $$ = new Integer(DIV); }
+	|	MOD					{ $$ = new Integer(MOD); }
+
+comparison:	GT					{ $$ = new Integer(GT); }
+	|	GE					{ $$ = new Integer(GE); }
+	|	LT					{ $$ = new Integer(LT); }
+	|	LE					{ $$ = new Integer(LE); }
+	|	EQ					{ $$ = new Integer(EQ); }
+	|	NE					{ $$ = new Integer(NE); }
+	|	MATCHES					{ $$ = new Integer(MATCHES); }
+	|	NOMATCH					{ $$ = new Integer(NOMATCH); }
+
+operand:	'(' expression ')'			{ $$ = $2; }
+	|	addop operand				{ $$ = $2.changeSign($1, checkOnly); }
+	|	PARAMETER				{ $$ = resolve($1, PARAMETER); }
+	|	JPARAMETER				{ $$ = resolve($1, JPARAMETER); }
+	|	RPARAMETER				{ $$ = resolve($1, RPARAMETER); }
+	|	TPARAMETER				{ $$ = resolve($1, TPARAMETER); }
+	|	literal					{ $$ = $1; }
+	|	function				{ $$ = $1; }
+
+function:	ABS '(' expression ')'							{ $$ = $3.abs(checkOnly); }
+	|	INT '(' expression ')'							{ $$ = $3.to_int(checkOnly); }
+	|	DATE '(' expression ',' expression ')'					{ $$ = $3.to_date($5, checkOnly); }
+	|	FIELD '(' IDENTIFIER ')'						{ $$ = field(new ParseObject($3)); }
+	|	LOWERCASE '(' expression ')'						{ $$ = $3.lowercase(checkOnly); }
+	|	ROUND '(' expression ')'						{ $$ = $3.round(checkOnly); }
+	|	STR '(' expression ')'							{ $$ = $3.adjust(ParseObject.STRING, checkOnly); }
+	|	SUBSTR '(' expression ',' expression ',' expression ')'			{ $$ = $3.substr($5, $7, checkOnly); }
+	|	SUBSTR '(' expression ',' expression ')'				{ $$ = $3.substr($5, null, checkOnly); }
+	|	TRIM '(' expression ')'							{ $$ = $3.trim(checkOnly); }
+	|	UPPERCASE '(' expression ')'						{ $$ = $3.uppercase(checkOnly); }
+
+literal:	NUMBER									{ $$ = new ParseObject($1); }
+	|	STRING									{ $$ = new ParseObject($1); }
+%%
+
+private ParseObject field(ParseObject o)
+{
+	if(checkOnly) return new ParseObject(o);
+	return o;
+}
+
+private ParseObject resolve(String o, int type)
+	throws SDMSException
+{
+	if(checkOnly) return new ParseObject(emptyString);
+	String p = emptyString;
+	switch (type) {
+		case JPARAMETER:
+			p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
+			break;
+		case RPARAMETER:
+			if (r != null)
+				p = r.getVariableValue(sysEnv, o);
+			break;
+		case TPARAMETER:
+			p = resolveTriggerVariable(o);
+			if (p == null) p = emptyString;
+			break;
+		case PARAMETER:
+			p = resolveTriggerVariable(o);
+			if(p != null) return new ParseObject(p);
+			if(sme != null)
+				p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
+			else
+				if (r != null)
+					p = r.getVariableValue(sysEnv, o);
+				else
+					p = emptyString;
+			break;
+	}
+	return new ParseObject(p);
+}
+
+public void set(SystemEnvironment env, SDMSSubmittedEntity sme, SDMSResource rs, SDMSTrigger tr, SDMSTriggerQueue trq, SDMSScope s)
+{
+	this.sysEnv = env;
+	this.sme = sme;
+	this.r = rs;
+	this.t = tr;
+	this.tq = trq;
+	this.evalScope = s;
+}
+
+public String resolveTriggerVariable(String key)
+{
+	if(tq == null) return null;
+	try {
+		if(key.equals(S_TIMES_CHECKED)) {
+			return tq.getTimesChecked(sysEnv).toString();
+		}
+		if(key.equals(S_TIMES_FIRED)) {
+			return tq.getTimesTriggered(sysEnv).toString();
+		}
+	} catch(SDMSException e) { /* ignore */ }
+	return null;
+}
+
+}
+
+class ParseObject {
+
+	private BigDecimal number;
+	private String     string;
+
+	private int type;
+
+	public static final int VOID   = 0;
+	public static final int STRING = 1;
+	public static final int NUMBER = 2;
+	public static final int DATE   = 3;
+
+	public static final BigDecimal one = new BigDecimal("1");
+
+
+	public ParseObject()
+	{
+		type = VOID;
+		number = null;
+		string = null;
+	}
+
+	public ParseObject(Object o)
+	{
+		if(o instanceof BigDecimal) {
+			type = NUMBER;
+			number = (BigDecimal) o;
+			string = null;
+		} else
+		if(o instanceof String) {
+			type = STRING;
+			string = (String) o;
+			number = null;
+		} else
+		if(o.getClass().getName().endsWith("Something date like")) {
+			type = DATE;
+			string = null;
+			number = null;
+		} else {
+			// Error
+			System.err.println("Fatal Exception! Unexpected Object: " + o.toString() + "\n");
+			System.exit(1);
+		}
+	}
+
+	public ParseObject(String s)
+	{
+		type = STRING;
+		string = s;
+		number = null;
+	}
+
+	public ParseObject(BigDecimal d)
+	{
+		type = NUMBER;
+		number = d;
+		string = null;
+	}
+
+	public ParseObject(ParseObject p)
+	{
+		type = p.type;
+		number = p.number;
+		string = p.string;
+	}
+
+	public ParseObject adjust(ParseObject po, boolean checkOnly)
+	{
+		return adjust(po.type, checkOnly);
+	}
+
+	public ParseObject adjust(int t, boolean checkOnly)
+	{
+		if(checkOnly) return new ParseObject();
+		if(type == t) return new ParseObject(this);
+		ParseObject rc = new ParseObject();
+		switch(t) {
+			case STRING:
+				rc.type = STRING;
+				rc.number = null;
+				if(type == NUMBER)	rc.string = number.toString();
+				if(type == VOID)	rc.string = new String();
+				break;
+			case NUMBER:
+				rc.type = NUMBER;
+				rc.string = null;
+				if(type == STRING)	rc.number = new BigDecimal(string);
+				if(type == VOID)	rc.number = new BigDecimal("0");
+				break;
+		}
+		return rc;
+	}
+
+	public ParseObject mult(ParseObject o2, Integer s, boolean checkOnly)
+	{
+		if(checkOnly) return new ParseObject();
+		int operator = s.intValue();
+		ParseObject op1 = adjust(ParseObject.NUMBER, checkOnly);
+		ParseObject op2 = o2.adjust(ParseObject.NUMBER, checkOnly);
+		switch(operator) {
+			case ExprParser.DIV:	op1.number = op1.number.divide(op2.number, BigDecimal.ROUND_HALF_UP); break;
+			case ExprParser.TIMES:	op1.number = op1.number.multiply(op2.number); break;
+			case ExprParser.MOD:
+				BigInteger n1 = op1.number.toBigInteger();
+				BigInteger n2 = op2.number.toBigInteger();
+				op1.number= new BigDecimal(n1.mod(n2));
+				break;
+		}
+		return op1;
+	}
+
+	public ParseObject add(ParseObject o2, Integer s, boolean checkOnly)
+	{
+		if(checkOnly) return new ParseObject();
+		int operator = s.intValue();
+		if(type == STRING && operator == ExprParser.PLUS) {
+			ParseObject str = o2.adjust(STRING, checkOnly);
+			str.string = string + str.string;
+			return str;
+		}
+		ParseObject op1 = adjust(NUMBER, checkOnly);
+		ParseObject op2 = o2.adjust(NUMBER, checkOnly);
+		switch(operator) {
+			case ExprParser.PLUS:	op1.number = op1.number.add(op2.number); break;
+			case ExprParser.MINUS:	op1.number = op1.number.add(op2.number.negate()); break;
+		}
+		return op1;
+	}
+
+	public int compareTo(ParseObject o2, boolean checkOnly)
+	{
+		ParseObject op2 = o2.adjust(type, checkOnly);
+		int val = 0;
+		switch(type) {
+			case NUMBER: val = number.compareTo(op2.number); break;
+			case STRING: val = string.compareTo(op2.string); break;
+		}
+		return val;
+	}
+
+	public Boolean compare(ParseObject o2, Integer s, boolean checkOnly)
+	{
+		if(checkOnly) return Boolean.TRUE;
+		int operator = s.intValue();
+		if(operator == ExprParser.MATCHES || operator == ExprParser.NOMATCH) {
+			ParseObject op1 = adjust(STRING, checkOnly);
+			ParseObject op2 = o2.adjust(STRING, checkOnly);
+			if(operator == ExprParser.MATCHES && op1.string.matches(op2.string)) return Boolean.TRUE;
+			if(operator == ExprParser.NOMATCH && !op1.string.matches(op2.string)) return Boolean.TRUE;
+			return Boolean.FALSE;
+		} else {
+			int val = compareTo(o2, checkOnly);
+			switch(operator) {
+				case ExprParser.EQ:	return new Boolean(val == 0);
+				case ExprParser.GE:	return new Boolean(val >= 0);
+				case ExprParser.GT:	return new Boolean(val > 0);
+				case ExprParser.LE:	return new Boolean(val <= 0);
+				case ExprParser.LT:	return new Boolean(val < 0);
+				case ExprParser.NE:	return new Boolean(val != 0);
+			}
+		}
+		return Boolean.TRUE;
+	}
+
+	public ParseObject changeSign(Integer s, boolean checkOnly)
+	{
+		if(checkOnly) return new ParseObject();
+		int operator = s.intValue();
+		ParseObject retval = adjust(ParseObject.NUMBER, checkOnly);
+		switch(operator) {
+			case ExprParser.PLUS:
+				// do nothing
+				break;
+			case ExprParser.MINUS:
+				retval.number = retval.number.negate();
+				break;
+		}
+		return retval;
+	}
+
+	public ParseObject to_int(boolean checkOnly)
+	{
+		if(checkOnly) return new ParseObject();
+		ParseObject retval = adjust(ParseObject.NUMBER, checkOnly);
+		retval.number = new BigDecimal(retval.number.toBigInteger());
+		return retval;
+	}
+
+	public ParseObject to_date(ParseObject format, boolean checkOnly)
+	{
+		if(checkOnly) return new ParseObject();
+		if(type == NUMBER) return this.to_int(false);
+		if(type == VOID) return this;
+		ParseObject retval;
+		if(format.type == STRING) {
+			try {
+				SimpleDateFormat sdf;
+				if (format.string != null)
+					sdf = new SimpleDateFormat(format.string);
+				else 
+					sdf = (SimpleDateFormat) SystemEnvironment.staticSystemDateFormat.clone();
+				Date d = sdf.parse(this.string);
+				retval = new ParseObject(new BigDecimal(d.getTime()));
+			} catch (ParseException pe) {
+				retval = new ParseObject(new BigDecimal(0));
+			}
+		} else {
+			retval = new ParseObject(new BigDecimal(0));
+		}
+		return retval;
+	}
+
+	public ParseObject abs(boolean checkOnly)
+	{
+		if(checkOnly) return new ParseObject();
+		ParseObject retval = adjust(ParseObject.NUMBER, checkOnly);
+		retval.number = retval.number.abs();
+		return retval;
+	}
+
+	public ParseObject round(boolean checkOnly)
+	{
+		if(checkOnly) return new ParseObject();
+		ParseObject retval = adjust(ParseObject.NUMBER, checkOnly);
+		retval.number = retval.number.divide(one, BigDecimal.ROUND_HALF_UP);
+		return retval;
+	}
+
+	public ParseObject substr(ParseObject v, ParseObject b, boolean checkOnly)
+	{
+		if(checkOnly) return new ParseObject();
+		ParseObject retval = adjust(STRING, checkOnly);
+		int von = v.adjust(NUMBER, checkOnly).number.intValue();
+		if(b != null) {
+			int bis = b.adjust(NUMBER, checkOnly).number.intValue();
+			retval.string = retval.string.substring(von, bis);
+		} else {
+			retval.string = retval.string.substring(von);
+		}
+		return retval;
+	}
+
+	public ParseObject trim(boolean checkOnly)
+	{
+		if(checkOnly) return new ParseObject();
+		ParseObject retval = adjust(STRING, checkOnly);
+		retval.string = retval.string.trim();
+		return retval;
+	}
+
+	public ParseObject uppercase(boolean checkOnly)
+	{
+		if(checkOnly) return new ParseObject();
+		ParseObject retval = adjust(STRING, checkOnly);
+		retval.string = retval.string.toUpperCase();
+		return retval;
+	}
+
+	public ParseObject lowercase(boolean checkOnly)
+	{
+		if(checkOnly) return new ParseObject();
+		ParseObject retval = adjust(STRING, checkOnly);
+		retval.string = retval.string.toLowerCase();
+		return retval;
+	}
+}
+
+/*
+class DateParser {
+
+	// Special Characters
+	//
+	// DD   = day numeric (01 - 31)
+	// MM   = month numeric (01 - 12)
+	// YY   = year numeric (00 - 99) Values > 70 count as 19YY
+	// YYYY = year numeric (1970 - 9999)
+	// hh   = hour numeric (00 - 23)
+	// mm   = minute numeric (00 - 59)
+	// ss   = second numeric (00 - 59)
+	// ddd  = name of day (is ignored, any 3 character string is accepted)
+	//
+}
+*/

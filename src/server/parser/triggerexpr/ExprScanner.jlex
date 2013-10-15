@@ -1,0 +1,216 @@
+//
+// $Id: ExprScanner.jlex,v 1.4.18.1 2013/03/14 10:25:16 ronald Exp $
+//
+// Copyright (C) 2004 independIT Integrative Technologies GmbH
+//
+// $Log: ExprScanner.jlex,v $
+// Revision 1.4.18.1  2013/03/14 10:25:16  ronald
+// Umstellung auf standard konforme package bezeichnungen
+//
+// Revision 1.4  2004/11/22 09:23:12  ronald
+// Eliminated compiler warnings
+//
+// Revision 1.3  2004/10/06 06:51:38  ronald
+// WIP. Resource Variablen. Joblocal/Folderlocal Resources. Checkin wg. Abgleich
+//
+// Revision 1.2  2004/07/23 09:32:49  ronald
+// #Issue 80: Expression Trigger. Einige grundsaetzliche Verbesserungen
+//
+// Revision 1.1  2004/07/14 21:27:59  ronald
+// Issue #80: Expression Trigger. Teil I Infrastruktur
+//
+//
+
+package de.independit.scheduler.server.parser.triggerexpr;
+
+import java.io.*;
+import java.math.*;
+import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.server.exception.*;
+
+%%
+
+%public
+%class ExprScanner
+%implements de.independit.scheduler.server.parser.triggerexpr.ExprParser.yyInput
+%type int
+%yyeof
+%integer
+
+%line
+%full
+
+%{
+private static boolean debug = false;
+
+public int yyline()
+{
+	return yyline + 1;
+}
+
+private int token;
+private Object value;
+private boolean eofProhibited = false;
+
+/** move to next token
+    @return false if positioned beyond tokens (EOF)
+    @throws IOException on input error
+*/
+public boolean advance() throws 
+	java.io.IOException, CommonErrorException
+{
+	token = yylex();
+	if(debug) SDMSThread.doTrace(null, "Token : " + token + "\n", SDMSThread.SEVERITY_DEBUG);
+	return (token != YYEOF);
+}
+
+private void proto(String s)
+{
+	if(debug) System.out.println(s + "( " + yytext() + " )");
+}
+
+/** classifies current token
+    should not be called if advance() returned false
+    @return current %token or single character
+*/
+public int token()
+{
+	return token;
+}
+
+/** associated with current token
+    should not be called after advance() returned false.
+    @return value for token();
+*/
+public Object value() 
+{
+	return value;
+}
+%}
+
+// Note: This definition of identifiers conforms to the definition in Parser.jay/Scanner.jlex
+alpha	=	[a-zA-Z_#@]
+alnum	=	[a-zA-Z_0-9#@]
+ws	=	[ \t\n\r\b\015]+
+true	=	[Tt][Rr][Uu][Ee]
+false	=	[Ff][Aa][Ll][Ss][Ee]
+number	=	[0-9]+(\.[0-9]*)?([eE][-+][0-9]{1,3})?
+eq	=	"=="
+ge	=	">="
+gt	=	">"
+le	=	"<="
+lt	=	"<"
+ne	=	"!="
+matches	=	"=~"
+nomatch	=	"!~"
+div	=	"/"
+minus	=	"-"
+mod	=	"%"
+plus	=	\+
+times	=	\*
+abs	=	[Aa][Bb][Ss]
+and	=	[Aa][Nn][Dd]
+date	=	[Dd][Aa][Tt][Ee]
+field	=	[Ff][Ii][Ee][Ll][Dd]
+int	=	[Ii][Nn][Tt]
+or	=	[Oo][Rr]
+round	=	[Rr][Oo][Uu][Nn][Dd]
+str	=	[Ss][Tt][Rr]
+substr	=	[Ss][Uu][Bb][Ss][Tt][Rr]
+trim	=	[Tt][Rr][Ii][Mm]
+uppercase =	[Uu][Pp][Pp][Ee][Rr][Cc][Aa][Ss][Ee]
+lowercase =	[Ll][Oo][Ww][Ee][Rr][Cc][Aa][Ss][Ee]
+not	=	[Nn][Oo][Tt]
+job     =	[Jj][Oo][Bb]
+resource =	[Rr][Ee][Ss][Oo][Uu][Rr][Cc][Ee]
+trigger =	[Tt][Rr][Ii][Gg][Gg][Ee][Rr]
+identifier =	{alpha}{alnum}*
+
+%state	DQSTRING
+%%
+
+//------------------------------------------------------------------------------------------
+// Normal Environment, Variables are evaluated, Whitespace is discarded
+//
+
+<YYINITIAL>{ws}			{ proto("WS "); break; }
+<YYINITIAL>\"			{ proto("DQSTRING_START ");	value = new String(); yybegin(DQSTRING); break; }
+<YYINITIAL>{true}		{ proto("TRUE ");	value = Boolean.TRUE;	return ExprParser.BOOLEAN; }
+<YYINITIAL>{false}		{ proto("FALSE ");	value = Boolean.FALSE;	return ExprParser.BOOLEAN; }
+<YYINITIAL>{eq}			{ proto("== ");			return ExprParser.EQ; }
+<YYINITIAL>{ge}			{ proto(">= ");			return ExprParser.GE; }
+<YYINITIAL>{gt}			{ proto("> ");			return ExprParser.GT; }
+<YYINITIAL>{le}			{ proto("<= ");			return ExprParser.LE; }
+<YYINITIAL>{lt}			{ proto("< ");			return ExprParser.LT; }
+<YYINITIAL>{ne}			{ proto("!= ");			return ExprParser.NE; }
+<YYINITIAL>{matches}		{ proto("=~ ");			return ExprParser.MATCHES; }
+<YYINITIAL>{nomatch}		{ proto("!~ ");			return ExprParser.NOMATCH; }
+<YYINITIAL>{div}		{ proto("/ ");			return ExprParser.DIV; }
+<YYINITIAL>{minus}		{ proto("- ");			return ExprParser.MINUS; }
+<YYINITIAL>{mod}		{ proto("% ");			return ExprParser.MOD; }
+<YYINITIAL>{plus}		{ proto("+ ");			return ExprParser.PLUS; }
+<YYINITIAL>{times}		{ proto("* ");			return ExprParser.TIMES; }
+<YYINITIAL>{abs}		{ proto("ABS ");		return ExprParser.ABS; }
+<YYINITIAL>{and}		{ proto("AND ");		return ExprParser.AND; }
+<YYINITIAL>{date}		{ proto("DATE ");		return ExprParser.DATE; }
+<YYINITIAL>{field}		{ proto("FIELD ");		return ExprParser.FIELD; }
+<YYINITIAL>{int}		{ proto("INT ");		return ExprParser.INT; }
+<YYINITIAL>{lowercase}		{ proto("LOWERCASE ");		return ExprParser.LOWERCASE; }
+<YYINITIAL>{number}		{ proto("NUMBER ");	value = new BigDecimal(yytext());	return ExprParser.NUMBER; }
+<YYINITIAL>{not}		{ proto("NOT ");		return ExprParser.NOT; }
+<YYINITIAL>{or}			{ proto("OR ");			return ExprParser.OR; }
+<YYINITIAL>{round}		{ proto("ROUND ");		return ExprParser.ROUND; }
+<YYINITIAL>{str}		{ proto("STR ");		return ExprParser.STR; }
+<YYINITIAL>{substr}		{ proto("SUBSTR ");		return ExprParser.SUBSTR; }
+<YYINITIAL>{trim}		{ proto("TRIM ");		return ExprParser.TRIM; }
+<YYINITIAL>{uppercase}		{ proto("UPPERCASE ");		return ExprParser.UPPERCASE; }
+<YYINITIAL>\${identifier}	{ 
+					proto("PARAM ");
+					value = (yytext().substring(1)).toUpperCase(); 
+					return ExprParser.PARAMETER;
+				}
+<YYINITIAL>\$\{{identifier}\}	{ 
+					proto("PARAM ");
+					value = yytext().substring(2, yytext().length() - 1); 
+					return ExprParser.PARAMETER;
+				}
+<YYINITIAL>\${job}\.{identifier}	{ 
+					proto("PARAM ");
+					value = (yytext().substring(5)).toUpperCase(); /* the name is after "job.", which has length 4 */
+					return ExprParser.JPARAMETER;
+				}
+<YYINITIAL>\$\{{job}\.{identifier}\}	{ 
+					proto("PARAM ");
+					value = yytext().substring(2+4, yytext().length() - 1); 
+					return ExprParser.JPARAMETER;
+				}
+<YYINITIAL>\${resource}\.{identifier}	{ 
+					proto("PARAM ");
+					value = (yytext().substring(10)).toUpperCase(); 
+					return ExprParser.RPARAMETER;
+				}
+<YYINITIAL>\$\{{resource}\.{identifier}\}	{ 
+					proto("PARAM ");
+					value = yytext().substring(2 + 9, yytext().length() - 1); 
+					return ExprParser.RPARAMETER;
+				}
+<YYINITIAL>\${trigger}\.{identifier}	{ 
+					proto("PARAM ");
+					value = (yytext().substring(9)).toUpperCase(); 
+					return ExprParser.TPARAMETER;
+				}
+<YYINITIAL>\$\{{trigger}\.{identifier}\}	{ 
+					proto("PARAM ");
+					value = yytext().substring(2+8, yytext().length() - 1); 
+					return ExprParser.TPARAMETER;
+				}
+
+<YYINITIAL>.			{ proto("CHAR ");		return yytext().charAt(0); }
+<DQSTRING>\"			{ proto("DQSTRING_END ");	yybegin(YYINITIAL); return ExprParser.STRING; }
+<DQSTRING>\\\"			{ proto("\\\" ");		value = value + yytext(); break; }
+<DQSTRING>.			{ proto("CHAR ");		value = value + yytext(); break; }
+
+
+//
+// End of File
+//
