@@ -50,6 +50,7 @@ source mysql_gen/INTERVALL.sql
 source mysql_gen/INTERVAL_HIERARCHY.sql
 source mysql_gen/INTERVAL_SELECTION.sql
 source mysql_gen/KILL_JOB.sql
+source mysql_gen/MASTER_ALLOCATION.sql
 source mysql_gen/MEMBER.sql
 source mysql_gen/NAMED_ENVIRONMENT.sql
 source mysql_gen/NAMED_RESOURCE.sql

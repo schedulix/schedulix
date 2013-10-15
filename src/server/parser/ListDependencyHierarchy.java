@@ -123,6 +123,28 @@ public class ListDependencyHierarchy
 		return se.pathString (sysEnv);
 	}
 
+	private String getSmePathString (final SystemEnvironment sysEnv, final Long smeId, long version)
+	throws SDMSException
+	{
+		if (smeId == null)
+			return null;
+
+		Long seId;
+		long actVersion = version;
+		try {
+			final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject (sysEnv, smeId);
+			seId = sme.getSeId (sysEnv);
+			actVersion = sme.getSeVersion(sysEnv).longValue();
+		} catch (NotFoundException nfe) {
+
+			seId = smeId;
+		}
+
+		final SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject (sysEnv, seId, actVersion);
+
+		return se.pathString (sysEnv);
+	}
+
 	private String getSmePathString (final SystemEnvironment sysEnv, final Long smeId)
 	throws SDMSException
 	{
@@ -130,11 +152,8 @@ public class ListDependencyHierarchy
 			return null;
 
 		final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject (sysEnv, smeId);
-
 		final Long seId = sme.getSeId (sysEnv);
-
-		final long actVersion = sme.getSeVersion(sysEnv).longValue();
-
+		final Long actVersion = sme.getSeVersion(sysEnv).longValue();
 		final SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject (sysEnv, seId, actVersion);
 
 		return se.pathString (sysEnv);
@@ -175,11 +194,19 @@ public class ListDependencyHierarchy
 
 				final Long ReqSmeId = di.getRequiredId (env);
 
-				final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject (env, ReqSmeId);
+				Long seId = null;
+				long version;
 
-				final long version = sme.getSeVersion(env).longValue();
+				try {
+					final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject (env, ReqSmeId);
+					version = sme.getSeVersion(env).longValue();
+					seId = sme.getSeId (env);
+				} catch (NotFoundException nfe) {
 
-				final Long seId = sme.getSeId (env);
+					final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject (env, di.getDependentId (env));
+					version = sme.getSeVersion(env).longValue();
+					seId = ReqSmeId;
+				}
 
 				final SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject (env, seId, version);
 
@@ -227,6 +254,7 @@ public class ListDependencyHierarchy
 	private final void render_deps (SystemEnvironment sysEnv, Long smeId, String depPath, SDMSOutputContainer table, HashSet visitedHash)
 	throws SDMSException
 	{
+		final String empty = "";
 		final Vector deps = SDMSDependencyInstanceTable.idx_dependentId.getVector (sysEnv, smeId);
 
 		Collections.sort (deps, new depsComp (sysEnv));
@@ -237,23 +265,43 @@ public class ListDependencyHierarchy
 			final Long diDepSmeId = di.getDependentId (sysEnv);
 			final Long diReqSmeId = di.getRequiredId (sysEnv);
 
-			final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject (sysEnv, diReqSmeId);
-			final Long parentId = sme.getParentId (sysEnv);
+			SDMSSubmittedEntity sme;
+			try {
+				sme = SDMSSubmittedEntityTable.getObject (sysEnv, diReqSmeId);
+			} catch (NotFoundException nfe) {
 
-			final long actVersion = sme.getSeVersion(sysEnv).longValue();
+				sme = null;
+			}
 
-			final Long seId = sme.getSeId (sysEnv);
+			Long seId;
+			long actVersion;
+			Long parentId = null;
+			final SDMSSubmittedEntity depSme = SDMSSubmittedEntityTable.getObject (sysEnv, diDepSmeId);
+
+			if (sme != null) {
+				parentId = sme.getParentId (sysEnv);
+				actVersion = sme.getSeVersion(sysEnv).longValue();
+				seId = sme.getSeId (sysEnv);
+			} else {
+
+				actVersion = depSme.getSeVersion(sysEnv).longValue();
+				seId = diReqSmeId;
+			}
 
 			final SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject (sysEnv, seId, actVersion);
 
-			final String path = depPath + ";" + sme.getSubmitPathString(sysEnv);
+			String path = depPath + ";";
+			if (sme != null)
+				path = path + sme.getSubmitPathString(sysEnv);
+			else
+				path = path + se.pathString(sysEnv);
 
 			final Long ddId = di.getDdId (sysEnv);
 
 			final SDMSDependencyDefinition dd = SDMSDependencyDefinitionTable.getObject (sysEnv, ddId, actVersion);
 			final Long ddDepSeId = dd.getSeDependentId (sysEnv);
 			final Long ddReqSeId = dd.getSeRequiredId (sysEnv);
-			final boolean visited = visitedHash.contains(sme.getId(sysEnv));
+			final boolean visited = visitedHash.contains(seId);
 
 			final Vector row = new Vector();
 
@@ -262,7 +310,7 @@ public class ListDependencyHierarchy
 			row.add (diDepSmeId);
 			row.add (getSmePathString (sysEnv, diDepSmeId));
 			row.add (diReqSmeId);
-			row.add (getSmePathString (sysEnv, diReqSmeId));
+			row.add (getSmePathString (sysEnv, diReqSmeId, actVersion));
 			row.add (di.getStateAsString (sysEnv));
 			row.add (path);
 			row.add (ddDepSeId);
@@ -273,84 +321,154 @@ public class ListDependencyHierarchy
 			row.add (dd.getUnresolvedHandlingAsString (sysEnv));
 			row.add (dd.getModeAsString (sysEnv));
 			row.add (dd.getStateSelectionAsString (sysEnv));
-			row.add (sme.getMasterId (sysEnv));
+			row.add (depSme.getMasterId (sysEnv));
 			row.add (se.getTypeAsString (sysEnv));
-			row.add (parentId);
-			row.add (getSmePathString (sysEnv, parentId));
-			row.add (asOwnerString (sysEnv, sme.getOwnerId (sysEnv)));
-			row.add (asScopeString (sysEnv, sme.getScopeId (sysEnv)));
-			row.add (sme.getExitCode (sysEnv));
-			row.add (sme.getPid (sysEnv));
-			row.add (sme.getExtPid (sysEnv));
-			row.add (sme.getStateAsString (sysEnv));
-			row.add (asEsdString (sysEnv, sme.getJobEsdId (sysEnv), actVersion));
-			row.add (asEsdString (sysEnv, sme.getFinalEsdId (sysEnv), actVersion));
-			row.add (sme.getJobIsFinal (sysEnv));
-			row.add (visited ? new Long(0) : cntRequired (sysEnv, sme));
-			row.add (sme.getCntRestartable (sysEnv));
-			row.add (sme.getCntSubmitted (sysEnv));
-			row.add (sme.getCntDependencyWait (sysEnv));
-			row.add (sme.getCntResourceWait (sysEnv));
-			row.add (sme.getCntRunnable (sysEnv));
-			row.add (sme.getCntStarting (sysEnv));
-			row.add (sme.getCntStarted (sysEnv));
-			row.add (sme.getCntRunning (sysEnv));
-			row.add (sme.getCntToKill (sysEnv));
-			row.add (sme.getCntKilled (sysEnv));
-			row.add (sme.getCntCancelled (sysEnv));
-			row.add (sme.getCntFinal (sysEnv));
-			row.add (sme.getCntBrokenActive (sysEnv));
-			row.add (sme.getCntBrokenFinished (sysEnv));
-			row.add (sme.getCntError (sysEnv));
-			row.add (sme.getCntSynchronizeWait (sysEnv));
-			row.add (sme.getCntFinished (sysEnv));
-			row.add (asTimestamp (sysEnv, sme.getSubmitTs (sysEnv)));
-			row.add (asTimestamp (sysEnv, sme.getSyncTs (sysEnv)));
-			row.add (asTimestamp (sysEnv, sme.getResourceTs (sysEnv)));
-			row.add (asTimestamp (sysEnv, sme.getRunnableTs (sysEnv)));
-			row.add (asTimestamp (sysEnv, sme.getStartTs (sysEnv)));
-			row.add (asTimestamp (sysEnv, sme.getFinishTs (sysEnv)));
-			row.add (asTimestamp (sysEnv, sme.getFinalTs (sysEnv)));
-			row.add (sme.getErrorMsg (sysEnv));
-			row.add (di.getDependentIdOrig (sysEnv));
-			row.add (di.getDependencyOperationAsString (sysEnv));
-			row.add (sme.getChildTag (sysEnv));
+			if (sme != null) {
+				row.add (parentId);
+				row.add (getSmePathString (sysEnv, parentId));
+				row.add (asOwnerString (sysEnv, sme.getOwnerId (sysEnv)));
+				row.add (asScopeString (sysEnv, sme.getScopeId (sysEnv)));
+				row.add (sme.getExitCode (sysEnv));
+				row.add (sme.getPid (sysEnv));
+				row.add (sme.getExtPid (sysEnv));
+				row.add (sme.getStateAsString (sysEnv));
+				row.add (asEsdString (sysEnv, sme.getJobEsdId (sysEnv), actVersion));
+				row.add (asEsdString (sysEnv, sme.getFinalEsdId (sysEnv), actVersion));
+				row.add (sme.getJobIsFinal (sysEnv));
+				row.add (visited ? new Long(0) : cntRequired (sysEnv, sme));
+				row.add (sme.getCntRestartable (sysEnv));
+				row.add (sme.getCntSubmitted (sysEnv));
+				row.add (sme.getCntDependencyWait (sysEnv));
+				row.add (sme.getCntResourceWait (sysEnv));
+				row.add (sme.getCntRunnable (sysEnv));
+				row.add (sme.getCntStarting (sysEnv));
+				row.add (sme.getCntStarted (sysEnv));
+				row.add (sme.getCntRunning (sysEnv));
+				row.add (sme.getCntToKill (sysEnv));
+				row.add (sme.getCntKilled (sysEnv));
+				row.add (sme.getCntCancelled (sysEnv));
+				row.add (sme.getCntFinal (sysEnv));
+				row.add (sme.getCntBrokenActive (sysEnv));
+				row.add (sme.getCntBrokenFinished (sysEnv));
+				row.add (sme.getCntError (sysEnv));
+				row.add (sme.getCntSynchronizeWait (sysEnv));
+				row.add (sme.getCntFinished (sysEnv));
+				row.add (asTimestamp (sysEnv, sme.getSubmitTs (sysEnv)));
+				row.add (asTimestamp (sysEnv, sme.getSyncTs (sysEnv)));
+				row.add (asTimestamp (sysEnv, sme.getResourceTs (sysEnv)));
+				row.add (asTimestamp (sysEnv, sme.getRunnableTs (sysEnv)));
+				row.add (asTimestamp (sysEnv, sme.getStartTs (sysEnv)));
+				row.add (asTimestamp (sysEnv, sme.getFinishTs (sysEnv)));
+				row.add (asTimestamp (sysEnv, sme.getFinalTs (sysEnv)));
+				row.add (sme.getErrorMsg (sysEnv));
+				row.add (di.getDependentIdOrig (sysEnv));
+				row.add (di.getDependencyOperationAsString (sysEnv));
+				row.add (sme.getChildTag (sysEnv));
 
-			Vector c = SDMSHierarchyInstanceTable.idx_parentId.getVector (sysEnv, sme.getId (sysEnv));
-			row.add (new Integer (c.size()));
+				Vector c = SDMSHierarchyInstanceTable.idx_parentId.getVector (sysEnv, sme.getId (sysEnv));
+				row.add (new Integer (c.size()));
 
-			c = SDMSDependencyInstanceTable.idx_dependentId.getVector (sysEnv, sme.getId (sysEnv));
-			row.add (new Integer (c.size()));
+				c = SDMSDependencyInstanceTable.idx_dependentId.getVector (sysEnv, sme.getId (sysEnv));
+				row.add (new Integer (c.size()));
 
-			final Vector dds_v = SDMSDependencyStateTable.idx_ddId.getVector (sysEnv, dd.getId (sysEnv), actVersion);
-			String sep = "";
-			final StringBuffer states = new StringBuffer();
-			for (int j = 0; j < dds_v.size(); ++j) {
-				final SDMSDependencyState dds = (SDMSDependencyState) dds_v.get (j);
-				final SDMSExitStateDefinition esd = SDMSExitStateDefinitionTable.getObject (sysEnv, dds.getEsdId (sysEnv), actVersion);
-				final String esdn = esd.getName (sysEnv);
-				states.append (sep);
-				states.append (esdn);
-				sep = ",";
+				final Vector dds_v = SDMSDependencyStateTable.idx_ddId.getVector (sysEnv, dd.getId (sysEnv), actVersion);
+				String sep = "";
+				final StringBuffer states = new StringBuffer();
+				for (int j = 0; j < dds_v.size(); ++j) {
+					final SDMSDependencyState dds = (SDMSDependencyState) dds_v.get (j);
+					final SDMSExitStateDefinition esd = SDMSExitStateDefinitionTable.getObject (sysEnv, dds.getEsdId (sysEnv), actVersion);
+					final String esdn = esd.getName (sysEnv);
+					states.append (sep);
+					states.append (esdn);
+					sep = ",";
+				}
+				row.add (new String (states));
+
+				row.add (sme.getIsSuspended (sysEnv));
+				row.add (sme.getParentSuspended (sysEnv));
+				row.add (sme.getCntUnreachable (sysEnv));
+
+				final SDMSSubmittedEntity sme_orig = SDMSSubmittedEntityTable.getObject (sysEnv, di.getDependentIdOrig (sysEnv));
+				row.add (sme_orig.getSubmitPathString (sysEnv));
+
+				row.add (di.getIgnoreAsString (sysEnv));
+			} else {
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (new Long(0));
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+				row.add (di.getDependentIdOrig (sysEnv));
+				row.add (di.getDependencyOperationAsString (sysEnv));
+				row.add (empty);
+
+				row.add (new Integer (0));
+
+				row.add (new Integer (0));
+
+				final Vector dds_v = SDMSDependencyStateTable.idx_ddId.getVector (sysEnv, dd.getId (sysEnv), actVersion);
+				String sep = "";
+				final StringBuffer states = new StringBuffer();
+				for (int j = 0; j < dds_v.size(); ++j) {
+					final SDMSDependencyState dds = (SDMSDependencyState) dds_v.get (j);
+					final SDMSExitStateDefinition esd = SDMSExitStateDefinitionTable.getObject (sysEnv, dds.getEsdId (sysEnv), actVersion);
+					final String esdn = esd.getName (sysEnv);
+					states.append (sep);
+					states.append (esdn);
+					sep = ",";
+				}
+				row.add (new String (states));
+
+				row.add (empty);
+				row.add (empty);
+				row.add (empty);
+
+				final SDMSSubmittedEntity sme_orig = SDMSSubmittedEntityTable.getObject (sysEnv, di.getDependentIdOrig (sysEnv));
+				row.add (sme_orig.getSubmitPathString (sysEnv));
+
+				row.add (di.getIgnoreAsString (sysEnv));
 			}
-			row.add (new String (states));
-
-			row.add (sme.getIsSuspended (sysEnv));
-			row.add (sme.getParentSuspended (sysEnv));
-			row.add (sme.getCntUnreachable (sysEnv));
-
-			final SDMSSubmittedEntity sme_orig = SDMSSubmittedEntityTable.getObject (sysEnv, di.getDependentIdOrig (sysEnv));
-			row.add (sme_orig.getSubmitPathString (sysEnv));
-
-			row.add (di.getIgnoreAsString (sysEnv));
-
 			table.addData (sysEnv, row);
 
-			if (expandIds == null || expandIds.contains (diReqSmeId)) {
+			if (sme != null) {
+				if (expandIds == null || expandIds.contains (diReqSmeId)) {
 
-				if (!visited && sme.getState(sysEnv).intValue() == SDMSSubmittedEntity.DEPENDENCY_WAIT) {
-					visitedHash.add(diReqSmeId);
-					render_deps (sysEnv, diReqSmeId, path, table, visitedHash);
+					if (!visited && sme.getState(sysEnv).intValue() == SDMSSubmittedEntity.DEPENDENCY_WAIT) {
+						visitedHash.add(diReqSmeId);
+						render_deps (sysEnv, diReqSmeId, path, table, visitedHash);
+					}
 				}
 			}
 		}

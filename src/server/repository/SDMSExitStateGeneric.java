@@ -40,8 +40,6 @@ public class SDMSExitStateGeneric extends SDMSObject
 	implements Cloneable
 {
 
-	public final static String __version = "SDMSExitStateGeneric $Revision: 2.5 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int RESTARTABLE = 1;
 	public static final int PENDING = 2;
 	public static final int FINAL = 3;

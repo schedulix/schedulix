@@ -41,8 +41,6 @@ import de.independit.scheduler.jobserver.Config;
 public class ShowSubmitted extends Node
 {
 
-	public final static String __version = "@(#) $Id: ShowSubmitted.java,v 2.48.2.4 2013/06/18 09:49:38 ronald Exp $";
-
 	private static final int REQUIRED   = 1;
 	private static final int DEPENDENTS = 2;
 
@@ -588,6 +586,8 @@ public class ShowSubmitted extends Node
 			data.add(null);
 		else if(unresolvedHandling.intValue() == SDMSDependencyDefinition.SUSPEND)
 			data.add("SUSPEND");
+		else if(unresolvedHandling.intValue() == SDMSDependencyDefinition.DEFER)
+			data.add("DEFERED");
 		else
 			data.add("IGNORE");
 
@@ -933,11 +933,17 @@ public class ShowSubmitted extends Node
 			c_data.add(di.getRequiredId(sysEnv));
 
 			if (mode == REQUIRED)
-				sme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getRequiredId(sysEnv));
+
+				try {
+					sme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getRequiredId(sysEnv));
+				} catch(NotFoundException nfe) {
+
+					sme = null;
+				}
 			else
 				sme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getDependentId(sysEnv));
 
-			if (di.getState(sysEnv).intValue() == SDMSDependencyInstance.DEFERED) {
+			if (sme == null) {
 				SDMSSchedulingEntity se_def = SDMSSchedulingEntityTable.getObject(sysEnv, dd.getSeRequiredId(sysEnv), actVersion);
 				c_data.add(se_def.pathVector(sysEnv, actVersion));
 				c_data.add(null);
@@ -977,45 +983,79 @@ public class ShowSubmitted extends Node
 				sep = ",";
 			}
 			c_data.add(new String(states));
-			c_data.add(sme.getStateAsString(sysEnv));
-			c_data.add(sme.getIsSuspended(sysEnv));
-			c_data.add(sme.getParentSuspended(sysEnv));
 
-			c_data.add(sme.getCntSubmitted(sysEnv));
-			c_data.add(sme.getCntDependencyWait(sysEnv));
-			c_data.add(sme.getCntSynchronizeWait(sysEnv));
-			c_data.add(sme.getCntResourceWait(sysEnv));
-			c_data.add(sme.getCntRunnable(sysEnv));
-			c_data.add(sme.getCntStarting(sysEnv));
-			c_data.add(sme.getCntStarted(sysEnv));
-			c_data.add(sme.getCntRunning(sysEnv));
-			c_data.add(sme.getCntToKill(sysEnv));
-			c_data.add(sme.getCntKilled(sysEnv));
-			c_data.add(sme.getCntCancelled(sysEnv));
-			c_data.add(sme.getCntFinished(sysEnv));
-			c_data.add(sme.getCntFinal(sysEnv));
-			c_data.add(sme.getCntBrokenActive(sysEnv));
-			c_data.add(sme.getCntBrokenFinished(sysEnv));
-			c_data.add(sme.getCntError(sysEnv));
-			c_data.add(sme.getCntRestartable(sysEnv));
-			c_data.add(sme.getCntUnreachable(sysEnv));
-			c_data.add(sme.getJobIsFinal(sysEnv));
-			c_data.add(sme.getChildTag(sysEnv));
+			if (sme != null) {
+				c_data.add(sme.getStateAsString(sysEnv));
+				c_data.add(sme.getIsSuspended(sysEnv));
+				c_data.add(sme.getParentSuspended(sysEnv));
 
-			if (sme.getState(sysEnv).intValue() == SDMSSubmittedEntity.FINAL) {
-				SDMSExitStateDefinition esd = SDMSExitStateDefinitionTable.getObject(sysEnv, sme.getFinalEsdId(sysEnv));
-				c_data.add(esd.getName(sysEnv));
+				c_data.add(sme.getCntSubmitted(sysEnv));
+				c_data.add(sme.getCntDependencyWait(sysEnv));
+				c_data.add(sme.getCntSynchronizeWait(sysEnv));
+				c_data.add(sme.getCntResourceWait(sysEnv));
+				c_data.add(sme.getCntRunnable(sysEnv));
+				c_data.add(sme.getCntStarting(sysEnv));
+				c_data.add(sme.getCntStarted(sysEnv));
+				c_data.add(sme.getCntRunning(sysEnv));
+				c_data.add(sme.getCntToKill(sysEnv));
+				c_data.add(sme.getCntKilled(sysEnv));
+				c_data.add(sme.getCntCancelled(sysEnv));
+				c_data.add(sme.getCntFinished(sysEnv));
+				c_data.add(sme.getCntFinal(sysEnv));
+				c_data.add(sme.getCntBrokenActive(sysEnv));
+				c_data.add(sme.getCntBrokenFinished(sysEnv));
+				c_data.add(sme.getCntError(sysEnv));
+				c_data.add(sme.getCntRestartable(sysEnv));
+				c_data.add(sme.getCntUnreachable(sysEnv));
+				c_data.add(sme.getJobIsFinal(sysEnv));
+				c_data.add(sme.getChildTag(sysEnv));
+
+				if (sme.getState(sysEnv).intValue() == SDMSSubmittedEntity.FINAL) {
+					SDMSExitStateDefinition esd = SDMSExitStateDefinitionTable.getObject(sysEnv, sme.getFinalEsdId(sysEnv));
+					c_data.add(esd.getName(sysEnv));
+				} else {
+					c_data.add(null);
+				}
+
+				Vector c = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, sme.getId(sysEnv));
+				c_data.add(new Integer(c.size()));
+
+				c_data.add(di.getIgnoreAsString(sysEnv));
+				c_data.add(sme.getChildSuspended(sysEnv));
+				c_data.add(sme.getCntPending(sysEnv));
+				c_data.add(dd.getCondition(sysEnv));
 			} else {
 				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(di.getIgnoreAsString(sysEnv));
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(dd.getCondition(sysEnv));
 			}
-
-			Vector c = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, sme.getId(sysEnv));
-			c_data.add(new Integer(c.size()));
-
-			c_data.add(di.getIgnoreAsString(sysEnv));
-			c_data.add(sme.getChildSuspended(sysEnv));
-			c_data.add(sme.getCntPending(sysEnv));
-			c_data.add(dd.getCondition(sysEnv));
 
 			c_container.addData(sysEnv, c_data);
 		}
@@ -1353,6 +1393,12 @@ class SsResourceScopeFormatter implements Formatter
 
 		c_desc.add("STICKY");
 
+		c_desc.add("STICKY_NAME");
+
+		c_desc.add("STICKY_PARENT");
+
+		c_desc.add("STICKY_PARENT_TYPE");
+
 		c_desc.add("ONLINE");
 
 		c_desc.add("ALLOCATE_STATE");
@@ -1404,6 +1450,9 @@ class SsResourceScopeFormatter implements Formatter
 		v.add(null);
 		v.add(null);
 		v.add(Boolean.FALSE);
+		v.add(null);
+		v.add(null);
+		v.add(null);
 		v.add(null);
 		v.add(new Boolean(s.isConnected(sysEnv)));
 		v.add(null);
@@ -1514,6 +1563,16 @@ class SsResourceScopeFormatter implements Formatter
 			v.add(ra.getLockmodeAsString(sysEnv));
 			v.add(Boolean.FALSE);
 			v.add(ra.getIsSticky(sysEnv));
+			v.add(ra.getStickyName(sysEnv));
+			Long stickyParent = ra.getStickyParent(sysEnv);
+			v.add(stickyParent);
+			if (stickyParent == null)
+				v.add(null);
+			else {
+				final SDMSSubmittedEntity pssme = SDMSSubmittedEntityTable.getObject(sysEnv, stickyParent);
+				final SDMSSchedulingEntity psse = SDMSSchedulingEntityTable.getObject(sysEnv, pssme.getSeId(sysEnv), actVersion);
+				v.add(psse.getTypeAsString(sysEnv));
+			}
 			v.add(r.getIsOnline(sysEnv));
 			v.add("MASTER RESERVED");
 			v.add(null);
@@ -1535,6 +1594,9 @@ class SsResourceScopeFormatter implements Formatter
 			v.add(null);
 			v.add(Boolean.FALSE);
 			v.add(Boolean.FALSE);
+			v.add(null);
+			v.add(null);
+			v.add(null);
 			v.add(r.getIsOnline(sysEnv));
 			v.add(null);
 			v.add(null);
@@ -1578,6 +1640,26 @@ class SsResourceScopeFormatter implements Formatter
 			}
 			v.add(Boolean.FALSE);
 			v.add(rr.getIsSticky(sysEnv));
+			v.add(rr.getStickyName(sysEnv));
+			Long stickyParent;
+			SDMSSchedulingEntity spse = null;
+			if (ra == null) {
+				stickyParent = rr.getStickyParent(sysEnv);
+				v.add(stickyParent);
+				if (stickyParent != null)
+					spse = SDMSSchedulingEntityTable.getObject(sysEnv, stickyParent, actVersion);
+			} else {
+				stickyParent = ra.getStickyParent(sysEnv);
+				v.add(stickyParent);
+				if (stickyParent != null) {
+					final SDMSSubmittedEntity spsme = SDMSSubmittedEntityTable.getObject(sysEnv, stickyParent);
+					spse = SDMSSchedulingEntityTable.getObject(sysEnv, spsme.getSeId(sysEnv), actVersion);
+				}
+			}
+			if (spse != null)
+				v.add(spse.getTypeAsString(sysEnv));
+			else
+				v.add(null);
 			v.add(r.getIsOnline(sysEnv));
 			if(ra != null) {
 				if(ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.ALLOCATION) {
@@ -1593,7 +1675,8 @@ class SsResourceScopeFormatter implements Formatter
 							v.add("BLOCKED");
 						} else {
 							if(ra.getIsSticky(sysEnv).booleanValue()) {
-								MasterReservationInfo mri = SystemEnvironment.sched.checkMasterReservation(sysEnv, sme, rr, r, actVersion);
+								MasterReservationInfo mri =
+								        SystemEnvironment.sched.checkMasterReservation(sysEnv, sme, rr, ra.getStickyParent(sysEnv), r, actVersion);
 								if(mri.canAllocate)	v.add("AVAILABLE");
 								else			v.add("BLOCKED");
 							} else {

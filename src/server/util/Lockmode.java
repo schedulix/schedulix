@@ -42,19 +42,11 @@ public class Lockmode
 	public static final String SharedExcl  = "SX";
 	public static final String SharedComp  = "SC";
 	public static final String Exclusive   = "X";
-	public static final String IShared     = "IS";
-	public static final String ISharedExcl = "ISX";
-	public static final String IExclusive  = "IX";
-	public static final String ISharedComp = "ICS";
 
 	public static final int X   = 0x00;
-	public static final int IX  = 0x01;
 	public static final int SX  = 0x02;
-	public static final int ISX = 0x03;
 	public static final int S   = 0x04;
-	public static final int IS  = 0x05;
 	public static final int SC  = 0x06;
-	public static final int ISC = 0x07;
 	public static final int N   = 0xFF;
 
 	public Lockmode()
@@ -64,13 +56,9 @@ public class Lockmode
 	public Lockmode(SystemEnvironment env, int m) throws CommonErrorException
 	{
 		if (m != X    &&
-		    m != IX   &&
 		    m != SX   &&
-		    m != ISX  &&
 		    m != S    &&
-		    m != IS   &&
 		    m != SC   &&
-		    m != ISC  &&
 		    m != N) {
 			throw new CommonErrorException(new SDMSMessage(env, "03110181507", "Invalid Lockmode $1", new Integer(m)));
 		}
@@ -79,7 +67,7 @@ public class Lockmode
 	public Lockmode(int m)
 	{
 		mode = N;
-		if(m == X || m == IX || m == SX || m == ISX || m == S || m == IS || m == SC || m == ISC || m == N) mode = m;
+		if(m == X || m == SX || m == S || m == SC || m == N) mode = m;
 	}
 	public int getLockmode()
 	{
@@ -88,7 +76,7 @@ public class Lockmode
 	public int setLockmode(int m)
 	{
 		int rc = mode;
-		if(m == X || m == IX || m == SX || m == ISX || m == S || m == IS || m == SC || m == ISC || m == N) mode = m;
+		if(m == X || m == SX || m == S || m == SC || m == N) mode = m;
 		return rc;
 	}
 	public int setLockmode(Lockmode l)
@@ -100,7 +88,7 @@ public class Lockmode
 	public int setLockmode(SystemEnvironment env, int m) throws CommonErrorException
 	{
 		int rc = mode;
-		if(m == X || m == IX || m == SX || m == ISX || m == S || m == IS || m == SC || m == ISC || m == N) mode = m;
+		if(m == X || m == SX || m == S || m == SC || m == N) mode = m;
 		else {
 			throw new CommonErrorException(new SDMSMessage(env, "03308061033", "Invalid Lockmode $1", new Integer(m)));
 		}
@@ -111,20 +99,12 @@ public class Lockmode
 		switch(mode) {
 		case X:
 			return Exclusive;
-		case IX:
-			return IExclusive;
 		case SX:
 			return SharedExcl;
-		case ISX:
-			return ISharedExcl;
 		case S:
 			return Shared;
-		case IS:
-			return IShared;
 		case SC:
 			return SharedComp;
-		case ISC:
-			return ISharedComp;
 		case N:
 			return Nolock;
 		default:

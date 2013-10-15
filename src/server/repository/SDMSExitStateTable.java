@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSExitStateTable extends SDMSExitStateTableGeneric
 {
 
-	public final static String __version = "SDMSExitStateTable $Revision: 2.5 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public SDMSExitStateTable(SystemEnvironment env)
 	throws SDMSException
 	{

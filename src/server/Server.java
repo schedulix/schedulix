@@ -41,6 +41,7 @@ import de.independit.scheduler.server.output.*;
 public class Server
 {
 
+	public final static String __version = "@(#) $Id: Server.java,v 2.17.2.6 2013/09/11 11:50:39 ronald Exp $";
 
 	private ThreadGroup utg;
 	private OrdinaryListenThread ult;

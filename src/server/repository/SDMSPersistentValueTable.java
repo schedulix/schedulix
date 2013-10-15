@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSPersistentValueTable extends SDMSPersistentValueTableGeneric
 {
 
-	public final static String __version = "SDMSPersistentValueTable $Revision: 2.2 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public SDMSPersistentValueTable(SystemEnvironment env)
 	throws SDMSException
 	{

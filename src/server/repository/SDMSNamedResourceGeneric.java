@@ -40,8 +40,6 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 	implements Cloneable
 {
 
-	public final static String __version = "SDMSNamedResourceGeneric $Revision: 2.9 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int STATIC = 1;
 	public static final int SYSTEM = 2;
 	public static final int POOL = 3;

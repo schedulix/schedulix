@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSnpSrvrSRFootprint extends SDMSnpSrvrSRFootprintProxyGeneric
 {
 
-	public final static String __version = "SDMSnpSrvrSRFootprint $Revision: 2.0 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	protected SDMSnpSrvrSRFootprint(SDMSObject p_object)
 	{
 		super(p_object);

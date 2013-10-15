@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSTriggerProxyGeneric extends SDMSProxy
 {
 
-	public final static String __version = "SDMSTriggerProxyGeneric $Revision: 2.15 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int JOB_DEFINITION = 0;
 	public static final int RESOURCE = 1;
 	public static final int NAMED_RESOURCE = 2;

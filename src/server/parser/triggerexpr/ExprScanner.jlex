@@ -33,7 +33,6 @@ import de.independit.scheduler.server.exception.*;
 %public
 %class ExprScanner
 %implements de.independit.scheduler.server.parser.triggerexpr.ExprParser.yyInput
-%type int
 %yyeof
 %integer
 

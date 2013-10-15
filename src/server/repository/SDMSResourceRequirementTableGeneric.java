@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSResourceRequirementTableGeneric extends SDMSTable
 {
 
-	public final static String __version = "SDMSResourceRequirementTableGeneric $Revision: 2.5 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static String tableName = "RESOURCE_REQUIREMENT";
 	public static SDMSResourceRequirementTable table  = null;
 
@@ -71,6 +69,8 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 	                                      ,Integer p_amount
 	                                      ,Integer p_keepMode
 	                                      ,Boolean p_isSticky
+	                                      ,String p_stickyName
+	                                      ,Long p_stickyParent
 	                                      ,Long p_rsmpId
 	                                      ,Integer p_expiredAmount
 	                                      ,Integer p_expiredBase
@@ -94,6 +94,8 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		         , p_amount
 		         , p_keepMode
 		         , p_isSticky
+		         , p_stickyName
+		         , p_stickyParent
 		         , p_rsmpId
 		         , p_expiredAmount
 		         , p_expiredBase
@@ -112,6 +114,8 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		                , p_amount
 		                , p_keepMode
 		                , p_isSticky
+		                , p_stickyName
+		                , p_stickyParent
 		                , p_rsmpId
 		                , p_expiredAmount
 		                , p_expiredBase
@@ -160,6 +164,8 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 	                        ,Integer p_amount
 	                        ,Integer p_keepMode
 	                        ,Boolean p_isSticky
+	                        ,String p_stickyName
+	                        ,Long p_stickyParent
 	                        ,Long p_rsmpId
 	                        ,Integer p_expiredAmount
 	                        ,Integer p_expiredBase
@@ -193,6 +199,8 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		Integer amount;
 		Integer keepMode;
 		Boolean isSticky;
+		String stickyName;
+		Long stickyParent;
 		Long rsmpId;
 		Integer expiredAmount;
 		Integer expiredBase;
@@ -213,22 +221,26 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 			if (r.wasNull()) amount = null;
 			keepMode = new Integer (r.getInt(5));
 			isSticky = new Boolean ((r.getInt(6) == 0 ? false : true));
-			rsmpId = new Long (r.getLong(7));
+			stickyName = r.getString(7);
+			if (r.wasNull()) stickyName = null;
+			stickyParent = new Long (r.getLong(8));
+			if (r.wasNull()) stickyParent = null;
+			rsmpId = new Long (r.getLong(9));
 			if (r.wasNull()) rsmpId = null;
-			expiredAmount = new Integer (r.getInt(8));
+			expiredAmount = new Integer (r.getInt(10));
 			if (r.wasNull()) expiredAmount = null;
-			expiredBase = new Integer (r.getInt(9));
+			expiredBase = new Integer (r.getInt(11));
 			if (r.wasNull()) expiredBase = null;
-			lockmode = new Integer (r.getInt(10));
+			lockmode = new Integer (r.getInt(12));
 			if (r.wasNull()) lockmode = null;
-			condition = r.getString(11);
+			condition = r.getString(13);
 			if (r.wasNull()) condition = null;
-			creatorUId = new Long (r.getLong(12));
-			createTs = new Long (r.getLong(13));
-			changerUId = new Long (r.getLong(14));
-			changeTs = new Long (r.getLong(15));
-			validFrom = r.getLong(16);
-			validTo = r.getLong(17);
+			creatorUId = new Long (r.getLong(14));
+			createTs = new Long (r.getLong(15));
+			changerUId = new Long (r.getLong(16));
+			changeTs = new Long (r.getLong(17));
+			validFrom = r.getLong(18);
+			validTo = r.getLong(19);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 
@@ -241,6 +253,8 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		                amount,
 		                keepMode,
 		                isSticky,
+		                stickyName,
+		                stickyParent,
 		                rsmpId,
 		                expiredAmount,
 		                expiredBase,
@@ -280,6 +294,8 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		                                   ", " + squote + "AMOUNT" + equote +
 		                                   ", " + squote + "KEEP_MODE" + equote +
 		                                   ", " + squote + "IS_STICKY" + equote +
+		                                   ", " + squote + "STICKY_NAME" + equote +
+		                                   ", " + squote + "STICKY_PARENT" + equote +
 		                                   ", " + squote + "RSMP_ID" + equote +
 		                                   ", " + squote + "EXPIRED_AMOUNT" + equote +
 		                                   ", " + squote + "EXPIRED_BASE" + equote +

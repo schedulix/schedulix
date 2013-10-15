@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSResourceAllocationTable extends SDMSResourceAllocationTableGeneric
 {
 
-	public final static String __version = "@(#) $Id: SDMSResourceAllocationTable.java,v 2.2.14.1 2013/03/14 10:25:23 ronald Exp $";
-
 	public SDMSResourceAllocationTable(SystemEnvironment env)
 	throws SDMSException
 	{
@@ -54,6 +52,8 @@ public class SDMSResourceAllocationTable extends SDMSResourceAllocationTableGene
 	                                     ,Integer p_origAmount
 	                                     ,Integer p_keepMode
 	                                     ,Boolean p_isSticky
+	                                     ,String p_stickyName
+	                                     ,Long p_stickyParent
 	                                     ,Integer p_allocationType
 	                                     ,Long p_rsmpId
 	                                     ,Integer p_lockmode
@@ -80,6 +80,8 @@ public class SDMSResourceAllocationTable extends SDMSResourceAllocationTableGene
 		                     , p_origAmount
 		                     , p_keepMode
 		                     , p_isSticky
+		                     , p_stickyName
+		                     , p_stickyParent
 		                     , p_allocationType
 		                     , p_rsmpId
 		                     , p_lockmode

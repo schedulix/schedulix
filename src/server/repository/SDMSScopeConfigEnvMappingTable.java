@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSScopeConfigEnvMappingTable extends SDMSScopeConfigEnvMappingTableGeneric
 {
 
-	public final static String __version = "SDMSScopeConfigEnvMappingTable $Revision: 2.2 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public SDMSScopeConfigEnvMappingTable(SystemEnvironment env)
 	throws SDMSException
 	{

@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSKillJobProxyGeneric extends SDMSProxy
 {
 
-	public final static String __version = "SDMSKillJobProxyGeneric $Revision: 2.4 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int RUNNABLE = SDMSSubmittedEntity.RUNNABLE;
 	public static final int STARTING = SDMSSubmittedEntity.STARTING;
 	public static final int STARTED = SDMSSubmittedEntity.STARTED;

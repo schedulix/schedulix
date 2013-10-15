@@ -40,8 +40,6 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 	implements Cloneable
 {
 
-	public final static String __version = "SDMSIntervalSelectionGeneric $Revision: 2.3 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static int nr_id = 1;
 	public final static int nr_intId = 2;
 	public final static int nr_value = 3;

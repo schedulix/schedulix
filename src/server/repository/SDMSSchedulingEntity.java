@@ -40,7 +40,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 	implements SDMSOwnedObject
 {
 
-	public final static String __version = "@(#) $Id: SDMSSchedulingEntity.java,v 2.58.2.6 2013/03/25 08:01:51 dieter Exp $";
 	private final static VariableResolver SEVR = new SeVariableResolver();
 	private static final Integer zero = new Integer(0);
 	private static final Long lzero = new Long(0);
@@ -495,6 +494,8 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                               rr_o.getAmount(sysEnv),
 			                               rr_o.getKeepMode(sysEnv),
 			                               rr_o.getIsSticky(sysEnv),
+			                               rr_o.getStickyName(sysEnv),
+			                               rr_o.getStickyParent(sysEnv),
 			                               rr_o.getRsmpId(sysEnv),
 			                               rr_o.getExpiredAmount(sysEnv),
 			                               rr_o.getExpiredBase(sysEnv),
@@ -680,6 +681,19 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			Long seId = (Long)relocationTable.get(tr.getSeId(sysEnv));
 			if (seId != null) {
 				tr.setSeId(sysEnv, seId);
+			}
+		}
+
+		Vector v_rr = SDMSResourceRequirementTable.idx_seId.getVector(sysEnv, id);
+		Iterator i_rr = v_rr.iterator();
+		while (i_rr.hasNext()) {
+			SDMSResourceRequirement rr = (SDMSResourceRequirement)i_rr.next();
+			Long stickyParent = rr.getStickyParent(sysEnv);
+			if (stickyParent != null) {
+				stickyParent = (Long)relocationTable.get(stickyParent);
+				if (stickyParent != null) {
+					rr.setStickyParent(sysEnv, stickyParent);
+				}
 			}
 		}
 	}

@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSResourceAllocationTableGeneric extends SDMSTable
 {
 
-	public final static String __version = "SDMSResourceAllocationTableGeneric $Revision: 2.6 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static String tableName = "RESOURCE_ALLOCATION";
 	public static SDMSResourceAllocationTable table  = null;
 
@@ -75,6 +73,8 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 	                                     ,Integer p_origAmount
 	                                     ,Integer p_keepMode
 	                                     ,Boolean p_isSticky
+	                                     ,String p_stickyName
+	                                     ,Long p_stickyParent
 	                                     ,Integer p_allocationType
 	                                     ,Long p_rsmpId
 	                                     ,Integer p_lockmode
@@ -99,6 +99,8 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		         , p_origAmount
 		         , p_keepMode
 		         , p_isSticky
+		         , p_stickyName
+		         , p_stickyParent
 		         , p_allocationType
 		         , p_rsmpId
 		         , p_lockmode
@@ -118,6 +120,8 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		                , p_origAmount
 		                , p_keepMode
 		                , p_isSticky
+		                , p_stickyName
+		                , p_stickyParent
 		                , p_allocationType
 		                , p_rsmpId
 		                , p_lockmode
@@ -167,6 +171,8 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 	                        ,Integer p_origAmount
 	                        ,Integer p_keepMode
 	                        ,Boolean p_isSticky
+	                        ,String p_stickyName
+	                        ,Long p_stickyParent
 	                        ,Integer p_allocationType
 	                        ,Long p_rsmpId
 	                        ,Integer p_lockmode
@@ -201,6 +207,8 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		Integer origAmount;
 		Integer keepMode;
 		Boolean isSticky;
+		String stickyName;
+		Long stickyParent;
 		Integer allocationType;
 		Long rsmpId;
 		Integer lockmode;
@@ -223,16 +231,20 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 			if (r.wasNull()) origAmount = null;
 			keepMode = new Integer (r.getInt(7));
 			isSticky = new Boolean ((r.getInt(8) == 0 ? false : true));
-			allocationType = new Integer (r.getInt(9));
-			rsmpId = new Long (r.getLong(10));
+			stickyName = r.getString(9);
+			if (r.wasNull()) stickyName = null;
+			stickyParent = new Long (r.getLong(10));
+			if (r.wasNull()) stickyParent = null;
+			allocationType = new Integer (r.getInt(11));
+			rsmpId = new Long (r.getLong(12));
 			if (r.wasNull()) rsmpId = null;
-			lockmode = new Integer (r.getInt(11));
+			lockmode = new Integer (r.getInt(13));
 			if (r.wasNull()) lockmode = null;
-			refcount = new Integer (r.getInt(12));
-			creatorUId = new Long (r.getLong(13));
-			createTs = new Long (r.getLong(14));
-			changerUId = new Long (r.getLong(15));
-			changeTs = new Long (r.getLong(16));
+			refcount = new Integer (r.getInt(14));
+			creatorUId = new Long (r.getLong(15));
+			createTs = new Long (r.getLong(16));
+			changerUId = new Long (r.getLong(17));
+			changeTs = new Long (r.getLong(18));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -249,6 +261,8 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		                origAmount,
 		                keepMode,
 		                isSticky,
+		                stickyName,
+		                stickyParent,
 		                allocationType,
 		                rsmpId,
 		                lockmode,
@@ -289,6 +303,8 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		                                   ", " + squote + "ORIG_AMOUNT" + equote +
 		                                   ", " + squote + "KEEP_MODE" + equote +
 		                                   ", " + squote + "IS_STICKY" + equote +
+		                                   ", " + squote + "STICKY_NAME" + equote +
+		                                   ", " + squote + "STICKY_PARENT" + equote +
 		                                   ", " + squote + "ALLOCATION_TYPE" + equote +
 		                                   ", " + squote + "RSMP_ID" + equote +
 		                                   ", " + squote + "LOCKMODE" + equote +

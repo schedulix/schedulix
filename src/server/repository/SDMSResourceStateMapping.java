@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSResourceStateMapping extends SDMSResourceStateMappingProxyGeneric
 {
 
-	public final static String __version = "SDMSResourceStateMapping $Revision: 2.3 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	protected SDMSResourceStateMapping(SDMSObject p_object)
 	{
 		super(p_object);

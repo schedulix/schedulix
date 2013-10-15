@@ -40,8 +40,6 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	implements Cloneable
 {
 
-	public final static String __version = "SDMSResourceAllocationGeneric $Revision: 2.6 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int N = Lockmode.N;
 	public static final int X = Lockmode.X;
 	public static final int SX = Lockmode.SX;
@@ -64,14 +62,16 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	public final static int nr_origAmount = 6;
 	public final static int nr_keepMode = 7;
 	public final static int nr_isSticky = 8;
-	public final static int nr_allocationType = 9;
-	public final static int nr_rsmpId = 10;
-	public final static int nr_lockmode = 11;
-	public final static int nr_refcount = 12;
-	public final static int nr_creatorUId = 13;
-	public final static int nr_createTs = 14;
-	public final static int nr_changerUId = 15;
-	public final static int nr_changeTs = 16;
+	public final static int nr_stickyName = 9;
+	public final static int nr_stickyParent = 10;
+	public final static int nr_allocationType = 11;
+	public final static int nr_rsmpId = 12;
+	public final static int nr_lockmode = 13;
+	public final static int nr_refcount = 14;
+	public final static int nr_creatorUId = 15;
+	public final static int nr_createTs = 16;
+	public final static int nr_changerUId = 17;
+	public final static int nr_changeTs = 18;
 
 	public static String tableName = SDMSResourceAllocationTableGeneric.tableName;
 
@@ -82,6 +82,8 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	protected Integer origAmount;
 	protected Integer keepMode;
 	protected Boolean isSticky;
+	protected String stickyName;
+	protected Long stickyParent;
 	protected Integer allocationType;
 	protected Long rsmpId;
 	protected Integer lockmode;
@@ -104,6 +106,8 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	        Integer p_origAmount,
 	        Integer p_keepMode,
 	        Boolean p_isSticky,
+	        String p_stickyName,
+	        Long p_stickyParent,
 	        Integer p_allocationType,
 	        Long p_rsmpId,
 	        Integer p_lockmode,
@@ -123,6 +127,14 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		origAmount = p_origAmount;
 		keepMode = p_keepMode;
 		isSticky = p_isSticky;
+		if (p_stickyName != null && p_stickyName.length() > 64) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141528",
+			                        "(ResourceAllocation) Length of $1 exceeds maximum length $2", "stickyName", "64")
+			);
+		}
+		stickyName = p_stickyName;
+		stickyParent = p_stickyParent;
 		allocationType = p_allocationType;
 		rsmpId = p_rsmpId;
 		lockmode = p_lockmode;
@@ -359,6 +371,76 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 			}
 			o = (SDMSResourceAllocationGeneric) change(env);
 			o.isSticky = p_isSticky;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public String getStickyName (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (stickyName);
+	}
+
+	public	SDMSResourceAllocationGeneric setStickyName (SystemEnvironment env, String p_stickyName)
+	throws SDMSException
+	{
+		if(p_stickyName != null && p_stickyName.equals(stickyName)) return this;
+		if(p_stickyName == null && stickyName == null) return this;
+		SDMSResourceAllocationGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
+				);
+			}
+			o = (SDMSResourceAllocationGeneric) change(env);
+			if (p_stickyName != null && p_stickyName.length() > 64) {
+				throw new CommonErrorException (
+				        new SDMSMessage(env, "01112141510",
+				                        "(ResourceAllocation) Length of $1 exceeds maximum length $2", "stickyName", "64")
+				);
+			}
+			o.stickyName = p_stickyName;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Long getStickyParent (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (stickyParent);
+	}
+
+	public	SDMSResourceAllocationGeneric setStickyParent (SystemEnvironment env, Long p_stickyParent)
+	throws SDMSException
+	{
+		if(p_stickyParent != null && p_stickyParent.equals(stickyParent)) return this;
+		if(p_stickyParent == null && stickyParent == null) return this;
+		SDMSResourceAllocationGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
+				);
+			}
+			o = (SDMSResourceAllocationGeneric) change(env);
+			o.stickyParent = p_stickyParent;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
@@ -718,6 +800,8 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	                                        Integer p_origAmount,
 	                                        Integer p_keepMode,
 	                                        Boolean p_isSticky,
+	                                        String p_stickyName,
+	                                        Long p_stickyParent,
 	                                        Integer p_allocationType,
 	                                        Long p_rsmpId,
 	                                        Integer p_lockmode,
@@ -736,6 +820,8 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		origAmount = p_origAmount;
 		keepMode = p_keepMode;
 		isSticky = p_isSticky;
+		stickyName = p_stickyName;
+		stickyParent = p_stickyParent;
 		allocationType = p_allocationType;
 		rsmpId = p_rsmpId;
 		lockmode = p_lockmode;
@@ -780,6 +866,8 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 				        ", " + squote + "ORIG_AMOUNT" + equote +
 				        ", " + squote + "KEEP_MODE" + equote +
 				        ", " + squote + "IS_STICKY" + equote +
+				        ", " + squote + "STICKY_NAME" + equote +
+				        ", " + squote + "STICKY_PARENT" + equote +
 				        ", " + squote + "ALLOCATION_TYPE" + equote +
 				        ", " + squote + "RSMP_ID" + equote +
 				        ", " + squote + "LOCKMODE" + equote +
@@ -789,6 +877,8 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ") VALUES (?" +
+				        ", ?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -828,20 +918,28 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 				pInsert.setInt(6, origAmount.intValue());
 			pInsert.setInt(7, keepMode.intValue());
 			pInsert.setInt (8, isSticky.booleanValue() ? 1 : 0);
-			pInsert.setInt(9, allocationType.intValue());
-			if (rsmpId == null)
+			if (stickyName == null)
+				pInsert.setNull(9, Types.VARCHAR);
+			else
+				pInsert.setString(9, stickyName);
+			if (stickyParent == null)
 				pInsert.setNull(10, Types.INTEGER);
 			else
-				pInsert.setLong (10, rsmpId.longValue());
-			if (lockmode == null)
-				pInsert.setNull(11, Types.INTEGER);
+				pInsert.setLong (10, stickyParent.longValue());
+			pInsert.setInt(11, allocationType.intValue());
+			if (rsmpId == null)
+				pInsert.setNull(12, Types.INTEGER);
 			else
-				pInsert.setInt(11, lockmode.intValue());
-			pInsert.setInt(12, refcount.intValue());
-			pInsert.setLong (13, creatorUId.longValue());
-			pInsert.setLong (14, createTs.longValue());
-			pInsert.setLong (15, changerUId.longValue());
-			pInsert.setLong (16, changeTs.longValue());
+				pInsert.setLong (12, rsmpId.longValue());
+			if (lockmode == null)
+				pInsert.setNull(13, Types.INTEGER);
+			else
+				pInsert.setInt(13, lockmode.intValue());
+			pInsert.setInt(14, refcount.intValue());
+			pInsert.setLong (15, creatorUId.longValue());
+			pInsert.setLong (16, createTs.longValue());
+			pInsert.setLong (17, changerUId.longValue());
+			pInsert.setLong (18, changeTs.longValue());
 			pInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
@@ -899,6 +997,8 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 				        ", " + squote + "ORIG_AMOUNT" + equote + " = ? " +
 				        ", " + squote + "KEEP_MODE" + equote + " = ? " +
 				        ", " + squote + "IS_STICKY" + equote + " = ? " +
+				        ", " + squote + "STICKY_NAME" + equote + " = ? " +
+				        ", " + squote + "STICKY_PARENT" + equote + " = ? " +
 				        ", " + squote + "ALLOCATION_TYPE" + equote + " = ? " +
 				        ", " + squote + "RSMP_ID" + equote + " = ? " +
 				        ", " + squote + "LOCKMODE" + equote + " = ? " +
@@ -929,21 +1029,29 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 				pUpdate.setInt(5, origAmount.intValue());
 			pUpdate.setInt(6, keepMode.intValue());
 			pUpdate.setInt (7, isSticky.booleanValue() ? 1 : 0);
-			pUpdate.setInt(8, allocationType.intValue());
-			if (rsmpId == null)
+			if (stickyName == null)
+				pUpdate.setNull(8, Types.VARCHAR);
+			else
+				pUpdate.setString(8, stickyName);
+			if (stickyParent == null)
 				pUpdate.setNull(9, Types.INTEGER);
 			else
-				pUpdate.setLong (9, rsmpId.longValue());
-			if (lockmode == null)
-				pUpdate.setNull(10, Types.INTEGER);
+				pUpdate.setLong (9, stickyParent.longValue());
+			pUpdate.setInt(10, allocationType.intValue());
+			if (rsmpId == null)
+				pUpdate.setNull(11, Types.INTEGER);
 			else
-				pUpdate.setInt(10, lockmode.intValue());
-			pUpdate.setInt(11, refcount.intValue());
-			pUpdate.setLong (12, creatorUId.longValue());
-			pUpdate.setLong (13, createTs.longValue());
-			pUpdate.setLong (14, changerUId.longValue());
-			pUpdate.setLong (15, changeTs.longValue());
-			pUpdate.setLong(16, id.longValue());
+				pUpdate.setLong (11, rsmpId.longValue());
+			if (lockmode == null)
+				pUpdate.setNull(12, Types.INTEGER);
+			else
+				pUpdate.setInt(12, lockmode.intValue());
+			pUpdate.setInt(13, refcount.intValue());
+			pUpdate.setLong (14, creatorUId.longValue());
+			pUpdate.setLong (15, createTs.longValue());
+			pUpdate.setLong (16, changerUId.longValue());
+			pUpdate.setLong (17, changeTs.longValue());
+			pUpdate.setLong(18, id.longValue());
 			pUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
@@ -998,6 +1106,8 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "origAmount : " + origAmount, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "keepMode : " + keepMode, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isSticky : " + isSticky, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "stickyName : " + stickyName, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "stickyParent : " + stickyParent, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "allocationType : " + allocationType, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "rsmpId : " + rsmpId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "lockmode : " + lockmode, SDMSThread.SEVERITY_MESSAGE);
@@ -1024,6 +1134,8 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		        indentString + "origAmount     : " + origAmount + "\n" +
 		        indentString + "keepMode       : " + keepMode + "\n" +
 		        indentString + "isSticky       : " + isSticky + "\n" +
+		        indentString + "stickyName     : " + stickyName + "\n" +
+		        indentString + "stickyParent   : " + stickyParent + "\n" +
 		        indentString + "allocationType : " + allocationType + "\n" +
 		        indentString + "rsmpId         : " + rsmpId + "\n" +
 		        indentString + "lockmode       : " + lockmode + "\n" +

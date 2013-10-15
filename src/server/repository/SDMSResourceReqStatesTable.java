@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSResourceReqStatesTable extends SDMSResourceReqStatesTableGeneric
 {
 
-	public final static String __version = "SDMSResourceReqStatesTable $Revision: 2.1 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public SDMSResourceReqStatesTable(SystemEnvironment env)
 	throws SDMSException
 	{

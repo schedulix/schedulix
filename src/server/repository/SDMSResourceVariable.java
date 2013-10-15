@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSResourceVariable extends SDMSResourceVariableProxyGeneric
 {
 
-	public final static String __version = "SDMSResourceVariable $Revision: 2.4 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	protected SDMSResourceVariable(SDMSObject p_object)
 	{
 		super(p_object);

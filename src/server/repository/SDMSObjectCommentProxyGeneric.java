@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 {
 
-	public final static String __version = "SDMSObjectCommentProxyGeneric $Revision: 2.14 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int SYSTEM = 0;
 	public static final int SELECT = 99;
 	public static final int DISTRIBUTION = 25;

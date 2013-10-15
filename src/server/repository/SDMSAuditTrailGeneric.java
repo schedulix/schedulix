@@ -40,8 +40,6 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	implements Cloneable
 {
 
-	public final static String __version = "SDMSAuditTrailGeneric $Revision: 2.10 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int ENVIRONMENT = SDMSObjectComment.ENVIRONMENT;
 	public static final int EVENT = SDMSObjectComment.EVENT;
 	public static final int EXIT_STATE_DEFINITION = SDMSObjectComment.EXIT_STATE_DEFINITION;

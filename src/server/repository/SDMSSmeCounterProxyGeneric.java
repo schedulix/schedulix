@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSSmeCounterProxyGeneric extends SDMSProxy
 {
 
-	public final static String __version = "SDMSSmeCounterProxyGeneric $Revision: 2.4 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static long privilegeMask = SDMSPrivilege.ALL;
 
 	protected SDMSSmeCounterProxyGeneric(SDMSObject p_object)

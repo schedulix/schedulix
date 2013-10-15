@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSIgnoredDependencyTable extends SDMSIgnoredDependencyTableGeneric
 {
 
-	public final static String __version = "SDMSIgnoredDependencyTable $Revision: 2.1 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public SDMSIgnoredDependencyTable(SystemEnvironment env)
 	throws SDMSException
 	{

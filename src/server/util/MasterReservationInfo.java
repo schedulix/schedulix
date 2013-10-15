@@ -44,6 +44,8 @@ public class MasterReservationInfo
 	public boolean canAllocate;
 	public int amount;
 	public int lockmode;
+	public String stickyName;
+	public Long stickyParent;
 
 	public MasterReservationInfo()
 	{
@@ -51,7 +53,20 @@ public class MasterReservationInfo
 		canAllocate = false;
 		amount = 0;
 		lockmode = Lockmode.N;
+		stickyName = null;
+		stickyParent = null;
 	}
 
+	public void dump()
+	{
+		System.out.println("----------------------------------------------------");
+		System.out.println("mustAllocate = " + mustAllocate);
+		System.out.println("canAllocate = " + canAllocate);
+		System.out.println("amount = " + amount);
+		System.out.println("lockmode = " + lockmode);
+		System.out.println("stickyName = " + stickyName);
+		System.out.println("stickyParent = " + stickyParent);
+		System.out.println("----------------------------------------------------");
+	}
 }
 

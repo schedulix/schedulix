@@ -53,6 +53,7 @@ set autocommit on;
 \i ing_gen/INTERVAL_SELECTION.sql
 \i ing_gen/KILL_JOB.sql
 \i ing_gen/MEMBER.sql
+\i ing_gen/MASTER_ALLOCATION.sql
 \i ing_gen/NAMED_ENVIRONMENT.sql
 \i ing_gen/NAMED_RESOURCE.sql
 \i ing_gen/OBJECT_COMMENT.sql

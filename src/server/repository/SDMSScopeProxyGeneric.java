@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSScopeProxyGeneric extends SDMSProxy
 {
 
-	public final static String __version = "SDMSScopeProxyGeneric $Revision: 2.7 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int SCOPE = 1;
 	public static final int SERVER = 2;
 	public static final int NOMINAL = 1;

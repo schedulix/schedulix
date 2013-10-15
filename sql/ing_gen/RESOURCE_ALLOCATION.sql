@@ -24,7 +24,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
--- Copyright (C) 2003-2006 independIT Integrative Technologies GmbH
+-- Copyright (C) 2003-2013 independIT Integrative Technologies GmbH
 
 CREATE TABLE RESOURCE_ALLOCATION (
     ID                             DECIMAL(20) NOT NULL
@@ -35,6 +35,8 @@ CREATE TABLE RESOURCE_ALLOCATION (
     , ORIG_AMOUNT                    integer         WITH NULL
     , KEEP_MODE                      integer         NOT NULL
     , IS_STICKY                      integer         NOT NULL
+    , STICKY_NAME                    varchar(64)     WITH NULL
+    , STICKY_PARENT                  decimal(20)     WITH NULL
     , ALLOCATION_TYPE                integer         NOT NULL
     , RSMP_ID                        decimal(20)     WITH NULL
     , LOCKMODE                       integer         WITH NULL
@@ -56,6 +58,8 @@ SELECT
     , ORIG_AMOUNT                    AS ORIG_AMOUNT
     , CASE KEEP_MODE WHEN 0 THEN 'NOKEEP' WHEN 1 THEN 'KEEP' WHEN 2 THEN 'KEEP_FINAL' END AS KEEP_MODE
     , CASE IS_STICKY WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_STICKY
+    , STICKY_NAME                    AS STICKY_NAME
+    , STICKY_PARENT                  AS STICKY_PARENT
     , CASE ALLOCATION_TYPE WHEN 1 THEN 'REQUEST' WHEN 2 THEN 'RESERVATION' WHEN 3 THEN 'MASTER_RESERVATION' WHEN 4 THEN 'ALLOCATION' WHEN 5 THEN 'IGNORE' END AS ALLOCATION_TYPE
     , RSMP_ID                        AS RSMP_ID
     , CASE LOCKMODE WHEN 255 THEN 'N' WHEN 0 THEN 'X' WHEN 2 THEN 'SX' WHEN 4 THEN 'S' WHEN 6 THEN 'SC' END AS LOCKMODE

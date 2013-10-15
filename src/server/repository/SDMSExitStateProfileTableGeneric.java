@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSExitStateProfileTableGeneric extends SDMSTable
 {
 
-	public final static String __version = "SDMSExitStateProfileTableGeneric $Revision: 2.4 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static String tableName = "EXIT_STATE_PROFILE";
 	public static SDMSExitStateProfileTable table  = null;
 

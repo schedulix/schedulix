@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class AlterJobDefinition extends ManipJobDefinition
 {
 
-	public final static String __version = "@(#) $Id: AlterJobDefinition.java,v 2.30.2.3 2013/03/22 14:32:15 dieter Exp $";
-
 	public AlterJobDefinition(Vector p, String n, WithHash w, Boolean ne)
 	{
 		super(p, n, w, ne);
@@ -515,7 +513,10 @@ public class AlterJobDefinition extends ManipJobDefinition
 		String rsmpname;
 		Long rsmpId;
 		Integer keepMode;
+		WithHash sticky;
 		Boolean isSticky;
+		String stickyName;
+		Long stickyParent;
 		WithHash expired;
 		Integer exp_mult;
 		Integer exp_interval;
@@ -540,7 +541,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 				lockmode = (Integer) wh.get(ParseStr.S_LOCKMODE);
 				rsmpname = (String) wh.get(ParseStr.S_MAP_STATUS);
 				keepMode = (Integer) wh.get(ParseStr.S_KEEP);
-				isSticky = (Boolean) wh.get(ParseStr.S_STICKY);
+				sticky = (WithHash) wh.get(ParseStr.S_STICKY);
 				expired = (WithHash) wh.get(ParseStr.S_EXPIRED);
 				states = (Vector) wh.get(ParseStr.S_STATUS);
 				condition = (String) wh.get(ParseStr.S_CONDITION);
@@ -569,7 +570,27 @@ public class AlterJobDefinition extends ManipJobDefinition
 							rr.setRsmpId(sysEnv, rsmpId);
 						}
 						if(wh.containsKey(ParseStr.S_KEEP))	rr.setKeepMode(sysEnv, keepMode);
-						if(wh.containsKey(ParseStr.S_STICKY))	rr.setIsSticky(sysEnv, isSticky);
+						if(wh.containsKey(ParseStr.S_STICKY)) {
+							isSticky = Boolean.TRUE;
+							stickyName = (String) sticky.get(ParseStr.S_NAME);
+							PathVector spv = (PathVector) sticky.get(ParseStr.S_JOB_DEFINITION);
+							if (spv == null) {
+								stickyParent = null;
+							} else {
+								String pName = (String) spv.remove(spv.size() -1);
+								try {
+									SDMSSchedulingEntity spse = SDMSSchedulingEntityTable.get(sysEnv, spv, pName);
+									if(!spse.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
+										throw new AccessViolationException(new SDMSMessage(sysEnv, "03309241513", "Insufficient privileges"));
+									stickyParent = spse.getId(sysEnv);
+								} catch(NotFoundException nfe) {
+									throw new CommonErrorException(new SDMSMessage(sysEnv, "03309250927", "The specified sticky parent isn't a job definition"));
+								}
+							}
+							rr.setIsSticky(sysEnv, isSticky);
+							rr.setStickyName(sysEnv, stickyName);
+							rr.setStickyParent(sysEnv, stickyParent);
+						}
 						if(wh.containsKey(ParseStr.S_EXPIRED)) {
 							if(expired != null) {
 								exp_mult = (Integer) expired.get(ParseStr.S_MULT);
@@ -596,7 +617,28 @@ public class AlterJobDefinition extends ManipJobDefinition
 						rsmpId = SDMSResourceStateMappingProfileTable.idx_name_getUnique(sysEnv, rsmpname).getId(sysEnv);
 					}
 					if(keepMode == null)	keepMode = new Integer(SDMSResourceRequirement.NOKEEP);
-					if(isSticky == null)	isSticky = Boolean.FALSE;
+					if(sticky == null) {
+						isSticky = Boolean.FALSE;
+						stickyName = null;
+						stickyParent = null;
+					} else {
+						isSticky = Boolean.TRUE;
+						stickyName = (String) sticky.get(ParseStr.S_NAME);
+						PathVector spv = (PathVector) sticky.get(ParseStr.S_JOB_DEFINITION);
+						if (spv == null) {
+							stickyParent = null;
+						} else {
+							String pName = (String) spv.remove(spv.size() -1);
+							try {
+								SDMSSchedulingEntity spse = SDMSSchedulingEntityTable.get(sysEnv, spv, pName);
+								if(!spse.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
+									throw new AccessViolationException(new SDMSMessage(sysEnv, "03309241515", "Insufficient privileges"));
+								stickyParent = spse.getId(sysEnv);
+							} catch (NotFoundException nfe) {
+								throw new CommonErrorException(new SDMSMessage(sysEnv, "03309250929", "The specified sticky parent isn't a job definition"));
+							}
+						}
+					}
 					if(expired == null) {
 						exp_mult = null;
 						exp_interval = null;
@@ -606,7 +648,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 						exp_interval = (Integer) expired.get(ParseStr.S_INTERVAL);
 					}
 					rr = SDMSResourceRequirementTable.table.create(sysEnv,
-					                newNrId, seId, amount, keepMode, isSticky,
+					                newNrId, seId, amount, keepMode, isSticky, stickyName, stickyParent,
 					                rsmpId, exp_mult, exp_interval, lockmode, condition);
 				}
 

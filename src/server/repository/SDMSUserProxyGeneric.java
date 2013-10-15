@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSUserProxyGeneric extends SDMSProxy
 {
 
-	public final static String __version = "SDMSUserProxyGeneric $Revision: 2.6 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static String SYSTEM = "SYSTEM";
 	public final static String INTERNAL = "INTERNAL";
 	public final static String NOBODY = "NOBODY";

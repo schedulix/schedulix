@@ -46,7 +46,7 @@ JOB_T job = {
 
 const char *last_error = NULL;
 
-#define VERSION "v2.5.1/" OS_TYPE
+#define VERSION "v2.6/" OS_TYPE
 
 static const char *const copyright = "Copyright (c) 2002-2013";
 static const char *const company   = "independIT Integrative Technologies GmbH";

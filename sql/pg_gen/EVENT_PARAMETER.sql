@@ -24,7 +24,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
--- Copyright (C) 2003-2006 independIT Integrative Technologies GmbH
+-- Copyright (C) 2003-2013 independIT Integrative Technologies GmbH
 
 CREATE TABLE EVENT_PARAMETER (
     ID                             DECIMAL(20) NOT NULL

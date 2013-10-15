@@ -39,6 +39,7 @@ import de.independit.scheduler.server.output.*;
 public class ShowObjectMonitor extends ShowCommented
 {
 
+	public final static String __version = "@(#) $Id: ShowObjectMonitor.java,v 2.4.4.5 2013/09/13 08:58:44 dieter Exp $";
 
 	ObjectURL url;
 

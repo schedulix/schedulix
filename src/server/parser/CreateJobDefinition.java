@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class CreateJobDefinition extends ManipJobDefinition
 {
 
-	public final static String __version = "@(#) $Id: CreateJobDefinition.java,v 2.12.2.2 2013/03/22 14:32:15 dieter Exp $";
-
 	private boolean replace;
 
 	public CreateJobDefinition(Vector p, String n, WithHash w, Boolean r)

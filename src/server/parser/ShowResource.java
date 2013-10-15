@@ -40,8 +40,6 @@ import de.independit.scheduler.server.util.*;
 public class ShowResource extends ShowCommented
 {
 
-	public final static String __version = "@(#) $Id: ShowResource.java,v 2.23.2.4 2013/06/18 09:49:37 ronald Exp $";
-
 	private Vector resourcepath;
 	private Vector path;
 	private Long rId;
@@ -416,7 +414,14 @@ public class ShowResource extends ShowCommented
 			Vector rav = r.getAllocations(sysEnv);
 			for(int i = 0; i < rav.size(); i++) {
 				SDMSResourceAllocation ra = (SDMSResourceAllocation) rav.get(i);
-				s_container.addData(sysEnv, fill_detail(sysEnv, ra, nr, r));
+				if (ra.getSmeId(sysEnv).longValue() > 0)
+					s_container.addData(sysEnv, fill_detail(sysEnv, ra, nr, r));
+				else {
+					Vector mrav = SDMSMasterAllocationTable.idx_raId.getVector(sysEnv, ra.getId(sysEnv));
+					for (int j = 0; j < mrav.size(); ++j) {
+						s_container.addData(sysEnv, fill_detail(sysEnv, ra, (SDMSMasterAllocation) mrav.get(j), nr, r));
+					}
+				}
 			}
 		}
 
@@ -448,6 +453,12 @@ public class ShowResource extends ShowCommented
 		rdesc.add("KEEP_MODE");
 
 		rdesc.add("IS_STICKY");
+
+		rdesc.add("STICKY_NAME");
+
+		rdesc.add("STICKY_PARENT");
+
+		rdesc.add("STICKY_PARENT_TYPE");
 
 		rdesc.add("LOCKMODE");
 
@@ -493,6 +504,16 @@ public class ShowResource extends ShowCommented
 		v.add(ra.getAmount(sysEnv));
 		v.add(ra.getKeepModeAsString(sysEnv));
 		v.add(ra.getIsSticky(sysEnv));
+		v.add(ra.getStickyName(sysEnv));
+		Long stickyParent = ra.getStickyParent(sysEnv);
+		v.add(stickyParent);
+		if (stickyParent == null)
+			v.add(null);
+		else {
+			final SDMSSubmittedEntity spsme = SDMSSubmittedEntityTable.getObject(sysEnv, stickyParent);
+			final SDMSSchedulingEntity spse = SDMSSchedulingEntityTable.getObject(sysEnv, spsme.getSeId(sysEnv), actVersion);
+			v.add(spse.getTypeAsString(sysEnv));
+		}
 		v.add(ra.getLockmodeAsString(sysEnv));
 		Long rsmpId = ra.getRsmpId(sysEnv);
 		if (rsmpId != null) {
@@ -515,7 +536,7 @@ public class ShowResource extends ShowCommented
 					v.add(BLOCKED);
 				} else {
 					if(ra.getIsSticky(sysEnv).booleanValue()) {
-						MasterReservationInfo mri = SystemEnvironment.sched.checkMasterReservation(sysEnv, sme, rr, r, actVersion);
+						MasterReservationInfo mri = SystemEnvironment.sched.checkMasterReservation(sysEnv, sme, rr, ra.getStickyParent(sysEnv), r, actVersion);
 						if(mri.canAllocate) {
 							v.add("AVAILABLE");
 							v.add(AVAILABLE);
@@ -548,6 +569,73 @@ public class ShowResource extends ShowCommented
 				v.add(IGNORED);
 				break;
 			}
+		}
+		v.add(sme.getPriority(sysEnv));
+		v.add(new Integer(SystemEnvironment.sched.getDynPriority(sysEnv, sme)));
+		v.add(sme.getPrivileges(sysEnv).toString());
+
+		return v;
+	}
+
+	private Vector fill_detail(SystemEnvironment sysEnv, SDMSResourceAllocation ra, SDMSMasterAllocation ma, SDMSNamedResource nr, SDMSResource r)
+	throws SDMSException
+	{
+		Vector v = new Vector();
+		Long seId;
+		long smeId;
+		Long oSmeId;
+		SDMSSubmittedEntity sme;
+		long actVersion;
+		SDMSSchedulingEntity se;
+		SDMSResourceRequirement rr;
+
+		v.add(ra.getId(sysEnv));
+		smeId = ra.getSmeId(sysEnv).longValue();
+		oSmeId = new Long(-smeId);
+		v.add(oSmeId);
+		sme = SDMSSubmittedEntityTable.getObject(sysEnv, oSmeId);
+		v.add(sme.getMasterId(sysEnv));
+		actVersion = sme.getSeVersion(sysEnv).longValue();
+		seId = sme.getSeId(sysEnv);
+		se = SDMSSchedulingEntityTable.getObject(sysEnv, seId, actVersion);
+
+		v.add(se.getTypeAsString(sysEnv));
+
+		v.add(sme.getSubmitPathString(sysEnv,true));
+		v.add(ra.getAmount(sysEnv));
+		v.add(ra.getKeepModeAsString(sysEnv));
+		v.add(ra.getIsSticky(sysEnv));
+		v.add(ma.getStickyName(sysEnv));
+		Long stickyParent = ma.getStickyParent(sysEnv);
+		v.add(stickyParent);
+		if (stickyParent == null)
+			v.add(null);
+		else {
+			final SDMSSubmittedEntity spsme = SDMSSubmittedEntityTable.getObject(sysEnv, stickyParent);
+			final SDMSSchedulingEntity spse = SDMSSchedulingEntityTable.getObject(sysEnv, spsme.getSeId(sysEnv), actVersion);
+			v.add(spse.getTypeAsString(sysEnv));
+		}
+		v.add(ma.getLockmodeAsString(sysEnv));
+		Long rsmpId = ra.getRsmpId(sysEnv);
+		if (rsmpId != null) {
+			SDMSResourceStateMappingProfile rsmp = SDMSResourceStateMappingProfileTable.getObject(sysEnv, ra.getRsmpId(sysEnv), actVersion);
+			v.add(rsmp.getName(sysEnv));
+		} else v.add(null);
+		int allocType = ra.getAllocationType(sysEnv).intValue();
+		v.add(ra.getAllocationTypeAsString(sysEnv));
+		switch(allocType) {
+		case SDMSResourceAllocation.ALLOCATION:
+			v.add(ALLOCATION);
+			break;
+		case SDMSResourceAllocation.MASTER_RESERVATION:
+			v.add(MASTER_RESERVATION);
+			break;
+		case SDMSResourceAllocation.RESERVATION:
+			v.add(RESERVATION);
+			break;
+		case SDMSResourceAllocation.IGNORE:
+			v.add(IGNORED);
+			break;
 		}
 		v.add(sme.getPriority(sysEnv));
 		v.add(new Integer(SystemEnvironment.sched.getDynPriority(sysEnv, sme)));

@@ -40,8 +40,6 @@ public class SDMSIgnoredDependencyGeneric extends SDMSObject
 	implements Cloneable
 {
 
-	public final static String __version = "SDMSIgnoredDependencyGeneric $Revision: 2.1 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static int nr_id = 1;
 	public final static int nr_shId = 2;
 	public final static int nr_ddName = 3;

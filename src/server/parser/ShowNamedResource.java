@@ -40,8 +40,6 @@ import de.independit.scheduler.server.output.*;
 public class ShowNamedResource extends ShowCommented
 {
 
-	public final static String __version = "@(#) $Id: ShowNamedResource.java,v 2.21.2.4 2013/08/09 09:46:42 ronald Exp $";
-
 	private ObjectURL url;
 	HashSet expandIds;
 
@@ -312,6 +310,10 @@ public class ShowNamedResource extends ShowCommented
 
 		c_desc.add("IS_STICKY");
 
+		c_desc.add("STICKY_NAME");
+
+		c_desc.add("STICKY_PARENT");
+
 		c_desc.add("RESOURCE_STATE_MAPPING");
 
 		c_desc.add("EXPIRED_AMOUNT");
@@ -457,6 +459,14 @@ public class ShowNamedResource extends ShowCommented
 		c_data.add(rr.getAmount(sysEnv));
 		c_data.add(rr.getKeepModeAsString(sysEnv));
 		c_data.add(rr.getIsSticky(sysEnv));
+		c_data.add(rr.getStickyName(sysEnv));
+		Long spId = rr.getStickyParent(sysEnv);
+		if (spId == null)
+			c_data.add(null);
+		else {
+			SDMSSchedulingEntity spse = SDMSSchedulingEntityTable.getObject(sysEnv, spId);
+			c_data.add(spse.pathString(sysEnv));
+		}
 		Long rsmpId = rr.getRsmpId(sysEnv);
 		if(rsmpId != null) {
 			rsmp = SDMSResourceStateMappingProfileTable.getObject(sysEnv, rsmpId);

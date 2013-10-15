@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSEntityVariableProxyGeneric extends SDMSProxy
 {
 
-	public final static String __version = "SDMSEntityVariableProxyGeneric $Revision: 2.3 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP;
 
 	static final public int name_size = 64;

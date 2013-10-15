@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSGrantTable extends SDMSGrantTableGeneric
 {
 
-	public final static String __version = "SDMSGrantTable $Revision: 2.8 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public SDMSGrantTable(SystemEnvironment env)
 	throws SDMSException
 	{

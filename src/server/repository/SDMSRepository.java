@@ -167,6 +167,7 @@ public class SDMSRepository
 		tables.put(SDMSNamedEnvironmentTableGeneric.tableName,            new SDMSNamedEnvironmentTable(env));
 		tables.put(SDMSNamedResourceTableGeneric.tableName,               new SDMSNamedResourceTable(env));
 
+		tables.put(SDMSMasterAllocationTableGeneric.tableName,            new SDMSMasterAllocationTable(env));
 		tables.put(SDMSMemberTableGeneric.tableName,                      new SDMSMemberTable(env));
 
 		tables.put(SDMSObjectCommentTableGeneric.tableName,               new SDMSObjectCommentTable(env));

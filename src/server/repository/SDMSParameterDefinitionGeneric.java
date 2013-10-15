@@ -40,8 +40,6 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	implements Cloneable
 {
 
-	public final static String __version = "SDMSParameterDefinitionGeneric $Revision: 2.11 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int REFERENCE = 10;
 	public static final int CHILDREFERENCE = 20;
 	public static final int CONSTANT = 30;

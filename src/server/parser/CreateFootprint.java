@@ -38,8 +38,6 @@ import de.independit.scheduler.server.exception.*;
 public class CreateFootprint extends Node
 {
 
-	public final static String __version = "@(#) $Id: CreateFootprint.java,v 2.3.14.1 2013/03/14 10:24:26 ronald Exp $";
-
 	private String name;
 	private Vector resources;
 	private boolean replace;
@@ -59,15 +57,16 @@ public class CreateFootprint extends Node
 		Long   nrId;
 		Long   fId = f.getId(sysEnv);
 		Integer amount;
-		Integer lockmode;
-		String mapname;
-		Long rsmpId;
 		Integer keepMode;
-		Boolean isSticky;
-		WithHash expired;
-		Integer exp_mult;
-		Integer exp_interval;
-		Vector states;
+
+		Long rsmpId = null;
+		Integer lockmode = new Integer(SDMSResourceRequirement.N);
+		Boolean isSticky = Boolean.FALSE;
+		String stickyName = null;
+		Long stickyParent = null;
+		Integer exp_mult = null;
+		Integer exp_interval = null;
+		String condition = null;
 
 		SDMSResourceRequirement rr;
 		SDMSNamedResource nr;
@@ -87,29 +86,9 @@ public class CreateFootprint extends Node
 		keepMode = (Integer) with.get(ParseStr.S_KEEP);
 		if(keepMode == null) keepMode = new Integer(SDMSResourceRequirement.NOKEEP);
 
-		lockmode = (Integer) with.get(ParseStr.S_LOCKMODE);
-		if(lockmode == null) lockmode = new Integer(SDMSResourceRequirement.N);
-
-		mapname = (String) with.get(ParseStr.S_MAP_STATUS);
-		if(mapname == null)  rsmpId = null;
-		else rsmpId = new Long(1);
-
-		isSticky = (Boolean) with.get(ParseStr.S_STICKY);
-		if(isSticky == null) isSticky = Boolean.FALSE;
-
-		exp_interval = null;
-		expired = (WithHash) with.get(ParseStr.S_EXPIRED);
-		if(expired == null)	exp_mult = null;
-		else 			exp_mult = new Integer(1);
-
-		states = (Vector) with.get(ParseStr.S_STATUS);
-		if(states != null) {
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03207161112", "Resource states are not a valid option for system resources"));
-		}
-
 		rr = SDMSResourceRequirementTable.table.create(sysEnv,
-		                nrId, fId, amount, keepMode, isSticky,
-		                rsmpId, exp_mult, exp_interval, lockmode, null );
+		                nrId, fId, amount, keepMode, isSticky, stickyName, stickyParent,
+		                rsmpId, exp_mult, exp_interval, lockmode, condition);
 		rr.check(sysEnv);
 
 	}

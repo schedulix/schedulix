@@ -98,8 +98,8 @@ public class SDMSPrivilege
 	                MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL;
 
 	public final static long MANAGE_PRIVS[] = 	{ MANAGE_USER, MANAGE_GROUP, MANAGE_ESD, MANAGE_ESP,
-	                                                  MANAGE_ESM, MANAGE_EST, MANAGE_RSD, MANAGE_RSP, MANAGE_RSM,
-	                                                  MANAGE_FP, MANAGE_ENV, MANAGE_SYS, MANAGE_SEL
+	                MANAGE_ESM, MANAGE_EST, MANAGE_RSD, MANAGE_RSP, MANAGE_RSM,
+	                MANAGE_FP, MANAGE_ENV, MANAGE_SYS, MANAGE_SEL
 	                                           };
 
 	public final static long NOPRIVS		= 0x0000000000000000L;

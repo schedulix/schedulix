@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSIntervalSelectionTable extends SDMSIntervalSelectionTableGeneric
 {
 
-	public final static String __version = "SDMSIntervalSelectionTable $Revision: 2.3 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public SDMSIntervalSelectionTable(SystemEnvironment env)
 	throws SDMSException
 	{

@@ -39,8 +39,6 @@ import de.independit.scheduler.server.output.*;
 public class ShowFootprint extends ShowCommented
 {
 
-	public final static String __version = "@(#) $Id: ShowFootprint.java,v 2.9.2.2 2013/06/18 09:49:36 ronald Exp $";
-
 	private final ObjectURL url;
 	private final HashSet expandIds;
 

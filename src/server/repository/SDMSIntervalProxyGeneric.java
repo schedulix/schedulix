@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSIntervalProxyGeneric extends SDMSProxy
 {
 
-	public final static String __version = "SDMSIntervalProxyGeneric $Revision: 2.9 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int MINUTE = 0;
 	public static final int HOUR = 1;
 	public static final int DAY = 2;

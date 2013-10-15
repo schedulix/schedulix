@@ -39,8 +39,6 @@ import de.independit.scheduler.server.output.*;
 public class ListJobDefinitionHierarchy extends Node
 {
 
-	public final static String __version = "@(#) $Id: ListJobDefinitionHierarchy.java,v 2.12.4.3 2013/06/18 09:49:33 ronald Exp $";
-
 	Vector path;
 	boolean expand;
 	HashSet expandIds;

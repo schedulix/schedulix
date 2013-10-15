@@ -40,8 +40,6 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	implements Cloneable
 {
 
-	public final static String __version = "SDMSResourceRequirementGeneric $Revision: 2.5 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int N = Lockmode.N;
 	public static final int X = Lockmode.X;
 	public static final int SX = Lockmode.SX;
@@ -63,15 +61,17 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	public final static int nr_amount = 4;
 	public final static int nr_keepMode = 5;
 	public final static int nr_isSticky = 6;
-	public final static int nr_rsmpId = 7;
-	public final static int nr_expiredAmount = 8;
-	public final static int nr_expiredBase = 9;
-	public final static int nr_lockmode = 10;
-	public final static int nr_condition = 11;
-	public final static int nr_creatorUId = 12;
-	public final static int nr_createTs = 13;
-	public final static int nr_changerUId = 14;
-	public final static int nr_changeTs = 15;
+	public final static int nr_stickyName = 7;
+	public final static int nr_stickyParent = 8;
+	public final static int nr_rsmpId = 9;
+	public final static int nr_expiredAmount = 10;
+	public final static int nr_expiredBase = 11;
+	public final static int nr_lockmode = 12;
+	public final static int nr_condition = 13;
+	public final static int nr_creatorUId = 14;
+	public final static int nr_createTs = 15;
+	public final static int nr_changerUId = 16;
+	public final static int nr_changeTs = 17;
 
 	public static String tableName = SDMSResourceRequirementTableGeneric.tableName;
 
@@ -80,6 +80,8 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	protected Integer amount;
 	protected Integer keepMode;
 	protected Boolean isSticky;
+	protected String stickyName;
+	protected Long stickyParent;
 	protected Long rsmpId;
 	protected Integer expiredAmount;
 	protected Integer expiredBase;
@@ -101,6 +103,8 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	        Integer p_amount,
 	        Integer p_keepMode,
 	        Boolean p_isSticky,
+	        String p_stickyName,
+	        Long p_stickyParent,
 	        Long p_rsmpId,
 	        Integer p_expiredAmount,
 	        Integer p_expiredBase,
@@ -119,6 +123,14 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 		amount = p_amount;
 		keepMode = p_keepMode;
 		isSticky = p_isSticky;
+		if (p_stickyName != null && p_stickyName.length() > 64) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141528",
+			                        "(ResourceRequirement) Length of $1 exceeds maximum length $2", "stickyName", "64")
+			);
+		}
+		stickyName = p_stickyName;
+		stickyParent = p_stickyParent;
 		rsmpId = p_rsmpId;
 		expiredAmount = p_expiredAmount;
 		expiredBase = p_expiredBase;
@@ -299,6 +311,76 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 			}
 			o = (SDMSResourceRequirementGeneric) change(env);
 			o.isSticky = p_isSticky;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public String getStickyName (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (stickyName);
+	}
+
+	public	SDMSResourceRequirementGeneric setStickyName (SystemEnvironment env, String p_stickyName)
+	throws SDMSException
+	{
+		if(p_stickyName != null && p_stickyName.equals(stickyName)) return this;
+		if(p_stickyName == null && stickyName == null) return this;
+		SDMSResourceRequirementGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(ResourceRequirement) Change of system object not allowed")
+				);
+			}
+			o = (SDMSResourceRequirementGeneric) change(env);
+			if (p_stickyName != null && p_stickyName.length() > 64) {
+				throw new CommonErrorException (
+				        new SDMSMessage(env, "01112141510",
+				                        "(ResourceRequirement) Length of $1 exceeds maximum length $2", "stickyName", "64")
+				);
+			}
+			o.stickyName = p_stickyName;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Long getStickyParent (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (stickyParent);
+	}
+
+	public	SDMSResourceRequirementGeneric setStickyParent (SystemEnvironment env, Long p_stickyParent)
+	throws SDMSException
+	{
+		if(p_stickyParent != null && p_stickyParent.equals(stickyParent)) return this;
+		if(p_stickyParent == null && stickyParent == null) return this;
+		SDMSResourceRequirementGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(ResourceRequirement) Change of system object not allowed")
+				);
+			}
+			o = (SDMSResourceRequirementGeneric) change(env);
+			o.stickyParent = p_stickyParent;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
@@ -674,6 +756,8 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	                Integer p_amount,
 	                Integer p_keepMode,
 	                Boolean p_isSticky,
+	                String p_stickyName,
+	                Long p_stickyParent,
 	                Long p_rsmpId,
 	                Integer p_expiredAmount,
 	                Integer p_expiredBase,
@@ -691,6 +775,8 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 		amount = p_amount;
 		keepMode = p_keepMode;
 		isSticky = p_isSticky;
+		stickyName = p_stickyName;
+		stickyParent = p_stickyParent;
 		rsmpId = p_rsmpId;
 		expiredAmount = p_expiredAmount;
 		expiredBase = p_expiredBase;
@@ -734,6 +820,8 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 				        ", " + squote + "AMOUNT" + equote +
 				        ", " + squote + "KEEP_MODE" + equote +
 				        ", " + squote + "IS_STICKY" + equote +
+				        ", " + squote + "STICKY_NAME" + equote +
+				        ", " + squote + "STICKY_PARENT" + equote +
 				        ", " + squote + "RSMP_ID" + equote +
 				        ", " + squote + "EXPIRED_AMOUNT" + equote +
 				        ", " + squote + "EXPIRED_BASE" + equote +
@@ -745,6 +833,8 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ", VALID_FROM, VALID_TO" +
 				        ") VALUES (?" +
+				        ", ?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -779,32 +869,40 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 				pInsert.setInt(4, amount.intValue());
 			pInsert.setInt(5, keepMode.intValue());
 			pInsert.setInt (6, isSticky.booleanValue() ? 1 : 0);
-			if (rsmpId == null)
-				pInsert.setNull(7, Types.INTEGER);
+			if (stickyName == null)
+				pInsert.setNull(7, Types.VARCHAR);
 			else
-				pInsert.setLong (7, rsmpId.longValue());
-			if (expiredAmount == null)
+				pInsert.setString(7, stickyName);
+			if (stickyParent == null)
 				pInsert.setNull(8, Types.INTEGER);
 			else
-				pInsert.setInt(8, expiredAmount.intValue());
-			if (expiredBase == null)
+				pInsert.setLong (8, stickyParent.longValue());
+			if (rsmpId == null)
 				pInsert.setNull(9, Types.INTEGER);
 			else
-				pInsert.setInt(9, expiredBase.intValue());
-			if (lockmode == null)
+				pInsert.setLong (9, rsmpId.longValue());
+			if (expiredAmount == null)
 				pInsert.setNull(10, Types.INTEGER);
 			else
-				pInsert.setInt(10, lockmode.intValue());
-			if (condition == null)
-				pInsert.setNull(11, Types.VARCHAR);
+				pInsert.setInt(10, expiredAmount.intValue());
+			if (expiredBase == null)
+				pInsert.setNull(11, Types.INTEGER);
 			else
-				pInsert.setString(11, condition);
-			pInsert.setLong (12, creatorUId.longValue());
-			pInsert.setLong (13, createTs.longValue());
-			pInsert.setLong (14, changerUId.longValue());
-			pInsert.setLong (15, changeTs.longValue());
-			pInsert.setLong(16, env.tx.versionId);
-			pInsert.setLong(17, Long.MAX_VALUE);
+				pInsert.setInt(11, expiredBase.intValue());
+			if (lockmode == null)
+				pInsert.setNull(12, Types.INTEGER);
+			else
+				pInsert.setInt(12, lockmode.intValue());
+			if (condition == null)
+				pInsert.setNull(13, Types.VARCHAR);
+			else
+				pInsert.setString(13, condition);
+			pInsert.setLong (14, creatorUId.longValue());
+			pInsert.setLong (15, createTs.longValue());
+			pInsert.setLong (16, changerUId.longValue());
+			pInsert.setLong (17, changeTs.longValue());
+			pInsert.setLong(18, env.tx.versionId);
+			pInsert.setLong(19, Long.MAX_VALUE);
 			pInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
@@ -908,6 +1006,8 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "amount : " + amount, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "keepMode : " + keepMode, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isSticky : " + isSticky, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "stickyName : " + stickyName, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "stickyParent : " + stickyParent, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "rsmpId : " + rsmpId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "expiredAmount : " + expiredAmount, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "expiredBase : " + expiredBase, SDMSThread.SEVERITY_MESSAGE);
@@ -933,6 +1033,8 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 		        indentString + "amount        : " + amount + "\n" +
 		        indentString + "keepMode      : " + keepMode + "\n" +
 		        indentString + "isSticky      : " + isSticky + "\n" +
+		        indentString + "stickyName    : " + stickyName + "\n" +
+		        indentString + "stickyParent  : " + stickyParent + "\n" +
 		        indentString + "rsmpId        : " + rsmpId + "\n" +
 		        indentString + "expiredAmount : " + expiredAmount + "\n" +
 		        indentString + "expiredBase   : " + expiredBase + "\n" +

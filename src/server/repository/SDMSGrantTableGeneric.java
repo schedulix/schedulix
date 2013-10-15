@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSGrantTableGeneric extends SDMSTable
 {
 
-	public final static String __version = "SDMSGrantTableGeneric $Revision: 2.8 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static String tableName = "GRANTS";
 	public static SDMSGrantTable table  = null;
 

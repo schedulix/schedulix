@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSCalendarTableGeneric extends SDMSTable
 {
 
-	public final static String __version = "SDMSCalendarTableGeneric $Revision: 2.2 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static String tableName = "CALENDAR";
 	public static SDMSCalendarTable table  = null;
 

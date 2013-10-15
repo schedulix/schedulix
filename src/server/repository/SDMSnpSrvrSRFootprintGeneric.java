@@ -40,8 +40,6 @@ public class SDMSnpSrvrSRFootprintGeneric extends SDMSObject
 	implements Cloneable
 {
 
-	public final static String __version = "SDMSnpSrvrSRFootprintGeneric $Revision: 2.0 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static int nr_id = 1;
 	public final static int nr_sId = 2;
 	public final static int nr_sessionId = 3;

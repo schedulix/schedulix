@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSSmeCounter extends SDMSSmeCounterProxyGeneric
 {
 
-	public final static String __version = "SDMSSmeCounter $Revision: 2.4 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	protected SDMSSmeCounter(SDMSObject p_object)
 	{
 		super(p_object);

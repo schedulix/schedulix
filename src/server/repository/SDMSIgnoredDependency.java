@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSIgnoredDependency extends SDMSIgnoredDependencyProxyGeneric
 {
 
-	public final static String __version = "SDMSIgnoredDependency $Revision: 2.1 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	protected SDMSIgnoredDependency(SDMSObject p_object)
 	{
 		super(p_object);

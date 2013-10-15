@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSIntervalHierarchyTableGeneric extends SDMSTable
 {
 
-	public final static String __version = "SDMSIntervalHierarchyTableGeneric $Revision: 2.1 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static String tableName = "INTERVAL_HIERARCHY";
 	public static SDMSIntervalHierarchyTable table  = null;
 

@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSResourceStateMappingProfileTable extends SDMSResourceStateMappingProfileTableGeneric
 {
 
-	public final static String __version = "SDMSResourceStateMappingProfileTable $Revision: 2.3 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public SDMSResourceStateMappingProfileTable(SystemEnvironment env)
 	throws SDMSException
 	{

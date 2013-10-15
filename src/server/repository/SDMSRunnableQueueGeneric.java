@@ -40,8 +40,6 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 	implements Cloneable
 {
 
-	public final static String __version = "SDMSRunnableQueueGeneric $Revision: 2.3 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int DEPENDENCY_WAIT = SDMSSubmittedEntity.DEPENDENCY_WAIT;
 	public static final int SYNCHRONIZE_WAIT = SDMSSubmittedEntity.SYNCHRONIZE_WAIT;
 	public static final int RESOURCE_WAIT = SDMSSubmittedEntity.RESOURCE_WAIT;

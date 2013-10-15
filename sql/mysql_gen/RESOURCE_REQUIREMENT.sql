@@ -24,7 +24,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
--- Copyright (C) 2003-2006 independIT Integrative Technologies GmbH
+-- Copyright (C) 2003-2013 independIT Integrative Technologies GmbH
 
 CREATE TABLE RESOURCE_REQUIREMENT (
     ID                             DECIMAL(20) NOT NULL
@@ -33,6 +33,8 @@ CREATE TABLE RESOURCE_REQUIREMENT (
     , `AMOUNT`                       integer             NULL
     , `KEEP_MODE`                    integer         NOT NULL
     , `IS_STICKY`                    integer         NOT NULL
+    , `STICKY_NAME`                  varchar(64)         NULL
+    , `STICKY_PARENT`                decimal(20)         NULL
     , `RSMP_ID`                      decimal(20)         NULL
     , `EXPIRED_AMOUNT`               integer             NULL
     , `EXPIRED_BASE`                 integer             NULL
@@ -55,6 +57,8 @@ SELECT
     , `AMOUNT`                       AS `AMOUNT`
     , CASE `KEEP_MODE` WHEN 0 THEN 'NOKEEP' WHEN 1 THEN 'KEEP' WHEN 2 THEN 'KEEP_FINAL' END AS `KEEP_MODE`
     , CASE `IS_STICKY` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_STICKY`
+    , `STICKY_NAME`                  AS `STICKY_NAME`
+    , `STICKY_PARENT`                AS `STICKY_PARENT`
     , `RSMP_ID`                      AS `RSMP_ID`
     , `EXPIRED_AMOUNT`               AS `EXPIRED_AMOUNT`
     , CASE `EXPIRED_BASE` WHEN 0 THEN 'MINUTE' WHEN 1 THEN 'HOUR' WHEN 2 THEN 'DAY' WHEN 3 THEN 'WEEK' WHEN 4 THEN 'MONTH' WHEN 5 THEN 'YEAR' END AS `EXPIRED_BASE`
@@ -74,6 +78,8 @@ SELECT
     , `AMOUNT`                       AS `AMOUNT`
     , CASE `KEEP_MODE` WHEN 0 THEN 'NOKEEP' WHEN 1 THEN 'KEEP' WHEN 2 THEN 'KEEP_FINAL' END AS `KEEP_MODE`
     , CASE `IS_STICKY` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_STICKY`
+    , `STICKY_NAME`                  AS `STICKY_NAME`
+    , `STICKY_PARENT`                AS `STICKY_PARENT`
     , `RSMP_ID`                      AS `RSMP_ID`
     , `EXPIRED_AMOUNT`               AS `EXPIRED_AMOUNT`
     , CASE `EXPIRED_BASE` WHEN 0 THEN 'MINUTE' WHEN 1 THEN 'HOUR' WHEN 2 THEN 'DAY' WHEN 3 THEN 'WEEK' WHEN 4 THEN 'MONTH' WHEN 5 THEN 'YEAR' END AS `EXPIRED_BASE`

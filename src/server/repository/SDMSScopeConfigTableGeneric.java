@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSScopeConfigTableGeneric extends SDMSTable
 {
 
-	public final static String __version = "SDMSScopeConfigTableGeneric $Revision: 2.2 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public final static String tableName = "SCOPE_CONFIG";
 	public static SDMSScopeConfigTable table  = null;
 

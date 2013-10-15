@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSResourceAllocationProxyGeneric extends SDMSProxy
 {
 
-	public final static String __version = "SDMSResourceAllocationProxyGeneric $Revision: 2.6 $ / @(#) $Id: generate.py,v 2.42.2.7 2013/04/17 12:40:29 ronald Exp $";
-
 	public static final int N = Lockmode.N;
 	public static final int X = Lockmode.X;
 	public static final int SX = Lockmode.SX;
@@ -55,6 +53,8 @@ public class SDMSResourceAllocationProxyGeneric extends SDMSProxy
 	public static final int ALLOCATION = 4;
 	public static final int IGNORE = 5;
 	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP;
+
+	static final public int stickyName_size = 64;
 
 	private static SDMSTable masterTables[] = null;
 
@@ -194,6 +194,42 @@ public class SDMSResourceAllocationProxyGeneric extends SDMSProxy
 
 		touchMaster(env);
 		((SDMSResourceAllocationGeneric)(object)).setIsSticky (env, p_isSticky);
+		return ;
+	}
+	public String getStickyName (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSResourceAllocationGeneric)(object)).getStickyName (env));
+	}
+
+	public void setStickyName (SystemEnvironment env, String p_stickyName)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSResourceAllocationGeneric)(object)).setStickyName (env, p_stickyName);
+		return ;
+	}
+	public Long getStickyParent (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSResourceAllocationGeneric)(object)).getStickyParent (env));
+	}
+
+	public void setStickyParent (SystemEnvironment env, Long p_stickyParent)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSResourceAllocationGeneric)(object)).setStickyParent (env, p_stickyParent);
 		return ;
 	}
 	public Integer getAllocationType (SystemEnvironment env)

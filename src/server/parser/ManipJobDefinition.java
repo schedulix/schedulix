@@ -41,8 +41,6 @@ import de.independit.scheduler.server.parser.cmdline.*;
 public abstract class ManipJobDefinition extends Node
 {
 
-	public static final String __version = "@(#) $Id: ManipJobDefinition.java,v 2.35.2.5 2013/03/22 14:32:15 dieter Exp $";
-
 	Vector path;
 	WithHash withs;
 
@@ -745,6 +743,9 @@ public abstract class ManipJobDefinition extends Node
 		String rsmpname;
 		Long rsmpId;
 		Integer keepMode;
+		WithHash sticky;
+		String stickyName;
+		Long stickyParent;
 		Boolean isSticky;
 		WithHash expired;
 		Integer exp_mult;
@@ -762,7 +763,7 @@ public abstract class ManipJobDefinition extends Node
 		lockmode = (Integer) with.get(ParseStr.S_LOCKMODE);
 		rsmpname = (String) with.get(ParseStr.S_MAP_STATUS);
 		keepMode = (Integer) with.get(ParseStr.S_KEEP);
-		isSticky = (Boolean) with.get(ParseStr.S_STICKY);
+		sticky = (WithHash) with.get(ParseStr.S_STICKY);
 		expired = (WithHash) with.get(ParseStr.S_EXPIRED);
 		condition = (String) with.get(ParseStr.S_CONDITION);
 
@@ -777,7 +778,28 @@ public abstract class ManipJobDefinition extends Node
 		if(rsmpname != null)	rsmpId = SDMSResourceStateMappingProfileTable.idx_name_getUnique(sysEnv, rsmpname).getId(sysEnv);
 		else 			rsmpId = null;
 		if(keepMode == null) keepMode = new Integer(SDMSResourceRequirement.NOKEEP);
-		if(isSticky == null) isSticky = Boolean.FALSE;
+		if(sticky != null) {
+
+			isSticky = Boolean.TRUE;
+			stickyName = (String) sticky.get(ParseStr.S_NAME);
+			PathVector spv = (PathVector) sticky.get(ParseStr.S_JOB_DEFINITION);
+			if (spv != null) {
+				String pName = (String) spv.remove(spv.size() -1);
+				try {
+					SDMSSchedulingEntity spse = SDMSSchedulingEntityTable.get(sysEnv, spv, pName);
+					if(!spse.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
+						throw new AccessViolationException(new SDMSMessage(sysEnv, "03309241442", "Insufficient privileges"));
+					stickyParent = spse.getId(sysEnv);
+				} catch(NotFoundException nfe) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03309250931", "The specified sticky parent isn't a job definition"));
+				}
+			} else
+				stickyParent = null;
+		} else {
+			isSticky = Boolean.FALSE;
+			stickyName = null;
+			stickyParent = null;
+		}
 
 		if(expired != null) {
 			exp_mult = (Integer) expired.get(ParseStr.S_MULT);
@@ -791,18 +813,19 @@ public abstract class ManipJobDefinition extends Node
 		if(isAdd) {
 			try {
 				rr = SDMSResourceRequirementTable.table.create(sysEnv,
-				                nrId, seId, amount, keepMode, isSticky,
+				                nrId, seId, amount, keepMode, isSticky, stickyName, stickyParent,
 				                rsmpId, exp_mult, exp_interval, lockmode, condition);
 			} catch (DuplicateKeyException dke) {
 				if(processError) {
-					rr = changeResourceRequirement(sysEnv, seId, nrId, amount, keepMode, isSticky, rsmpId, exp_mult, exp_interval, lockmode, condition);
+					rr = changeResourceRequirement(sysEnv, seId, nrId, amount, keepMode, isSticky, stickyName, stickyParent, rsmpId,
+					                               exp_mult, exp_interval, lockmode, condition);
 				} else {
 					throw dke;
 				}
 			}
 		} else {
 			try {
-				rr = changeResourceRequirement(sysEnv, seId, nrId, amount, keepMode, isSticky, rsmpId, exp_mult, exp_interval, lockmode, condition);
+				rr = changeResourceRequirement(sysEnv, seId, nrId, amount, keepMode, isSticky, stickyName, stickyParent, rsmpId, exp_mult, exp_interval, lockmode, condition);
 			} catch (NotFoundException nfe) {
 				if(processError) return;
 				throw nfe;
@@ -835,7 +858,8 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	private SDMSResourceRequirement changeResourceRequirement(SystemEnvironment sysEnv, Long seId, Long nrId, Integer amount, Integer keepMode,
-	                Boolean isSticky, Long rsmpId, Integer exp_mult, Integer exp_interval, Integer lockmode, String condition)
+	                Boolean isSticky, String stickyName, Long stickyParent, Long rsmpId, Integer
+	                exp_mult, Integer exp_interval, Integer lockmode, String condition)
 	throws SDMSException
 	{
 		SDMSResourceRequirement rr;
@@ -843,6 +867,8 @@ public abstract class ManipJobDefinition extends Node
 		rr.setAmount(sysEnv, amount);
 		rr.setKeepMode(sysEnv, keepMode);
 		rr.setIsSticky(sysEnv, isSticky);
+		rr.setStickyName(sysEnv, stickyName);
+		rr.setStickyParent(sysEnv, stickyParent);
 		rr.setRsmpId(sysEnv, rsmpId);
 		rr.setExpiredAmount(sysEnv, exp_mult);
 		rr.setExpiredBase(sysEnv, exp_interval);
