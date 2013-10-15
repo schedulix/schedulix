@@ -2,3 +2,17 @@
 *.o
 jobserver/de_independit_scheduler_jobserver_Utils.h
 de/
+server/parser/Parser.java
+server/parser/Parser.java.raw
+server/parser/Scanner.java
+server/parser/cmdline/CmdLineParser.java
+server/parser/cmdline/CmdLineScanner.java
+server/parser/triggerexpr/ExprParser.java
+server/parser/triggerexpr/ExprScanner.java
+server/parser/yycheck.data
+server/parser/yytable.data
+shell/MiniParser.java
+shell/MiniScanner.java
+tools/MiniParse.java
+tools/Scanner.java
+
