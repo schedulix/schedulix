@@ -2,4 +2,3 @@ bin/jobserver
 bin/scrolllog
 lib/BICsuite.jar
 lib/libBICsuite.so
-src/md5/mddriver
