@@ -118,7 +118,7 @@ public class Config
 	                                                new Long (30),
 	                                                new Long (5),
 	                                                new Integer (Trace.DEFAULT),
-	                                                "SYSTEM",
+	                                                "NONE",
 	                                                Boolean.TRUE,
 	                                                Boolean.FALSE
 	                                             };
