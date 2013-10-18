@@ -62,7 +62,7 @@ JNIEXPORT jint JNICALL Java_de_independit_scheduler_jobserver_Utils_getPid (JNIE
 
 static void Utils_abortProgram (JNIEnv *env, jclass clazz, jobject ri, const char *const msg)
 {
-	const jmethodID jmid = env->GetStaticMethodID (clazz, "abortProgram", "(Ljobserver/RepoIface;Ljava/lang/String;)V");
+	const jmethodID jmid = env->GetStaticMethodID (clazz, "abortProgram", "(Lde/independit/scheduler/jobserver/RepoIface;Ljava/lang/String;)V");
 	if (! jmid)
 		die ("(04301271607) GetStaticMethodID() failed");
 
