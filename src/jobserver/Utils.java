@@ -34,8 +34,6 @@ import de.independit.scheduler.server.SystemEnvironment;
 
 public class Utils
 {
-	public static final String __version = "@(#) $Id: Utils.java,v 2.8.12.1 2013/03/14 10:24:07 ronald Exp $";
-
 	public static final char TIMESTAMP_LEADIN  = '[';
 	public static final char TIMESTAMP_LEADOUT = ']';
 
