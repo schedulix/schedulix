@@ -43,7 +43,7 @@ public class Utils
 	public static final char BOOTTIME_SYSTEM = 'S';
 	public static final char BOOTTIME_FILE   = 'F';
 
-	public static final char BOOTTIME_DEFAULT =  BOOTTIME_SYSTEM;
+	public static final char BOOTTIME_DEFAULT =  BOOTTIME_NONE;
 
 	private static final String LIBRARY_NAME = "BICsuite";
 
