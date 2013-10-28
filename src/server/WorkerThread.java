@@ -148,6 +148,11 @@ public class WorkerThread extends SDMSThread
 						} else
 							doTrace(cEnv, "Execution time for " + n.getClass() + " : " + (cEnv.tx.endTime - cEnv.tx.startTime) + " ms", SEVERITY_MESSAGE);
 					} catch (RecoverableException re) {
+						String msg = re.toString();
+						if (msg.contains("Connection lost")) {
+
+							env.dbConnection = Server.connectToDB(env);
+						}
 						i++;
 						if(i == retryCount) {
 
