@@ -28,6 +28,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package de.independit.scheduler;
 
 import java.lang.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.io.*;
 
@@ -58,27 +60,38 @@ public class sdmsh extends App
 		addOption(null, "timeout", "Timeout", MYTIMEOUT , null, "timeout", false , "Number of seconds after which the server will remove an idle session. 0 means no timeout.");
 	}
 
+	private static Object getConsole()
+	{
+		Object console;
+		Class systemClass;
+		try {
+			Method consoleMethod = System.class.getMethod("console", (Class[])null);
+			console = consoleMethod.invoke(System.class, (Object[])null);
+		} catch (Exception e) {
+			console = null;
+		}
+		return console;
+	}
+
 	private static String getValue (final String prompt, final boolean visible)
 	{
 		try {
+			System.out.print (prompt);
 			if (!visible) {
-				Console c = System.console();
-				if (c != null) {
-					System.out.print (prompt);
-					String pw = new String(c.readPassword());
-					return pw;
-				} else {
-					InputStreamReader isr = new InputStreamReader (System.in);
-					BufferedReader br = new BufferedReader (isr);
-					System.out.print (prompt);
-					return br.readLine();
+				Object console = getConsole();
+				if (console != null) {
+					try {
+						Method readPasswordMethod = console.getClass().getMethod("readPassword", (Class[])null);
+						String pw = new String((char[])(readPasswordMethod.invoke(console, (Object[])null)));
+						return pw;
+					} catch (Exception e) {
+
+					}
 				}
-			} else {
-				InputStreamReader isr = new InputStreamReader (System.in);
-				BufferedReader br = new BufferedReader (isr);
-				System.out.print (prompt);
-				return br.readLine();
 			}
+			InputStreamReader isr = new InputStreamReader (System.in);
+			BufferedReader br = new BufferedReader (isr);
+			return br.readLine();
 		} catch (final IOException e) {
 			System.err.println ("FATAL ERROR while reading from stdin");
 			System.exit (1);
@@ -176,7 +189,7 @@ public class sdmsh extends App
 			}
 		}
 
-		if (System.console() == null && !options.isSet(App.VERBOSE)) {
+		if ( getConsole() == null && !options.isSet(App.VERBOSE)) {
 			if (!silent) {
 				o = options.getOption(App.VERBOSE);
 				o.set(null, true);
