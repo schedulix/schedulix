@@ -40,8 +40,6 @@ import de.independit.scheduler.server.output.*;
 public class SelectCmd extends Node
 {
 
-	public final static String __version = "@(#) $Id: SelectCmd.java,v 2.6.4.1 2013/03/14 10:24:47 ronald Exp $";
-
 	private String selectCmd;
 	private WithHash with;
 	private Vector sv;
@@ -246,10 +244,10 @@ public class SelectCmd extends Node
 				sysEnv.dbConnection.rollback();
 			} catch (SQLException sqle2) {
 
+				throw new RecoverableException(new SDMSMessage(sysEnv, "03310281524", "Connection lost"));
 			}
 
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03204170024",
-			                               "SQL Error : $1", sqle.toString()));
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03204170024", "SQL Error : $1", sqle.toString()));
 		}
 
 		if(sv != null && sv.size() > 0) {
