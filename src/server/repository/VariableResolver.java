@@ -45,6 +45,7 @@ public abstract class VariableResolver
 	protected final static SimpleDateFormat myFormat = new SimpleDateFormat ("yyyyMMddHHmmss", SystemEnvironment.systemLocale);
 	protected final static String emptyString = new String("");
 	protected final static char[] validChars;
+	protected final static char[] eValidChars;
 
 	static
 	{
@@ -55,8 +56,19 @@ public abstract class VariableResolver
 			'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 			'@', '_', '#', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
 		};
+		final char[] ecarr = {
+			'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+			'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+			'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+			'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+			'@', '_', '#', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+			'!', '%', '&', '(', ')', '*', '+', ',', '-', '/', ';', '<', '=',
+			'>', '?', '|'
+		};
 		Arrays.sort(carr);
+		Arrays.sort(ecarr);
 		validChars = carr;
+		eValidChars = ecarr;
 	}
 
 	public String parseAndSubstitute(SystemEnvironment sysEnv,
@@ -130,25 +142,45 @@ public abstract class VariableResolver
 		StringBuffer var = new StringBuffer();
 		int i = pos + 1;
 		boolean delimited = false;
+		boolean caseSensitive = false;
 		int maxpos = key.length;
 		Long objId = thisObject.getId(sysEnv);
+		char searchChars[] = validChars;
 
 		if(key[i] == '{') {
 			i++;
 			delimited = true;
+			if (key[i] == '\'') {
+				i++;
+				caseSensitive = true;
+				searchChars = eValidChars;
+			}
 		}
-		while(i < maxpos && (delimited || Arrays.binarySearch(validChars, key[i]) >= 0)) {
-			if(key[i] == '}') {
+		while(i < maxpos && (delimited || Arrays.binarySearch(searchChars, key[i]) >= 0)) {
+			if(delimited && ((!caseSensitive && key[i] == '}') || (caseSensitive && key[i] == '\''))) {
+				if (caseSensitive)
+					if (key[i+1] == '}')
+						i++;
+					else {
+
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03312031425", "Syntax Error: unexpected Character '" + key[i+1] + "'"));
+					}
 				i++;
 				break;
 			} else {
+				if (delimited && Arrays.binarySearch(searchChars, key[i]) < 0) {
+
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03312031427", "Syntax Error: unexpected Character '" + key[i] + "'"));
+				}
 				var.append(key[i]);
 			}
 			i++;
 		}
 		i--;
 
-		final String varName = var.toString();
+		final String varName;
+		if (caseSensitive)	varName = var.toString();
+		else			varName = var.toString().toUpperCase();
 		SDMSKey k = new SDMSKey(objId, varName);
 		if(recursionCheck.search(k) >= 0) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03603010059", "Run into a loop while trying to resolve variable $1", varName));

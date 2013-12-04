@@ -1,656 +1,8 @@
 %{
 //
-// $Id: Parser.jay,v 2.195.2.3 2013/03/19 17:16:48 ronald Exp $
+// Parser.jay
 //
 // Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
-//
-// $Log: Parser.jay,v $
-// Revision 2.195.2.3  2013/03/19 17:16:48  ronald
-// Einige Tabellen aus der Open Source Version "entfernt"
-//
-// Revision 2.195.2.2  2013/03/19 10:02:56  ronald
-// Korrektur Doku
-//
-// Revision 2.195.2.1  2013/03/14 10:24:42  ronald
-// Umstellung auf standard konforme package bezeichnungen
-//
-// Revision 2.195  2013/01/10 10:27:06  ronald
-// Wenn man aenderungen macht sollte man darauf achten, dass das richtige
-// Statement geaendert wird
-//
-// Revision 2.194  2013/01/10 10:19:58  ronald
-// beim ALTER bzw. CREATE INTERVAL kann jetzt STARTTIME = NONE spezifiziert
-// werden (und dasselbe auch fuer ENDTIME)
-//
-// Revision 2.193  2012/09/13 12:40:29  ronald
-// Debug level can be set at session level. Exceptions won't be logged though.
-// This is a difference between server and session trace level 3
-//
-// Revision 2.192  2012/09/12 16:12:36  ronald
-// Trigger auf Named Resources entfernt
-//
-// Revision 2.191  2012/07/16 15:48:48  ronald
-// synctime, starttime, endtime und ranges muessen ohne beruecksichtigung
-// der angegebene Zeitzone interpretiert werden.
-// (Besser ist es gar keine Zeitzone an zu geben, was der Dump jetzt auch macht)
-//
-// Revision 2.190  2012/07/04 05:49:31  ronald
-// Merge und Delay Option entfernt
-//
-// Revision 2.189  2012/07/03 10:27:15  ronald
-// Lackschicht fuers time scheduling (tz in Schedules)
-//
-// Revision 2.188  2012/07/02 14:51:24  ronald
-// Time Zone added to Schedule
-//
-// Revision 2.187  2012/03/13 12:41:12  ronald
-// multiple sources can be copied at once (with relocation)
-//
-// Revision 2.186  2012/02/17 07:09:13  ronald
-// small beautifying; documentation improvements
-//
-// Revision 2.185  2012/02/14 11:03:30  ronald
-// nullpointerexception eliminiert
-//
-// Revision 2.184  2012/02/14 09:24:29  ronald
-// Erweiterung der ESP um zwei Eigenschaften/State
-//
-// Revision 2.183  2012/02/14 08:17:15  ronald
-// Erweiterung in der Syntax fuer ESP (batch default, dependency default)
-//
-// Revision 2.182  2012/02/06 09:46:31  ronald
-// Syntax fuer inherit grants implementiert
-//
-// Revision 2.181  2011/12/19 12:52:39  ronald
-// copy erweitert, analog zu move/rename
-//
-// Revision 2.180  2011/12/16 15:08:42  ronald
-// Neue Statements
-//
-// Revision 2.179  2011/10/12 09:04:40  ronald
-// Bug fix zum zweiten
-//
-// Revision 2.178  2011/10/12 07:45:19  ronald
-// small bug fix
-//
-// Revision 2.177  2011/10/12 06:26:43  ronald
-// recursive audit in show submitted
-//
-// Revision 2.176  2011/10/10 12:38:29  ronald
-// Beautifying; Bessere Fehlermeldungen
-//
-// Revision 2.175  2011/09/21 07:12:31  ronald
-// documentation changes
-//
-// Revision 2.174  2011/09/20 13:39:56  ronald
-// rename of object type to object monitor
-//
-// Revision 2.173  2011/09/19 08:47:44  ronald
-// watcher = none zugefuegt
-//
-// Revision 2.172  2011/09/14 15:26:50  ronald
-// Syntax dokumentation: Object watching
-//
-// Revision 2.171  2011/09/13 09:42:27  ronald
-// some beautifying; purge object events/instances; seId/mainSeId in Object
-// Event zugefuegt
-//
-// Revision 2.170  2011/09/12 14:14:29  ronald
-// Zeiten fuer purge zugefuegt
-//
-// Revision 2.169  2011/09/12 08:29:27  ronald
-// dbddhkpaav
-//
-// Revision 2.168  2011/09/12 08:27:05  ronald
-// beautifying
-//
-// Revision 2.167  2011/09/09 19:18:51  ronald
-// Dump ergaenzt. Doku change im parser
-//
-// Revision 2.166  2011/09/09 08:51:47  ronald
-// main/parentSeId im object type trigger koennen jetzt auch zurueckgesetzt werden
-//
-// Revision 2.165  2011/09/09 05:17:56  ronald
-// mainSeId und parentSeId an Trigger zugefuegt
-//
-// Revision 2.164  2011/09/08 11:48:11  ronald
-// Bugfixing, active flag fuer Trigger, nonmaster trigger fuer OT (single)
-//
-// Revision 2.163  2011/09/07 08:29:35  ronald
-// Umstellung auf ObjectURL part 1
-//
-// Revision 2.162  2011/09/07 07:06:39  ronald
-// Object Watching WIP. Abgleich checkin
-//
-// Revision 2.161  2011/09/06 14:54:53  ronald
-// Object Watching WIP
-//
-// Revision 2.160  2011/09/06 14:12:01  ronald
-// Object Watching WIP. Checkin wegen Abgleich
-//
-// Revision 2.159  2011/09/01 08:31:35  ronald
-// Bugfixing and Object Monitoring enhancements
-//
-// Revision 2.158  2011/08/30 14:13:25  ronald
-// Filewatcher Erweiterungen (WIP)
-//
-// Revision 2.157  2011/08/25 11:48:06  ronald
-// Filewatcher Definitionsschicht. Initial checkin
-//
-// Revision 2.156  2011/08/19 07:31:40  ronald
-// Documentation rerun triggers and suspend/resume functionality
-//
-// Revision 2.155  2011/08/16 12:59:16  ronald
-// resume at/in. Nun auch fuer scheduling_hierarchy. WIP/Abgleich checkin
-//
-// Revision 2.154  2011/08/11 11:22:04  ronald
-// rerun trigger enhancements
-//
-// Revision 2.153  2011/08/09 16:42:52  ronald
-// rerun trigger + autoresume WIP
-//
-// Revision 2.152  2011/08/09 11:02:24  ronald
-// autoresume & rerun triggers. Checkin wegen Abgleich.
-//
-// Revision 2.151  2011/08/09 07:58:11  ronald
-// syntax for rerun trigger and autoresume in triggers added
-//
-// Revision 2.150  2011/08/02 08:28:24  ronald
-// added force option to link resource
-//
-// Revision 2.149  2011/08/01 19:30:05  ronald
-// some bugs:
-// 1. grant ... on schedule root; war nicht moeglich
-// 2. Einige render Bugs im Dump
-//
-// Revision 2.148  2011/07/29 07:39:55  ronald
-// oops, syntax change fuehrte zum nich mehr funktionieren
-//
-// Revision 2.147  2011/07/23 05:47:36  ronald
-// resource links & small bugfixes
-//
-// Revision 2.146  2011/06/29 13:34:05  ronald
-// manage select privileg implementiert
-//
-// Revision 2.145  2011/06/29 11:09:06  ronald
-// Dump command now PROFESSIONAL
-//
-// Revision 2.144  2011/05/19 12:24:53  ronald
-// possibility of session information added
-//
-// Revision 2.143  2011/03/08 13:50:43  ronald
-// Added system grants
-//
-// Revision 2.142  2011/01/21 10:58:01  ronald
-// repaired OwnerFilter; added OwnerFilter to List Folder
-//
-// Revision 2.141  2011/01/20 09:58:49  ronald
-// list trigger OF <folderpath>
-// zeigt alle Jobs und Ressources die den genannten Job triggern.
-//
-// Revision 2.140  2010/08/27 07:24:22  ronald
-// blanks are now allowed in quoted identifiers
-//
-// Revision 2.139  2010/08/23 12:40:09  ronald
-// Adding SSL/TLS Support. WIP
-//
-// Revision 2.138  2010/03/15 07:41:38  ronald
-// Auditing Flag zugefuegt
-//
-// Revision 2.137  2009/12/10 13:20:34  ronald
-// horizon = none instead of default
-//
-// Revision 2.136  2009/12/07 11:33:01  ronald
-// Save space within parser
-//
-// Revision 2.135  2009/10/06 14:34:46  ronald
-// Filter in den List Befehle verbessert und vereinheitlicht
-//
-// Revision 2.134  2009/10/05 12:17:54  ronald
-// Bugfixing im Rahmen der Calendar-Implementierung
-//
-// Revision 2.133  2009/09/24 09:17:06  ronald
-// Versioned Dump eingebaut
-//
-// Revision 2.132  2009/09/22 07:37:08  ronald
-// List Calendar -- WIP
-//
-// Revision 2.131  2009/05/07 13:34:41  ronald
-// Calendar work. WIP
-// expected finaltime added
-//
-// Revision 2.130  2009/03/31 14:53:11  ronald
-// suspend + resume (WIP). Bug nonversioned access in getPrivileges fixed.
-// ShowSubmitted ignoriert resources wenn NR not Found.
-//
-// Revision 2.129  2009/03/31 07:59:47  ronald
-// Syntax fuer Infrastruktur auto-rerun eingebaut (WIP)
-//
-// Revision 2.128  2009/03/27 14:28:33  ronald
-// backup kann nun auch ungequoted in Namen benutzt werden
-//
-// Revision 2.127  2008/05/15 13:15:22  ronald
-// Administrator can now force a reschedule by command
-//
-// Revision 2.126  2008/04/22 12:43:43  ronald
-// Kommentare wg Zeichensaetze angepasst
-//
-// Revision 2.125  2007/12/18 10:29:00  ronald
-// Leerstrings in stridentifiers wurden falsch behandelt
-//
-// Revision 2.124  2007/12/04 15:12:56  ronald
-// Filter nach Jobs mit Warning eingebaut
-//
-// Revision 2.123  2007/11/13 16:27:17  ronald
-// Minor improvements
-//
-// Revision 2.122  2007/11/09 12:30:25  ronald
-// at set parameter for a job an identification check can be done optionally.
-//
-// Revision 2.121  2007/11/09 11:19:27  ronald
-// Doku verbesserungen
-// Conditional Resources
-//
-// Revision 2.120  2007/10/30 15:32:13  ronald
-// Resource Requirements with condition (for static resources).
-// Definition layer
-//
-// Revision 2.119  2007/10/26 10:20:12  ronald
-// Loads of documentation work
-//
-// Revision 2.118  2007/10/26 10:07:18  ronald
-// Bug in create folder fixed
-//
-// Revision 2.117  2007/10/11 09:40:53  ronald
-// Umstellung auf ObjectURL von alter Scope
-// sdmsh enhancements
-//
-// Revision 2.116  2007/10/11 09:20:06  ronald
-// Umstellung auf ObjectURL von create/alter/... scope Befehle
-// Register/Deregister enhanced
-// sdmsh kann nun Timeout sofort spezifizieren im Connect
-//
-// Revision 2.115  2007/10/09 14:57:34  ronald
-// several dokumentation enhancements
-//
-// Revision 2.114  2007/10/01 12:39:40  ronald
-// Aenderungen wegen der Syntax Dokumentation
-//
-// Revision 2.113  2007/09/12 07:56:04  ronald
-// Added a wildcard functionality to the dump alias (* matches any alias)
-//
-// Revision 2.112  2007/09/10 14:26:40  ronald
-// Access control for dump implemented
-// sdmsh flaw removed (didn't render prompt after dump)
-//
-// Revision 2.111  2007/08/31 11:27:33  ronald
-// Small flaws eliminated
-//
-// Revision 2.110  2007/08/29 09:51:18  ronald
-// Checkin wegen Abgleich
-//
-// Revision 2.109  2007/08/27 14:10:37  ronald
-// Dump WIP
-//
-// Revision 2.108  2007/08/11 11:46:42  ronald
-// Dump beta
-//
-// Revision 2.107  2007/08/09 14:07:09  ronald
-// Dump WIP. Checkin wg. abgleich
-//
-// Revision 2.106  2007/08/06 09:46:24  ronald
-// Dump WIP. Checkin wg. Abgleich
-//
-// Revision 2.105  2007/07/19 12:43:45  ronald
-// additional small changes for change of cleanup
-//
-// Revision 2.104  2007/07/19 09:35:50  ronald
-// WIP. breaks server. ci because of communication
-//
-// Revision 2.103  2007/07/19 08:40:08  ronald
-// WIP, breaks server! Checkin for communication
-//
-// Revision 2.102  2007/06/21 08:13:39  ronald
-// Dump WIP
-//
-// Revision 2.101  2007/05/04 12:17:15  ronald
-// WIP. Checking wg. Abgleich
-//
-// Revision 2.100  2007/04/29 11:58:31  ronald
-// Pool tracing implemented
-//
-// Revision 2.99  2007/04/27 14:36:48  ronald
-// Allocation factor implemented
-// bookkeeping improved (Is now easier to understand for the user)
-//
-// Revision 2.98  2007/04/27 11:50:57  dieter
-// fixed bug with resource TAG
-//
-// Revision 2.97  2007/04/25 17:14:38  ronald
-// Multicommand rollback implemented
-//
-// Revision 2.96  2007/04/24 16:45:23  ronald
-// Resource Trace eingebaut
-//
-// Revision 2.95  2007/04/20 08:25:13  ronald
-// WIP; dump/cleanup funktioniert noch nicht (ganz). Checkin weil Dump/Cleanup
-// komplett ueberarbeitet wird.
-//
-// Revision 2.94  2007/04/04 09:22:34  julia
-// sci_doku
-//
-// Revision 2.93  2007/02/23 15:36:05  julia
-// verbesserung_syntax_doku
-//
-// Revision 2.92  2007/01/05 15:17:20  julia
-// flaw im select_cmd eliminiert. Purpose fuer multicommand zugefuegt
-//
-// Revision 2.91  2006/11/15 16:07:37  dieter
-// Expand resources in show scope
-//
-// Revision 2.90  2006/10/20 12:39:55  ronald
-// Typo ausgebessert
-//
-// Revision 2.89  2006/08/08 19:18:20  ronald
-// negitive expirations, d.h. eine Ressource muss minimal n Zeiteinheiten
-// her getouched sein, eingebaut
-//
-// Revision 2.88  2006/06/28 21:28:06  ronald
-// Version information zugefuegt
-//
-// Revision 2.87  2006/06/16 16:56:59  ronald
-// Issue #357: Warn if trigger limit reached
-//
-// Revision 2.86  2006/05/15 12:35:32  ronald
-// Issue #353: Warning Triggers implementiert
-//
-// Revision 2.85  2006/05/11 10:43:45  dieter
-// added toString for WithHash
-// fixed select .. with statement
-//
-// Revision 2.84  2006/04/27 10:28:55  ronald
-// Resource Pools. Distribution of target amounts WIP
-//
-// Revision 2.83  2006/04/04 12:32:58  ronald
-// removed small flaws. changed syntax of create/alter distribution.
-// documentation works
-//
-// Revision 2.82  2006/03/26 05:22:23  ronald
-// checkin wg. Kommunikation. WIP
-//
-// Revision 2.81  2006/03/24 14:14:21  ronald
-// Copy Distribution zugefuegt. Ansonsten minor improvements + Syntax-Eintraege
-//
-// Revision 2.80  2006/03/22 15:10:01  ronald
-// Issue 341: Definition layer implementiert. WIP
-//
-// Revision 2.79  2006/03/21 15:20:39  ronald
-// Issue 341: Pooled Resources. WIP.
-//
-// Revision 2.78  2006/03/17 16:36:12  ronald
-// Issue #341: Resource pools, WIP
-//
-// Revision 2.77  2006/03/10 09:39:24  ronald
-// advanced grant. hoffentlich keine wuensche mehr offen.
-//
-// Revision 2.76  2006/03/10 07:18:44  ronald
-// Flaw in Folderparameter handling behoben
-//
-// Revision 2.75  2006/03/08 18:58:45  ronald
-// Im grant und revoke koennen nun mehr als ein Privileg gleichzeitig
-// angegeben werden.
-//
-// Revision 2.74  2006/03/08 11:57:25  ronald
-// Issue #96: Syntax von List Jobs nun geglaetted.
-//
-// Revision 2.73  2006/03/08 10:07:23  ronald
-// Issue 348: recursive grant und revoke
-//
-// Revision 2.72  2006/03/06 20:15:47  ronald
-// Small bugfixing. better error message at connect error.
-//
-// Revision 2.71  2006/03/06 14:06:49  ronald
-// Issue 340: local parameters
-//
-// Revision 2.70  2006/03/05 09:24:48  ronald
-// Issue 346: Kommando kann beim Connect gleich mitgegeben werden.
-// Issue 340: Syntax fuer Local Variables implementiert.
-//
-// Revision 2.69  2006/02/23 08:54:35  ronald
-// Reibungsverluste der Parserumstellung ausgemerzt.
-//
-// Revision 2.68  2006/02/21 11:34:34  ronald
-// Parserumstellung bzw. optimierung. WIP. Bitte mittesten.
-//
-// Revision 2.67  2006/02/16 14:17:43  ronald
-// Show comment command added
-//
-// Revision 2.66  2006/02/15 19:27:37  ronald
-// Conditional dependencies. Definition part.
-//
-// Revision 2.65  2006/02/11 00:11:44  bernhard
-// Syntax change: name mapping now everywhere via '(...)'.
-// Syntax change: no '(' at ACTION clause of CREATE/ALTER EVENT statement.
-// "Some" beautifications
-//
-// Revision 2.64  2006/02/09 00:46:20  ronald
-// Trigger on folder resources implemented
-//
-// Revision 2.63  2006/01/30 21:28:51  ronald
-// Comments zugefuegt. Addressierung erfolgt mittels ''ObjectURL''
-//
-// Revision 2.62  2006/01/23 14:10:58  bernhard
-// DUMP ... EXPAND replaced/enhanced by DUMP ... SELECTION.
-// Minor simplifications/unifications/beautifications
-//
-// Revision 2.61  2006/01/06 18:01:49  bernhard
-// Minor "consequencing" of previous syntax changes.
-// WIP: finer expand granulation
-//
-// Revision 2.60  2005/11/14 21:02:53  ronald
-// Small beautifying
-//
-// Revision 2.59  2005/11/10 10:41:05  ronald
-// removed some comments which made mksyntax.py to die
-//
-// Revision 2.58  2005/11/10 09:36:42  ronald
-// MASTER_ID ist jetzt kein reserved word mehr
-//
-// Revision 2.57  2005/11/10 08:59:03  ronald
-// Min Priority und Aging = NONE eingebaut.
-//
-// Revision 2.56  2005/11/10 08:22:13  ronald
-// Parameterfilter eingebaut.
-//
-// Revision 2.55  2005/11/08 17:26:28  bernhard
-// Minor beautifying
-//
-// Revision 2.54  2005/10/11 12:11:59  ronald
-// Dynamic aging und Job specific min priority eingebaut
-//
-// Revision 2.53  2005/09/15 19:32:46  bernhard
-// Added skeleton for register command
-//
-// Revision 2.52  2005/07/13 07:01:30  ronald
-// Der Warncount kann nun zurueckgesetzt werden. Als Abfallprodukt kann
-// auch haendisch eine Warnung gesetzt werden.
-//
-// Revision 2.51  2005/06/27 16:02:40  ronald
-// Scanner symbol (add_or_alter) entfernt.
-//
-// Revision 2.50  2005/06/22 08:25:15  ronald
-// CONDITION ist nun nicht mehr "reserved"
-//
-// Revision 2.49  2005/05/04 16:21:18  ronald
-// Letzte Aenderung zurueckgenommen
-//
-// Revision 2.48  2005/05/04 14:32:40  ronald
-// Issue 336. Dokumentation. Parser geringfuegig geaendert wg. Syntaxdiagramm.
-//
-// Revision 2.47  2005/04/30 15:17:32  ronald
-// Issue #336: Broken flag im Profile. Teil 1: definition
-//
-// Revision 2.46  2005/04/22 14:04:33  ronald
-// 1. Issue #332: SC (Shared Compatible) Lock eingefuehrt
-// 2. Filter auf PENDING und FINAL Jobs implementiert (no Issue)
-//
-// Revision 2.45  2005/04/20 13:08:10  dieter
-// removed drop  user cascade option
-// dokumentation work create/drop/rename user
-//
-// Revision 2.44  2005/04/15 10:09:58  ronald
-// Session timeout eingebaut
-//
-// Revision 2.43  2005/04/07 20:00:11  bernhard
-// "Luxury"-backlog-handling: none, last, all.
-// Individual suspend_limit for scheduled events
-//
-// Revision 2.42  2005/03/10 00:19:32  bernhard
-// Included documentation of dump/cleanup.
-// Removed some unused items.
-// Some cosmetics
-//
-// Revision 2.41  2005/02/08 17:16:02  ronald
-// rename of non-terminal because of order in documentation
-//
-// Revision 2.40  2005/02/04 14:01:53  ronald
-// Documentation
-//
-// Revision 2.39  2005/01/26 07:20:13  ronald
-// Dokumentationsarbeit
-//
-// Revision 2.38  2005/01/19 20:35:34  ronald
-// Eine Menge Doku
-//
-// Revision 2.37  2005/01/12 15:29:46  dieter
-// doc work
-//
-// Revision 2.36  2005/01/10 04:44:06  ronald
-// Bit of beautifying. Bit of Documentation.
-// Issue #327: Server Hinschmiss solved.
-//
-// Revision 2.35  2004/12/27 17:27:20  bernhard
-// Issue #281: dump enhancements/cleanup statements.
-// Minor beautifying
-//
-// Revision 2.34  2004/12/15 11:38:17  ronald
-// EST Aenderung rueckgaengig gemacht
-//
-// Revision 2.33  2004/12/15 11:20:40  ronald
-// Doku changes. Exit state translation erweitert.
-//
-// Revision 2.32  2004/12/15 09:37:00  ronald
-// Syntax Doku Ergaenzung
-//
-// Revision 2.31  2004/12/15 08:22:24  ronald
-// Descriptions zugefuegt. Kleinere Syntaxumstellungen.
-//
-// Revision 2.30  2004/12/15 00:16:14  bernhard
-// Now dumping folders/scopes instead of job(server)s.
-// Minor typo corrected.
-// WIP: dump enhancements
-//
-// Revision 2.29  2004/12/03 09:39:43  ronald
-// create/alter footprint syntax verbessert
-//
-// Revision 2.28  2004/11/25 19:38:25  bernhard
-// EXPAND ALL is //D:DEFAULT in DUMP command
-//
-// Revision 2.27  2004/11/24 10:52:07  ronald
-// Documentation improvements
-//
-// Revision 2.26  2004/11/23 17:05:34  ronald
-// Documentation sync. WIP.
-//
-// Revision 2.25  2004/11/18 00:55:56  bernhard
-// Implemented comments on events, intervals, schedules, and scheduled events.
-// More issue #801 "consequences" (sigh!).
-// Minor beautifying
-//
-// Revision 2.24  2004/11/11 16:48:36  ronald
-// Next step in creating docs, but still WIP.
-//
-// Revision 2.23  2004/11/09 08:18:32  ronald
-// Dokugenerierung WIP
-//
-// Revision 2.22  2004/10/30 19:28:56  bernhard
-// Issue #301 "fixed" - I won't say anything more!
-//
-// Revision 2.21  2004/10/28 13:01:45  ronald
-// Documentation generator. WIP
-//
-// Revision 2.20  2004/10/26 22:49:59  bernhard
-// Minor beautifying
-//
-// Revision 2.19  2004/10/24 18:43:49  bernhard
-// Dump now generates create_or_alter statements (WIP).
-// Minor beautifying
-//
-// Revision 2.18  2004/10/19 16:25:27  ronald
-// Checkin intermediate result
-//
-// Revision 2.17  2004/10/06 06:51:38  ronald
-// WIP. Resource Variablen. Joblocal/Folderlocal Resources. Checkin wg. Abgleich
-//
-// Revision 2.16  2004/09/26 21:47:32  ronald
-// WIP. Resource Parameters. Sicherheits Checkin
-//
-// Revision 2.15  2004/09/18 13:23:05  ronald
-// Issue #279: Resource Parameter. local constant zugefuegt. Show an den
-// Anforderungen des Frontends angepasst.
-//
-// Revision 2.14  2004/09/15 07:02:08  ronald
-// Issue #279: Resource Parameter. Erster Wurf.
-//
-// Revision 2.13  2004/08/04 00:03:08  ronald
-// Asynchrone Trigger implementiert. Feinschliff noch notwendig
-//
-// Revision 2.12  2004/07/23 09:14:11  ronald
-// Bugfixing im Zusammenhang mit Resource Trigger
-//
-// Revision 2.11  2004/07/14 21:27:59  ronald
-// Issue #80: Expression Trigger. Teil I Infrastruktur
-//
-// Revision 2.10  2004/07/08 20:30:18  ronald
-// Issue #299: submit with ignore dependency
-//
-// Revision 2.9  2004/07/08 08:38:01  ronald
-// 1. get submittag eingebaut
-// 2. mehrere Paremeter koennen in einem Statement gesetzt werden
-//
-// Revision 2.8  2004/06/30 06:05:23  ronald
-// UNREACHABLE als State definiert (fehlte)
-//
-// Revision 2.7  2004/06/09 09:28:23  ronald
-// Unreachable specialty bei milestones entfernt
-//
-// Revision 2.6  2004/06/08 20:05:12  ronald
-// Issue #289: pipeline enhancements. Andere Semantik von Milestones.
-//
-// Revision 2.5  2004/06/03 19:24:23  ronald
-// show job submittag = 'X' zugefuegt
-//
-// Revision 2.4  2004/06/03 14:32:53  dieter
-// submittag zugefuegt
-//
-// Revision 2.3  2004/06/03 13:22:22  dieter
-// Run sequence zum verhindern von set state und exit code
-// fuer jobs die inzwischen restarted wurden.
-//
-// Revision 2.2  2004/06/01 22:15:21  ronald
-// Issue #287: get parameter for job
-//
-// Revision 2.1  2004/06/01 17:41:13  ronald
-// Issue #286: Loeschen des Errortextes ermoeglicht.
-//
-// Revision 2.0  2004/04/19 15:25:40  ronald
-// Version 2.0 Started
-//
-// Removed log info for revision 1.2 - 1.191
-// if needed, try cvs log Parser.jay
-//
-// Revision 1.1  2001/09/12 23:24:04  ronald
-// Initial checkin
 //
 //
 
@@ -670,7 +22,7 @@ public class Parser
 {
 
 	private int stop = 0;
-	private static final String patternString = "^[a-zA-Z_@# ][a-zA-Z_0-9@# ]*$";
+	private static final String patternString = "^[-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z|])?$";
 	private final Pattern identifierPattern = Pattern.compile(patternString);
 
 	public Parser()
@@ -921,7 +273,7 @@ cmd:		multicmd							{ $$ = $1; }
 
 //D:MASTER USER JOB SERVER
 //D:NT-ALIAS = multicommand
-//D:DESCRIPTION multicommand.tex.indexed
+//D:DESCRIPTION multicommand.tex
 //D:PURPOSE P185
 multicmd:	BMULTICMD opt_ordinarycmdlist EMULTICMD 			{ $$ = $2 == null ? null : new MultiCommand($2, true); }
 	|	BMULTICMD opt_ordinarycmdlist EMULTICMD ROLLBACK 		{ $$ = $2 == null ? null : new MultiCommand($2, false); }
@@ -1174,7 +526,7 @@ empty_cmd:									{ $$ = new EmptyCmd(); }
 //D:MASTER USER
 //D:NT-ALIAS = select
 //D:PURPOSE P001
-//D:DESCRIPTION select.tex.indexed
+//D:DESCRIPTION select.tex
 select_cmd:	SELECT opt_sel_with						{ $$ = new SelectCmd($1.textValue, $2); }
 
 opt_sel_with:									{ $$ = null; }
@@ -1202,7 +554,7 @@ sortlist:	signed_integer							{ $$ = new Vector(); $<Vector>$.addElement($1); }
 //----------------------------------------------------------------------------------------------
 //D:MASTER USER JOB SERVER
 //D:NT-ALIAS = disconnect
-//D:DESCRIPTION disconnect.tex.indexed
+//D:DESCRIPTION disconnect.tex
 //D:PURPOSE P003
 disconnect_cmd:	DISCONNECT							{ post(new Disconnect()); if(stop == 0) return null; }
 
@@ -1218,20 +570,20 @@ connect_cmd:	connect_cmdu							{ $$ = $1; }
 //D:MASTER USER NOJOB NOSERVER
 //D:NT-ALIAS = connect
 //D:PURPOSE P004
-//D:DESCRIPTION connect.tex.indexed
+//D:DESCRIPTION connect.tex
 connect_cmdu:	CONNECT username identified_by opt_connect_with 		{ $$ = new Connect($2, $3, $4); }
 
 //D:MASTER SERVER NOUSER NOJOB
 //D:NT-ALIAS = connect
 //D:PURPOSE P169
-//D:DESCRIPTION connect.tex.indexed
+//D:DESCRIPTION connect.tex
 connect_cmds:	CONNECT JOB_SERVER serverpath '.' servername identified_by opt_connect_with
 										{ $$ = new Connect($3, $5, $6, $7); }
 
 //D:MASTER JOB NOUSER NOSERVER
 //D:NT-ALIAS = connect
 //D:PURPOSE P170
-//D:DESCRIPTION connect.tex.indexed
+//D:DESCRIPTION connect.tex
 connect_cmdj:	CONNECT JOB jobid identified_by	opt_connect_with		{ $$ = new Connect($3, $4, $5); }
 
 identified_by:	IDENTIFIED BY STRING						{ $$ = $3.textValue;
@@ -1287,7 +639,7 @@ run_test_cmd:	RUN TEST testid							{ $$ = new RunTest($3); }
 //-----------------------------------------------------------------------------------
 //D:MASTER
 //D:NT-ALIAS = stop server
-//D:DESCRIPTION stop_server.tex.indexed
+//D:DESCRIPTION stop_server.tex
 //D:PURPOSE P005
 stop_svr_cmd:	STOP SERVER							{ $$ = new StopServer(); }
 	|	STOP SERVER KILL						{ $$ = new StopServer(getConnectionEnvironment(),true); }
@@ -1296,39 +648,39 @@ stop_svr_cmd:	STOP SERVER							{ $$ = new StopServer(); }
 //D:NT-ALIAS = alter server
 //D:NODEFAULTS
 //D:PURPOSE P006
-//D:DESCRIPTION alter_server.tex.indexed
+//D:DESCRIPTION alter_server.tex
 alter_server:	ALTER SERVER WITH enable CONNECT				{ $$ = new ConnectCtrl($4.booleanValue()); }
 	|	ALTER SERVER WITH SCHEDULE					{ $$ = new AlterServer(); }
 	|	ALTER SERVER WITH TRACE LEVEL '=' integer			{ $$ = new AlterServer($7); }
 
 //D:MASTER
 //D:NT-ALIAS = show system
-//D:DESCRIPTION show_system.tex.indexed
+//D:DESCRIPTION show_system.tex
 //D:PURPOSE P007
 show_system:	SHOW SYSTEM							{ $$ = new ShowSystem(); }
 
 //D:MASTER
 //D:NT-ALIAS = list session
-//D:DESCRIPTION list_session.tex.indexed
+//D:DESCRIPTION list_session.tex
 //D:PURPOSE P008
 list_session:	LIST SESSION							{ $$ = new ListSession(); }
 
 //D:MASTER
 //D:NT-ALIAS = show session
-//D:DESCRIPTION show_session.tex.indexed
+//D:DESCRIPTION show_session.tex
 //D:PURPOSE P009
 show_session:	SHOW SESSION opt_sid						{ $$ = new ShowSession($3); }
 
 //D:MASTER
 //D:NT-ALIAS = kill session
-//D:DESCRIPTION kill_session.tex.indexed
+//D:DESCRIPTION kill_session.tex
 //D:PURPOSE P010
 kill_sess_cmd:	KILL SESSION sid						{ $$ = new KillSession($3); }
 
 //D:MASTER
 //D:NT-ALIAS = alter session
 //D:PURPOSE P011
-//D:DESCRIPTION alter_session.tex.indexed
+//D:DESCRIPTION alter_session.tex
 alter_session:	ALTER SESSION opt_sid connect_with				{ $$ = new AlterSession($3, $4); }
 
 opt_sid:									{ $$ = null; }
@@ -1343,32 +695,32 @@ opt_sid:									{ $$ = null; }
 //D:MASTER
 //D:PURPOSE P012
 //D:NT-ALIAS = create user
-//D:DESCRIPTION create_user.tex.indexed
+//D:DESCRIPTION create_user.tex
 create_user:	create USER username us_with					{ $$ = new CreateUser($3, $4, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = alter user
 //D:NODEFAULTS
 //D:PURPOSE P013
-//D:DESCRIPTION alter_user.tex.indexed
+//D:DESCRIPTION alter_user.tex
 alter_user:	alter user_url us_with				 		{ $$ = new AlterUser($2, $3, $1); }
 	|	alter user_url us_add_dellist					{ $$ = new AlterUser($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop user
 //D:PURPOSE P014
-//D:DESCRIPTION drop_user.tex.indexed
+//D:DESCRIPTION drop_user.tex
 drop_user:	drop user_url			 				{ $$ = new DropUser($2, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = rename user
 //D:PURPOSE P015
-//D:DESCRIPTION rename_user.tex.indexed
+//D:DESCRIPTION rename_user.tex
 rename_user:	RENAME user_url TO username					{ $$ = new RenameUser($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = show user
-//D:DESCRIPTION show_user.tex.indexed
+//D:DESCRIPTION show_user.tex
 //D:PURPOSE P016
 show_user:	SHOW USER opt_username						{ $$ = new ShowUser($3); }
 
@@ -1377,7 +729,7 @@ opt_username:									{ $$ = null; }
 
 //D:MASTER
 //D:NT-ALIAS = list user
-//D:DESCRIPTION list_user.tex.indexed
+//D:DESCRIPTION list_user.tex
 //D:PURPOSE P017
 list_user:	LIST USER							{ $$ = new ListUser(); }
 
@@ -1417,38 +769,38 @@ us_grlist:	groupname							{ $$ = new Vector(); $<Vector>$.addElement($1); }
 //D:MASTER
 //D:NT-ALIAS = create group
 //D:PURPOSE P018
-//D:DESCRIPTION create_group.tex.indexed
+//D:DESCRIPTION create_group.tex
 create_group:	create GROUP groupname opt_gr_with				{ $$ = new CreateGroup($3, $4, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = alter group
 //D:NODEFAULTS
 //D:PURPOSE P019
-//D:DESCRIPTION alter_group.tex.indexed
+//D:DESCRIPTION alter_group.tex
 alter_group:	alter group_url gr_with						{ $$ = new AlterGroup($2, $3, $1); }
 	|	alter group_url gr_add_dellist					{ $$ = new AlterGroup($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop group
 //D:PURPOSE P020
-//D:DESCRIPTION drop_group.tex.indexed
+//D:DESCRIPTION drop_group.tex
 drop_group:	drop group_url							{ $$ = new DropGroup($2, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = rename group
 //D:PURPOSE P021
-//D:DESCRIPTION rename_group.tex.indexed
+//D:DESCRIPTION rename_group.tex
 rename_group:	RENAME group_url TO groupname					{ $$ = new RenameGroup($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = show group
-//D:DESCRIPTION show_group.tex.indexed
+//D:DESCRIPTION show_group.tex
 //D:PURPOSE P022
 show_group:	SHOW group_url							{ $$ = new ShowGroup($2); }
 
 //D:MASTER
 //D:NT-ALIAS = list group
-//D:DESCRIPTION list_group.tex.indexed
+//D:DESCRIPTION list_group.tex
 //D:PURPOSE P023
 list_group:	LIST GROUP							{ $$ = new ListGroup(); }
 
@@ -1484,7 +836,7 @@ gr_unlist:	username							{ $$ = new Vector(); $<Vector>$.addElement($1); }
 //D:MASTER
 //D:NT-ALIAS = create folder
 //D:PURPOSE P024
-//D:DESCRIPTION create_folder.tex.indexed
+//D:DESCRIPTION create_folder.tex
 create_folder:	create FOLDER folderpath cf_optwith				{ if ($3.size() == 1 && !$1.booleanValue())
 										  	yyerror(ParseStr.S_SYNTAX_ERROR, new String[] {new String(".")});
 										  $$ = new CreateFolder($3, $4, $1);
@@ -1492,7 +844,7 @@ create_folder:	create FOLDER folderpath cf_optwith				{ if ($3.size() == 1 && !$
 
 //D:MASTER
 //D:NT-ALIAS = drop folder
-//D:DESCRIPTION drop_folder.tex.indexed
+//D:DESCRIPTION drop_folder.tex
 //D:PURPOSE P025
 drop_folder:	drop folder_url opt_cascade opt_force				{ $$ = new DropFolder($2, $3, $4, $1); }
 
@@ -1500,25 +852,25 @@ drop_folder:	drop folder_url opt_cascade opt_force				{ $$ = new DropFolder($2, 
 //D:LEVEL enterprise
 //D:NT-ALIAS = cleanup folder
 //D:PURPOSE P167
-//D:DESCRIPTION cleanup_folder.tex.indexed
+//D:DESCRIPTION cleanup_folder.tex
 cleanup_folder:	CLEANUP FOLDER clf_list clf_optwith				{ $$ = new CleanupFolder($3, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = move folder
-//D:DESCRIPTION move_folder.tex.indexed
+//D:DESCRIPTION move_folder.tex
 //D:PURPOSE P026
 move_folder:	MOVE folder_url TO folderpath					{ $$ = new MoveFolder($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = rename folder
-//D:DESCRIPTION rename_folder.tex.indexed
+//D:DESCRIPTION rename_folder.tex
 //D:PURPOSE P202
 rename_folder:	RENAME folder_url TO foldername					{ $$ = new MoveFolder($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = copy folder
 //D:PURPOSE P027
-//D:DESCRIPTION copy_folder.tex.indexed
+//D:DESCRIPTION copy_folder.tex
 copy_folder:	COPY url_list TO folderpath					{ $$ = new CopyFolder($2, $4); }
 //D:OVERRIDE
 //	|	COPY folder_url TO foldername
@@ -1534,25 +886,25 @@ folder_or_job:	folder_url							{ $$ = $1; }
 //D:NT-ALIAS = alter folder
 //D:NODEFAULTS
 //D:PURPOSE P160
-//D:DESCRIPTION alter_folder.tex.indexed
+//D:DESCRIPTION alter_folder.tex
 alter_folder:	alter folder_url cf_withwith					{ $$ = new AlterFolder($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = list folder
-//D:DESCRIPTION list_folder.tex.indexed
+//D:DESCRIPTION list_folder.tex
 //D:PURPOSE P028
 list_folder:	LIST FOLDER folderpath opt_lf_withlist				{ $$ = new ListFolder($3, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = show folder
-//D:DESCRIPTION show_folder.tex.indexed
+//D:DESCRIPTION show_folder.tex
 //D:PURPOSE P029
 show_folder:	SHOW folder_url							{ $$ = new ShowFolder($2); }
 
 //D:MASTER
 //D:NT-ALIAS = show job definition
 //D:PURPOSE P166
-//D:DESCRIPTION show_job_definition.tex.indexed
+//D:DESCRIPTION show_job_definition.tex
 show_job_definition:	SHOW jobdef_url						{ $$ = new ShowFolder($2); }
 
 cf_optwith:									{ $$ = null; }
@@ -1637,7 +989,7 @@ lf_filteratom:		NAME LIKE STRING					{ $$ = new WithItem(ParseStr.map($1.token),
 
 //D:MASTER
 //D:NT-ALIAS = list job definition hierarchy
-//D:DESCRIPTION list_job_definition_hierarchy.tex.indexed
+//D:DESCRIPTION list_job_definition_hierarchy.tex
 //D:PURPOSE P030
 list_job_definition_hierarchy:	LIST JOB_DEFINITION_HIERARCHY folderpath opt_expand
 										{ $$ = new ListJobDefinitionHierarchy($3, $4); }
@@ -1650,7 +1002,7 @@ list_job_definition_hierarchy:	LIST JOB_DEFINITION_HIERARCHY folderpath opt_expa
 
 //D:MASTER
 //D:NT-ALIAS = list dependency definition
-//D:DESCRIPTION list_dependency_definition.tex.indexed
+//D:DESCRIPTION list_dependency_definition.tex
 //D:PURPOSE P031
 list_dependency_definition:	LIST DEPENDENCY_DEFINITION folderpath		{ $$ = new ListDependencyDefinition($3); }
 
@@ -1662,7 +1014,7 @@ list_dependency_definition:	LIST DEPENDENCY_DEFINITION folderpath		{ $$ = new Li
 
 //D:MASTER
 //D:NT-ALIAS = list dependency hierarchy
-//D:DESCRIPTION list_dependency_hierarchy.tex.indexed
+//D:DESCRIPTION list_dependency_hierarchy.tex
 //D:PURPOSE P032
 list_dependency_hierarchy:	LIST DEPENDENCY_HIERARCHY jobid opt_expand	{ $$ = new ListDependencyHierarchy($3, $4); }
 
@@ -1674,38 +1026,38 @@ list_dependency_hierarchy:	LIST DEPENDENCY_HIERARCHY jobid opt_expand	{ $$ = new
 
 //D:MASTER
 //D:NT-ALIAS = create scope
-//D:DESCRIPTION create_jobserver.tex.indexed
+//D:DESCRIPTION create_jobserver.tex
 //D:PURPOSE P033
 create_scope:		create scope_url cs_optwith				{ $$ = new CreateScope ($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop scope
-//D:DESCRIPTION drop_scope.tex.indexed
+//D:DESCRIPTION drop_scope.tex
 //D:PURPOSE P034
 drop_scope:		drop scope_url opt_cascade				{ $$ = new DropScope($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = move scope
-//D:DESCRIPTION move_scope.tex.indexed
+//D:DESCRIPTION move_scope.tex
 //D:PURPOSE P035
 move_scope:		MOVE scope_url TO serverpath				{ $$ = new MoveScope($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = rename scope
-//D:DESCRIPTION rename_scope.tex.indexed
+//D:DESCRIPTION rename_scope.tex
 //D:PURPOSE P203
 rename_scope:		RENAME scope_url TO scopename				{ $$ = new MoveScope($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = copy scope
 //D:PURPOSE P036
-//D:DESCRIPTION copy_scope.tex.indexed
+//D:DESCRIPTION copy_scope.tex
 copy_scope:		COPY scope_url TO serverpath				{ $$ = new CopyScope($2, $4); }
 	|		COPY scope_url TO scopename				{ $$ = new CopyScope($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = alter scope
-//D:DESCRIPTION alter_scope.tex.indexed
+//D:DESCRIPTION alter_scope.tex
 //D:NODEFAULTS
 //D:PURPOSE P037
 alter_scope:		alter scope_url js_withwith				{ $$ = new AlterScope ($2, $3, $1); }
@@ -1713,13 +1065,13 @@ alter_scope:		alter scope_url js_withwith				{ $$ = new AlterScope ($2, $3, $1);
 
 //D:MASTER
 //D:NT-ALIAS = list scope
-//D:DESCRIPTION list_scope.tex.indexed
+//D:DESCRIPTION list_scope.tex
 //D:PURPOSE P038
 list_scope:		LIST scope_url opt_expand				{ $$ = new ListScope($2, $3); }
 
 //D:MASTER
 //D:NT-ALIAS = show scope
-//D:DESCRIPTION show_scope.tex.indexed
+//D:DESCRIPTION show_scope.tex
 //D:PURPOSE P039
 show_scope:		SHOW scope_url opt_expand				{ $$ = new ShowScope($2, $3); }
 
@@ -1793,7 +1145,7 @@ scope_cfg_envlist:	parm_is_string						{ $$ = new WithHash(); $<WithHash>$.addIt
 //D:NT-ALIAS = alter jobserver
 //D:NODEFAULTS
 //D:PURPOSE P171
-//D:DESCRIPTION alter_jobserver.tex.indexed
+//D:DESCRIPTION alter_jobserver.tex
 alter_jobservers:	alter JOB_SERVER with js_fatal ERROR_TEXT '=' STRING	{ $$ = new AlterScope($4.booleanValue(), $7.textValue, $1); }
 	|		alter JOB_SERVER with DYNAMIC jobsvr_parm		{ $$ = new AlterScope($5, $1); }
 
@@ -1804,26 +1156,26 @@ alter_jobservers:	alter JOB_SERVER with js_fatal ERROR_TEXT '=' STRING	{ $$ = ne
 
 //D:MASTER
 //D:NT-ALIAS = shutdown
-//D:DESCRIPTION shutdown.tex.indexed
+//D:DESCRIPTION shutdown.tex
 //D:PURPOSE P045
 shutdown_cmd:		SHUTDOWN serverpath					{ $$ = new ShutdownServer($2); }
 
 //D:MASTER
 //D:NT-ALIAS = suspend
-//D:DESCRIPTION suspend.tex.indexed
+//D:DESCRIPTION suspend.tex
 //D:PURPOSE P046
 suspend_cmd:		SUSPEND serverpath					{ $$ = new SuspendServer($2); }
 
 //D:MASTER
 //D:NT-ALIAS = resume
-//D:DESCRIPTION resume.tex.indexed
+//D:DESCRIPTION resume.tex
 //D:PURPOSE P047
 resume_cmd:		RESUME serverpath					{ $$ = new ResumeServer($2); }
 
 //D:MASTER USER SERVER
 //D:NT-ALIAS = register
 //D:PURPOSE P048
-//D:DESCRIPTION register.tex.indexed
+//D:DESCRIPTION register.tex
 register_cmd:		REGISTER serverpath '.' servername with PID '=' pid opt_suspended
 										{ $$ = new RegisterServer($2, $4, $8, $9); }
 	|		REGISTER WITH PID '=' pid				{ $$ = new RegisterServer(null, null, $5, null); }
@@ -1831,12 +1183,12 @@ register_cmd:		REGISTER serverpath '.' servername with PID '=' pid opt_suspended
 //D:MASTER USER SERVER
 //D:NT-ALIAS = deregister
 //D:PURPOSE P049
-//D:DESCRIPTION deregister.tex.indexed
+//D:DESCRIPTION deregister.tex
 deregister_cmd:		DEREGISTER serverpath '.' servername 			{ $$ = new RegisterServer($2, $4, null, Boolean.FALSE); }
 
 //D:MASTER SERVER NOUSER
 //D:NT-ALIAS = get next job
-//D:DESCRIPTION get_next_job.tex.indexed
+//D:DESCRIPTION get_next_job.tex
 //D:PURPOSE P050
 get_next_job:		GET_NEXT_JOB						{ $$ = new GetNextJob(); }
 
@@ -1848,31 +1200,31 @@ get_next_job:		GET_NEXT_JOB						{ $$ = new GetNextJob(); }
 //D:MASTER
 //D:NT-ALIAS = create named resource
 //D:PURPOSE P051
-//D:DESCRIPTION create_named_resource.tex.indexed
+//D:DESCRIPTION create_named_resource.tex
 create_named_resource:	create NAMED_RESOURCE resourcepath cnr_with_clause	{ $$ = new CreateNamedResource($3, $4, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop named resource
 //D:PURPOSE P052
-//D:DESCRIPTION drop_named_resource.tex.indexed
+//D:DESCRIPTION drop_named_resource.tex
 drop_named_resource:	drop nr_url opt_cascade					{ $$ = new DropNamedResource($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = move named resource
 //D:PURPOSE P053
-//D:DESCRIPTION move_named_resource.tex.indexed
+//D:DESCRIPTION move_named_resource.tex
 move_named_resource:	MOVE nr_url TO resourcepath				{ $$ = new RenameNamedResource($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = rename named resource
 //D:PURPOSE P205
-//D:DESCRIPTION rename_named_resource.tex.indexed
+//D:DESCRIPTION rename_named_resource.tex
 rename_named_resource:	RENAME nr_url TO resourcename				{ $$ = new RenameNamedResource($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = copy named resource
 //D:PURPOSE P054
-//D:DESCRIPTION copy_named_resource.tex.indexed
+//D:DESCRIPTION copy_named_resource.tex
 copy_named_resource:	COPY nr_url TO resourcepath				{ $$ = new CopyNamedResource($2, $4); }
 	|		COPY nr_url TO resourcename				{ $$ = new CopyNamedResource($2, $4); }
 
@@ -1880,18 +1232,18 @@ copy_named_resource:	COPY nr_url TO resourcepath				{ $$ = new CopyNamedResource
 //D:NT-ALIAS = alter named resource
 //D:NODEFAULTS
 //D:PURPOSE P055
-//D:DESCRIPTION alter_named_resource.tex.indexed
+//D:DESCRIPTION alter_named_resource.tex
 alter_named_resource:	alter nr_url anr_with_clause				{ $$ = new AlterNamedResource($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = show named resource
-//D:DESCRIPTION show_named_resource.tex.indexed
+//D:DESCRIPTION show_named_resource.tex
 //D:PURPOSE P056
 show_named_resource:	SHOW nr_url opt_expand					{ $$ = new ShowNamedResource($2, $3); }
 
 //D:MASTER
 //D:NT-ALIAS = list named resource
-//D:DESCRIPTION list_named_resource.tex.indexed
+//D:DESCRIPTION list_named_resource.tex
 //D:PURPOSE P057
 list_named_resource:	LIST NAMED_RESOURCE opt_resourcepath opt_lnr_withwith	{ if($3 == null)
 											if($4 == null)	$$ = new ListNamedResource();
@@ -2011,31 +1363,31 @@ lnr_usagelist:		resource_usage						{ $$ = new Vector(); $<Vector>$.addElement($
 //D:MASTER
 //D:NT-ALIAS = create resource
 //D:PURPOSE P058
-//D:DESCRIPTION create_resource.tex.indexed
+//D:DESCRIPTION create_resource.tex
 create_resource:	create RESOURCE resourcepath IN ar_path ar_with_clause	{ $$ = new CreateResource($3, $5, $6, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop resource
 //D:PURPOSE P059
-//D:DESCRIPTION drop_resource.tex.indexed
+//D:DESCRIPTION drop_resource.tex
 drop_resource:		drop resource_url opt_force				{ $$ = new DropResource($2, $1, $3); }
 
 //D:MASTER
 //D:NT-ALIAS = alter resource
 //D:NODEFAULTS
 //D:PURPOSE P060
-//D:DESCRIPTION alter_resource.tex.indexed
+//D:DESCRIPTION alter_resource.tex
 alter_resource:		alter resource_url ar_with_clause			{ $$ = new AlterResource($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = link resource
 //D:PURPOSE P187
-//D:DESCRIPTION link_resource.tex.indexed
+//D:DESCRIPTION link_resource.tex
 link_resource:	LINK scoperesource_url TO scope_url opt_force			{ $$ = new LinkResource($2, $4, $5); }
 
 //D:MASTER
 //D:NT-ALIAS = show resource
-//D:DESCRIPTION show_resource.tex.indexed
+//D:DESCRIPTION show_resource.tex
 //D:PURPOSE P061
 show_resource:		SHOW resource_url					{ $$ = new ShowResource($2); }
 
@@ -2112,32 +1464,32 @@ ar_parm:		parametername '=' STRING				{ Vector v = new Vector();
 //D:MASTER
 //D:NT-ALIAS = create resource state definition
 //D:PURPOSE P062
-//D:DESCRIPTION create_resource_state_definition.tex.indexed
+//D:DESCRIPTION create_resource_state_definition.tex
 //D:EXAMPLE create_resource_state_definition.tex
 create_resource_stat_def:	create RESOURCE_STATUS_DEFINITION statusname	{ $$ = new CreateResourceStatus($3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop resource state definition
 //D:PURPOSE P063
-//D:DESCRIPTION drop_resource_state_definition.tex.indexed
+//D:DESCRIPTION drop_resource_state_definition.tex
 drop_resource_stat_def:		drop RESOURCE_STATUS_DEFINITION statusname	{ $$ = new DropResourceStatus($3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = rename resource state definition
 //D:PURPOSE P064
-//D:DESCRIPTION rename_resource_state_definition.tex.indexed
+//D:DESCRIPTION rename_resource_state_definition.tex
 rename_resource_stat_def:	RENAME RESOURCE_STATUS_DEFINITION statusname TO statusname
 										{ $$ = new RenameResourceStatus($3, $5); }
 
 //D:MASTER
 //D:NT-ALIAS = list resource state definition
-//D:DESCRIPTION list_resource_state_definition.tex.indexed
+//D:DESCRIPTION list_resource_state_definition.tex
 //D:PURPOSE P065
 list_resource_stat_def:		LIST RESOURCE_STATUS_DEFINITION			{ $$ = new ListResourceStatus(); }
 
 //D:MASTER
 //D:NT-ALIAS = show resource state definition
-//D:DESCRIPTION show_resource_state_definition.tex.indexed
+//D:DESCRIPTION show_resource_state_definition.tex
 //D:PURPOSE P066
 show_resource_stat_def:		SHOW RESOURCE_STATUS_DEFINITION statusname	{ $$ = new ShowResourceStatus($3); }
 
@@ -2150,7 +1502,7 @@ show_resource_stat_def:		SHOW RESOURCE_STATUS_DEFINITION statusname	{ $$ = new S
 //D:MASTER
 //D:NT-ALIAS = create resource state profile
 //D:PURPOSE P067
-//D:DESCRIPTION create_resource_state_profile.tex.indexed
+//D:DESCRIPTION create_resource_state_profile.tex
 //D:EXAMPLE create_resource_state_profile.tex
 create_rsp:		create RESOURCE_STATUS_PROFILE profilename rsp_with_clause
 										{ $$ = new CreateRsp($3, $4, $1); }
@@ -2158,33 +1510,33 @@ create_rsp:		create RESOURCE_STATUS_PROFILE profilename rsp_with_clause
 //D:MASTER
 //D:NT-ALIAS = drop resource state profile
 //D:PURPOSE P068
-//D:DESCRIPTION drop_resource_state_profile.tex.indexed
+//D:DESCRIPTION drop_resource_state_profile.tex
 drop_rsp:		drop RESOURCE_STATUS_PROFILE profilename		{ $$ = new DropRsp($3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = alter resource state profile
 //D:NODEFAULTS
 //D:PURPOSE P069
-//D:DESCRIPTION alter_resource_state_profile.tex.indexed
+//D:DESCRIPTION alter_resource_state_profile.tex
 alter_rsp:		alter RESOURCE_STATUS_PROFILE profilename rsp_with_clause
 										{ $$ = new AlterRsp($3, $4, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = rename resource state profile
 //D:PURPOSE P070
-//D:DESCRIPTION rename_resource_state_profile.tex.indexed
+//D:DESCRIPTION rename_resource_state_profile.tex
 rename_rsp:		RENAME RESOURCE_STATUS_PROFILE profilename TO profilename
 										{ $$ = new RenameRsp($3, $5); }
 
 //D:MASTER
 //D:NT-ALIAS = list resource state profile
-//D:DESCRIPTION list_resource_state_profile.tex.indexed
+//D:DESCRIPTION list_resource_state_profile.tex
 //D:PURPOSE P071
 list_rsp:		LIST RESOURCE_STATUS_PROFILE				{ $$ = new ListRsp(); }
 
 //D:MASTER
 //D:NT-ALIAS = show resource state profile
-//D:DESCRIPTION show_resource_state_profile.tex.indexed
+//D:DESCRIPTION show_resource_state_profile.tex
 //D:PURPOSE P072
 show_rsp:		SHOW RESOURCE_STATUS_PROFILE profilename		{ $$ = new ShowRsp($3); }
 
@@ -2211,7 +1563,7 @@ statuslist:		statusname						{ $$ = new Vector(); $<Vector>$.addElement($1); }
 //D:MASTER
 //D:NT-ALIAS = create resource state mapping
 //D:PURPOSE P073
-//D:DESCRIPTION create_resource_state_mapping.tex.indexed
+//D:DESCRIPTION create_resource_state_mapping.tex
 //D:EXAMPLE create_resource_state_mapping.tex
 create_rsm:		create RESOURCE_STATUS_MAPPING mappingname rsm_with_clause
 										{ $$ = new CreateRsm($3, $4, $1); }
@@ -2219,33 +1571,33 @@ create_rsm:		create RESOURCE_STATUS_MAPPING mappingname rsm_with_clause
 //D:MASTER
 //D:NT-ALIAS = drop resource state mapping
 //D:PURPOSE P074
-//D:DESCRIPTION drop_resource_state_mapping.tex.indexed
+//D:DESCRIPTION drop_resource_state_mapping.tex
 drop_rsm:		drop RESOURCE_STATUS_MAPPING mappingname		{ $$ = new DropRsm($3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = alter resource state mapping
 //D:NODEFAULTS
 //D:PURPOSE P075
-//D:DESCRIPTION alter_resource_state_mapping.tex.indexed
+//D:DESCRIPTION alter_resource_state_mapping.tex
 alter_rsm:		alter RESOURCE_STATUS_MAPPING mappingname rsm_with_clause
 										{ $$ = new AlterRsm($3, $4, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = rename resource state mapping
 //D:PURPOSE P076
-//D:DESCRIPTION rename_resource_state_mapping.tex.indexed
+//D:DESCRIPTION rename_resource_state_mapping.tex
 rename_rsm:		RENAME RESOURCE_STATUS_MAPPING mappingname TO profilename
 										{ $$ = new RenameRsm($3, $5); }
 
 //D:MASTER
 //D:NT-ALIAS = list resource state mapping
-//D:DESCRIPTION list_resource_state_mapping.tex.indexed
+//D:DESCRIPTION list_resource_state_mapping.tex
 //D:PURPOSE P077
 list_rsm:		LIST RESOURCE_STATUS_MAPPING				{ $$ = new ListRsm(); }
 
 //D:MASTER
 //D:NT-ALIAS = show resource state mapping
-//D:DESCRIPTION show_resource_state_mapping.tex.indexed
+//D:DESCRIPTION show_resource_state_mapping.tex
 //D:PURPOSE P078
 show_rsm:		SHOW RESOURCE_STATUS_MAPPING profilename		{ $$ = new ShowRsm($3); }
 
@@ -2275,20 +1627,20 @@ rsm_withitem:		statusname MAPS statusname TO statusname		{ $$ = new Vector();
 //D:MASTER
 //D:NT-ALIAS = create environment
 //D:PURPOSE P079
-//D:DESCRIPTION create_environment.tex.indexed
+//D:DESCRIPTION create_environment.tex
 create_environment:	create ENVIRONMENT environmentname opt_env_with_clause	{ $$ = new CreateEnvironment($3, $4, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop environment
 //D:PURPOSE P080
-//D:DESCRIPTION drop_environment.tex.indexed
+//D:DESCRIPTION drop_environment.tex
 drop_environment:	drop env_url						{ $$ = new DropEnvironment($2, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = alter environment
 //D:NODEFAULTS
 //D:PURPOSE P081
-//D:DESCRIPTION alter_environment.tex.indexed
+//D:DESCRIPTION alter_environment.tex
 alter_environment:	alter env_url env_with_clause				{ $$ = new AlterEnvironment($2, $3, $1); }
 	|		alter env_url env_addclause				{ $$ = new AlterEnvironment($2, true, $3, $1); }
 	|		alter env_url env_delclause				{ $$ = new AlterEnvironment($2, false, $3, $1); }
@@ -2296,18 +1648,18 @@ alter_environment:	alter env_url env_with_clause				{ $$ = new AlterEnvironment(
 //D:MASTER
 //D:NT-ALIAS = rename environment
 //D:PURPOSE P082
-//D:DESCRIPTION rename_environment.tex.indexed
+//D:DESCRIPTION rename_environment.tex
 rename_environment:	RENAME env_url TO environmentname			{ $$ = new RenameEnvironment($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = list environment
-//D:DESCRIPTION list_environment.tex.indexed
+//D:DESCRIPTION list_environment.tex
 //D:PURPOSE P083
 list_environment:	LIST ENVIRONMENT					{ $$ = new ListEnvironment(); }
 
 //D:MASTER
 //D:NT-ALIAS = show environment
-//D:DESCRIPTION show_environment.tex.indexed
+//D:DESCRIPTION show_environment.tex
 //D:PURPOSE P084
 show_environment:	SHOW env_url opt_expand					{ $$ = new ShowEnvironment($2, $3); }
 
@@ -2346,31 +1698,31 @@ env_delclause:		DELETE '(' resourcelist ')'				{ $$ = $3; }
 //D:MASTER
 //D:NT-ALIAS = create exit state definition
 //D:PURPOSE P085
-//D:DESCRIPTION create_exit_state_definition.tex.indexed
+//D:DESCRIPTION create_exit_state_definition.tex
 //D:EXAMPLE create_exit_state_definition.tex
 create_exit_status_def:	create EXIT_STATUS_DEFINITION statusname		{ $$ = new CreateExitStatusDef($3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop exit state definition
 //D:PURPOSE P086
-//D:DESCRIPTION drop_exit_state_definition.tex.indexed
+//D:DESCRIPTION drop_exit_state_definition.tex
 drop_exit_status_def:	drop esd_url						{ $$ = new DropExitStatusDef($2, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = rename exit state definition
 //D:PURPOSE P087
-//D:DESCRIPTION rename_exit_state_definition.tex.indexed
+//D:DESCRIPTION rename_exit_state_definition.tex
 rename_exit_status_def:	RENAME esd_url TO statusname				{ $$ = new RenameExitStatusDef($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = show exit state definition
-//D:DESCRIPTION show_exit_state_definition.tex.indexed
+//D:DESCRIPTION show_exit_state_definition.tex
 //D:PURPOSE P088
 show_exit_status_def:	SHOW esd_url						{ $$ = new ShowExitStatusDef($2); }
 
 //D:MASTER
 //D:NT-ALIAS = list exit state definition
-//D:DESCRIPTION list_exit_state_definition.tex.indexed
+//D:DESCRIPTION list_exit_state_definition.tex
 //D:PURPOSE P089
 list_exit_status_def:	LIST EXIT_STATUS_DEFINITION				{ $$ = new ListExitStatusDef(); }
 
@@ -2383,7 +1735,7 @@ list_exit_status_def:	LIST EXIT_STATUS_DEFINITION				{ $$ = new ListExitStatusDe
 //D:MASTER
 //D:NT-ALIAS = create exit state mapping
 //D:PURPOSE P090
-//D:DESCRIPTION create_exit_status_mapping.tex.indexed
+//D:DESCRIPTION create_exit_status_mapping.tex
 //D:EXAMPLE create_exit_status_mapping.tex
 create_exit_status_mapping:	create EXIT_STATUS_MAPPING mappingname esm_with_clause
 										{ $$ = new CreateExitStatusMapping($3, $4, $1); }
@@ -2391,31 +1743,31 @@ create_exit_status_mapping:	create EXIT_STATUS_MAPPING mappingname esm_with_clau
 //D:MASTER
 //D:NT-ALIAS = drop exit state mapping
 //D:PURPOSE P091
-//D:DESCRIPTION drop_exit_state_mapping.tex.indexed
+//D:DESCRIPTION drop_exit_state_mapping.tex
 drop_exit_status_mapping:	drop esm_url					{ $$ = new DropExitStateMapping($2, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = alter exit state mapping
 //D:NODEFAULTS
 //D:PURPOSE P092
-//D:DESCRIPTION alter_exit_status_mapping.tex.indexed
+//D:DESCRIPTION alter_exit_status_mapping.tex
 alter_exit_status_mapping:	alter esm_url esm_with_clause			{ $$ = new AlterExitStateMapping($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = rename exit state mapping
 //D:PURPOSE P093
-//D:DESCRIPTION rename_exit_state_mapping.tex.indexed
+//D:DESCRIPTION rename_exit_state_mapping.tex
 rename_exit_status_mapping:	RENAME esm_url TO profilename			{ $$ = new RenameExitStateMapping($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = show exit state mapping
-//D:DESCRIPTION show_exit_state_mapping.tex.indexed
+//D:DESCRIPTION show_exit_state_mapping.tex
 //D:PURPOSE P094
 show_exit_status_mapping:	SHOW esm_url					{ $$ = new ShowExitStateMapping($2); }
 
 //D:MASTER
 //D:NT-ALIAS = list exit state mapping
-//D:DESCRIPTION list_exit_state_mapping.tex.indexed
+//D:DESCRIPTION list_exit_state_mapping.tex
 //D:PURPOSE P095
 list_exit_status_mapping:	LIST EXIT_STATUS_MAPPING			{ $$ = new ListExitStateMapping(); }
 
@@ -2443,9 +1795,9 @@ esm_mapping:			signed_integer ',' statusname			{ $$ = new EsmMap($1, $3); }
 
 //D:MASTER
 //D:NT-ALIAS = create exit state profile
-//D:DESCRIPTION list_exit_state_profile.tex.indexed
+//D:DESCRIPTION list_exit_state_profile.tex
 //D:PURPOSE P161
-//D:DESCRIPTION create_exit_state_profile.tex.indexed
+//D:DESCRIPTION create_exit_state_profile.tex
 //D:EXAMPLE create_exit_state_profile.tex
 create_exit_status_prof:	create EXIT_STATUS_PROFILE profilename esp_withwith
 										{ if(!$4.containsKey(ParseStr.S_STATUS))
@@ -2456,32 +1808,32 @@ create_exit_status_prof:	create EXIT_STATUS_PROFILE profilename esp_withwith
 //D:MASTER
 //D:NT-ALIAS = drop exit state profile
 //D:PURPOSE P096
-//D:DESCRIPTION drop_exit_state_profile.tex.indexed
+//D:DESCRIPTION drop_exit_state_profile.tex
 drop_exit_status_prof:		drop esp_url					{ $$ = new DropExitStatProf($2, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = alter exit state profile
 //D:NODEFAULTS
 //D:PURPOSE P097
-//D:DESCRIPTION alter_exit_state_prof.tex.indexed
+//D:DESCRIPTION alter_exit_state_prof.tex
 alter_exit_status_prof:		alter esp_url esp_withwith			{ $$ = new AlterExitStatProf($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = rename exit state profile
 //D:PURPOSE P098
-//D:DESCRIPTION rename_exit_state_profile.tex.indexed
+//D:DESCRIPTION rename_exit_state_profile.tex
 rename_exit_status_prof:	RENAME esp_url TO profilename			{ $$ = new RenameExitStatProf($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = show exit state profile
-//D:DESCRIPTION show_exit_state_profile.tex.indexed
+//D:DESCRIPTION show_exit_state_profile.tex
 //D:PURPOSE P099
 show_exit_status_profile:	SHOW esp_url					{ $$ = new ShowExitStateProfile($2); }
 
 //D:MASTER
 //D:NT-ALIAS = list exit state profile
 //D:PURPOSE P100
-//D:DESCRIPTION list_exit_state_profile.tex.indexed
+//D:DESCRIPTION list_exit_state_profile.tex
 list_exit_status_profile:	LIST EXIT_STATUS_PROFILE			{ $$ = new ListExitStateProfile(); }
 
 esp_withwith:			with esp_with					{ $$ = $2; }
@@ -2527,12 +1879,12 @@ esp_state_type:			FINAL						{ $$ = new Integer(SDMSExitState.FINAL); }
 //D:MASTER
 //D:NT-ALIAS = create footprint
 //D:PURPOSE P101
-//D:DESCRIPTION create_footprint.tex.indexed
+//D:DESCRIPTION create_footprint.tex
 create_footprint:	create FOOTPRINT footprintname cfp_withwith		{ $$ = new CreateFootprint($3, $4, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop footprint
-//D:DESCRIPTION drop_footprint.tex.indexed
+//D:DESCRIPTION drop_footprint.tex
 //D:PURPOSE P102
 drop_footprint:		drop fp_url						{ $$ = new DropFootprint($2, $1); }
 
@@ -2540,26 +1892,26 @@ drop_footprint:		drop fp_url						{ $$ = new DropFootprint($2, $1); }
 //D:NT-ALIAS = alter footprint
 //D:NODEFAULTS
 //D:PURPOSE P103
-//D:DESCRIPTION alter_footprint.tex.indexed
+//D:DESCRIPTION alter_footprint.tex
 alter_footprint:	alter fp_url cfp_withwith				{ $$ = new AlterFootprint($2, $3, $1); }
 	|		alter fp_url cfp_addwith				{ $$ = new AlterFootprint($2, $3, true, $1); }
 	|		alter fp_url cfp_delwith				{ $$ = new AlterFootprint($2, $3, false, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = rename footprint
-//D:DESCRIPTION rename_footprint.tex.indexed
+//D:DESCRIPTION rename_footprint.tex
 //D:PURPOSE P104
 rename_footprint:	RENAME fp_url TO footprintname				{ $$ = new RenameFootprint($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = list footprint
-//D:DESCRIPTION list_footprint.tex.indexed
+//D:DESCRIPTION list_footprint.tex
 //D:PURPOSE P105
 list_footprint:		LIST FOOTPRINT						{ $$ = new ListFootprint(); }
 
 //D:MASTER
 //D:NT-ALIAS = show footprint
-//D:DESCRIPTION show_footprint.tex.indexed
+//D:DESCRIPTION show_footprint.tex
 //D:PURPOSE P106
 show_footprint:		SHOW fp_url opt_expand					{ $$ = new ShowFootprint($2, $3); }
 
@@ -2581,7 +1933,7 @@ cfp_delwith:		DELETE RESOURCE '=' '(' resourcelist ')'		{ $$ = $5; }
 //D:LEVEL professional
 //D:NT-ALIAS = create exit state translation
 //D:PURPOSE P107
-//D:DESCRIPTION create_exit_state_translation.tex.indexed
+//D:DESCRIPTION create_exit_state_translation.tex
 //D:EXAMPLE create_exit_state_translation.tex
 create_exit_status_trans:	create EXIT_STATUS_TRANSLATION transname est_withwith
 										{ $$ = new CreateExitStateTranslation($3, $4, $1); }
@@ -2591,34 +1943,34 @@ create_exit_status_trans:	create EXIT_STATUS_TRANSLATION transname est_withwith
 //D:NT-ALIAS = alter exit state translation
 //D:NODEFAULTS
 //D:PURPOSE P108
-//D:DESCRIPTION alter_exit_state_trans.tex.indexed
+//D:DESCRIPTION alter_exit_state_trans.tex
 alter_exit_status_trans:	alter est_url est_withwith			{ $$ = new AlterExitStateTranslation($2, $3, $1); }
 
 //D:MASTER
 //D:LEVEL professional
 //D:NT-ALIAS = drop exit state translation
 //D:PURPOSE P109
-//D:DESCRIPTION drop_exit_state_translation.tex.indexed
+//D:DESCRIPTION drop_exit_state_translation.tex
 drop_exit_status_trans:		drop est_url					{ $$ = new DropExitStateTranslation($2, $1); }
 
 //D:MASTER
 //D:LEVEL professional
 //D:NT-ALIAS = rename exit state translation
 //D:PURPOSE P110
-//D:DESCRIPTION rename_exit_state_translation.tex.indexed
+//D:DESCRIPTION rename_exit_state_translation.tex
 rename_exit_status_trans:	RENAME est_url TO transname			{ $$ = new RenameExitStateTranslation($2, $4); }
 
 //D:MASTER
 //D:LEVEL professional
 //D:NT-ALIAS = list exit state translation
-//D:DESCRIPTION list_exit_state_translation.tex.indexed
+//D:DESCRIPTION list_exit_state_translation.tex
 //D:PURPOSE P111
 list_exit_status_trans:		LIST EXIT_STATUS_TRANSLATION			{ $$ = new ListExitStateTranslation(); }
 
 //D:MASTER
 //D:LEVEL professional
 //D:NT-ALIAS = show exit state translation
-//D:DESCRIPTION show_exit_state_translation.tex.indexed
+//D:DESCRIPTION show_exit_state_translation.tex
 //D:PURPOSE P112
 show_exit_status_trans:		SHOW est_url					{ $$ = new ShowExitStateTranslation($2); }
 
@@ -2640,13 +1992,13 @@ est_trans:			statusname TO statusname			{ $$ = new StatusTranslation($1, $3); }
 //D:MASTER
 //D:NT-ALIAS = drop job definition
 //D:PURPOSE P113
-//D:DESCRIPTION drop_job_definition.tex.indexed
+//D:DESCRIPTION drop_job_definition.tex
 drop_job_definition:	drop JOB_DEFINITION folderpath '.' jobname opt_force	{ $$ = new DropJobDefinition($3, $5, $6, $1.booleanValue()); }
 
 //D:MASTER
 //D:NT-ALIAS = create job definition
 //D:PURPOSE P162
-//D:DESCRIPTION create_job_definition.tex.indexed
+//D:DESCRIPTION create_job_definition.tex
 create_job_definition:	create JOB_DEFINITION folderpath '.' jobname job_with_clause
 										{ $$ = new CreateJobDefinition($3, $5, $6, $1); }
 
@@ -2654,7 +2006,7 @@ create_job_definition:	create JOB_DEFINITION folderpath '.' jobname job_with_cla
 //D:NT-ALIAS = alter job definition
 //D:NODEFAULTS
 //D:PURPOSE P163
-//D:DESCRIPTION alter_job_definition.tex.indexed
+//D:DESCRIPTION alter_job_definition.tex
 alter_job_definition:	alter JOB_DEFINITION folderpath '.' jobname job_with_clause
 										{ $$ = new AlterJobDefinition($3, $5, $6, $1); }
 	|		alter JOB_DEFINITION folderpath '.' jobname ajd_add_del_list
@@ -2663,14 +2015,14 @@ alter_job_definition:	alter JOB_DEFINITION folderpath '.' jobname job_with_claus
 //D:MASTER
 //D:NT-ALIAS = move job definition
 //D:PURPOSE P164
-//D:DESCRIPTION move_job_definition.tex.indexed
+//D:DESCRIPTION move_job_definition.tex
 move_job_definition:	MOVE JOB_DEFINITION folderpath '.' jobname TO folderpath
 										{ $$ = new MoveJobDefinition($3, $5, $7); }
 
 //D:MASTER
 //D:NT-ALIAS = rename job definition
 //D:PURPOSE P200
-//D:DESCRIPTION rename_job_definition.tex.indexed
+//D:DESCRIPTION rename_job_definition.tex
 rename_job_definition:	RENAME JOB_DEFINITION folderpath '.' jobname TO jobname
 										{ $$ = new MoveJobDefinition($3, $5, $7); }
 
@@ -3054,7 +2406,7 @@ jp_aggfunction:		AVG							{ $$ = new Integer(SDMSParameterDefinition.AVG); }
 //D:LEVEL professional
 //D:NT-ALIAS = dump
 //D:PURPOSE P114
-//D:DESCRIPTION dump.tex.indexed
+//D:DESCRIPTION dump.tex
 //D:EXAMPLE dump.tex
 dump_cmd:	DUMP opt_dump_list opt_dump_with opt_filespec			{ $$ = new DumpCommand($2, $3, $4);
 										  final String s = $<DumpCommand>$.syntaxCheck();
@@ -3128,14 +2480,14 @@ daliasname:	aliasname							{ $$ = $1; }
 
 //D:MASTER JOB USER
 //D:NT-ALIAS = get submittag
-//D:DESCRIPTION get_submittag.tex.indexed
+//D:DESCRIPTION get_submittag.tex
 //D:PURPOSE P115
 get_submittag_cmd:	GET SUBMITTAG						{ $$ = new GetSubmitTag(); }
 
 //D:MASTER USER JOB
 //D:NT-ALIAS = submit
 //D:PURPOSE P116
-//D:DESCRIPTION submit_cmd.tex.indexed
+//D:DESCRIPTION submit_cmd.tex
 submit_cmd:		full_submit_cmd						{ $$ = $1; }
 	|		child_submit_cmd					{ $$ = $1; }
 
@@ -3188,7 +2540,7 @@ submit_param:		parm_is_string						{ $$ = $1; }
 
 //D:MASTER
 //D:NT-ALIAS = finish job
-//D:DESCRIPTION finish_job.tex.indexed
+//D:DESCRIPTION finish_job.tex
 //D:PURPOSE P117
 finish_job_cmd:	FINISH JOB jobid WITH EXIT_CODE '=' signed_integer		{ $$ = new FinishJob($3, $7); }
 	|	FINISH JOB WITH EXIT_CODE '=' signed_integer			{ $$ = new FinishJob($6); }
@@ -3203,7 +2555,7 @@ finish_job_cmd:	FINISH JOB jobid WITH EXIT_CODE '=' signed_integer		{ $$ = new F
 //D:NT-ALIAS = alter job
 //D:NODEFAULTS
 //D:PURPOSE P118
-//D:DESCRIPTION alter_job.tex.indexed
+//D:DESCRIPTION alter_job.tex
 alter_job:	ALTER JOB jobid aj_withwith					{ $$ = new AlterJob($3, $4); }
 	|	ALTER JOB aj_withwith						{ $$ = new AlterJob($3); }
 
@@ -3286,7 +2638,7 @@ aj_ignnrlist:	resourcepath							{ $$ = new Vector(); $<Vector>$.addElement($1);
 
 //D:MASTER SERVER NOUSER
 //D:NT-ALIAS = reassure
-//D:DESCRIPTION reassure.tex.indexed
+//D:DESCRIPTION reassure.tex
 //D:PURPOSE P119
 reassure_cmd:	REASSURE jobid optrun						{ $$ = new ReassureJob($2); }
 
@@ -3302,7 +2654,7 @@ optrun:
 //D:MASTER
 //D:NT-ALIAS = list calendar
 //D:PURPOSE P186
-//D:DESCRIPTION list_calendar.tex.indexed
+//D:DESCRIPTION list_calendar.tex
 list_calendar:		LIST CALENDAR opt_lc_withlist				{ $$ = new ListCalendar($3); }
 
 opt_lc_withlist:								{ $$ = null; }
@@ -3341,7 +2693,7 @@ lc_filteratom:		NAME LIKE STRING					{ $$ = new WithItem(ParseStr.map($1.token),
 //D:MASTER
 //D:NT-ALIAS = list job
 //D:PURPOSE P120
-//D:DESCRIPTION list_job.tex.indexed
+//D:DESCRIPTION list_job.tex
 list_job:		LIST JOB opt_lj_idlist opt_lj_withlist			{ if($3 == null) 
 											if($4 == null) $$ = new ListSubmitted();
 											else		$$ = new ListSubmitted($4);
@@ -3436,7 +2788,7 @@ folderpathlist:		folderpath						{ $$ = new Vector(); $<Vector>$.addElement($1);
 
 //D:MASTER
 //D:NT-ALIAS = show job
-//D:DESCRIPTION show_job.tex.indexed
+//D:DESCRIPTION show_job.tex
 //D:PURPOSE P121
 show_job:	SHOW JOB jobid opt_sj_with 					{ $$ = new ShowSubmitted($3, $4); }
 	|	SHOW JOB SUBMITTAG '=' STRING opt_sj_with			{ $$ = new ShowSubmitted($5.textValue, $6); }
@@ -3492,7 +2844,7 @@ get_set_parm_cmd:	get_parm_cmd						{ $$ = $1; }
 
 //D:MASTER JOB USER
 //D:NT-ALIAS = get parameter
-//D:DESCRIPTION get_parameter.tex.indexed
+//D:DESCRIPTION get_parameter.tex
 //D:PURPOSE P122
 get_parm_cmd:		GET PARAMETERS parametername opt_gpmode			{ $$ = new GetParameter($3, $4); }
 	|		GET PARAMETERS OF jobid parametername opt_gpmode	{ $$ = new GetParameter($5, $6, $4); }
@@ -3507,7 +2859,7 @@ gpmode:			STRICT							{ $$ = ParseStr.map($1.token); }
 
 //D:MASTER JOB USER
 //D:NT-ALIAS = set parameter
-//D:DESCRIPTION set_parameter.tex.indexed
+//D:DESCRIPTION set_parameter.tex
 //D:PURPOSE P123
 set_parm_cmd:		SET PARAMETERS cf_parmlist				{ $$ = new SetParameter($3); }
 	|		SET PARAMETERS on_of jobid cf_parmlist			{ $$ = new SetParameter($5, $4, null); }
@@ -3524,7 +2876,7 @@ on_of:			ON							{ /* do nothing */ }
 
 //D:MASTER JOB NOUSER
 //D:NT-ALIAS = set state
-//D:DESCRIPTION set_state.tex.indexed
+//D:DESCRIPTION set_state.tex
 //D:PURPOSE P124
 set_status_cmd:	SET STATUS '=' statusname					{ $$ = new SetState($4); }
 
@@ -3537,12 +2889,12 @@ set_status_cmd:	SET STATUS '=' statusname					{ $$ = new SetState($4); }
 //D:MASTER
 //D:NT-ALIAS = create event
 //D:PURPOSE P125
-//D:DESCRIPTION create_event.tex.indexed
+//D:DESCRIPTION create_event.tex
 create_event:	create event_url cev_with_clause	 			{ $$ = new CreateEvent($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop event
-//D:DESCRIPTION drop_event.tex.indexed
+//D:DESCRIPTION drop_event.tex
 //D:PURPOSE P126
 drop_event:	drop event_url							{ $$ = new DropEvent($2, $1); }
 
@@ -3550,24 +2902,24 @@ drop_event:	drop event_url							{ $$ = new DropEvent($2, $1); }
 //D:NT-ALIAS = alter event
 //D:NODEFAULTS
 //D:PURPOSE P127
-//D:DESCRIPTION alter_event.tex.indexed
+//D:DESCRIPTION alter_event.tex
 alter_event:	alter event_url cev_with_clause					{ $$ = new AlterEvent($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = rename event
-//D:DESCRIPTION rename_event.tex.indexed
+//D:DESCRIPTION rename_event.tex
 //D:PURPOSE P128
 rename_event:	RENAME EVENT eventname TO eventname				{ $$ = new RenameEvent($3, $5); }
 
 //D:MASTER
 //D:NT-ALIAS = list event
-//D:DESCRIPTION list_event.tex.indexed
+//D:DESCRIPTION list_event.tex
 //D:PURPOSE P129
 list_event:	LIST EVENT							{ $$ = new ListEvent(); }
 
 //D:MASTER
 //D:NT-ALIAS = show event
-//D:DESCRIPTION show_event.tex.indexed
+//D:DESCRIPTION show_event.tex
 //D:PURPOSE P130
 show_event:	SHOW EVENT eventname						{ $$ = new ShowEvent($3); }
 
@@ -3589,7 +2941,7 @@ cev_withitem:	ACTION '=' event_submit_cmd					{ $$ = new WithItem(ParseStr.map($
 
 //D:MASTER
 //D:NT-ALIAS = create interval
-//D:DESCRIPTION create_interval.tex.indexed
+//D:DESCRIPTION create_interval.tex
 //D:PURPOSE P131
 create_interval:	create interval_url opt_ival_with			{ $$ = new CreateInterval($2, $3, $1); }
 
@@ -3597,31 +2949,31 @@ create_interval:	create interval_url opt_ival_with			{ $$ = new CreateInterval($
 //D:NT-ALIAS = alter interval
 //D:NODEFAULTS
 //D:PURPOSE P132
-//D:DESCRIPTION alter_interval.tex.indexed
+//D:DESCRIPTION alter_interval.tex
 alter_interval:		alter interval_url ival_with				{ $$ = new AlterInterval($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop interval
-//D:DESCRIPTION drop_interval.tex.indexed
+//D:DESCRIPTION drop_interval.tex
 //D:PURPOSE P133
 drop_interval:		drop interval_url					{ $$ = new DropInterval($2, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = rename interval
-//D:DESCRIPTION rename_interval.tex.indexed
+//D:DESCRIPTION rename_interval.tex
 //D:PURPOSE P134
 rename_interval:	RENAME INTERVAL intervalname TO intervalname		{ $$ = new RenameInterval($3, $5); }
 
 //D:MASTER
 //D:NT-ALIAS = list interval
-//D:DESCRIPTION list_interval.tex.indexed
+//D:DESCRIPTION list_interval.tex
 //D:PURPOSE P135
 list_interval:		LIST INTERVAL						{ $$ = new ListInterval(); }
 
 //D:MASTER
 //D:NT-ALIAS = show interval
 //D:PURPOSE P136
-//D:DESCRIPTION show_interval.tex.indexed
+//D:DESCRIPTION show_interval.tex
 show_interval:		SHOW INTERVAL intervalname opt_show_with		{ $$ = new ShowInterval($3, $4); }
 
 //D:LINEBREAK
@@ -3713,7 +3065,7 @@ ival_namelist:		intervalname						{ $$ = new Vector(); $<Vector>$.addElement($1)
 
 //D:MASTER
 //D:NT-ALIAS = create schedule
-//D:DESCRIPTION create_schedule.tex.indexed
+//D:DESCRIPTION create_schedule.tex
 //D:PURPOSE P137
 create_schedule:	create schedule_url opt_schedwith			{ $$ = new CreateSchedule($2, $3, $1); }
 
@@ -3721,38 +3073,38 @@ create_schedule:	create schedule_url opt_schedwith			{ $$ = new CreateSchedule($
 //D:NT-ALIAS = alter schedule
 //D:NODEFAULTS
 //D:PURPOSE P138
-//D:DESCRIPTION alter_schedule.tex.indexed
+//D:DESCRIPTION alter_schedule.tex
 alter_schedule:		alter schedule_url schedwithwith			{ $$ = new AlterSchedule($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop schedule
-//D:DESCRIPTION drop_schedule.tex.indexed
+//D:DESCRIPTION drop_schedule.tex
 //D:PURPOSE P139
 drop_schedule:		drop schedule_url					{ $$ = new DropSchedule($2, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = move schedule
-//D:DESCRIPTION move_schedule.tex.indexed
+//D:DESCRIPTION move_schedule.tex
 //D:PURPOSE P140
 move_schedule:		MOVE SCHEDULE schedulepath '.' schedulename TO schedulepath
 										{ $$ = new MoveSchedule($3, $5, $7); }
 
 //D:MASTER
 //D:NT-ALIAS = rename schedule
-//D:DESCRIPTION rename_schedule.tex.indexed
+//D:DESCRIPTION rename_schedule.tex
 //D:PURPOSE P204
 rename_schedule:	RENAME SCHEDULE schedulepath '.' schedulename TO schedulename
 										{ $$ = new MoveSchedule($3, $5, $7); }
 
 //D:MASTER
 //D:NT-ALIAS = list schedule
-//D:DESCRIPTION list_schedule.tex.indexed
+//D:DESCRIPTION list_schedule.tex
 //D:PURPOSE P141
 list_schedule:		LIST SCHEDULE schedulepath opt_expand			{ $$ = new ListSchedule($3, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = show schedule
-//D:DESCRIPTION show_schedule.tex.indexed
+//D:DESCRIPTION show_schedule.tex
 //D:PURPOSE P142
 show_schedule:		SHOW SCHEDULE schedulepath				{ $$ = new ShowSchedule($3); }
 
@@ -3786,31 +3138,31 @@ active:			ACTIVE							{ $$ = Boolean.TRUE; }
 //D:MASTER
 //D:NT-ALIAS = create scheduled event
 //D:PURPOSE P143
-//D:DESCRIPTION create_scheduled_event.tex.indexed
+//D:DESCRIPTION create_scheduled_event.tex
 create_scheduled_event:	create scheduledevent_url opt_schevwith			{ $$ = new CreateScheduledEvent($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = alter scheduled event
 //D:NODEFAULTS
 //D:PURPOSE P144
-//D:DESCRIPTION alter_scheduled_event.tex.indexed
+//D:DESCRIPTION alter_scheduled_event.tex
 alter_scheduled_event:	alter scheduledevent_url schevwithwith			{ $$ = new AlterScheduledEvent($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop scheduled event
-//D:DESCRIPTION drop_scheduled_event.tex.indexed
+//D:DESCRIPTION drop_scheduled_event.tex
 //D:PURPOSE P145
 drop_scheduled_event:	drop scheduledevent_url					{ $$ = new DropScheduledEvent($2, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = list scheduled event
-//D:DESCRIPTION list_scheduled_event.tex.indexed
+//D:DESCRIPTION list_scheduled_event.tex
 //D:PURPOSE P146
 list_scheduled_event:	LIST SCHEDULED_EVENT					{ $$ = new ListScheduledEvent(); }
 
 //D:MASTER
 //D:NT-ALIAS = show scheduled event
-//D:DESCRIPTION show_scheduled_event.tex.indexed
+//D:DESCRIPTION show_scheduled_event.tex
 //D:PURPOSE P147
 show_scheduled_event:	SHOW SCHEDULED_EVENT schedulepath '.' eventname		{ $$ = new ShowScheduledEvent($3, $5); }
 
@@ -3846,7 +3198,7 @@ schevbacklog:		LAST							{ $$ = new Integer(SDMSScheduledEvent.LAST); }
 //D:MASTER
 //D:NT-ALIAS = create trigger
 //D:PURPOSE P148
-//D:DESCRIPTION  create_trigger.tex.indexed
+//D:DESCRIPTION  create_trigger.tex
 create_trigger:		create TRIGGER triggername ON ct_object ct_withwith	{ $$ = new CreateTrigger($3, $5, $6, $1); }
 
 ct_object:		JOB_DEFINITION folderpath				{ $$ = new WithItem(ParseStr.S_JOB, $2); }
@@ -3943,24 +3295,24 @@ ct_event:		CREATE							{ $$ = SDMSTrigger.map($1.token); }
 //D:NT-ALIAS = alter trigger
 //D:NODEFAULTS
 //D:PURPOSE P149
-//D:DESCRIPTION alter_trigger.tex.indexed
+//D:DESCRIPTION alter_trigger.tex
 alter_trigger:		alter trigger_url ct_withwith				{ $$ = new AlterTrigger($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop trigger
 //D:PURPOSE P150
-//D:DESCRIPTION drop_trigger.tex.indexed
+//D:DESCRIPTION drop_trigger.tex
 drop_trigger:		drop trigger_url					{ $$ = new DropTrigger($2, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = rename trigger
 //D:PURPOSE P151
-//D:DESCRIPTION rename_trigger.tex.indexed
+//D:DESCRIPTION rename_trigger.tex
 rename_trigger:		RENAME trigger_url TO triggername			{ $$ = new RenameTrigger($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = list trigger
-//D:DESCRIPTION list_trigger.tex.indexed
+//D:DESCRIPTION list_trigger.tex
 //D:PURPOSE P152
 list_trigger:		LIST TRIGGER						{ $$ = new ListTrigger((Vector) null, false); }
 	|		LIST TRIGGER FOR folderpath				{ $$ = new ListTrigger($4, false); }
@@ -3969,7 +3321,7 @@ list_trigger:		LIST TRIGGER						{ $$ = new ListTrigger((Vector) null, false); }
 
 //D:MASTER
 //D:NT-ALIAS = show trigger
-//D:DESCRIPTION show_trigger.tex.indexed
+//D:DESCRIPTION show_trigger.tex
 //D:PURPOSE P153
 show_trigger:		SHOW trigger_url					{ $$ = new ShowTrigger($2); }
 
@@ -3984,26 +3336,26 @@ ct_withwith:		with ct_withlist					{ $$ = $2; }
 //D:MASTER
 //D:NT-ALIAS = create comment
 //D:PURPOSE P154
-//D:DESCRIPTION create_comment.tex.indexed
+//D:DESCRIPTION create_comment.tex
 create_comment:	create COMMENT ON objecturl cc_with			 	{ $$ = new CreateComment($4, $5, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = alter comment
 //D:NODEFAULTS
 //D:PURPOSE P155
-//D:DESCRIPTION alter_comment.tex.indexed
+//D:DESCRIPTION alter_comment.tex
 alter_comment:	alter COMMENT ON objecturl cc_with	 			{ $$ = new AlterComment($4, $5, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = drop comment
 //D:PURPOSE P156
-//D:DESCRIPTION drop_comment.tex.indexed
+//D:DESCRIPTION drop_comment.tex
 drop_comment:	drop COMMENT ON objecturl					{ $$ = new DropComment($4, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = show comment
 //D:PURPOSE P172
-//D:DESCRIPTION show_comment.tex.indexed
+//D:DESCRIPTION show_comment.tex
 show_comment:	SHOW COMMENT ON objecturl					{ $$ = new ShowComment($4); }
 
 cc_with:	with cc_withitem						{ $$ = new WithHash(); $<WithHash>$.addItem($2); }
@@ -4023,7 +3375,7 @@ cc_type:	TEXT								{ $$ = ParseStr.map($1.token); }
 //D:LEVEL professional
 //D:NT-ALIAS = grant
 //D:PURPOSE P157
-//D:DESCRIPTION grant.tex.indexed
+//D:DESCRIPTION grant.tex
 grant_cmd:	GRANT privilege_list ON objecturl TO us_grlist gr_cascforce		{ $$ = new Grant(SDMSGrant.GRANT, $2, $4, $6, $7, Boolean.FALSE); }
 	|	GRANT privilege_list ON CHILDREN OF objecturl TO us_grlist gr_cascforce	{ $$ = new Grant(SDMSGrant.GRANT, $2, $6, $8, $9, Boolean.TRUE); }
 	|	GRANT MANAGE sys_object TO us_grlist					{ $$ = new Grant(SDMSGrant.GRANT, $3.token, $5); }
@@ -4033,7 +3385,7 @@ grant_cmd:	GRANT privilege_list ON objecturl TO us_grlist gr_cascforce		{ $$ = n
 //D:LEVEL professional
 //D:NT-ALIAS = revoke
 //D:PURPOSE P158
-//D:DESCRIPTION revoke.tex.indexed
+//D:DESCRIPTION revoke.tex
 revoke_cmd:	REVOKE privilege_list ON objecturl FROM us_grlist gr_cascforce		{ $$ = new Grant(SDMSGrant.REVOKE, $2, $4, $6, $7, Boolean.FALSE); }
 	|	REVOKE privilege_list ON CHILDREN OF objecturl FROM us_grlist gr_cascforce	{ $$ = new Grant(SDMSGrant.REVOKE, $2, $6, $8, $9, Boolean.TRUE); }
 	|	REVOKE MANAGE sys_object FROM us_grlist					{ $$ = new Grant(SDMSGrant.REVOKE, $3.token, $5); }
@@ -4043,7 +3395,7 @@ revoke_cmd:	REVOKE privilege_list ON objecturl FROM us_grlist gr_cascforce		{ $$
 //D:LEVEL professional
 //D:NT-ALIAS = list grant
 //D:PURPOSE P159
-//D:DESCRIPTION list_grant.tex.indexed
+//D:DESCRIPTION list_grant.tex
 list_grant:	LIST GRANT ON objecturl						{ $$ = new ListGrant($4); }
 	|	LIST GRANT FOR groupname					{ $$ = new ListGrant($4); }
 
@@ -4074,14 +3426,14 @@ gr_cascforce:									{ $$ = null; }
 //D:LEVEL enterprise
 //D:NT-ALIAS = create pool
 //D:PURPOSE P173
-//D:DESCRIPTION create_pool.tex.indexed
+//D:DESCRIPTION create_pool.tex
 create_pool:	create pool_url with cpl_withlist				{ $$ = new CreatePool($2, $4, $1); }
 
 //D:MASTER
 //D:LEVEL enterprise
 //D:NT-ALIAS = alter pool
 //D:PURPOSE P174
-//D:DESCRIPTION alter_pool.tex.indexed
+//D:DESCRIPTION alter_pool.tex
 alter_pool:	alter pool_url with cpl_withlist				{ $$ = new AlterPool($2, $4, $1); }
 	|	alter pool_url ACTIVATE DISTRIBUTION distname			{ $$ = new ActivateDistribution($2, $5, $1); }
 
@@ -4089,28 +3441,28 @@ alter_pool:	alter pool_url with cpl_withlist				{ $$ = new AlterPool($2, $4, $1)
 //D:LEVEL enterprise
 //D:NT-ALIAS = drop pool
 //D:PURPOSE P175
-//D:DESCRIPTION drop_pool.tex.indexed
+//D:DESCRIPTION drop_pool.tex
 drop_pool:	drop pool_url							{ $$ = new DropPool($2, $1); }
 
 //D:MASTER
 //D:LEVEL enterprise
 //D:NT-ALIAS = show pool
 //D:PURPOSE P176
-//D:DESCRIPTION show_pool.tex.indexed
+//D:DESCRIPTION show_pool.tex
 show_pool:	SHOW pool_url			 				{ $$ = new ShowPool($2); }
 
 //D:MASTER
 //D:LEVEL enterprise
 //D:NT-ALIAS = list pool
 //D:PURPOSE P177
-//D:DESCRIPTION list_pool.tex.indexed
+//D:DESCRIPTION list_pool.tex
 list_pool:	LIST POOL 							{ $$ = new ListPool(); }
 
 //D:MASTER
 //D:LEVEL enterprise
 //D:NT-ALIAS = move pool
 //D:PURPOSE P178
-//D:DESCRIPTION move_pool.tex.indexed
+//D:DESCRIPTION move_pool.tex
 move_pool:	MOVE pool_url TO serverpath					{ $$ = new MovePool($2, $4); }
 
 
@@ -4160,42 +3512,42 @@ cpl_managed:	MANAGED								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.
 //D:LEVEL enterprise
 //D:NT-ALIAS = create distribution
 //D:PURPOSE P179
-//D:DESCRIPTION create_dist.tex.indexed
+//D:DESCRIPTION create_dist.tex
 create_dist:	create dist_url with cd_with					{ $$ = new CreateDistribution($2, $4, $1); }
 
 //D:MASTER
 //D:LEVEL enterprise
 //D:NT-ALIAS = alter distribution
 //D:PURPOSE P180
-//D:DESCRIPTION alter_dist.tex.indexed
+//D:DESCRIPTION alter_dist.tex
 alter_dist:	alter dist_url with cd_with					{ $$ = new AlterDistribution($2, $4, $1); }
 
 //D:MASTER
 //D:LEVEL enterprise
 //D:NT-ALIAS = drop distribution
 //D:PURPOSE P181
-//D:DESCRIPTION drop_dist.tex.indexed
+//D:DESCRIPTION drop_dist.tex
 drop_dist:	drop dist_url							{ $$ = new DropDistribution($2, $1); }
 
 //D:MASTER
 //D:LEVEL enterprise
 //D:NT-ALIAS = show distribution
 //D:PURPOSE P182
-//D:DESCRIPTION show_dist.tex.indexed
+//D:DESCRIPTION show_dist.tex
 show_dist:	SHOW dist_url			 				{ $$ = new ShowDistribution($2); }
 
 //D:MASTER
 //D:LEVEL enterprise
 //D:NT-ALIAS = rename distribution
 //D:PURPOSE P183
-//D:DESCRIPTION rename_dist.tex.indexed
+//D:DESCRIPTION rename_dist.tex
 rename_dist:	RENAME dist_url TO distname	 				{ $$ = new RenameDistribution($2, $4); }
 
 //D:MASTER
 //D:LEVEL enterprise
 //D:NT-ALIAS = copy distribution
 //D:PURPOSE P184
-//D:DESCRIPTION copy_dist.tex.indexed
+//D:DESCRIPTION copy_dist.tex
 copy_dist:	COPY dist_url TO distname					{ $$ = new CopyDistribution($2, $4); }
 
 
@@ -4210,7 +3562,7 @@ cd_with:	RESOURCE '=' '(' cpl_resourcelist ')'				{ $$ = $4; }
 //D:NT-ALIAS = create watch type
 //D:LEVEL professional
 //D:PURPOSE P188
-//D:DESCRIPTION create_watch_type.tex.indexed
+//D:DESCRIPTION create_watch_type.tex
 create_wt:		create WATCH TYPE watchtypename wt_with_clause
 										{ $$ = new CreateWt($4, $5, $1); }
 
@@ -4218,7 +3570,7 @@ create_wt:		create WATCH TYPE watchtypename wt_with_clause
 //D:NT-ALIAS = drop watch type
 //D:LEVEL professional
 //D:PURPOSE P189
-//D:DESCRIPTION drop_watch_type.tex.indexed
+//D:DESCRIPTION drop_watch_type.tex
 drop_wt:		drop wt_url						{ $$ = new DropWt($2, $1); }
 
 //D:MASTER
@@ -4226,7 +3578,7 @@ drop_wt:		drop wt_url						{ $$ = new DropWt($2, $1); }
 //D:LEVEL professional
 //D:NODEFAULTS
 //D:PURPOSE P190
-//D:DESCRIPTION alter_watch_type.tex.indexed
+//D:DESCRIPTION alter_watch_type.tex
 alter_wt:		alter wt_url wt_with_clause
 										{ $$ = new AlterWt($2, $3, $1); }
 
@@ -4234,21 +3586,21 @@ alter_wt:		alter wt_url wt_with_clause
 //D:NT-ALIAS = rename watch type
 //D:LEVEL professional
 //D:PURPOSE P191
-//D:DESCRIPTION rename_watch_type.tex.indexed
+//D:DESCRIPTION rename_watch_type.tex
 rename_wt:		RENAME wt_url TO watchtypename
 										{ $$ = new RenameWt($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = list watch type
 //D:LEVEL professional
-//D:DESCRIPTION list_watch_type.tex.indexed
+//D:DESCRIPTION list_watch_type.tex
 //D:PURPOSE P192
 list_wt:		LIST WATCH TYPE						{ $$ = new ListWt(); }
 
 //D:MASTER
 //D:NT-ALIAS = show watch type
 //D:LEVEL professional
-//D:DESCRIPTION show_watch_type.tex.indexed
+//D:DESCRIPTION show_watch_type.tex
 //D:PURPOSE P193
 show_wt:		SHOW wt_url				 		{ $$ = new ShowWt($2); }
 
@@ -4293,7 +3645,7 @@ wt_parametertype:	CONFIG								{ $$ = ParseStr.map($1.token); }
 //D:NT-ALIAS = create object monitor
 //D:LEVEL professional
 //D:PURPOSE P194
-//D:DESCRIPTION create_object_monitor.tex.indexed
+//D:DESCRIPTION create_object_monitor.tex
 create_om:		create OBJECT MONITOR objecttypename wt_url om_with_clause
 										{ $$ = new CreateObjectMonitor($4, $5, $6, $1); }
 
@@ -4301,7 +3653,7 @@ create_om:		create OBJECT MONITOR objecttypename wt_url om_with_clause
 //D:NT-ALIAS = drop object monitor
 //D:LEVEL professional
 //D:PURPOSE P195
-//D:DESCRIPTION drop_object_monitor.tex.indexed
+//D:DESCRIPTION drop_object_monitor.tex
 drop_om:		drop om_url						{ $$ = new DropObjectMonitor($2, $1); }
 
 //D:MASTER USER NOSERVER NOJOB
@@ -4309,7 +3661,7 @@ drop_om:		drop om_url						{ $$ = new DropObjectMonitor($2, $1); }
 //D:LEVEL professional
 //D:NODEFAULTS
 //D:PURPOSE P196
-//D:DESCRIPTION alter_object_monitor.tex.indexed
+//D:DESCRIPTION alter_object_monitor.tex
 alter_om:		alter om_url aom_with_clause				{ $$ = new AlterObjectMonitor($2, $3, $1); }
 
 //D:MASTER NOUSER NOSERVER JOB
@@ -4317,28 +3669,28 @@ alter_om:		alter om_url aom_with_clause				{ $$ = new AlterObjectMonitor($2, $3,
 //D:LEVEL professional
 //D:NODEFAULTS
 //D:PURPOSE P201
-//D:DESCRIPTION alter_object_monitor.tex.indexed
+//D:DESCRIPTION alter_object_monitor.tex
 alter_omj:		alter om_url INSTANCE '=' '(' opt_om_instancelist ')'	{ $$ = new AlterObjectMonitor($2, $6, $1, true); }
 
 //D:MASTER
 //D:NT-ALIAS = rename object monitor
 //D:LEVEL professional
 //D:PURPOSE P197
-//D:DESCRIPTION rename_object_monitor.tex.indexed
+//D:DESCRIPTION rename_object_monitor.tex
 rename_om:		RENAME om_url TO objecttypename
 										{ $$ = new RenameObjectMonitor($2, $4); }
 
 //D:MASTER JOB USER NOSERVER
 //D:NT-ALIAS = list object monitor
 //D:LEVEL professional
-//D:DESCRIPTION list_object_monitor.tex.indexed
+//D:DESCRIPTION list_object_monitor.tex
 //D:PURPOSE P198
 list_om:		LIST OBJECT MONITOR					{ $$ = new ListObjectMonitor(); }
 
 //D:MASTER JOB USER NOSERVER
 //D:NT-ALIAS = show object monitor
 //D:LEVEL professional
-//D:DESCRIPTION show_object_monitor.tex.indexed
+//D:DESCRIPTION show_object_monitor.tex
 //D:PURPOSE P199
 show_om:		SHOW om_url				 		{ $$ = new ShowObjectMonitor($2); }
 
