@@ -241,6 +241,7 @@ public class SelectCmd extends Node
 		} catch (SQLException sqle) {
 
 			try {
+
 				sysEnv.dbConnection.rollback();
 			} catch (SQLException sqle2) {
 
