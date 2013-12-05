@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec java -jar $SDMSHOME/tools/lib/jay.jar $@

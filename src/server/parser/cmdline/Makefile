@@ -35,7 +35,7 @@ generate: CmdLineParser.java CmdLineScanner.java
 subdirs: commonsubdirs
 
 clean: commonclean
-	rm -f CmdLineParser.java CmdLineScanner.java y.output
+	rm -f CmdLineParser.java CmdLineScanner.java y.output parser.tables
 	rm -f *~
 
 #

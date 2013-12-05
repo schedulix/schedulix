@@ -22,13 +22,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-JAY = $(SDMSHOME)/tools/bin/jay.linux
+JAY = $(SDMSHOME)/tools/bin/jay
 SKELETON = $(SDMSHOME)/tools/lib/skeleton
 JLEX = $(SDMSHOME)/tools/bin/jflex
-AWK = /usr/bin/awk
+AWK = /usr/bin/gawk
 SED = sed
 
-JAVAC = javac -cp $(SDMSHOME)/src:$(SWTJAR)
+JAVAC = javac -cp $(SDMSHOME)/src:$(SWTJAR):$(JNAJAR)
 JAR = jar
 JARCREATEFLAGS = cmf
 JAVAH = javah
@@ -40,6 +40,7 @@ else
 CXXFLAGS += -O3
 JAVAC_FLAGS = -O
 endif
+JAY_FLAGS = -v
 
 commonsubdirs:
 	@for DIR in $(SUBDIRS); do \
@@ -67,7 +68,8 @@ commongensubdirs:
 	$(JAVAC) $(JAVAC_FLAGS) $< 
 
 %.java: %.jay
-	$(JAY) $(JAY_FLAGS) $< < $(SKELETON) > $@
+	$(JAY) $(JAY_FLAGS) $< $(SKELETON) > $@
+	egrep -e "^//yy" < $@ | sed 's!//yy!!' > parser.tables
 
 %.java: %.jlex
 	$(JLEX) -d /tmp $<

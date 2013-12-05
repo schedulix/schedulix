@@ -106,7 +106,7 @@ incase == 1 && /^case [0-9]+:/	{	casenr = $2 + 0;
 /[ 	]*\/\/.*/		{ next; } # strip comments
 
 # this is the first statement after the switch
-/[ 	]*yyTop -= YyLenClass.yyLen/	{ 
+/[ 	]*yyTop -= yyLen\[yyN\];/	{ 
 					verbosecopy = 1;
 					incase = 0;
 					# now sort and print

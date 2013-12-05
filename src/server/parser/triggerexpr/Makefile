@@ -35,7 +35,7 @@ generate: commongensubdirs ExprParser.java ExprScanner.java
 subdirs: commonsubdirs
 
 clean: commonclean
-	rm -f ExprParser.java ExprScanner.java y.output
+	rm -f ExprParser.java ExprScanner.java y.output parser.tables
 	rm -f *~
 
 include $(SDMSHOME)/src/Makefile.CommonRules

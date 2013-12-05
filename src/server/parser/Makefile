@@ -135,7 +135,7 @@ subdirs: commonsubdirs
 
 clean: commonclean
 	rm -f *.pyc Parser.java Parser.java.raw Scanner.java \
-		y.output yycheck.data yytable.data
+		y.output parser.tables
 
 #
 # This is just a syntax-definition check
@@ -145,7 +145,8 @@ syntax:
 
 Parser.java:    Parser.jay compress.awk
 	rm -f yytable.data yycheck.data
-	$(JAY) $(JAY_FLAGS) Parser.jay < $(SKELETON) > Parser.java.raw
+	$(JAY) $(JAY_FLAGS) Parser.jay $(SKELETON) > Parser.java.raw
+	egrep -e "^//yy" < Parser.java.raw | sed 's!//yy!!' > parser.tables
 	$(AWK) -f compress.awk < Parser.java.raw > Parser.java
 
 include $(SDMSHOME)/src/Makefile.CommonRules
