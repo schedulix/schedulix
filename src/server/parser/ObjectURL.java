@@ -253,6 +253,8 @@ public class ObjectURL
 			break;
 		case SDMSObjectComment.SCOPE:
 			p = SDMSScopeTable.getObject(sysEnv, objId);
+			if (((SDMSScope) p).getType(sysEnv).intValue() == SDMSScope.SERVER)
+				parserType = new Integer(Parser.JOB_SERVER);
 			break;
 		case SDMSObjectComment.TRIGGER:
 			p = SDMSTriggerTable.getObject(sysEnv, objId);
