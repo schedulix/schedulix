@@ -88,8 +88,7 @@ public class WakeupThread
 						String msg = new String(d.getData(), 0, d.getLength());
 
 						try {
-							Long tId = new Long(Long.parseLong(msg));
-							Notifier.interrupt(tId);
+							Notifier.interrupt(new Long(0L));
 						} catch(NumberFormatException nfe) {
 
 							Trace.error("[WakeupThread] got a message I don't understand : >" + msg + "< (length : " + msg.length() + ")");

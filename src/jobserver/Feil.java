@@ -35,8 +35,6 @@ import java.nio.channels.OverlappingFileLockException;
 
 public class Feil
 {
-	public static final String __version = "@(#) $Id: Feil.java,v 2.8.2.1 2013/03/14 10:24:06 ronald Exp $";
-
 	public static final String STATUS_STARTED         = "STARTED";
 	public static final String STATUS_RUNNING         = "RUNNING";
 	public static final String STATUS_FINISHED        = "FINISHED";
@@ -52,26 +50,28 @@ public class Feil
 
 	private static final Pattern NEWLINE_PATTERN = Pattern.compile (".*[\\n\\r].*", Pattern.DOTALL);
 
-	private static final String ID            = "id";
-	private static final String STATUS        = "status";
-	private static final String COMMAND       = "command";
-	private static final String ARGUMENT      = "argument";
-	private static final String WORKDIR       = "workdir";
-	private static final String USEPATH       = "usepath";
-	private static final String VERBOSELOGS   = "verboselogs";
-	private static final String LOGFILE       = "logfile";
-	private static final String LOGFILEAPPEND = "logfile_append";
-	private static final String ERRLOG        = "errlog";
-	private static final String ERRLOGAPPEND  = "errlog_append";
-	private static final String SAMELOGS      = "samelogs";
-	private static final String EXECPID       = "execpid";
-	private static final String EXTPID        = "extpid";
-	private static final String STATUS_TX     = "status_tx";
-	private static final String RETURNCODE    = "returncode";
-	private static final String ERROR         = "error";
-	private static final String RUN           = "run";
-	private static final String INCOMPLETE    = "incomplete";
-	private static final String COMPLETE      = "complete";
+	private static String DEV_NULL = "/dev/null";
+
+	public static final String ID            = "id";
+	public static final String STATUS        = "status";
+	public static final String COMMAND       = "command";
+	public static final String ARGUMENT      = "argument";
+	public static final String WORKDIR       = "workdir";
+	public static final String USEPATH       = "usepath";
+	public static final String VERBOSELOGS   = "verboselogs";
+	public static final String LOGFILE       = "logfile";
+	public static final String LOGFILEAPPEND = "logfile_append";
+	public static final String ERRLOG        = "errlog";
+	public static final String ERRLOGAPPEND  = "errlog_append";
+	public static final String SAMELOGS      = "samelogs";
+	public static final String EXECPID       = "execpid";
+	public static final String EXTPID        = "extpid";
+	public static final String STATUS_TX     = "status_tx";
+	public static final String RETURNCODE    = "returncode";
+	public static final String ERROR         = "error";
+	public static final String RUN           = "run";
+	public static final String INCOMPLETE    = "incomplete";
+	public static final String COMPLETE      = "complete";
 
 	private final File filnam;
 	private final String jid;
@@ -80,6 +80,16 @@ public class Feil
 
 	private String id          = "";
 	private String status      = "";
+	private String command     = "";
+	private Vector args        = new Vector();
+	private String workdir     = "";
+	private boolean usepath    = Boolean.FALSE;
+	private boolean verboseLogs = Boolean.FALSE;
+	private String logfile     = "";
+	private boolean logappend  = Boolean.FALSE;
+	private String errlog      = "";
+	private boolean errappend  = Boolean.FALSE;
+	private boolean samelogs   = Boolean.FALSE;
 	private String timestamp   = "";
 	private String runningTS   = "";
 	private String exec_pid    = "";
@@ -90,13 +100,18 @@ public class Feil
 
 	private StringBuffer error = new StringBuffer();
 
-	private boolean incomplete = false;
 	private boolean complete   = false;
 
 	public Feil (final File prefix, final String jid)
 	{
 		filnam   = new File (prefix.toString() + jid);
 		this.jid = jid;
+	}
+
+	public Feil (final String taskfileName)
+	{
+		filnam   = new File (taskfileName);
+		this.jid = "0";
 	}
 
 	public File getFilename()
@@ -140,7 +155,7 @@ public class Feil
 
 	public final boolean getIncomplete()
 	{
-		return incomplete;
+		return !complete;
 	}
 	public final boolean getComplete()
 	{
@@ -186,6 +201,47 @@ public class Feil
 	public final String getRun()
 	{
 		return run;
+	}
+
+	public final String getCommand()
+	{
+		return command;
+	}
+	public final Vector getArgs()
+	{
+		return args;
+	}
+	public final String getWorkdir()
+	{
+		return workdir;
+	}
+	public final boolean getUsepath()
+	{
+		return usepath;
+	}
+	public final boolean getVerboseLogs()
+	{
+		return verboseLogs;
+	}
+	public final String getLogfile()
+	{
+		return logfile;
+	}
+	public final boolean getLogappend()
+	{
+		return logappend;
+	}
+	public final String getErrlog()
+	{
+		return errlog;
+	}
+	public final boolean getErrappend()
+	{
+		return errappend;
+	}
+	public final boolean getSamelogs()
+	{
+		return samelogs;
 	}
 
 	private final byte[] read()
@@ -237,7 +293,7 @@ public class Feil
 		return "";
 	}
 
-	private final String append (final String id, final String val)
+	public final String append (final String id, final String val)
 	throws IOException
 	{
 		final byte[] data = read();
@@ -356,18 +412,8 @@ public class Feil
 
 	public final void scan()
 	{
-		id          = "";
-		run         = "";
-		status      = "";
-		timestamp   = "";
-		runningTS   = "";
-		exec_pid    = "";
-		ext_pid     = "";
-		status_tx   = "";
-		return_code = "";
 		error.setLength (0);
 
-		incomplete  = false;
 		complete    = false;
 
 		final String data = new String (read());
@@ -427,16 +473,25 @@ public class Feil
 
 			++pos;
 
-			if      (key.equals (ID))         id          = value;
-			else if (key.equals (RUN))        run         = value;
-			else if (key.equals (EXECPID))    exec_pid    = value;
-			else if (key.equals (EXTPID))     ext_pid     = value;
-			else if (key.equals (STATUS_TX))  status_tx   = value;
-			else if (key.equals (RETURNCODE)) return_code = value;
+			if      (key.equals (ID))            id          = value;
+			else if (key.equals (RUN))           run         = value;
+			else if (key.equals (EXECPID))       exec_pid    = value;
+			else if (key.equals (EXTPID))        ext_pid     = value;
+			else if (key.equals (STATUS_TX))     status_tx   = value;
+			else if (key.equals (RETURNCODE))    return_code = value;
 
-			else if (key.equals (INCOMPLETE)) incomplete = true;
-			else if (key.equals (COMPLETE))   complete   = true;
-
+			else if (key.equals (INCOMPLETE))    complete = false;
+			else if (key.equals (COMPLETE))      complete = true;
+			else if (key.equals (COMMAND))       command = value;
+			else if (key.equals (ARGUMENT))      args.add(value);
+			else if (key.equals (WORKDIR))       workdir = value;
+			else if (key.equals (USEPATH))       usepath = true;
+			else if (key.equals (VERBOSELOGS))   verboseLogs = true;
+			else if (key.equals (LOGFILE))       logfile = value;
+			else if (key.equals (ERRLOG))        errlog = value;
+			else if (key.equals (ERRLOGAPPEND))  errappend = true;
+			else if (key.equals (LOGFILEAPPEND)) logappend = true;
+			else if (key.equals (SAMELOGS))      samelogs = true;
 			else if (key.equals (STATUS)) {
 				status = value;
 				timestamp = ts;
@@ -454,6 +509,15 @@ public class Feil
 
 		if (id.equals (""))
 			id = jid;
+
+		if (logfile.equals("")) {
+
+			logfile = DEV_NULL;
+		}
+		if (errlog.equals("")) {
+
+			logfile = DEV_NULL;
+		}
 	}
 
 	public final void setStatus (final String new_status)

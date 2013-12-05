@@ -31,8 +31,6 @@ import java.io.File;
 
 public class Descr
 {
-	public static final String __version = "@(#) $Id: Descr.java,v 2.2.18.1 2013/03/14 10:24:06 ronald Exp $";
-
 	public final String      id;
 	public final String      run;
 	public final String      cmd;

@@ -125,6 +125,7 @@ public class Server
 
 	private final boolean doRestart ()
 	{
+		HashMap<String,Long> startTimes = ProcessInfo.getStartTimes();
 		final String jid[] = getJobFileIds();
 		for (int i = 0; i < jid.length; ++i) {
 			final Feil feil = Server.getFeil(cfg, jid[i]);
@@ -149,7 +150,7 @@ public class Server
 				}
 
 				if ((! feil.getStatus().equals (Feil.STATUS_STARTED))
-				    || (((feil.getExecPid() != null) && (! feil.getExecPid().equals (""))) && Utils.isAlive (ri, feil.getExecPid()))) {
+				    || (((feil.getExecPid() != null) && (! feil.getExecPid().equals (""))) && ProcessInfo.isAlive (feil.getExecPid(), startTimes))) {
 					feil.close();
 					continue;
 				}
@@ -179,13 +180,14 @@ public class Server
 
 	private final void breed()
 	{
+		HashMap<String,Long> startTimes = ProcessInfo.getStartTimes();
 		final String jid[] = getJobFileIds();
 		for (int i = 0; i < jid.length; ++i) {
-			breed(jid[i]);
+			breed(jid[i], startTimes);
 		}
 	}
 
-	private final void breed(String jid)
+	private final void breed(String jid, HashMap<String,Long> startTimes)
 	{
 		final Feil feil = Server.getFeil(cfg, jid);
 		boolean feil_expired = false;
@@ -208,13 +210,13 @@ public class Server
 					feil.scan();
 
 					if (feil.getStatus().equals (Feil.STATUS_RUNNING)) {
-						if (! Utils.isAlive (ri, feil.getExecPid()))
-							if (Utils.isAlive (ri, feil.getExtPid()))
+						if (! ProcessInfo.isAlive (feil.getExecPid(), startTimes))
+							if (ProcessInfo.isAlive (feil.getExtPid(), startTimes))
 								feil.setStatus (Feil.STATUS_BROKEN_ACTIVE);
 							else
 								feil.setStatus (Feil.STATUS_BROKEN_FINISHED);
 					} else if (feil.getStatus().equals (Feil.STATUS_BROKEN_ACTIVE))
-						if (! Utils.isAlive (ri, feil.getExtPid()))
+						if (! ProcessInfo.isAlive (feil.getExtPid(), startTimes))
 							feil.setStatus (Feil.STATUS_BROKEN_FINISHED);
 
 					if (! feil.getStatus().equals (feil.getStatus_Tx())) {

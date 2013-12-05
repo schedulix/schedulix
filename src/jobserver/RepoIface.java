@@ -40,8 +40,6 @@ import de.independit.scheduler.server.dump.Dump;
 
 public class RepoIface
 {
-	public static final String __version = "@(#) $Id: RepoIface.java,v 2.16.2.2 2013/03/15 12:16:53 ronald Exp $";
-
 	public static final int NOP             = 0;
 	public static final int START_JOB       = 1;
 	public static final int SHUTDOWN_SERVER = 2;
@@ -373,6 +371,8 @@ public class RepoIface
 	private final Descr collectJobData (final SDMSOutput res)
 	{
 		final String job_cmd = (String) getByName (res.container, STARTJOB_CMD);
+		if (job_cmd == null || job_cmd.equals(""))
+			Utils.abortProgram (this, "(03310171401) Invalid run command");
 
 		final File job_log  = getFile (res, STARTJOB_LOG);
 		final File job_elog = getFile (res, STARTJOB_ERR);

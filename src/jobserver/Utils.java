@@ -47,22 +47,27 @@ public class Utils
 
 	private static final SimpleDateFormat DATE_FORMAT = (SimpleDateFormat) SystemEnvironment.staticJSCommDateFormat.clone();
 
+	private static final Libjni jni;
+
 	static
 	{
-		try {
-			System.loadLibrary (LIBRARY_NAME);
-		}
-
-		catch (final UnsatisfiedLinkError ule) {
-			abortProgram ("(04301271515) Cannot find library " + LIBRARY_NAME + ": " + ule);
-		}
+		jni = new Libjni();
 	}
 
-	public static final native String getVersion();
+	public static final String getVersion()
+	{
+		return Libjni.getVersion();
+	}
 
-	public static final native String getCopyright();
+	public static final String getCopyright()
+	{
+		return Libjni.getCopyright();
+	}
 
-	public static final native String getCompany();
+	public static final String getCompany()
+	{
+		return Libjni.getCompany();
+	}
 
 	public static final void abortProgram (final String msg)
 	{
@@ -133,37 +138,65 @@ public class Utils
 		return String.valueOf (getPid());
 	}
 
-	private static final native int getPid();
+	private static final int getPid()
+	{
+		return jni.getPid();
+	}
 
 	//-------------------------------------------------------------------------
 	/** Find out, if the specified pid is (still) active. */
 	//-------------------------------------------------------------------------
 
-	public static final native boolean isAlive (final RepoIface ri, final String pid);
+	public static final boolean isAlive (final RepoIface ri, final String pid)
+	{
+		return jni.isAlive(pid);
+	}
 
 	//-------------------------------------------------------------------------
 	/** Return command that writes the system environment to standard output. */
 	//-------------------------------------------------------------------------
 
-	public static final native String getEnvCmd();
+	public static final String getEnvCmd()
+	{
+		return jni.getEnvCmd();
+	}
 
 	//-------------------------------------------------------------------------
 	/** chdir() to the specified path and return null if that was possible, else an error message is returned. */
 	//-------------------------------------------------------------------------
 
-	public static final native String chdir (final String path);
+	public static final String chdir (final String path)
+	{
+		return jni.chdir(path);
+	}
 
 	//-------------------------------------------------------------------------
 	/** Set how to determine time of last boot and return null if that was possible, else an error message is returned. */
 	//-------------------------------------------------------------------------
 
-	public static final native String setBoottimeHow (final char how);
+	public static final String setBoottimeHow (final char how)
+	{
+		if (jni.setBoottimeHow(how)) return null;
+		else return "Oops";
+	}
 
 	//-------------------------------------------------------------------------
 	/** Return how the time of the last boot is determined. */
 	//-------------------------------------------------------------------------
 
-	public static final native char getBoottimeHow();
+	public static final char getBoottimeHow()
+	{
+		return jni.getBoottimeHow();
+	}
+
+	//-------------------------------------------------------------------------
+	/** Return a string representing a starting time of a propcess */
+	//-------------------------------------------------------------------------
+
+	public static final String getProcessStartTime(long pid)
+	{
+		return jni.getProcessStartTime(pid);
+	}
 
 	//-------------------------------------------------------------------------
 	// Don't instantiate!

@@ -29,6 +29,7 @@ package de.independit.scheduler.jobserver;
 
 import java.io.*;
 import java.nio.channels.*;
+import java.util.*;
 
 public class EiThread
 	extends Thread
@@ -74,8 +75,9 @@ public class EiThread
 		synchronized(feil) {
 			cmdarray = new String[] {
 			        cfg.get (Config.JOB_EXECUTOR).toString(),
-			        String.valueOf (Utils.getBoottimeHow()),
-			        feil.getFilename().toString()
+			        String.valueOf (ProcessInfo.getBoottimeHow()),
+			        feil.getFilename().toString(),
+			        ProcessInfo.getBoottime(ProcessInfo.getBoottimeHow())
 			};
 		}
 
@@ -152,7 +154,13 @@ public class EiThread
 					feil.scan();
 
 					if (rc != 0) {
-						if (Utils.isAlive (ri, feil.getExtPid()))
+						String extPid = feil.getExtPid();
+						boolean alive = false;
+						if (!(extPid.equals(""))) {
+							HashMap<String,Long> startTimes = ProcessInfo.getStartTimes();
+							alive = ProcessInfo.isAlive (extPid, startTimes);
+						}
+						if (alive)
 							feil.setStatus (Feil.STATUS_BROKEN_ACTIVE);
 						else {
 							feil.setError ("(04301271445) Job executor returned errno = " + rc);

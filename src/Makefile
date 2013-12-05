@@ -29,11 +29,18 @@ JARDIRS = de
 
 PROGRAM_VERSION = $(shell grep programVersion server/SystemEnvironment.java | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
 BUILD_DATE = $(shell date '+%d.%m.%Y %H:%M')
-COPYRIGHT = $(shell grep 'static const char \*const copyright' jobserver/libcommon.cc | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
-COMPANY = $(shell grep 'static const char \*const company' jobserver/libcommon.cc | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
+COPYRIGHT = $(shell grep 'public static final String copyright' jobserver/Libjni.java | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
+COMPANY = $(shell grep 'public static final String company' jobserver/Libjni.java | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
 
 JAR_FILE = $(SDMSHOME)/lib/BICsuite.jar
 MANIFEST = /tmp/sdms.manifest
+
+ECHO = /bin/echo
+ifeq ($(OSTYPE),solaris)
+ECHOOPTS =
+else
+ECHOOPTS = -e
+endif
 
 all: prereq generate subdirs $(CLASSES) $(JAR_FILE)
 
@@ -61,24 +68,26 @@ clean: commonclean
 	rm -f VERSION
 
 $(JAR_FILE): BICServer.class sdmsh.class \
-	$(shell find $(JARDIRS) -follow \( -type d -name test \) -prune -o -name \*.class -print) \
-	server/parser/yycheck.data  server/parser/yytable.data
+		$(shell find $(JARDIRS) -follow \( -type d -name test \) -prune -o -name \*.class -print) \
+		$(shell find $(JARDIRS) -follow \( -type d -name test \) -prune -o -name parser.tables -print)
 	cd $(SDMSHOME)/src; \
 	for fff in *.class; do \
 		if [ ! -e de/independit/scheduler/$${fff} ]; then \
 			ln -s $(SDMSHOME)/src/$${fff} de/independit/scheduler/$${fff}; \
 		fi; \
 	done; \
-	/bin/echo -e "Manifest-Version: 1.1\nProgram-Version: $(PROGRAM_VERSION)\nLevel: OPEN\nBuild: $(BUILD)\nBuild-Date: $(BUILD_DATE)\nCopyright: $(COPYRIGHT) $(COMPANY)\nCompany: $(COMPANY)"; \
-	/bin/echo -e "Manifest-Version: 1.1\nProgram-Version: $(PROGRAM_VERSION)\nLevel: OPEN\nBuild: $(BUILD)\nBuild-Date: $(BUILD_DATE)\nCopyright: $(COPYRIGHT) $(COMPANY)\nCompany: $(COMPANY)" >$(MANIFEST); \
+	$(ECHO) $(ECHOOPTS) "Manifest-Version: 1.1\nProgram-Version: $(PROGRAM_VERSION)\nLevel: OPEN\nBuild-Date: $(BUILD_DATE)\nCopyright: $(COPYRIGHT) $(COMPANY)\nCompany: $(COMPANY)"; \
+	$(ECHO) $(ECHOOPTS) "Manifest-Version: 1.1\nProgram-Version: $(PROGRAM_VERSION)\nLevel: OPEN\nBuild-Date: $(BUILD_DATE)\nCopyright: $(COPYRIGHT) $(COMPANY)\nCompany: $(COMPANY)" >$(MANIFEST); \
 	$(JAR) $(JARCREATEFLAGS) $(MANIFEST) $(JAR_FILE) \
 		de/independit/scheduler/BICServer.class \
 		de/independit/scheduler/sdmsh.class \
 		`find $(JARDIRS) -follow \( -type d -name test \) -prune -o -name \*.class -print` \
-		de/independit/scheduler/server/parser/yy*.data; \
+		`find $(JARDIRS) -follow \( -type d -name test \) -prune -o -name parser.tables -print`; \
 	$(JAR) -i $(JAR_FILE); \
 	touch $(JAR_FILE); \
 	rm -f $(MANIFEST)
 
 include $(SDMSHOME)/src/Makefile.CommonRules
 
+#
+#

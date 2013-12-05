@@ -336,10 +336,10 @@ public class Config
 
 		if (keyStr.equals (BOOTTIME)) {
 			final String howStr = (String) value;
-			final String errStr;
-			if      (howStr.equals ("NONE"))   errStr = Utils.setBoottimeHow (Utils.BOOTTIME_NONE);
-			else if (howStr.equals ("SYSTEM")) errStr = Utils.setBoottimeHow (Utils.BOOTTIME_SYSTEM);
-			else if (howStr.equals ("FILE"))   errStr = Utils.setBoottimeHow (Utils.BOOTTIME_FILE);
+			String errStr = null;
+			if      (howStr.equals ("NONE"))   ProcessInfo.setBoottimeHow (ProcessInfo.BOOTTIME_NONE);
+			else if (howStr.equals ("SYSTEM")) ProcessInfo.setBoottimeHow (ProcessInfo.BOOTTIME_SYSTEM);
+			else if (howStr.equals ("FILE"))   ProcessInfo.setBoottimeHow (ProcessInfo.BOOTTIME_FILE);
 			else                               errStr = "(04307111914) Unknown boottime determination: " + howStr;
 
 			if (errStr != null)
@@ -645,8 +645,12 @@ public class Config
 					if (execErr.length() != 0)
 						throw new IllegalArgumentException ("(04301271418) Job executor: " + execErr.toString());
 
-					if (! execOut.toString().equals (Server.getVersionInfo().replaceFirst ("\\(server\\)", "\\(executor\\)")))
-						throw new IllegalArgumentException ("(04301271419) Invalid/non matching job executor: " + executor);
+					String executorVersion = execOut.toString().toLowerCase();
+					executorVersion = executorVersion.substring(0, executorVersion.indexOf("\n"));
+					String serverVersion = Server.getVersionInfo().toLowerCase();
+					serverVersion = serverVersion.substring(0, serverVersion.indexOf("\n"));
+					if (! executorVersion.equals (serverVersion.replaceFirst ("\\(server\\)", "\\(executor\\)")))
+						throw new IllegalArgumentException ("(04301271419) Invalid/non matching job executor: " + executor + " [ " + serverVersion + " != " + executorVersion + " ]");
 				}
 
 				finally {

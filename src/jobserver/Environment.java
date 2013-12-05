@@ -217,7 +217,7 @@ public class Environment
 
 	public final Environment merge (final Environment env, final RepoIface ri, final Config cfg)
 	{
-		final HashMap result = new HashMap (this);
+		final Environment result = new Environment (this);
 
 		final HashMap mapping = (HashMap) cfg.get (Config.ENV_MAPPING);
 
@@ -240,7 +240,7 @@ public class Environment
 			}
 		}
 
-		return new Environment (result);
+		return result;
 	}
 
 	public final String[] toArray()

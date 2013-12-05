@@ -22,7 +22,28 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-LINUX=1
+# test for "GNU Make"
+ifneq (,)
+This makefile requires GNU Make.
+endif
+
+ifndef OSTYPE
+OSTYPE := $(shell uname | tr '[A-Z]' '[a-z]')
+endif
+
+ifeq ($(OSTYPE),linux)
+        LINUX=1
+else
+        ifeq ($(OSTYPE),netbsdelf)
+                NETBSD=1
+        else
+                ifeq ($(OSTYPE),sunos)
+                        SOLARIS=1
+                else
+                        $(error UNKNOWN OPERATING SYSTEM $(OS))
+                endif
+        endif
+endif
 
 ifdef LINUX
 JAVAINC   = $(JAVAHOME)/include
@@ -42,7 +63,7 @@ endif
 endif
 endif
 
-SUBDIRS = .
+SUBDIRS = jexecutor
 
 CLASSES = JobServer.class \
 	Config.class Descr.class EiThread.class Environment.class Feil.class \
@@ -53,29 +74,28 @@ CLASSES = JobServer.class \
 BIN_PATH = $(SDMSHOME)/bin
 LIB_PATH = $(SDMSHOME)/lib
 
-BIN_FILE = $(BIN_PATH)/jobserver
-LIB_FILE = $(LIB_PATH)/libBICsuite.so
+JOBEXECUTOR = $(BIN_PATH)/jobexecutor
 
-DISTRIB = $(BIN_FILE) $(LIB_FILE)
+DISTRIB = $(JOBEXECUTOR)
 
 .PHONY: all generate subdirs distrib clean new
 
 all: subdirs distrib $(CLASSES)
 
-subdirs: commonsubdirs
-
 generate:
+
+subdirs: commonsubdirs
 
 distrib: $(DISTRIB)
 
 clean: commonclean
-	-rm -f $(DISTRIB) *.o jobserver_*.h
+	-rm -f $(DISTRIB) *.o
 
 new: clean all
 
 include $(SDMSHOME)/src/Makefile.CommonRules
 
-CXXFLAGS += -fno-exceptions -Wall -Wshadow \
+CXXFLAGS += -g -fno-exceptions -Wall -Wshadow \
 	-Wpointer-arith -Wwrite-strings -Wconversion \
 	-Woverloaded-virtual \
 	-I$(JAVAINC) -I$(JAVAINCOS)
@@ -95,21 +115,9 @@ endif
 endif
 endif
 
-$(BIN_FILE): jobserver.o $(LIB_FILE)
-	$(CXX) -L$(LIB_PATH) -lBICsuite -o $@ $< -lBICsuite
+$(JOBEXECUTOR): jobexecutor.o
+	$(CXX) -o $@ $<
 
-$(LIB_FILE): libcommon.o libosdepend.o libjni.o 
-	$(LD) $(LDLIBFLAGS) -o $@ $^ -lc
-
-jobserver.o: jobserver.cc libjobserver.h de_independit_scheduler_jobserver_Utils.h libosdepend.h feil.h
-
-libcommon.o: libcommon.cc libjobserver.h de_independit_scheduler_jobserver_Utils.h libosdepend.h feil.h libcommon.h
-
-libosdepend.o: libunix.cc libjobserver.h de_independit_scheduler_jobserver_Utils.h libosdepend.h feil.h libcommon.h
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-libjni.o: libjni.cc libjobserver.h de_independit_scheduler_jobserver_Utils.h libosdepend.h feil.h
-
-de_independit_scheduler_jobserver_Utils.h: Utils.class
-	$(JAVAH) -classpath $(SDMSHOME)/src -jni de.independit.scheduler.jobserver.Utils
-
+#
+# End of File
+#
