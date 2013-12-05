@@ -16,3 +16,5 @@ shell/MiniScanner.java
 tools/MiniParse.java
 tools/Scanner.java
 md5/mddriver
+parser.tables
+y.output

@@ -1,4 +1,5 @@
 bin/jobserver
 bin/scrolllog
+bin/jobexecutor
 lib/BICsuite.jar
 lib/libBICsuite.so
