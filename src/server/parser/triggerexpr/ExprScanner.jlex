@@ -124,6 +124,7 @@ job     =	[Jj][Oo][Bb]
 resource =	[Rr][Ee][Ss][Oo][Uu][Rr][Cc][Ee]
 trigger =	[Tt][Rr][Ii][Gg][Gg][Ee][Rr]
 identifier =	{alpha}{alnum}*
+stridentifier = [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z|])?
 
 %state	DQSTRING
 %%
@@ -168,9 +169,14 @@ identifier =	{alpha}{alnum}*
 					value = (yytext().substring(1)).toUpperCase(); 
 					return ExprParser.PARAMETER;
 				}
-<YYINITIAL>\$\{{identifier}\}	{ 
+<YYINITIAL>\$\{{stridentifier}\}	{ 
 					proto("PARAM ");
-					value = yytext().substring(2, yytext().length() - 1); 
+					value = yytext().substring(2, yytext().length() - 1).toUpperCase(); 
+					return ExprParser.PARAMETER;
+				}
+<YYINITIAL>\$\{'{stridentifier}'\}	{ 
+					proto("PARAM ");
+					value = yytext().substring(2+1, yytext().length() - 2); 
 					return ExprParser.PARAMETER;
 				}
 <YYINITIAL>\${job}\.{identifier}	{ 
@@ -178,9 +184,14 @@ identifier =	{alpha}{alnum}*
 					value = (yytext().substring(5)).toUpperCase(); /* the name is after "job.", which has length 4 */
 					return ExprParser.JPARAMETER;
 				}
-<YYINITIAL>\$\{{job}\.{identifier}\}	{ 
+<YYINITIAL>\$\{{job}\.{stridentifier}\}	{ 
 					proto("PARAM ");
-					value = yytext().substring(2+4, yytext().length() - 1); 
+					value = yytext().substring(2+4, yytext().length() - 1).toUpperCase(); 
+					return ExprParser.JPARAMETER;
+				}
+<YYINITIAL>\$\{{job}\.'{stridentifier}'\}	{ 
+					proto("PARAM ");
+					value = yytext().substring(2+4+1, yytext().length() - 2); 
 					return ExprParser.JPARAMETER;
 				}
 <YYINITIAL>\${resource}\.{identifier}	{ 
@@ -188,9 +199,14 @@ identifier =	{alpha}{alnum}*
 					value = (yytext().substring(10)).toUpperCase(); 
 					return ExprParser.RPARAMETER;
 				}
-<YYINITIAL>\$\{{resource}\.{identifier}\}	{ 
+<YYINITIAL>\$\{{resource}\.{stridentifier}\}	{ 
 					proto("PARAM ");
-					value = yytext().substring(2 + 9, yytext().length() - 1); 
+					value = yytext().substring(2 + 9, yytext().length() - 1).toUpperCase(); 
+					return ExprParser.RPARAMETER;
+				}
+<YYINITIAL>\$\{{resource}\.'{stridentifier}'\}	{ 
+					proto("PARAM ");
+					value = yytext().substring(2 + 9 + 1, yytext().length() - 2); 
 					return ExprParser.RPARAMETER;
 				}
 <YYINITIAL>\${trigger}\.{identifier}	{ 
@@ -198,15 +214,21 @@ identifier =	{alpha}{alnum}*
 					value = (yytext().substring(9)).toUpperCase(); 
 					return ExprParser.TPARAMETER;
 				}
-<YYINITIAL>\$\{{trigger}\.{identifier}\}	{ 
+<YYINITIAL>\$\{{trigger}\.{stridentifier}\}	{ 
 					proto("PARAM ");
-					value = yytext().substring(2+8, yytext().length() - 1); 
+					value = yytext().substring(2+8, yytext().length() - 1).toUpperCase(); 
+					return ExprParser.TPARAMETER;
+				}
+<YYINITIAL>\$\{{trigger}\.'{stridentifier}'\}	{ 
+					proto("PARAM ");
+					value = yytext().substring(2+8+1, yytext().length() - 2); 
 					return ExprParser.TPARAMETER;
 				}
 
 <YYINITIAL>.			{ proto("CHAR ");		return yytext().charAt(0); }
 <DQSTRING>\"			{ proto("DQSTRING_END ");	yybegin(YYINITIAL); return ExprParser.STRING; }
-<DQSTRING>\\\"			{ proto("\\\" ");		value = value + yytext(); break; }
+<DQSTRING>\\\"			{ proto("\\\" ");		value = value + "\""; break; }
+<DQSTRING>\\\\			{ proto("\\ ");			value = value + "\\"; break; }
 <DQSTRING>.			{ proto("CHAR ");		value = value + yytext(); break; }
 
 
