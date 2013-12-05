@@ -399,7 +399,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 				return;
 			}
 
-			byte[] sbuf = { '0' };
+			byte[] sbuf = getId(sysEnv).toString().getBytes();
 
 			try {
 				DatagramPacket sd = new DatagramPacket(sbuf, 0, sbuf.length, addr, port);
