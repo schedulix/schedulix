@@ -1,13 +1,22 @@
 #
 # Java and Java Flags for BICsuite server, jobserver and utilities
 #
+# Some installation dependent jarfiles
+# If the examples aren't run, the SWTJAR file can be removed
+# The JNAJAR file is needed for jobservers
+# The JDBCJAR file is needed for the scheduling server and can be removed for client installations
+#
+JNAJAR=/path/to/jna.jar
+SWTJAR=/path/to/swt.jar
+JDBCJAR=/path/to/jdbc/jarfile
+#
 # Bicsuite JAR to use
 #
 BICSUITEJAR=$BICSUITEHOME/lib/BICsuite.jar
 #
 # CLASSPATH to use containing the path to jdbc driver and others if needed
 #
-BICSUITECLASSPATH=$BICSUITEJAR:/path/to/jdbc/jarfile
+BICSUITECLASSPATH=$BICSUITEJAR:$JDBCJAR:$JNAJAR:$SWTJAR
 #
 BICSUITEJAVA=`which java`
 # java used for BICsuite Server

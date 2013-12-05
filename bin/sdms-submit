@@ -12,4 +12,4 @@ fi
 . $BICSUITECONFIG/bicsuite.conf || exit 1
 CLASS=`basename $0 | sed 's/sdms-//'`
 INFO="$0["`$WHOAMI`"@"`hostname`"]"
-$BICSUITEJAVA_TL $BICSUITEJAVAFLAGS_TL -cp $BICSUITEJAR de.independit.scheduler.tools.$CLASS --info $INFO "$@"
+$BICSUITEJAVA_TL $BICSUITEJAVAFLAGS_TL -cp "$BICSUITECLASSPATH" de.independit.scheduler.tools.$CLASS --info "$INFO" "$@"

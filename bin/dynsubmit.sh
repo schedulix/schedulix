@@ -11,5 +11,5 @@ fi
 . $BICSUITECONFIG/java.conf || exit 1
 
 cd $BICSUITEHOME/bin
-$BICSUITEJAVA_TL -cp "$BICSUITEJAR:$BICSUITEHOME/lib/swt.jar:$SWTJAR" de.independit.scheduler.demo.SDMSsubmitThreads "$@"
+$BICSUITEJAVA_TL -cp "$BICSUITECLASSPATH" de.independit.scheduler.demo.SDMSsubmitThreads "$@"
 exit $?

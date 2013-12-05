@@ -13,11 +13,11 @@ print_usage()
 
 do_start()
 {
-	CMDSTRING="$BICSUITEJAVA_BS $BICSUITEJAVAFLAGS_BS -cp $BICSUITECLASSPATH de.independit.scheduler.BICServer $BICSUITECONFIG/server.conf $*"
+	CMDSTRING="$BICSUITEJAVA_BS $BICSUITEJAVAFLAGS_BS -cp '$BICSUITECLASSPATH' de.independit.scheduler.BICServer '$BICSUITECONFIG/server.conf' $*"
 
 	TMPLOG=`ls -1rt $LOGFILE.* 2>/dev/null | tail -1`
 	ACTLOG=`ls -1rt $LOGFILE.* 2>/dev/null | tail -1`
-	$SCROLLLOG $LOGFILE $SCROLLLOGOPTS -o $PIDFILE -e $CMDSTRING
+	eval $SCROLLLOG $LOGFILE $SCROLLLOGOPTS -o $PIDFILE -e $CMDSTRING
 
 	# we need to wait until the new Logfile has been created
 	while [ "$TMPLOG" = "$ACTLOG" ]; do
@@ -143,10 +143,10 @@ shift
 trap "rm -f $PIDFILE" 0 1 2 3
 
 case "$OPERATION" in
-	start)		ensure_pipe $LOGFILE;
+	start)		ensure_pipe "$LOGFILE";
 			do_start "$@" ;;
 
-	stop)		ensure_pipe $LOGFILE;
+	stop)		ensure_pipe "$LOGFILE";
 			do_stop ;;
 
 	*)		print_usage ;

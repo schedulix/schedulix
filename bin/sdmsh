@@ -13,4 +13,4 @@ fi
 . $BICSUITECONFIG/bicsuite.conf || exit 1
 INFO="sdmsh["`whoami`"@"`hostname`"]"
 
-$BICSUITEJAVA_TL $BICSUITEJAVAFLAGS_TL -cp $BICSUITEJAR de.independit.scheduler.sdmsh --info $INFO "$@"
+$BICSUITEJAVA_TL $BICSUITEJAVAFLAGS_TL -cp "$BICSUITECLASSPATH" de.independit.scheduler.sdmsh --info "$INFO" "$@"

@@ -17,7 +17,7 @@ then
 	exit 1
 else
 	if [ "$CONFIGFILE" = "--version" ]; then
-		$BICSUITEJAVA_JS $BICSUITEJAVAFLAGS_JS -cp $BICSUITEJAR de.independit.scheduler.jobserver.JobServer --version
+		$BICSUITEJAVA_JS $BICSUITEJAVAFLAGS_JS -cp "$BICSUITECLASSPATH" de.independit.scheduler.jobserver.JobServer --version
 		exit 0
 	else
 		if test -f $CONFIGFILE
@@ -35,8 +35,8 @@ INFO='jobserver['`whoami`'@'`hostname`']'
 LOGFILE=$2
 if [ "$LOGFILE" = "" ]
 then
-	$BICSUITEJAVA_JS $BICSUITEJAVAFLAGS_JS -cp $BICSUITEJAR de.independit.scheduler.jobserver.JobServer "$@" "$INFO"
+	$BICSUITEJAVA_JS $BICSUITEJAVAFLAGS_JS -cp "$BICSUITECLASSPATH" de.independit.scheduler.jobserver.JobServer "$@" "$INFO"
 else
 	ensure_pipe $LOGFILE
-	$SCROLLLOG $LOGFILE -e $BICSUITEJAVA_JS $BICSUITEJAVAFLAGS_JS -cp $BICSUITEJAR de.independit.scheduler.jobserver.JobServer $CONFIGFILE "$INFO"
+	$SCROLLLOG $LOGFILE -e $BICSUITEJAVA_JS $BICSUITEJAVAFLAGS_JS -cp "$BICSUITECLASSPATH" de.independit.scheduler.jobserver.JobServer "$CONFIGFILE" "$INFO"
 fi
