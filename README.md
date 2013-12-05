@@ -37,5 +37,20 @@ ADD COLUMN STICKY_PARENT DECIMAL(20) WITH NULL;
 
 And create the new table MASTER_ALLOCATION (see sql directory)
 
+-------------------------------------------------------------------------------------------
+
+Not yet documented: For building the 2.6 release a jna.jar is required.
+This jar file which is released under the LGPL can be obtained from
+
+https://maven.java.net/content/repositories/releases/net/java/dev/jna/jna/4.0.0/jna-4.0.0.jar
+
+The github repository of jna.jar can be found at
+
+https://github.com/twall/jna
+
+Similar to the swt.jar an environment variable JNAJAR must be set and point to the jna.jar file.
+
+In order to run the system the jna.jar file is required for jobservers. The swt.jar file is
+required for the examples. This can be configured in the $BICSUITEHOME/etc/java.conf file.
 
 Happy Hacking :-)
