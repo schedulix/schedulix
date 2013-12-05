@@ -39,113 +39,9 @@ public class Environment
 
 	public static final Environment systemEnvironment = new Environment();
 
-	private static final class CollectorThread
-		extends Thread
-	{
-		private Process p = null;
-		private final Runtime rt = Runtime.getRuntime();
-		private final String cmd;
-
-		CollectorThread (final String cmd)
-		{
-			super();
-
-			this.cmd = cmd;
-		}
-
-		public void run()
-		{
-			try {
-				p = rt.exec (cmd);
-			}
-
-			catch (final IOException ioe) {
-				Utils.abortProgram ("(04301271447) Cannot retrieve system environment: Error launching \"" + cmd + "\": " + ioe.getMessage());
-			}
-		}
-
-		void waitForRunning()
-		{
-			while (p == null)
-				Utils.sleep (100);
-		}
-
-		BufferedReader getInputStream()
-		{
-			return new BufferedReader (new InputStreamReader (p.getInputStream()));
-		}
-
-		int exitValue()
-		{
-			return p.exitValue();
-		}
-	}
-
 	private Environment()
 	{
-		super();
-
-		final String cmd = Utils.getEnvCmd();
-
-		final CollectorThread coll = new CollectorThread (cmd);
-		coll.start();
-		coll.waitForRunning();
-
-		try {
-			final BufferedReader inp = coll.getInputStream();
-
-			boolean running = true;
-			int rc = 0;
-			do {
-				while (inp.ready())
-					parseLine (inp.readLine());
-
-				try {
-					rc = coll.exitValue();
-					running = false;
-				}
-
-				catch (final IllegalThreadStateException _) {
-					running = true;
-				}
-
-				if (running)
-					Utils.sleep (100);
-			} while (running);
-
-			if (rc != 0)
-				Utils.abortProgram ("(04301271448) Cannot retrieve system environment: \"" + cmd + "\" returned " + rc);
-
-			while (inp.ready())
-				parseLine (inp.readLine());
-
-			inp.close();
-		}
-
-		catch (final IOException ioe) {
-			Utils.abortProgram ("(04301271450) Cannot retrieve system environment: " + ioe.getMessage());
-		}
-	}
-
-	private final void parseLine (final String line)
-	{
-		if (line == null)
-			return;
-
-		final int equ = line.indexOf ('=');
-		if (equ == -1)
-			Utils.abortProgram ("(04301271449) Missing '=' in environment: " + line);
-
-		if (equ < (line.length() - 1)) {
-			int p = 0;
-			while ((p < equ) && (line.charAt (p) <= ' '))
-				++p;
-
-			final String key = line.substring (p, equ);
-			final String val = line.substring (equ + 1);
-
-			put (key, val);
-		}
+		super(System.getenv());
 	}
 
 	public Environment (final Vector settings)
@@ -160,17 +56,6 @@ public class Environment
 	public Environment (final HashMap settings)
 	{
 		super (settings);
-	}
-
-	public Environment (final File file)
-	throws IOException
-	{
-		super();
-
-		final BufferedReader inp = new BufferedReader (new FileReader (file));
-		while (inp.ready())
-			parseLine (inp.readLine());
-		inp.close();
 	}
 
 	public boolean containsKey (Object key)
@@ -217,6 +102,7 @@ public class Environment
 
 	public final Environment merge (final Environment env, final RepoIface ri, final Config cfg)
 	{
+
 		final Environment result = new Environment (this);
 
 		final HashMap mapping = (HashMap) cfg.get (Config.ENV_MAPPING);
