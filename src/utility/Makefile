@@ -22,14 +22,35 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-LINUX=1
+# test for "GNU Make"
+ifneq (,)
+This makefile requires GNU Make.
+endif
+
+ifndef OSTYPE
+OSTYPE := $(shell uname | tr '[A-Z]' '[a-z]')
+endif
+
+ifeq ($(OSTYPE),linux)
+        LINUX=1
+else
+        ifeq ($(OSTYPE),netbsdelf)
+                NETBSD=1
+        else
+                ifeq ($(OSTYPE),sunos)
+                        SOLARIS=1
+                else
+                        $(error UNKNOWN OPERATING SYSTEM $(OS))
+                endif
+        endif
+endif
 
 SUBDIRS = .
 
 CFILES = scrolllog.c common.c
 HFILES = scrolllog.h common.h
 SLOBJS = scrolllog.o common.o
-OBJS = $(SLOBJS) $(WDOBJS)
+OBJS = $(SLOBJS)
 
 EXEC = $(SDMSHOME)/bin/scrolllog 
 
@@ -52,7 +73,7 @@ new: clean all
 
 include $(SDMSHOME)/src/Makefile.CommonRules
 
-CXXFLAGS += -fno-exceptions -pedantic -Wall -Wshadow -Wpointer-arith \
+CXXFLAGS += -g -fno-exceptions -pedantic -Wall -Wshadow -Wpointer-arith \
 	-Wwrite-strings -Wconversion -Wstrict-prototypes -Wmissing-prototypes \
 	-Wmissing-declarations -Wnested-externs
 

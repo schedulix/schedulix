@@ -35,7 +35,7 @@ generate: MiniParser.java MiniScanner.java
 subdirs: commonsubdirs
 
 clean: commonclean
-	rm -f MiniParser.java MiniScanner.java y.output
+	rm -f MiniParser.java MiniScanner.java y.output parser.tables
 
 #
 # This is just a syntax-definition check

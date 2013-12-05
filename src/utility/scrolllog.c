@@ -271,7 +271,8 @@ int start_cmd()
 	}
 
 	if(redirect(pipename)) {
-		exit(2);
+
+		exit(0);
 	}
 
 	sleep(3);
@@ -279,7 +280,8 @@ int start_cmd()
 	reset_sighandling();
 
 	execvp(cmd[0], cmd);
-	_exit(3);
+	fprintf(stderr, "Couldn't start %s\nExiting ...", cmd[0]);
+	_exit(0);
 
 	return -1;
 }
@@ -408,28 +410,31 @@ int process()
 		while((lineno < no_of_lines) && (terminate != 2)) {
 			if(fgets(buf, BUFSIZE, paip) == NULL) {
 				fclose(paip);
-				fprintf(outf, "[scrolllog] Waiting for child (%d) to terminate\n", (int) childpid);
 				fflush(outf);
-				switch ((int)waitpid((pid_t) -1, &status, 0)) {
-				case -1:
-					if(errno == ECHILD) {
+				if (childpid) {
+					fprintf(outf, "[scrolllog] Waiting for child (%d) to terminate\n", (int) childpid);
+					fflush(outf);
+					switch ((int)waitpid((pid_t) -1, &status, 0)) {
+					case -1:
+						if(errno == ECHILD) {
 
-						fprintf(outf, "[scrolllog] WARNING, childpid != 0 && ECHILD !\n");
+							fprintf(outf, "[scrolllog] WARNING, childpid != 0 && ECHILD !\n");
+							fflush(outf);
+
+							restart   = 1;
+
+							childpid  = 0;
+							terminate = 1;
+						}
+						break;
+					default:
+						fprintf(outf, "[scrolllog] Child exited with state %d\n", status);
 						fflush(outf);
-
-						restart   = 1;
-
 						childpid  = 0;
 						terminate = 1;
+						if (status == 0) restart = 0;
+						else restart = 1;
 					}
-					break;
-				default:
-					fprintf(outf, "[scrolllog] Child exited with state %d\n", status);
-					fflush(outf);
-					childpid  = 0;
-					terminate = 1;
-					if (status == 0) restart = 0;
-					else restart = 1;
 				}
 				if(terminate == 1) {
 					if(restart && (cmd != NULL)) {
