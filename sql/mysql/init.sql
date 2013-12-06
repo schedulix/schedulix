@@ -51,17 +51,17 @@ VALUES (
 	30, NULL,         NULL,        NULL,       0,         0,        1,       3,          NULL,
 	0, 0, 0, 0, 0, 9223372036854775807);
 
-INSERT INTO FOLDER (ID, NAME,     OWNER_ID, ENV_ID, PARENT_ID, VALID_FROM, VALID_TO,            CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
-	VALUES     (40, 'SYSTEM', 81,       NULL,   NULL,      0,          9223372036854775807, 0,            0,         0,            0);
+INSERT INTO FOLDER (ID, NAME,     OWNER_ID, ENV_ID, PARENT_ID, VALID_FROM, VALID_TO,            CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS, INHERIT_PRIVS)
+	VALUES     (40, 'SYSTEM', 81,       NULL,   NULL,      0,          9223372036854775807, 0,            0,         0,            0,         0);
 
-INSERT INTO SCOPE (ID, NAME,     OWNER_ID, TYPE, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
-	VALUES    (50, 'GLOBAL', 81,       1,    0,            0,         0,            0);
+INSERT INTO SCOPE (ID, NAME,     OWNER_ID, TYPE, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS, INHERIT_PRIVS)
+	VALUES    (50, 'GLOBAL', 81,       1,    0,            0,         0,            0,         0);
 
-INSERT INTO NAMED_RESOURCE (ID, NAME,       OWNER_ID, PARENT_ID, `USAGE`, RSP_ID, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
-	VALUES             (60, 'RESOURCE', 81,       NULL,      8,     NULL,   0,            0,         0,            0);
+INSERT INTO NAMED_RESOURCE (ID, NAME,       OWNER_ID, PARENT_ID, `USAGE`, RSP_ID, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS, INHERIT_PRIVS)
+	VALUES             (60, 'RESOURCE', 81,       NULL,      8,       NULL,   0,            0,         0,            0,         0);
 
-INSERT INTO SCHEDULE (ID, NAME,   OWNER_ID, INT_ID, PARENT_ID, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS, ACTIVE)
-	VALUES       (70, 'ROOT', 81,       NULL,   NULL,      0,            0,         0,            0,         1);
+INSERT INTO SCHEDULE (ID, NAME,   OWNER_ID, INT_ID, PARENT_ID, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS, ACTIVE, INHERIT_PRIVS, TIME_ZONE)
+	VALUES       (70, 'ROOT', 81,       NULL,   NULL,      0,            0,         0,            0,         1,      0,             'GMT');
 
 INSERT INTO MEMBER (ID, G_ID, U_ID, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
 	VALUES     (90, 81,   0,    0,            0,         0,            0);
