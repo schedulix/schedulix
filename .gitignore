@@ -3,3 +3,6 @@ bin/scrolllog
 bin/jobexecutor
 lib/BICsuite.jar
 lib/libBICsuite.so
+*.conf
+*.pyc
+log/*
