@@ -133,7 +133,7 @@ public class AlterFootprint extends Node
 		Boolean isSticky = Boolean.FALSE;
 		String stickyName = null;
 		Long stickyParent = null;
-		Integer exp_mult = new Integer(1);
+		Integer exp_mult = null;
 		Integer exp_interval = null;
 		String condition = null;
 
