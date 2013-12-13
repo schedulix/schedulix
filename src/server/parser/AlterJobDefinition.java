@@ -570,7 +570,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 							rr.setRsmpId(sysEnv, rsmpId);
 						}
 						if(wh.containsKey(ParseStr.S_KEEP))	rr.setKeepMode(sysEnv, keepMode);
-						if(wh.containsKey(ParseStr.S_STICKY)) {
+						if(wh.containsKey(ParseStr.S_STICKY) && sticky != null) {
 							isSticky = Boolean.TRUE;
 							stickyName = (String) sticky.get(ParseStr.S_NAME);
 							PathVector spv = (PathVector) sticky.get(ParseStr.S_JOB_DEFINITION);
