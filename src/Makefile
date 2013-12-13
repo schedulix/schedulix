@@ -60,7 +60,7 @@ JAR_FILE = $(SDMSHOME)/lib/BICsuite.jar
 MANIFEST = /tmp/sdms.manifest
 
 ECHO = /bin/echo
-ifeq ($(OSTYPE),solaris)
+ifeq ($(OSTYPE),sunos)
 ECHOOPTS =
 else
 ECHOOPTS = -e
