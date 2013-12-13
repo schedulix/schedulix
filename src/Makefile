@@ -22,6 +22,30 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+# test for "GNU Make"
+ifneq (,)
+This makefile requires GNU Make.
+endif
+
+ifndef OSTYPE
+OSTYPE := $(shell uname | tr '[A-Z]' '[a-z]')
+endif
+
+ifeq ($(OSTYPE),linux)
+        LINUX=1
+else
+        ifeq ($(OSTYPE),netbsdelf)
+                NETBSD=1
+        else
+                ifeq ($(OSTYPE),sunos)
+                        SOLARIS=1
+                else
+                        $(error UNKNOWN OPERATING SYSTEM $(OS))
+                endif
+        endif
+endif
+
+
 CLASSES = BICServer.class sdmsh.class 
 
 SUBDIRS = server jobserver shell utility md5 SDMSApp tools demo 
