@@ -212,7 +212,7 @@ public class SDMSIntervalSelectionTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "INT_ID" + equote +
 		                                   ", " + squote + "VALUE" + equote +
 		                                   ", " + squote + "PERIOD_FROM" + equote +

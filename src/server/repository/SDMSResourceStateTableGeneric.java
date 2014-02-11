@@ -199,7 +199,7 @@ public class SDMSResourceStateTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "RSD_ID" + equote +
 		                                   ", " + squote + "RSP_ID" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +

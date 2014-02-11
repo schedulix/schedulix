@@ -212,7 +212,7 @@ public class SDMSSmeCounterTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "JAHR" + equote +
 		                                   ", " + squote + "MONAT" + equote +
 		                                   ", " + squote + "TAG" + equote +

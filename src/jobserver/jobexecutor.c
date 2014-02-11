@@ -32,8 +32,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <time.h>
 #include <errno.h>
+#ifdef WINDOWS
+#include <windows.h>
+#endif
 
+#ifndef WINDOWS
 #define NULLDEVICE   "/dev/null"
+#else
+#define NULLDEVICE   "NUL"
+#endif
 
 #define ARGS_NOTREAD  -1
 #define ARGS_RUN       0
@@ -53,9 +60,22 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define false (1 == 0)
 #define true  (0 == 0)
 
+#ifdef WINDOWS
+#define sleep(a) Sleep((a) * 1000)
+#define Fread(a,b,c,d,e)   (ReadFile((d), (a), (b) * (c), (&e), NULL), e)
+#define Fwrite(a,b,c,d,e)  (WriteFile((d), (a), (b) * (c), (&e), NULL), e)
+#define Fseek(a,b,c)       SetFilePointer((a), (b), NULL, (c))
+#else
+#define FILE_BEGIN         SEEK_SET
+#define FILE_CURRENT	   SEEK_CUR
+#define FILE_END           SEEK_END
+#define Fread(a,b,c,d,e)   fread((a), (b), (c), (d))
+#define Fwrite(a,b,c,d,e)  fread((a), (b), (c), (d))
+#define Fseek(a, b, c)     fseek((a), (b), (c))
+#endif
+
 #define STATUS_OK      0
 #define SEVERITY_WARNING 1
-#define SEVERITY_ERROR   2
 #define SEVERITY_FATAL   3
 
 typedef struct _callstatus {
@@ -66,7 +86,7 @@ typedef struct _callstatus {
 } callstatus;
 
 char *message[] = {
-#define NO_ERROR         0
+#define MSG_NO_ERROR     0
 	"No error",
 #define INVALID_TASKFILE 1
 	"Invalid taskfile (doesn't exist, isn't readable or writable)",
@@ -108,6 +128,10 @@ char *message[] = {
 	"Mandatory value missing in taskfile (key %s)",
 #define INVALID_BOOTTIME 20
 	"Invalid boottime (too long)"
+#define TFUNLOCK_FAILED 21
+	"Couldn't release taskfile lock"
+#define CHLDWAIT_FAILED	22
+	"Wait for child process failed"
 };
 
 char *ARG_VERSION1 = "--version";
@@ -126,6 +150,7 @@ time_t myStartTime;
 #define TF_BUFSIZE 16384
 #define MAXLENGTH   8192
 char taskfileBuf[TF_BUFSIZE];
+char tfWriteBuf[TF_BUFSIZE];
 
 char *COMMAND       = "command";
 char *ARGUMENT      = "argument";
@@ -140,7 +165,7 @@ char *SAMELOGS      = "samelogs";
 char *EXECPID       = "execpid";
 char *EXTPID        = "extpid";
 char *RETURNCODE    = "returncode";
-char *ERROR         = "error";
+char *S_ERROR       = "error";
 char *STATUS        = "status";
 char *STATUS_TX     = "status_tx";
 char *INCOMPLETE    = "incomplete";
@@ -171,17 +196,22 @@ char *jstatus;
 char *jstatus_tx;
 int  complete;
 
-FILE *taskfile;
+#ifndef WINDOWS
 int buflen;
+#define HANDLE FILE*
+#else
+DWORD buflen;
+#endif
 int bufpos;
 int filepos;
+HANDLE taskfile;
 
 char *getUsage();
 char *getVersion();
 void initFields();
 int checkArgs(callstatus *status, int argc, char *argv[]);
-FILE *openTaskfile(callstatus *status);
-void closeTaskfile(callstatus *status, FILE *taskfile);
+HANDLE openTaskfile(callstatus *status);
+void closeTaskfile(callstatus *status, HANDLE taskfile);
 void advance(callstatus *status);
 void readTimestamp(callstatus *status);
 void readWhiteSpace(callstatus *status);
@@ -325,7 +355,7 @@ void addArgument(callstatus *status, char *value)
 int checkArgs(callstatus *status, int argc, char *argv[])
 {
 	status->severity = STATUS_OK;
-	status->msg = NO_ERROR;
+	status->msg = MSG_NO_ERROR;
 
 	if (argc <= 4 && argc > 1) {
 		if (!strcmp(argv[1], ARG_VERSION1) || !strcmp(argv[1], ARG_VERSION2)) {
@@ -381,14 +411,17 @@ int checkArgs(callstatus *status, int argc, char *argv[])
 	return ARGS_NOTREAD;
 }
 
-FILE *openTaskfile(callstatus *status)
+HANDLE openTaskfile(callstatus *status)
 {
-	FILE *taskfile = NULL;
+	HANDLE taskfile = NULL;
 	int retry_cnt = 0;
+#ifndef WINDOWS
 	struct flock lock;
 	int tffd;
+#endif
 
 	while (1) {
+#ifndef WINDOWS
 		taskfile = fopen(taskfileName, "r+");
 
 		if (taskfile != NULL) break;
@@ -402,15 +435,36 @@ FILE *openTaskfile(callstatus *status)
 			status->msg = INVALID_TASKFILE;
 			return NULL;
 		}
+#else
+		taskfile = CreateFile (
+		                   taskfileName,
+		                   GENERIC_READ | GENERIC_WRITE,
+		                   FILE_SHARE_READ | FILE_SHARE_WRITE,
+		                   NULL,
+		                   OPEN_EXISTING,
+		                   FILE_ATTRIBUTE_NORMAL,
+		                   NULL);
+		if (taskfile != INVALID_HANDLE_VALUE)
+			break;
+
+		const DWORD errn = GetLastError();
+		if (errn != ERROR_TOO_MANY_OPEN_FILES) {
+			status->severity = SEVERITY_FATAL;
+			status->msg = INVALID_TASKFILE;
+			return NULL;
+		}
+
+#endif
 
 		sleep(RETRY_OPEN_TIME + retry_cnt);
 		retry_cnt++;
 	}
 
+#ifndef WINDOWS
 	retry_cnt = 0;
 	tffd = fileno(taskfile);
 	lock.l_type = F_WRLCK;
-	lock.l_whence = SEEK_SET;
+	lock.l_whence = FILE_BEGIN;
 	lock.l_start = 0;
 	lock.l_len = 0;
 	while (1) {
@@ -425,13 +479,36 @@ FILE *openTaskfile(callstatus *status)
 		sleep(RETRY_LOCK_TIME + retry_cnt);
 		retry_cnt++;
 	}
+#else
+	OVERLAPPED ov;
+	ULONG internal;
+	ULONG internalHigh;
+
+	ov.Internal     = (ULONG_PTR) &internal;
+	ov.InternalHigh = (ULONG_PTR) &internalHigh;
+	ov.Offset       = 0;
+	ov.OffsetHigh   = 0;
+	ov.hEvent       = 0;
+
+	while (! LockFileEx (
+	               taskfile,
+	               LOCKFILE_EXCLUSIVE_LOCK,
+	               0,
+	               0xffffffff,
+	               0xffffffff,
+	               &ov)) {
+		sleep(RETRY_LOCK_TIME + retry_cnt);
+		retry_cnt++;
+	}
+#endif
 
 	return taskfile;
 }
 
-void closeTaskfile(callstatus *status, FILE *taskfile)
+void closeTaskfile(callstatus *status, HANDLE taskfile)
 {
 	if (taskfile != NULL) {
+#ifndef WINDOWS
 		if (fsync(fileno(taskfile)) != 0) {
 			status->severity = SEVERITY_FATAL;
 			status->msg = TFWRITE_FAILED;
@@ -441,6 +518,27 @@ void closeTaskfile(callstatus *status, FILE *taskfile)
 			status->severity = SEVERITY_WARNING;
 			status->msg = TFCLOSE_FAILED;
 		}
+#else
+		if (! FlushFileBuffers (taskfile)) {
+			status->severity = SEVERITY_FATAL;
+			status->msg = TFWRITE_FAILED;
+			return;
+		}
+		if (! UnlockFile (
+		            taskfile,
+		            0,
+		            0,
+		            0xffffffff,
+		            0xffffffff)) {
+			status->severity = SEVERITY_FATAL;
+			status->msg = TFUNLOCK_FAILED;
+			return;
+		}
+		if (! CloseHandle (taskfile)) {
+			status->severity = SEVERITY_WARNING;
+			status->msg = TFCLOSE_FAILED;
+		}
+#endif
 	}
 
 	filepos = -1;
@@ -456,8 +554,10 @@ void advance(callstatus *status)
 
 	if (filepos == -1 || bufpos == buflen) {
 
-		if ((buflen = fread(taskfileBuf, sizeof(char), TF_BUFSIZE, taskfile)) == 0) {
+		if ((buflen = Fread(taskfileBuf, sizeof(char), TF_BUFSIZE, taskfile, buflen)) == 0) {
+#ifndef WINDOWS
 			if (feof(taskfile)) {
+#endif
 
 				if (filepos == -1) {
 					status->severity = SEVERITY_FATAL;
@@ -466,6 +566,7 @@ void advance(callstatus *status)
 				}
 				bufpos = -1;
 				return;
+#ifndef WINDOWS
 			} else {
 
 				status->severity = SEVERITY_FATAL;
@@ -473,6 +574,7 @@ void advance(callstatus *status)
 				status->syserror = ferror(taskfile);
 				return;
 			}
+#endif
 		}
 
 		bufpos = 0;
@@ -665,7 +767,7 @@ void processEntry(callstatus *status)
 	else if (!strcmp(key, EXECPID))		execpid = Strdup(status, value);
 	else if (!strcmp(key, EXTPID))		extpid = Strdup(status, value);
 	else if (!strcmp(key, RETURNCODE))	returncode = Strdup(status, value);
-	else if (!strcmp(key, ERROR))		error = Strdup(status, value);
+	else if (!strcmp(key, S_ERROR))		error = Strdup(status, value);
 	else if (!strcmp(key, STATUS))		jstatus = Strdup(status, value);
 	else if (!strcmp(key, STATUS_TX))	jstatus_tx = Strdup(status, value);
 	else if (!strcmp(key, COMPLETE))	complete = true;
@@ -743,6 +845,11 @@ char *getTimestamp(time_t tim)
 
 void appendTaskfile(callstatus *status, char *key, char *value)
 {
+	int numBytes;
+#ifdef WINDOWS
+	DWORD bytesWritten;
+#endif
+
 	taskfile = openTaskfile(status);
 	if (status->severity != STATUS_OK) return;
 
@@ -754,14 +861,20 @@ void appendTaskfile(callstatus *status, char *key, char *value)
 		if (status->severity != STATUS_OK) return;
 	}
 
-	if (fseek(taskfile, filepos - buflen + bufpos, SEEK_SET) < 0) {
+	if (Fseek(taskfile, filepos - buflen + bufpos, FILE_BEGIN) < 0) {
 		status->severity = SEVERITY_FATAL;
 		status->msg = SEEK_FAILED;
 		status->syserror = errno;
 		return;
 	}
 
-	if (fprintf(taskfile, "%s %s=%s\n", getTimestamp(time(NULL)), key, value) < 0) {
+	if ((numBytes = snprintf(tfWriteBuf, TF_BUFSIZE, "%s %s=%s\n", getTimestamp(time(NULL)), key, value)) >= TF_BUFSIZE) {
+		status->severity = SEVERITY_FATAL;
+		status->msg = WRITE_FAILED;
+		status->syserror = errno;
+		return;
+	}
+	if (Fwrite(tfWriteBuf, numBytes, 1, taskfile, bytesWritten) != numBytes) {
 		status->severity = SEVERITY_FATAL;
 		status->msg = WRITE_FAILED;
 		status->syserror = errno;
@@ -822,7 +935,11 @@ void run(callstatus *status)
 	char **argv;
 	int i;
 	pid_t cpid;
+#ifndef WINDOWS
 	int   exitcode;
+#else
+	DWORD exitcode;
+#endif
 	char  *execpid;
 	char  buf[20];
 
@@ -845,6 +962,8 @@ void run(callstatus *status)
 
 	redirect(status);
 	if (status->severity != STATUS_OK) return;
+
+#ifndef WINDOWS
 
 	cpid = fork();
 
@@ -895,6 +1014,76 @@ void run(callstatus *status)
 	status->severity = SEVERITY_FATAL;
 	status->msg = EXEC_FAILED;
 	status->syserror = errno;
+#else
+
+	size_t size = strlen(argv[0]) + sizeof ('\0');
+	for (i = 1; argv[i]; ++i)
+		size += strlen (" ") + strlen (argv[i]);
+
+	char *const cmdline = (char *) malloc (size);
+	if (! cmdline) {
+		status->severity = SEVERITY_FATAL;
+		status->msg = OUT_OF_MEM;
+		return;
+	}
+
+	int ofs = sprintf (cmdline, "%s", argv[0]);
+	for (i = 1; argv[i]; ++i)
+		ofs += sprintf (cmdline + ofs, " %s", argv[i]);
+
+	char *module = usepath ? NULL : command;
+	if (module && (*module == '"')) {
+		char *unquoted = Strdup(status, module + 1);
+		if (status->severity != STATUS_OK) {
+			return;
+		}
+		unquoted[strlen(unquoted) - 1] = '\0';
+		module = unquoted;
+	}
+
+	STARTUPINFO si;
+	ZeroMemory (&si, sizeof (si));
+	si.cb = sizeof (si);
+
+	PROCESS_INFORMATION pi;
+
+	if (! CreateProcess (
+	            module,
+	            cmdline,
+	            NULL,
+	            NULL,
+	            TRUE,
+	            0,
+	            NULL,
+	            NULL,
+	            &si,
+	            &pi)) {
+		status->severity = SEVERITY_FATAL;
+		status->msg = EXEC_FAILED;
+		return;
+	}
+
+	extpid = getUniquePid(status, pi.dwProcessId);
+	if (status->severity != STATUS_OK) return;
+	appendTaskfile(status, EXTPID, extpid);
+	if (status->severity != STATUS_OK) return;
+	appendTaskfile(status, STATUS, STATUS_RUNNING);
+	if (status->severity != STATUS_OK) return;
+
+	if (WaitForSingleObject (pi.hProcess, INFINITE) == WAIT_FAILED) {
+		status->severity = SEVERITY_FATAL;
+		status->msg = CHLDWAIT_FAILED;
+		return;
+	}
+	if (! GetExitCodeProcess (pi.hProcess, &exitcode)) {
+		status->severity = SEVERITY_FATAL;
+		status->msg = CHLDWAIT_FAILED;
+		return;
+	}
+
+	CloseHandle (pi.hProcess);
+
+#endif
 	return;
 }
 
@@ -907,7 +1096,7 @@ int main(int argc, char *argv[])
 
 	initFields();
 	status.severity = STATUS_OK;
-	status.msg = NO_ERROR;
+	status.msg = MSG_NO_ERROR;
 
 	argsType = checkArgs(&status, argc, argv);
 

@@ -222,11 +222,13 @@ public class ProcessInfo
 			try {
 				Process p = Runtime.getRuntime().exec("WMIC PROCESS GET HANDLE, CREATIONDATE");
 				BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				p.getOutputStream().close();
 				String line;
 				String pattern = "yyyyMMddHHmmss";
 				int patternLength = pattern.length();
 				SimpleDateFormat format = new SimpleDateFormat(pattern);
-				while ((line = in.readLine().trim()) != null) {
+				while ((line = in.readLine()) != null) {
+					line = line.trim();
 					if (line.length() < patternLength) continue;
 					String strDate = line.substring(0, patternLength);
 					String strPid  = line.substring(patternLength);

@@ -197,7 +197,7 @@ public class SDMSIntervalHierarchyTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "CHILD_ID" + equote +
 		                                   ", " + squote + "PARENT_ID" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +

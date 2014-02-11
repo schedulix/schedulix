@@ -285,7 +285,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "SE_PARENT_ID" + equote +
 		                                   ", " + squote + "SE_CHILD_ID" + equote +
 		                                   ", " + squote + "ALIAS_NAME" + equote +

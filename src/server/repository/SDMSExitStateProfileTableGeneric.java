@@ -204,7 +204,7 @@ public class SDMSExitStateProfileTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NAME" + equote +
 		                                   ", " + squote + "DEFAULT_ESMP_ID" + equote +
 		                                   ", " + squote + "IS_VALID" + equote +

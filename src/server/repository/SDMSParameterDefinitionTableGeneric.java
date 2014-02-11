@@ -242,7 +242,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "SE_ID" + equote +
 		                                   ", " + squote + "NAME" + equote +
 		                                   ", " + squote + "TYPE" + equote +

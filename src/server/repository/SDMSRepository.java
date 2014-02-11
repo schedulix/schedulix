@@ -44,6 +44,7 @@ public class SDMSRepository
 	private Iterator tableIterator = null;
 	private SDMSException loaderException = null;
 	private Integer lockObject = new Integer(0);
+	private long lowestActiveVersion = Long.MAX_VALUE;
 
 	public SDMSRepository(SystemEnvironment env) throws SDMSException
 	{
@@ -51,10 +52,9 @@ public class SDMSRepository
 
 		env.dbConnection = Server.connectToDB(env);
 
-		tables = new HashMap(60);
+		fillSme2Load(env);
+		env.lowestActiveVersion = lowestActiveVersion;
 
-		env.lowestActiveDate = getLowestActiveDate(env);
-		env.lowestActiveVersion = getLowestActiveVersion(env);
 		initMap(env);
 		loadTables(env);
 
@@ -67,71 +67,128 @@ public class SDMSRepository
 		}
 	}
 
-	private long getLowestActiveDate(SystemEnvironment env)
+	private void fillSme2Load(SystemEnvironment env)
 	throws SDMSException
 	{
-		java.util.Date d = new java.util.Date();
-		long now = d.getTime();
+		long lowestActiveDate = getLowestActiveDate(env);
+		long historyDate = getHistoryDate(env);
+		int masterCtr = 0;
+		long oldSeId = 0;
 
-		long preserveTime = SystemEnvironment.preserveTime;
-
-		return now - preserveTime;
-	}
-
-	private long getLowestActiveVersion(SystemEnvironment env)
-	throws SDMSException
-	{
-		PreparedStatement stmt1;
-		boolean postgres = false;
+		long smeId;
+		long seId;
+		int  state;
+		long seVersion;
+		long finalTs;
+		boolean hit;
 
 		try {
-
-			if(env.dbConnection.getMetaData().getDriverName().startsWith("PostgreSQL")) {
-				postgres = true;
+			final String driverName = env.dbConnection.getMetaData().getDriverName();
+			final boolean postgres = driverName.startsWith("PostgreSQL");
+			String squote = "";
+			String equote = "";
+			if (driverName.startsWith("MySQL")) {
+				squote = "`";
+				equote = "`";
 			}
-		} catch (SQLException sqle) {
-			throw new FatalException(new SDMSMessage(env, "03202202228", "Error collecting Driver Information"));
-		}
-
-		String s1 = "SELECT MIN(m.SE_VERSION) " +
-		            "  FROM SUBMITTED_ENTITY m " +
-		            " WHERE (m.STATE NOT IN ( ?, ? ) " +
-		            (postgres ? "    OR  (m.FINAL_TS >= CAST (? AS DECIMAL) " :
-		             "    OR  (m.FINAL_TS >= ? ") +
-		            "   AND m.STATE IN ( ?, ? )))";
-		try {
-			stmt1 = env.dbConnection.prepareStatement(s1);
-
-			stmt1.clearParameters();
-
-			stmt1.setInt(1, SDMSSubmittedEntity.FINAL);
-			stmt1.setInt(2, SDMSSubmittedEntity.CANCELLED);
-
-			if(postgres) {
-				stmt1.setString(3, "" + env.lowestActiveDate);
-			} else {
-				stmt1.setLong(3, env.lowestActiveDate);
+			if (driverName.startsWith("Microsoft")) {
+				squote = "[";
+				equote = "]";
 			}
 
-			stmt1.setInt(4, SDMSSubmittedEntity.FINAL);
-			stmt1.setInt(5, SDMSSubmittedEntity.CANCELLED);
-
-			ResultSet rs = stmt1.executeQuery();
-			rs.next();
-			long version = rs.getLong(1);
-			if (rs.wasNull())
-				version = Long.MAX_VALUE;
-
+			Statement cleanup = env.dbConnection.createStatement();
+			cleanup.executeUpdate("DELETE FROM SME2LOAD");
 			env.dbConnection.commit();
 
-			return version;
-		} catch (SQLException sqle) {
-			throw new FatalException(new SDMSMessage(env, "03202011808", "SQLError $1 in select", sqle.getMessage()));
+			PreparedStatement insertStmt = env.dbConnection.prepareStatement("INSERT INTO SME2LOAD VALUES ( ? )");
+
+			Statement stmt = env.dbConnection.createStatement();
+			ResultSet rset = stmt.executeQuery("SELECT " + "ID" +
+			                                   ", " + squote + "SE_ID" + equote +
+			                                   ", " + squote + "SE_VERSION" + equote +
+			                                   ", " + squote + "STATE" + equote +
+			                                   ", " + squote + "FINAL_TS" + equote +
+			                                   ", " + squote + "SUBMIT_TS" + equote +
+			                                   "  FROM SUBMITTED_ENTITY" +
+			                                   " WHERE ID = MASTER_ID" +
+			                                   "   AND (" + squote + "STATE" + squote + " NOT IN (" + SDMSSubmittedEntity.CANCELLED + "," + SDMSSubmittedEntity.FINAL + ") OR" +
+			                                   "       FINAL_TS >= " + (postgres ?
+			                                                   "	   CAST (\'" + lowestActiveDate + "\' AS DECIMAL)" :
+			                                                   "	   " + lowestActiveDate) + ")" +
+			                                   " ORDER BY SE_ID, SUBMIT_TS DESC");
+			int insctr = 0;
+			while(rset.next()) {
+				hit = false;
+				smeId = rset.getLong(1);
+				seId = rset.getLong(2);
+				seVersion = rset.getLong(3);
+				state = rset.getInt(4);
+				finalTs = rset.getLong(5);
+
+				if (seId != oldSeId) {
+					masterCtr = 0;
+					oldSeId = seId;
+				}
+				masterCtr++;
+
+				if (state != SDMSSubmittedEntity.CANCELLED && state != SDMSSubmittedEntity.FINAL)
+					hit = true;
+				else if (masterCtr <= env.minHistoryCount)
+					hit = true;
+				else if (masterCtr <= env.maxHistoryCount || env.maxHistoryCount == 0) {
+					if (finalTs >= historyDate) hit = true;
+				}
+				if (hit) {
+					if (seVersion < lowestActiveVersion)
+						lowestActiveVersion = seVersion;
+					// now write sme2load table with masterId
+					insertStmt.setLong(1, smeId);
+					insertStmt.addBatch();
+					insctr++;
+					if (insctr == 1000) {	// write 1000 rows "at once"
+						insertStmt.executeBatch();
+						insertStmt.clearBatch();
+						insctr = 0;
+					}
+				}
+			}
+			if (insctr != 0)			// if there are any remaining rows, write them
+				insertStmt.executeBatch();
+			stmt.close();
+			insertStmt.close();
+			env.dbConnection.commit();
+
+			Statement fill = env.dbConnection.createStatement();
+			fill.executeUpdate("INSERT INTO SME2LOAD " +
+			                   "SELECT S.ID FROM SUBMITTED_ENTITY S, SME2LOAD M " +
+			                   " WHERE M.ID = S.MASTER_ID " +
+			                   "   AND S.ID != S.MASTER_ID");
+			env.dbConnection.commit();
+		} catch(SQLException sqle) {
+			throw new FatalException(new SDMSMessage(env, "03401131304",
+			                         "SQL Error : $1", sqle.getMessage()));
 		}
+	}
+
+	private long getLowestActiveDate(SystemEnvironment env)
+	{
+		java.util.Date d = new java.util.Date();
+
+		long pTime = (SystemEnvironment.minHistoryCount == 0 ? SystemEnvironment.preserveTime : SystemEnvironment.maxPreserveTime);
+
+		return d.getTime() - pTime;
+	}
+
+	private long getHistoryDate(SystemEnvironment env)
+	{
+		java.util.Date d = new java.util.Date();
+
+		return d.getTime() - SystemEnvironment.preserveTime;
 	}
 
 	private void initMap(SystemEnvironment env)  throws SDMSException
 	{
+		tables = new HashMap();
 
 		tables.put(SDMSCalendarTableGeneric.tableName,                    new SDMSCalendarTable(env));
 

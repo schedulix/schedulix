@@ -197,7 +197,7 @@ public class SDMSResourceStateProfileTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NAME" + equote +
 		                                   ", " + squote + "INITIAL_RSD_ID" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +

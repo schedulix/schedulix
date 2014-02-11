@@ -207,7 +207,7 @@ public class SDMSEnvironmentTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NE_ID" + equote +
 		                                   ", " + squote + "NR_ID" + equote +
 		                                   ", " + squote + "CONDITION" + equote +

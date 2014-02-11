@@ -210,7 +210,7 @@ public class SDMSRunnableQueueTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "SME_ID" + equote +
 		                                   ", " + squote + "SCOPE_ID" + equote +
 		                                   ", " + squote + "STATE" + equote +

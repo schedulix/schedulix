@@ -14,7 +14,7 @@ SUBDIRS = .
 
 CLASSES = Jexecutor.class JProcessExecutor.class
 
-.PHONY: all generate subdirs distrib clean new
+.PHONY: all generate subdirs clean new
 
 all: generate subdirs $(CLASSES)
 

@@ -206,7 +206,7 @@ public class SDMSResourceVariableTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "PD_ID" + equote +
 		                                   ", " + squote + "R_ID" + equote +
 		                                   ", " + squote + "VALUE" + equote +

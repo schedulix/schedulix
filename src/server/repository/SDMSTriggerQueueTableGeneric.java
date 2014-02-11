@@ -216,7 +216,7 @@ public class SDMSTriggerQueueTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "SME_ID" + equote +
 		                                   ", " + squote + "TR_ID" + equote +
 		                                   ", " + squote + "NEXT_TRIGGER_TIME" + equote +

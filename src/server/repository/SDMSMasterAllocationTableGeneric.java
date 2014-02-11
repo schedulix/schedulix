@@ -230,7 +230,7 @@ public class SDMSMasterAllocationTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "RA_ID" + equote +
 		                                   ", " + squote + "SME_ID" + equote +
 		                                   ", " + squote + "AMOUNT" + equote +

@@ -311,7 +311,7 @@ public class SDMSScheduledEventTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "OWNER_ID" + equote +
 		                                   ", " + squote + "SCE_ID" + equote +
 		                                   ", " + squote + "EVT_ID" + equote +

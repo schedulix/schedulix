@@ -199,7 +199,7 @@ public class SDMSMemberTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "G_ID" + equote +
 		                                   ", " + squote + "U_ID" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +

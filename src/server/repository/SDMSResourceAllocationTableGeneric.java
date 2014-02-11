@@ -295,7 +295,7 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "R_ID" + equote +
 		                                   ", " + squote + "SME_ID" + equote +
 		                                   ", " + squote + "NR_ID" + equote +

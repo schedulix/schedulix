@@ -205,7 +205,7 @@ public class SDMSDependencyStateTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "DD_ID" + equote +
 		                                   ", " + squote + "ESD_ID" + equote +
 		                                   ", " + squote + "CONDITION" + equote +

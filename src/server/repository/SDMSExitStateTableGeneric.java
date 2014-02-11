@@ -248,7 +248,7 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "PREFERENCE" + equote +
 		                                   ", " + squote + "IS_FINAL" + equote +
 		                                   ", " + squote + "IS_RESTARTABLE" + equote +

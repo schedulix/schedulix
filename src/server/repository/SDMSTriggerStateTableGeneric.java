@@ -208,7 +208,7 @@ public class SDMSTriggerStateTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "TRIGGER_ID" + equote +
 		                                   ", " + squote + "FROM_STATE_ID" + equote +
 		                                   ", " + squote + "TO_STATE_ID" + equote +

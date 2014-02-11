@@ -794,7 +794,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		}
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "ACCESS_KEY" + equote +
 		                                   ", " + squote + "MASTER_ID" + equote +
 		                                   ", " + squote + "SUBMIT_TAG" + equote +
@@ -878,13 +878,9 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
 		                                   "  FROM " + tableName() + ", " +
-		                                   "       MASTER_STATE " +
-		                                   " WHERE ID = MS_C_ID" +
-		                                   "   AND (MS_M_STATE NOT IN (" + SDMSSubmittedEntity.CANCELLED + "," + SDMSSubmittedEntity.FINAL + ") OR" +
-		                                   "       MS_M_FINAL_Ts >= " + (postgres ?
-		                                                   "           CAST (\'" + env.lowestActiveDate + "\' AS DECIMAL)" :
-		                                                   "           " + env.lowestActiveDate) + ")" +
-		                                   ""		);
+		                                   "       SME2LOAD " +
+		                                   " WHERE " + tableName() + ".ID = SME2LOAD.ID"
+		                                  );
 		while(rset.next()) {
 			if(loadObject(env, rset)) ++loaded;
 			++read;

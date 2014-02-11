@@ -262,7 +262,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		}
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "DD_ID" + equote +
 		                                   ", " + squote + "DEPENDENT_ID" + equote +
 		                                   ", " + squote + "DEPENDENT_ID_ORIG" + equote +
@@ -277,13 +277,9 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
 		                                   "  FROM " + tableName() + ", " +
-		                                   "       MASTER_STATE " +
-		                                   " WHERE DEPENDENT_ID = MS_C_ID" +
-		                                   "   AND (MS_M_STATE NOT IN (" + SDMSSubmittedEntity.CANCELLED + "," + SDMSSubmittedEntity.FINAL + ") OR" +
-		                                   "       MS_M_FINAL_Ts >= " + (postgres ?
-		                                                   "           CAST (\'" + env.lowestActiveDate + "\' AS DECIMAL)" :
-		                                                   "           " + env.lowestActiveDate) + ")" +
-		                                   ""		);
+		                                   "       SME2LOAD " +
+		                                   " WHERE " + tableName() + ".DEPENDENT_ID = SME2LOAD.ID"
+		                                  );
 		while(rset.next()) {
 			if(loadObject(env, rset)) ++loaded;
 			++read;

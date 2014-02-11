@@ -197,7 +197,7 @@ public class SDMSCalendarTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "SCEV_ID" + equote +
 		                                   ", " + squote + "STARTTIME" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +

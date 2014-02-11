@@ -47,6 +47,7 @@ public class GarbageThread extends InternalSession
 
 	public final static String name = "GarbageCollection";
 	private final long preserveTime;
+	private final long maxPreserveTime;
 
 	public GarbageThread(SystemEnvironment env, SyncFifo f)
 	throws SDMSException
@@ -56,6 +57,7 @@ public class GarbageThread extends InternalSession
 		initThread(env, f, NR, name, SystemEnvironment.gcWakeupInterval*60*1000);
 
 		preserveTime = SystemEnvironment.preserveTime;
+		maxPreserveTime = SystemEnvironment.maxPreserveTime;
 	}
 
 	protected Node getNode(int m)
@@ -64,7 +66,7 @@ public class GarbageThread extends InternalSession
 		else			return new DoGarbage();
 	}
 
-	public void collect(SystemEnvironment sysEnv)
+	public void collect(final SystemEnvironment sysEnv)
 	throws SDMSException
 	{
 		Long smeId;
@@ -74,24 +76,98 @@ public class GarbageThread extends InternalSession
 
 		doTrace(cEnv, "Start Garbage Collect (now = " + now + " preserveTime = " + preserveTime + ")", SEVERITY_INFO);
 
+		Vector v_masters = new Vector();
 		SDMSFilter filter = new SDMSFilter () {
 			public boolean isValid(SystemEnvironment sysEnv, SDMSProxy obj) throws SDMSException {
 				SDMSSubmittedEntity sme = (SDMSSubmittedEntity)obj;
 				if (sme.getId(sysEnv).equals(sme.getMasterId(sysEnv))) {
 					int state = sme.getState(sysEnv).intValue();
 					if (state == SDMSSubmittedEntity.FINAL || state == SDMSSubmittedEntity.CANCELLED) {
-						long finaltime = sme.getFinalTs(sysEnv).longValue();
-						if (now - finaltime > preserveTime)
-							return true;
+						return true;
 					}
 				}
 				return false;
 			}
 		};
-
 		Iterator i = SDMSSubmittedEntityTable.table.iterator(sysEnv, filter);
 		while(i.hasNext()) {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) i.next();
+			v_masters.add(sme);
+		}
+
+		Collections.sort (v_masters,
+		new Comparator () {
+			public int compare (Object o1, Object o2) {
+				try {
+					SDMSSubmittedEntity sme_1 = (SDMSSubmittedEntity)o1;
+					SDMSSubmittedEntity sme_2 = (SDMSSubmittedEntity)o2;
+
+					long se_id_1 = sme_1.getSeId(sysEnv).longValue();
+					long se_id_2 = sme_2.getSeId(sysEnv).longValue();
+					if (se_id_1 != se_id_2) {
+						if (se_id_1 < se_id_2)
+							return -1;
+						else
+							return 1;
+					} else {
+						long submit_ts_1 = sme_1.getSubmitTs(sysEnv).longValue();
+						long submit_ts_2 = sme_2.getSubmitTs(sysEnv).longValue();
+						if (submit_ts_1 != submit_ts_2) {
+							if (submit_ts_1 < submit_ts_2)
+								return 1;
+							else
+								return -1;
+						}
+						return 0;
+					}
+				} catch (SDMSException e) {
+					return 0;
+				}
+			}
+			public boolean equals (Object o1, Object o2) {
+				try {
+					SDMSSubmittedEntity sme_1 = (SDMSSubmittedEntity)o1;
+					SDMSSubmittedEntity sme_2 = (SDMSSubmittedEntity)o2;
+
+					long se_id_1 = sme_1.getSeId(sysEnv).longValue();
+					long se_id_2 = sme_2.getSeId(sysEnv).longValue();
+					if (se_id_1 != se_id_2) {
+						return false;
+					} else {
+						long submit_ts_1 = sme_1.getSubmitTs(sysEnv).longValue();
+						long submit_ts_2 = sme_2.getSubmitTs(sysEnv).longValue();
+						if (submit_ts_1 != submit_ts_2) {
+							return false;
+						}
+						return true;
+					}
+				} catch (SDMSException e) {
+					return false;
+				}
+			}
+		}
+		                 );
+
+		int masterCtr = 0;
+		long seId = 0;
+		long oldSeId = 0;
+		i = v_masters.iterator();
+		while(i.hasNext()) {
+			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) i.next();
+			seId = sme.getSeId(sysEnv).longValue();
+			if (seId != oldSeId) {
+				masterCtr = 0;
+				oldSeId = seId;
+			}
+			masterCtr++;
+			finaltime = sme.getFinalTs(sysEnv).longValue();
+			if (now - finaltime <= maxPreserveTime) {
+				if (masterCtr <= sysEnv.minHistoryCount)
+					continue;
+				if (now - finaltime <= preserveTime)
+					if (sysEnv.maxHistoryCount == 0 || masterCtr <= sysEnv.maxHistoryCount)
+						continue;
+			}
 			sme.releaseMaster(sysEnv);
 		}
 

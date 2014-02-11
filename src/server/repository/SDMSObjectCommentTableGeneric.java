@@ -224,7 +224,7 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "OBJECT_ID" + equote +
 		                                   ", " + squote + "OBJECT_TYPE" + equote +
 		                                   ", " + squote + "INFO_TYPE" + equote +

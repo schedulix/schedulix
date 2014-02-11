@@ -192,7 +192,7 @@ public class SDMSPersistentValueTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NAME" + equote +
 		                                   ", " + squote + "INT_VALUE" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +

@@ -224,7 +224,7 @@ public class SDMSGrantTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "OBJECT_ID" + equote +
 		                                   ", " + squote + "G_ID" + equote +
 		                                   ", " + squote + "OBJECT_TYPE" + equote +

@@ -35,7 +35,7 @@ ADD COLUMN STICKY_NAME VARCHAR(64) WITH NULL;
 ALTER TABLE RESOURCE_ALLOCATION
 ADD COLUMN STICKY_PARENT DECIMAL(20) WITH NULL;
 
-And create the new table MASTER_ALLOCATION (see sql directory)
+And create the new table MASTER_ALLOCATION as well as the table SME2LOAD (see sql directory)
 
 -------------------------------------------------------------------------------------------
 
@@ -52,5 +52,14 @@ Similar to the swt.jar an environment variable JNAJAR must be set and point to t
 
 In order to run the system the jna.jar file is required for jobservers. The swt.jar file is
 required for the examples. This can be configured in the $BICSUITEHOME/etc/java.conf file.
+
+-------------------------------------------------------------------------------------------
+
+There has been a change in the object loading strategy. Effectively the user has more
+control over the objects loaded. This results in reduced memory consumption, shorter start up
+times and more valuable information.
+
+The loading strategy is controled by three additional server parameters. See server.conf.template
+for details.
 
 Happy Hacking :-)

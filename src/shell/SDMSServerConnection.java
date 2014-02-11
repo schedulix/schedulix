@@ -118,7 +118,7 @@ public class SDMSServerConnection
 		        false;
 		info = options.isSet(App.INFO) ? options.getValue(App.INFO) : null;
 		if (info != null) {
-			info = info.replace("\\","\\\\");
+			info = info.replace("\\\\","\\\\");
 			info = info.replace("'","\\'");
 		}
 	}

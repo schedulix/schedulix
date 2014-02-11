@@ -340,7 +340,7 @@ public class RepoIface
 	{
 		this.cfg = cfg;
 		this.information = information;
-		this.information = this.information.replace("\\","\\\\");
+		this.information = this.information.replace("\\\\","\\\\");
 		this.information = this.information.replace("'","\\'");
 
 		openConnection();

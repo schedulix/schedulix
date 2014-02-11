@@ -90,6 +90,9 @@ public class SystemEnvironment implements Cloneable
 	public static int service_port;
 	public static int txRetryCount;
 	public static long preserveTime;
+	public static long maxPreserveTime;
+	public static int minHistoryCount;
+	public static int maxHistoryCount;
 	public static int maxWorker;
 	public static int maxConnects;
 	public static String exportVariablesString;
@@ -136,6 +139,9 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_EXPORTVARIABLES       = "ExportVariables";
 	public static final String S_GCWAKEUP              = "GCWakeup";
 	public static final String S_HISTORY               = "History";
+	public static final String S_HISTORYLIMIT          = "HistoryLimit";
+	public static final String S_MINHISTORYCOUNT       = "MinHistoryCount";
+	public static final String S_MAXHISTORYCOUNT       = "MaxHistoryCount";
 	public static final String S_HOSTNAME              = "Hostname";
 	public static final String S_JDBCDRIVER            = "JdbcDriver";
 	public static final String S_LEVEL                 = "CompatibilityLevel";
@@ -275,6 +281,9 @@ public class SystemEnvironment implements Cloneable
 		getServicePort();
 		getTxRetryCount();
 		getHistory();
+		getHistoryLimit();
+		getMinHistoryCount();
+		getMaxHistoryCount();
 		getWorkerThreads();
 		getUserThreads();
 		getExportVariables();
@@ -447,6 +456,33 @@ public class SystemEnvironment implements Cloneable
 		preserveTime = checkIntProperty(s_preserveTime, S_HISTORY, minTime, 1440, 0, "Invalid History : ");
 		props.setProperty(S_HISTORY, "" + preserveTime);
 		preserveTime *= 1000 * 60;
+	}
+
+	private void getHistoryLimit()
+	{
+		String s_preserveTime = props.getProperty(S_HISTORYLIMIT, "1440");
+		int minTime = (int) preserveTime / (60 * 1000);
+		if (runMode.equals("TEST")) minTime = 5;
+		maxPreserveTime = checkIntProperty(s_preserveTime, S_HISTORYLIMIT, minTime, 2880, 0, "Invalid HistoryLimit : ");
+		props.setProperty(S_HISTORYLIMIT, "" + maxPreserveTime);
+		maxPreserveTime *= 1000 * 60;
+	}
+
+	private void getMinHistoryCount()
+	{
+		String s_historyCount = props.getProperty(S_MINHISTORYCOUNT, "0");
+		minHistoryCount = checkIntProperty(s_historyCount, S_MINHISTORYCOUNT, 0, 0, 0, "Invalid MinHistoryCount : ");
+		props.setProperty(S_MINHISTORYCOUNT, "" + minHistoryCount);
+	}
+
+	private void getMaxHistoryCount()
+	{
+		String s_historyCount = props.getProperty(S_MAXHISTORYCOUNT, "0");
+		if (s_historyCount.equals("0"))
+			maxHistoryCount = 0;
+		else
+			maxHistoryCount = checkIntProperty(s_historyCount, S_MAXHISTORYCOUNT, minHistoryCount, 0, 0, "Invalid MaxHistoryCount : ");
+		props.setProperty(S_MAXHISTORYCOUNT, "" + maxHistoryCount);
 	}
 
 	private void getCalHorizon()

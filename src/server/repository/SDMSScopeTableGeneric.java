@@ -320,7 +320,7 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NAME" + equote +
 		                                   ", " + squote + "OWNER_ID" + equote +
 		                                   ", " + squote + "PARENT_ID" + equote +

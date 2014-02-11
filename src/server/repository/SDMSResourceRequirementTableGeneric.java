@@ -288,7 +288,7 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NR_ID" + equote +
 		                                   ", " + squote + "SE_ID" + equote +
 		                                   ", " + squote + "AMOUNT" + equote +

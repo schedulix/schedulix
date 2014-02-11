@@ -217,7 +217,7 @@ public class SDMSUserTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NAME" + equote +
 		                                   ", " + squote + "PASSWD" + equote +
 		                                   ", " + squote + "IS_ENABLED" + equote +

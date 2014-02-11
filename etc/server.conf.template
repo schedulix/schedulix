@@ -79,6 +79,14 @@ GCWakeup=240
 History=14400
 
 #
+# HistoryLimit: since the number of jobs to load can be specified, the previously 
+#               defined History can be exceeded.
+#               The HistoryLimit defines a hard limit. Final jobs elder than this
+#               limit won't be loaded, disregarding any counts
+#
+HistoryLimit=28800
+
+#
 # Hostname: Hostname of the SDMSServer
 #
 Hostname=hostname.domain.de
@@ -95,6 +103,19 @@ Hostname=hostname.domain.de
 # in case of Mysql, use something like:
 # JdbcDriver=com.mysql.jdbc.Driver
 JdbcDriver=NOT_SET
+
+#
+#
+# MinHistoryCount: Minimum number of masters loaded (if present), disregarding the
+#                  History. 0 means no minimum
+#
+MinHistoryCount=0
+
+#
+# MaxHistoryCount: Maximum number of masters loaded, even if History is larger
+#                  0 means ignore
+#
+MaxHistoryCount=0
 
 #
 # ParameterHandling:  Parameter handling - Parameters can be handled in either of three ways:

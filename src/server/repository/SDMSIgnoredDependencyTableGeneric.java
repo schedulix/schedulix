@@ -197,7 +197,7 @@ public class SDMSIgnoredDependencyTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "SH_ID" + equote +
 		                                   ", " + squote + "DD_NAME" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +

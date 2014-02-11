@@ -204,7 +204,7 @@ public class SDMSScopeConfigTableGeneric extends SDMSTable
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   "ID" +
+		                                   tableName() + ".ID" +
 		                                   ", " + squote + "KEY" + equote +
 		                                   ", " + squote + "VALUE" + equote +
 		                                   ", " + squote + "S_ID" + equote +
