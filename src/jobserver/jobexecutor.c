@@ -220,7 +220,7 @@ void readLength(callstatus *status, char *lgth);
 void readValue(callstatus *status, int lgth, char *value);
 void processTaskfile(callstatus *status);
 void evaluateTaskfile(callstatus *status);
-void appendTaskfile(callstatus *status, char *key, char *value);
+void appendTaskfile(callstatus *status, char *key, char *value, int alreadyOpen);
 void redirect(callstatus *status);
 char *getUniquePid(callstatus *status, pid_t pid);
 void run(callstatus *status);
@@ -439,7 +439,7 @@ HANDLE openTaskfile(callstatus *status)
 		taskfile = CreateFile (
 		                   taskfileName,
 		                   GENERIC_READ | GENERIC_WRITE,
-		                   FILE_SHARE_READ | FILE_SHARE_WRITE,
+		                   0,
 		                   NULL,
 		                   OPEN_EXISTING,
 		                   FILE_ATTRIBUTE_NORMAL,
@@ -479,27 +479,6 @@ HANDLE openTaskfile(callstatus *status)
 		sleep(RETRY_LOCK_TIME + retry_cnt);
 		retry_cnt++;
 	}
-#else
-	OVERLAPPED ov;
-	ULONG internal;
-	ULONG internalHigh;
-
-	ov.Internal     = (ULONG_PTR) &internal;
-	ov.InternalHigh = (ULONG_PTR) &internalHigh;
-	ov.Offset       = 0;
-	ov.OffsetHigh   = 0;
-	ov.hEvent       = 0;
-
-	while (! LockFileEx (
-	               taskfile,
-	               LOCKFILE_EXCLUSIVE_LOCK,
-	               0,
-	               0xffffffff,
-	               0xffffffff,
-	               &ov)) {
-		sleep(RETRY_LOCK_TIME + retry_cnt);
-		retry_cnt++;
-	}
 #endif
 
 	return taskfile;
@@ -522,16 +501,6 @@ void closeTaskfile(callstatus *status, HANDLE taskfile)
 		if (! FlushFileBuffers (taskfile)) {
 			status->severity = SEVERITY_FATAL;
 			status->msg = TFWRITE_FAILED;
-			return;
-		}
-		if (! UnlockFile (
-		            taskfile,
-		            0,
-		            0,
-		            0xffffffff,
-		            0xffffffff)) {
-			status->severity = SEVERITY_FATAL;
-			status->msg = TFUNLOCK_FAILED;
 			return;
 		}
 		if (! CloseHandle (taskfile)) {
@@ -843,15 +812,20 @@ char *getTimestamp(time_t tim)
 	return buf;
 }
 
-void appendTaskfile(callstatus *status, char *key, char *value)
+void appendTaskfile(callstatus *status, char *key, char *value, int alreadyOpen)
 {
 	int numBytes;
 #ifdef WINDOWS
 	DWORD bytesWritten;
 #endif
 
-	taskfile = openTaskfile(status);
-	if (status->severity != STATUS_OK) return;
+	if (alreadyOpen == 0) {
+		taskfile = openTaskfile(status);
+		if (status->severity != STATUS_OK) return;
+	} else {
+		// reset file position
+		Fseek(taskfile, 0, FILE_BEGIN);
+	}
 
 	advance(status);
 	if (status->severity != STATUS_OK) return;
@@ -881,8 +855,10 @@ void appendTaskfile(callstatus *status, char *key, char *value)
 		return;
 	}
 
-	closeTaskfile(status, taskfile);
-	if (status->severity != STATUS_OK) return;
+	if (alreadyOpen == 0) {
+		closeTaskfile(status, taskfile);
+		if (status->severity != STATUS_OK) return;
+	}
 
 	return;
 }
@@ -945,7 +921,7 @@ void run(callstatus *status)
 
 	execpid = getUniquePid(status, getpid());
 	if (status->severity != STATUS_OK) return;
-	appendTaskfile(status, EXECPID, execpid);
+	appendTaskfile(status, EXECPID, execpid, 0);
 	if (status->severity != STATUS_OK) return;
 
 	argv = (char **) malloc((1 + num_args + 1) * sizeof(char*));
@@ -981,20 +957,26 @@ void run(callstatus *status)
 			fprintf(stdout, "------- %s End (%d) --------\n", getTimestamp(time(NULL)), exitcode);
 		}
 		snprintf(buf, 20, "%d", exitcode);
-		appendTaskfile(status, STATUS, STATUS_FINISHED);
+		taskfile = openTaskfile(status);
 		if (status->severity != STATUS_OK) return;
-		appendTaskfile(status, RETURNCODE, buf);
+		appendTaskfile(status, STATUS, STATUS_FINISHED, 1);
 		if (status->severity != STATUS_OK) return;
+		appendTaskfile(status, RETURNCODE, buf, 1);
+		if (status->severity != STATUS_OK) return;
+		closeTaskfile(status, taskfile);
 		return;
 	}
 
 	myStartTime = time(NULL);
 	extpid = getUniquePid(status, getpid());
 	if (status->severity != STATUS_OK) return;
-	appendTaskfile(status, EXTPID, extpid);
+	taskfile = openTaskfile(status);
+	if (status->severity != STATUS_OK) return;	// TODO: better error handling
+	appendTaskfile(status, EXTPID, extpid, 1);
 	if (status->severity != STATUS_OK) return;
-	appendTaskfile(status, STATUS, STATUS_RUNNING);
+	appendTaskfile(status, STATUS, STATUS_RUNNING, 1);
 	if (status->severity != STATUS_OK) return;
+	closeTaskfile(status, taskfile);
 
 	if (setsid() == -1) {
 
@@ -1065,10 +1047,13 @@ void run(callstatus *status)
 
 	extpid = getUniquePid(status, pi.dwProcessId);
 	if (status->severity != STATUS_OK) return;
-	appendTaskfile(status, EXTPID, extpid);
+	taskfile = openTaskfile(status);
+	if (status->severity != STATUS_OK) return;	// TODO: better error handling
+	appendTaskfile(status, EXTPID, extpid, 1);
 	if (status->severity != STATUS_OK) return;
-	appendTaskfile(status, STATUS, STATUS_RUNNING);
+	appendTaskfile(status, STATUS, STATUS_RUNNING, 1);
 	if (status->severity != STATUS_OK) return;
+	closeTaskfile(status, taskfile);
 
 	if (WaitForSingleObject (pi.hProcess, INFINITE) == WAIT_FAILED) {
 		status->severity = SEVERITY_FATAL;
