@@ -44,13 +44,13 @@ public class Server
 	private WakeupThread wecker = null;
 	private HttpThread httpserver = null;
 
-	private static HashMap<String, Feil> feilMap = null;
+	private static HashMap feilMap = null;
 
-	public Server (final String config_filnam, final String information)
+	public Server (final String config_filnam)
 	throws CommonErrorException
 	{
 		cfg = new Config (config_filnam);
-		ri  = new RepoIface (cfg, information);
+		ri  = new RepoIface (cfg);
 	}
 
 	public static final String getVersionInfo()
@@ -64,10 +64,10 @@ public class Server
 	{
 		final Feil f;
 		if (feilMap == null) {
-			feilMap = new HashMap<String, Feil>();
+			feilMap = new HashMap();
 		}
 		if (feilMap.containsKey(jid))
-			f = feilMap.get(jid);
+			f = (Feil) feilMap.get(jid);
 		else {
 			f = new Feil ((File) cfg.get (Config.JOB_FILE_PREFIX), jid);
 			feilMap.put(jid, f);
@@ -79,7 +79,7 @@ public class Server
 	{
 		Feil f;
 		if (feilMap.containsKey(jid))
-			f = feilMap.get(jid);
+			f = (Feil) feilMap.get(jid);
 		else
 			return;
 
@@ -125,7 +125,7 @@ public class Server
 
 	private final boolean doRestart ()
 	{
-		HashMap<String,Long> startTimes = ProcessInfo.getStartTimes();
+		HashMap startTimes = ProcessInfo.getStartTimes();
 		final String jid[] = getJobFileIds();
 		for (int i = 0; i < jid.length; ++i) {
 			final Feil feil = Server.getFeil(cfg, jid[i]);
@@ -180,14 +180,14 @@ public class Server
 
 	private final void breed()
 	{
-		HashMap<String,Long> startTimes = ProcessInfo.getStartTimes();
+		HashMap startTimes = ProcessInfo.getStartTimes();
 		final String jid[] = getJobFileIds();
 		for (int i = 0; i < jid.length; ++i) {
 			breed(jid[i], startTimes);
 		}
 	}
 
-	private final void breed(String jid, HashMap<String,Long> startTimes)
+	private final void breed(String jid, HashMap startTimes)
 	{
 		final Feil feil = Server.getFeil(cfg, jid);
 		boolean feil_expired = false;
@@ -253,9 +253,10 @@ public class Server
 	{
 		final Feil feil = Server.getFeil(cfg, jd.id);
 		synchronized(feil) {
-			if (feil.exists())
-				Utils.abortProgram (ri, "(04301271511) Job id " + jd.id + " already in process");
-
+			if (feil.exists()) {
+				ri.notifyError (RepoIface.NONFATAL, "(04301271511) Job id " + jd.id + " already in process");
+				return;
+			}
 			try {
 				feil.create (jd, ((Boolean) cfg.get (Config.USE_PATH)).booleanValue(), ((Boolean) cfg.get (Config.VERBOSE_LOGS)).booleanValue());
 			}

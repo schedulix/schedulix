@@ -35,11 +35,12 @@ public final class Trace
 {
 	public static final String __version = "@(#) $Id: Trace.java,v 2.2.16.1 2013/03/14 10:24:07 ronald Exp $";
 
-	public static final int FATAL   = -3;
-	public static final int ERROR   = -2;
-	public static final int INFO    = -1;
-	public static final int WARNING =  0;
-	public static final int DEBUG   =  1;
+	public static final int FATAL   = -2;
+	public static final int ERROR   = -1;
+	public static final int INFO    =  0;
+	public static final int WARNING =  1;
+	public static final int MESSAGE =  2;
+	public static final int DEBUG   =  3;
 
 	public static final int DEFAULT = WARNING;
 
@@ -63,6 +64,8 @@ public final class Trace
 			return "WARNING";
 		case DEBUG:
 			return "DEBUG  ";
+		case MESSAGE:
+			return "MESSAGE";
 		}
 
 		return "UNKNOWN";
@@ -95,6 +98,10 @@ public final class Trace
 	public static final void debug   (final String msg)
 	{
 		trace (msg, DEBUG);
+	}
+	public static final void message (final String msg)
+	{
+		trace (msg, MESSAGE);
 	}
 
 	private static final String dump_field (final Object obj)

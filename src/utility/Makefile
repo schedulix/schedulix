@@ -73,7 +73,7 @@ new: clean all
 
 include $(SDMSHOME)/src/Makefile.CommonRules
 
-CXXFLAGS += -g -fno-exceptions -pedantic -Wall -Wshadow -Wpointer-arith \
+CXXFLAGS += -fno-exceptions -pedantic -Wall -Wshadow -Wpointer-arith \
 	-Wwrite-strings -Wconversion -Wstrict-prototypes -Wmissing-prototypes \
 	-Wmissing-declarations -Wnested-externs
 

@@ -245,7 +245,10 @@ public class AlterJob extends Node
 			delFromQueue(sysEnv, sme);
 			break;
 		case SDMSSubmittedEntity.RUNNING:
+			int oldState = sme.getState(sysEnv);
 			setSomeFields(sysEnv, sme, status);
+			if (oldState != SDMSSubmittedEntity.STARTED && tsLong != null)
+				sme.setStartTs(sysEnv, tsLong);
 			delFromQueue(sysEnv, sme);
 			break;
 		case SDMSSubmittedEntity.FINISHED:

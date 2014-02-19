@@ -35,47 +35,44 @@ public class JobServer
 {
 	public static final String __version = "@(#) $Id: JobServer.java,v 2.7.2.1 2013/03/14 10:24:06 ronald Exp $";
 
+	public static String env_filnam = null;
+	public static String session_info = "";
+
 	public static void main (String argv[])
 	{
-		String config_filnam = "";
-		String information = "";
-		if (argv.length > 0) {
-			config_filnam = argv [0];
-			if (argv.length > 1)
-				information = argv [1];
-			if (argv.length > 2) {
-				System.err.print ("***WARNING*** (04301271451) Ignoring superfluous arguments:");
-				for (int i = 1; i < argv.length; ++i)
-					System.err.print (" " + argv [i]);
-				System.err.println();
-				System.err.flush();
-			}
-		} else {
-			System.out.println ("Enter name of configuration file:");
-			System.out.flush();
-			try {
-				config_filnam = new BufferedReader (new InputStreamReader (System.in)).readLine();
-			}
-
-			catch (final IOException ioe) {
-				System.out.println ("(04301271452) Oops: " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
-				System.exit (1);
-			}
+		if (argv.length == 0) {
+			System.err.println ("(04402181122) Missing parameter configfile");
+			System.err.flush();
+			System.exit (1);
 		}
-
-		if (config_filnam.equals ("--version")) {
+		if (argv[0].equals ("--version")) {
 			System.err.println (Server.getVersionInfo());
 			System.exit (-1);
 		}
-
-		if (config_filnam.startsWith ("-")) {
-			System.err.println ("***ERROR*** (04506161445) Unknown/invalid argument: " + config_filnam);
-			System.exit (-1);
+		String config_filnam = argv[0];
+		int ppos = 1;
+		if (argv.length > ppos) {
+			if (! argv[ppos].equals("-e")) {
+				session_info = argv[ppos];
+				ppos++;
+			}
+		}
+		if (argv.length > ppos) {
+			if (argv[1].equals("-e")) {
+				if (argv.length > ppos + 1) {
+					env_filnam = argv [ppos + 1];
+					ppos += 2;
+				} else {
+					System.err.println ("(04402181123) Missing parameter environmentfile");
+					System.err.flush();
+					System.exit (1);
+				}
+			}
 		}
 
 		Server server = null;
 		try {
-			server = new Server (config_filnam, information);
+			server = new Server (config_filnam);
 		}
 
 		catch (final CommonErrorException cee) {

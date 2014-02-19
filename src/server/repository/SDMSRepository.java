@@ -266,7 +266,6 @@ public class SDMSRepository
 
 	private void loadTables(SystemEnvironment env) throws SDMSException
 	{
-
 		tableIterator = tables.values().iterator();
 
 		TableLoader tl[] = new TableLoader[SystemEnvironment.dbLoaders];

@@ -70,6 +70,8 @@ class Libjni
 			osType = OS_MAC;
 		else if (os.contains("nix"))
 			osType = OS_UNIX;
+		else if (os.contains("sunos"))
+			osType = OS_UNIX;
 		else if (os.contains("nux"))
 			osType = OS_LINUX;
 		else if (os.contains("aix"))

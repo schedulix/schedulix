@@ -35,7 +35,6 @@ import javax.net.ssl.*;
 import de.independit.scheduler.server.SystemEnvironment;
 import de.independit.scheduler.server.output.*;
 import de.independit.scheduler.server.parser.ScopeConfig;
-import de.independit.scheduler.server.parser.Connect;
 import de.independit.scheduler.server.dump.Dump;
 
 public class RepoIface
@@ -47,6 +46,8 @@ public class RepoIface
 
 	public static boolean FATAL    = true;
 	public static boolean NONFATAL = false;
+
+	public static final String JS_ALREADY_CONNECTED = "Server already connected";
 
 	public static final String COMMAND             = "COMMAND";
 	public static final String CMD_NOP             = "NOP";
@@ -75,7 +76,7 @@ public class RepoIface
 		return currentHost;
 	}
 	private int    currentPort;
-	public final synchronized int    getPort()
+	public final synchronized int getPort()
 	{
 		return currentPort;
 	}
@@ -93,8 +94,6 @@ public class RepoIface
 	private Descr jobData;
 
 	private boolean isConnected = false;
-
-	private String information = "";
 
 	public final boolean isConnected()
 	{
@@ -201,7 +200,7 @@ public class RepoIface
 			final int size = keyList.size();
 			for (int i = 0; i < size; ++i) {
 				final String key = (String) keyList.get (i);
-				final String value = (String) Environment.systemEnvironment.get (key);
+				final String value = (String) Environment.getSystemEnvironment().get (key);
 
 				dynList.add (Dump.quotedString (key) + "=" + Dump.quotedString (value == null ? "" : value));
 			}
@@ -252,9 +251,9 @@ public class RepoIface
 
 		SDMSOutput res;
 
-		res = sdmsExec ("connect jobserver " + repoUser + " identified by '" + Utils.quoted (repoPass) + "' with protocol = serial, session = '" + information + "';");
+		res = sdmsExec ("connect jobserver " + repoUser + " identified by '" + Utils.quoted (repoPass) + "' with protocol = serial, session = '" + JobServer.session_info + "';");
 		if (res.error != null) {
-			if (res.error.message.equals (Connect.JS_ALREADY_CONNECTED))
+			if (res.error.message.equals (JS_ALREADY_CONNECTED))
 				Utils.abortProgram ("(04301271457) Cannot connect: (" + res.error.code + ") " + res.error.message);
 
 			Trace.error ("(04301271458) Cannot connect: (" + res.error.code + ") " + res.error.message);
@@ -336,12 +335,9 @@ public class RepoIface
 		isConnected = false;
 	}
 
-	public RepoIface (final Config cfg, final String information)
+	public RepoIface (final Config cfg)
 	{
 		this.cfg = cfg;
-		this.information = information;
-		this.information = this.information.replace("\\\\","\\\\");
-		this.information = this.information.replace("'","\\'");
 
 		openConnection();
 	}
@@ -436,7 +432,7 @@ public class RepoIface
 	{
 		while (true) {
 			final SDMSOutput res = sdmsExec ("get next job;");
-			final Boolean onlineServer = (Boolean) cfg.get (Config.ONLINE_SERVER);
+			final boolean onlineServer = ((Boolean) cfg.get (Config.ONLINE_SERVER)).booleanValue();
 			if (res.error != null) {
 				if (!onlineServer)
 					closeConnection();

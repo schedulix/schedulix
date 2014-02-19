@@ -264,7 +264,7 @@ public class HttpThread
 						String query = "";
 						do {
 							str = in.readLine();
-							Trace.info("[HttpThread] Got Request from " + remoteAddress + " : " + str);
+							Trace.message("[HttpThread] Got Request from " + remoteAddress + " : " + str);
 							String[] spl = str.split(" ");
 
 							if (spl[0].equals(CLGTH))	cl = Integer.parseInt(spl[1]);

@@ -29,18 +29,17 @@ package de.independit.scheduler.server.timer;
 
 import de.independit.scheduler.server.SystemEnvironment;
 import de.independit.scheduler.server.exception.SDMSException;
-import de.independit.scheduler.server.repository.*;
 
 public class TimerUnit
 {
 	public static final String __version = "@(#) $Id: TimerUnit.java,v 2.1.2.1 2013/03/14 10:25:28 ronald Exp $";
 
-	public static final int YEAR   = SDMSInterval.YEAR;
-	public static final int MONTH  = SDMSInterval.MONTH;
-	public static final int DAY    = SDMSInterval.DAY;
-	public static final int HOUR   = SDMSInterval.HOUR;
-	public static final int MINUTE = SDMSInterval.MINUTE;
-	public static final int WEEK   = SDMSInterval.WEEK;
+	public static final int YEAR   = 5;
+	public static final int MONTH  = 4;
+	public static final int DAY    = 2;
+	public static final int HOUR   = 1;
+	public static final int MINUTE = 0;
+	public static final int WEEK   = 3;
 
 	public static final int[][] STANDARD_LENGTH = {
 

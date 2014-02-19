@@ -30,18 +30,148 @@ package de.independit.scheduler.jobserver;
 import java.io.*;
 import java.util.*;
 
-import de.independit.scheduler.server.repository.SDMSSubmittedEntity;
-
 public class Environment
 	extends HashMap
 {
 	public static final String __version = "@(#) $Id: Environment.java,v 2.3.14.1 2013/03/14 10:24:06 ronald Exp $";
 
-	public static final Environment systemEnvironment = new Environment();
+	private static Environment systemEnvironment = null;
+
+	public static final String S_SDMSHOST   = "SDMSHOST";
+	public static final String S_SDMSPORT   = "SDMSPORT";
+
+	private static final class CollectorThread
+		extends Thread
+	{
+		private Process p = null;
+		private final Runtime rt = Runtime.getRuntime();
+		private final String cmd;
+
+		CollectorThread (final String cmd)
+		{
+			super();
+
+			this.cmd = cmd;
+		}
+
+		public void run()
+		{
+			try {
+				p = rt.exec (cmd);
+				p.getOutputStream().close();
+			}
+
+			catch (final IOException ioe) {
+				Utils.abortProgram ("(04301271447) Cannot retrieve system environment: Error launching \"" + cmd + "\": " + ioe.getMessage());
+			}
+		}
+
+		void waitForRunning()
+		{
+			while (p == null)
+				Utils.sleep (100);
+		}
+
+		BufferedReader getInputStream()
+		{
+			return new BufferedReader (new InputStreamReader (p.getInputStream()));
+		}
+
+		int exitValue()
+		{
+			return p.exitValue();
+		}
+	}
 
 	private Environment()
 	{
-		super(System.getenv());
+		super();
+	}
+
+	public static Environment getSystemEnvironment()
+	{
+		if (systemEnvironment != null)
+			return systemEnvironment;
+
+		systemEnvironment = new Environment();
+
+		final String cmd = Utils.getEnvCmd();
+
+		final CollectorThread coll = new CollectorThread (cmd);
+		coll.start();
+		coll.waitForRunning();
+
+		try {
+			final BufferedReader inp = coll.getInputStream();
+
+			boolean running = true;
+			int rc = 0;
+			do {
+				while (inp.ready())
+					systemEnvironment.parseLine (inp.readLine());
+
+				try {
+					rc = coll.exitValue();
+					running = false;
+				}
+
+				catch (final IllegalThreadStateException _) {
+					running = true;
+				}
+
+				if (running)
+					Utils.sleep (100);
+			} while (running);
+
+			if (rc != 0)
+				Utils.abortProgram ("(04301271448) Cannot retrieve system environment: \"" + cmd + "\" returned " + rc);
+
+			while (inp.ready())
+				systemEnvironment.parseLine (inp.readLine());
+
+			inp.close();
+		}
+
+		catch (final IOException ioe) {
+			Utils.abortProgram ("(04301271450) Cannot retrieve system environment: " + ioe.getMessage());
+		}
+
+		if (JobServer.env_filnam != null) {
+
+			try {
+				File env_fil = new File(JobServer.env_filnam);
+				final BufferedReader inp = new BufferedReader (new FileReader (env_fil));
+
+				String line;
+				while ((line = inp.readLine()) != null)
+					systemEnvironment.parseLine (line);
+				inp.close();
+			} catch (IOException ioe) {
+				Utils.abortProgram ("(01402030936) Error reading environment file " + JobServer.env_filnam + "(" + ioe.getMessage() + ")");
+			}
+		}
+		return systemEnvironment;
+	}
+
+	private final void parseLine (final String line)
+	{
+		if (line == null)
+			return;
+
+		final int equ = line.indexOf ('=');
+		if (equ == -1)
+			Utils.abortProgram ("(04301271449) Missing '=' in environment: " + line);
+
+		if (equ < (line.length() - 1)) {
+			int p = 0;
+			while ((p < equ) && (line.charAt (p) <= ' '))
+				++p;
+
+			final String key = line.substring (p, equ);
+			final String val = line.substring (equ + 1);
+
+			put (key, val);
+		}
 	}
 
 	public Environment (final Vector settings)
@@ -56,6 +186,17 @@ public class Environment
 	public Environment (final HashMap settings)
 	{
 		super (settings);
+	}
+
+	public Environment (final File file)
+	throws IOException
+	{
+		super();
+
+		final BufferedReader inp = new BufferedReader (new FileReader (file));
+		while (inp.ready())
+			parseLine (inp.readLine());
+		inp.close();
 	}
 
 	public boolean containsKey (Object key)
@@ -102,8 +243,7 @@ public class Environment
 
 	public final Environment merge (final Environment env, final RepoIface ri, final Config cfg)
 	{
-
-		final Environment result = new Environment (this);
+		final HashMap result = new HashMap (this);
 
 		final HashMap mapping = (HashMap) cfg.get (Config.ENV_MAPPING);
 
@@ -115,9 +255,9 @@ public class Environment
 				final String key = (String) mapping.get (exp);
 
 				String val = null;
-				if (key.equals (SDMSSubmittedEntity.S_SDMSHOST))
+				if (key.equals (S_SDMSHOST))
 					val = ri.getHost();
-				else if (key.equals (SDMSSubmittedEntity.S_SDMSPORT))
+				else if (key.equals (S_SDMSPORT))
 					val = String.valueOf (ri.getPort());
 				else
 					val = (String) env.get (key);
@@ -126,7 +266,7 @@ public class Environment
 			}
 		}
 
-		return result;
+		return new Environment (result);
 	}
 
 	public final String[] toArray()

@@ -57,7 +57,7 @@ public class EiThread
 		this.jid = jid;
 		this.workdir = workdir;
 
-		final Environment e = Environment.systemEnvironment.merge (env, ri, cfg);
+		final Environment e = Environment.getSystemEnvironment().merge (env, ri, cfg);
 		this.env = e.toArray();
 
 		setPriority (Thread.MIN_PRIORITY);
@@ -94,17 +94,18 @@ public class EiThread
 
 		if (wd_ok) {
 			Process p;
+			int trycnt = 0;
 			while (true) {
 				try {
 					p = rt.exec (cmdarray, env);
 					break;
-				}
-
-				catch (final IOException ioe) {
-					ri.notifyError (RepoIface.NONFATAL, "(04302012116) Cannot launch job executor: " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
-
-					Utils.sleep (breed_delay);
-					System.exit(1);
+				} catch (final IOException ioe) {
+					Utils.sleep (1000);
+					trycnt ++;
+					if (trycnt >= 5) {
+						ri.notifyError (RepoIface.NONFATAL, "(04302012116) Cannot launch job executor: " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
+						System.exit(1);
+					}
 				}
 			}
 
@@ -137,9 +138,7 @@ public class EiThread
 				try {
 					rc = p.waitFor();
 					break;
-				}
-
-				catch (final InterruptedException _) {
+				} catch (final InterruptedException _) {
 
 				}
 			}
@@ -153,7 +152,10 @@ public class EiThread
 					feil.open();
 					feil.scan();
 
-					if (rc != 0) {
+					if (rc == 42) {
+
+						Trace.warning("(02402051056)Job executor for job " + jid + " returned error = " + rc + ", double execution ignored");
+					} else if (rc != 0) {
 						String extPid = feil.getExtPid();
 						boolean alive = false;
 						if (!(extPid.equals(""))) {
@@ -177,17 +179,11 @@ public class EiThread
 							}
 						}
 					}
-				}
+				} catch (final OverlappingFileLockException _) {
 
-				catch (final IOException e) {
+				} catch (final IOException e) {
 					ioe = e;
-				}
-
-				catch (final OverlappingFileLockException _) {
-
-				}
-
-				finally {
+				} finally {
 					feil.close();
 				}
 			}

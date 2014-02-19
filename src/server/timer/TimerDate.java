@@ -32,7 +32,6 @@ import java.text.SimpleDateFormat;
 
 import de.independit.scheduler.server.SystemEnvironment;
 import de.independit.scheduler.server.exception.SDMSException;
-import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.util.DateTime;
 
 public class TimerDate
