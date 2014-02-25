@@ -33,12 +33,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <time.h>
 #include <errno.h>
 #include <limits.h>
+#include <signal.h>
 #ifdef WINDOWS
 #include <windows.h>
 #endif
 
 #ifndef WINDOWS
 #define NULLDEVICE   "/dev/null"
+#define SIGNUM_MIN SIGHUP
+#define SIGNUM_MAX SIGSYS
 #else
 #define NULLDEVICE   "NUL"
 #endif
@@ -64,7 +67,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define true  (0 == 0)
 
 #ifdef WINDOWS
-#define sleep(a) Sleep((a) * 1000)
+#define sleep(a)           Sleep((a) * 1000)
 #define Fread(a,b,c,d,e)   (ReadFile((d), (a), (b) * (c), (&e), NULL), e)
 #define Fwrite(a,b,c,d,e)  (WriteFile((d), (a), (b) * (c), (&e), NULL), e)
 #define Fseek(a,b,c)       SetFilePointer((a), (b), NULL, (c))
@@ -75,7 +78,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define FILE_CURRENT	   SEEK_CUR
 #define FILE_END           SEEK_END
 #define Fread(a,b,c,d,e)   fread((a), (b), (c), (d))
-#define Fwrite(a,b,c,d,e)  fread((a), (b), (c), (d))
+#define Fwrite(a,b,c,d,e)  fwrite((a), (b), (c), (d))
 #define Fseek(a, b, c)     fseek((a), (b), (c))
 #define Fflush(a)          fflush((a))
 #define Fclose(a)          fclose(a)
@@ -138,7 +141,9 @@ char *message[] = {
 #define TFUNLOCK_FAILED 21
 	"Couldn't release taskfile lock",
 #define CHLDWAIT_FAILED	22
-	"Wait for child process failed"
+	"Wait for child process failed",
+#define SET_SIGNAL_FAILED 23
+	"Set signal handler failed"
 };
 
 char *ARG_VERSION1 = "--version";
@@ -212,6 +217,7 @@ DWORD buflen;
 int bufpos;
 int filepos;
 HANDLE taskfile;
+HANDLE myLog = NULL;
 
 char *getUsage();
 char *getVersion();
@@ -229,10 +235,18 @@ void processTaskfile(callstatus *status);
 void evaluateTaskfile(callstatus *status);
 void appendTaskfile(callstatus *status, char *key, char *value, int alreadyOpen);
 void redirect(callstatus *status);
-void redirectPrivate(callstatus *status);
+void openLog(callstatus *status);
 char *getUniquePid(callstatus *status, pid_t pid);
 void run(callstatus *status);
 void printJobFields();
+void default_all_signals(callstatus *status);
+void ignore_all_signals(callstatus *status);
+#ifndef WINDOWS
+void set_all_signals(struct sigaction aktschn, callstatus *status);
+#else
+void set_all_signals (void (__cdecl *aktschn) (int), callstatus *status);
+#endif
+char *Strdup(callstatus *status, char *src);
 
 char *getUsage()
 {
@@ -296,6 +310,89 @@ char *Strdup(callstatus *status, char *src)
 	}
 	return trg;
 }
+
+#ifndef WINDOWS
+void set_all_signals (struct sigaction aktschn, callstatus *status)
+{
+	int rc;
+	int signum;
+
+	for (signum = SIGNUM_MIN; signum <= SIGNUM_MAX; ++signum) {
+		if ((signum != SIGKILL) && (signum != SIGSTOP)) {
+			rc = sigaction (signum, &aktschn, NULL);
+			if (rc) {
+				status->severity = SEVERITY_WARNING;
+				status->msg = SET_SIGNAL_FAILED;
+			}
+		}
+	}
+}
+
+void ignore_all_signals (callstatus *status)
+{
+	struct sigaction aktschn;
+
+#ifdef NETBSD
+	sigemptyset (&aktschn.sa_mask);
+
+	aktschn.sa_flags   = 0;
+#endif
+	aktschn.sa_handler = SIG_IGN;
+
+	set_all_signals (aktschn, status);
+}
+
+void default_all_signals (callstatus *status)
+{
+	struct sigaction aktschn;
+#ifdef NETBSD
+	sigemptyset (&aktschn.sa_mask);
+
+	aktschn.sa_flags   = 0;
+#endif
+	aktschn.sa_handler = SIG_DFL;
+
+	set_all_signals (aktschn, status);
+}
+#else
+void set_all_signals (void (__cdecl *aktschn) (int), callstatus *status)
+{
+	if (signal (SIGABRT, aktschn) == SIG_ERR) {
+		status->severity = SEVERITY_WARNING;
+		status->msg = SET_SIGNAL_FAILED;
+	}
+	if (signal (SIGFPE, aktschn) == SIG_ERR) {
+		status->severity = SEVERITY_WARNING;
+		status->msg = SET_SIGNAL_FAILED;
+	}
+	if (signal (SIGILL, aktschn) == SIG_ERR) {
+		status->severity = SEVERITY_WARNING;
+		status->msg = SET_SIGNAL_FAILED;
+	}
+	if (signal (SIGINT, aktschn) == SIG_ERR) {
+		status->severity = SEVERITY_WARNING;
+		status->msg = SET_SIGNAL_FAILED;
+	}
+	if (signal (SIGSEGV, aktschn) == SIG_ERR) {
+		status->severity = SEVERITY_WARNING;
+		status->msg = SET_SIGNAL_FAILED;
+	}
+	if (signal (SIGTERM, aktschn) == SIG_ERR) {
+		status->severity = SEVERITY_WARNING;
+		status->msg = SET_SIGNAL_FAILED;
+	}
+}
+
+void ignore_all_signals (callstatus *status)
+{
+	set_all_signals (SIG_IGN, status);
+}
+
+void default_all_signals (callstatus *status)
+{
+	set_all_signals (SIG_DFL, status);
+}
+#endif
 
 void printJobFields()
 {
@@ -434,7 +531,11 @@ HANDLE openTaskfile(callstatus *status)
 
 	while (1) {
 #ifndef WINDOWS
-		taskfile = fopen(taskfileName, "r+");
+		tffd = open(taskfileName, O_RDWR|O_SYNC|O_RSYNC);
+		if (tffd < 0) {
+			exit(1);
+		}
+		taskfile = fdopen(tffd, "r+");
 
 		if (taskfile != NULL) break;
 
@@ -448,6 +549,7 @@ HANDLE openTaskfile(callstatus *status)
 			return NULL;
 		}
 #else
+
 		taskfile = CreateFile (
 		                   taskfileName,
 		                   GENERIC_READ | GENERIC_WRITE,
@@ -526,6 +628,10 @@ void advance(callstatus *status)
 	}
 
 	if (filepos == -1 || bufpos == buflen) {
+		if (filepos == -1)
+			Fseek(taskfile, 0, FILE_BEGIN);
+		else
+			Fseek(taskfile, filepos, FILE_BEGIN);
 
 		if ((buflen = Fread(taskfileBuf, sizeof(char), TF_BUFSIZE, taskfile, buflen)) == 0) {
 #ifndef WINDOWS
@@ -820,6 +926,7 @@ char *getTimestamp(time_t tim)
 void appendTaskfile(callstatus *status, char *key, char *value, int alreadyOpen)
 {
 	int numBytes;
+	int seekpos;
 #ifdef WINDOWS
 	DWORD bytesWritten;
 #else
@@ -831,6 +938,7 @@ void appendTaskfile(callstatus *status, char *key, char *value, int alreadyOpen)
 		if (status->severity != STATUS_OK) return;
 	} else {
 		// reset file position
+
 		Fseek(taskfile, 0, FILE_BEGIN);
 		filepos = -1;
 		bufpos = 0;
@@ -845,7 +953,8 @@ void appendTaskfile(callstatus *status, char *key, char *value, int alreadyOpen)
 		if (status->severity != STATUS_OK) return;
 	}
 
-	if (Fseek(taskfile, filepos - buflen + bufpos, FILE_BEGIN) < 0) {
+	seekpos = filepos - buflen + bufpos;
+	if (Fseek(taskfile, seekpos, FILE_BEGIN) < 0) {
 		status->severity = SEVERITY_FATAL;
 		status->msg = SEEK_FAILED;
 		status->syserror = errno;
@@ -858,6 +967,9 @@ void appendTaskfile(callstatus *status, char *key, char *value, int alreadyOpen)
 		status->syserror = errno;
 		return;
 	}
+
+	tfWriteBuf[numBytes] = '\0';
+
 	bytesWritten = Fwrite(tfWriteBuf, numBytes, 1, taskfile, bytesWritten) * numBytes;
 	if (bytesWritten != numBytes) {
 		status->severity = SEVERITY_FATAL;
@@ -868,7 +980,6 @@ void appendTaskfile(callstatus *status, char *key, char *value, int alreadyOpen)
 
 	if (alreadyOpen == 0) {
 		closeTaskfile(status, taskfile);
-		if (status->severity != STATUS_OK) return;
 	} else {
 		Fflush(taskfile);
 	}
@@ -909,28 +1020,60 @@ void redirect(callstatus *status)
 	}
 }
 
-void redirectPrivate(callstatus *status)
+void openLog(callstatus *status)
 {
 	char *pl;
 	char privateLog[PATH_MAX + 1];
+	int myLogFd;
 
 	fclose(stdin);
+
 	pl = getenv(JOBEXECUTORLOG);
 	if (pl == NULL) strncpy(privateLog, NULLDEVICE, PATH_MAX);
 	else snprintf(privateLog, PATH_MAX, "%s.%d", pl, getpid());
 
-	if (freopen(privateLog, "w", stdout) < 0) {
-		status->severity = SEVERITY_FATAL;
-		status->msg = LOGOPEN_FAILED;
-		status->syserror = errno;
+#ifndef WINDOWS
+	myLogFd = open(privateLog, O_WRONLY|O_SYNC|O_CREAT);
+	if (myLogFd < 0) {
+		myLog = NULL;
 		return;
 	}
-	if (dup2(fileno(stdout), fileno(stderr)) < 0) {
-		status->severity = SEVERITY_FATAL;
-		status->msg = DUP_FAILED;
-		status->syserror = errno;
-		return;
+
+	if ((myLog = fdopen(myLogFd, "w")) == NULL) {
+		myLog = fopen(NULLDEVICE, "w");
 	}
+#else
+	myLog = CreateFile (
+	                privateLog,
+	                GENERIC_WRITE,
+	                FILE_SHARE_READ,
+	                NULL,
+	                CREATE_ALWAYS,
+	                FILE_ATTRIBUTE_NORMAL,
+	                NULL);
+	if (myLog == INVALID_HANDLE_VALUE) {
+		myLog = CreateFile(
+		                NULLDEVICE,
+		                GENERIC_WRITE,
+		                FILE_SHARE_READ|FILE_SHARE_WRITE,
+		                NULL,
+		                OPEN_EXISTING,
+		                FILE_ATTRIBUTE_NORMAL,
+		                NULL);
+		if (myLog == INVALID_HANDLE_VALUE)
+			myLog = NULL;
+	}
+
+#endif
+
+	return;
+}
+
+void closeLog(callstatus *status)
+{
+	if (myLog != NULL)
+		fclose(myLog);
+	return;
 }
 
 char *getUniquePid(callstatus *status, pid_t pid)
@@ -958,7 +1101,11 @@ void run(callstatus *status)
 
 	execpid = getUniquePid(status, getpid());
 	if (status->severity != STATUS_OK) return;
-	appendTaskfile(status, EXECPID, execpid, 0);
+
+	taskfile = openTaskfile(status);
+	if (status->severity != STATUS_OK) return;
+
+	appendTaskfile(status, EXECPID, execpid, 1);
 	if (status->severity != STATUS_OK) return;
 
 	argv = (char **) malloc((1 + num_args + 1) * sizeof(char*));
@@ -989,6 +1136,8 @@ void run(callstatus *status)
 	}
 	if (cpid > 0) {
 
+		closeTaskfile(status, taskfile);
+
 		waitpid(cpid, &exitcode, 0);
 		if (verboselogs) {
 			fprintf(stdout, "------- %s End (%d) --------\n", getTimestamp(time(NULL)), exitcode);
@@ -1005,15 +1154,21 @@ void run(callstatus *status)
 		return;
 	}
 
+	default_all_signals (status);
+	if (status->severity != STATUS_OK) {
+		if (myLog != NULL) fprintf(myLog, "%s\n", message[status->msg]);
+		status->severity = STATUS_OK;
+		status->msg = MSG_NO_ERROR;
+	}
 	myStartTime = time(NULL);
 	extpid = getUniquePid(status, getpid());
 	if (status->severity != STATUS_OK) return;
-	taskfile = openTaskfile(status);
-	if (status->severity != STATUS_OK) return;
+
 	appendTaskfile(status, EXTPID, extpid, 1);
 	if (status->severity != STATUS_OK) return;
 	appendTaskfile(status, STATUS, STATUS_RUNNING, 1);
 	if (status->severity != STATUS_OK) return;
+
 	closeTaskfile(status, taskfile);
 
 	if (setsid() == -1) {
@@ -1085,8 +1240,7 @@ void run(callstatus *status)
 
 	extpid = getUniquePid(status, pi.dwProcessId);
 	if (status->severity != STATUS_OK) return;
-	taskfile = openTaskfile(status);
-	if (status->severity != STATUS_OK) return;
+
 	appendTaskfile(status, EXTPID, extpid, 1);
 	if (status->severity != STATUS_OK) return;
 	appendTaskfile(status, STATUS, STATUS_RUNNING, 1);
@@ -1121,6 +1275,8 @@ int main(int argc, char *argv[])
 	status.severity = STATUS_OK;
 	status.msg = MSG_NO_ERROR;
 
+	openLog(&status);
+
 	argsType = checkArgs(&status, argc, argv);
 
 	switch (argsType) {
@@ -1136,15 +1292,18 @@ int main(int argc, char *argv[])
 		fprintf(stdout, "%s", getUsage());
 		exit(0);
 	case ARGS_RUN:
-		redirectPrivate(&status);
+		ignore_all_signals (&status);
 		if (status.severity != STATUS_OK) {
-			exit(1);
+			if (myLog != NULL) fprintf(myLog, "%s\n", message[status.msg]);
+			status.severity = STATUS_OK;
+			status.msg = MSG_NO_ERROR;
 		}
 		run(&status);
 		if (status.severity != STATUS_OK) {
 
-			fprintf(stderr, "%s\n", message[status.msg]);
+			if (myLog != NULL) fprintf(myLog, "%s\n", message[status.msg]);
 		}
+		closeLog(&status);
 		break;
 	default:
 
