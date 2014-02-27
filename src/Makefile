@@ -40,7 +40,7 @@ else
                 ifeq ($(OSTYPE),sunos)
                         SOLARIS=1
                 else
-                        $(error UNKNOWN OPERATING SYSTEM $(OS))
+                        $(error UNKNOWN OPERATING SYSTEM $(OSTYPE))
                 endif
         endif
 endif
