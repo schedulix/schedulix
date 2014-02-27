@@ -1,1 +1,29 @@
-java JFlex.Main $@
+#!/bin/bash
+
+if ! echo $CLASSPATH | grep -i jflex >/dev/null 2>&1; then
+	echo "WARNING: Didn't find jflex.jar or similar in CLASSPATH"
+	# The next will do an educated guess (which works on several Linux)
+	if [ -d /usr/share/java ]; then
+		X=`ls /usr/share/java/[Jj][Ff]lex* 2>/dev/null | head -1`
+		if [ $? -eq 0 ]; then
+			export CLASSPATH=$X:$CLASSPATH
+		fi
+	fi
+fi
+
+for MAIN in jflex.Main JFlex.Main; do
+	# since both "class not found" and "java $MAIN -version" return 1
+	# we have to read the output. Fortunately JFlex tells us something
+	# like "This is JFlex 1.4.3" or so
+	if java $MAIN -version 2>/dev/null | grep -i "this is" >/dev/null 2>&1; then
+		java $MAIN $@
+		exit $?
+	fi
+done
+
+echo "***************************************************" >&2
+echo "ERROR: Could find neither jflex.Main nor JFlex.Main" >&2
+echo "ERROR: Did you set your CLASSPATH correctly ?" >&2
+echo "***************************************************" >&2
+exit 1
+
