@@ -55,6 +55,7 @@ PROGRAM_VERSION = $(shell grep programVersion server/SystemEnvironment.java | se
 BUILD_DATE = $(shell date '+%d.%m.%Y %H:%M')
 COPYRIGHT = $(shell grep 'public static final String copyright' jobserver/Libjni.java | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
 COMPANY = $(shell grep 'public static final String company' jobserver/Libjni.java | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
+BUILD = $(shell git log | awk '/commit/ { print $$2; exit }')
 
 JAR_FILE = $(SDMSHOME)/lib/BICsuite.jar
 MANIFEST = /tmp/sdms.manifest
@@ -100,8 +101,8 @@ $(JAR_FILE): BICServer.class sdmsh.class \
 			ln -s $(SDMSHOME)/src/$${fff} de/independit/scheduler/$${fff}; \
 		fi; \
 	done; \
-	$(ECHO) $(ECHOOPTS) "Manifest-Version: 1.1\nProgram-Version: $(PROGRAM_VERSION)\nLevel: OPEN\nBuild-Date: $(BUILD_DATE)\nCopyright: $(COPYRIGHT) $(COMPANY)\nCompany: $(COMPANY)"; \
-	$(ECHO) $(ECHOOPTS) "Manifest-Version: 1.1\nProgram-Version: $(PROGRAM_VERSION)\nLevel: OPEN\nBuild-Date: $(BUILD_DATE)\nCopyright: $(COPYRIGHT) $(COMPANY)\nCompany: $(COMPANY)" >$(MANIFEST); \
+	$(ECHO) $(ECHOOPTS) "Manifest-Version: 1.1\nProgram-Version: $(PROGRAM_VERSION)\nLevel: OPEN\nBuild: $(BUILD)\nBuild-Date: $(BUILD_DATE)\nCopyright: $(COPYRIGHT) $(COMPANY)\nCompany: $(COMPANY)"; \
+	$(ECHO) $(ECHOOPTS) "Manifest-Version: 1.1\nProgram-Version: $(PROGRAM_VERSION)\nLevel: OPEN\nBuild: $(BUILD)\nBuild-Date: $(BUILD_DATE)\nCopyright: $(COPYRIGHT) $(COMPANY)\nCompany: $(COMPANY)" >$(MANIFEST); \
 	$(JAR) $(JARCREATEFLAGS) $(MANIFEST) $(JAR_FILE) \
 		de/independit/scheduler/BICServer.class \
 		de/independit/scheduler/sdmsh.class \
