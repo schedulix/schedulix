@@ -34,6 +34,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <errno.h>
 #include <limits.h>
 #include <signal.h>
+#include <sys/stat.h>
 #ifdef WINDOWS
 #include <windows.h>
 #endif
@@ -1025,6 +1026,7 @@ void openLog(callstatus *status)
 	char *pl;
 	char privateLog[PATH_MAX + 1];
 	int myLogFd;
+	mode_t mode = S_IRUSR | S_IWUSR;
 
 	fclose(stdin);
 
@@ -1033,7 +1035,7 @@ void openLog(callstatus *status)
 	else snprintf(privateLog, PATH_MAX, "%s.%d", pl, getpid());
 
 #ifndef WINDOWS
-	myLogFd = open(privateLog, O_WRONLY|O_SYNC|O_CREAT);
+	myLogFd = open(privateLog, O_WRONLY|O_SYNC|O_CREAT, mode);
 	if (myLogFd < 0) {
 		myLog = NULL;
 		return;
