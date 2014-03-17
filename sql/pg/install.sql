@@ -98,6 +98,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 \i pg/VERSIONCOUNTER.sql
 \i REPOSITORY_LOCK.sql
 \i MASTER_STATE.sql
-\i SME2LOAD.sql
+\i pg/SME2LOAD.sql
 \i init.sql
 \i pg/sci_sme_quarter.sql

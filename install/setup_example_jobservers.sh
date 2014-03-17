@@ -27,7 +27,7 @@ with
 		'REPOPORT' = '2506',
 		'BOOTTIME' = 'NONE',
 		'USEPATH' = 'true',
-		'JOBEXECUTOR' = '$BICSUITEHOME/bin/jobserver',
+		'JOBEXECUTOR' = '$BICSUITEHOME/bin/jobexecutor',
 		'DEFAULTWORKDIR' = '$HOMEDIR/tmp',
 		'VERBOSELOGS' = 'true',
 		'NAME_PATTERN_LOGFILES' = '.*\\.log',
