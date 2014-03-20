@@ -91,14 +91,6 @@ public class TriggerThread extends InternalSession
 				long rts = resumeTs.longValue();
 				if (rts <= now) {
 					sme.resume(sysEnv);
-					SDMSAuditTrailTable.table.create(sysEnv, cEnv.uid(), new Long ((new java.util.Date()).getTime()),
-					                                 new Integer(SDMSAuditTrail.RESUME),
-					                                 new Integer(SDMSAuditTrail.JOB),
-					                                 sme.getId(sysEnv), sme.getId(sysEnv),
-					                                 Boolean.FALSE,
-					                                 null,
-					                                 "Automatic resume");
-
 				} else {
 					if (rts < nextTime) nextTime = rts;
 				}
