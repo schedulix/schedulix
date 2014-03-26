@@ -35,6 +35,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <limits.h>
 #include <signal.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 #ifdef WINDOWS
 #include <windows.h>
 #endif
@@ -319,7 +321,7 @@ void set_all_signals (struct sigaction aktschn, callstatus *status)
 	int signum;
 
 	for (signum = SIGNUM_MIN; signum <= SIGNUM_MAX; ++signum) {
-		if ((signum != SIGKILL) && (signum != SIGSTOP)) {
+		if ((signum != SIGKILL) && (signum != SIGSTOP) && (signum != SIGCHLD)) {
 			rc = sigaction (signum, &aktschn, NULL);
 			if (rc) {
 				status->severity = SEVERITY_WARNING;
@@ -1100,6 +1102,7 @@ void run(callstatus *status)
 #endif
 	char  *execpid;
 	char  buf[20];
+	int exitstatus;
 
 	execpid = getUniquePid(status, getpid());
 	if (status->severity != STATUS_OK) return;
@@ -1140,7 +1143,16 @@ void run(callstatus *status)
 
 		closeTaskfile(status, taskfile);
 
-		waitpid(cpid, &exitcode, 0);
+		exitcode = -1;
+		while (exitcode == -1) {
+			exitstatus = 0;
+			waitpid(cpid, &exitstatus, 0);
+			if (WIFEXITED (exitstatus))
+				exitcode = WEXITSTATUS (exitstatus);
+			else if (WIFSIGNALED (exitstatus))
+				exitcode = 128 + WTERMSIG (exitstatus);
+		}
+
 		if (verboselogs) {
 			fprintf(stdout, "------- %s End (%d) --------\n", getTimestamp(time(NULL)), exitcode);
 		}
