@@ -785,22 +785,10 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 
 			final Long oId = getOwnerId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(oId, uId))) {
-				boolean ok = false;
-				Vector v =  SDMSGrantTable.idx_objectId.getVector(sysEnv, getId(sysEnv));
-				Iterator i = v.iterator();
-				SDMSPrivilege p = new SDMSPrivilege();
-				while (i.hasNext()) {
-					SDMSGrant gr = (SDMSGrant)i.next();
-
-					p.setPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
-					if (p.can(SDMSPrivilege.SUBMIT)) {
-						if (gr.getGId(sysEnv).equals(gId)) {
-							ok = true;
-							break;
-						}
-					}
-				}
-				if (!ok) {
+				Vector checkGroups = new Vector();
+				checkGroups.add(gId);
+				SDMSPrivilege grp = getPrivilegesForGroups(sysEnv, checkGroups);
+				if (!grp.can(SDMSPrivilege.SUBMIT)) {
 					final SDMSUser  u = SDMSUserTable.getObject(sysEnv, uId);
 					final SDMSGroup g = SDMSGroupTable.getObject(sysEnv, gId);
 					throw new CommonErrorException(

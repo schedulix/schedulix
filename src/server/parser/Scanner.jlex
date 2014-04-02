@@ -273,6 +273,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("RUNNING",		new Integer(Parser.RUNNING));
 	tokens.put("RUNTIME",		new Integer(Parser.RUNTIME));
 	tokens.put("S",			new Integer(Parser.S));
+	tokens.put("SALT",		new Integer(Parser.SALT));
 	tokens.put("SC",		new Integer(Parser.SC));
 	tokens.put("SCHEDULE",		new Integer(Parser.SCHEDULE));
 	tokens.put("SCHEDULES",		new Integer(Parser.SCHEDULE));

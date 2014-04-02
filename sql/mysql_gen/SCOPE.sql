@@ -39,6 +39,8 @@ CREATE TABLE SCOPE (
     , `IS_REGISTERED`                integer             NULL
     , `STATE`                        integer             NULL
     , `PASSWD`                       varchar(40)         NULL
+    , `SALT`                         varchar(64)         NULL
+    , `METHOD`                       integer         NOT NULL
     , `PID`                          varchar(32)         NULL
     , `NODE`                         varchar(32)         NULL
     , `ERRMSG`                       varchar(256)        NULL

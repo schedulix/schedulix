@@ -42,10 +42,14 @@ public class SDMSUserProxyGeneric extends SDMSProxy
 	public final static String SYSTEM = "SYSTEM";
 	public final static String INTERNAL = "INTERNAL";
 	public final static String NOBODY = "NOBODY";
+	public final static int MD5 = 0;
+	public final static int SHA256 = 1;
+	public final static int SALT_LENGTH = 64;
 	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP|SDMSPrivilege.GRANT;
 
 	static final public int name_size = 64;
 	static final public int passwd_size = 64;
+	static final public int salt_size = 64;
 
 	protected SDMSUserProxyGeneric(SDMSObject p_object)
 	{
@@ -84,6 +88,47 @@ public class SDMSUserProxyGeneric extends SDMSProxy
 			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
 
 		((SDMSUserGeneric)(object)).setPasswd (env, p_passwd);
+		return ;
+	}
+	public String getSalt (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSUserGeneric)(object)).getSalt (env));
+	}
+
+	public void setSalt (SystemEnvironment env, String p_salt)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSUserGeneric)(object)).setSalt (env, p_salt);
+		return ;
+	}
+	public Integer getMethod (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSUserGeneric)(object)).getMethod (env));
+	}
+
+	public String getMethodAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSUserGeneric) object).getMethodAsString (env);
+	}
+
+	public void setMethod (SystemEnvironment env, Integer p_method)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSUserGeneric)(object)).setMethod (env, p_method);
 		return ;
 	}
 	public Boolean getIsEnabled (SystemEnvironment env)

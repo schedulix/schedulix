@@ -30,6 +30,8 @@ CREATE TABLE USERS (
     ID                             DECIMAL(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `PASSWD`                       varchar(64)     NOT NULL
+    , `SALT`                         varchar(64)         NULL
+    , `METHOD`                       integer         NOT NULL
     , `IS_ENABLED`                   integer         NOT NULL
     , `DEFAULT_G_ID`                 decimal(20)     NOT NULL
     , `DELETE_VERSION`               decimal(20)     NOT NULL

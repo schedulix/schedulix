@@ -55,6 +55,7 @@ public abstract class ManipUser extends Node
 	protected Long publicGId;
 
 	protected final static Long ZERO = new Long(0L);
+	protected final static int MD5LENGTH = 35;
 
 	public ManipUser(ObjectURL u, WithHash w)
 	{
@@ -81,7 +82,20 @@ public abstract class ManipUser extends Node
 	public abstract void go(SystemEnvironment sysEnv)
 	throws SDMSException;
 
-	protected void evaluate_with(SystemEnvironment sysEnv)
+	public static String generateSalt()
+	{
+		StringBuffer salt = new StringBuffer();
+		Random r = new Random(System.currentTimeMillis());
+
+		for (int i = 0; i < SDMSUser.SALT_LENGTH; ++i) {
+			char c = (char) (r.nextInt(96) + 32);
+			salt.append(c);
+		}
+
+		return salt.toString();
+	}
+
+	protected void evaluate_with(SystemEnvironment sysEnv, String salt, int method)
 	throws SDMSException
 	{
 		SDMSGroup g;
@@ -94,12 +108,20 @@ public abstract class ManipUser extends Node
 		passwd = null;
 		if (with.containsKey (ParseStr.S_PASSWORD)) {
 			txtPasswd = (String) with.get(ParseStr.S_PASSWORD);
-			passwd = CheckSum.mkstr(CheckSum.md5(txtPasswd.getBytes()));
+			if (method == SDMSUser.MD5)
+				passwd = CheckSum.mkstr(CheckSum.md5((txtPasswd + salt).getBytes()), true);
+			else
+				passwd = CheckSum.mkstr(CheckSum.sha256((txtPasswd + salt).getBytes()), false);
 		}
 		if (with.containsKey (ParseStr.S_RAWPASSWORD))
-			if (passwd == null)
-				passwd = (String) with.get (ParseStr.S_RAWPASSWORD);
-			else
+			if (passwd == null) {
+				Vector v = (Vector) with.get (ParseStr.S_RAWPASSWORD);
+				passwd = (String) v.get(0);
+				salt = (String) v.get(1);
+
+				if (passwd.length() == MD5LENGTH)
+					method = new Integer(SDMSScope.MD5);
+			} else
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "04312181625", "Both " + ParseStr.S_PASSWORD + " and " + ParseStr.S_RAWPASSWORD + " are not allowed"));
 
 		if(!with.containsKey(ParseStr.S_ENABLE))

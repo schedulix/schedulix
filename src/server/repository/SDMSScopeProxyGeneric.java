@@ -41,6 +41,8 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 
 	public static final int SCOPE = 1;
 	public static final int SERVER = 2;
+	public static final int MD5 = SDMSUser.MD5;
+	public static final int SHA256 = SDMSUser.SHA256;
 	public static final int NOMINAL = 1;
 	public static final int NONFATAL = 2;
 	public static final int FATAL = 3;
@@ -48,6 +50,7 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 
 	static final public int name_size = 64;
 	static final public int passwd_size = 40;
+	static final public int salt_size = 64;
 	static final public int pid_size = 32;
 	static final public int node_size = 32;
 	static final public int errmsg_size = 256;
@@ -256,6 +259,47 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
 
 		((SDMSScopeGeneric)(object)).setPasswd (env, p_passwd);
+		return ;
+	}
+	public String getSalt (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSScopeGeneric)(object)).getSalt (env));
+	}
+
+	public void setSalt (SystemEnvironment env, String p_salt)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSScopeGeneric)(object)).setSalt (env, p_salt);
+		return ;
+	}
+	public Integer getMethod (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSScopeGeneric)(object)).getMethod (env));
+	}
+
+	public String getMethodAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSScopeGeneric) object).getMethodAsString (env);
+	}
+
+	public void setMethod (SystemEnvironment env, Integer p_method)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSScopeGeneric)(object)).setMethod (env, p_method);
 		return ;
 	}
 	public String getPid (SystemEnvironment env)

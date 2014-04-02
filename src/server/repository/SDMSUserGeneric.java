@@ -43,22 +43,29 @@ public class SDMSUserGeneric extends SDMSObject
 	public final static String SYSTEM = "SYSTEM";
 	public final static String INTERNAL = "INTERNAL";
 	public final static String NOBODY = "NOBODY";
+	public final static int MD5 = 0;
+	public final static int SHA256 = 1;
+	public final static int SALT_LENGTH = 64;
 
 	public final static int nr_id = 1;
 	public final static int nr_name = 2;
 	public final static int nr_passwd = 3;
-	public final static int nr_isEnabled = 4;
-	public final static int nr_defaultGId = 5;
-	public final static int nr_deleteVersion = 6;
-	public final static int nr_creatorUId = 7;
-	public final static int nr_createTs = 8;
-	public final static int nr_changerUId = 9;
-	public final static int nr_changeTs = 10;
+	public final static int nr_salt = 4;
+	public final static int nr_method = 5;
+	public final static int nr_isEnabled = 6;
+	public final static int nr_defaultGId = 7;
+	public final static int nr_deleteVersion = 8;
+	public final static int nr_creatorUId = 9;
+	public final static int nr_createTs = 10;
+	public final static int nr_changerUId = 11;
+	public final static int nr_changeTs = 12;
 
 	public static String tableName = SDMSUserTableGeneric.tableName;
 
 	protected String name;
 	protected String passwd;
+	protected String salt;
+	protected Integer method;
 	protected Boolean isEnabled;
 	protected Long defaultGId;
 	protected Long deleteVersion;
@@ -75,6 +82,8 @@ public class SDMSUserGeneric extends SDMSObject
 	        SystemEnvironment env,
 	        String p_name,
 	        String p_passwd,
+	        String p_salt,
+	        Integer p_method,
 	        Boolean p_isEnabled,
 	        Long p_defaultGId,
 	        Long p_deleteVersion,
@@ -100,6 +109,14 @@ public class SDMSUserGeneric extends SDMSObject
 			);
 		}
 		passwd = p_passwd;
+		if (p_salt != null && p_salt.length() > 64) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141528",
+			                        "(User) Length of $1 exceeds maximum length $2", "salt", "64")
+			);
+		}
+		salt = p_salt;
+		method = p_method;
 		isEnabled = p_isEnabled;
 		defaultGId = p_defaultGId;
 		deleteVersion = p_deleteVersion;
@@ -167,6 +184,81 @@ public class SDMSUserGeneric extends SDMSObject
 				);
 			}
 			o.passwd = p_passwd;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public String getSalt (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (salt);
+	}
+
+	public	SDMSUserGeneric setSalt (SystemEnvironment env, String p_salt)
+	throws SDMSException
+	{
+		if(p_salt != null && p_salt.equals(salt)) return this;
+		if(p_salt == null && salt == null) return this;
+		SDMSUserGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			o = (SDMSUserGeneric) change(env);
+			if (p_salt != null && p_salt.length() > 64) {
+				throw new CommonErrorException (
+				        new SDMSMessage(env, "01112141510",
+				                        "(User) Length of $1 exceeds maximum length $2", "salt", "64")
+				);
+			}
+			o.salt = p_salt;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getMethod (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (method);
+	}
+
+	public String getMethodAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		final Integer v = getMethod (env);
+		switch (v.intValue()) {
+		case SDMSUser.MD5:
+			return "MD5";
+		case SDMSUser.SHA256:
+			return "SHA256";
+		}
+		throw new FatalException (new SDMSMessage (env,
+		                          "01205252242",
+		                          "Unknown User.method: $1",
+		                          getMethod (env)));
+	}
+
+	public	SDMSUserGeneric setMethod (SystemEnvironment env, Integer p_method)
+	throws SDMSException
+	{
+		if(method.equals(p_method)) return this;
+		SDMSUserGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			o = (SDMSUserGeneric) change(env);
+			o.method = p_method;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
@@ -417,6 +509,8 @@ public class SDMSUserGeneric extends SDMSObject
 	protected SDMSUserGeneric(Long p_id,
 	                          String p_name,
 	                          String p_passwd,
+	                          String p_salt,
+	                          Integer p_method,
 	                          Boolean p_isEnabled,
 	                          Long p_defaultGId,
 	                          Long p_deleteVersion,
@@ -429,6 +523,8 @@ public class SDMSUserGeneric extends SDMSObject
 		id     = p_id;
 		name = p_name;
 		passwd = p_passwd;
+		salt = p_salt;
+		method = p_method;
 		isEnabled = p_isEnabled;
 		defaultGId = p_defaultGId;
 		deleteVersion = p_deleteVersion;
@@ -467,6 +563,8 @@ public class SDMSUserGeneric extends SDMSObject
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "PASSWD" + equote +
+				        ", " + squote + "SALT" + equote +
+				        ", " + squote + "METHOD" + equote +
 				        ", " + squote + "IS_ENABLED" + equote +
 				        ", " + squote + "DEFAULT_G_ID" + equote +
 				        ", " + squote + "DELETE_VERSION" + equote +
@@ -475,6 +573,8 @@ public class SDMSUserGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ") VALUES (?" +
+				        ", ?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -497,13 +597,18 @@ public class SDMSUserGeneric extends SDMSObject
 			pInsert.setLong(1, id.longValue());
 			pInsert.setString(2, name);
 			pInsert.setString(3, passwd);
-			pInsert.setInt (4, isEnabled.booleanValue() ? 1 : 0);
-			pInsert.setLong (5, defaultGId.longValue());
-			pInsert.setLong (6, deleteVersion.longValue());
-			pInsert.setLong (7, creatorUId.longValue());
-			pInsert.setLong (8, createTs.longValue());
-			pInsert.setLong (9, changerUId.longValue());
-			pInsert.setLong (10, changeTs.longValue());
+			if (salt == null)
+				pInsert.setNull(4, Types.VARCHAR);
+			else
+				pInsert.setString(4, salt);
+			pInsert.setInt(5, method.intValue());
+			pInsert.setInt (6, isEnabled.booleanValue() ? 1 : 0);
+			pInsert.setLong (7, defaultGId.longValue());
+			pInsert.setLong (8, deleteVersion.longValue());
+			pInsert.setLong (9, creatorUId.longValue());
+			pInsert.setLong (10, createTs.longValue());
+			pInsert.setLong (11, changerUId.longValue());
+			pInsert.setLong (12, changeTs.longValue());
 			pInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
@@ -556,6 +661,8 @@ public class SDMSUserGeneric extends SDMSObject
 				        "UPDATE USERS SET " +
 				        "" + squote + "NAME" + equote + " = ? " +
 				        ", " + squote + "PASSWD" + equote + " = ? " +
+				        ", " + squote + "SALT" + equote + " = ? " +
+				        ", " + squote + "METHOD" + equote + " = ? " +
 				        ", " + squote + "IS_ENABLED" + equote + " = ? " +
 				        ", " + squote + "DEFAULT_G_ID" + equote + " = ? " +
 				        ", " + squote + "DELETE_VERSION" + equote + " = ? " +
@@ -574,19 +681,34 @@ public class SDMSUserGeneric extends SDMSObject
 			pUpdate.clearParameters();
 			pUpdate.setString(1, name);
 			pUpdate.setString(2, passwd);
-			pUpdate.setInt (3, isEnabled.booleanValue() ? 1 : 0);
-			pUpdate.setLong (4, defaultGId.longValue());
-			pUpdate.setLong (5, deleteVersion.longValue());
-			pUpdate.setLong (6, creatorUId.longValue());
-			pUpdate.setLong (7, createTs.longValue());
-			pUpdate.setLong (8, changerUId.longValue());
-			pUpdate.setLong (9, changeTs.longValue());
-			pUpdate.setLong(10, id.longValue());
+			if (salt == null)
+				pUpdate.setNull(3, Types.VARCHAR);
+			else
+				pUpdate.setString(3, salt);
+			pUpdate.setInt(4, method.intValue());
+			pUpdate.setInt (5, isEnabled.booleanValue() ? 1 : 0);
+			pUpdate.setLong (6, defaultGId.longValue());
+			pUpdate.setLong (7, deleteVersion.longValue());
+			pUpdate.setLong (8, creatorUId.longValue());
+			pUpdate.setLong (9, createTs.longValue());
+			pUpdate.setLong (10, changerUId.longValue());
+			pUpdate.setLong (11, changeTs.longValue());
+			pUpdate.setLong(12, id.longValue());
 			pUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
 			throw new FatalException(new SDMSMessage(env, "01110182006", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
+	}
+
+	static public boolean checkMethod(Integer p)
+	{
+		switch (p.intValue()) {
+		case SDMSUser.MD5:
+		case SDMSUser.SHA256:
+			return true;
+		}
+		return false;
 	}
 
 	public void print()
@@ -595,6 +717,8 @@ public class SDMSUserGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "id : " + id, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "name : " + name, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "passwd : " + passwd, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "salt : " + salt, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "method : " + method, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isEnabled : " + isEnabled, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "defaultGId : " + defaultGId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "deleteVersion : " + deleteVersion, SDMSThread.SEVERITY_MESSAGE);
@@ -615,6 +739,8 @@ public class SDMSUserGeneric extends SDMSObject
 		        indentString + "id : " + id + "\n" +
 		        indentString + "name          : " + name + "\n" +
 		        indentString + "passwd        : " + passwd + "\n" +
+		        indentString + "salt          : " + salt + "\n" +
+		        indentString + "method        : " + method + "\n" +
 		        indentString + "isEnabled     : " + isEnabled + "\n" +
 		        indentString + "defaultGId    : " + defaultGId + "\n" +
 		        indentString + "deleteVersion : " + deleteVersion + "\n" +

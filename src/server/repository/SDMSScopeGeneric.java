@@ -42,6 +42,8 @@ public class SDMSScopeGeneric extends SDMSObject
 
 	public static final int SCOPE = 1;
 	public static final int SERVER = 2;
+	public static final int MD5 = SDMSUser.MD5;
+	public static final int SHA256 = SDMSUser.SHA256;
 	public static final int NOMINAL = 1;
 	public static final int NONFATAL = 2;
 	public static final int FATAL = 3;
@@ -58,15 +60,17 @@ public class SDMSScopeGeneric extends SDMSObject
 	public final static int nr_isRegistered = 10;
 	public final static int nr_state = 11;
 	public final static int nr_passwd = 12;
-	public final static int nr_pid = 13;
-	public final static int nr_node = 14;
-	public final static int nr_errmsg = 15;
-	public final static int nr_lastActive = 16;
-	public final static int nr_creatorUId = 17;
-	public final static int nr_createTs = 18;
-	public final static int nr_changerUId = 19;
-	public final static int nr_changeTs = 20;
-	public final static int nr_inheritPrivs = 21;
+	public final static int nr_salt = 13;
+	public final static int nr_method = 14;
+	public final static int nr_pid = 15;
+	public final static int nr_node = 16;
+	public final static int nr_errmsg = 17;
+	public final static int nr_lastActive = 18;
+	public final static int nr_creatorUId = 19;
+	public final static int nr_createTs = 20;
+	public final static int nr_changerUId = 21;
+	public final static int nr_changeTs = 22;
+	public final static int nr_inheritPrivs = 23;
 
 	public static String tableName = SDMSScopeTableGeneric.tableName;
 
@@ -81,6 +85,8 @@ public class SDMSScopeGeneric extends SDMSObject
 	protected Boolean isRegistered;
 	protected Integer state;
 	protected String passwd;
+	protected String salt;
+	protected Integer method;
 	protected String pid;
 	protected String node;
 	protected String errmsg;
@@ -108,6 +114,8 @@ public class SDMSScopeGeneric extends SDMSObject
 	        Boolean p_isRegistered,
 	        Integer p_state,
 	        String p_passwd,
+	        String p_salt,
+	        Integer p_method,
 	        String p_pid,
 	        String p_node,
 	        String p_errmsg,
@@ -144,6 +152,14 @@ public class SDMSScopeGeneric extends SDMSObject
 			);
 		}
 		passwd = p_passwd;
+		if (p_salt != null && p_salt.length() > 64) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141528",
+			                        "(Scope) Length of $1 exceeds maximum length $2", "salt", "64")
+			);
+		}
+		salt = p_salt;
+		method = p_method;
 		if (p_pid != null && p_pid.length() > 32) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141528",
@@ -562,6 +578,91 @@ public class SDMSScopeGeneric extends SDMSObject
 		return o;
 	}
 
+	public String getSalt (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (salt);
+	}
+
+	public	SDMSScopeGeneric setSalt (SystemEnvironment env, String p_salt)
+	throws SDMSException
+	{
+		if(p_salt != null && p_salt.equals(salt)) return this;
+		if(p_salt == null && salt == null) return this;
+		SDMSScopeGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(Scope) Change of system object not allowed")
+				);
+			}
+			o = (SDMSScopeGeneric) change(env);
+			if (p_salt != null && p_salt.length() > 64) {
+				throw new CommonErrorException (
+				        new SDMSMessage(env, "01112141510",
+				                        "(Scope) Length of $1 exceeds maximum length $2", "salt", "64")
+				);
+			}
+			o.salt = p_salt;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getMethod (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (method);
+	}
+
+	public String getMethodAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		final Integer v = getMethod (env);
+		switch (v.intValue()) {
+		case SDMSScope.MD5:
+			return "MD5";
+		case SDMSScope.SHA256:
+			return "SHA256";
+		}
+		throw new FatalException (new SDMSMessage (env,
+		                          "01205252242",
+		                          "Unknown Scope.method: $1",
+		                          getMethod (env)));
+	}
+
+	public	SDMSScopeGeneric setMethod (SystemEnvironment env, Integer p_method)
+	throws SDMSException
+	{
+		if(method.equals(p_method)) return this;
+		SDMSScopeGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(Scope) Change of system object not allowed")
+				);
+			}
+			o = (SDMSScopeGeneric) change(env);
+			o.method = p_method;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
 	public String getPid (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -896,6 +997,8 @@ public class SDMSScopeGeneric extends SDMSObject
 	                           Boolean p_isRegistered,
 	                           Integer p_state,
 	                           String p_passwd,
+	                           String p_salt,
+	                           Integer p_method,
 	                           String p_pid,
 	                           String p_node,
 	                           String p_errmsg,
@@ -919,6 +1022,8 @@ public class SDMSScopeGeneric extends SDMSObject
 		isRegistered = p_isRegistered;
 		state = p_state;
 		passwd = p_passwd;
+		salt = p_salt;
+		method = p_method;
 		pid = p_pid;
 		node = p_node;
 		errmsg = p_errmsg;
@@ -968,6 +1073,8 @@ public class SDMSScopeGeneric extends SDMSObject
 				        ", " + squote + "IS_REGISTERED" + equote +
 				        ", " + squote + "STATE" + equote +
 				        ", " + squote + "PASSWD" + equote +
+				        ", " + squote + "SALT" + equote +
+				        ", " + squote + "METHOD" + equote +
 				        ", " + squote + "PID" + equote +
 				        ", " + squote + "NODE" + equote +
 				        ", " + squote + "ERRMSG" + equote +
@@ -978,6 +1085,8 @@ public class SDMSScopeGeneric extends SDMSObject
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ", " + squote + "INHERIT_PRIVS" + equote +
 				        ") VALUES (?" +
+				        ", ?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -1044,27 +1153,32 @@ public class SDMSScopeGeneric extends SDMSObject
 				pInsert.setNull(12, Types.VARCHAR);
 			else
 				pInsert.setString(12, passwd);
-			if (pid == null)
+			if (salt == null)
 				pInsert.setNull(13, Types.VARCHAR);
 			else
-				pInsert.setString(13, pid);
-			if (node == null)
-				pInsert.setNull(14, Types.VARCHAR);
-			else
-				pInsert.setString(14, node);
-			if (errmsg == null)
+				pInsert.setString(13, salt);
+			pInsert.setInt(14, method.intValue());
+			if (pid == null)
 				pInsert.setNull(15, Types.VARCHAR);
 			else
-				pInsert.setString(15, errmsg);
-			if (lastActive == null)
-				pInsert.setNull(16, Types.INTEGER);
+				pInsert.setString(15, pid);
+			if (node == null)
+				pInsert.setNull(16, Types.VARCHAR);
 			else
-				pInsert.setLong (16, lastActive.longValue());
-			pInsert.setLong (17, creatorUId.longValue());
-			pInsert.setLong (18, createTs.longValue());
-			pInsert.setLong (19, changerUId.longValue());
-			pInsert.setLong (20, changeTs.longValue());
-			pInsert.setLong (21, inheritPrivs.longValue());
+				pInsert.setString(16, node);
+			if (errmsg == null)
+				pInsert.setNull(17, Types.VARCHAR);
+			else
+				pInsert.setString(17, errmsg);
+			if (lastActive == null)
+				pInsert.setNull(18, Types.INTEGER);
+			else
+				pInsert.setLong (18, lastActive.longValue());
+			pInsert.setLong (19, creatorUId.longValue());
+			pInsert.setLong (20, createTs.longValue());
+			pInsert.setLong (21, changerUId.longValue());
+			pInsert.setLong (22, changeTs.longValue());
+			pInsert.setLong (23, inheritPrivs.longValue());
 			pInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
@@ -1126,6 +1240,8 @@ public class SDMSScopeGeneric extends SDMSObject
 				        ", " + squote + "IS_REGISTERED" + equote + " = ? " +
 				        ", " + squote + "STATE" + equote + " = ? " +
 				        ", " + squote + "PASSWD" + equote + " = ? " +
+				        ", " + squote + "SALT" + equote + " = ? " +
+				        ", " + squote + "METHOD" + equote + " = ? " +
 				        ", " + squote + "PID" + equote + " = ? " +
 				        ", " + squote + "NODE" + equote + " = ? " +
 				        ", " + squote + "ERRMSG" + equote + " = ? " +
@@ -1179,28 +1295,33 @@ public class SDMSScopeGeneric extends SDMSObject
 				pUpdate.setNull(11, Types.VARCHAR);
 			else
 				pUpdate.setString(11, passwd);
-			if (pid == null)
+			if (salt == null)
 				pUpdate.setNull(12, Types.VARCHAR);
 			else
-				pUpdate.setString(12, pid);
-			if (node == null)
-				pUpdate.setNull(13, Types.VARCHAR);
-			else
-				pUpdate.setString(13, node);
-			if (errmsg == null)
+				pUpdate.setString(12, salt);
+			pUpdate.setInt(13, method.intValue());
+			if (pid == null)
 				pUpdate.setNull(14, Types.VARCHAR);
 			else
-				pUpdate.setString(14, errmsg);
-			if (lastActive == null)
-				pUpdate.setNull(15, Types.INTEGER);
+				pUpdate.setString(14, pid);
+			if (node == null)
+				pUpdate.setNull(15, Types.VARCHAR);
 			else
-				pUpdate.setLong (15, lastActive.longValue());
-			pUpdate.setLong (16, creatorUId.longValue());
-			pUpdate.setLong (17, createTs.longValue());
-			pUpdate.setLong (18, changerUId.longValue());
-			pUpdate.setLong (19, changeTs.longValue());
-			pUpdate.setLong (20, inheritPrivs.longValue());
-			pUpdate.setLong(21, id.longValue());
+				pUpdate.setString(15, node);
+			if (errmsg == null)
+				pUpdate.setNull(16, Types.VARCHAR);
+			else
+				pUpdate.setString(16, errmsg);
+			if (lastActive == null)
+				pUpdate.setNull(17, Types.INTEGER);
+			else
+				pUpdate.setLong (17, lastActive.longValue());
+			pUpdate.setLong (18, creatorUId.longValue());
+			pUpdate.setLong (19, createTs.longValue());
+			pUpdate.setLong (20, changerUId.longValue());
+			pUpdate.setLong (21, changeTs.longValue());
+			pUpdate.setLong (22, inheritPrivs.longValue());
+			pUpdate.setLong(23, id.longValue());
 			pUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
@@ -1228,6 +1349,15 @@ public class SDMSScopeGeneric extends SDMSObject
 		}
 		return false;
 	}
+	static public boolean checkMethod(Integer p)
+	{
+		switch (p.intValue()) {
+		case SDMSScope.MD5:
+		case SDMSScope.SHA256:
+			return true;
+		}
+		return false;
+	}
 
 	public void print()
 	{
@@ -1244,6 +1374,8 @@ public class SDMSScopeGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "isRegistered : " + isRegistered, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "state : " + state, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "passwd : " + passwd, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "salt : " + salt, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "method : " + method, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "pid : " + pid, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "node : " + node, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "errmsg : " + errmsg, SDMSThread.SEVERITY_MESSAGE);
@@ -1275,6 +1407,8 @@ public class SDMSScopeGeneric extends SDMSObject
 		        indentString + "isRegistered     : " + isRegistered + "\n" +
 		        indentString + "state            : " + state + "\n" +
 		        indentString + "passwd           : " + passwd + "\n" +
+		        indentString + "salt             : " + salt + "\n" +
+		        indentString + "method           : " + method + "\n" +
 		        indentString + "pid              : " + pid + "\n" +
 		        indentString + "node             : " + node + "\n" +
 		        indentString + "errmsg           : " + errmsg + "\n" +

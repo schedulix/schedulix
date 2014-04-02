@@ -58,7 +58,7 @@ public class Parser
 %token <Token>	RAWPASSWORD REACHABLE READ REASSURE RECREATE RECURSIVE REFERENCE REGISTER RENAME RENICE REQUIRED REQUESTABLE_AMOUNT RERUN RERUN_PROGRAM RESOURCE
 %token <Token>	RESOURCE_TEMPLATE RESOURCE_STATUS RESOURCE_STATUS_DEFINITION RESOURCE_STATUS_MAPPING RESOURCE_STATUS_PROFILE RESOURCE_WAIT
 %token <Token>	RESTARTABLE RESTRICT RESULT RESUME REVOKE ROLLBACK ROOT RUN RUNNABLE RUNNING RUNTIME RUN_PROGRAM
-%token <Token>	S SC SCHEDULE SCHEDULED_EVENT SCOPE SELECT SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT
+%token <Token>	S SALT SC SCHEDULE SCHEDULED_EVENT SCOPE SELECT SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT
 %token <Token>	STARTED STARTING STARTTIME STATIC STATUS STATUS_MAPPING STATUS_PROFILE STICKY STOP STRICT STRING
 %token <Token>	SUBMIT SUBMITCOUNT SUBMITTAG SUBMITTED SUBMITTING_USER SUM SUSPEND SUSPEND_LIMIT SX SYNCHRONIZE_WAIT SYNCHRONIZING SYNCTIME SYSTEM
 %token <Token>	TAG TEST TEXT TIME TIMEOUT TIMESTAMP TO TO_KILL TOUCH TRACE TRANSLATION TREE TRIGGER TRUNC TYPE
@@ -585,8 +585,9 @@ connect_cmdj:	CONNECT JOB jobid identified_by	opt_connect_with		{ $$ = new Conne
 
 identified_by:	IDENTIFIED BY STRING						{ $$ = $3.textValue;
 										  ConnectionEnvironment ce = getConnectionEnvironment();
-										  if(ce != null)
+										  if(ce != null) {
 											((UserConnection) ce.getMe()).scanner.unproto_input($3.textValue); 
+										  }
 										}
 
 
@@ -4150,13 +4151,30 @@ objecttypename:	stridentifier							{ $$ = $1; }
 
 password:	PASSWORD '=' STRING						{ $$ = new WithItem (ParseStr.S_PASSWORD, $3.textValue); 
 										  ConnectionEnvironment ce = getConnectionEnvironment();
-										  if(ce != null)
+										  if(ce != null) {
 											((UserConnection) ce.getMe()).scanner.unproto_input($3.textValue); 
+										  }
 										}
-	|	RAWPASSWORD '=' STRING						{ $$ = new WithItem (ParseStr.S_RAWPASSWORD, $3.textValue); 
+	|	RAWPASSWORD '=' STRING						{
+										  Vector v = new Vector();
+										  v.add($3.textValue);	/* hashed password */
+										  v.add(null);		/* no salt         */
+										  $$ = new WithItem (ParseStr.S_RAWPASSWORD, v); 
 										  ConnectionEnvironment ce = getConnectionEnvironment();
-										  if(ce != null)
+										  if(ce != null) {
 											((UserConnection) ce.getMe()).scanner.unproto_input($3.textValue); 
+										  }
+										}
+	|	RAWPASSWORD '=' STRING SALT '=' STRING				{
+										  Vector v = new Vector();
+										  v.add($3.textValue);	/* hashed password */
+										  v.add($6.textValue);	/* salt            */
+										  $$ = new WithItem (ParseStr.S_RAWPASSWORD, v); 
+										  ConnectionEnvironment ce = getConnectionEnvironment();
+										  if(ce != null) {
+											((UserConnection) ce.getMe()).scanner.unproto_input($3.textValue); 
+											((UserConnection) ce.getMe()).scanner.unproto_input($6.textValue); 
+										  }
 										}
 
 //D:NT=PARM
@@ -4544,6 +4562,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	RUNNING								{ $$ = (String) $1.value; }
 	|	RUNTIME								{ $$ = (String) $1.value; }
 	|	S								{ $$ = (String) $1.value; }
+	|	SALT								{ $$ = (String) $1.value; }
 	|	SC								{ $$ = (String) $1.value; }
 	|	SCHEDULE							{ $$ = (String) $1.value; }
 	|	SCOPE								{ $$ = (String) $1.value; }

@@ -62,6 +62,8 @@ public class SDMSUserTableGeneric extends SDMSTable
 	public SDMSUser create(SystemEnvironment env
 	                       ,String p_name
 	                       ,String p_passwd
+	                       ,String p_salt
+	                       ,Integer p_method
 	                       ,Boolean p_isEnabled
 	                       ,Long p_defaultGId
 	                       ,Long p_deleteVersion
@@ -80,6 +82,8 @@ public class SDMSUserTableGeneric extends SDMSTable
 		validate(env
 		         , p_name
 		         , p_passwd
+		         , p_salt
+		         , p_method
 		         , p_isEnabled
 		         , p_defaultGId
 		         , p_deleteVersion
@@ -93,6 +97,8 @@ public class SDMSUserTableGeneric extends SDMSTable
 		SDMSUserGeneric o = new SDMSUserGeneric(env
 		                                        , p_name
 		                                        , p_passwd
+		                                        , p_salt
+		                                        , p_method
 		                                        , p_isEnabled
 		                                        , p_defaultGId
 		                                        , p_deleteVersion
@@ -135,6 +141,8 @@ public class SDMSUserTableGeneric extends SDMSTable
 	protected void validate(SystemEnvironment env
 	                        ,String p_name
 	                        ,String p_passwd
+	                        ,String p_salt
+	                        ,Integer p_method
 	                        ,Boolean p_isEnabled
 	                        ,Long p_defaultGId
 	                        ,Long p_deleteVersion
@@ -145,6 +153,9 @@ public class SDMSUserTableGeneric extends SDMSTable
 	                       )
 	throws SDMSException
 	{
+		if (!SDMSUserGeneric.checkMethod(p_method))
+
+			throw new FatalException(new SDMSMessage(env, "01110182023", "User: $1 $2", "method", p_method));
 
 	}
 
@@ -154,6 +165,8 @@ public class SDMSUserTableGeneric extends SDMSTable
 		Long id;
 		String name;
 		String passwd;
+		String salt;
+		Integer method;
 		Boolean isEnabled;
 		Long defaultGId;
 		Long deleteVersion;
@@ -168,13 +181,16 @@ public class SDMSUserTableGeneric extends SDMSTable
 			id     = new Long (r.getLong(1));
 			name = r.getString(2);
 			passwd = r.getString(3);
-			isEnabled = new Boolean ((r.getInt(4) == 0 ? false : true));
-			defaultGId = new Long (r.getLong(5));
-			deleteVersion = new Long (r.getLong(6));
-			creatorUId = new Long (r.getLong(7));
-			createTs = new Long (r.getLong(8));
-			changerUId = new Long (r.getLong(9));
-			changeTs = new Long (r.getLong(10));
+			salt = r.getString(4);
+			if (r.wasNull()) salt = null;
+			method = new Integer (r.getInt(5));
+			isEnabled = new Boolean ((r.getInt(6) == 0 ? false : true));
+			defaultGId = new Long (r.getLong(7));
+			deleteVersion = new Long (r.getLong(8));
+			creatorUId = new Long (r.getLong(9));
+			createTs = new Long (r.getLong(10));
+			changerUId = new Long (r.getLong(11));
+			changeTs = new Long (r.getLong(12));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -186,6 +202,8 @@ public class SDMSUserTableGeneric extends SDMSTable
 		return new SDMSUserGeneric(id,
 		                           name,
 		                           passwd,
+		                           salt,
+		                           method,
 		                           isEnabled,
 		                           defaultGId,
 		                           deleteVersion,
@@ -220,6 +238,8 @@ public class SDMSUserTableGeneric extends SDMSTable
 		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NAME" + equote +
 		                                   ", " + squote + "PASSWD" + equote +
+		                                   ", " + squote + "SALT" + equote +
+		                                   ", " + squote + "METHOD" + equote +
 		                                   ", " + squote + "IS_ENABLED" + equote +
 		                                   ", " + squote + "DEFAULT_G_ID" + equote +
 		                                   ", " + squote + "DELETE_VERSION" + equote +

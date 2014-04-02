@@ -53,14 +53,15 @@ INSERT INTO GROUPS (ID, NAME,    DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGE
 --	Table "user"
 --------------------------------------------------------------------------------
 
-INSERT INTO USERS (ID, NAME,     PASSWD,                                IS_ENABLED, DEFAULT_G_ID, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
-	VALUES    (0,  'SYSTEM', 'ba143b7e 75dde00e 8f0fd6f4 6cf65faf', 1,          81,           0,              0,            0,         0,            0);
+INSERT INTO USERS (ID, NAME,     PASSWD,                                SALT, METHOD, IS_ENABLED, DEFAULT_G_ID, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
+	VALUES    (0,  'SYSTEM', 'ba143b7e 75dde00e 8f0fd6f4 6cf65faf', null, 0,      1,          81,           0,              0,            0,         0,            0);
 
-INSERT INTO USERS (ID, NAME,     PASSWD,                                IS_ENABLED, DEFAULT_G_ID, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
-	VALUES    (1,  'NOBODY', 'xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx', 0,          80,           0,              0,            0,         0,            0);
+INSERT INTO USERS (ID, NAME,     PASSWD,                                SALT, METHOD, IS_ENABLED, DEFAULT_G_ID, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
+	VALUES    (1,  'NOBODY', 'xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx', null, 0,      0,          80,           0,              0,            0,         0,            0);
+ 
+INSERT INTO USERS (ID, NAME,       PASSWD,                              SALT, METHOD, IS_ENABLED, DEFAULT_G_ID, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
+	VALUES    (2,  'INTERNAL', 'xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx', null, 0,    0,          81,           0,              0,            0,         0,            0);
 
-INSERT INTO USERS (ID, NAME,       PASSWD,                                IS_ENABLED, DEFAULT_G_ID, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
-	VALUES    (2,  'INTERNAL', 'xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx', 0,          81,           0,              0,            0,         0,            0);
 
 --------------------------------------------------------------------------------
 --	Table "SCHEDULING HIERARCHY"
@@ -89,8 +90,8 @@ INSERT INTO FOLDER (ID, NAME,     OWNER_ID, ENV_ID, PARENT_ID, VALID_FROM, VALID
 --------------------------------------------------------------------------------
 
 -- Create GLOBAL scope owned by ADMIN without parent
-INSERT INTO SCOPE (ID, NAME,     OWNER_ID, TYPE, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS, INHERIT_PRIVS)
-	VALUES    (50, 'GLOBAL', 81,       1,    0,            0,         0,            0        , 0);
+INSERT INTO SCOPE (ID, NAME,     OWNER_ID, TYPE, METHOD, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS, INHERIT_PRIVS)
+	VALUES    (50, 'GLOBAL', 81,       1,    0,      0,            0,         0,            0        , 0);
 
 --------------------------------------------------------------------------------
 --	Table "NAMED_RESOURCE"

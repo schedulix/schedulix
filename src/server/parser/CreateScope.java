@@ -60,6 +60,8 @@ public class CreateScope extends Node
 		Long parentId;
 		String passwd = null;
 		String node = null;
+		String salt = null;
+		Integer method = new Integer(SDMSScope.SHA256);
 		Boolean isEnabled = null;
 		Vector path;
 		String name;
@@ -85,12 +87,22 @@ public class CreateScope extends Node
 			state = new Integer(SDMSScope.NOMINAL);
 			type = new Integer(SDMSScope.SERVER);
 			node = (String) with.get (ParseStr.S_NODE);
-			if (with.containsKey (ParseStr.S_PASSWORD))
-				passwd = CheckSum.mkstr (CheckSum.md5 (((String) with.get (ParseStr.S_PASSWORD)).getBytes()));
-			if (with.containsKey (ParseStr.S_RAWPASSWORD))
-				if (passwd == null)
-					passwd = (String) with.get (ParseStr.S_RAWPASSWORD);
+			if (with.containsKey (ParseStr.S_PASSWORD)) {
+				salt = ManipUser.generateSalt();
+				if (method.intValue() == SDMSScope.MD5)
+					passwd = CheckSum.mkstr (CheckSum.md5 ((((String) with.get (ParseStr.S_PASSWORD)) + salt).getBytes()), true);
 				else
+					passwd = CheckSum.mkstr (CheckSum.sha256 ((((String) with.get (ParseStr.S_PASSWORD)) + salt).getBytes()), false);
+			}
+			if (with.containsKey (ParseStr.S_RAWPASSWORD))
+				if (passwd == null) {
+					Vector v = (Vector) with.get (ParseStr.S_RAWPASSWORD);
+					passwd = (String) v.get(0);
+					salt = (String) v.get(1);
+
+					if (passwd.length() == ManipUser.MD5LENGTH)
+						method = new Integer(SDMSScope.MD5);
+				} else
 					throw new CommonErrorException (new SDMSMessage (sysEnv, "04312151753",
 					                                "Both " + ParseStr.S_PASSWORD + " and " + ParseStr.S_RAWPASSWORD + " are not allowed"));
 			if (passwd == null)
@@ -142,7 +154,7 @@ public class CreateScope extends Node
 		try {
 			s = SDMSScopeTable.table.create(sysEnv, name, gId, parentId, type, isTerminate,
 			                                hasAlteredConfig, isSuspended, isEnabled,
-			                                isRegistered, state, passwd, null ,
+			                                isRegistered, state, passwd, salt, method, null ,
 			                                node, null , null , inheritPrivs);
 
 			final Long sId = s.getId (sysEnv);

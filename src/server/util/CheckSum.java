@@ -26,6 +26,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 package de.independit.scheduler.server.util;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
@@ -240,18 +243,32 @@ public class CheckSum
 		return decode(out);
 	}
 
-	public final static String mkstr(int[] a)
+	public final static byte[] sha256(byte[] msg)
 	{
-		byte[] b = decode(a);
-		return mkstr(b);
+		MessageDigest sha;
+		try {
+			sha = MessageDigest.getInstance("SHA-256");
+		} catch(NoSuchAlgorithmException nsae) {
+
+			return msg;
+		}
+		sha.update(msg);
+
+		return sha.digest();
 	}
 
-	public final static String mkstr(byte[] b)
+	public final static String mkstr(int[] a, boolean withBlanks)
+	{
+		byte[] b = decode(a);
+		return mkstr(b, withBlanks);
+	}
+
+	public final static String mkstr(byte[] b, boolean withBlanks)
 	{
 		StringBuffer sb = new StringBuffer(b.length * 3);
 
 		for(int i = 0; i < b.length; i++) {
-			if((i != 0) && ((i)%4 == 0))
+			if(withBlanks && (i != 0) && ((i)%4 == 0))
 				sb.append(' ');
 			if (b[i] <= 0x0f && b[i] >= 0) {
 				sb.append('0');

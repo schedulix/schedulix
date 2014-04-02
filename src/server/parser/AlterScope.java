@@ -153,6 +153,8 @@ public class AlterScope
 	throws SDMSException
 	{
 		final Long sId = s.getId(sysEnv);
+		String salt = null;
+		Integer method = new Integer(SDMSScope.SHA256);
 
 		s.notify(sysEnv);
 
@@ -160,15 +162,29 @@ public class AlterScope
 			s.setNode(sysEnv, (String) with.get (ParseStr.S_NODE));
 
 		String passwd = null;
-		if (with.containsKey (ParseStr.S_PASSWORD))
-			passwd = CheckSum.mkstr (CheckSum.md5 (((String) with.get (ParseStr.S_PASSWORD)).getBytes()));
-		if (with.containsKey (ParseStr.S_RAWPASSWORD))
-			if (passwd == null)
-				passwd = (String) with.get (ParseStr.S_RAWPASSWORD);
+		if (with.containsKey (ParseStr.S_PASSWORD)) {
+			salt = ManipUser.generateSalt();
+			if (method.intValue() == SDMSScope.MD5)
+				passwd = CheckSum.mkstr (CheckSum.md5 ((((String) with.get (ParseStr.S_PASSWORD)) + salt).getBytes()), true);
 			else
+				passwd = CheckSum.mkstr (CheckSum.sha256 ((((String) with.get (ParseStr.S_PASSWORD)) + salt).getBytes()), false);
+		}
+		if (with.containsKey (ParseStr.S_RAWPASSWORD)) {
+			if (passwd == null) {
+				Vector v = (Vector) with.get (ParseStr.S_RAWPASSWORD);
+				passwd = (String) v.get(0);
+				salt = (String) v.get(1);
+
+				if (passwd.length() == ManipUser.MD5LENGTH)
+					method = new Integer(SDMSScope.MD5);
+			} else
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "04312151811", "Both " + ParseStr.S_PASSWORD + " and " + ParseStr.S_RAWPASSWORD + " are not allowed"));
-		if(passwd != null)
+		}
+		if(passwd != null) {
 			s.setPasswd(sysEnv, passwd);
+			s.setSalt(sysEnv, salt);
+			s.setMethod(sysEnv, method);
+		}
 
 		if (with.containsKey (ParseStr.S_ERROR_TEXT)) {
 			s.setErrmsg(sysEnv, (String) with.get(ParseStr.S_ERROR_TEXT));

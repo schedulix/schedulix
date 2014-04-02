@@ -53,7 +53,9 @@ public class CreateUser extends ManipUser
 	{
 		SDMSUser u;
 		boolean suActive = false;
-		evaluate_with(sysEnv);
+		int method = SDMSUser.SHA256;
+		String salt = generateSalt();
+		evaluate_with(sysEnv, salt, method);
 
 		if(defaultGId == null)
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03401261241", "default group must be specified"));
@@ -106,7 +108,7 @@ public class CreateUser extends ManipUser
 		}
 
 		try {
-			u = SDMSUserTable.table.create( sysEnv, user, passwd, enable, defaultGId, new Long(0));
+			u = SDMSUserTable.table.create( sysEnv, user, passwd, salt, method, enable, defaultGId, new Long(0));
 		} catch (DuplicateKeyException dke) {
 			if(replace) {
 				try {

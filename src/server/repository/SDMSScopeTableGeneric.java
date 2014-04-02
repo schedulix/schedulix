@@ -77,6 +77,8 @@ public class SDMSScopeTableGeneric extends SDMSTable
 	                        ,Boolean p_isRegistered
 	                        ,Integer p_state
 	                        ,String p_passwd
+	                        ,String p_salt
+	                        ,Integer p_method
 	                        ,String p_pid
 	                        ,String p_node
 	                        ,String p_errmsg
@@ -106,6 +108,8 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		         , p_isRegistered
 		         , p_state
 		         , p_passwd
+		         , p_salt
+		         , p_method
 		         , p_pid
 		         , p_node
 		         , p_errmsg
@@ -130,6 +134,8 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		                , p_isRegistered
 		                , p_state
 		                , p_passwd
+		                , p_salt
+		                , p_method
 		                , p_pid
 		                , p_node
 		                , p_errmsg
@@ -185,6 +191,8 @@ public class SDMSScopeTableGeneric extends SDMSTable
 	                        ,Boolean p_isRegistered
 	                        ,Integer p_state
 	                        ,String p_passwd
+	                        ,String p_salt
+	                        ,Integer p_method
 	                        ,String p_pid
 	                        ,String p_node
 	                        ,String p_errmsg
@@ -203,6 +211,9 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		if (!SDMSScopeGeneric.checkState(p_state))
 
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Scope: $1 $2", "state", p_state));
+		if (!SDMSScopeGeneric.checkMethod(p_method))
+
+			throw new FatalException(new SDMSMessage(env, "01110182023", "Scope: $1 $2", "method", p_method));
 
 	}
 
@@ -221,6 +232,8 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		Boolean isRegistered;
 		Integer state;
 		String passwd;
+		String salt;
+		Integer method;
 		String pid;
 		String node;
 		String errmsg;
@@ -254,19 +267,22 @@ public class SDMSScopeTableGeneric extends SDMSTable
 			if (r.wasNull()) state = null;
 			passwd = r.getString(12);
 			if (r.wasNull()) passwd = null;
-			pid = r.getString(13);
+			salt = r.getString(13);
+			if (r.wasNull()) salt = null;
+			method = new Integer (r.getInt(14));
+			pid = r.getString(15);
 			if (r.wasNull()) pid = null;
-			node = r.getString(14);
+			node = r.getString(16);
 			if (r.wasNull()) node = null;
-			errmsg = r.getString(15);
+			errmsg = r.getString(17);
 			if (r.wasNull()) errmsg = null;
-			lastActive = new Long (r.getLong(16));
+			lastActive = new Long (r.getLong(18));
 			if (r.wasNull()) lastActive = null;
-			creatorUId = new Long (r.getLong(17));
-			createTs = new Long (r.getLong(18));
-			changerUId = new Long (r.getLong(19));
-			changeTs = new Long (r.getLong(20));
-			inheritPrivs = new Long (r.getLong(21));
+			creatorUId = new Long (r.getLong(19));
+			createTs = new Long (r.getLong(20));
+			changerUId = new Long (r.getLong(21));
+			changeTs = new Long (r.getLong(22));
+			inheritPrivs = new Long (r.getLong(23));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -287,6 +303,8 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		                            isRegistered,
 		                            state,
 		                            passwd,
+		                            salt,
+		                            method,
 		                            pid,
 		                            node,
 		                            errmsg,
@@ -332,6 +350,8 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		                                   ", " + squote + "IS_REGISTERED" + equote +
 		                                   ", " + squote + "STATE" + equote +
 		                                   ", " + squote + "PASSWD" + equote +
+		                                   ", " + squote + "SALT" + equote +
+		                                   ", " + squote + "METHOD" + equote +
 		                                   ", " + squote + "PID" + equote +
 		                                   ", " + squote + "NODE" + equote +
 		                                   ", " + squote + "ERRMSG" + equote +

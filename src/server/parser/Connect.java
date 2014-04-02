@@ -63,7 +63,6 @@ public class Connect extends Node
 		super();
 		cmdtype = Node.ANY_COMMAND;
 		user = u;
-		passwd = CheckSum.mkstr(CheckSum.md5(p.getBytes()));
 		txtPasswd = p;
 		isUser = true;
 		isJobServer = false;
@@ -87,9 +86,9 @@ public class Connect extends Node
 		super();
 		cmdtype = Node.ANY_COMMAND;
 		user = null;
-		passwd = CheckSum.mkstr(CheckSum.md5(p.getBytes()));
 		isUser = false;
 		isJobServer = true;
+		txtPasswd = p;
 		jsName = js;
 		isJob = false;
 		jobid = null;
@@ -128,6 +127,8 @@ public class Connect extends Node
 	{
 		SDMSUser u;
 		Long uId;
+		String salt;
+		int method;
 
 		try {
 
@@ -142,6 +143,12 @@ public class Connect extends Node
 					                               "02110192352", "Invalid username or password"));
 				}
 			} else {
+				salt = u.getSalt(sysEnv);
+				method = u.getMethod(sysEnv).intValue();
+				if (method == SDMSUser.MD5)
+					passwd = CheckSum.mkstr(CheckSum.md5((txtPasswd + (salt == null ? "" : salt)).getBytes()), true);
+				else
+					passwd = CheckSum.mkstr(CheckSum.sha256((txtPasswd + (salt == null ? "" : salt)).getBytes()), false);
 				if (!u.getPasswd(sysEnv).equals(passwd)) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv,
 					                               "02110192352", "Invalid username or password"));
@@ -168,6 +175,8 @@ public class Connect extends Node
 		SDMSScope s;
 		Long pId;
 		int timeout;
+		String salt;
+		int method;
 
 		try {
 
@@ -182,6 +191,12 @@ public class Connect extends Node
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
 				                               "03202041508", "JobServer disabled"));
 			}
+			salt = s.getSalt(sysEnv);
+			method = s.getMethod(sysEnv).intValue();
+			if (method == SDMSScope.MD5)
+				passwd = CheckSum.mkstr(CheckSum.md5((txtPasswd + (salt == null ? "" : salt)).getBytes()), true);
+			else
+				passwd = CheckSum.mkstr(CheckSum.sha256((txtPasswd + (salt == null ? "" : salt)).getBytes()), false);
 			if(!s.getPasswd(sysEnv).equals(passwd)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
 				                               "03202041511", "Invalid jobservername or password"));
