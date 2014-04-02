@@ -28,4 +28,4 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 CREATE TABLE sme2load (
 	id         DECIMAL(20) NOT NULL
 );
-
+\g
