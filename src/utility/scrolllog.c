@@ -414,27 +414,33 @@ int process()
 				if (childpid) {
 					fprintf(outf, "[scrolllog] Waiting for child (%d) to terminate\n", (int) childpid);
 					fflush(outf);
-					switch ((int)waitpid((pid_t) -1, &status, 0)) {
-					case -1:
-						if(errno == ECHILD) {
+					do {
+						switch ((int)waitpid((pid_t) -1, &status, 0)) {
+						case -1:
+							if(errno == ECHILD) {
 
-							fprintf(outf, "[scrolllog] WARNING, childpid != 0 && ECHILD !\n");
+								fprintf(outf, "[scrolllog] WARNING, childpid != 0 && ECHILD !\n");
+								fflush(outf);
+
+								restart   = 1;
+							}
+							break;
+						default:
+							if (WIFEXITED(status)) {
+								status = WEXITSTATUS(status);
+							} else if (WIFSIGNALED(status)) {
+								status = 128 + WTERMSIG(status);
+							} else
+								continue;
+							fprintf(outf, "[scrolllog] Child exited with state %d\n", status);
 							fflush(outf);
-
-							restart   = 1;
-
-							childpid  = 0;
-							terminate = 1;
+							if (status == 0) restart = 0;
+							else restart = 1;
 						}
-						break;
-					default:
-						fprintf(outf, "[scrolllog] Child exited with state %d\n", status);
-						fflush(outf);
+
 						childpid  = 0;
 						terminate = 1;
-						if (status == 0) restart = 0;
-						else restart = 1;
-					}
+					} while(childpid != 0);
 				}
 				if(terminate == 1) {
 					if(restart && (cmd != NULL)) {
