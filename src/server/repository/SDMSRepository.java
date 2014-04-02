@@ -190,6 +190,8 @@ public class SDMSRepository
 	{
 		tables = new HashMap();
 
+		// For each table
+		// C
 		tables.put(SDMSCalendarTableGeneric.tableName,                    new SDMSCalendarTable(env));
 
 		tables.put(SDMSDependencyDefinitionTableGeneric.tableName,        new SDMSDependencyDefinitionTable(env));
@@ -260,6 +262,7 @@ public class SDMSRepository
 
 		tables.put(SDMSUserTableGeneric.tableName,                        new SDMSUserTable(env));
 
+		// non persistent tables
 		tables.put(SDMSnpJobFootprintTableGeneric.tableName,              new SDMSnpJobFootprintTable(env));
 		tables.put(SDMSnpSrvrSRFootprintTableGeneric.tableName,           new SDMSnpSrvrSRFootprintTable(env));
 	}
