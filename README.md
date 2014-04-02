@@ -23,6 +23,18 @@ When upgrading from the stable 2.5.1 version to the current _unstable_ master br
 don't forget to upgrade the database schema (adapt these statements to the dialect of
 the dbms used):
 
+ALTER TABLE USERS
+ADD COLUMN SALT VARCHAR(64) WITH NULL;
+
+ALTER TABLE USERS
+ADD COLUMN METHOD INTEGER NOT NULL WITH DEFAULT; /* 0 */
+
+ALTER TABLE SCOPE
+ADD COLUMN SALT VARCHAR(64) WITH NULL;
+
+ALTER TABLE SCOPE
+ADD COLUMN METHOD INTEGER NOT NULL WITH DEFAULT; /* 0 */
+
 ALTER TABLE RESOURCE_REQUIREMENT
 ADD COLUMN STICKY_NAME VARCHAR(64) WITH NULL;
 
@@ -61,5 +73,15 @@ times and more valuable information.
 
 The loading strategy is controled by three additional server parameters. See server.conf.template
 for details.
+
+-------------------------------------------------------------------------------------------
+
+Password hashes are now stored as SHA256 hash with a 64 byte salt.
+Adding the salt was definitely necessary to improve security.
+The use of SHA256 wasn't that necessary, but the security of this algorithm is regarded higher
+than the security of the formerly used MD5.
+There's no direct need to change all passwords (although it would improve security of course),
+since the type of hash is automatically recognized.
+Scripts using the RAWPASSWORD option continue to work.
 
 Happy Hacking :-)
