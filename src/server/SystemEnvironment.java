@@ -256,7 +256,7 @@ public class SystemEnvironment implements Cloneable
 		featureLevels.put(S_FOLDER_ENVIRONMENTS,      new Feature(S_PROFESSIONAL, "Use of Folder Environments"));
 		featureLevels.put(S_FOLDER_RESOURCES,         new Feature(S_PROFESSIONAL, "Use of Folder Resources"));
 		featureLevels.put(S_SE_RESOURCES,             new Feature(S_PROFESSIONAL, "Use of Job or Batch Resources"));
-		featureLevels.put(S_CONDITIONAL_RESOURCES,    new Feature(S_PROFESSIONAL, "Use of Conditional Resource Requierements"));
+		featureLevels.put(S_CONDITIONAL_RESOURCES,    new Feature(S_PROFESSIONAL, "Use of Conditional Resource Requirements"));
 		featureLevels.put(S_JOB_LEVEL_AGING_CONTROL,  new Feature(S_PROFESSIONAL, "Job Level Priority Aging Control"));
 		featureLevels.put(S_RESOURCE_TRIGGER,         new Feature(S_PROFESSIONAL, "Use of Resource Triggers"));
 		featureLevels.put(S_OBJECTMONITOR_TRIGGER,    new Feature(S_PROFESSIONAL, "Use of Object Monitor Triggers"));
