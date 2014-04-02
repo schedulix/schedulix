@@ -329,6 +329,8 @@ public class ObjectURL
 			break;
 		case SDMSObjectComment.SCOPE:
 			p = getScope(sysEnv);
+			if (((SDMSScope) p).getType(sysEnv).intValue() == SDMSScope.SERVER)
+				parserType = new Integer(Parser.JOB_SERVER);
 			break;
 		case SDMSObjectComment.TRIGGER:
 			p = getTrigger(sysEnv);
