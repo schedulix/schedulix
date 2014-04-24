@@ -940,7 +940,6 @@ void appendTaskfile(callstatus *status, char *key, char *value, int alreadyOpen)
 		taskfile = openTaskfile(status);
 		if (status->severity != STATUS_OK) return;
 	} else {
-		// reset file position
 
 		Fseek(taskfile, 0, FILE_BEGIN);
 		filepos = -1;
