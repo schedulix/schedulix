@@ -766,9 +766,8 @@ public abstract class ManipJobDefinition extends Node
 		sticky = (WithHash) with.get(ParseStr.S_STICKY);
 		expired = (WithHash) with.get(ParseStr.S_EXPIRED);
 		condition = (String) with.get(ParseStr.S_CONDITION);
-
 		if (condition != null)
-			sysEnv.checkFeatureAvailability(SystemEnvironment.S_CONDITIONAL_RESOURCES);
+			condition = canonizeCondition (sysEnv, condition);
 
 		nr = SDMSNamedResourceTable.getNamedResource(sysEnv, name);
 		Long nrId = nr.getId(sysEnv);

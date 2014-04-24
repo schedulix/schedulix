@@ -197,7 +197,6 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_FOLDER_ENVIRONMENTS      = "FOLDER_ENVIRONMENTS";
 	public static final String S_FOLDER_RESOURCES         = "FOLDER_RESOURCES";
 	public static final String S_SE_RESOURCES             = "SE_RESOURCES";
-	public static final String S_CONDITIONAL_RESOURCES    = "S_CONDITIONAL_RESOURCES";
 	public static final String S_JOB_LEVEL_AGING_CONTROL  = "JOB_LEVEL_AGING_CONTROL";
 	public static final String S_RESOURCE_TRIGGER         = "RESOURCE_TRIGGER";
 	public static final String S_OBJECTMONITOR_TRIGGER    = "OBJECTMONITOR_TRIGGER";
@@ -256,7 +255,6 @@ public class SystemEnvironment implements Cloneable
 		featureLevels.put(S_FOLDER_ENVIRONMENTS,      new Feature(S_PROFESSIONAL, "Use of Folder Environments"));
 		featureLevels.put(S_FOLDER_RESOURCES,         new Feature(S_PROFESSIONAL, "Use of Folder Resources"));
 		featureLevels.put(S_SE_RESOURCES,             new Feature(S_PROFESSIONAL, "Use of Job or Batch Resources"));
-		featureLevels.put(S_CONDITIONAL_RESOURCES,    new Feature(S_PROFESSIONAL, "Use of Conditional Resource Requirements"));
 		featureLevels.put(S_JOB_LEVEL_AGING_CONTROL,  new Feature(S_PROFESSIONAL, "Job Level Priority Aging Control"));
 		featureLevels.put(S_RESOURCE_TRIGGER,         new Feature(S_PROFESSIONAL, "Use of Resource Triggers"));
 		featureLevels.put(S_OBJECTMONITOR_TRIGGER,    new Feature(S_PROFESSIONAL, "Use of Object Monitor Triggers"));

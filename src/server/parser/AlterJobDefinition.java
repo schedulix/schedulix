@@ -546,7 +546,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 				states = (Vector) wh.get(ParseStr.S_STATUS);
 				condition = (String) wh.get(ParseStr.S_CONDITION);
 				if (condition != null) {
-					sysEnv.checkFeatureAvailability(SystemEnvironment.S_CONDITIONAL_RESOURCES);
 					condition = canonizeCondition(sysEnv, condition);
 				}
 

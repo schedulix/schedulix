@@ -91,9 +91,6 @@ public class AlterEnvironment extends Node
 				String condition = (String) w.value;
 				if (condition != null && condition.trim().equals("")) condition = null;
 
-				if (condition != null)
-					sysEnv.checkFeatureAvailability(SystemEnvironment.S_CONDITIONAL_RESOURCES);
-
 				nr = SDMSNamedResourceTable.getNamedResource(sysEnv, (Vector) w.key);
 				SDMSEnvironmentTable.table.create(sysEnv, neId, nr.getId(sysEnv), condition);
 			}
@@ -104,9 +101,6 @@ public class AlterEnvironment extends Node
 					WithItem w = (WithItem) resourceList.get(i);
 					String condition = (String) w.value;
 					if (condition != null && condition.trim().equals("")) condition = null;
-
-					if (condition != null)
-						sysEnv.checkFeatureAvailability(SystemEnvironment.S_CONDITIONAL_RESOURCES);
 					nr = SDMSNamedResourceTable.getNamedResource(sysEnv, (Vector) w.key);
 					SDMSEnvironmentTable.table.create(sysEnv, neId, nr.getId(sysEnv), condition);
 				}

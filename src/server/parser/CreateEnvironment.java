@@ -79,9 +79,6 @@ public class CreateEnvironment extends Node
 			String condition = (String) w.value;
 			if (condition != null && condition.trim().equals("")) condition = null;
 
-			if (condition != null)
-				sysEnv.checkFeatureAvailability(SystemEnvironment.S_CONDITIONAL_RESOURCES);
-
 			if(nr.getUsage(sysEnv).intValue() != SDMSNamedResource.STATIC) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03201222223",
 				                               "Resource $1 must be STATIC", nr.getName(sysEnv)));
