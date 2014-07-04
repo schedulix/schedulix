@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -47,8 +47,7 @@ public abstract class VariableResolver
 	protected final static char[] validChars;
 	protected final static char[] eValidChars;
 
-	static
-	{
+	static {
 		final char[] carr = {
 			'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
 			'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -72,28 +71,28 @@ public abstract class VariableResolver
 	}
 
 	public String parseAndSubstitute(SystemEnvironment sysEnv,
-	                                 SDMSProxy thisObject,
-	                                 String key,
-	                                 boolean fastAccess,
-	                                 String mode,
-	                                 boolean triggercontext,
-	                                 Stack recursionCheck,
-	                                 long version)
-	throws SDMSException
+						SDMSProxy thisObject,
+						String key,
+						boolean fastAccess,
+						String mode,
+						boolean triggercontext,
+						Stack recursionCheck,
+						long version)
+		throws SDMSException
 	{
 		return parseAndSubstitute (sysEnv, thisObject, key, fastAccess, mode, triggercontext, recursionCheck, version, null);
 	}
 
 	public String parseAndSubstitute(SystemEnvironment sysEnv,
-	                                 SDMSProxy thisObject,
-	                                 String key,
-	                                 boolean fastAccess,
-	                                 String mode,
-	                                 boolean triggercontext,
-	                                 Stack recursionCheck,
-	                                 long version,
-	                                 SDMSScope evalScope)
-	throws SDMSException
+						SDMSProxy thisObject,
+						String key,
+						boolean fastAccess,
+						String mode,
+						boolean triggercontext,
+						Stack recursionCheck,
+						long version,
+						SDMSScope evalScope)
+		throws SDMSException
 	{
 
 		StringBuffer result = new StringBuffer();
@@ -127,17 +126,17 @@ public abstract class VariableResolver
 	}
 
 	private int readVar(SystemEnvironment sysEnv,
-	                    SDMSProxy thisObject,
-	                    char[] key,
-	                    int pos,
-	                    boolean fastAccess,
-	                    String mode,
-	                    boolean triggercontext,
-	                    StringBuffer result,
-	                    Stack recursionCheck,
-	                    long version,
-	                    SDMSScope evalScope)
-	throws SDMSException
+				SDMSProxy thisObject,
+				char[] key,
+				int pos,
+				boolean fastAccess,
+				String mode,
+				boolean triggercontext,
+				StringBuffer result,
+				Stack recursionCheck,
+				long version,
+				SDMSScope evalScope)
+		throws SDMSException
 	{
 		StringBuffer var = new StringBuffer();
 		int i = pos + 1;
@@ -197,72 +196,72 @@ public abstract class VariableResolver
 	}
 
 	protected String getInternalVariableValue(SystemEnvironment sysEnv,
-	                SDMSProxy thisObject,
-	                String key,
-	                boolean fastAccess,
-	                String mode,
-	                boolean triggercontext,
-	                Stack recursionCheck,
-	                long version)
-	throws SDMSException
+							SDMSProxy thisObject,
+							String key,
+							boolean fastAccess,
+							String mode,
+							boolean triggercontext,
+							Stack recursionCheck,
+							long version)
+		throws SDMSException
 	{
 		return getInternalVariableValue (sysEnv, thisObject, key, fastAccess, mode, triggercontext, recursionCheck, version, null);
 	}
 
 	abstract protected String getInternalVariableValue(SystemEnvironment sysEnv,
-	                SDMSProxy thisObject,
-	                String key,
-	                boolean fastAccess,
-	                String mode,
-	                boolean triggercontext,
-	                Stack recursionCheck,
-	                long version,
-	                SDMSScope evalScope)
-	throws SDMSException;
+							SDMSProxy thisObject,
+							String key,
+							boolean fastAccess,
+							String mode,
+							boolean triggercontext,
+							Stack recursionCheck,
+							long version,
+							SDMSScope evalScope)
+		throws SDMSException;
 
 	public String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, boolean fastAccess, String mode, boolean triggercontext, SDMSScope evalScope)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getVariableValue(sysEnv, thisObject, key, fastAccess, mode, triggercontext, -1, evalScope);
 	}
 
 	public String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, long version)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getVariableValue(sysEnv, thisObject, key, false, ParseStr.S_DEFAULT, false, version, null);
 	}
 
 	public String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getVariableValue(sysEnv, thisObject, key, false, ParseStr.S_DEFAULT, false, -1, null);
 	}
 	public String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getVariableValue(sysEnv, thisObject, key, false, ParseStr.S_DEFAULT, false, -1, null, sme);
 	}
 
 	abstract protected String getVariableValue(SystemEnvironment sysEnv,
-	                SDMSProxy thisObject,
-	                String key,
-	                boolean fastAccess,
-	                String mode,
-	                boolean triggercontext,
-	                long version,
-	                SDMSScope evalScope)
-	throws SDMSException;
+							SDMSProxy thisObject,
+							String key,
+							boolean fastAccess,
+							String mode,
+							boolean triggercontext,
+							long version,
+							SDMSScope evalScope)
+		throws SDMSException;
 
 	protected String getVariableValue(SystemEnvironment sysEnv,
-	                                  SDMSProxy thisObject,
-	                                  String key,
-	                                  boolean fastAccess,
-	                                  String mode,
-	                                  boolean triggercontext,
-	                                  long version,
-	                                  SDMSScope evalScope,
-	                                  SDMSSubmittedEntity sme)
-	throws SDMSException
+							SDMSProxy thisObject,
+							String key,
+							boolean fastAccess,
+							String mode,
+							boolean triggercontext,
+							long version,
+							SDMSScope evalScope,
+							SDMSSubmittedEntity sme)
+		throws SDMSException
 	{
 		return getVariableValue(sysEnv,thisObject,key,fastAccess,mode,triggercontext,version,evalScope);
 	}

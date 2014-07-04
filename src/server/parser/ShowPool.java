@@ -51,7 +51,7 @@ public class ShowPool extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_POOL);
 
@@ -128,7 +128,7 @@ public class ShowPool extends ShowCommented
 
 		Vector data = new Vector();
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage(sysEnv, "03603161317", "Profile"), desc, data);
+			new SDMSMessage(sysEnv, "03603161317", "Profile"), desc, data);
 
 		result.setOutputContainer(d_container);
 

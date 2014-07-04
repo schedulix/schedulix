@@ -153,7 +153,7 @@ public class ListFolder extends Node
 	}
 
 	public Vector fillVector(SystemEnvironment sysEnv, SDMSProxy co, HashSet parentSet)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = new Vector();
 		if(co instanceof SDMSFolder) {
@@ -165,7 +165,7 @@ public class ListFolder extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFolder f;
 		SDMSSchedulingEntity se;
@@ -183,11 +183,11 @@ public class ListFolder extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03201292008",
-		                                   "$1 Object(s) found", new Integer(d_container.lines)));
+				"$1 Object(s) found", new Integer(d_container.lines)));
 	}
 
 	private Boolean checkMse(SystemEnvironment sysEnv, SDMSFolder f, HashMap cache)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Long id = f.getId(sysEnv);
@@ -232,32 +232,14 @@ public class ListFolder extends Node
 	private void add_empties(Vector v)
 	{
 		String empty = "";
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
+		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
+		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
+		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
+		v.add(empty); v.add(empty); v.add(empty); v.add(empty);
 	}
 
 	private void fillFVector(SystemEnvironment sysEnv, SDMSFolder f, Vector v)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long fId = f.getId(sysEnv);
 		v.add(fId);
@@ -300,7 +282,7 @@ public class ListFolder extends Node
 	}
 
 	private void fillSeVector(SystemEnvironment sysEnv, SDMSSchedulingEntity se, Vector v)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long esmpId;
 		Long espId;

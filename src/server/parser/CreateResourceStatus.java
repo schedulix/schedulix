@@ -51,7 +51,7 @@ public class CreateResourceStatus extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			SDMSResourceStateDefinitionTable.table.create (sysEnv, name);

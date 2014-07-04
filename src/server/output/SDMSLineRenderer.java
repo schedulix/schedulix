@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -129,7 +129,7 @@ public class SDMSLineRenderer extends SDMSOutputRenderer
 		for (i = 0; i < s; i++) {
 			if (i > 0) write(ostream, " ");
 			write (ostream, pad (((SDMSOutputLabel)(p_container.desc.elementAt(i))).name,
-			                     ((SDMSOutputLabel)(p_container.desc.elementAt(i))).length, " "));
+					     ((SDMSOutputLabel)(p_container.desc.elementAt(i))).length, " "));
 		}
 		writeln(ostream, "");
 		for (i = 0; i < s; i++) {

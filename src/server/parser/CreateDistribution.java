@@ -60,7 +60,7 @@ public class CreateDistribution extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_POOL);
 		result.setFeedback(new SDMSMessage(sysEnv,"03603201216", "Distribution created"));

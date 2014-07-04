@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -45,13 +45,9 @@ public class TimerDate
 
 	private boolean isNaD;
 
-	public final boolean isNaD()
-	{
-		return isNaD;
-	}
+	public final boolean isNaD() { return isNaD; }
 
-	static
-	{
+	static {
 		gc.setTimeZone (TimeZone.getDefault());
 	}
 
@@ -88,35 +84,13 @@ public class TimerDate
 		return (int) (millis / (60 * 1000));
 	}
 
-	public final boolean eq (final TimerDate when)
-	{
-		return (isNaD || when.isNaD) ? false :   equals (when);
-	}
-	public final boolean ne (final TimerDate when)
-	{
-		return (isNaD || when.isNaD) ? true  : ! equals (when);
-	}
+	public final boolean eq (final TimerDate when) { return (isNaD || when.isNaD) ? false :   equals (when); }
+	public final boolean ne (final TimerDate when) { return (isNaD || when.isNaD) ? true  : ! equals (when); }
 
-	public final boolean gt (final TimerDate when)
-	{
-		ensureNoNaD (when);
-		return   after  (when);
-	}
-	public final boolean ge (final TimerDate when)
-	{
-		ensureNoNaD (when);
-		return ! before (when);
-	}
-	public final boolean lt (final TimerDate when)
-	{
-		ensureNoNaD (when);
-		return   before (when);
-	}
-	public final boolean le (final TimerDate when)
-	{
-		ensureNoNaD (when);
-		return ! after  (when);
-	}
+	public final boolean gt (final TimerDate when) { ensureNoNaD (when); return   after  (when); }
+	public final boolean ge (final TimerDate when) { ensureNoNaD (when); return ! before (when); }
+	public final boolean lt (final TimerDate when) { ensureNoNaD (when); return   before (when); }
+	public final boolean le (final TimerDate when) { ensureNoNaD (when); return ! after  (when); }
 
 	private final void ensureNoNaD (final TimerDate when)
 	{
@@ -169,24 +143,12 @@ public class TimerDate
 			gc.setTime (this);
 
 			switch (incr.unit()) {
-			case TimerUnit.YEAR:
-				gc.add (Calendar.YEAR,         mult * incr.mult());
-				break;
-			case TimerUnit.MONTH:
-				gc.add (Calendar.MONTH,        mult * incr.mult());
-				break;
-			case TimerUnit.WEEK:
-				gc.add (Calendar.WEEK_OF_YEAR, mult * incr.mult());
-				break;
-			case TimerUnit.DAY:
-				gc.add (Calendar.DAY_OF_MONTH, mult * incr.mult());
-				break;
-			case TimerUnit.HOUR:
-				gc.add (Calendar.HOUR_OF_DAY,  mult * incr.mult());
-				break;
-			case TimerUnit.MINUTE:
-				gc.add (Calendar.MINUTE,       mult * incr.mult());
-				break;
+			case TimerUnit.YEAR:   gc.add (Calendar.YEAR,         mult * incr.mult()); break;
+			case TimerUnit.MONTH:  gc.add (Calendar.MONTH,        mult * incr.mult()); break;
+			case TimerUnit.WEEK:   gc.add (Calendar.WEEK_OF_YEAR, mult * incr.mult()); break;
+			case TimerUnit.DAY:    gc.add (Calendar.DAY_OF_MONTH, mult * incr.mult()); break;
+			case TimerUnit.HOUR:   gc.add (Calendar.HOUR_OF_DAY,  mult * incr.mult()); break;
+			case TimerUnit.MINUTE: gc.add (Calendar.MINUTE,       mult * incr.mult()); break;
 			default:
 				throw new IllegalArgumentException ("(04304041905) unexpected TimerUnit: " + incr);
 			}

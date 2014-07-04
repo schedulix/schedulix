@@ -52,7 +52,7 @@ public class RenameDistribution extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_POOL);
 		result.setFeedback(new SDMSMessage(sysEnv,"03603201420", "Distribution renamed"));

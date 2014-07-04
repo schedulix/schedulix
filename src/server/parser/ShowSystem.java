@@ -76,7 +76,7 @@ public class ShowSystem extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer d_container = null;
 		SDMSOutputContainer w_container = null;
@@ -107,7 +107,7 @@ public class ShowSystem extends Node
 		while(i.hasNext()) {
 			String str = (String) i.next();
 			if(!str.equals(SystemEnvironment.S_DBPASSWD) &&
-			    !str.equals(SystemEnvironment.S_SYSPASSWD))
+			   !str.equals(SystemEnvironment.S_SYSPASSWD))
 				conf.add(str);
 		}
 		Collections.sort(conf);
@@ -134,8 +134,8 @@ public class ShowSystem extends Node
 		int uphr = (int) uptime%24;
 		uptime /= 24;
 		String uptimeAsString = (uptime > 0 ? "" + uptime + " day(s) " : "") +
-		                        (uphr + uptime > 0 ? "" + uphr + " hour(s) " : "") +
-		                        (upmin + uphr + uptime > 0 ? "" + upmin + " min(s) " : "") + "" + upsec + " sec(s)";
+					(uphr + uptime > 0 ? "" + uphr + " hour(s) " : "") +
+					(upmin + uphr + uptime > 0 ? "" + upmin + " min(s) " : "") + "" + upsec + " sec(s)";
 		data.add(uptimeAsString);
 		if (SystemEnvironment.sched.envhit == 0)
 			data.add("0 %");
@@ -145,7 +145,7 @@ public class ShowSystem extends Node
 		while(i.hasNext()) {
 			String str = (String) i.next();
 			if(!str.equals(SystemEnvironment.S_DBPASSWD) &&
-			    !str.equals(SystemEnvironment.S_SYSPASSWD)
+			   !str.equals(SystemEnvironment.S_SYSPASSWD)
 			  )
 				data.add(SystemEnvironment.props.get(str));
 		}
@@ -177,7 +177,7 @@ public class ShowSystem extends Node
 	}
 
 	private void add_worker(SystemEnvironment sysEnv, SDMSOutputContainer w_container)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector data;
 		ThreadGroup wg = SystemEnvironment.wg;
@@ -202,7 +202,7 @@ public class ShowSystem extends Node
 	}
 
 	private void listObjects(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Iterator i = SystemEnvironment.repository.getTableIterator(sysEnv);
 

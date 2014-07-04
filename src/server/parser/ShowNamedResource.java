@@ -61,7 +61,7 @@ public class ShowNamedResource extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedResource nr;
 		SDMSOutputContainer d_container = null;
@@ -153,7 +153,7 @@ public class ShowNamedResource extends ShowCommented
 	}
 
 	private void add_resources(SystemEnvironment sysEnv, Long nrId, Vector v)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector desc = new Vector();
 		SDMSScope s;
@@ -237,7 +237,7 @@ public class ShowNamedResource extends ShowCommented
 	}
 
 	private void add_parameters(SystemEnvironment sysEnv, Long nrId, Vector v)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector c_desc = new Vector();
 
@@ -268,7 +268,7 @@ public class ShowNamedResource extends ShowCommented
 	}
 
 	private void render_parameter(SystemEnvironment sysEnv, SDMSNamedResource nr, SDMSOutputContainer c, SDMSParameterDefinition pd)
-	throws SDMSException
+		throws SDMSException
 	{
 		final String name = pd.getName (sysEnv);
 		final String value = pd.getDefaultValue(sysEnv);
@@ -331,21 +331,21 @@ public class ShowNamedResource extends ShowCommented
 	}
 
 	private void add_job_definitions(SystemEnvironment sysEnv, SDMSNamedResource nr, Long nrId, Vector v)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSOutputContainer c_container = new SDMSOutputContainer(sysEnv, null, fillHeadInfo());
 
 		switch(nr.getUsage(sysEnv).intValue()) {
-		case SDMSNamedResource.STATIC:
-			searchAndRenderStatic(sysEnv, nrId, c_container);
-			break;
-		case SDMSNamedResource.SYSTEM:
-			searchAndRenderSystem(sysEnv, nrId, c_container);
-			break;
-		case SDMSNamedResource.SYNCHRONIZING:
-			searchAndRenderSync(sysEnv, nrId, c_container);
-			break;
+			case SDMSNamedResource.STATIC:
+				searchAndRenderStatic(sysEnv, nrId, c_container);
+				break;
+			case SDMSNamedResource.SYSTEM:
+				searchAndRenderSystem(sysEnv, nrId, c_container);
+				break;
+			case SDMSNamedResource.SYNCHRONIZING:
+				searchAndRenderSync(sysEnv, nrId, c_container);
+				break;
 		}
 		Collections.sort(c_container.dataset, c_container.getComparator(sysEnv, 1));
 
@@ -354,7 +354,7 @@ public class ShowNamedResource extends ShowCommented
 	}
 
 	private void searchAndRenderStatic(SystemEnvironment sysEnv, Long nrId, SDMSOutputContainer c_container)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceRequirement rr;
 		SDMSEnvironment e;
@@ -390,7 +390,7 @@ public class ShowNamedResource extends ShowCommented
 	}
 
 	private void searchAndRenderSystem(SystemEnvironment sysEnv, Long nrId, SDMSOutputContainer c_container)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceRequirement rr;
 		SDMSFootprint fp;
@@ -433,7 +433,7 @@ public class ShowNamedResource extends ShowCommented
 	}
 
 	private void searchAndRenderSync(SystemEnvironment sysEnv, Long nrId, SDMSOutputContainer c_container)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceRequirement rr;
 		SDMSSchedulingEntity se;
@@ -450,7 +450,7 @@ public class ShowNamedResource extends ShowCommented
 	}
 
 	private void render_rr(SystemEnvironment sysEnv, Vector c_data, SDMSResourceRequirement rr, SDMSSchedulingEntity se)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateMappingProfile rsmp;
 
@@ -498,7 +498,7 @@ public class ShowNamedResource extends ShowCommented
 	}
 
 	private void render_env(SystemEnvironment sysEnv, Vector c_data, SDMSSchedulingEntity se, SDMSEnvironment e)
-	throws SDMSException
+		throws SDMSException
 	{
 		c_data.add(se.getId(sysEnv));
 		c_data.add(se.pathVector(sysEnv));

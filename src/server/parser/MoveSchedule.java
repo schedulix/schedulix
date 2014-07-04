@@ -62,7 +62,7 @@ public class MoveSchedule
 	}
 
 	private void moveSchedule(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSchedule parentSce;
 		String newName;
@@ -96,7 +96,7 @@ public class MoveSchedule
 	}
 
 	private void renameSchedule(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Long oldParentId = SDMSScheduleTable.getSchedule (sysEnv, fromPath).getId (sysEnv);
 		final SDMSKey oldParentKey = new SDMSKey (oldParentId, fromName);
@@ -108,7 +108,7 @@ public class MoveSchedule
 	}
 
 	public void go (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (newName == null)
 			moveSchedule(sysEnv);

@@ -53,7 +53,7 @@ public class ShowSession extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		ThreadGroup tg;
 		SDMSThread[]    list;
@@ -108,7 +108,7 @@ public class ShowSession extends Node
 	}
 
 	private void fillVector(SystemEnvironment sysEnv, ConnectionEnvironment cEnv, Vector data)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(cEnv.id() == env.id()) {
 			data.add(" * ");

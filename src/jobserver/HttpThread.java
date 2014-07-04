@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -80,7 +80,7 @@ public class HttpThread
 	}
 
 	private String getFile(RandomAccessFile f, long limit)
-	throws IOException
+		throws IOException
 	{
 		StringBuffer sb = new StringBuffer();
 		if (f == null) return null;
@@ -104,7 +104,7 @@ public class HttpThread
 	}
 
 	private void executeQuery(String query, PrintWriter out)
-	throws java.io.UnsupportedEncodingException
+		throws java.io.UnsupportedEncodingException
 	{
 
 		HashMap qry = new HashMap();
@@ -228,7 +228,7 @@ public class HttpThread
 		final Runtime rt = Runtime.getRuntime();
 		Socket remote = null;
 
-		RUNLOOP:	while (run) {
+RUNLOOP:	while (run) {
 			Long p = (Long) cfg.get (Config.HTTP_PORT);
 			if (p != null)
 				port = p.intValue();

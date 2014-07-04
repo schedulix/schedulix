@@ -63,7 +63,7 @@ public class SetParameter extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (jobid == null) jobid = sysEnv.cEnv.uid();
 		if (key != null) {

@@ -51,7 +51,7 @@ public class DropObjectMonitor extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_OBJECT_MONITOR);
 		result.setFeedback(new SDMSMessage(sysEnv, "02108241744", "Object Monitor dropped"));

@@ -49,7 +49,7 @@ public class ListWt extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_OBJECT_MONITOR);
 		SDMSOutputContainer d_container = null;
@@ -66,8 +66,8 @@ public class ListWt extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "02108241006", "$1 Watch Type(s) found",
-		                        new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "02108241006", "$1 Watch Type(s) found",
+					new Integer(d_container.lines)));
 	}
 
 }

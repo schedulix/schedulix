@@ -85,8 +85,8 @@ public class ShutdownThread extends SDMSThread
 		}
 		doTrace(null, "Release repository lock from " + SystemEnvironment.startTime, SEVERITY_INFO);
 		String s1 = "DELETE FROM REPOSITORY_LOCK " +
-		            (postgres ? "WHERE TS = CAST (? AS DECIMAL)" :
-		             " WHERE TS = ?");
+			    (postgres ? "WHERE TS = CAST (? AS DECIMAL)" :
+			     " WHERE TS = ?");
 		try {
 			PreparedStatement pDelete = sysEnv.dbConnection.prepareStatement(s1);
 			pDelete.clearParameters();

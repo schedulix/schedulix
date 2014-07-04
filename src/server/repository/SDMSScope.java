@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -56,7 +56,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public SDMSScope copy(SystemEnvironment sysEnv, Long targetScopeId, String name)
-	throws SDMSException
+		throws SDMSException
 	{
 		final HashMap rMap = new HashMap();
 		final HashMap pMap = new HashMap();
@@ -67,7 +67,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	private SDMSScope internalCopy(SystemEnvironment sysEnv, Long targetScopeId, String name, HashMap rMap, HashMap pMap)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Long id = getId(sysEnv);
@@ -81,46 +81,46 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 		SDMSScope f;
 		if (type.equals(new Integer(SDMSScope.SCOPE))) {
 			f = SDMSScopeTable.table.create(sysEnv,
-			                                name,
-			                                defaultGId,
-			                                targetScopeId,
-			                                getType(sysEnv),
-			                                null,
-			                                null,
-			                                null,
-			                                null,
-			                                null,
-			                                null,
-			                                null,
-			                                null,
-			                                new Integer(0),
-			                                null,
-			                                null,
-			                                null,
-			                                null,
-			                                getInheritPrivs(sysEnv)
-			                               );
+							name,
+							defaultGId,
+							targetScopeId,
+							getType(sysEnv),
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							new Integer(0),
+							null,
+							null,
+							null,
+							null,
+							getInheritPrivs(sysEnv)
+			);
 		} else {
 			f = SDMSScopeTable.table.create(sysEnv,
-			                                name,
-			                                defaultGId,
-			                                targetScopeId,
-			                                getType(sysEnv),
-			                                Boolean.FALSE,
-			                                Boolean.FALSE,
-			                                Boolean.FALSE,
-			                                getIsEnabled(sysEnv),
-			                                Boolean.FALSE,
-			                                new Integer(SDMSScope.NOMINAL),
-			                                getPasswd(sysEnv),
-			                                getSalt(sysEnv),
-			                                getMethod(sysEnv),
-			                                null,
-			                                getNode(sysEnv),
-			                                null,
-			                                null,
-			                                getInheritPrivs(sysEnv)
-			                               );
+							name,
+							defaultGId,
+							targetScopeId,
+							getType(sysEnv),
+							Boolean.FALSE,
+							Boolean.FALSE,
+							Boolean.FALSE,
+							getIsEnabled(sysEnv),
+							Boolean.FALSE,
+							new Integer(SDMSScope.NOMINAL),
+							getPasswd(sysEnv),
+							getSalt(sysEnv),
+							getMethod(sysEnv),
+							null,
+							getNode(sysEnv),
+							null,
+							null,
+							getInheritPrivs(sysEnv)
+			);
 		}
 
 		Long newId = f.getId(sysEnv);
@@ -137,31 +137,31 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 		while (i_r.hasNext()) {
 			SDMSResource r = (SDMSResource)i_r.next();
 			SDMSResource newR = SDMSResourceTable.table.create(sysEnv,
-			                    r.getNrId(sysEnv),
-			                    newId,
-			                    null,
-			                    defaultGId,
-			                    null,
-			                    null,
-			                    null,
-			                    r.getRsdId(sysEnv),
-			                    null,
-			                    r.getDefinedAmount(sysEnv),
-			                    r.getRequestableAmount(sysEnv),
-			                    r.getDefinedAmount(sysEnv),
-			                    r.getDefinedAmount(sysEnv),
-			                    r.getIsOnline(sysEnv),
-			                    r.getFactor(sysEnv),
-			                    r.getTraceInterval(sysEnv),
-			                    r.getTraceBase(sysEnv),
-			                    r.getTraceBaseMultiplier(sysEnv),
-			                    fzero,
-			                    fzero,
-			                    fzero,
-			                    fzero,
-			                    lzero,
-			                    lzero
-			                                                  );
+						r.getNrId(sysEnv),
+						newId,
+						null,
+						defaultGId,
+						null,
+						null,
+						null,
+						r.getRsdId(sysEnv),
+						null,
+						r.getDefinedAmount(sysEnv),
+						r.getRequestableAmount(sysEnv),
+						r.getDefinedAmount(sysEnv),
+						r.getDefinedAmount(sysEnv),
+						r.getIsOnline(sysEnv),
+						r.getFactor(sysEnv),
+						r.getTraceInterval(sysEnv),
+						r.getTraceBase(sysEnv),
+						r.getTraceBaseMultiplier(sysEnv),
+						fzero,
+						fzero,
+						fzero,
+						fzero,
+						lzero,
+						lzero
+			);
 			rMap.put(r.getId(sysEnv), newR.getId(sysEnv));
 		}
 
@@ -176,7 +176,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	private UserConnection getConnection(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSThread[]    list;
 		ThreadGroup tg = SystemEnvironment.utg;
@@ -201,7 +201,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public boolean isConnected(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(getType(sysEnv).intValue() == SDMSScope.SERVER) {
 			if(getConnection(sysEnv) != null) return true;
@@ -211,7 +211,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public int getConnectionId(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(getType(sysEnv).intValue() == SDMSScope.SERVER) {
 			UserConnection uc;
@@ -223,7 +223,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public long getIdle(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(getType(sysEnv).intValue() == SDMSScope.SERVER) {
 			UserConnection uc = getConnection(sysEnv);
@@ -241,7 +241,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public void setIsRegistered(SystemEnvironment sysEnv, Boolean state)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(state.equals(getIsRegistered(sysEnv))) return ;
 		super.setIsRegistered(sysEnv, state);
@@ -250,7 +250,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public void setOwnerId(SystemEnvironment sysEnv, Long ownerId)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(ownerId.equals(getOwnerId(sysEnv))) return ;
 		super.setOwnerId(sysEnv, ownerId);
@@ -259,19 +259,19 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public void delete(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		delete(sysEnv, false);
 	}
 
 	public void delete(SystemEnvironment sysEnv, boolean cascade)
-	throws SDMSException
+		throws SDMSException
 	{
 		myDelete(sysEnv, cascade);
 	}
 
 	public void myDelete(SystemEnvironment sysEnv, boolean cascade)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector cv;
 		final Long id = getId(sysEnv);
@@ -315,13 +315,13 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public String getVariableValue (final SystemEnvironment sysEnv, final String key)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SVR.getVariableValue (sysEnv, this, key, -1);
 	}
 
 	public String getVariableValue (final SystemEnvironment sysEnv, final String key, final long version)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SVR.getVariableValue (sysEnv, this, key, version);
 	}
@@ -335,7 +335,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public boolean canExecute(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSPrivilege p = null;
 		HashSet hg = new HashSet();
@@ -351,13 +351,13 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return pathString(sysEnv);
 	}
 
 	public String getURL(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (getType(sysEnv).intValue() == SDMSScope.SCOPE)
 			return "scope " + getURLName(sysEnv);
@@ -366,13 +366,13 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public String getSubtypeName(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getTypeAsString(env);
 	}
 
 	public void notify(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (this.getType(sysEnv).intValue() == SDMSScope.SERVER) {
 
@@ -424,7 +424,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public long getPrivileges(SystemEnvironment sysEnv, long checkPrivs, boolean fastFail, Vector checkGroups)
-	throws SDMSException
+		throws SDMSException
 	{
 		long p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
 		if(sysEnv.cEnv.isUser())

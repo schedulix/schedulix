@@ -52,7 +52,7 @@ public class ShowRsm extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateMappingProfile rsmp;
 		SDMSOutputContainer d_container = null;
@@ -140,7 +140,7 @@ public class ShowRsm extends ShowCommented
 
 		data.add(r_container);
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage(sysEnv, "03204021426", "Resource State Mapping"), desc, data);
+			new SDMSMessage(sysEnv, "03204021426", "Resource State Mapping"), desc, data);
 
 		result.setOutputContainer(d_container);
 

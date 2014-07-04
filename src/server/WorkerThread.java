@@ -56,7 +56,7 @@ public class WorkerThread extends SDMSThread
 	private boolean		protoCommit = false;
 
 	public WorkerThread(SystemEnvironment sysEnv, ThreadGroup t, SyncFifo f, int i)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(t, "Worker" + Integer.toString(i));
 		if (i == 0) protoCommit = true;
@@ -66,7 +66,7 @@ public class WorkerThread extends SDMSThread
 			env = (SystemEnvironment) sysEnv.clone();
 		} catch(CloneNotSupportedException cnse) {
 			throw new FatalException(new SDMSMessage(sysEnv, "03110181513",
-			                         "Cannot Clone SystemEnvironment"));
+							"Cannot Clone SystemEnvironment"));
 		}
 		env.dbConnection = Server.connectToDB(env);
 		retryCount = SystemEnvironment.txRetryCount;
@@ -136,7 +136,7 @@ public class WorkerThread extends SDMSThread
 						cEnv.setState(ConnectionEnvironment.COMMITTING);
 						if (protoCommit)
 							doTrace(cEnv, "Server Execution time for " + n.getClass() + " : " + (System.currentTimeMillis() - cEnv.tx.startTime) +
-							        " ms -- Start Committing", SEVERITY_MESSAGE);
+								" ms -- Start Committing", SEVERITY_MESSAGE);
 						cEnv.tx.commit(env);
 
 						i = retryCount;
@@ -144,7 +144,7 @@ public class WorkerThread extends SDMSThread
 						if (n instanceof Connect) {
 							Node cmd = ((Connect) n).getNode();
 							doTrace(cEnv, "Execution time for " + n.getClass() + (cmd == null ? "" : "/" + cmd.getClass()) + " : " +
-							        (cEnv.tx.endTime - cEnv.tx.startTime) + " ms", SEVERITY_MESSAGE);
+								(cEnv.tx.endTime - cEnv.tx.startTime) + " ms", SEVERITY_MESSAGE);
 						} else
 							doTrace(cEnv, "Execution time for " + n.getClass() + " : " + (cEnv.tx.endTime - cEnv.tx.startTime) + " ms", SEVERITY_MESSAGE);
 					} catch (RecoverableException re) {
@@ -196,11 +196,11 @@ public class WorkerThread extends SDMSThread
 							} catch (DeadlockException de) {
 
 								throw new FatalException(
-								        new SDMSMessage(env, "03110181515", "Deadlock at Rollback"));
+										new SDMSMessage(env, "03110181515", "Deadlock at Rollback"));
 							} catch (SQLException sqle) {
 
 								throw new FatalException(
-								        new SDMSMessage(env, "03110181516", "Rollback failed"));
+										new SDMSMessage(env, "03110181516", "Rollback failed"));
 							}
 					}
 				} while(i < retryCount);

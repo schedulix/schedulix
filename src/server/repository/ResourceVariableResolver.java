@@ -51,8 +51,7 @@ public class ResourceVariableResolver extends VariableResolver
 
 	private static final HashSet internalVars;
 
-	static
-	{
+	static {
 		internalVars = new HashSet();
 		internalVars.add(S_STATE);
 		internalVars.add(S_AMOUNT);
@@ -65,14 +64,14 @@ public class ResourceVariableResolver extends VariableResolver
 	private SDMSSubmittedEntity sme = null;
 
 	protected String getVariableValue(SystemEnvironment sysEnv,
-	                                  SDMSProxy thisObject,
-	                                  String key,
-	                                  boolean fastAccess,
-	                                  String mode,
-	                                  boolean triggercontext,
-	                                  long version,
-	                                  SDMSScope evalScope)
-	throws SDMSException
+					  SDMSProxy thisObject,
+					  String key,
+					  boolean fastAccess,
+					  String mode,
+					  boolean triggercontext,
+					  long version,
+					  SDMSScope evalScope)
+		throws SDMSException
 	{
 		sme = null;
 		final String retval = getInternalVariableValue(sysEnv, (SDMSResource) thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null);
@@ -81,15 +80,15 @@ public class ResourceVariableResolver extends VariableResolver
 	}
 
 	protected String getVariableValue(SystemEnvironment sysEnv,
-	                                  SDMSProxy thisObject,
-	                                  String key,
-	                                  boolean fastAccess,
-	                                  String mode,
-	                                  boolean triggercontext,
-	                                  long version,
-	                                  SDMSScope evalScope,
-	                                  SDMSSubmittedEntity sme)
-	throws SDMSException
+					  SDMSProxy thisObject,
+					  String key,
+					  boolean fastAccess,
+					  String mode,
+					  boolean triggercontext,
+					  long version,
+					  SDMSScope evalScope,
+					  SDMSSubmittedEntity sme)
+		throws SDMSException
 	{
 		this.sme = sme;
 		final String retval = getInternalVariableValue(sysEnv, (SDMSResource) thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null);
@@ -98,7 +97,7 @@ public class ResourceVariableResolver extends VariableResolver
 	}
 
 	protected String getStandardVariable(SystemEnvironment sysEnv, SDMSResource thisResource, String key)
-	throws SDMSException
+		throws SDMSException
 	{
 		String retVal = "";
 
@@ -122,11 +121,10 @@ public class ResourceVariableResolver extends VariableResolver
 		} else if (key.equals(S_REQUESTED_AMOUNT)) {
 			Integer amount = null;
 			if (sme != null) {
-				try {
-					SDMSResourceAllocation sa = SDMSResourceAllocationTable.idx_smeId_rId_getUnique(sysEnv, new SDMSKey(sme.getId(sysEnv), thisResource.getId(sysEnv)));
+				Vector sav = SDMSResourceAllocationTable.idx_smeId_nrId.getVector(sysEnv, new SDMSKey(sme.getId(sysEnv), thisResource.getNrId(sysEnv)));
+				if ( sav.size() > 0) {
+					SDMSResourceAllocation sa = (SDMSResourceAllocation) sav.get(0);
 					amount = sa.getAmount(sysEnv);
-				} catch (NotFoundException nfe) {
-
 				}
 			}
 			if (amount == null) retVal = "";
@@ -140,15 +138,15 @@ public class ResourceVariableResolver extends VariableResolver
 	}
 
 	protected String getInternalVariableValue(SystemEnvironment sysEnv,
-	                SDMSProxy thisObject,
-	                String key,
-	                boolean fastAccess,
-	                String mode,
-	                boolean triggercontext,
-	                Stack recursionCheck,
-	                long version,
-	                SDMSScope evalScope)
-	throws SDMSException
+						SDMSProxy thisObject,
+						String key,
+						boolean fastAccess,
+						String mode,
+						boolean triggercontext,
+						Stack recursionCheck,
+						long version,
+						SDMSScope evalScope)
+		throws SDMSException
 	{
 		SDMSResource thisResource = (SDMSResource) thisObject;
 

@@ -53,7 +53,7 @@ public class CreateRsm extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateMappingProfile rsmp;
 		Long rsmpId;

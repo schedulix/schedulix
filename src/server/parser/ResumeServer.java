@@ -46,7 +46,7 @@ public class ResumeServer extends ManipServer
 	}
 
 	protected void action(SystemEnvironment sysEnv, SDMSScope s)
-	throws SDMSException
+		throws SDMSException
 	{
 		s.setIsSuspended(sysEnv, Boolean.FALSE);
 		SystemEnvironment.sched.notifyChange(sysEnv, s, SchedulingThread.RESUME);

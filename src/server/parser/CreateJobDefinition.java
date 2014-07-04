@@ -48,7 +48,7 @@ public class CreateJobDefinition extends ManipJobDefinition
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		evaluateWith(sysEnv);
 		if(otype == null) {
@@ -75,48 +75,48 @@ public class CreateJobDefinition extends ManipJobDefinition
 
 		if(SDMSFolderTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(folderId, name))) {
 			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03201290918", "Object with name $1 already exists within $2",
-			                                name, SDMSFolderTable.getObject(sysEnv, folderId).pathString(sysEnv)));
+					name, SDMSFolderTable.getObject(sysEnv, folderId).pathString(sysEnv)));
 		}
 		SDMSSchedulingEntity se;
 		try {
 			se = SDMSSchedulingEntityTable.table.create(sysEnv,
-			                name,
-			                folderId,
-			                gId,
-			                new Integer(type),
-			                runProgram,
-			                rerunProgram,
-			                killProgram,
-			                workdir,
-			                logfile,
-			                truncLog,
-			                errlogfile,
-			                truncErrlog,
-			                expectedRuntime,
-			                expectedFinaltime,
-			                getExpectedRuntime,
-			                priority,
-			                minPriority,
-			                agingAmount,
-			                agingBase,
-			                submitSuspended,
-			                resumeAt,
-			                resumeIn,
-			                resumeBase,
-			                masterSubmittable,
-			                to_mult,
-			                to_interval,
-			                to_esdId,
-			                sameNode,
-			                gangSchedule,
-			                dependencyOperation,
-			                esmpId,
-			                espId,
-			                null,
-			                neId,
-			                fpId,
-			                inheritPrivs
-			                                           );
+						name,
+						folderId,
+						gId,
+						new Integer(type),
+						runProgram,
+						rerunProgram,
+						killProgram,
+						workdir,
+						logfile,
+						truncLog,
+						errlogfile,
+						truncErrlog,
+						expectedRuntime,
+						expectedFinaltime,
+						getExpectedRuntime,
+						priority,
+						minPriority,
+						agingAmount,
+						agingBase,
+						submitSuspended,
+						resumeAt,
+						resumeIn,
+						resumeBase,
+						masterSubmittable,
+						to_mult,
+						to_interval,
+						to_esdId,
+						sameNode,
+						gangSchedule,
+						dependencyOperation,
+						esmpId,
+						espId,
+						null,
+						neId,
+						fpId,
+						inheritPrivs
+			);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
 				AlterJobDefinition ajd = new AlterJobDefinition(path, name, withs, Boolean.FALSE);

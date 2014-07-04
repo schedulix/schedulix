@@ -48,7 +48,7 @@ public class ListExitStateTranslation extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXIT_STATE_TRANSLATION);
 		SDMSOutputContainer d_container = null;
@@ -59,7 +59,7 @@ public class ListExitStateTranslation extends Node
 		desc.add("PRIVS");
 
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage (sysEnv, "02111281855", "List of Exit State Translations"), desc);
+			new SDMSMessage (sysEnv, "02111281855", "List of Exit State Translations"), desc);
 
 		Vector estp_v = new Vector();
 
@@ -68,8 +68,8 @@ public class ListExitStateTranslation extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "02111281857",
-		                        "$1 Exit State Translations(s) found", new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "02111281857",
+				"$1 Exit State Translations(s) found", new Integer(d_container.lines)));
 	}
 }
 

@@ -53,7 +53,7 @@ public class CreateEnvironment extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSNamedEnvironment ne;
@@ -81,7 +81,7 @@ public class CreateEnvironment extends Node
 
 			if(nr.getUsage(sysEnv).intValue() != SDMSNamedResource.STATIC) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03201222223",
-				                               "Resource $1 must be STATIC", nr.getName(sysEnv)));
+						"Resource $1 must be STATIC", nr.getName(sysEnv)));
 			}
 			SDMSEnvironmentTable.table.create(sysEnv, neId, nr.getId(sysEnv), condition);
 		}

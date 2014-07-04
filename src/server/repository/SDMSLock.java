@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -46,14 +46,8 @@ public class SDMSLock
 	public static final int O   = 0x05;
 	public static final int N   = 0xFF;
 
-	public SDMSLock()
-	{
-		mode = N;
-	}
-	protected SDMSLock(int m)
-	{
-		mode = m;
-	}
+	public SDMSLock() { mode = N; }
+	protected SDMSLock(int m) { mode = m; }
 	public SDMSLock(SystemEnvironment env, int m) throws SDMSException
 	{
 		if (m != X    &&
@@ -61,13 +55,10 @@ public class SDMSLock
 		    m != O    &&
 		    m != N) {
 			throw new FatalException(new SDMSMessage(env, "03110181534",
-			                         "Invalid Lockmode $1", new Integer(m)));
+						"Invalid Lockmode $1", new Integer(m)));
 		}
 		mode = m;
 	}
-	public int getLockmode()
-	{
-		return mode;
-	}
+	public int getLockmode() { return mode; }
 }
 

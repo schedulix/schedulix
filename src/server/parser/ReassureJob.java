@@ -52,7 +52,7 @@ public class ReassureJob extends JobDistribution
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope s;
 		SDMSOutputContainer d_container = null;
@@ -75,7 +75,7 @@ public class ReassureJob extends JobDistribution
 	}
 
 	private void search_job(SystemEnvironment sysEnv, SDMSScope s, Vector desc, Vector data)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSSubmittedEntity sme;
@@ -99,7 +99,7 @@ public class ReassureJob extends JobDistribution
 	}
 
 	private void process_job(SystemEnvironment sysEnv, SDMSScope s, SDMSSubmittedEntity sme, Vector desc, Vector data)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		int status = sme.getState(sysEnv).intValue();
@@ -122,7 +122,7 @@ public class ReassureJob extends JobDistribution
 	}
 
 	private void process_killjob(SystemEnvironment sysEnv, SDMSScope s, SDMSKillJob kj, Vector desc, Vector data)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		int status = kj.getState(sysEnv).intValue();

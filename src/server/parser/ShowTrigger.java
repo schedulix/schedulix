@@ -53,7 +53,7 @@ public class ShowTrigger extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer d_container = null;
 		SDMSOutputContainer r_container = null;
@@ -158,18 +158,18 @@ public class ShowTrigger extends ShowCommented
 		int objType = t.getObjectType(sysEnv).intValue();
 		data.add(t.getObjectTypeAsString(sysEnv));
 		switch(objType) {
-		case SDMSTrigger.JOB_DEFINITION:
-			data.add(SDMSSchedulingEntityTable.getObject(sysEnv, t.getFireId(sysEnv)).pathString(sysEnv));
-			break;
-		case SDMSTrigger.NAMED_RESOURCE:
-			data.add(SDMSNamedResourceTable.getObject(sysEnv, t.getFireId(sysEnv)).pathString(sysEnv));
-			break;
-		case SDMSTrigger.RESOURCE:
-			SDMSResource r = SDMSResourceTable.getObject(sysEnv, t.getFireId(sysEnv));
-			SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, r.getNrId(sysEnv));
-			SDMSScope s = SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv));
-			data.add(nr.pathString(sysEnv) + " in " + s.pathString(sysEnv));
-			break;
+			case SDMSTrigger.JOB_DEFINITION:
+				data.add(SDMSSchedulingEntityTable.getObject(sysEnv, t.getFireId(sysEnv)).pathString(sysEnv));
+				break;
+			case SDMSTrigger.NAMED_RESOURCE:
+				data.add(SDMSNamedResourceTable.getObject(sysEnv, t.getFireId(sysEnv)).pathString(sysEnv));
+				break;
+			case SDMSTrigger.RESOURCE:
+				SDMSResource r = SDMSResourceTable.getObject(sysEnv, t.getFireId(sysEnv));
+				SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, r.getNrId(sysEnv));
+				SDMSScope s = SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv));
+				data.add(nr.pathString(sysEnv) + " in " + s.pathString(sysEnv));
+				break;
 		}
 		data.add(t.getIsActive(sysEnv));
 		data.add(t.getActionAsString(sysEnv));
@@ -268,19 +268,19 @@ public class ShowTrigger extends ShowCommented
 			Long fromStateId = ts.getFromStateId(sysEnv);
 			Long toStateId = ts.getToStateId(sysEnv);
 			switch(objType) {
-			case SDMSTrigger.JOB_DEFINITION:
-				if(fromStateId != null) rdata.add(SDMSExitStateDefinitionTable.getObject(sysEnv,fromStateId).getName(sysEnv));
-				else			rdata.add(null);
-				if(toStateId != null)	rdata.add(SDMSExitStateDefinitionTable.getObject(sysEnv,toStateId).getName(sysEnv));
-				else			rdata.add(null);
-				break;
-			case SDMSTrigger.NAMED_RESOURCE:
-			case SDMSTrigger.RESOURCE:
-				if(fromStateId != null) rdata.add(SDMSResourceStateDefinitionTable.getObject(sysEnv,fromStateId).getName(sysEnv));
-				else			rdata.add(null);
-				if(toStateId != null)	rdata.add(SDMSResourceStateDefinitionTable.getObject(sysEnv,toStateId).getName(sysEnv));
-				else			rdata.add(null);
-				break;
+				case SDMSTrigger.JOB_DEFINITION:
+					if(fromStateId != null) rdata.add(SDMSExitStateDefinitionTable.getObject(sysEnv,fromStateId).getName(sysEnv));
+					else			rdata.add(null);
+					if(toStateId != null)	rdata.add(SDMSExitStateDefinitionTable.getObject(sysEnv,toStateId).getName(sysEnv));
+					else			rdata.add(null);
+					break;
+				case SDMSTrigger.NAMED_RESOURCE:
+				case SDMSTrigger.RESOURCE:
+					if(fromStateId != null) rdata.add(SDMSResourceStateDefinitionTable.getObject(sysEnv,fromStateId).getName(sysEnv));
+					else			rdata.add(null);
+					if(toStateId != null)	rdata.add(SDMSResourceStateDefinitionTable.getObject(sysEnv,toStateId).getName(sysEnv));
+					else			rdata.add(null);
+					break;
 			}
 			r_container.addData(sysEnv, rdata);
 		}

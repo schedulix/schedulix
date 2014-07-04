@@ -52,7 +52,7 @@ public class CreateGroup extends ManipGroup
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSGroup g;
 		Long newGroupId = null;

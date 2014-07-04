@@ -63,7 +63,7 @@ public class CopyFolder extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFolder f, p, parent;
 		SDMSSchedulingEntity se_o;
@@ -121,12 +121,12 @@ public class CopyFolder extends Node
 
 				if(SDMSSchedulingEntityTable.idx_folderId_name.containsKey(sysEnv, new SDMSKey(npId, name))) {
 					throw new DuplicateKeyException(new SDMSMessage(sysEnv, "02204160938", "Object with name $1 already exists within $2",
-					                                name, parent.pathString(sysEnv)));
+						name, parent.pathString(sysEnv)));
 				}
 
 				if (SDMSFolderTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(npId, name))) {
 					throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03112191224", "Object with name $1 already exists within $2",
-					                                name, parent.pathString(sysEnv)));
+						name, parent.pathString(sysEnv)));
 				}
 
 				if(npId.equals(myId)) {
@@ -153,7 +153,7 @@ public class CopyFolder extends Node
 					name = se_o.getName(sysEnv);
 				if(SDMSFolderTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(npId, name))) {
 					throw new DuplicateKeyException(new SDMSMessage(sysEnv, "02204160925", "Object with name $1 already exists within $2",
-					                                name, parent.pathString(sysEnv)));
+						name, parent.pathString(sysEnv)));
 				}
 				SDMSSchedulingEntity newSe = se_o.copy(sysEnv, npId, name, relocationTable);
 				relocationTable.put(se_o.getId(sysEnv), newSe.getId(sysEnv));

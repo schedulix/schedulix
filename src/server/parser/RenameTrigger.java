@@ -51,7 +51,7 @@ public class RenameTrigger extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSTrigger t = (SDMSTrigger) url.resolve(sysEnv);
 

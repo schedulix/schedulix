@@ -49,7 +49,7 @@ public class ListResourceStatus extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateDefinition o;
 		SDMSOutputContainer d_container = null;
@@ -78,8 +78,8 @@ public class ListResourceStatus extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03201100047", "$1 Resource State Definition(s) found",
-		                        new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "03201100047", "$1 Resource State Definition(s) found",
+					new Integer(d_container.lines)));
 
 	}
 

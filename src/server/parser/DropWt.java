@@ -51,7 +51,7 @@ public class DropWt extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_OBJECT_MONITOR);
 		result.setFeedback(new SDMSMessage(sysEnv, "02108241000", "Watch Type dropped"));

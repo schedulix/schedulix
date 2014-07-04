@@ -441,8 +441,7 @@ public class ParseStr
 
 	private static final HashMap mapper = new HashMap();
 
-	static
-	{
+	static {
 		mapper.put(new Integer(Parser.ACTION),			ParseStr.S_ACTION);
 		mapper.put(new Integer(Parser.ACTIVE),			ParseStr.S_ACTIVE);
 		mapper.put(new Integer(Parser.ADD),			ParseStr.S_ADD);

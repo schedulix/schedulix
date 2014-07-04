@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -46,14 +46,8 @@ public abstract class SDMSOutputRenderer
 	{
 	}
 
-	public void setSilent(boolean silent)
-	{
-		this.silent = silent;
-	}
-	public void setVerbose(boolean verbose)
-	{
-		this.verbose = verbose;
-	}
+	public void setSilent(boolean silent) { this.silent = silent; }
+	public void setVerbose(boolean verbose) { this.verbose = verbose; }
 
 	public abstract void render(SystemEnvironment env, SDMSOutput p_output) throws FatalException;
 	public abstract void render(PrintStream ostream, SDMSOutput p_output) throws FatalException;

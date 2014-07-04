@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -54,18 +54,12 @@ public final class Trace
 	private static final String levelString (final int level)
 	{
 		switch (level) {
-		case FATAL:
-			return "FATAL  ";
-		case ERROR:
-			return "ERROR  ";
-		case INFO:
-			return "INFO   ";
-		case WARNING:
-			return "WARNING";
-		case DEBUG:
-			return "DEBUG  ";
-		case MESSAGE:
-			return "MESSAGE";
+		case FATAL:   return "FATAL  ";
+		case ERROR:   return "ERROR  ";
+		case INFO:    return "INFO   ";
+		case WARNING: return "WARNING";
+		case DEBUG:   return "DEBUG  ";
+		case MESSAGE: return "MESSAGE";
 		}
 
 		return "UNKNOWN";
@@ -79,30 +73,12 @@ public final class Trace
 		}
 	}
 
-	public static final void fatal   (final String msg)
-	{
-		trace (msg, FATAL);
-	}
-	public static final void error   (final String msg)
-	{
-		trace (msg, ERROR);
-	}
-	public static final void info    (final String msg)
-	{
-		trace (msg, INFO);
-	}
-	public static final void warning (final String msg)
-	{
-		trace (msg, WARNING);
-	}
-	public static final void debug   (final String msg)
-	{
-		trace (msg, DEBUG);
-	}
-	public static final void message (final String msg)
-	{
-		trace (msg, MESSAGE);
-	}
+	public static final void fatal   (final String msg) { trace (msg, FATAL);   }
+	public static final void error   (final String msg) { trace (msg, ERROR);   }
+	public static final void info    (final String msg) { trace (msg, INFO);    }
+	public static final void warning (final String msg) { trace (msg, WARNING); }
+	public static final void debug   (final String msg) { trace (msg, DEBUG);   }
+	public static final void message (final String msg) { trace (msg, MESSAGE); }
 
 	private static final String dump_field (final Object obj)
 	{

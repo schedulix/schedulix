@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -308,8 +308,7 @@ public class SystemEnvironment implements Cloneable
 			getAuditFile();
 		}
 
-		if ((port == 0) && (service_port == 0)
-		   ) {
+		if ((port == 0) && (service_port == 0)) {
 
 			port = 2506;
 		}
@@ -366,7 +365,7 @@ public class SystemEnvironment implements Cloneable
 	}
 
 	public void checkFeatureAvailability(String feature)
-	throws SDMSException
+		throws SDMSException
 	{
 		Feature f = (Feature)featureLevels.get(feature);
 		if (f == null) {
@@ -378,7 +377,7 @@ public class SystemEnvironment implements Cloneable
 	}
 
 	public boolean checkFeature (String feature)
-	throws SDMSException
+		throws SDMSException
 	{
 		Feature f = (Feature)featureLevels.get(feature);
 		if (f == null) {
@@ -515,7 +514,7 @@ public class SystemEnvironment implements Cloneable
 	{
 		String s_scheduleWakeupInterval = props.getProperty(S_SCHEDULEWAKEUP, "30");
 		scheduleWakeupInterval = checkIntProperty(s_scheduleWakeupInterval, S_SCHEDULEWAKEUP, 2, 30, 0,
-		                         "Invalid wakeup interval for scheduler : ");
+								"Invalid wakeup interval for scheduler : ");
 		props.setProperty(S_SCHEDULEWAKEUP, "" + scheduleWakeupInterval);
 	}
 
@@ -523,7 +522,7 @@ public class SystemEnvironment implements Cloneable
 	{
 		String s_GCWakeupInterval = props.getProperty(S_GCWAKEUP, "240");
 		gcWakeupInterval = checkIntProperty(s_GCWakeupInterval, S_GCWAKEUP, 1, 240, 0,
-		                                    "Invalid wakeup interval for garbage collector : ");
+								"Invalid wakeup interval for garbage collector : ");
 		props.setProperty(S_GCWAKEUP, "" + gcWakeupInterval);
 	}
 
@@ -531,7 +530,7 @@ public class SystemEnvironment implements Cloneable
 	{
 		String s_TTWakeupInterval = props.getProperty(S_TTWAKEUP, "30");
 		ttWakeupInterval = checkIntProperty(s_TTWakeupInterval, S_TTWAKEUP, 10, 30, 0,
-		                                    "Invalid wakeup interval for trigger thread : ");
+								"Invalid wakeup interval for trigger thread : ");
 		props.setProperty(S_TTWAKEUP, "" + ttWakeupInterval);
 	}
 
@@ -595,7 +594,7 @@ public class SystemEnvironment implements Cloneable
 	{
 		String s_triggerHardLimit = props.getProperty (S_TRIGGERHARDLIMIT, "100");
 		triggerHardLimit = checkIntProperty(s_triggerHardLimit, S_TRIGGERHARDLIMIT, triggerSoftLimit, 100, 0,
-		                                    "Invalid trigger hard limit: ");
+								"Invalid trigger hard limit: ");
 		props.setProperty(S_TRIGGERHARDLIMIT, "" + triggerHardLimit);
 	}
 
@@ -657,49 +656,49 @@ public class SystemEnvironment implements Cloneable
 	{
 
 		final String defaultVars =
-		        SDMSSubmittedEntity.S_ERRORLOG		+ "," +
-		        SDMSSubmittedEntity.S_EXPFINALTIME	+ "," +
-		        SDMSSubmittedEntity.S_EXPRUNTIME	+ "," +
-		        SDMSSubmittedEntity.S_FINISHTS		+ "," +
-		        SDMSSubmittedEntity.S_ISRESTARTABLE	+ "," +
-		        SDMSSubmittedEntity.S_JOBID		+ "," +
-		        SDMSSubmittedEntity.S_JOBNAME		+ "," +
-		        SDMSSubmittedEntity.S_JOBSTATE		+ "," +
-		        SDMSSubmittedEntity.S_JOBTAG		+ "," +
-		        SDMSSubmittedEntity.S_KEY		+ "," +
-		        SDMSSubmittedEntity.S_LOGFILE		+ "," +
-		        SDMSSubmittedEntity.S_MASTERID		+ "," +
-		        SDMSSubmittedEntity.S_MERGEDSTATE	+ "," +
-		        SDMSSubmittedEntity.S_PARENTID		+ "," +
-		        SDMSSubmittedEntity.S_PID		+ "," +
-		        SDMSSubmittedEntity.S_RERUNSEQ		+ "," +
-		        SDMSSubmittedEntity.S_RESOURCETS	+ "," +
-		        SDMSSubmittedEntity.S_RUNNABLETS	+ "," +
-		        SDMSSubmittedEntity.S_SCOPENAME		+ "," +
-		        SDMSSubmittedEntity.S_SDMSHOST		+ "," +
-		        SDMSSubmittedEntity.S_SDMSPORT		+ "," +
-		        SDMSSubmittedEntity.S_SEID		+ "," +
-		        SDMSSubmittedEntity.S_STARTTS		+ "," +
-		        SDMSSubmittedEntity.S_STATE		+ "," +
-		        SDMSSubmittedEntity.S_SUBMITTS		+ "," +
-		        SDMSSubmittedEntity.S_SYNCTS		+ "," +
-		        SDMSSubmittedEntity.S_SYSDATE		+ "," +
-		        SDMSSubmittedEntity.S_TRBASE		+ "," +
-		        SDMSSubmittedEntity.S_TRBASEID		+ "," +
-		        SDMSSubmittedEntity.S_TRBASEJOBID	+ "," +
-		        SDMSSubmittedEntity.S_TRNAME		+ "," +
-		        SDMSSubmittedEntity.S_TRNSTATE		+ "," +
-		        SDMSSubmittedEntity.S_TRORIGIN		+ "," +
-		        SDMSSubmittedEntity.S_TRORIGINID	+ "," +
-		        SDMSSubmittedEntity.S_TRORIGINJOBID	+ "," +
-		        SDMSSubmittedEntity.S_TROSTATE		+ "," +
-		        SDMSSubmittedEntity.S_TRREASON		+ "," +
-		        SDMSSubmittedEntity.S_TRREASONID	+ "," +
-		        SDMSSubmittedEntity.S_TRREASONJOBID	+ "," +
-		        SDMSSubmittedEntity.S_TRSEQ		+ "," +
-		        SDMSSubmittedEntity.S_TRTYPE		+ "," +
-		        SDMSSubmittedEntity.S_WARNING		+ "," +
-		        SDMSSubmittedEntity.S_WORKDIR;
+			SDMSSubmittedEntity.S_ERRORLOG		+ "," +
+			SDMSSubmittedEntity.S_EXPFINALTIME	+ "," +
+			SDMSSubmittedEntity.S_EXPRUNTIME	+ "," +
+			SDMSSubmittedEntity.S_FINISHTS		+ "," +
+			SDMSSubmittedEntity.S_ISRESTARTABLE	+ "," +
+			SDMSSubmittedEntity.S_JOBID		+ "," +
+			SDMSSubmittedEntity.S_JOBNAME		+ "," +
+			SDMSSubmittedEntity.S_JOBSTATE		+ "," +
+			SDMSSubmittedEntity.S_JOBTAG		+ "," +
+			SDMSSubmittedEntity.S_KEY		+ "," +
+			SDMSSubmittedEntity.S_LOGFILE		+ "," +
+			SDMSSubmittedEntity.S_MASTERID		+ "," +
+			SDMSSubmittedEntity.S_MERGEDSTATE	+ "," +
+			SDMSSubmittedEntity.S_PARENTID		+ "," +
+			SDMSSubmittedEntity.S_PID		+ "," +
+			SDMSSubmittedEntity.S_RERUNSEQ		+ "," +
+			SDMSSubmittedEntity.S_RESOURCETS	+ "," +
+			SDMSSubmittedEntity.S_RUNNABLETS	+ "," +
+			SDMSSubmittedEntity.S_SCOPENAME		+ "," +
+			SDMSSubmittedEntity.S_SDMSHOST		+ "," +
+			SDMSSubmittedEntity.S_SDMSPORT		+ "," +
+			SDMSSubmittedEntity.S_SEID		+ "," +
+			SDMSSubmittedEntity.S_STARTTS		+ "," +
+			SDMSSubmittedEntity.S_STATE		+ "," +
+			SDMSSubmittedEntity.S_SUBMITTS		+ "," +
+			SDMSSubmittedEntity.S_SYNCTS		+ "," +
+			SDMSSubmittedEntity.S_SYSDATE		+ "," +
+			SDMSSubmittedEntity.S_TRBASE		+ "," +
+			SDMSSubmittedEntity.S_TRBASEID		+ "," +
+			SDMSSubmittedEntity.S_TRBASEJOBID	+ "," +
+			SDMSSubmittedEntity.S_TRNAME		+ "," +
+			SDMSSubmittedEntity.S_TRNSTATE		+ "," +
+			SDMSSubmittedEntity.S_TRORIGIN		+ "," +
+			SDMSSubmittedEntity.S_TRORIGINID	+ "," +
+			SDMSSubmittedEntity.S_TRORIGINJOBID	+ "," +
+			SDMSSubmittedEntity.S_TROSTATE		+ "," +
+			SDMSSubmittedEntity.S_TRREASON		+ "," +
+			SDMSSubmittedEntity.S_TRREASONID	+ "," +
+			SDMSSubmittedEntity.S_TRREASONJOBID	+ "," +
+			SDMSSubmittedEntity.S_TRSEQ		+ "," +
+			SDMSSubmittedEntity.S_TRTYPE		+ "," +
+			SDMSSubmittedEntity.S_WARNING		+ "," +
+			SDMSSubmittedEntity.S_WORKDIR;
 
 		exportVariablesString = props.getProperty(S_EXPORTVARIABLES, defaultVars);
 		userExportVariablesString = props.getProperty(S_USEREXPORTVARIABLES, "");
@@ -735,7 +734,7 @@ public class SystemEnvironment implements Cloneable
 	}
 
 	public Object clone()
-	throws CloneNotSupportedException
+		throws CloneNotSupportedException
 	{
 		final SystemEnvironment sysEnv = (SystemEnvironment) super.clone();
 		sysEnv.systemDateFormat = (SimpleDateFormat) systemDateFormat.clone();
@@ -743,48 +742,18 @@ public class SystemEnvironment implements Cloneable
 		return sysEnv;
 	}
 
-	public void enableConnect()
-	{
-		connectState.setValue(connectState.getValue() & 2);
-	}
-	public void disableConnect()
-	{
-		connectState.setValue(connectState.getValue() | 1);
-	}
-	public void setConnectShutdown()
-	{
-		connectState.setValue(connectState.getValue() | 2);
-	}
-	public int getConnectState()
-	{
-		return connectState.getValue();
-	}
-	public static void setProtectMode()
-	{
-		protectMode = true;
-	}
-	public static void resetProtectMode()
-	{
-		protectMode = false;
-	}
-	public static boolean getProtectMode()
-	{
-		return protectMode;
-	}
+	public void enableConnect()		{ connectState.setValue(connectState.getValue() & 2); }
+	public void disableConnect()		{ connectState.setValue(connectState.getValue() | 1); }
+	public void setConnectShutdown()	{ connectState.setValue(connectState.getValue() | 2); }
+	public int getConnectState()		{ return connectState.getValue(); }
+	public static void setProtectMode()	{ protectMode = true; }
+	public static void resetProtectMode()	{ protectMode = false; }
+	public static boolean getProtectMode()	{ return protectMode; }
 
-	public Long randomLong()
-	{
-		return new Long(java.lang.Math.abs(random.nextLong()));
-	}
+	public Long randomLong()		{ return new Long(java.lang.Math.abs(random.nextLong())); }
 
-	public static synchronized int getTraceLevel()
-	{
-		return traceLevel;
-	}
-	public static synchronized void setTraceLevel(int t)
-	{
-		traceLevel = t;
-	}
+	public static synchronized int getTraceLevel()	{ return traceLevel; }
+	public static synchronized void setTraceLevel(int t) { traceLevel = t; }
 
 	public static void getSharedLock()
 	{
@@ -826,18 +795,9 @@ class MutableInteger
 
 	int value;
 
-	public MutableInteger(int v)
-	{
-		value = v;
-	}
-	public void setValue(int v)
-	{
-		value = v;
-	}
-	public int  getValue()
-	{
-		return value;
-	}
+	public MutableInteger(int v) { value = v; }
+	public void setValue(int v)  { value = v; }
+	public int  getValue()       { return value; }
 }
 
 class ExecuteLock

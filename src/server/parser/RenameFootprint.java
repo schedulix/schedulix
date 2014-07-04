@@ -51,7 +51,7 @@ public class RenameFootprint extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFootprint f;
 

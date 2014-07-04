@@ -63,7 +63,7 @@ public class CreateNamedResource extends Node
 	}
 
 	private void evaluateWith(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		usage = (Integer) with.get(ParseStr.S_USAGE);
 		if(usage == null)
@@ -88,7 +88,7 @@ public class CreateNamedResource extends Node
 		if(iu == SDMSNamedResource.CATEGORY || iu == SDMSNamedResource.POOL) {
 			if(parms != null && parms.size() > 0) {
 				throw new CommonErrorException(
-				        new SDMSMessage(sysEnv, "03409281206", "Parameters are not allowed for categories")
+					new SDMSMessage(sysEnv, "03409281206", "Parameters are not allowed for categories")
 				);
 			}
 		}
@@ -106,7 +106,7 @@ public class CreateNamedResource extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long rsp_id;
 		Long parentId;

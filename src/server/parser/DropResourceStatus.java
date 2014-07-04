@@ -52,7 +52,7 @@ public class DropResourceStatus extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateDefinition rsd;
 

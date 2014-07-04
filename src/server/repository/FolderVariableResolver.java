@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -43,14 +43,14 @@ public class FolderVariableResolver extends VariableResolver
 	public static final String __version = "@(#) $Id: FolderVariableResolver.java,v 2.4.8.1 2013/03/14 10:25:17 ronald Exp $";
 
 	protected String getVariableValue(SystemEnvironment sysEnv,
-	                                  SDMSProxy thisObject,
-	                                  String key,
-	                                  boolean fastAccess,
-	                                  String mode,
-	                                  boolean triggercontext,
-	                                  long version,
-	                                  SDMSScope evalScope)
-	throws SDMSException
+					  SDMSProxy thisObject,
+					  String key,
+					  boolean fastAccess,
+					  String mode,
+					  boolean triggercontext,
+					  long version,
+					  SDMSScope evalScope)
+		throws SDMSException
 	{
 		SDMSThread.doTrace(sysEnv.cEnv, "get valiable value : " + key, SDMSThread.SEVERITY_DEBUG);
 		final String retval = getInternalVariableValue(sysEnv, (SDMSFolder) thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null);
@@ -59,15 +59,15 @@ public class FolderVariableResolver extends VariableResolver
 	}
 
 	protected String getInternalVariableValue(SystemEnvironment sysEnv,
-	                SDMSProxy thisObject,
-	                String key,
-	                boolean fastAccess,
-	                String mode,
-	                boolean triggercontext,
-	                Stack recursionCheck,
-	                long version,
-	                SDMSScope evalScope)
-	throws SDMSException
+						SDMSProxy thisObject,
+						String key,
+						boolean fastAccess,
+						String mode,
+						boolean triggercontext,
+						Stack recursionCheck,
+						long version,
+						SDMSScope evalScope)
+		throws SDMSException
 	{
 		String retval;
 		SDMSFolder thisFolder = (SDMSFolder) thisObject;

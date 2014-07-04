@@ -115,7 +115,7 @@ public class SDMSServerConnection
 		user = options.getValue(App.USER);
 		passwd = options.getValue(App.PASS);
 		use_ssl =
-		        false;
+			false;
 		info = options.isSet(App.INFO) ? options.getValue(App.INFO) : null;
 		if (info != null) {
 			info = info.replace("\\\\","\\\\");
@@ -139,9 +139,9 @@ public class SDMSServerConnection
 		out = new PrintStream(svrConnection.getOutputStream(), true);
 
 		return execute("connect " + (isJob ? "job " : "") + user + " identified by '" + passwd +
-		               "' with protocol = SERIAL" +
-		               (timeout != -1 ? ", timeout = " + timeout : "") +
-		               (info != null ? ", session = '" + info + "'" : "" ) + ";");
+			"' with protocol = SERIAL" +
+			(timeout != -1 ? ", timeout = " + timeout : "") +
+			(info != null ? ", session = '" + info + "'" : "" ) + ";");
 	}
 
 	public SDMSOutput execute(String cmd)
@@ -210,7 +210,7 @@ public class SDMSServerConnection
 	}
 
 	private void checkSuperfluous(InputStream is)
-	throws IOException
+		throws IOException
 	{
 		if (is.available() > 0) {
 			byte[] bytes = new byte[5000];
@@ -220,17 +220,8 @@ public class SDMSServerConnection
 		}
 	}
 
-	public String getUser()
-	{
-		return user;
-	}
-	public String getHost()
-	{
-		return host;
-	}
-	public int getPort()
-	{
-		return port;
-	}
+	public String getUser() { return user; }
+	public String getHost() { return host; }
+	public int getPort()	{ return port; }
 }
 

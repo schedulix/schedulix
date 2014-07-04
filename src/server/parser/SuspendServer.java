@@ -46,7 +46,7 @@ public class SuspendServer extends ManipServer
 	}
 
 	protected void action(SystemEnvironment sysEnv, SDMSScope s)
-	throws SDMSException
+		throws SDMSException
 	{
 		s.setIsSuspended(sysEnv, Boolean.TRUE);
 		SystemEnvironment.sched.notifyChange(sysEnv, s, SchedulingThread.SUSPEND);

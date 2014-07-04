@@ -55,29 +55,29 @@ public class FutureFilter extends Filter
 		}
 		numMillis = System.currentTimeMillis();
 		switch(base.intValue()) {
-		case SDMSInterval.MINUTE:
-			numMillis += mult.longValue() * 60 * 1000;
-			break;
-		case SDMSInterval.HOUR:
-			numMillis += mult.longValue() * 60 * 60 * 1000;
-			break;
-		case SDMSInterval.DAY:
-			numMillis += mult.longValue() * 24 * 60 * 60 * 1000;
-			break;
-		case SDMSInterval.WEEK:
-			numMillis += mult.longValue() * 7 * 24 * 60 * 60 * 1000;
-			break;
-		case SDMSInterval.MONTH:
-			numMillis += mult.longValue() * 30 * 24 * 60 * 60 * 1000;
-			break;
-		case SDMSInterval.YEAR:
-			numMillis += mult.longValue() * 365 * 24 * 60 * 60 * 1000;
-			break;
+			case SDMSInterval.MINUTE:
+				numMillis += mult.longValue() * 60 * 1000;
+				break;
+			case SDMSInterval.HOUR:
+				numMillis += mult.longValue() * 60 * 60 * 1000;
+				break;
+			case SDMSInterval.DAY:
+				numMillis += mult.longValue() * 24 * 60 * 60 * 1000;
+				break;
+			case SDMSInterval.WEEK:
+				numMillis += mult.longValue() * 7 * 24 * 60 * 60 * 1000;
+				break;
+			case SDMSInterval.MONTH:
+				numMillis += mult.longValue() * 30 * 24 * 60 * 60 * 1000;
+				break;
+			case SDMSInterval.YEAR:
+				numMillis += mult.longValue() * 365 * 24 * 60 * 60 * 1000;
+				break;
 		}
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			if (p instanceof SDMSSubmittedEntity)

@@ -53,7 +53,7 @@ public class CreateExitStatProf extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		boolean gotFinalState = false;
 
@@ -79,7 +79,7 @@ public class CreateExitStatProf extends Node
 		Vector states = (Vector) items.get(ParseStr.S_STATUS);
 		if(states == null) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03112171825",
-			                               "States missing"));
+				"States missing"));
 		}
 		i = states.iterator();
 		EspState esps;
@@ -110,40 +110,40 @@ public class CreateExitStatProf extends Node
 			if (isUnreachable.booleanValue()) {
 				if (had_unreachable) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "02205311455",
-					                                "Only one state can be marked as unreachable state"));
+						"Only one state can be marked as unreachable state"));
 				}
 				had_unreachable = true;
 				if (isFinal.booleanValue() != true) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "02204301739",
-					                                "The unreachable state must be defined FINAL"));
+						"The unreachable state must be defined FINAL"));
 				}
 			}
 			if (isBroken.booleanValue()) {
 				if (had_broken) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "03504300759",
-					                                "Only one state can be marked as broken state"));
+						"Only one state can be marked as broken state"));
 				}
 				had_broken = true;
 				if (isRestartable.booleanValue() == false) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "03505041129",
-					                                "The broken state must be defined RESTARTABLE"));
+						"The broken state must be defined RESTARTABLE"));
 				}
 			}
 			if (isBatchDefault.booleanValue()) {
 				if (had_batchDefault) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "03202141003",
-					                                "Only one state can be marked as default exit stae for batches and milestones"));
+						"Only one state can be marked as default exit stae for batches and milestones"));
 				}
 				had_batchDefault = true;
 				if (isFinal.booleanValue() != true) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "03202141008",
-					                                "The default exit state for batches and milestones must be defined FINAL"));
+						"The default exit state for batches and milestones must be defined FINAL"));
 				}
 			}
 			if (isDependencyDefault.booleanValue()) {
 				if (isFinal.booleanValue() != true) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "03202141009",
-					                                "A default exit state for dependencies must be defined FINAL"));
+						"A default exit state for dependencies must be defined FINAL"));
 				}
 			}
 			esdId = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, esps.name).getId(sysEnv);
@@ -152,13 +152,13 @@ public class CreateExitStatProf extends Node
 				SDMSExitStateTable.table.create (sysEnv, pref, isFinal, isRestartable, isUnreachable, isBroken, isBatchDefault, isDependencyDefault, espId, esdId);
 			} catch (DuplicateKeyException dke) {
 				throw new CommonErrorException (new SDMSMessage(sysEnv, "03110120948",
-				                                "Exit state definition $1 specified more than once", esps.name));
+					"Exit state definition $1 specified more than once", esps.name));
 			}
 		}
 
 		if (!gotFinalState) {
 			throw new CommonErrorException (new SDMSMessage(sysEnv, "03202242058",
-			                                "An exit state profile requires at least one final state"));
+				"An exit state profile requires at least one final state"));
 		}
 
 		Long d_esmpId = null;

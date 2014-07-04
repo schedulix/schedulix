@@ -79,7 +79,7 @@ public class SelectCmd extends Node
 	}
 
 	private Vector collist(ResultSetMetaData mdset)
-	throws SQLException
+		throws SQLException
 	{
 		Vector desc = new Vector();
 
@@ -121,7 +121,7 @@ public class SelectCmd extends Node
 	}
 
 	private Long objectToId(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long sId;
 		if(o instanceof Integer) {
@@ -132,54 +132,50 @@ public class SelectCmd extends Node
 			sId = new Long (((java.math.BigDecimal) o).intValue());
 		} else {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03204250147",
-			                               "Type Error, Column is no ScopeId but a $1", o.getClass().getName()));
+				"Type Error, Column is no ScopeId but a $1", o.getClass().getName()));
 		}
 		return sId;
 	}
 
 	private String convert_folder(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SDMSFolderTable.getObject(sysEnv, objectToId(sysEnv, o)).pathString(sysEnv);
 	}
 
 	private String convert_scope(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SDMSScopeTable.getObject(sysEnv, objectToId(sysEnv, o)).pathString(sysEnv);
 	}
 
 	private String convert_job(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SDMSSchedulingEntityTable.getObject(sysEnv, objectToId(sysEnv, o)).pathString(sysEnv);
 	}
 
 	private String convert_category(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SDMSNamedResourceTable.getObject(sysEnv, objectToId(sysEnv, o)).pathString(sysEnv);
 	}
 
 	private String convert(SystemEnvironment sysEnv, Object o, int idx)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(o == null) return null;
 		switch(ctype[idx]) {
-		case CATEGORYTYPE:
-			return convert_category(sysEnv, o);
-		case FOLDERTYPE:
-			return convert_folder(sysEnv, o);
-		case SCOPETYPE:
-			return convert_scope(sysEnv, o);
-		case JOBTYPE:
-			return convert_job(sysEnv, o);
+			case CATEGORYTYPE:	return convert_category(sysEnv, o);
+			case FOLDERTYPE:	return convert_folder(sysEnv, o);
+			case SCOPETYPE:		return convert_scope(sysEnv, o);
+			case JOBTYPE:		return convert_job(sysEnv, o);
 		}
 		return null;
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long sgId = null;
 		Long ZERO = new Long(0);
@@ -257,7 +253,7 @@ public class SelectCmd extends Node
 				sca[i] = ((Integer) sv.get(i)).intValue();
 				if (sca[i] >= d_container.columns)
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03003081227",
-					                               "The sort column specified ($1) exceeds the number of columns in the output", new Integer(sca[i])));
+								"The sort column specified ($1) exceeds the number of columns in the output", new Integer(sca[i])));
 			}
 			Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, sca));
 		}

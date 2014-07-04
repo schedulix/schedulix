@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -50,7 +50,7 @@ public class TriggerThread extends InternalSession
 	private int maxWakeupInterval;
 
 	public TriggerThread(SystemEnvironment env, SyncFifo f)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(name);
 		NR = 1234323;
@@ -65,7 +65,7 @@ public class TriggerThread extends InternalSession
 	}
 
 	public void checkTrigger(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		long now = System.currentTimeMillis();
 		nextTime = Long.MAX_VALUE;
@@ -74,15 +74,17 @@ public class TriggerThread extends InternalSession
 		doTrace(cEnv, "Start Resuming Jobs", SEVERITY_MESSAGE);
 
 		i = SDMSSubmittedEntityTable.table.iterator(sysEnv,
-		new SDMSFilter() {
-			public boolean isValid(SystemEnvironment sysEnv, SDMSProxy p)
-			throws SDMSException {
-				SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
-				if (!sme.getIsSuspended(sysEnv).booleanValue()) return false;
-				if (sme.getResumeTs(sysEnv) == null) return false;
-				return true;
+			new SDMSFilter() {
+				public boolean isValid(SystemEnvironment sysEnv, SDMSProxy p)
+					throws SDMSException
+				{
+					SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
+					if (!sme.getIsSuspended(sysEnv).booleanValue()) return false;
+					if (sme.getResumeTs(sysEnv) == null) return false;
+					return true;
+				}
 			}
-		});
+		);
 		while (i.hasNext()) {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) i.next();
 			if (!sme.getIsSuspended(sysEnv).booleanValue()) continue;
@@ -131,15 +133,15 @@ class DoCheckTrigger extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		switch(action) {
-		case SCHEDULE:
-			SystemEnvironment.tt.checkTrigger(sysEnv);
-			break;
-		case INITIALIZE:
+			case SCHEDULE:
+				SystemEnvironment.tt.checkTrigger(sysEnv);
+				break;
+			case INITIALIZE:
 
-			break;
+				break;
 		}
 	}
 

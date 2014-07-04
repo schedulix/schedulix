@@ -51,7 +51,7 @@ public class GetNextJob extends JobDistribution
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope s;
 		SDMSOutputContainer d_container = null;
@@ -95,7 +95,7 @@ public class GetNextJob extends JobDistribution
 	}
 
 	private boolean search_next_job(SystemEnvironment sysEnv, SDMSScope s, Vector desc, Vector data)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long sId = s.getId(sysEnv);
 		SDMSRunnableQueue rq = null;
@@ -142,7 +142,7 @@ public class GetNextJob extends JobDistribution
 					}
 				}
 			}
-			                                                      );
+			);
 
 			if(v.size() == 0) {
 

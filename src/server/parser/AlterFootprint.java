@@ -62,7 +62,7 @@ public class AlterFootprint extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFootprint fp;
 
@@ -95,7 +95,7 @@ public class AlterFootprint extends Node
 	}
 
 	private void deleteResourceRequirements(SystemEnvironment sysEnv, SDMSFootprint f)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long fpId = f.getId(sysEnv);
 
@@ -111,8 +111,8 @@ public class AlterFootprint extends Node
 
 					SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, nrId);
 					throw new CommonErrorException(
-					        new SDMSMessage(sysEnv, "0340911291427", "A parameter of Resource $1 is referenced by $2",
-					                        nr.pathString(sysEnv), se.pathString(sysEnv))
+						new SDMSMessage(sysEnv, "0340911291427", "A parameter of Resource $1 is referenced by $2",
+							nr.pathString(sysEnv), se.pathString(sysEnv))
 					);
 				}
 			}
@@ -121,7 +121,7 @@ public class AlterFootprint extends Node
 	}
 
 	private void createResourceRequirement(SystemEnvironment sysEnv, WithHash with, SDMSFootprint f)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector name;
 		Long   nrId;
@@ -156,8 +156,8 @@ public class AlterFootprint extends Node
 		if(keepMode == null) keepMode = new Integer(SDMSResourceRequirement.NOKEEP);
 
 		rr = SDMSResourceRequirementTable.table.create(sysEnv,
-		                nrId, fId, amount, keepMode, isSticky, stickyName, stickyParent,
-		                rsmpId, exp_mult, exp_interval, lockmode, condition);
+				nrId, fId, amount, keepMode, isSticky, stickyName, stickyParent,
+				rsmpId, exp_mult, exp_interval, lockmode, condition);
 
 		rr.check(sysEnv);
 	}

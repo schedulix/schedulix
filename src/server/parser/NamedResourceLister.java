@@ -53,33 +53,33 @@ public class NamedResourceLister extends HierarchyLister
 	}
 
 	public void setDefaultStartpoint(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedResource nr = SDMSNamedResourceTable.idx_parentId_name_getUnique(sysEnv, new SDMSKey(null, "RESOURCE"));
 		startpoint = nr.pathVector(sysEnv);
 	}
 
 	public SDMSProxy getStartObject(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SDMSNamedResourceTable.getNamedResource(sysEnv, startpoint);
 	}
 
 	public SDMSProxy getObject(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SDMSNamedResourceTable.getObject(sysEnv, id);
 	}
 
 	public Vector getChildren(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = SDMSNamedResourceTable.idx_parentId.getVector(sysEnv, id);
 		return v;
 	}
 
 	public Vector getParents(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = new Vector();
 		SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, id);
@@ -93,7 +93,7 @@ public class NamedResourceLister extends HierarchyLister
 	}
 
 	public boolean isLeaf(SystemEnvironment sysEnv, SDMSProxy o)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(((SDMSNamedResource) o).getUsage(sysEnv).intValue() == SDMSNamedResource.CATEGORY) return false;
 		return true;

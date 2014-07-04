@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -36,18 +36,12 @@ class TestApp extends App
 		addOption("e", "env", null, "ENV", null, "environment", true, "Environment to show");
 	}
 
-	public String getName()
-	{
-		return "TestApp";
-	}
+	public String getName() { return "TestApp"; }
 
-	public boolean canRetry()
-	{
-		return true;
-	}
+	public boolean canRetry() { return true; }
 
 	public int go()
-	throws RetryException
+		throws RetryException
 	{
 		SDMSLineRenderer lr = new SDMSLineRenderer();
 		SDMSOutput o = execute("SHOW ENVIRONMENT " + options.getValue("ENV"));
@@ -59,8 +53,5 @@ class TestApp extends App
 		return 0;
 	}
 
-	public static void main (String[] argv)
-	{
-		System.exit(new TestApp().run(argv));
-	}
+	public static void main (String[] argv) { System.exit(new TestApp().run(argv)); }
 }

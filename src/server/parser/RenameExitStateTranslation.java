@@ -51,11 +51,11 @@ public class RenameExitStateTranslation extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXIT_STATE_TRANSLATION);
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "02111281901", "Exit State Translation renamed"));
+			new SDMSMessage(sysEnv, "02111281901", "Exit State Translation renamed"));
 	}
 }
 

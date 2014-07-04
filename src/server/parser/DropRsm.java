@@ -51,7 +51,7 @@ public class DropRsm extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateMappingProfile rsmp;
 		try {
@@ -78,7 +78,7 @@ public class DropRsm extends Node
 				t = "footprint";
 			}
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03311041044", "Resource state mapping is in use by $1 $2 ($3)",
-			                               t, n, nr));
+						t, n, nr));
 		}
 
 		Vector v = SDMSResourceStateMappingTable.idx_rsmpId.getVector(sysEnv, rsmpId);

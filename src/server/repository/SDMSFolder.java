@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -55,7 +55,7 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	}
 
 	public SDMSFolder copy(SystemEnvironment sysEnv, Long targetFolderId, String name)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(!checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
 			throw new AccessViolationException(accessViolationMessage(sysEnv, "03402291137"));
@@ -66,19 +66,19 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	}
 
 	public SDMSFolder copy(SystemEnvironment sysEnv, Long targetFolderId, String name, HashMap relocationTable)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Long id = getId(sysEnv);
 		SDMSUser u = SDMSUserTable.getObject(sysEnv, sysEnv.cEnv.uid());
 
 		SDMSFolder f = SDMSFolderTable.table.create(sysEnv,
-		                name,
-		                u.getDefaultGId(sysEnv),
-		                getEnvId(sysEnv),
-		                targetFolderId,
-		                getInheritPrivs(sysEnv)
-		                                           );
+				name,
+				u.getDefaultGId(sysEnv),
+				getEnvId(sysEnv),
+				targetFolderId,
+				getInheritPrivs(sysEnv)
+		);
 		Long newId = f.getId(sysEnv);
 
 		ManipParameters.copy(sysEnv, id, newId);
@@ -108,42 +108,42 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 		while(i_r.hasNext()) {
 			SDMSResource r_o = (SDMSResource) i_r.next();
 			SDMSResource r_n = SDMSResourceTable.table.create(sysEnv,
-			                   r_o.getNrId(sysEnv),
-			                   newId,
-			                   r_o.getMasterId(sysEnv),
-			                   r_o.getOwnerId(sysEnv),
-			                   r_o.getLinkId(sysEnv),
-			                   null,
-			                   r_o.getTag(sysEnv),
-			                   r_o.getRsdId(sysEnv),
-			                   r_o.getRsdTime(sysEnv),
-			                   r_o.getDefinedAmount(sysEnv),
-			                   r_o.getRequestableAmount(sysEnv),
-			                   r_o.getDefinedAmount(sysEnv),
-			                   r_o.getDefinedAmount(sysEnv),
-			                   r_o.getIsOnline(sysEnv),
-			                   r_o.getFactor(sysEnv),
-			                   r_o.getTraceInterval(sysEnv),
-			                   r_o.getTraceBase(sysEnv),
-			                   r_o.getTraceBaseMultiplier(sysEnv),
-			                   fzero,
-			                   fzero,
-			                   fzero,
-			                   fzero,
-			                   lzero,
-			                   lzero
-			                                                 );
+					r_o.getNrId(sysEnv),
+					newId,
+					r_o.getMasterId(sysEnv),
+					r_o.getOwnerId(sysEnv),
+					r_o.getLinkId(sysEnv),
+					null,
+					r_o.getTag(sysEnv),
+					r_o.getRsdId(sysEnv),
+					r_o.getRsdTime(sysEnv),
+					r_o.getDefinedAmount(sysEnv),
+					r_o.getRequestableAmount(sysEnv),
+					r_o.getDefinedAmount(sysEnv),
+					r_o.getDefinedAmount(sysEnv),
+					r_o.getIsOnline(sysEnv),
+					r_o.getFactor(sysEnv),
+					r_o.getTraceInterval(sysEnv),
+					r_o.getTraceBase(sysEnv),
+					r_o.getTraceBaseMultiplier(sysEnv),
+					fzero,
+					fzero,
+					fzero,
+					fzero,
+					lzero,
+					lzero
+			);
 		}
 
 		try {
 			SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, id);
 			SDMSObjectCommentTable.table.create(sysEnv,
-			                                    newId,
-			                                    oc.getObjectType(sysEnv),
-			                                    oc.getInfoType(sysEnv),
-			                                    oc.getSequenceNumber(sysEnv),
-			                                    oc.getDescription(sysEnv)
-			                                   );
+					newId,
+					oc.getObjectType(sysEnv),
+					oc.getInfoType(sysEnv),
+					oc.getSequenceNumber(sysEnv),
+					oc.getDescription(sysEnv)
+			);
 		} catch (NotFoundException nfe) {
 
 		}
@@ -151,7 +151,7 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	}
 
 	public void relocateEntityDetails(SystemEnvironment sysEnv, HashMap relocationTable)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Long id = getId(sysEnv);
@@ -172,13 +172,13 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	}
 
 	public void delete(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		boolean dummy = delete (sysEnv, null);
 	}
 
 	public boolean  delete(SystemEnvironment sysEnv, HashSet keeplist)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Long fId = getId(sysEnv);
 
@@ -189,12 +189,12 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 			if(SDMSFolderTable.idx_parentId.containsKey(sysEnv, fId)) {
 
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03112191517",
-				                               "Folder $1 not empty", pathString(sysEnv)));
+					"Folder $1 not empty", pathString(sysEnv)));
 			}
 			if(SDMSSchedulingEntityTable.idx_folderId.containsKey(sysEnv, fId)) {
 
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03112191519",
-				                               "Folder $1 not empty", pathString(sysEnv)));
+					"Folder $1 not empty", pathString(sysEnv)));
 			}
 			ManipParameters.kill (sysEnv, fId);
 			super.delete(sysEnv);
@@ -203,13 +203,13 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	}
 
 	public void dropResources (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		boolean dummy = dropResources (sysEnv, null);
 	}
 
 	public boolean dropResources (SystemEnvironment sysEnv, HashSet keeplist)
-	throws SDMSException
+		throws SDMSException
 	{
 		boolean dropped_all_resources = true;
 		final Long fId = getId(sysEnv);
@@ -227,13 +227,13 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	}
 
 	public void deleteCascadeFirstPass(SystemEnvironment sysEnv, HashSet keeplist)
-	throws SDMSException
+		throws SDMSException
 	{
 		deleteCascadeFirstPass(sysEnv, this, keeplist);
 	}
 
 	private void deleteCascadeFirstPass(SystemEnvironment sysEnv, SDMSFolder f, HashSet keeplist)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Vector v = SDMSSchedulingEntityTable.idx_folderId.getVector(sysEnv, f.getId(sysEnv));
@@ -277,13 +277,13 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	}
 
 	public boolean deleteCascadeSecondPass(SystemEnvironment sysEnv, HashSet parameterLinks, boolean force, HashSet keeplist)
-	throws SDMSException
+		throws SDMSException
 	{
 		return deleteCascadeSecondPass(sysEnv, this, parameterLinks, force, keeplist);
 	}
 
 	private boolean deleteCascadeSecondPass(SystemEnvironment sysEnv, SDMSFolder f, HashSet parameterLinks, boolean force, HashSet keeplist)
-	throws SDMSException
+		throws SDMSException
 	{
 		boolean dropped_all_content = true;
 
@@ -314,22 +314,22 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 					String name = null;
 					int type = tt.getObjectType(sysEnv).intValue();
 					switch(type) {
-					case SDMSTrigger.JOB_DEFINITION:
-						name = SDMSSchedulingEntityTable.getObject(sysEnv, tt.getFireId(sysEnv)).pathString(sysEnv);
-						break;
-					case SDMSTrigger.RESOURCE:
-						SDMSResource r = SDMSResourceTable.getObject(sysEnv, tt.getFireId(sysEnv));
-						name = SDMSNamedResourceTable.getObject(sysEnv, r.getNrId(sysEnv)).pathString(sysEnv) +
-						       " in " +
-						       SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv)).pathString(sysEnv);
-						break;
-					case SDMSTrigger.NAMED_RESOURCE:
-						name = SDMSNamedResourceTable.getObject(sysEnv, tt.getFireId(sysEnv)).pathString(sysEnv);
-						break;
+						case SDMSTrigger.JOB_DEFINITION:
+							name = SDMSSchedulingEntityTable.getObject(sysEnv, tt.getFireId(sysEnv)).pathString(sysEnv);
+							break;
+						case SDMSTrigger.RESOURCE:
+							SDMSResource r = SDMSResourceTable.getObject(sysEnv, tt.getFireId(sysEnv));
+							name = SDMSNamedResourceTable.getObject(sysEnv, r.getNrId(sysEnv)).pathString(sysEnv) +
+							       " in " +
+							       SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv)).pathString(sysEnv);
+							break;
+						case SDMSTrigger.NAMED_RESOURCE:
+							name = SDMSNamedResourceTable.getObject(sysEnv, tt.getFireId(sysEnv)).pathString(sysEnv);
+							break;
 					}
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03207041735",
-					                               "$1 in use by Trigger $2 in $3", se.pathString(sysEnv),
-					                               tt.getName(sysEnv), name));
+							"$1 in use by Trigger $2 in $3", se.pathString(sysEnv),
+							tt.getName(sysEnv), name));
 				}
 			}
 
@@ -343,8 +343,8 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 				if(dv.size() != 0) {
 					SDMSSchedulingEntity tse = SDMSSchedulingEntityTable.getObject(sysEnv, ((SDMSDependencyDefinition) dv.get(0)).getSeDependentId(sysEnv));
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03207041736",
-					                               "$1 is required by job definition $2", se.pathString(sysEnv),
-					                               tse.pathString(sysEnv)));
+							"$1 is required by job definition $2", se.pathString(sysEnv),
+							tse.pathString(sysEnv)));
 				}
 			}
 
@@ -356,10 +356,10 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 			} else {
 				if(hv.size() != 0) {
 					SDMSSchedulingEntity tse = SDMSSchedulingEntityTable.getObject(sysEnv,
-					                           ((SDMSSchedulingHierarchy) hv.get(0)).getSeParentId(sysEnv));
+								((SDMSSchedulingHierarchy) hv.get(0)).getSeParentId(sysEnv));
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03207041737",
-					                               "$1 is child of job definition $2", se.pathString(sysEnv),
-					                               tse.pathString(sysEnv)));
+							"$1 is child of job definition $2", se.pathString(sysEnv),
+							tse.pathString(sysEnv)));
 				}
 			}
 
@@ -384,31 +384,31 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	}
 
 	public String getVariableValue(SystemEnvironment sysEnv, String key)
-	throws SDMSException
+		throws SDMSException
 	{
 		return FVR.getVariableValue(sysEnv, this, key, -1);
 	}
 
 	public String getVariableValue(SystemEnvironment sysEnv, String key, long version)
-	throws SDMSException
+		throws SDMSException
 	{
 		return FVR.getVariableValue(sysEnv, this, key, version);
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return pathString(sysEnv);
 	}
 
 	public String getURL(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return "folder " + getURLName(sysEnv);
 	}
 
 	public long getPrivileges(SystemEnvironment sysEnv, long checkPrivs, boolean fastFail, Vector checkGroups)
-	throws SDMSException
+		throws SDMSException
 	{
 		long p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
 		if(sysEnv.cEnv.isUser())

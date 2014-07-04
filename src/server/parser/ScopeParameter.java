@@ -45,13 +45,13 @@ public class ScopeParameter
 	private static final Integer aggFunctionNone = new Integer (SDMSParameterDefinition.NONE);
 
 	private static final void markAltered (final SystemEnvironment sysEnv, final Long sId)
-	throws SDMSException
+		throws SDMSException
 	{
 		ScopeConfig.markAltered (sysEnv, SDMSScopeTable.getObject (sysEnv, sId));
 	}
 
 	public static final void create (final SystemEnvironment sysEnv, final Long id, final WithHash p)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (p == null)
 			return;
@@ -90,7 +90,7 @@ public class ScopeParameter
 	}
 
 	public static final void kill (final SystemEnvironment sysEnv, final Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector list = SDMSParameterDefinitionTable.idx_seId.getVector (sysEnv, id);
 		final int size = list.size();
@@ -105,7 +105,7 @@ public class ScopeParameter
 	}
 
 	private static final void killChildDynamicValues (final SystemEnvironment sysEnv, final Long id, final String name)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector childList = SDMSScopeTable.idx_parentId.getVector (sysEnv, id);
 		final int childSize = childList.size();
@@ -124,7 +124,7 @@ public class ScopeParameter
 	}
 
 	public static final void copy (final SystemEnvironment sysEnv, final Long oldId, final Long newId)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector list = SDMSParameterDefinitionTable.idx_seId.getVector (sysEnv, oldId);
 		final int size = list.size();
@@ -143,7 +143,7 @@ public class ScopeParameter
 	}
 
 	public static final void alter (final SystemEnvironment sysEnv, final Long id, final WithHash p)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector list;
 		int size;
@@ -191,7 +191,7 @@ public class ScopeParameter
 	}
 
 	public static final void setDynamicValues (final SystemEnvironment sysEnv, final SDMSScope s, final WithHash p)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (s.getType (sysEnv).intValue() != SDMSScope.SERVER)
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "04307171658", "Only jobservers can have dynamic values"));
@@ -241,7 +241,7 @@ public class ScopeParameter
 	}
 
 	public static final SDMSOutputContainer get (final SystemEnvironment sysEnv, final Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		return ManipParameters.get (sysEnv, id);
 	}

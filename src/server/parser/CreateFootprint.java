@@ -51,7 +51,7 @@ public class CreateFootprint extends Node
 	}
 
 	private void createResourceRequirement(SystemEnvironment sysEnv, WithHash with, SDMSFootprint f)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector name;
 		Long   nrId;
@@ -87,14 +87,14 @@ public class CreateFootprint extends Node
 		if(keepMode == null) keepMode = new Integer(SDMSResourceRequirement.NOKEEP);
 
 		rr = SDMSResourceRequirementTable.table.create(sysEnv,
-		                nrId, fId, amount, keepMode, isSticky, stickyName, stickyParent,
-		                rsmpId, exp_mult, exp_interval, lockmode, condition);
+					nrId, fId, amount, keepMode, isSticky, stickyName, stickyParent,
+					rsmpId, exp_mult, exp_interval, lockmode, condition);
 		rr.check(sysEnv);
 
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFootprint f;
 

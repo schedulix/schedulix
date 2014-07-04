@@ -54,7 +54,7 @@ public class ShowEnvironment extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedEnvironment ne;
 		SDMSEnvironment e;
@@ -141,11 +141,11 @@ public class ShowEnvironment extends ShowCommented
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03201232124", "Environment shown"));
+			new SDMSMessage(sysEnv, "03201232124", "Environment shown"));
 	}
 
 	private	SDMSOutputContainer jobDefContainer (SystemEnvironment sysEnv, Long neId)
-	throws SDMSException
+		throws SDMSException
 	{
 		FolderLister fl = new FolderLister(null, expandIds);
 		fl.setTitle(null);
@@ -209,7 +209,7 @@ class SeSeFormatter implements Formatter
 	}
 
 	public Vector fillVector(SystemEnvironment sysEnv, SDMSProxy co, HashSet parentSet)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = new Vector();
 		if(co instanceof SDMSFolder) {
@@ -221,7 +221,7 @@ class SeSeFormatter implements Formatter
 	}
 
 	private void fillSeVector(SystemEnvironment sysEnv, SDMSSchedulingEntity co, Vector v)
-	throws SDMSException
+		throws SDMSException
 	{
 		v.add(co.getId(sysEnv));
 		v.add(co.pathVector(sysEnv));
@@ -232,7 +232,7 @@ class SeSeFormatter implements Formatter
 	}
 
 	private void fillFVector(SystemEnvironment sysEnv, SDMSFolder co, Vector v, HashSet parentSet)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long envId;
 		Long coId = co.getId(sysEnv);

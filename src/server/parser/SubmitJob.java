@@ -65,7 +65,7 @@ public class SubmitJob extends Node
 	}
 
 	public static Long evalResumeObj(SystemEnvironment sysEnv, Object resumeObj, Long refTime, boolean adjust)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long resumeTs = null;
 
@@ -78,7 +78,7 @@ public class SubmitJob extends Node
 	}
 
 	public static Long evalResumeObj(SystemEnvironment sysEnv, String resumeAt, Integer resumeIn, Integer resumeBase, Long refTime, boolean adjust)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long resumeTs = null;
 		long now;
@@ -94,23 +94,23 @@ public class SubmitJob extends Node
 			int i = resumeBase.intValue();
 			long no_msecs = m * 60000;
 			switch (i) {
-			case SDMSInterval.MINUTE:
-				break;
-			case SDMSInterval.HOUR:
-				no_msecs *= 60;
-				break;
-			case SDMSInterval.DAY:
-				no_msecs *= 24 * 60;
-				break;
-			case SDMSInterval.WEEK:
-				no_msecs *= 7 * 24 * 60;
-				break;
-			case SDMSInterval.MONTH:
-				no_msecs *= 30 * 24 * 60;
-				break;
-			case SDMSInterval.YEAR:
-				no_msecs *= 365 * 24 * 60;
-				break;
+				case SDMSInterval.MINUTE:
+					break;
+				case SDMSInterval.HOUR:
+					no_msecs *= 60;
+					break;
+				case SDMSInterval.DAY:
+					no_msecs *= 24 * 60;
+					break;
+				case SDMSInterval.WEEK:
+					no_msecs *= 7 * 24 * 60;
+					break;
+				case SDMSInterval.MONTH:
+					no_msecs *= 30 * 24 * 60;
+					break;
+				case SDMSInterval.YEAR:
+					no_msecs *= 365 * 24 * 60;
+					break;
 			}
 			resumeTs = new Long (now + no_msecs);
 		} else {
@@ -132,7 +132,7 @@ public class SubmitJob extends Node
 	}
 
 	public Long master_submit(SystemEnvironment sysEnv, String submitTag)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSchedulingEntity se = (SDMSSchedulingEntity)SDMSSchedulingEntityTable.get(sysEnv, path, name);
 		Boolean suspend = (Boolean) with.get(ParseStr.S_SUSPEND);
@@ -160,11 +160,11 @@ public class SubmitJob extends Node
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			              sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 		}
 		if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT)) {
 			throw new AccessViolationException(
-			        new SDMSMessage(sysEnv, "03312181437", "Insufficient privileges for submitting $1", se.pathString(sysEnv))
+				new SDMSMessage(sysEnv, "03312181437", "Insufficient privileges for submitting $1", se.pathString(sysEnv))
 			);
 		}
 		se.checkSubmitForGroup(sysEnv, gId);
@@ -179,12 +179,12 @@ public class SubmitJob extends Node
 		}
 
 		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, params, suspend, resumeTs, gId, niceValue,
-		                                "manually submitted", submitTag, childTag, unresolvedHandling);
+								"manually submitted", submitTag, childTag, unresolvedHandling);
 		return sme.getId(sysEnv);
 	}
 
 	public Long child_submit(SystemEnvironment sysEnv, String submitTag)
-	throws SDMSException
+		throws SDMSException
 	{
 		Boolean suspend = (Boolean) with.get(ParseStr.S_SUSPEND);
 		Object resumeObj = with.get(ParseStr.S_RESUME);
@@ -215,7 +215,7 @@ public class SubmitJob extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer d_container = null;
 		Vector desc = new Vector();
@@ -229,7 +229,7 @@ public class SubmitJob extends Node
 			if (SDMSSubmittedEntityTable.idx_submitTag.containsKey(sysEnv, submitTag)) {
 
 				throw new CommonErrorException( new SDMSMessage(sysEnv, "03406031553",
-				                                "Job with submit tag $1 already submitted", submitTag));
+									"Job with submit tag $1 already submitted", submitTag));
 			}
 		}
 

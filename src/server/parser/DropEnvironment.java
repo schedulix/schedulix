@@ -51,7 +51,7 @@ public class DropEnvironment extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedEnvironment ne;
 		try {
@@ -70,14 +70,14 @@ public class DropEnvironment extends Node
 		if(v.size() > 0) {
 			SDMSSchedulingEntity se = (SDMSSchedulingEntity) v.get(0);
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03201222321",
-			                               "Environment in use by Scheduling Entity $1", se.pathString(sysEnv)));
+				"Environment in use by Scheduling Entity $1", se.pathString(sysEnv)));
 		}
 
 		v = SDMSFolderTable.idx_envId.getVector(sysEnv, neId);
 		if(v.size() > 0) {
 			SDMSFolder f = (SDMSFolder) v.get(0);
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03309030925",
-			                               "Environment in use by Folder $1", f.pathString(sysEnv)));
+				"Environment in use by Folder $1", f.pathString(sysEnv)));
 		}
 
 		v = SDMSEnvironmentTable.idx_neId.getVector(sysEnv, neId);

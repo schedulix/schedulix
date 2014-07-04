@@ -63,7 +63,7 @@ public class AlterEnvironment extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedEnvironment ne;
 		try {
@@ -117,8 +117,8 @@ public class AlterEnvironment extends Node
 						if(se.checkParameterRI(sysEnv, nrId)) {
 
 							throw new CommonErrorException(
-							        new SDMSMessage(sysEnv, "0340911291423", "A parameter of Resource $1 is referenced by $2",
-							                        nr.pathString(sysEnv), se.pathString(sysEnv))
+								new SDMSMessage(sysEnv, "0340911291423", "A parameter of Resource $1 is referenced by $2",
+									nr.pathString(sysEnv), se.pathString(sysEnv))
 							);
 						}
 					}

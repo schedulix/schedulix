@@ -123,7 +123,7 @@ public class Connect extends Node
 	}
 
 	private void connect_user(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSUser u;
 		Long uId;
@@ -135,12 +135,12 @@ public class Connect extends Node
 			u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(user, zero));
 			if (!u.getIsEnabled(sysEnv).booleanValue()) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
-				                               "02110192355", "User disabled"));
+					"02110192355", "User disabled"));
 			}
 			if (user.toUpperCase().equals("SYSTEM")) {
 				if(!txtPasswd.equals(SystemEnvironment.sysPasswd)) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv,
-					                               "02110192352", "Invalid username or password"));
+						"02110192352", "Invalid username or password"));
 				}
 			} else {
 				salt = u.getSalt(sysEnv);
@@ -151,7 +151,7 @@ public class Connect extends Node
 					passwd = CheckSum.mkstr(CheckSum.sha256((txtPasswd + (salt == null ? "" : salt)).getBytes()), false);
 				if (!u.getPasswd(sysEnv).equals(passwd)) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv,
-					                               "02110192352", "Invalid username or password"));
+						"02110192352", "Invalid username or password"));
 				}
 			}
 			if(sysEnv.getConnectState() != SystemEnvironment.NORMAL) {
@@ -161,7 +161,7 @@ public class Connect extends Node
 			}
 		} catch (NotFoundException nfe) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02110192350", "Invalid username or password"));
+				"02110192350", "Invalid username or password"));
 		}
 		uId = u.getId(sysEnv);
 		sysEnv.cEnv.setUid(uId);
@@ -170,7 +170,7 @@ public class Connect extends Node
 	}
 
 	private void connect_jobserver(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope s;
 		Long pId;
@@ -185,11 +185,11 @@ public class Connect extends Node
 			s = SDMSScopeTable.idx_parentId_name_getUnique(sysEnv, new SDMSKey(pId, jsName));
 			if(s.getType(sysEnv).intValue() != SDMSScope.SERVER) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202041546",
-				                               "Invalid jobservername or password"));
+						"Invalid jobservername or password"));
 			}
 			if(!s.getIsEnabled(sysEnv).booleanValue()) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
-				                               "03202041508", "JobServer disabled"));
+						"03202041508", "JobServer disabled"));
 			}
 			salt = s.getSalt(sysEnv);
 			method = s.getMethod(sysEnv).intValue();
@@ -199,11 +199,11 @@ public class Connect extends Node
 				passwd = CheckSum.mkstr(CheckSum.sha256((txtPasswd + (salt == null ? "" : salt)).getBytes()), false);
 			if(!s.getPasswd(sysEnv).equals(passwd)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
-				                               "03202041511", "Invalid jobservername or password"));
+						"03202041511", "Invalid jobservername or password"));
 			}
 		} catch (NotFoundException nfe) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "03202041510", "Invalid jobservername or password"));
+					"03202041510", "Invalid jobservername or password"));
 		}
 
 		SDMSnpSrvrSRFootprint sf = SDMSnpSrvrSRFootprintTable.idx_sId_getUnique(sysEnv, s.getId(sysEnv));
@@ -225,7 +225,7 @@ public class Connect extends Node
 	}
 
 	public static Long validateJobConnect(SystemEnvironment sysEnv, Long jobId, String key, boolean adminAccess)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long accessKey;
 		SDMSSubmittedEntity sme;
@@ -241,15 +241,15 @@ public class Connect extends Node
 				accessKey = new Long(Long.parseLong(key));
 			} catch (NumberFormatException nfe) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
-				                               "03206031607", "Invalid username or password"));
+						"03206031607", "Invalid username or password"));
 			}
 			if (!sme.getAccessKey(sysEnv).equals(accessKey)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
-				                               "02110192353", "Invalid username or password"));
+						"02110192353", "Invalid username or password"));
 			}
 		} catch (NotFoundException nfe) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02110192351", "Invalid username or password"));
+					"02110192351", "Invalid username or password"));
 		}
 
 		if (!adminAccess) {
@@ -257,23 +257,20 @@ public class Connect extends Node
 			int state = sme.getState(sysEnv).intValue();
 			if (state == SDMSSubmittedEntity.CANCELLED || state == SDMSSubmittedEntity.FINAL)
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03703141511",
-				                               "Invalid username or password"));
+						"Invalid username or password"));
 		}
 
 		return sme.getId(sysEnv);
 	}
 
 	private void connect_job(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.cEnv.setUid(validateJobConnect(sysEnv, jobid, passwd, false));
 		sysEnv.cEnv.setJob();
 	}
 
-	public Node getNode()
-	{
-		return cmd;
-	}
+	public Node getNode() { return cmd; }
 
 	public String getName()
 	{
@@ -284,7 +281,7 @@ public class Connect extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer d_container = null;
 		Vector desc = new Vector();

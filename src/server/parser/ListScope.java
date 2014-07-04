@@ -107,7 +107,7 @@ public class ListScope extends Node
 	}
 
 	public Vector fillVector(SystemEnvironment sysEnv, SDMSProxy co, HashSet parentSet)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = new Vector();
 		fillVector(sysEnv, (SDMSScope) co, v);
@@ -115,7 +115,7 @@ public class ListScope extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		ScopeLister sl = new ScopeLister(url, expandIds);
 		sl.setTitle(new SDMSMessage(sysEnv, "03207191656", "List of Scopes"));
@@ -126,11 +126,11 @@ public class ListScope extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03201281436",
-		                                   "$1 Object(s) found", new Integer(d_container.lines)));
+				"$1 Object(s) found", new Integer(d_container.lines)));
 	}
 
 	private void fillVector(SystemEnvironment sysEnv, SDMSScope s, Vector v)
-	throws SDMSException
+		throws SDMSException
 	{
 		v.add(s.getId(sysEnv));
 		v.add(s.pathVector(sysEnv));

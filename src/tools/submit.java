@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -65,18 +65,9 @@ class submit extends App
 		addOption("A", "at"     , null, AT     , null, "at"       , false, "Timestamp (YYYY-MM-DDTHH:MM) when job should be resumed (only valid with suspend option)");
 		addOption("g", "group"  , null, GROUP  , null, "groupname", false, "Group to own the submitted job (not allows with jid option)");
 	}
-	public String getName()
-	{
-		return "submit";
-	}
-	public boolean canRetry()
-	{
-		return true;
-	}
-	public String getUsageArguments()
-	{
-		return "{ parameter value }";
-	}
+	public String getName() { return "submit"; }
+	public boolean canRetry() { return true; }
+	public String getUsageArguments() { return "{ parameter value }"; }
 	public boolean validateOptions()
 	{
 		if (options.isSet(GROUP) && !options.isSet(App.USER)) {
@@ -136,7 +127,7 @@ class submit extends App
 		return true;
 	}
 	public int go()
-	throws RetryException
+		throws RetryException
 	{
 		String cmd;
 		SDMSOutput o;
@@ -146,24 +137,12 @@ class submit extends App
 			this.submitTag = SDMSOutputUtil.getFromRecord(o,"VALUE");
 		}
 		cmd = "SUBMIT " + options.getValue(JOB) + "\nWITH\n    SUBMITTAG = '" + submitTag + "'";
-		if (options.isSet(SUSPEND) && options.getOption(SUSPEND).getBValue()) {
-			cmd = cmd + ",\n    " + "SUSPEND";
-		}
-		if (options.isSet(DELAY) || options.isSet(AT) ) {
-			cmd = cmd + ",\n    " + "RESUME";
-		}
-		if (options.isSet(DELAY)) {
-			cmd = cmd + " IN " + options.getValue(DELAY) + " " + options.getValue(UNIT);
-		}
-		if (options.isSet(AT)) {
-			cmd = cmd + " AT '" + options.getValue(AT) + "'";
-		}
-		if (options.isSet(NICE))    {
-			cmd = cmd + ",\n    " + "NICEVALUE = " + options.getValue(NICE);
-		}
-		if (options.isSet(TAG))     {
-			cmd = cmd + ",\n    " + "CHILDTAG = '" + options.getValue(TAG) + "'";
-		}
+		if (options.isSet(SUSPEND) && options.getOption(SUSPEND).getBValue()) { cmd = cmd + ",\n    " + "SUSPEND"; }
+		if (options.isSet(DELAY) || options.isSet(AT) ) { cmd = cmd + ",\n    " + "RESUME"; }
+		if (options.isSet(DELAY)) { cmd = cmd + " IN " + options.getValue(DELAY) + " " + options.getValue(UNIT); }
+		if (options.isSet(AT)) { cmd = cmd + " AT '" + options.getValue(AT) + "'"; }
+		if (options.isSet(NICE))    { cmd = cmd + ",\n    " + "NICEVALUE = " + options.getValue(NICE); }
+		if (options.isSet(TAG))     { cmd = cmd + ",\n    " + "CHILDTAG = '" + options.getValue(TAG) + "'"; }
 		if (options.rest.size() > 0 ) {
 			cmd = cmd + ",\n    " + "PARAMETERS = (\n";
 			String sep = "";
@@ -190,8 +169,5 @@ class submit extends App
 		System.out.println(SDMSOutputUtil.getFromRecord(o,"ID"));
 		return 0;
 	}
-	public static void main (String[] argv)
-	{
-		System.exit(new submit().run(argv));
-	}
+	public static void main (String[] argv) { System.exit(new submit().run(argv)); }
 }

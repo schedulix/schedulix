@@ -51,7 +51,7 @@ public class ConnectCtrl extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(sysEnv.cEnv.uid().longValue() != 0) {
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "03202081833", "Insufficient Privileges"));

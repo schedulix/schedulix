@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -125,7 +125,7 @@ public class Feil
 	}
 
 	public long length()
-	throws IOException
+		throws IOException
 	{
 		if (rfil != null)
 			return rfil.length();
@@ -153,96 +153,30 @@ public class Feil
 		return result;
 	}
 
-	public final boolean getIncomplete()
-	{
-		return !complete;
-	}
-	public final boolean getComplete()
-	{
-		return complete;
-	}
+	public final boolean getIncomplete() { return !complete; }
+	public final boolean getComplete()   { return complete;  }
 
-	public final String getId()
-	{
-		return id;
-	}
-	public final String getStatus()
-	{
-		return status;
-	}
-	public final String getStatusTimestamp()
-	{
-		return timestamp;
-	}
-	public final String getExecPid()
-	{
-		return exec_pid;
-	}
-	public final String getExtPid()
-	{
-		return ext_pid;
-	}
-	public final String getStatus_Tx()
-	{
-		return status_tx;
-	}
-	public final String getReturnCode()
-	{
-		return return_code;
-	}
-	public final String getError()
-	{
-		return error.toString();
-	}
-	public final String getRunningTimestamp()
-	{
-		return runningTS;
-	}
-	public final String getRun()
-	{
-		return run;
-	}
+	public final String getId()               { return id; }
+	public final String getStatus()           { return status; }
+	public final String getStatusTimestamp()  { return timestamp; }
+	public final String getExecPid()          { return exec_pid; }
+	public final String getExtPid()           { return ext_pid; }
+	public final String getStatus_Tx()        { return status_tx; }
+	public final String getReturnCode()       { return return_code; }
+	public final String getError()            { return error.toString(); }
+	public final String getRunningTimestamp() { return runningTS; }
+	public final String getRun()              { return run; }
 
-	public final String getCommand()
-	{
-		return command;
-	}
-	public final Vector getArgs()
-	{
-		return args;
-	}
-	public final String getWorkdir()
-	{
-		return workdir;
-	}
-	public final boolean getUsepath()
-	{
-		return usepath;
-	}
-	public final boolean getVerboseLogs()
-	{
-		return verboseLogs;
-	}
-	public final String getLogfile()
-	{
-		return logfile;
-	}
-	public final boolean getLogappend()
-	{
-		return logappend;
-	}
-	public final String getErrlog()
-	{
-		return errlog;
-	}
-	public final boolean getErrappend()
-	{
-		return errappend;
-	}
-	public final boolean getSamelogs()
-	{
-		return samelogs;
-	}
+	public final String getCommand()          { return command; }
+	public final Vector getArgs()             { return args; }
+	public final String getWorkdir()          { return workdir; }
+	public final boolean getUsepath()         { return usepath; }
+	public final boolean getVerboseLogs()     { return verboseLogs; }
+	public final String getLogfile()          { return logfile; }
+	public final boolean getLogappend()       { return logappend; }
+	public final String getErrlog()           { return errlog; }
+	public final boolean getErrappend()       { return errappend; }
+	public final boolean getSamelogs()        { return samelogs; }
 
 	private final byte[] read()
 	{
@@ -267,7 +201,7 @@ public class Feil
 	}
 
 	private final String println (final String tag)
-	throws IOException
+		throws IOException
 	{
 		final String now = Utils.timestampNow();
 		rfil.writeBytes (now + " " + tag + "\n");
@@ -276,7 +210,7 @@ public class Feil
 	}
 
 	private final String println (final String id, final String val)
-	throws IOException
+		throws IOException
 	{
 		if (val != null) {
 			final StringBuffer tag = new StringBuffer (id);
@@ -294,7 +228,7 @@ public class Feil
 	}
 
 	public final String append (final String id, final String val)
-	throws IOException
+		throws IOException
 	{
 		final byte[] data = read();
 
@@ -308,7 +242,7 @@ public class Feil
 	}
 
 	public final void create (final Descr jd, final boolean use_path, final boolean verbose_logs)
-	throws IOException
+		throws IOException
 	{
 		rfil = new RandomAccessFile (filnam, "rws");
 		rfil.setLength (0);
@@ -381,7 +315,7 @@ public class Feil
 	}
 
 	public final void open()
-	throws IOException
+		throws IOException
 	{
 		rfil = new RandomAccessFile (filnam, "rws");
 
@@ -521,7 +455,7 @@ public class Feil
 	}
 
 	public final void setStatus (final String new_status)
-	throws IOException
+		throws IOException
 	{
 		status = new_status;
 		timestamp = append (STATUS, new_status);
@@ -530,14 +464,14 @@ public class Feil
 	}
 
 	public final void setStatus_Tx (final String new_status)
-	throws IOException
+		throws IOException
 	{
 		status_tx = new_status;
 		append (STATUS_TX, new_status);
 	}
 
 	public final void setError (final String new_error)
-	throws IOException
+		throws IOException
 	{
 		error.setLength (0);
 		error.append (new_error);

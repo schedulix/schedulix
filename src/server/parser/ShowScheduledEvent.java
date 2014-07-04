@@ -59,7 +59,7 @@ public class ShowScheduledEvent
 	}
 
 	public SDMSOutputContainer renderCalendar(SystemEnvironment sysEnv, Long scevId, SDMSSchedule sce)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector desc = new Vector();
 
@@ -88,7 +88,7 @@ public class ShowScheduledEvent
 	}
 
 	public void go (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Long sceId = SDMSScheduleTable.pathToId (sysEnv, path);
 		final SDMSSchedule sce = SDMSScheduleTable.getObject (sysEnv, sceId);

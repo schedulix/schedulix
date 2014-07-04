@@ -49,7 +49,7 @@ public class ListGroup extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSGroup g;
 		SDMSOutputContainer d_container = null;
@@ -88,7 +88,7 @@ public class ListGroup extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03312091455", "$1 Group(s) found", new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "03312091455", "$1 Group(s) found", new Integer(d_container.lines)));
 	}
 }
 

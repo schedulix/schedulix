@@ -51,7 +51,7 @@ public class RenameUser extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSUser u;
 

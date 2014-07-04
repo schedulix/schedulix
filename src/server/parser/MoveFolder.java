@@ -62,7 +62,7 @@ public class MoveFolder extends Node
 	}
 
 	private void moveFolder(SystemEnvironment sysEnv, SDMSFolder f)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFolder p;
 		String name;
@@ -90,7 +90,7 @@ public class MoveFolder extends Node
 
 		if(SDMSSchedulingEntityTable.idx_folderId_name.containsKey(sysEnv, new SDMSKey(npId, name))) {
 			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03201290943", "Object with name $1 already exists within $2",
-			                                name, f.pathString(sysEnv)));
+				name, f.pathString(sysEnv)));
 		}
 
 		if(npId.equals(myId)) {
@@ -112,7 +112,7 @@ public class MoveFolder extends Node
 	}
 
 	private void renameFolder(SystemEnvironment sysEnv, SDMSFolder f)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long opId;
 
@@ -123,11 +123,11 @@ public class MoveFolder extends Node
 
 		if(SDMSSchedulingEntityTable.idx_folderId_name.containsKey(sysEnv, new SDMSKey(opId, newName))) {
 			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03112161101", "Object with name $1 already exists",
-			                                newName));
+				newName));
 		}
 		if(SDMSFolderTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(opId, newName))) {
 			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03112161103", "Object with name $1 already exists",
-			                                newName));
+				newName));
 		}
 
 		f.setName(sysEnv, newName);
@@ -136,7 +136,7 @@ public class MoveFolder extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFolder f;
 

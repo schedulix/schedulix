@@ -49,7 +49,7 @@ public class ListExitStatusDef extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSExitStateDefinition o;
@@ -79,8 +79,8 @@ public class ListExitStatusDef extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03111272323", "$1 Exit State Definition(s) found",
-		                        new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "03111272323", "$1 Exit State Definition(s) found",
+					new Integer(d_container.lines)));
 	}
 }
 

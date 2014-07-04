@@ -41,5 +41,5 @@ public interface Formatter
 
 	public Vector fillHeadInfo();
 	public Vector fillVector(SystemEnvironment sysEnv, SDMSProxy co, HashSet parentSet)
-	throws SDMSException;
+		throws SDMSException;
 }

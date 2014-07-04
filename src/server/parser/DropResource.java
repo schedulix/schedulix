@@ -49,7 +49,7 @@ public class DropResource extends ManipResource
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResource r;
 		SDMSResourceTemplate rt;
@@ -60,7 +60,7 @@ public class DropResource extends ManipResource
 		if (p instanceof SDMSResource) {
 			((SDMSResource) p).delete(sysEnv, force);
 		} else
-			p.delete(sysEnv);
+			((SDMSResourceTemplate) p).delete(sysEnv);
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03202221023", "Resource dropped"));
 	}

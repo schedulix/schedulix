@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -50,7 +50,7 @@ public class GarbageThread extends InternalSession
 	private final long maxPreserveTime;
 
 	public GarbageThread(SystemEnvironment env, SyncFifo f)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(name);
 		NR = 1234322;
@@ -67,7 +67,7 @@ public class GarbageThread extends InternalSession
 	}
 
 	public void collect(final SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long smeId;
 		int state;
@@ -96,57 +96,57 @@ public class GarbageThread extends InternalSession
 		}
 
 		Collections.sort (v_masters,
-		new Comparator () {
-			public int compare (Object o1, Object o2) {
-				try {
-					SDMSSubmittedEntity sme_1 = (SDMSSubmittedEntity)o1;
-					SDMSSubmittedEntity sme_2 = (SDMSSubmittedEntity)o2;
+			new Comparator () {
+				public int compare (Object o1, Object o2) {
+					try {
+						SDMSSubmittedEntity sme_1 = (SDMSSubmittedEntity)o1;
+						SDMSSubmittedEntity sme_2 = (SDMSSubmittedEntity)o2;
 
-					long se_id_1 = sme_1.getSeId(sysEnv).longValue();
-					long se_id_2 = sme_2.getSeId(sysEnv).longValue();
-					if (se_id_1 != se_id_2) {
-						if (se_id_1 < se_id_2)
-							return -1;
-						else
-							return 1;
-					} else {
-						long submit_ts_1 = sme_1.getSubmitTs(sysEnv).longValue();
-						long submit_ts_2 = sme_2.getSubmitTs(sysEnv).longValue();
-						if (submit_ts_1 != submit_ts_2) {
-							if (submit_ts_1 < submit_ts_2)
-								return 1;
-							else
+						long se_id_1 = sme_1.getSeId(sysEnv).longValue();
+						long se_id_2 = sme_2.getSeId(sysEnv).longValue();
+						if (se_id_1 != se_id_2) {
+							if (se_id_1 < se_id_2)
 								return -1;
+							else
+								return 1;
+						} else {
+							long submit_ts_1 = sme_1.getSubmitTs(sysEnv).longValue();
+							long submit_ts_2 = sme_2.getSubmitTs(sysEnv).longValue();
+							if (submit_ts_1 != submit_ts_2) {
+								if (submit_ts_1 < submit_ts_2)
+									return 1;
+								else
+									return -1;
+							}
+							return 0;
 						}
+					} catch (SDMSException e) {
 						return 0;
 					}
-				} catch (SDMSException e) {
-					return 0;
 				}
-			}
-			public boolean equals (Object o1, Object o2) {
-				try {
-					SDMSSubmittedEntity sme_1 = (SDMSSubmittedEntity)o1;
-					SDMSSubmittedEntity sme_2 = (SDMSSubmittedEntity)o2;
+				public boolean equals (Object o1, Object o2) {
+					try {
+						SDMSSubmittedEntity sme_1 = (SDMSSubmittedEntity)o1;
+						SDMSSubmittedEntity sme_2 = (SDMSSubmittedEntity)o2;
 
-					long se_id_1 = sme_1.getSeId(sysEnv).longValue();
-					long se_id_2 = sme_2.getSeId(sysEnv).longValue();
-					if (se_id_1 != se_id_2) {
-						return false;
-					} else {
-						long submit_ts_1 = sme_1.getSubmitTs(sysEnv).longValue();
-						long submit_ts_2 = sme_2.getSubmitTs(sysEnv).longValue();
-						if (submit_ts_1 != submit_ts_2) {
+						long se_id_1 = sme_1.getSeId(sysEnv).longValue();
+						long se_id_2 = sme_2.getSeId(sysEnv).longValue();
+						if (se_id_1 != se_id_2) {
 							return false;
+						} else {
+							long submit_ts_1 = sme_1.getSubmitTs(sysEnv).longValue();
+							long submit_ts_2 = sme_2.getSubmitTs(sysEnv).longValue();
+							if (submit_ts_1 != submit_ts_2) {
+								return false;
+							}
+							return true;
 						}
-						return true;
+					} catch (SDMSException e) {
+						return false;
 					}
-				} catch (SDMSException e) {
-					return false;
 				}
 			}
-		}
-		                 );
+		);
 
 		int masterCtr = 0;
 		long seId = 0;
@@ -205,15 +205,15 @@ class DoGarbage extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		switch(action) {
-		case SCHEDULE:
-			SystemEnvironment.garb.collect(sysEnv);
-			break;
-		case INITIALIZE:
+			case SCHEDULE:
+				SystemEnvironment.garb.collect(sysEnv);
+				break;
+			case INITIALIZE:
 
-			break;
+				break;
 		}
 	}
 

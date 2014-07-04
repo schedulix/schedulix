@@ -49,7 +49,7 @@ public class ListUser extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSUser u;
 		SDMSOutputContainer d_container = null;
@@ -64,7 +64,7 @@ public class ListUser extends Node
 		desc.add("PRIVS");
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv,
-		                                      "02111101418", "List of Users"), desc);
+			"02111101418", "List of Users"), desc);
 
 		Vector groups = new Vector();
 		groups.addAll(sysEnv.cEnv.gid());
@@ -104,7 +104,7 @@ public class ListUser extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "02111101419", "$1 User(s) found", new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "02111101419", "$1 User(s) found", new Integer(d_container.lines)));
 	}
 }
 

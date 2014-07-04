@@ -50,7 +50,7 @@ public class SubmitUserFilter extends Filter
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			if(owners == null) {
@@ -58,7 +58,7 @@ public class SubmitUserFilter extends Filter
 				for(int i = 0; i < names.size(); i++) {
 					try {
 						Long gid = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-						                   sysEnv, new SDMSKey ((String)(names.get(i)), new Long(0))).getId(sysEnv);
+								sysEnv, new SDMSKey ((String)(names.get(i)), new Long(0))).getId(sysEnv);
 						owners.add(gid);
 					} catch (NotFoundException nfe) {
 

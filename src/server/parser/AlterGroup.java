@@ -49,7 +49,7 @@ public class AlterGroup extends ManipGroup
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSGroup g;
 		Long gId;
@@ -76,7 +76,7 @@ public class AlterGroup extends ManipGroup
 			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId) && !userlist.contains(myUId)) {
 
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03104151448",
-				                               "You cannot remove yourself from a group"));
+								"You cannot remove yourself from a group"));
 			}
 			for(int i = 0; i < oldusers.size(); i++) {
 				SDMSMember m = (SDMSMember) oldusers.get(i);
@@ -85,7 +85,7 @@ public class AlterGroup extends ManipGroup
 				if(gId.equals(u.getDefaultGId(sysEnv))) {
 					if(!userlist.contains(u.getId(sysEnv))) {
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03312130039",
-						                               "you cannot remove a user from his default group"));
+								"you cannot remove a user from his default group"));
 					}
 				}
 				if(userlist.contains(uId))
@@ -117,7 +117,7 @@ public class AlterGroup extends ManipGroup
 			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId) && dellist.contains(myUId)) {
 
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03104151447",
-				                               "You cannot remove yourself from a group"));
+								"You cannot remove yourself from a group"));
 			}
 			for(int i = 0; i < dellist.size(); i++) {
 				uId = (Long) dellist.get(i);
@@ -131,7 +131,7 @@ public class AlterGroup extends ManipGroup
 					}
 				} else {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03312102202",
-					                               "You cannot remove the default group"));
+								"You cannot remove the default group"));
 				}
 			}
 		}

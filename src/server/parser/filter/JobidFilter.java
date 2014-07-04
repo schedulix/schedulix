@@ -52,7 +52,7 @@ public class JobidFilter extends Filter
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			if(jids.contains(p.getId(sysEnv))) return true;

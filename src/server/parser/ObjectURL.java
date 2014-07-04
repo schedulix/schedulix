@@ -55,8 +55,7 @@ public class ObjectURL
 	public boolean wildcard = false;
 
 	private final static HashMap typeFromURL = new HashMap();
-	static
-	{
+	static {
 		typeFromURL.put(new Integer(Parser.DISTRIBUTION),		new Integer(SDMSObjectComment.DISTRIBUTION));
 		typeFromURL.put(new Integer(Parser.ENVIRONMENT),		new Integer(SDMSObjectComment.ENVIRONMENT));
 		typeFromURL.put(new Integer(Parser.EVENT),			new Integer(SDMSObjectComment.EVENT));
@@ -114,7 +113,7 @@ public class ObjectURL
 	}
 
 	public ObjectURL(Integer t, String n, WithItem s)
-	throws SDMSException
+		throws SDMSException
 	{
 		name = n;
 		objType = (Integer) typeFromURL.get(t);
@@ -136,7 +135,7 @@ public class ObjectURL
 	}
 
 	public ObjectURL(Integer t, PathVector p, WithItem s)
-	throws SDMSException
+		throws SDMSException
 	{
 		path = p;
 		objType = (Integer) typeFromURL.get(t);
@@ -172,7 +171,7 @@ public class ObjectURL
 	}
 
 	public SDMSProxy resolve(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(objType == null) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03512131431", "Cannot resolve an Object when the type is unknown"));
@@ -186,167 +185,87 @@ public class ObjectURL
 	}
 
 	private SDMSProxy resolveById(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSProxy p = null;
 		switch (objType.intValue()) {
-		case SDMSObjectComment.ENVIRONMENT:
-			p = SDMSNamedEnvironmentTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.EVENT:
-			p = SDMSEventTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.EXIT_STATE_DEFINITION:
-			p = SDMSExitStateDefinitionTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.EXIT_STATE_PROFILE:
-			p = SDMSExitStateProfileTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.EXIT_STATE_MAPPING:
-			p = SDMSExitStateMappingProfileTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.FOLDER:
-		case SDMSObjectComment.JOB_DEFINITION:
-			try {
-				p = SDMSFolderTable.getObject(sysEnv, objId);
-				objType = new Integer(SDMSObjectComment.FOLDER);
-			} catch (NotFoundException nfe) {
-				p = SDMSSchedulingEntityTable.getObject(sysEnv, objId);
-				objType = new Integer(SDMSObjectComment.JOB_DEFINITION);
-			}
-			break;
-		case SDMSObjectComment.FOOTPRINT:
-			p = SDMSFootprintTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.GROUP:
-			p = SDMSGroupTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.INTERVAL:
-			p = SDMSIntervalTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.JOB:
-			p = SDMSSubmittedEntityTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.NAMED_RESOURCE:
-			p = SDMSNamedResourceTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.PARAMETER:
-			p = SDMSParameterDefinitionTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.RESOURCE:
-			p = SDMSResourceTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
-			p = SDMSResourceStateDefinitionTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.RESOURCE_STATE_PROFILE:
-			p = SDMSResourceStateProfileTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.RESOURCE_STATE_MAPPING:
-			p = SDMSResourceStateMappingProfileTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.SCHEDULE:
-			p = SDMSScheduleTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.SCHEDULED_EVENT:
-			p = SDMSScheduledEventTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.SCOPE:
-			p = SDMSScopeTable.getObject(sysEnv, objId);
-			if (((SDMSScope) p).getType(sysEnv).intValue() == SDMSScope.SERVER)
-				parserType = new Integer(Parser.JOB_SERVER);
-			break;
-		case SDMSObjectComment.TRIGGER:
-			p = SDMSTriggerTable.getObject(sysEnv, objId);
-			break;
-		case SDMSObjectComment.USER:
-			p = SDMSUserTable.getObject(sysEnv, objId);
-			break;
-		default:
-			break;
+			case SDMSObjectComment.ENVIRONMENT:		p = SDMSNamedEnvironmentTable.getObject(sysEnv, objId);		break;
+			case SDMSObjectComment.EVENT:			p = SDMSEventTable.getObject(sysEnv, objId);			break;
+			case SDMSObjectComment.EXIT_STATE_DEFINITION:	p = SDMSExitStateDefinitionTable.getObject(sysEnv, objId);	break;
+			case SDMSObjectComment.EXIT_STATE_PROFILE:	p = SDMSExitStateProfileTable.getObject(sysEnv, objId);		break;
+			case SDMSObjectComment.EXIT_STATE_MAPPING:	p = SDMSExitStateMappingProfileTable.getObject(sysEnv, objId);	break;
+			case SDMSObjectComment.FOLDER:
+			case SDMSObjectComment.JOB_DEFINITION:
+				try {
+					p = SDMSFolderTable.getObject(sysEnv, objId);
+					objType = new Integer(SDMSObjectComment.FOLDER);
+				} catch (NotFoundException nfe) {
+					p = SDMSSchedulingEntityTable.getObject(sysEnv, objId);
+					objType = new Integer(SDMSObjectComment.JOB_DEFINITION);
+				}
+				break;
+			case SDMSObjectComment.FOOTPRINT:		p = SDMSFootprintTable.getObject(sysEnv, objId);		break;
+			case SDMSObjectComment.GROUP:			p = SDMSGroupTable.getObject(sysEnv, objId);			break;
+			case SDMSObjectComment.INTERVAL:		p = SDMSIntervalTable.getObject(sysEnv, objId);			break;
+			case SDMSObjectComment.JOB:			p = SDMSSubmittedEntityTable.getObject(sysEnv, objId);		break;
+			case SDMSObjectComment.NAMED_RESOURCE:		p = SDMSNamedResourceTable.getObject(sysEnv, objId);		break;
+			case SDMSObjectComment.PARAMETER:		p = SDMSParameterDefinitionTable.getObject(sysEnv, objId);	break;
+			case SDMSObjectComment.RESOURCE:		p = SDMSResourceTable.getObject(sysEnv, objId);			break;
+			case SDMSObjectComment.RESOURCE_STATE_DEFINITION: p = SDMSResourceStateDefinitionTable.getObject(sysEnv, objId); break;
+			case SDMSObjectComment.RESOURCE_STATE_PROFILE:	p = SDMSResourceStateProfileTable.getObject(sysEnv, objId);	break;
+			case SDMSObjectComment.RESOURCE_STATE_MAPPING:	p = SDMSResourceStateMappingProfileTable.getObject(sysEnv, objId); break;
+			case SDMSObjectComment.SCHEDULE:		p = SDMSScheduleTable.getObject(sysEnv, objId);			break;
+			case SDMSObjectComment.SCHEDULED_EVENT:		p = SDMSScheduledEventTable.getObject(sysEnv, objId);		break;
+			case SDMSObjectComment.SCOPE:
+				p = SDMSScopeTable.getObject(sysEnv, objId);
+				if (((SDMSScope) p).getType(sysEnv).intValue() == SDMSScope.SERVER)
+					parserType = new Integer(Parser.JOB_SERVER);
+				break;
+			case SDMSObjectComment.TRIGGER:			p = SDMSTriggerTable.getObject(sysEnv, objId);			break;
+			case SDMSObjectComment.USER:			p = SDMSUserTable.getObject(sysEnv, objId);			break;
+			default: break;
 		}
 		return p;
 	}
 
 	private SDMSProxy resolveByName(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSProxy p = null;
 		switch (objType.intValue()) {
-		case SDMSObjectComment.ENVIRONMENT:
-			p = getEnvironment(sysEnv);
-			break;
-		case SDMSObjectComment.EVENT:
-			p = getEvent(sysEnv);
-			break;
-		case SDMSObjectComment.EXIT_STATE_DEFINITION:
-			p = getExitStateDefinition(sysEnv);
-			break;
-		case SDMSObjectComment.EXIT_STATE_PROFILE:
-			p = getExitStateProfile(sysEnv);
-			break;
-		case SDMSObjectComment.EXIT_STATE_MAPPING:
-			p = getExitStateMapping(sysEnv);
-			break;
-		case SDMSObjectComment.FOLDER:
-			p = getFolder(sysEnv);
-			break;
-		case SDMSObjectComment.FOOTPRINT:
-			p = getFootprint(sysEnv);
-			break;
-		case SDMSObjectComment.GROUP:
-			p = getGroup(sysEnv);
-			break;
-		case SDMSObjectComment.INTERVAL:
-			p = getInterval(sysEnv);
-			break;
-		case SDMSObjectComment.JOB_DEFINITION:
-			p = getSchedulingEntity(sysEnv);
-			break;
-		case SDMSObjectComment.NAMED_RESOURCE:
-			p = getNamedResource(sysEnv);
-			break;
-		case SDMSObjectComment.PARAMETER:
-			p = getParameterDefinition(sysEnv);
-			break;
-		case SDMSObjectComment.RESOURCE:
-			p = getResource(sysEnv);
-			break;
-		case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
-			p = getResourceStateDefinition(sysEnv);
-			break;
-		case SDMSObjectComment.RESOURCE_STATE_PROFILE:
-			p = getResourceStateProfile(sysEnv);
-			break;
-		case SDMSObjectComment.RESOURCE_STATE_MAPPING:
-			p = getResourceStateMapping(sysEnv);
-			break;
-		case SDMSObjectComment.SCHEDULE:
-			p = getSchedule(sysEnv);
-			break;
-		case SDMSObjectComment.SCHEDULED_EVENT:
-			p = getScheduledEvent(sysEnv);
-			break;
-		case SDMSObjectComment.SCOPE:
-			p = getScope(sysEnv);
-			if (((SDMSScope) p).getType(sysEnv).intValue() == SDMSScope.SERVER)
-				parserType = new Integer(Parser.JOB_SERVER);
-			break;
-		case SDMSObjectComment.TRIGGER:
-			p = getTrigger(sysEnv);
-			break;
-		case SDMSObjectComment.USER:
-			p = getUser(sysEnv);
-			break;
-		default:
-			break;
+			case SDMSObjectComment.ENVIRONMENT:		p = getEnvironment(sysEnv);		break;
+			case SDMSObjectComment.EVENT:			p = getEvent(sysEnv);			break;
+			case SDMSObjectComment.EXIT_STATE_DEFINITION:	p = getExitStateDefinition(sysEnv);	break;
+			case SDMSObjectComment.EXIT_STATE_PROFILE:	p = getExitStateProfile(sysEnv);	break;
+			case SDMSObjectComment.EXIT_STATE_MAPPING:	p = getExitStateMapping(sysEnv);	break;
+			case SDMSObjectComment.FOLDER:			p = getFolder(sysEnv);			break;
+			case SDMSObjectComment.FOOTPRINT:		p = getFootprint(sysEnv);		break;
+			case SDMSObjectComment.GROUP:			p = getGroup(sysEnv);			break;
+			case SDMSObjectComment.INTERVAL:		p = getInterval(sysEnv);		break;
+			case SDMSObjectComment.JOB_DEFINITION:		p = getSchedulingEntity(sysEnv);	break;
+			case SDMSObjectComment.NAMED_RESOURCE:		p = getNamedResource(sysEnv);		break;
+			case SDMSObjectComment.PARAMETER:		p = getParameterDefinition(sysEnv);	break;
+			case SDMSObjectComment.RESOURCE:		p = getResource(sysEnv);		break;
+			case SDMSObjectComment.RESOURCE_STATE_DEFINITION: p = getResourceStateDefinition(sysEnv); break;
+			case SDMSObjectComment.RESOURCE_STATE_PROFILE:	p = getResourceStateProfile(sysEnv);	break;
+			case SDMSObjectComment.RESOURCE_STATE_MAPPING:	p = getResourceStateMapping(sysEnv);	break;
+			case SDMSObjectComment.SCHEDULE:		p = getSchedule(sysEnv);		break;
+			case SDMSObjectComment.SCHEDULED_EVENT:		p = getScheduledEvent(sysEnv);		break;
+			case SDMSObjectComment.SCOPE:
+				p = getScope(sysEnv);
+				if (((SDMSScope) p).getType(sysEnv).intValue() == SDMSScope.SERVER)
+					parserType = new Integer(Parser.JOB_SERVER);
+				break;
+			case SDMSObjectComment.TRIGGER:			p = getTrigger(sysEnv);			break;
+			case SDMSObjectComment.USER:			p = getUser(sysEnv);			break;
+			default: break;
 		}
 		if (p != null) objId = p.getId(sysEnv);
 		return p;
 	}
 
 	private final String getObjectName(final SystemEnvironment sysEnv, final String name, final WithItem seSpec)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (seSpec == null)
 			return name;
@@ -356,7 +275,7 @@ public class ObjectURL
 	}
 
 	private SDMSNamedEnvironment getEnvironment(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedEnvironment p = null;
 		p = SDMSNamedEnvironmentTable.idx_name_getUnique(sysEnv, name);
@@ -364,7 +283,7 @@ public class ObjectURL
 	}
 
 	private SDMSEvent getEvent(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		mappedName = getObjectName(sysEnv, name, seSpec);
 		SDMSEvent p = null;
@@ -373,7 +292,7 @@ public class ObjectURL
 	}
 
 	private SDMSExitStateDefinition getExitStateDefinition(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateDefinition p = null;
 		p = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, name);
@@ -381,7 +300,7 @@ public class ObjectURL
 	}
 
 	private SDMSExitStateProfile getExitStateProfile(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateProfile p = null;
 		p = SDMSExitStateProfileTable.idx_name_getUnique(sysEnv, name);
@@ -389,7 +308,7 @@ public class ObjectURL
 	}
 
 	private SDMSExitStateMappingProfile getExitStateMapping(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateMappingProfile p = null;
 		p = SDMSExitStateMappingProfileTable.idx_name_getUnique(sysEnv, name);
@@ -397,7 +316,7 @@ public class ObjectURL
 	}
 
 	private SDMSProxy getFolder(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSProxy p = null;
 		try {
@@ -410,7 +329,7 @@ public class ObjectURL
 	}
 
 	private SDMSFootprint getFootprint(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFootprint p = null;
 		p = SDMSFootprintTable.idx_name_getUnique(sysEnv, name);
@@ -418,7 +337,7 @@ public class ObjectURL
 	}
 
 	private SDMSGroup getGroup(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSGroup p = null;
 		p = SDMSGroupTable.idx_name_getUnique(sysEnv, name);
@@ -426,7 +345,7 @@ public class ObjectURL
 	}
 
 	private SDMSInterval getInterval(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		mappedName = getObjectName(sysEnv, name, seSpec);
 		SDMSInterval p = null;
@@ -435,7 +354,7 @@ public class ObjectURL
 	}
 
 	private SDMSSchedulingEntity getSchedulingEntity(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSchedulingEntity p = null;
 		p = SDMSSchedulingEntityTable.get(sysEnv, path, null);
@@ -443,7 +362,7 @@ public class ObjectURL
 	}
 
 	private SDMSNamedResource getNamedResource(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedResource p = null;
 		p = SDMSNamedResourceTable.getNamedResource(sysEnv, path);
@@ -451,7 +370,7 @@ public class ObjectURL
 	}
 
 	private SDMSParameterDefinition getParameterDefinition(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSParameterDefinition p = null;
 		SDMSProxy m = master.resolve(sysEnv);
@@ -460,7 +379,7 @@ public class ObjectURL
 	}
 
 	private SDMSProxy getResource(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSProxy p = null;
 		final SDMSProxy m = master.resolve(sysEnv);
@@ -477,7 +396,7 @@ public class ObjectURL
 	}
 
 	private SDMSResourceStateDefinition getResourceStateDefinition(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateDefinition p = null;
 		p = SDMSResourceStateDefinitionTable.idx_name_getUnique(sysEnv, name);
@@ -485,7 +404,7 @@ public class ObjectURL
 	}
 
 	private SDMSResourceStateProfile getResourceStateProfile(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateProfile p = null;
 		p = SDMSResourceStateProfileTable.idx_name_getUnique(sysEnv, name);
@@ -493,7 +412,7 @@ public class ObjectURL
 	}
 
 	private SDMSResourceStateMappingProfile getResourceStateMapping(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateMappingProfile p = null;
 		p = SDMSResourceStateMappingProfileTable.idx_name_getUnique(sysEnv, name);
@@ -501,7 +420,7 @@ public class ObjectURL
 	}
 
 	private SDMSSchedule getSchedule(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (seSpec != null) {
 			seId = IntervalUtil.getCheckedSeId (sysEnv, seSpec);
@@ -523,7 +442,7 @@ public class ObjectURL
 	}
 
 	private SDMSScheduledEvent getScheduledEvent(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final String evtName = (String) path.remove (path.size() - 1);
 
@@ -553,7 +472,7 @@ public class ObjectURL
 	}
 
 	private SDMSScope getScope(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope p = null;
 		p = SDMSScopeTable.getScope(sysEnv, path);
@@ -561,7 +480,7 @@ public class ObjectURL
 	}
 
 	private SDMSTrigger getTrigger(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSTrigger p = null;
 		SDMSProxy m = master.resolve(sysEnv);
@@ -570,7 +489,7 @@ public class ObjectURL
 	}
 
 	private SDMSUser getUser(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSUser p = null;
 		p = SDMSUserTable.idx_name_getUnique(sysEnv, name);
@@ -581,74 +500,73 @@ public class ObjectURL
 	{
 		String s = null;
 		switch (objType.intValue()) {
-		case SDMSObjectComment.ENVIRONMENT:
-			s = "ENVIRONMENT " + (name != null ? name : objId.toString());
-			break;
-		case SDMSObjectComment.EVENT:
-			s = "EVENT " + (name != null ? name : objId.toString());
-			break;
-		case SDMSObjectComment.EXIT_STATE_DEFINITION:
-			s = "EXIT STATE DEFINITION " + (name != null ? name : objId.toString());
-			break;
-		case SDMSObjectComment.EXIT_STATE_PROFILE:
-			s = "EXIT STATE PROFILE " + (name != null ? name : objId.toString());
-			break;
-		case SDMSObjectComment.EXIT_STATE_MAPPING:
-			s = "EXIT STATE MAPPING " + (name != null ? name : objId.toString());
-			break;
-		case SDMSObjectComment.FOLDER:
-			s = "FOLDER " + (path != null ? path.toString() : objId.toString());
-			break;
-		case SDMSObjectComment.FOOTPRINT:
-			s = "FOOTPRINT " + (name != null ? name : objId.toString());
-			break;
-		case SDMSObjectComment.GROUP:
-			s = "GROUP " + (name != null ? name : objId.toString());
-			break;
-		case SDMSObjectComment.INTERVAL:
-			s = "INTERVAL " + (name != null ? name : objId.toString());
-			break;
-		case SDMSObjectComment.JOB:
-			s = "JOB " + objId.toString();
-			break;
-		case SDMSObjectComment.JOB_DEFINITION:
-			s = "JOB DEFINITION " + (path != null ? path.toString() : objId.toString());
-			break;
-		case SDMSObjectComment.NAMED_RESOURCE:
-			s = "NAMED RESOURCE " + (path != null ? path.toString() : objId.toString());
-			break;
-		case SDMSObjectComment.PARAMETER:
-			s = "PARAMETER " + (name != null ? name + " OF " + master.toString() : objId.toString());
-			break;
-		case SDMSObjectComment.RESOURCE:
-			s = "RESOURCE " + (path != null ? path.toString() + " IN " + master.toString() : objId.toString());
-			break;
-		case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
-			s = "RESOURCE STATE DEFINITION " + (name != null ? name : objId.toString());
-			break;
-		case SDMSObjectComment.RESOURCE_STATE_PROFILE:
-			s = "RESOURCE STATE PROFILE " + (name != null ? name : objId.toString());
-			break;
-		case SDMSObjectComment.RESOURCE_STATE_MAPPING:
-			s = "RESOURCE STATE MAPPING " + (name != null ? name : objId.toString());
-			break;
-		case SDMSObjectComment.SCHEDULE:
-			s = "SCHEDULE " + (path != null ? path.toString() : objId.toString());
-			break;
-		case SDMSObjectComment.SCHEDULED_EVENT:
-			s = "SCHEDULED EVENT " + (path != null ? path.toString() : objId.toString());
-			break;
-		case SDMSObjectComment.SCOPE:
-			s = "SCOPE " + (path != null ? path.toString() : objId.toString());
-			break;
-		case SDMSObjectComment.TRIGGER:
-			s = "TRIGGER " + (name != null ? name + " ON " + master.toString() : objId.toString());
-			break;
-		case SDMSObjectComment.USER:
-			s = "USER " + (name != null ? name : objId.toString());
-			break;
-		default:
-			break;
+			case SDMSObjectComment.ENVIRONMENT:
+				s = "ENVIRONMENT " + (name != null ? name : objId.toString());
+				break;
+			case SDMSObjectComment.EVENT:
+				s = "EVENT " + (name != null ? name : objId.toString());
+				break;
+			case SDMSObjectComment.EXIT_STATE_DEFINITION:
+				s = "EXIT STATE DEFINITION " + (name != null ? name : objId.toString());
+				break;
+			case SDMSObjectComment.EXIT_STATE_PROFILE:
+				s = "EXIT STATE PROFILE " + (name != null ? name : objId.toString());
+				break;
+			case SDMSObjectComment.EXIT_STATE_MAPPING:
+				s = "EXIT STATE MAPPING " + (name != null ? name : objId.toString());
+				break;
+			case SDMSObjectComment.FOLDER:
+				s = "FOLDER " + (path != null ? path.toString() : objId.toString());
+				break;
+			case SDMSObjectComment.FOOTPRINT:
+				s = "FOOTPRINT " + (name != null ? name : objId.toString());
+				break;
+			case SDMSObjectComment.GROUP:
+				s = "GROUP " + (name != null ? name : objId.toString());
+				break;
+			case SDMSObjectComment.INTERVAL:
+				s = "INTERVAL " + (name != null ? name : objId.toString());
+				break;
+			case SDMSObjectComment.JOB:
+				s = "JOB " + objId.toString();
+				break;
+			case SDMSObjectComment.JOB_DEFINITION:
+				s = "JOB DEFINITION " + (path != null ? path.toString() : objId.toString());
+				break;
+			case SDMSObjectComment.NAMED_RESOURCE:
+				s = "NAMED RESOURCE " + (path != null ? path.toString() : objId.toString());
+				break;
+			case SDMSObjectComment.PARAMETER:
+				s = "PARAMETER " + (name != null ? name + " OF " + master.toString() : objId.toString());
+				break;
+			case SDMSObjectComment.RESOURCE:
+				s = "RESOURCE " + (path != null ? path.toString() + " IN " + master.toString() : objId.toString());
+				break;
+			case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
+				s = "RESOURCE STATE DEFINITION " + (name != null ? name : objId.toString());
+				break;
+			case SDMSObjectComment.RESOURCE_STATE_PROFILE:
+				s = "RESOURCE STATE PROFILE " + (name != null ? name : objId.toString());
+				break;
+			case SDMSObjectComment.RESOURCE_STATE_MAPPING:
+				s = "RESOURCE STATE MAPPING " + (name != null ? name : objId.toString());
+				break;
+			case SDMSObjectComment.SCHEDULE:
+				s = "SCHEDULE " + (path != null ? path.toString() : objId.toString());
+				break;
+			case SDMSObjectComment.SCHEDULED_EVENT:
+				s = "SCHEDULED EVENT " + (path != null ? path.toString() : objId.toString());
+				break;
+			case SDMSObjectComment.SCOPE:
+				s = "SCOPE " + (path != null ? path.toString() : objId.toString());
+				break;
+			case SDMSObjectComment.TRIGGER:
+				s = "TRIGGER " + (name != null ? name + " ON " + master.toString() : objId.toString());
+				break;
+			case SDMSObjectComment.USER:
+				s = "USER " + (name != null ? name : objId.toString());
+				break;
+			default: break;
 		}
 		return s;
 	}

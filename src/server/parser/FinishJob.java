@@ -78,7 +78,7 @@ public class FinishJob extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, jobId);
 		sme.finishJob(sysEnv, exitcode, errmsg, null );

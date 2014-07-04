@@ -51,7 +51,7 @@ public class DropRsp extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateProfile rsp;
 
@@ -72,8 +72,8 @@ public class DropRsp extends Node
 		if(v.size()>0) {
 
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "03201212212",
-			                                "Resource State Profile is profile for Named Resource $1",
-			                                ((SDMSNamedResource)(v.elementAt(0))).getName(sysEnv) ));
+					"Resource State Profile is profile for Named Resource $1",
+					((SDMSNamedResource)(v.elementAt(0))).getName(sysEnv) ));
 		}
 
 		v = SDMSResourceStateTable.idx_rspId.getVector(sysEnv, rspId);

@@ -51,7 +51,7 @@ public class DropGroup extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSGroup g;
 
@@ -75,7 +75,7 @@ public class DropGroup extends Node
 			SDMSUser u = SDMSUserTable.getObject(sysEnv, uid);
 			if(gId.equals(u.getDefaultGId(sysEnv))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03312130038",
-				                               "you cannot remove a user from his default group"));
+						"you cannot remove a user from his default group"));
 			}
 			if (uid.equals(sysEnv.cEnv.uid())) {
 
@@ -88,57 +88,57 @@ public class DropGroup extends Node
 
 		if (SDMSEventTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02402181200", "One or more $1 still owned by group $2",
-			                               "Event", gName));
+					"02402181200", "One or more $1 still owned by group $2",
+					"Event", gName));
 
 		if (SDMSFolderTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02402181201", "One or more $1 still owned by group $2",
-			                               "Folder", gName));
+					"02402181201", "One or more $1 still owned by group $2",
+					"Folder", gName));
 
 		if (SDMSIntervalTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02402181202", "One or more $1 still owned by group $2",
-			                               "Interval", gName));
+					"02402181202", "One or more $1 still owned by group $2",
+					"Interval", gName));
 
 		if (SDMSNamedResourceTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02402181203", "One or more $1 still owned by group $2",
-			                               "NamedResource", gName));
+					"02402181203", "One or more $1 still owned by group $2",
+					"NamedResource", gName));
 
 		if (SDMSScheduleTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02402181204", "One or more $1 still owned by group $2",
-			                               "Schedule", gName));
+					"02402181204", "One or more $1 still owned by group $2",
+					"Schedule", gName));
 
 		if (SDMSScheduledEventTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02402181205", "One or more $1 still owned by group $2",
-			                               "ScheduledEvent", gName));
+					"02402181205", "One or more $1 still owned by group $2",
+					"ScheduledEvent", gName));
 
 		if (SDMSSchedulingEntityTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02402181206", "One or more $1 still owned by group $2",
-			                               "SchedulingEntity", gName));
+					"02402181206", "One or more $1 still owned by group $2",
+					"SchedulingEntity", gName));
 
 		if (SDMSScopeTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02402181207", "One or more $1 still owned by group $2",
-			                               "Scope", gName));
+					"02402181207", "One or more $1 still owned by group $2",
+					"Scope", gName));
 
 		if (SDMSSubmittedEntityTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02402181208", "One or more $1 still owned by group $2",
-			                               "SubmittedEntity", gName));
+					"02402181208", "One or more $1 still owned by group $2",
+					"SubmittedEntity", gName));
 
 		if (SDMSResourceTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02402270834", "One or more $1 still owned by group $2",
-			                               "Resource", gName));
+					"02402270834", "One or more $1 still owned by group $2",
+					"Resource", gName));
 
 		if (SDMSTriggerTable.idx_submitOwnerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "02402181209", "One or more Master Trigger still submits for group $1", gName));
+					"02402181209", "One or more Master Trigger still submits for group $1", gName));
 
 		SDMSObjectCommentTable.dropComment (sysEnv, gId);
 

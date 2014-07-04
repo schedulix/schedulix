@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -93,18 +93,12 @@ public abstract class SDMSThread extends Thread
 	public static String severityName(int severity)
 	{
 		switch(severity)  {
-		case SEVERITY_DEBUG:
-			return "DEBUG  ";
-		case SEVERITY_MESSAGE:
-			return "MESSAGE";
-		case SEVERITY_WARNING:
-			return "WARNING";
-		case SEVERITY_INFO:
-			return "INFO   ";
-		case SEVERITY_ERROR:
-			return "ERROR  ";
-		case SEVERITY_FATAL:
-			return "FATAL  ";
+			case SEVERITY_DEBUG:	return "DEBUG  ";
+			case SEVERITY_MESSAGE:	return "MESSAGE";
+			case SEVERITY_WARNING:	return "WARNING";
+			case SEVERITY_INFO:	return "INFO   ";
+			case SEVERITY_ERROR:	return "ERROR  ";
+			case SEVERITY_FATAL:	return "FATAL  ";
 		}
 		return "UNKNOWN";
 	}

@@ -97,7 +97,7 @@ public class DateTime
 	public static final DateTime ZERO = new DateTime (new Long (DURATION_VALID | MINUTE_VALID));
 
 	private final int parseNumber (final String str, final String what, final int ofs, final int len, final int min, final int max)
-	throws SDMSEscape
+		throws SDMSEscape
 	{
 		if (! str.substring (ofs).matches ("^\\d{" + len + "}.*"))
 			return -1;
@@ -116,13 +116,13 @@ public class DateTime
 	}
 
 	private final boolean parseStr (final String str, final String pattern)
-	throws SDMSEscape
+		throws SDMSEscape
 	{
 		return parseStr(str, pattern, false);
 	}
 
 	private final boolean parseStr (final String str, final String pattern, boolean ignoreTz)
-	throws SDMSEscape
+		throws SDMSEscape
 	{
 		tz     = ignoreTz ? GMT : TimeZone.getDefault();
 		year   = -1;
@@ -250,63 +250,63 @@ public class DateTime
 	// If isDuration is true, the resulting DateTime is a duration (that has nothing to do with timezone's and must not be >= MIN_VALUE)
 
 	public DateTime (final String str, final boolean isDuration)
-	throws SDMSEscape
+		throws SDMSEscape
 	{
 		this.isDuration = isDuration;
 		interpretStr(str, isDuration, false);
 	}
 
 	public DateTime (final String str, final boolean isDuration, final boolean ignoreTz)
-	throws SDMSEscape
+		throws SDMSEscape
 	{
 		this.isDuration = isDuration;
 		interpretStr(str, isDuration, ignoreTz);
 	}
 
 	private void interpretStr(final String str, final boolean isDuration, final boolean ignoreTz)
-	throws SDMSEscape
+		throws SDMSEscape
 	{
 		boolean good =
-		        parseStr    (str, "YYYY", ignoreTz)
-		        || parseStr (str, "YYYYMM", ignoreTz)		|| parseStr (str, "YYYY-MM", ignoreTz)
-		        || parseStr (str, "YYYYMMDD", ignoreTz)		|| parseStr (str, "YYYY-MM-DD", ignoreTz)
-		        || parseStr (str, "YYYYMMDDThh", ignoreTz)	|| parseStr (str, "YYYY-MM-DDThh", ignoreTz)
-		        || parseStr (str, "YYYYMMDDThhmm", ignoreTz)	|| parseStr (str, "YYYY-MM-DDThh:mm", ignoreTz)
-		        || parseStr (str, "YYYYMMDDThhmmss", ignoreTz)	|| parseStr (str, "YYYY-MM-DDThh:mm:ss", ignoreTz)
+			parseStr    (str, "YYYY", ignoreTz)
+			|| parseStr (str, "YYYYMM", ignoreTz)		|| parseStr (str, "YYYY-MM", ignoreTz)
+			|| parseStr (str, "YYYYMMDD", ignoreTz)		|| parseStr (str, "YYYY-MM-DD", ignoreTz)
+			|| parseStr (str, "YYYYMMDDThh", ignoreTz)	|| parseStr (str, "YYYY-MM-DDThh", ignoreTz)
+			|| parseStr (str, "YYYYMMDDThhmm", ignoreTz)	|| parseStr (str, "YYYY-MM-DDThh:mm", ignoreTz)
+			|| parseStr (str, "YYYYMMDDThhmmss", ignoreTz)	|| parseStr (str, "YYYY-MM-DDThh:mm:ss", ignoreTz)
 
-		        || parseStr (str, "-MM", ignoreTz)
-		        || parseStr (str, "-MMDD", ignoreTz)		|| parseStr (str, "-MM-DD", ignoreTz)
-		        || parseStr (str, "-MMDDThh", ignoreTz)		|| parseStr (str, "-MM-DDThh", ignoreTz)
-		        || parseStr (str, "-MMDDThhmm", ignoreTz)	|| parseStr (str, "-MM-DDThh:mm", ignoreTz)
-		        || parseStr (str, "-MMDDThhmmss", ignoreTz)	|| parseStr (str, "-MM-DDThh:mm:ss", ignoreTz)
+			|| parseStr (str, "-MM", ignoreTz)
+			|| parseStr (str, "-MMDD", ignoreTz)		|| parseStr (str, "-MM-DD", ignoreTz)
+			|| parseStr (str, "-MMDDThh", ignoreTz)		|| parseStr (str, "-MM-DDThh", ignoreTz)
+			|| parseStr (str, "-MMDDThhmm", ignoreTz)	|| parseStr (str, "-MM-DDThh:mm", ignoreTz)
+			|| parseStr (str, "-MMDDThhmmss", ignoreTz)	|| parseStr (str, "-MM-DDThh:mm:ss", ignoreTz)
 
-		        || parseStr (str, "--DD", ignoreTz)
-		        || parseStr (str, "--DDThh", ignoreTz)
-		        || parseStr (str, "--DDThhmm", ignoreTz)	|| parseStr (str, "--DDThh:mm", ignoreTz)
-		        || parseStr (str, "--DDThhmmss", ignoreTz)	|| parseStr (str, "--DDThh:mm:ss", ignoreTz)
+			|| parseStr (str, "--DD", ignoreTz)
+			|| parseStr (str, "--DDThh", ignoreTz)
+			|| parseStr (str, "--DDThhmm", ignoreTz)	|| parseStr (str, "--DDThh:mm", ignoreTz)
+			|| parseStr (str, "--DDThhmmss", ignoreTz)	|| parseStr (str, "--DDThh:mm:ss", ignoreTz)
 
-		        || parseStr (str, "Thh", ignoreTz)
-		        || parseStr (str, "Thhmm", ignoreTz)		|| parseStr (str, "Thh:mm", ignoreTz)
-		        || parseStr (str, "Thhmmss", ignoreTz)		|| parseStr (str, "Thh:mm:ss", ignoreTz)
+			|| parseStr (str, "Thh", ignoreTz)
+			|| parseStr (str, "Thhmm", ignoreTz)		|| parseStr (str, "Thh:mm", ignoreTz)
+			|| parseStr (str, "Thhmmss", ignoreTz)		|| parseStr (str, "Thh:mm:ss", ignoreTz)
 
-		        || parseStr (str, "T-mm", ignoreTz)		|| parseStr (str, "T-mm", ignoreTz)
-		        || parseStr (str, "T-mmss", ignoreTz)		|| parseStr (str, "T-mm:ss", ignoreTz)
+			|| parseStr (str, "T-mm", ignoreTz)		|| parseStr (str, "T-mm", ignoreTz)
+			|| parseStr (str, "T-mmss", ignoreTz)		|| parseStr (str, "T-mm:ss", ignoreTz)
 
-		        || parseStr (str, "T--ss", ignoreTz)		|| parseStr (str, "T--ss", ignoreTz)
+			|| parseStr (str, "T--ss", ignoreTz)		|| parseStr (str, "T--ss", ignoreTz)
 
-		        || parseStr (str, "YYYYWww", ignoreTz)
-		        || parseStr (str, "Www", ignoreTz);
+			|| parseStr (str, "YYYYWww", ignoreTz)
+			|| parseStr (str, "Www", ignoreTz);
 
 		if (! good) {
 			good =
-			        parseStr    (str, "YYYYz", ignoreTz)
-			        || parseStr (str, "YYYYMMz", ignoreTz)		|| parseStr (str, "YYYY-MMz", ignoreTz)
-			        || parseStr (str, "YYYYMMDDz", ignoreTz)	|| parseStr (str, "YYYY-MM-DDz", ignoreTz)
-			        || parseStr (str, "YYYYMMDDThhz", ignoreTz)	|| parseStr (str, "YYYY-MM-DDThhz", ignoreTz)
-			        || parseStr (str, "YYYYMMDDThhmmz", ignoreTz)	|| parseStr (str, "YYYY-MM-DDThh:mmz", ignoreTz)
-			        || parseStr (str, "YYYYMMDDThhmmssz", ignoreTz)	|| parseStr (str, "YYYY-MM-DDThh:mm:ssz", ignoreTz)
+				parseStr    (str, "YYYYz", ignoreTz)
+				|| parseStr (str, "YYYYMMz", ignoreTz)		|| parseStr (str, "YYYY-MMz", ignoreTz)
+				|| parseStr (str, "YYYYMMDDz", ignoreTz)	|| parseStr (str, "YYYY-MM-DDz", ignoreTz)
+				|| parseStr (str, "YYYYMMDDThhz", ignoreTz)	|| parseStr (str, "YYYY-MM-DDThhz", ignoreTz)
+				|| parseStr (str, "YYYYMMDDThhmmz", ignoreTz)	|| parseStr (str, "YYYY-MM-DDThh:mmz", ignoreTz)
+				|| parseStr (str, "YYYYMMDDThhmmssz", ignoreTz)	|| parseStr (str, "YYYY-MM-DDThh:mm:ssz", ignoreTz)
 
-			        || parseStr (str, "YYYYWwwz", ignoreTz);
+				|| parseStr (str, "YYYYWwwz", ignoreTz);
 
 			if (good && isDuration)
 				throw new SDMSEscape ("(04304091425) durations cannot have a timezone: \"" + str + '"');
@@ -326,7 +326,7 @@ public class DateTime
 	//------------------------------------------------------------------------------------------
 
 	public DateTime (final String str)
-	throws SDMSEscape
+		throws SDMSEscape
 	{
 		this (str, ! IS_DURATION);
 	}
@@ -398,21 +398,21 @@ public class DateTime
 				}
 			}
 			switch (levelToAdjust) {
-			case YEAR:
-				newGC.add(Calendar.YEAR, 1);
-				break;
-			case MONTH:
-				newGC.add(Calendar.MONTH, 1);
-				break;
-			case DAY:
-				newGC.add(Calendar.DAY_OF_MONTH, 1);
-				break;
-			case HOUR:
-				newGC.add(Calendar.HOUR_OF_DAY, 1);
-				break;
-			case MINUTE:
-				newGC.add(Calendar.MINUTE, 1);
-				break;
+				case YEAR:
+					newGC.add(Calendar.YEAR, 1);
+					break;
+				case MONTH:
+					newGC.add(Calendar.MONTH, 1);
+					break;
+				case DAY:
+					newGC.add(Calendar.DAY_OF_MONTH, 1);
+					break;
+				case HOUR:
+					newGC.add(Calendar.HOUR_OF_DAY, 1);
+					break;
+				case MINUTE:
+					newGC.add(Calendar.MINUTE, 1);
+					break;
 			}
 		}
 
@@ -842,13 +842,13 @@ public class DateTime
 				}
 			}
 			return nice    ("0000",  gc.get (Calendar.YEAR))
-			       + nice ("'-'00", gc.get (Calendar.MONTH) + 1)
-			       + nice ("'-'00", gc.get (Calendar.DAY_OF_MONTH))
-			       + nice ("'T'00", gc.get (Calendar.HOUR_OF_DAY))
-			       + nice ("':'00", gc.get (Calendar.MINUTE))
-			       + (secondsSuppressed ? "" : nice ("':'00", gc.get (Calendar.SECOND)))
-			       + DSTkz
-			       + (myTz == null ? "" : " " + myTz.getID());
+				+ nice ("'-'00", gc.get (Calendar.MONTH) + 1)
+				+ nice ("'-'00", gc.get (Calendar.DAY_OF_MONTH))
+				+ nice ("'T'00", gc.get (Calendar.HOUR_OF_DAY))
+				+ nice ("':'00", gc.get (Calendar.MINUTE))
+				+ (secondsSuppressed ? "" : nice ("':'00", gc.get (Calendar.SECOND)))
+				+ DSTkz
+				+ (myTz == null ? "" : " " + myTz.getID());
 		} else {
 			final String tzID = ((! isDuration) && (year != -1)) ? (myTz == null ? "" : " " + myTz.getID()) : "";
 

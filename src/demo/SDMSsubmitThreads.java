@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -106,7 +106,7 @@ public class SDMSsubmitThreads
 		shell.setText("SDMSsubmitThreads");
 		final Image logo = new Image(display, "Images/Logo.png");
 		final Image bullit = new Image(display,
-		                               "Images/Bullit.png");
+				"Images/Bullit.png");
 		shell.setImage(bullit);
 		GridLayout gridLayout = new GridLayout(1, false);
 		gridLayout.marginHeight = 0;
@@ -261,7 +261,7 @@ public class SDMSsubmitThreads
 		boolean failure = false;
 		SDMSOutput output = null;
 		SDMSServerConnection connection = new SDMSServerConnection(host, new Integer(port).intValue(),
-		                id, key);
+				id, key);
 		try {
 			output = connection.connect();
 		} catch (IOException e) {

@@ -54,7 +54,7 @@ public class CreateScheduledEvent
 	}
 
 	public void go (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			obj.resolve(sysEnv);
@@ -70,16 +70,16 @@ public class CreateScheduledEvent
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			              sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId)) &&
-			    !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
+			   !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03312162143",
-				                               "User $1 does not belong to Group $2", u.getName(sysEnv), gName));
+						"User $1 does not belong to Group $2", u.getName(sysEnv), gName));
 			}
 		}
 
 		final Integer backlogHandling = with.containsKey (ParseStr.S_BACKLOG_HANDLING) ? (Integer) with.get (ParseStr.S_BACKLOG_HANDLING) :
-		                                new Integer (SDMSScheduledEvent.LAST);
+						new Integer (SDMSScheduledEvent.LAST);
 
 		Integer suspendLimit = null;
 		Integer suspendLimitMultiplier = null;
@@ -97,17 +97,17 @@ public class CreateScheduledEvent
 		SDMSScheduledEvent scev;
 		try {
 			scev = SDMSScheduledEventTable.table.create (sysEnv, gId, obj.sceId, obj.evtId, active,
-			                Boolean.FALSE,
-			                null,
-			                null,
-			                null,
-			                null,
-			                null,
-			                backlogHandling,
-			                suspendLimit,
-			                suspendLimitMultiplier,
-			                isCalendar,
-			                calendarHorizon);
+					Boolean.FALSE,
+					null,
+					null,
+					null,
+					null,
+					null,
+					backlogHandling,
+					suspendLimit,
+					suspendLimitMultiplier,
+					isCalendar,
+					calendarHorizon);
 		} catch (final DuplicateKeyException dke) {
 			if (replace) {
 				final AlterScheduledEvent ase = new AlterScheduledEvent (obj, with, Boolean.FALSE);

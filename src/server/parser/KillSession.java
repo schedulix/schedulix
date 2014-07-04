@@ -51,7 +51,7 @@ public class KillSession extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
 			Iterator i = sysEnv.cEnv.gid().iterator();

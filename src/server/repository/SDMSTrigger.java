@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -46,8 +46,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 
 	private final static HashMap mapper = new HashMap();
 
-	static
-	{
+	static {
 		mapper.put(new Integer(Parser.IMMEDIATE_LOCAL),		new Integer(SDMSTrigger.IMMEDIATE_LOCAL));
 		mapper.put(new Integer(Parser.IMMEDIATE_MERGE),		new Integer(SDMSTrigger.IMMEDIATE_MERGE));
 		mapper.put(new Integer(Parser.BEFORE_FINAL),		new Integer(SDMSTrigger.BEFORE_FINAL));
@@ -73,7 +72,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 	}
 
 	public void delete(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Vector act_ts = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, getId(sysEnv));
@@ -86,19 +85,19 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 	}
 
 	public boolean checkCondition(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, SDMSTriggerQueue tq)
-	throws SDMSException
+		throws SDMSException
 	{
 		return checkCondition(sysEnv, null, sme, tq);
 	}
 
 	public boolean checkCondition(SystemEnvironment sysEnv, SDMSResource r)
-	throws SDMSException
+		throws SDMSException
 	{
 		return checkCondition(sysEnv, r, null, null);
 	}
 
 	private boolean checkCondition(SystemEnvironment sysEnv, SDMSResource r, SDMSSubmittedEntity sme, SDMSTriggerQueue tq)
-	throws SDMSException
+		throws SDMSException
 	{
 		final String cond = getCondition(sysEnv);
 
@@ -110,7 +109,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 	}
 
 	public void checkConditionSyntax(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSMessage msg = null;
 		String cond = getCondition(sysEnv);
@@ -121,7 +120,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 	}
 
 	public boolean trigger(SystemEnvironment sysEnv, Long esdId, Long reasonSmeId, SDMSTriggerQueue tq, SDMSSubmittedEntity thisSme)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (!getIsActive(sysEnv).booleanValue()) return false;
 
@@ -168,7 +167,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		if (action != RERUN) {
 
 			v_f_sme = SDMSSubmittedEntityTable.idx_fireSmeId_trId.getVector(sysEnv,
-			                new SDMSKey(id, trId));
+					new SDMSKey(id, trId));
 			maxTrSeq = v_f_sme.size();
 		} else {
 			maxTrSeq = thisSme.getRerunSeq(sysEnv);
@@ -219,7 +218,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				if (getIsSuspend(sysEnv).booleanValue()) {
 					Long submitTs = sme.getSubmitTs(sysEnv);
 					resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv),
-					                                   submitTs, true );
+							submitTs, true );
 					sme.setResumeTs(sysEnv, resumeTs);
 				}
 			} else {
@@ -229,7 +228,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 					thisSme.suspend(sysEnv, true);
 					Long finishTs = thisSme.getFinishTs(sysEnv);
 					resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv),
-					                                   finishTs, true );
+							finishTs, true );
 					thisSme.setResumeTs(sysEnv, resumeTs);
 				}
 			}
@@ -239,7 +238,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 	}
 
 	public SDMSSubmittedEntity triggerSubmit(SystemEnvironment sysEnv, SDMSSubmittedEntity thisSme, Integer trSeq, int trigger_type)
-	throws SDMSException
+		throws SDMSException
 	{
 		java.util.Date dts = new java.util.Date();
 		Long ts = new Long (dts.getTime());
@@ -280,8 +279,8 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 
 			if (!mths.add(trId)) {
 				throw new CommonErrorException (new SDMSMessage(sysEnv, "03305141915",
-				                                "Cannot fire Trigger $1 recursively in same Transaction",
-				                                getName(sysEnv)));
+					"Cannot fire Trigger $1 recursively in same Transaction",
+					getName(sysEnv)));
 			}
 
 			Boolean suspend = getIsSuspend(sysEnv);
@@ -289,12 +288,12 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			if(isMasterTrigger) {
 				final SDMSSchedulingEntity thisSe = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
 				sme = se.submitMaster(sysEnv,
-				                      null,
-				                      suspend,
-				                      null,
-				                      getSubmitOwnerId(sysEnv),
-				                      new Integer(0),
-				                      "Triggered by " + thisSe.pathString(sysEnv, seVersion) + "(" + getName(sysEnv) + "), Job " + thisSme.getId(sysEnv).toString());
+					null,
+					suspend,
+					null,
+					getSubmitOwnerId(sysEnv),
+					new Integer(0),
+					"Triggered by " + thisSe.pathString(sysEnv, seVersion) + "(" + getName(sysEnv) + "), Job " + thisSme.getId(sysEnv).toString());
 			} else {
 				Long replaceId = null;
 				if (submitSeId.equals(fireSeId)) {
@@ -305,15 +304,15 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				if (trigger_type == SDMSTrigger.AFTER_FINAL) forceChildDef = true;
 				else forceChildDef = false;
 				sme = psme.submitChild(sysEnv,
-				                       null,
-				                       suspend,
-				                       null,
-				                       submitSeId,
-				                       childTag,
-				                       replaceId,
-				                       null,
-				                       forceChildDef
-				                      );
+					null,
+					suspend,
+					null,
+					submitSeId,
+					childTag,
+					replaceId,
+					null,
+					forceChildDef
+				);
 			}
 			sme.setBaseSmeId(sysEnv, (Long)(sysEnv.tx.txData.get(SystemEnvironment.S_BASE_SME_ID)));
 		} catch (NonRecoverableException nre) {
@@ -324,10 +323,10 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 
 				if(isMasterTrigger) {
 					se.createErrorMaster (
-					        sysEnv,
-					        getSubmitOwnerId(sysEnv),
-					        "Triggered by " + thisSme.getId(sysEnv).toString() + "(" + getName(sysEnv) + ")",
-					        nre.toString()
+							sysEnv,
+							getSubmitOwnerId(sysEnv),
+							"Triggered by " + thisSme.getId(sysEnv).toString() + "(" + getName(sysEnv) + ")",
+							nre.toString()
 					);
 				}
 			}
@@ -345,7 +344,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 	}
 
 	public void trigger(SystemEnvironment sysEnv, SDMSResource r, Long oldRsdId, Long newRsdId, SDMSSubmittedEntity causeSme)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (!getIsActive(sysEnv).booleanValue()) return;
 
@@ -388,12 +387,12 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			try {
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, getSeId(sysEnv));
 				sme = se.submitMaster(sysEnv,
-				                      null,
-				                      getIsSuspend(sysEnv),
-				                      null,
-				                      getSubmitOwnerId(sysEnv),
-				                      new Integer(0),
-				                      "Triggered by Resource " + r.getId(sysEnv).toString() + "(" + getName(sysEnv) + ")");
+					null,
+					getIsSuspend(sysEnv),
+					null,
+					getSubmitOwnerId(sysEnv),
+					new Integer(0),
+					"Triggered by Resource " + r.getId(sysEnv).toString() + "(" + getName(sysEnv) + ")");
 
 			} catch (NonRecoverableException nre) {
 
@@ -414,7 +413,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				if (getIsSuspend(sysEnv).booleanValue()) {
 					Long submitTs = sme.getSubmitTs(sysEnv);
 					resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv),
-					                                   submitTs, true );
+							submitTs, true );
 					sme.setResumeTs(sysEnv, resumeTs);
 				}
 			}
@@ -422,7 +421,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 	}
 
 	private void updateTriggeredSme(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 		sme.setBaseSmeId(sysEnv, null);
 		sme.setReasonSmeId(sysEnv, null);
@@ -436,36 +435,36 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		if (getIsSuspend(sysEnv).booleanValue()) {
 			Long submitTs = sme.getSubmitTs(sysEnv);
 			resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv),
-			                                   submitTs, true );
+							   submitTs, true );
 			sme.setResumeTs(sysEnv, resumeTs);
 		}
 
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSProxy p = null;
 		int type = getObjectType(sysEnv).intValue();
 		switch (type) {
-		case SDMSTrigger.JOB_DEFINITION:
-			p = SDMSSchedulingEntityTable.getObject(sysEnv, getFireId(sysEnv));
-			break;
-		case SDMSTrigger.NAMED_RESOURCE:
-			p = SDMSNamedResourceTable.getObject(sysEnv, getFireId(sysEnv));
-			break;
-		case SDMSTrigger.RESOURCE:
-			p = SDMSResourceTable.getObject(sysEnv, getFireId(sysEnv));
-			break;
-		default:
-			throw new FatalException (new SDMSMessage(sysEnv, "0330603241133",
-			                          "Unknown Objecttype in Trigger $1", getName(sysEnv)));
+			case SDMSTrigger.JOB_DEFINITION:
+				p = SDMSSchedulingEntityTable.getObject(sysEnv, getFireId(sysEnv));
+				break;
+			case SDMSTrigger.NAMED_RESOURCE:
+				p = SDMSNamedResourceTable.getObject(sysEnv, getFireId(sysEnv));
+				break;
+			case SDMSTrigger.RESOURCE:
+				p = SDMSResourceTable.getObject(sysEnv, getFireId(sysEnv));
+				break;
+			default:
+				throw new FatalException (new SDMSMessage(sysEnv, "0330603241133",
+					"Unknown Objecttype in Trigger $1", getName(sysEnv)));
 		}
 		return getName(sysEnv) + " on " + p.getURL(sysEnv);
 	}
 
 	public String getURL(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return "trigger " + getURLName(sysEnv);
 	}

@@ -53,7 +53,7 @@ public class CreateExitStatusMapping extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateMappingProfile esmp;
 		try {
@@ -86,18 +86,18 @@ public class CreateExitStatusMapping extends Node
 			if (idx != 0) {
 				if (exitCode >= esmMap.from().intValue()) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "02110222023",
-					                                "Exit Code $1 out of sequence", esmMap.from()));
+						"Exit Code $1 out of sequence", esmMap.from()));
 				}
 				SDMSExitStateMappingTable.table.create (
-				        sysEnv, esmpId, esd.getId(sysEnv),
-				        new Integer(exitCode), new Integer (esmMap.from().intValue() - 1));
+						sysEnv, esmpId, esd.getId(sysEnv),
+						new Integer(exitCode), new Integer (esmMap.from().intValue() - 1));
 			}
 			idx = idx + 1;
 			exitCode = esmMap.from().intValue();
 			esd = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, esmMap.name());
 		}
 		SDMSExitStateMappingTable.table.create (sysEnv, esmpId, esd.getId(sysEnv),
-		                                        new Integer(exitCode), new Integer(Integer.MAX_VALUE));
+							new Integer(exitCode), new Integer(Integer.MAX_VALUE));
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03201161956", "Exit State Mapping created"));
 

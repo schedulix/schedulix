@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -47,7 +47,7 @@ public class AuditWriter
 	private static PrintStream audit = null;
 
 	private static void openAuditFile(SystemEnvironment sysEnv)
-	throws IOException
+		throws IOException
 	{
 		int fileno = 0;
 		File base = new File(sysEnv.auditFile);
@@ -73,7 +73,7 @@ public class AuditWriter
 	}
 
 	private static final String getHeader (SystemEnvironment sysEnv, Long versionId)
-	throws SDMSException
+		throws SDMSException
 	{
 		String name = null;
 		if (sysEnv.cEnv != null) {
@@ -98,7 +98,7 @@ public class AuditWriter
 	}
 
 	public static void write (SystemEnvironment sysEnv, Long versionId, String stmt)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			if (audit == null) {

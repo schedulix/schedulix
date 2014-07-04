@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -48,14 +48,14 @@ public class SDMSOutputContainer implements Serializable
 	public int	labelwidth;
 
 	public SDMSOutputContainer (SystemEnvironment env, Object p_title, Vector p_desc)
-	throws FatalException
+		throws FatalException
 	{
 		commonInit (env, p_title, p_desc);
 		columns = desc.size();
 	}
 
 	public SDMSOutputContainer (SystemEnvironment env, Object p_title, Vector p_desc, Vector p_data)
-	throws FatalException
+		throws FatalException
 	{
 		commonInit (env, p_title, p_desc);
 		columns = 0;
@@ -63,14 +63,14 @@ public class SDMSOutputContainer implements Serializable
 	}
 
 	private void commonInit (SystemEnvironment env, Object p_title, Vector p_desc)
-	throws FatalException
+		throws FatalException
 	{
 		SDMSOutputLabel lbl;
 
 		title = p_title;
 		if (p_desc == null || p_desc.size() == 0) {
 			throw new FatalException (new SDMSMessage(env, "03110181621",
-			                          "Cannot create SDMSOutputContainer without or empty description"));
+				"Cannot create SDMSOutputContainer without or empty description"));
 		}
 		desc = new Vector();
 		labelwidth = 0;
@@ -90,11 +90,11 @@ public class SDMSOutputContainer implements Serializable
 	{
 		if (columns == 0 && lines != 0) {
 			throw new FatalException (new SDMSMessage(env, "03110181622",
-			                          "Cannot add data to record type SDMSOutputContainer"));
+				"Cannot add data to record type SDMSOutputContainer"));
 		}
 		if (columns != 0 && p_data.size() != columns) {
 			throw new FatalException (new SDMSMessage(env, "03110181623",
-			                          "Number of data items does not match description"));
+				"Number of data items does not match description"));
 		}
 		int idx = 0;
 		Iterator i = p_data.iterator();
@@ -121,11 +121,11 @@ public class SDMSOutputContainer implements Serializable
 	}
 
 	public void setWidth(SystemEnvironment env, int colno, int len)
-	throws FatalException
+		throws FatalException
 	{
 		if (columns != 0 && colno >= columns) {
 			throw new FatalException (new SDMSMessage(env, "0312121108",
-			                          "Columnnumber exceeds the number of defined columns"));
+				"Columnnumber exceeds the number of defined columns"));
 		}
 		((SDMSOutputLabel)(desc.elementAt(colno))).length = len;
 	}
@@ -147,49 +147,49 @@ public class SDMSOutputContainer implements Serializable
 	}
 
 	public Comparator getComparator(SystemEnvironment env, int c1)
-	throws SDMSException
+		throws SDMSException
 	{
 		int a[] = new int[1];
 
 		a[0] = c1;
 		if(c1 >= desc.size() || -c1 >= desc.size()) {
 			throw new FatalException(new SDMSMessage(env, "03117121557",
-			                         "The number of the sortcolumn ($1) exceeds the number of columns ($2)",
-			                         new Integer(c1), new Integer(desc.size())));
+						"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
+						new Integer(c1), new Integer(desc.size())));
 		}
 		return new occomp(env, a);
 	}
 
 	public Comparator getComparator(SystemEnvironment env, int c1, int c2)
-	throws SDMSException
+		throws SDMSException
 	{
 		int a[] = new int[2];
 
 		a[0] = c1;
 		if(c1 >= desc.size() || -c1 >= desc.size()) {
 			throw new FatalException(new SDMSMessage(env, "03201292045",
-			                         "The number of the sortcolumn ($1) exceeds the number of columns ($2)",
-			                         new Integer(c1), new Integer(desc.size())));
+						"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
+						new Integer(c1), new Integer(desc.size())));
 		}
 		a[1] = c2;
 		if(c2 >= desc.size() || -c2 >= desc.size()) {
 			throw new FatalException(new SDMSMessage(env, "03117121559",
-			                         "The number of the sortcolumn ($1) exceeds the number of columns ($2)",
-			                         new Integer(c2), new Integer(desc.size())));
+						"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
+						new Integer(c2), new Integer(desc.size())));
 		}
 		return new occomp(env, a);
 	}
 
 	public Comparator getComparator(SystemEnvironment env, int c[])
-	throws SDMSException
+		throws SDMSException
 	{
 		int i;
 
 		for(i = 0; i < c.length; i++) {
 			if(c[i] >= desc.size() || -c[i] >= desc.size()) {
 				throw new FatalException(new SDMSMessage(env, "03117121601",
-				                         "The number of the sortcolumn ($1) exceeds the number of columns ($2)",
-				                         new Integer(c[i]), new Integer(desc.size())));
+						"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
+						new Integer(c[i]), new Integer(desc.size())));
 			}
 		}
 		return new occomp(env, c);

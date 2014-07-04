@@ -127,7 +127,7 @@ public class SsRFormatter implements Formatter
 	}
 
 	public Vector fillVector(SystemEnvironment sysEnv, SDMSProxy co, HashSet parentSet)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = new Vector();
 		Long scopeId;
@@ -194,8 +194,8 @@ public class SsRFormatter implements Formatter
 
 			Date d = new Date();
 			if(ts != null &&
-			    nr.getUsage(sysEnv).intValue() == SDMSNamedResource.SYNCHRONIZING &&
-			    nr.getRspId(sysEnv) != null) {
+			   nr.getUsage(sysEnv).intValue() == SDMSNamedResource.SYNCHRONIZING &&
+			   nr.getRspId(sysEnv) != null) {
 				d.setTime(ts.longValue());
 				v.add(sysEnv.systemDateFormat.format(d));
 			} else v.add(null);

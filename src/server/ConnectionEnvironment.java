@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -113,73 +113,24 @@ public class ConnectionEnvironment
 		this (c, n, svrtrc, o, f, rof, 0, uNode);
 	}
 
-	public int id()
-	{
-		return id;
-	}
-	public String name()
-	{
-		return name != null ? name : new Integer (id).toString();
-	}
-	public long start()
-	{
-		return start;
-	}
-	public long last()
-	{
-		return last;
-	}
-	public long idle()
-	{
-		return ((System.currentTimeMillis() - last + 500)/1000);
-	}
-	public Date dStart()
-	{
-		return dStart;
-	}
-	public PrintStream ostream()
-	{
-		return ostream;
-	}
+	public int id()				{ return id; }
+	public String name()			{ return name != null ? name : new Integer (id).toString(); }
+	public long start()			{ return start; }
+	public long last()			{ return last; }
+	public long idle()			{ return ((System.currentTimeMillis() - last + 500)/1000); }
+	public Date dStart()			{ return dStart; }
+	public PrintStream ostream()		{ return ostream; }
 
-	public Long uid()
-	{
-		return uid;
-	}
-	public Long euid()
-	{
-		return euid;
-	}
-	public HashSet gid()
-	{
-		return gid;
-	}
-	public void setUid(Long id)
-	{
-		uid = id;
-		euid = id;
-	}
-	public void setEUid(Long id)
-	{
-		euid = id;
-	}
-	public void resetEUid()
-	{
-		euid = uid;
-	}
-	public int timeout()
-	{
-		return ((UserConnection) me).getTimeout();
-	}
+	public Long uid()			{ return uid; }
+	public Long euid()			{ return euid; }
+	public HashSet gid()			{ return gid; }
+	public void setUid(Long id)		{ uid = id; euid = id; }
+	public void setEUid(Long id)		{ euid = id; }
+	public void resetEUid()			{ euid = uid; }
+	public int timeout()			{ return ((UserConnection) me).getTimeout(); }
 
-	public String getInfo()
-	{
-		return info;
-	}
-	public void setInfo(String inf)
-	{
-		info = inf;
-	}
+	public String getInfo()			{ return info; }
+	public void setInfo(String inf)		{ info = inf; }
 
 	public String ip()
 	{
@@ -187,13 +138,10 @@ public class ConnectionEnvironment
 			return userNode.getHostAddress();
 		return null;
 	}
-	public InetAddress getAddress()
-	{
-		return userNode;
-	}
+	public InetAddress getAddress()		{ return userNode; }
 
 	public void setGid(SystemEnvironment sysEnv, Vector v)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(v.size() == 0) {
 			gid = new HashSet();
@@ -216,14 +164,14 @@ public class ConnectionEnvironment
 	}
 
 	public void pushGid(SystemEnvironment sysEnv, HashSet g)
-	throws SDMSException
+		throws SDMSException
 	{
 		groupStack.push(gid);
 		gid = g;
 	}
 
 	public void popGid(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(groupStack.isEmpty())
 			throw new FatalException(new SDMSMessage(sysEnv, "03401301115", "Groupstack is empty. Unbalanced change group"));
@@ -231,7 +179,7 @@ public class ConnectionEnvironment
 	}
 
 	public void emptyGid(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		while(!groupStack.isEmpty()) {
 			SDMSThread.doTrace(this, "Unbalanced push(gid) : \n\t" + toString(), SDMSThread.SEVERITY_WARNING);
@@ -239,94 +187,28 @@ public class ConnectionEnvironment
 		}
 	}
 
-	public int port()
-	{
-		return port;
-	}
+	public int port()			{ return port; }
 
-	public SyncFifo cmdQueue()
-	{
-		return cmdQueue;
-	}
-	public SyncFifo roCmdQueue()
-	{
-		return roCmdQueue;
-	}
+	public SyncFifo cmdQueue()		{ return cmdQueue; }
+	public SyncFifo roCmdQueue()		{ return roCmdQueue; }
 
-	public void setMe(SDMSThread t)
-	{
-		me = t;
-	}
-	public SDMSThread getMe()
-	{
-		return me;
-	}
-	public ThreadLock lock()
-	{
-		return lock;
-	}
-	public boolean isJobServer()
-	{
-		return jobServer;
-	}
-	public boolean isJob()
-	{
-		return job;
-	}
-	public boolean isUser()
-	{
-		return user;
-	}
-	public void setJobServer()
-	{
-		jobServer = true;
-		job       = false;
-		user = false;
-	}
-	public void setJob()
-	{
-		job       = true;
-		jobServer = false;
-		user = false;
-	}
-	public void setUser()
-	{
-		user      = true;
-		jobServer = false;
-		job  = false;
-	}
-	public void trace_on()
-	{
-		trace = true;
-	}
-	public void trace_off()
-	{
-		trace = false;
-	}
-	public void setTrace(boolean t)
-	{
-		trace = t;
-	}
-	public boolean trace()
-	{
-		return trace;
-	}
-	public void setTraceLevel(int t)
-	{
-		tracelevel = t;
-	}
-	public int getTraceLevel()
-	{
-		return tracelevel;
-	}
-	public void setLast()
-	{
-		last = System.currentTimeMillis();
-	}
-	public SDMSOutputRenderer renderer()
-	{
-		return renderer;
-	}
+	public void setMe(SDMSThread t)		{ me = t; }
+	public SDMSThread getMe()		{ return me; }
+	public ThreadLock lock()		{ return lock; }
+	public boolean isJobServer()		{ return jobServer; }
+	public boolean isJob()			{ return job; }
+	public boolean isUser()			{ return user; }
+	public void setJobServer()		{ jobServer = true; job       = false; user = false; }
+	public void setJob()			{ job       = true; jobServer = false; user = false; }
+	public void setUser()			{ user      = true; jobServer = false; job  = false; }
+	public void trace_on()			{ trace = true; }
+	public void trace_off()			{ trace = false; }
+	public void setTrace(boolean t)		{ trace = t; }
+	public boolean trace()			{ return trace; }
+	public void setTraceLevel(int t)	{ tracelevel = t; }
+	public int getTraceLevel()		{ return tracelevel; }
+	public void setLast()			{ last = System.currentTimeMillis(); }
+	public SDMSOutputRenderer renderer()	{ return renderer; }
 	public void setRenderer(SDMSOutputRenderer type)
 	{
 		renderer = type;
@@ -336,24 +218,24 @@ public class ConnectionEnvironment
 	{
 		renderer = null;
 		switch (type) {
-		case Parser.XML:
-			renderer = new SDMSXmlRenderer();
-			break;
-		case Parser.LINE:
-			renderer = new SDMSLineRenderer();
-			break;
-		case Parser.PERL:
-			renderer = new SDMSPerlRenderer();
-			break;
-		case Parser.PYTHON:
-			renderer = new SDMSPythonRenderer();
-			break;
-		case Parser.SERIAL:
-			renderer = new SDMSSerialRenderer();
-			break;
-		case Parser.TIME:
-			renderer = new SDMSTimeRenderer();
-			break;
+			case Parser.XML:
+				renderer = new SDMSXmlRenderer();
+				break;
+			case Parser.LINE:
+				renderer = new SDMSLineRenderer();
+				break;
+			case Parser.PERL:
+				renderer = new SDMSPerlRenderer();
+				break;
+			case Parser.PYTHON:
+				renderer = new SDMSPythonRenderer();
+				break;
+			case Parser.SERIAL:
+				renderer = new SDMSSerialRenderer();
+				break;
+			case Parser.TIME:
+				renderer = new SDMSTimeRenderer();
+				break;
 		}
 	}
 
@@ -362,10 +244,7 @@ public class ConnectionEnvironment
 		return tx.versionId(env);
 	}
 
-	public long txId()
-	{
-		return tx.txId;
-	}
+	public long txId()			{ return tx.txId; }
 	public void proto_input(String s)
 	{
 		((UserConnection) me).scanner.proto_input(s);
@@ -385,8 +264,8 @@ public class ConnectionEnvironment
 	public String toString()
 	{
 		String s = "Id : " + id + ", Name : " + name + ", Start : " + start + ", Last : " + last +
-		           ", Uid : " + uid + ", Euid : " + euid + ", Type : " + (user ? "User" : job ? "Job" : "Jobserver") +
-		           ", Trace : " + trace + ", Port : " + port + ", State : " + stateNames[state];
+			   ", Uid : " + uid + ", Euid : " + euid + ", Type : " + (user ? "User" : job ? "Job" : "Jobserver") +
+			   ", Trace : " + trace + ", Port : " + port + ", State : " + stateNames[state];
 		return s;
 	}
 

@@ -53,7 +53,7 @@ public class AlterExitStateMapping extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateMappingProfile esmp;
 		try {
@@ -90,18 +90,18 @@ public class AlterExitStateMapping extends Node
 			if (idx != 0) {
 				if (exitCode >= esmMap.from().intValue()) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "02110260801",
-					                                "Exit Code $1 out of sequence", esmMap.from()));
+						"Exit Code $1 out of sequence", esmMap.from()));
 				}
 				esm = SDMSExitStateMappingTable.table.create (
-				              sysEnv, esmpId, esd.getId(sysEnv),
-				              new Integer(exitCode), new Integer (esmMap.from().intValue() - 1));
+						sysEnv, esmpId, esd.getId(sysEnv),
+						new Integer(exitCode), new Integer (esmMap.from().intValue() - 1));
 			}
 			idx = idx + 1;
 			exitCode = esmMap.from().intValue();
 			esd = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, esmMap.name());
 		}
 		esm = SDMSExitStateMappingTable.table.create (sysEnv,
-		                esmpId, esd.getId(sysEnv), new Integer(exitCode), new Integer(Integer.MAX_VALUE));
+			esmpId, esd.getId(sysEnv), new Integer(exitCode), new Integer(Integer.MAX_VALUE));
 
 		SDMSExitStateProfile esp;
 		Vector v = SDMSExitStateProfileTable.idx_defaultEsmpId.getVector(sysEnv, esmpId);
@@ -113,9 +113,9 @@ public class AlterExitStateMapping extends Node
 				esp.validateMappingProfile(sysEnv, esmpId);
 			} catch (CommonErrorException cee) {
 				throw new CommonErrorException (new SDMSMessage(sysEnv, "02112202121",
-				                                "Default Exit State Mapping not compatible to Exit State Profile $1",
-				                                esp.getName(sysEnv)
-				                                               ));
+					"Default Exit State Mapping not compatible to Exit State Profile $1",
+					esp.getName(sysEnv)
+				));
 			}
 		}
 
@@ -131,10 +131,10 @@ public class AlterExitStateMapping extends Node
 				esp.validateMappingProfile(sysEnv, esmpId);
 			} catch (CommonErrorException cee) {
 				throw new CommonErrorException (new SDMSMessage(sysEnv, "02112202120",
-				                                "Exit State Mapping not compatible to Exit State Profile $1 of Job $2",
-				                                esp.getName(sysEnv),
-				                                se.getName(sysEnv)
-				                                               ));
+					"Exit State Mapping not compatible to Exit State Profile $1 of Job $2",
+					esp.getName(sysEnv),
+					se.getName(sysEnv)
+				));
 			}
 		}
 

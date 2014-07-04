@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -41,13 +41,13 @@ public class SDMSSchedulingEntityTable extends SDMSSchedulingEntityTableGeneric
 	public final static String __version = "@(#) $Id: SDMSSchedulingEntityTable.java,v 2.1.18.1 2013/03/14 10:25:24 ronald Exp $";
 
 	public SDMSSchedulingEntityTable(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(env);
 	}
 
 	public static SDMSSchedulingEntity get(SystemEnvironment sysEnv, Vector path, String name)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector myPath = new Vector(path);
 		if (name == null) {
@@ -61,12 +61,12 @@ public class SDMSSchedulingEntityTable extends SDMSSchedulingEntityTableGeneric
 			return se;
 		} else {
 			throw new CommonErrorException(
-			        new SDMSMessage(sysEnv, "02206271151", "Invalid Name [Missing Folderpath]"));
+					new SDMSMessage(sysEnv, "02206271151", "Invalid Name [Missing Folderpath]"));
 		}
 	}
 
 	public static SDMSSchedulingEntity get(SystemEnvironment sysEnv, Vector path, String name, long version)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector myPath = new Vector(path);
 		if (name == null) {
@@ -80,12 +80,12 @@ public class SDMSSchedulingEntityTable extends SDMSSchedulingEntityTableGeneric
 			return se;
 		} else {
 			throw new CommonErrorException(
-			        new SDMSMessage(sysEnv, "02206271152", "Invalid Name [Missing Folderpath]"));
+					new SDMSMessage(sysEnv, "02206271152", "Invalid Name [Missing Folderpath]"));
 		}
 	}
 
 	protected boolean checkCreatePrivs(SystemEnvironment sysEnv, SDMSSchedulingEntity p)
-	throws SDMSException
+		throws SDMSException
 	{
 		final SDMSFolder f = SDMSFolderTable.getObject(sysEnv, p.getFolderId(sysEnv));
 		if(f.checkPrivileges(sysEnv, SDMSPrivilege.CREATE_CONTENT))

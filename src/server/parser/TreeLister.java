@@ -44,13 +44,13 @@ public abstract class TreeLister implements Comparator
 	SDMSMessage title;
 
 	protected void initLister(SDMSMessage t)
-	throws SDMSException
+		throws SDMSException
 	{
 		title = t;
 	}
 
 	public TreeLister(SDMSMessage t)
-	throws SDMSException
+		throws SDMSException
 	{
 		initLister(t);
 	}
@@ -61,13 +61,10 @@ public abstract class TreeLister implements Comparator
 
 	public abstract Vector getChildren(SystemEnvironment sysEnv, SDMSProxy o) throws SDMSException;
 
-	public int compare(Object o1, Object o2)
-	{
-		return 0;
-	}
+	public int compare(Object o1, Object o2) { return 0; }
 
 	public SDMSOutputContainer list(SystemEnvironment sysEnv, Vector rootObjects, HashSet expandList)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Vector objs = (Vector)rootObjects.clone();
@@ -85,7 +82,7 @@ public abstract class TreeLister implements Comparator
 	}
 
 	protected void render(SystemEnvironment sysEnv, SDMSOutputContainer container, SDMSProxy o, HashSet expandList)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		container.addData(sysEnv, format(sysEnv, o));

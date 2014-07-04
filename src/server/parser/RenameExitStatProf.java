@@ -51,7 +51,7 @@ public class RenameExitStatProf extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateProfile esp;
 
@@ -59,7 +59,7 @@ public class RenameExitStatProf extends Node
 		esp.setName(sysEnv, name2);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03201292006", "Exit State Profile renamed"));
+			new SDMSMessage(sysEnv, "03201292006", "Exit State Profile renamed"));
 	}
 }
 

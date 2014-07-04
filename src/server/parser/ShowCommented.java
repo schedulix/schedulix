@@ -53,7 +53,7 @@ public abstract class ShowCommented extends Node
 	}
 
 	private void getObjectComment(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(oc != null && id.equals(lastId)) return;
 		if(oc == null && id.equals(lastId) && !oc_exists) return;
@@ -68,7 +68,7 @@ public abstract class ShowCommented extends Node
 	}
 
 	protected String getCommentDescription(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		String text = null;
 		getObjectComment(sysEnv, id);
@@ -78,7 +78,7 @@ public abstract class ShowCommented extends Node
 	}
 
 	protected String getCommentInfoType(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		String infoType = null;
 		getObjectComment(sysEnv, id);

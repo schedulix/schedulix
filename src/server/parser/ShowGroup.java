@@ -67,7 +67,7 @@ public class ShowGroup extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSGroup g;
 		SDMSOutputContainer d_container = null;
@@ -128,7 +128,7 @@ public class ShowGroup extends ShowCommented
 	}
 
 	private SDMSOutputContainer getUserList(SystemEnvironment sysEnv, Long gId)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer d_container = null;
 
@@ -168,7 +168,7 @@ public class ShowGroup extends ShowCommented
 	}
 
 	private SDMSOutputContainer getManageList(SystemEnvironment sysEnv, Long gId)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer dc = null;
 

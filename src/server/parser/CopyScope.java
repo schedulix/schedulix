@@ -61,7 +61,7 @@ public class CopyScope extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope f, p;
 		String name;

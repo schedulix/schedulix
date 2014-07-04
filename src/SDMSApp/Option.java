@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -92,26 +92,26 @@ public class Option
 	public String toString()
 	{
 		return  "shortopt: " + shortopt +
-		        ", longopt: " + longopt +
-		        ", iniopt: " + iniopt +
-		        ", key: " + key +
-		        ", value: " + value +
-		        ", isBoolean: " + isBoolean +
-		        ", bvalue: " + bvalue +
-		        ", set: " + set +
-		        ", defaultvalue: " + defaultvalue +
-		        ", valuestring: " + valuestring +
-		        ", mandatory: " + mandatory +
-		        ", doc: " + doc;
+			", longopt: " + longopt +
+			", iniopt: " + iniopt +
+			", key: " + key +
+			", value: " + value +
+			", isBoolean: " + isBoolean +
+			", bvalue: " + bvalue +
+			", set: " + set +
+			", defaultvalue: " + defaultvalue +
+			", valuestring: " + valuestring +
+			", mandatory: " + mandatory +
+			", doc: " + doc;
 	}
 	public String toShortString()
 	{
 		return  "shortopt: " + shortopt +
-		        ",\tlongopt: " + longopt +
-		        ",\tiniopt: " + iniopt +
-		        ",\tkey: " + key +
-		        ",\tvalue: " + value +
-		        ",\tbvalue: " + bvalue +
-		        ",\tset: " + set;
+			",\tlongopt: " + longopt +
+			",\tiniopt: " + iniopt +
+			",\tkey: " + key +
+			",\tvalue: " + value +
+			",\tbvalue: " + bvalue +
+			",\tset: " + set;
 	}
 }

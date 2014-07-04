@@ -53,7 +53,7 @@ public class ShowObjectMonitor extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_OBJECT_MONITOR);
 		SDMSOutputContainer d_container = null;
@@ -92,13 +92,11 @@ public class ShowObjectMonitor extends ShowCommented
 
 		Vector data = new Vector();
 
-		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage(sysEnv, "02108251021", "Object Type"), desc, data);
+		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage(sysEnv, "02108251021", "Object Type"), desc, data);
 
 		result.setOutputContainer(d_container);
 
-		result.setFeedback(
-		        new SDMSMessage(sysEnv, "02108251022", "Object Type shown"));
+		result.setFeedback(new SDMSMessage(sysEnv, "02108251022", "Object Type shown"));
 
 	}
 

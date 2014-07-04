@@ -52,7 +52,7 @@ public class CreateSchedule
 	}
 
 	public void go (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			obj.resolve(sysEnv);
@@ -100,9 +100,9 @@ public class CreateSchedule
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			              sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId)) &&
-			    !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
+			   !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03401151027",
 				                               "User $1 does not belong to Group $2", u.getName(sysEnv), gName));
 			}

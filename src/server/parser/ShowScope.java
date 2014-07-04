@@ -59,7 +59,7 @@ public class ShowScope extends ShowCommented
 	}
 
 	private void fillHeader(SystemEnvironment sysEnv, Vector desc)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		desc.add("ID");
@@ -110,7 +110,7 @@ public class ShowScope extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSOutputContainer d_container = null;
@@ -167,8 +167,7 @@ public class ShowScope extends ShowCommented
 		collectConfig (sysEnv, v);
 		v.add (ScopeParameter.get (sysEnv, sId));
 
-		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv,
-		                                      "03201291430", "Scope"), desc, v);
+		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv, "03201291430", "Scope"), desc, v);
 
 		result.setOutputContainer(d_container);
 
@@ -176,7 +175,7 @@ public class ShowScope extends ShowCommented
 	}
 
 	private void add_resources(SystemEnvironment sysEnv, SDMSScope s, Vector v)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		ResourceTreeLister rtl = new ResourceTreeLister(sysEnv, null, s.getId(sysEnv));
@@ -188,7 +187,7 @@ public class ShowScope extends ShowCommented
 	}
 
 	private void fillConfigHeaders(SystemEnvironment sysEnv, Vector cfgDesc, Vector envDesc)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		cfgDesc.add ("KEY");
@@ -214,7 +213,7 @@ public class ShowScope extends ShowCommented
 	}
 
 	private void collectConfig (SystemEnvironment sysEnv, final Vector v)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector cfgDesc = new Vector();
 		final Vector envDesc = new Vector();
@@ -312,7 +311,7 @@ public class ShowScope extends ShowCommented
 	}
 
 	private String getScopePath (final SystemEnvironment sysEnv, final Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (id == null)
 			return "";
@@ -322,7 +321,7 @@ public class ShowScope extends ShowCommented
 	}
 
 	private final void collectEnvMapping (final SystemEnvironment sysEnv, final SDMSOutputContainer envTable, final HashMap envMap)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector envKeys = new Vector (envMap.keySet());
 		final int envSize = envKeys.size();

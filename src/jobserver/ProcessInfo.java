@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -172,7 +172,7 @@ public class ProcessInfo
 		long result = 0;
 		String os = System.getProperty("os.name").toLowerCase();
 		if(   os.contains("sunos")
-		      || os.contains("nux")
+		   || os.contains("nux")
 		  ) {
 			try {
 				BasicFileAttributes attr = Files.readAttributes(Paths.get("/proc/" + strPid), BasicFileAttributes.class);
@@ -189,9 +189,8 @@ public class ProcessInfo
 		HashMap<String,Long> result = new HashMap<String,Long>();
 		String os = System.getProperty("os.name").toLowerCase();
 		if(   os.contains("mac")
-		      || os.contains("nix")
-
-		      || os.contains("aix")
+		   || os.contains("nix")
+		   || os.contains("aix")
 		  ) {
 			try {
 				Process p = Runtime.getRuntime().exec("ps -e -o pid= -o lstart=");
@@ -315,12 +314,8 @@ public class ProcessInfo
 		if (! bootTimes.containsKey("" + how)) {
 			String bootTime = "0";
 			switch (how) {
-			case 'S':
-				bootTime = getBootTimeSystem();
-				break;
-			case 'F':
-				bootTime = getBootTimeFile();
-				break;
+				case 'S': bootTime = getBootTimeSystem(); break;
+				case 'F': bootTime = getBootTimeFile(); break;
 			}
 			bootTimes.put("" + how, new Long(bootTime));
 		}

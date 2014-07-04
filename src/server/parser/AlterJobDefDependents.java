@@ -50,7 +50,7 @@ public class AlterJobDefDependents extends ManipJobDefinition
 	}
 
 	private void delChildren(SystemEnvironment sysEnv, Vector arg, boolean ignoreNotFound)
-	throws SDMSException
+		throws SDMSException
 	{
 		int i;
 
@@ -60,7 +60,7 @@ public class AlterJobDefDependents extends ManipJobDefinition
 				SDMSSchedulingEntity c = SDMSSchedulingEntityTable.get(sysEnv, p, null);
 				Long cId = c.getId(sysEnv);
 				SDMSSchedulingHierarchy sh =
-				        SDMSSchedulingHierarchyTable.idx_parentId_childId_getUnique(sysEnv, new SDMSKey(seId, cId));
+					SDMSSchedulingHierarchyTable.idx_parentId_childId_getUnique(sysEnv, new SDMSKey(seId, cId));
 				sh.delete(sysEnv);
 			}
 		} catch(NotFoundException nfe) {
@@ -69,7 +69,7 @@ public class AlterJobDefDependents extends ManipJobDefinition
 	}
 
 	private void delParameters(SystemEnvironment sysEnv, Vector arg, boolean ignoreNotFound)
-	throws SDMSException
+		throws SDMSException
 	{
 		int i;
 
@@ -85,7 +85,7 @@ public class AlterJobDefDependents extends ManipJobDefinition
 	}
 
 	private void delRequirements(SystemEnvironment sysEnv, Vector arg, boolean ignoreNotFound)
-	throws SDMSException
+		throws SDMSException
 	{
 		int i;
 
@@ -95,7 +95,7 @@ public class AlterJobDefDependents extends ManipJobDefinition
 				SDMSSchedulingEntity r = SDMSSchedulingEntityTable.get(sysEnv, p, null);
 				Long rId = r.getId(sysEnv);
 				SDMSDependencyDefinition dd =
-				        SDMSDependencyDefinitionTable.idx_DependentId_RequiredId_getUnique(sysEnv, new SDMSKey(seId, rId));
+					SDMSDependencyDefinitionTable.idx_DependentId_RequiredId_getUnique(sysEnv, new SDMSKey(seId, rId));
 				dd.delete(sysEnv);
 			}
 		} catch(NotFoundException nfe) {
@@ -104,7 +104,7 @@ public class AlterJobDefDependents extends ManipJobDefinition
 	}
 
 	private void delResources(SystemEnvironment sysEnv, Vector arg, boolean ignoreNotFound)
-	throws SDMSException
+		throws SDMSException
 	{
 		int i;
 
@@ -122,7 +122,7 @@ public class AlterJobDefDependents extends ManipJobDefinition
 	}
 
 	private void addOrAlterChildren(SystemEnvironment sysEnv, Vector arg, boolean isAdd, boolean ignoreError)
-	throws SDMSException
+		throws SDMSException
 	{
 		int i;
 
@@ -133,13 +133,13 @@ public class AlterJobDefDependents extends ManipJobDefinition
 	}
 
 	private void addOrAlterParameters(SystemEnvironment sysEnv, WithHash wh, boolean isAdd, boolean ignoreError)
-	throws SDMSException
+		throws SDMSException
 	{
 		super.addOrAlterParameters(sysEnv, wh, se, isAdd, ignoreError);
 	}
 
 	private void addOrAlterRequirements(SystemEnvironment sysEnv, Vector arg, boolean isAdd, boolean ignoreError)
-	throws SDMSException
+		throws SDMSException
 	{
 		int i;
 
@@ -150,7 +150,7 @@ public class AlterJobDefDependents extends ManipJobDefinition
 	}
 
 	private void addOrAlterResources(SystemEnvironment sysEnv, Vector arg, boolean isAdd, boolean ignoreError)
-	throws SDMSException
+		throws SDMSException
 	{
 		int i;
 
@@ -161,7 +161,7 @@ public class AlterJobDefDependents extends ManipJobDefinition
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Object arg;
 

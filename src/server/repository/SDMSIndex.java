@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -56,10 +56,10 @@ public class SDMSIndex
 	public SDMSIndex (SystemEnvironment env, int t, boolean versioned) throws SDMSException
 	{
 		if(t != ORDINARY &&
-		    t != UNIQUE   &&
-		    t != IDUNIQUE) {
+		   t != UNIQUE   &&
+		   t != IDUNIQUE) {
 			throw new FatalException(new SDMSMessage(env,
-			                         "03110181526", "Invalid Indextype $1", new Integer(t)));
+						"03110181526", "Invalid Indextype $1", new Integer(t)));
 
 		}
 		hashMap = new HashMap();
@@ -68,7 +68,7 @@ public class SDMSIndex
 	}
 
 	public synchronized void put (SystemEnvironment env, Object key, SDMSObject o)
-	throws SDMSException
+		throws SDMSException
 	{
 		lockExclusive(env, key);
 
@@ -88,12 +88,12 @@ public class SDMSIndex
 				old = (SDMSObject) i.next();
 
 				if(!old.id.equals(o.id) && o.validFrom == -1 && o.validTo == -1 &&
-				    ((old.validTo == Long.MAX_VALUE && old.versions.tx == null) ||
-				     (old.validTo == -1 && old == old.versions.o_v.getLast())
-				    )
+				   ((old.validTo == Long.MAX_VALUE && old.versions.tx == null) ||
+				    (old.validTo == -1 && old == old.versions.o_v.getLast())
+				   )
 				  ) {
 					throw new DuplicateKeyException(new SDMSMessage(env, "03110181528",
-					                                "Duplicate Key $1: Second object exists", key));
+						"Duplicate Key $1: Second object exists", key));
 				}
 
 				if (o.validFrom < old.validTo && old.validFrom < o.validTo) {
@@ -106,7 +106,7 @@ public class SDMSIndex
 					p[5] = new Long(o.validFrom);
 					p[6] = new Long(o.validTo);
 					throw new FatalException(new SDMSMessage(env, "03110181529",
-					                         "Duplicate Key $1: Overlapping versionrange with same id: o[$2:$3,$4], old[$5:$6,$7]", p));
+						"Duplicate Key $1: Overlapping versionrange with same id: o[$2:$3,$4], old[$5:$6,$7]", p));
 				}
 			}
 		}
@@ -194,25 +194,25 @@ public class SDMSIndex
 	}
 
 	public Vector getVector(SystemEnvironment env, Object key)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getVector(env, key, null, 0);
 	}
 
 	public Vector getVector(SystemEnvironment env, Object key, SDMSFilter filter)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getVector(env, key, filter, 0);
 	}
 
 	public Vector getVector(SystemEnvironment env, Object key, int limit)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getVector(env, key, null, limit);
 	}
 
 	public Vector getVector(SystemEnvironment env, Object key, SDMSFilter filter, int limit)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector r = new Vector();
 		int count = 0;
@@ -261,7 +261,7 @@ public class SDMSIndex
 	}
 
 	public Vector getSortedVector(SystemEnvironment env, Object key)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = getVector(env, key);
 		Collections.sort(v);
@@ -269,13 +269,13 @@ public class SDMSIndex
 	}
 
 	public Vector getVector(SystemEnvironment env, Object key, long version)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getVector(env, key, version, null);
 	}
 
 	private Vector getVector(SystemEnvironment env, Object key, long version, SDMSFilter filter)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector r = new Vector();
 
@@ -315,7 +315,7 @@ public class SDMSIndex
 	}
 
 	public Vector getSortedVector(SystemEnvironment env, Object key, long version)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = getVector(env, key, version);
 		Collections.sort(v);
@@ -323,11 +323,11 @@ public class SDMSIndex
 	}
 
 	public synchronized SDMSProxy getUnique(SystemEnvironment env, Object key)
-	throws SDMSException
+		throws SDMSException
 	{
 		if((type&UNIQUE) == 0)
 			throw new FatalException(new SDMSMessage(env, "03110181530",
-			                         "Attempt to retrieve unique value from nonunique index"));
+				"Attempt to retrieve unique value from nonunique index"));
 
 		if(env.tx.mode == SDMSTransaction.READWRITE) {
 			lockShared(env, key);
@@ -357,11 +357,11 @@ public class SDMSIndex
 	}
 
 	public synchronized SDMSProxy getUnique(SystemEnvironment env, Object key, long version)
-	throws SDMSException
+		throws SDMSException
 	{
 		if((type&UNIQUE) == 0)
 			throw new FatalException(new SDMSMessage(env, "03110181531",
-			                         "Attempt to retrieve unique value from nonunique index"));
+				"Attempt to retrieve unique value from nonunique index"));
 
 		if(!isVersioned) {
 			lockShared(env, key);

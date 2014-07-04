@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -46,16 +46,10 @@ class set_state extends App
 		addOption("S", "state", null, STATE, null, "state", true , "Exit State to set");
 		addOption("f", "force", null, FORCE, null, null   , false, "[Don't] Force if job does not define a mapping for that state");
 	}
-	public String getName()
-	{
-		return "set_state";
-	}
-	public boolean canRetry()
-	{
-		return true;
-	}
+	public String getName() { return "set_state"; }
+	public boolean canRetry() { return true; }
 	public int go()
-	throws RetryException
+		throws RetryException
 	{
 		String cmd = "ALTER JOB";
 		if (options.isSet(App.USER)) cmd = cmd + " " + options.getValue(JID);
@@ -69,8 +63,5 @@ class set_state extends App
 			return 1;
 		} else return 0;
 	}
-	public static void main (String[] argv)
-	{
-		System.exit(new set_state().run(argv));
-	}
+	public static void main (String[] argv) { System.exit(new set_state().run(argv)); }
 }

@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -44,18 +44,9 @@ class set_variable extends App
 		addOption("j", "jid",  null, JID,  null, "jobid", true,  "Id of job to set variable for");
 		addOption("C", "case", null, CASE, null, null,    false, "[Don't] Treat variable names case sensitive");
 	}
-	public String getUsageArguments()
-	{
-		return "variable value { variable value }";
-	}
-	public String getName()
-	{
-		return "set_variable";
-	}
-	public boolean canRetry()
-	{
-		return true;
-	}
+	public String getUsageArguments() { return "variable value { variable value }"; }
+	public String getName() { return "set_variable"; }
+	public boolean canRetry() { return true; }
 	public boolean validateOptions()
 	{
 		if (options.rest.size() == 0) {
@@ -69,7 +60,7 @@ class set_variable extends App
 		return true;
 	}
 	public int go()
-	throws RetryException
+		throws RetryException
 	{
 		final String quote;
 		String cmd = "SET PARAMETER ";
@@ -93,8 +84,5 @@ class set_variable extends App
 			return 1;
 		} else return 0;
 	}
-	public static void main (String[] argv)
-	{
-		System.exit(new set_variable().run(argv));
-	}
+	public static void main (String[] argv) { System.exit(new set_variable().run(argv)); }
 }

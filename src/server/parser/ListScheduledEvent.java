@@ -51,7 +51,7 @@ public class ListScheduledEvent
 	}
 
 	public void go (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector desc = new Vector();
 

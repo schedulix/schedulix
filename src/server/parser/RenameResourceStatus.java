@@ -51,7 +51,7 @@ public class RenameResourceStatus extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateDefinition rsd;
 
@@ -59,7 +59,7 @@ public class RenameResourceStatus extends Node
 		rsd.setName(sysEnv, name2);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03201100051", "Resource State Definition renamed"));
+			new SDMSMessage(sysEnv, "03201100051", "Resource State Definition renamed"));
 	}
 }
 

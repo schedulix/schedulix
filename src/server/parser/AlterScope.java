@@ -78,7 +78,7 @@ public class AlterScope
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(url == null) {
 			jobServerAlter(sysEnv);
@@ -88,7 +88,7 @@ public class AlterScope
 	}
 
 	public void userAlter (final SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final SDMSScope s;
 		try {
@@ -107,7 +107,7 @@ public class AlterScope
 	}
 
 	public void userAlterScope (final SystemEnvironment sysEnv, SDMSScope s)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Long sId = s.getId(sysEnv);
 
@@ -127,7 +127,7 @@ public class AlterScope
 				gName = (String) with.get(ParseStr.S_GROUP_CASCADE);
 			}
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			                         sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId);
 			s.setOwnerId(sysEnv, gId);
 			if(with.containsKey (ParseStr.S_GROUP_CASCADE)) {
@@ -150,7 +150,7 @@ public class AlterScope
 	}
 
 	private void userAlterJobServer(SystemEnvironment sysEnv, SDMSScope s)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Long sId = s.getId(sysEnv);
 		String salt = null;
@@ -204,7 +204,7 @@ public class AlterScope
 					    state == SDMSSubmittedEntity.TO_KILL  ||
 					    state == SDMSSubmittedEntity.KILLED) {
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03311031035",
-						                               "A scope cannot be disabled while jobs are still running"));
+								"A scope cannot be disabled while jobs are still running"));
 					}
 				}
 				if(s.isConnected(sysEnv)) {
@@ -221,7 +221,7 @@ public class AlterScope
 		if (with.containsKey (ParseStr.S_GROUP)) {
 			final String gName = (String) with.get (ParseStr.S_GROUP);
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			                         sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId);
 			s.setOwnerId(sysEnv, gId);
 		}
@@ -230,7 +230,7 @@ public class AlterScope
 	}
 
 	private void changeChildGroup(SystemEnvironment sysEnv, Long parentId, Long groupId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector cv = SDMSScopeTable.idx_parentId.getVector(sysEnv, parentId);
 		for(int i = 0; i < cv.size(); i++) {
@@ -245,7 +245,7 @@ public class AlterScope
 	}
 
 	private void jobServerAlter(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final SDMSScope s = SDMSScopeTable.getObject(sysEnv, sysEnv.cEnv.uid());
 

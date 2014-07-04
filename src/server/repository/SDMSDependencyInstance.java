@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -47,7 +47,7 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 	}
 
 	public int check(SystemEnvironment sysEnv, HashMap checkCache)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (getState(sysEnv).intValue() == SDMSDependencyInstance.DEFERED)
 			return SDMSDependencyInstance.DEFERED;
@@ -73,12 +73,12 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 		int state = sme.getState(sysEnv).intValue();
 		Long esdId = null;
 		switch (state) {
-		case SDMSSubmittedEntity.FINAL:
-			esdId = sme.getFinalEsdId(sysEnv);
-			break;
-		case SDMSSubmittedEntity.FINISHED:
-			esdId = sme.getJobEsdId(sysEnv);
-			break;
+			case SDMSSubmittedEntity.FINAL:
+				esdId = sme.getFinalEsdId(sysEnv);
+				break;
+			case SDMSSubmittedEntity.FINISHED:
+				esdId = sme.getJobEsdId(sysEnv);
+				break;
 		}
 
 		Long ddId = getDdId(sysEnv);
@@ -86,55 +86,55 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 
 		int diState = SDMSDependencyInstance.OPEN;
 		switch (state) {
-		case SDMSSubmittedEntity.UNREACHABLE:
-			break;
-		case SDMSSubmittedEntity.CANCELLED:
-			diState = SDMSDependencyInstance.CANCELLED;
-			break;
-		default:
-			int mode = dd.getMode(sysEnv).intValue();
-			if ((state == SDMSSubmittedEntity.FINISHED && jobIsFinal && mode == SDMSDependencyDefinition.JOB_FINAL) || state == SDMSSubmittedEntity.FINAL) {
-				diState = FULFILLED;
-				int stateSelection = dd.getStateSelection(sysEnv).intValue();
-				if (stateSelection == SDMSDependencyDefinition.FINAL) {
+			case SDMSSubmittedEntity.UNREACHABLE:
+				break;
+			case SDMSSubmittedEntity.CANCELLED:
+				diState = SDMSDependencyInstance.CANCELLED;
+				break;
+			default:
+				int mode = dd.getMode(sysEnv).intValue();
+				if ((state == SDMSSubmittedEntity.FINISHED && jobIsFinal && mode == SDMSDependencyDefinition.JOB_FINAL) || state == SDMSSubmittedEntity.FINAL) {
+					diState = FULFILLED;
+					int stateSelection = dd.getStateSelection(sysEnv).intValue();
+					if (stateSelection == SDMSDependencyDefinition.FINAL) {
 
-					Vector v_ds = SDMSDependencyStateTable.idx_ddId.getVector(sysEnv, ddId, actVersion);
-					if (v_ds.size() != 0) {
+						Vector v_ds = SDMSDependencyStateTable.idx_ddId.getVector(sysEnv, ddId, actVersion);
+						if (v_ds.size() != 0) {
+							diState = SDMSDependencyInstance.FAILED;
+							Iterator i_ds = v_ds.iterator();
+							while (i_ds.hasNext()) {
+								SDMSDependencyState ds = (SDMSDependencyState)i_ds.next();
+								if (ds.getEsdId(sysEnv).equals(esdId)) {
+									diState = FULFILLED;
+									break;
+								}
+							}
+						}
+					} else {
+						Long seId = sme.getSeId(sysEnv);
+						Long espId = SDMSSchedulingEntityTable.getObject(sysEnv, seId, actVersion).getEspId(sysEnv);
+						Vector v_es = SDMSExitStateTable.idx_espId.getVector(sysEnv, espId, actVersion);
 						diState = SDMSDependencyInstance.FAILED;
-						Iterator i_ds = v_ds.iterator();
-						while (i_ds.hasNext()) {
-							SDMSDependencyState ds = (SDMSDependencyState)i_ds.next();
-							if (ds.getEsdId(sysEnv).equals(esdId)) {
-								diState = FULFILLED;
+						Iterator i_es = v_es.iterator();
+						while (i_es.hasNext()) {
+							SDMSExitState es = (SDMSExitState)i_es.next();
+							if (es.getEsdId(sysEnv).equals(esdId)) {
+								if (!(es.getIsFinal(sysEnv).booleanValue())) break;
+								if (stateSelection == SDMSDependencyDefinition.ALL_REACHABLE) {
+									if (!(es.getIsUnreachable(sysEnv).booleanValue()))
+										diState = SDMSDependencyInstance.FULFILLED;
+								} else if (stateSelection == SDMSDependencyDefinition.DEFAULT) {
+									if (es.getIsDependencyDefault(sysEnv).booleanValue())
+										diState = SDMSDependencyInstance.FULFILLED;
+								} else if (stateSelection == SDMSDependencyDefinition.UNREACHABLE) {
+									if (es.getIsUnreachable(sysEnv).booleanValue())
+										diState = SDMSDependencyInstance.FULFILLED;
+								}
 								break;
 							}
 						}
-					}
-				} else {
-					Long seId = sme.getSeId(sysEnv);
-					Long espId = SDMSSchedulingEntityTable.getObject(sysEnv, seId, actVersion).getEspId(sysEnv);
-					Vector v_es = SDMSExitStateTable.idx_espId.getVector(sysEnv, espId, actVersion);
-					diState = SDMSDependencyInstance.FAILED;
-					Iterator i_es = v_es.iterator();
-					while (i_es.hasNext()) {
-						SDMSExitState es = (SDMSExitState)i_es.next();
-						if (es.getEsdId(sysEnv).equals(esdId)) {
-							if (!(es.getIsFinal(sysEnv).booleanValue())) break;
-							if (stateSelection == SDMSDependencyDefinition.ALL_REACHABLE) {
-								if (!(es.getIsUnreachable(sysEnv).booleanValue()))
-									diState = SDMSDependencyInstance.FULFILLED;
-							} else if (stateSelection == SDMSDependencyDefinition.DEFAULT) {
-								if (es.getIsDependencyDefault(sysEnv).booleanValue())
-									diState = SDMSDependencyInstance.FULFILLED;
-							} else if (stateSelection == SDMSDependencyDefinition.UNREACHABLE) {
-								if (es.getIsUnreachable(sysEnv).booleanValue())
-									diState = SDMSDependencyInstance.FULFILLED;
-							}
-							break;
-						}
-					}
 
-				}
+					}
 			}
 			break;
 		}
@@ -149,7 +149,7 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 	}
 
 	public void setIgnore(SystemEnvironment sysEnv, int mode, Long originId, String comment)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, getDependentId(sysEnv));
 
@@ -165,7 +165,7 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 				SDMSSubmittedEntity dsme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getDependentId(sysEnv));
 
 				if(SDMSHierarchyInstanceTable.idx_parentId_childId.containsKey(sysEnv,
-				                new SDMSKey(sme.getId(sysEnv), dsme.getId(sysEnv)))) {
+								new SDMSKey(sme.getId(sysEnv), dsme.getId(sysEnv)))) {
 					di.setIgnore(sysEnv, SDMSDependencyInstance.RECURSIVE, originId, comment);
 				}
 			}

@@ -51,7 +51,7 @@ public class DropExitStatProf extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateProfile esp;
 		try {
@@ -69,9 +69,9 @@ public class DropExitStatProf extends Node
 		Vector se_v = SDMSSchedulingEntityTable.idx_espId.getVector(sysEnv, espId);
 		if (se_v.size() != 0) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "02112171835",
-			                                "Exit State Profile in use by $1",
-			                                ((SDMSSchedulingEntity)(se_v.elementAt(0))).pathString(sysEnv)
-			                                                ));
+				"Exit State Profile in use by $1",
+				((SDMSSchedulingEntity)(se_v.elementAt(0))).pathString(sysEnv)
+				));
 		}
 
 		Vector es_v = SDMSExitStateTable.idx_espId.getVector(sysEnv, espId);

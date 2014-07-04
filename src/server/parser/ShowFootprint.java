@@ -51,7 +51,7 @@ public class ShowFootprint extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer d_container = null;
 		SDMSFootprint fp;
@@ -112,7 +112,7 @@ public class ShowFootprint extends ShowCommented
 	}
 
 	private	SDMSOutputContainer requirementsContainer (SystemEnvironment sysEnv, Long fpId)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceRequirement rr;
 
@@ -148,7 +148,7 @@ public class ShowFootprint extends ShowCommented
 	}
 
 	private	SDMSOutputContainer jobDefContainer (SystemEnvironment sysEnv, Long fpId)
-	throws SDMSException
+		throws SDMSException
 	{
 		FolderLister fl = new FolderLister(null, expandIds);
 		fl.setTitle(null);
@@ -192,7 +192,7 @@ class SfSeFormatter implements Formatter
 	}
 
 	public Vector fillVector(SystemEnvironment sysEnv, SDMSProxy co, HashSet parentSet)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = new Vector();
 		if(co instanceof SDMSFolder) {
@@ -204,7 +204,7 @@ class SfSeFormatter implements Formatter
 	}
 
 	private void fillSeVector(SystemEnvironment sysEnv, SDMSSchedulingEntity co, Vector v)
-	throws SDMSException
+		throws SDMSException
 	{
 		v.add(co.getId(sysEnv));
 		v.add(co.pathVector(sysEnv));
@@ -214,7 +214,7 @@ class SfSeFormatter implements Formatter
 	}
 
 	private void fillFVector(SystemEnvironment sysEnv, SDMSFolder co, Vector v, HashSet parentSet)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long coId = co.getId(sysEnv);
 		v.add(coId);

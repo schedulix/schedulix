@@ -55,7 +55,7 @@ public class CreateScope extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long parentId;
 		String passwd = null;
@@ -104,10 +104,10 @@ public class CreateScope extends Node
 						method = new Integer(SDMSScope.MD5);
 				} else
 					throw new CommonErrorException (new SDMSMessage (sysEnv, "04312151753",
-					                                "Both " + ParseStr.S_PASSWORD + " and " + ParseStr.S_RAWPASSWORD + " are not allowed"));
+						"Both " + ParseStr.S_PASSWORD + " and " + ParseStr.S_RAWPASSWORD + " are not allowed"));
 			if (passwd == null)
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "04312151754",
-				                                "Either " + ParseStr.S_PASSWORD + " or " + ParseStr.S_RAWPASSWORD + " must be specified"));
+					"Either " + ParseStr.S_PASSWORD + " or " + ParseStr.S_RAWPASSWORD + " must be specified"));
 
 			if (with.containsKey (ParseStr.S_ENABLE))
 				isEnabled = (Boolean) with.get (ParseStr.S_ENABLE);
@@ -122,11 +122,11 @@ public class CreateScope extends Node
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			              sysEnv, new SDMSKey (gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey (gName, new Long(0))).getId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId)) &&
-			    !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
+			   !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03312161746",
-				                               "User $1 does not belong to Group $2", u.getName(sysEnv), gName));
+						"User $1 does not belong to Group $2", u.getName(sysEnv), gName));
 			}
 		}
 
@@ -153,9 +153,9 @@ public class CreateScope extends Node
 
 		try {
 			s = SDMSScopeTable.table.create(sysEnv, name, gId, parentId, type, isTerminate,
-			                                hasAlteredConfig, isSuspended, isEnabled,
-			                                isRegistered, state, passwd, salt, method, null ,
-			                                node, null , null , inheritPrivs);
+							hasAlteredConfig, isSuspended, isEnabled,
+							isRegistered, state, passwd, salt, method, null ,
+							node, null , null , inheritPrivs);
 
 			final Long sId = s.getId (sysEnv);
 

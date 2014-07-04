@@ -48,7 +48,7 @@ public class ListPool extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector desc = new Vector();
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_POOL);

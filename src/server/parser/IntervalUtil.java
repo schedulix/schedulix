@@ -71,7 +71,7 @@ public class IntervalUtil
 	}
 
 	static final Long getCheckedSeId (final SystemEnvironment sysEnv, final WithItem seSpec)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (seSpec == null)
 			return null;
@@ -128,7 +128,7 @@ public class IntervalUtil
 	}
 
 	public static final Integer getMultiplier (final SystemEnvironment sysEnv, final WithHash with)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Integer multiplier = (Integer) with.get (ParseStr.S_MULT);
 
@@ -142,7 +142,7 @@ public class IntervalUtil
 	}
 
 	public static final boolean getDateTime (final SystemEnvironment sysEnv, final DateTime datetime, final WithHash with, final String which)
-	throws SDMSException
+		throws SDMSException
 	{
 		boolean secondsIgnore = false;
 
@@ -160,7 +160,7 @@ public class IntervalUtil
 	}
 
 	public static final void killFilter (final SystemEnvironment sysEnv, final Long ivalId)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector ihList = SDMSIntervalHierarchyTable.idx_parentId.getVector (sysEnv, ivalId);
 		final Iterator ihIt = ihList.iterator();
@@ -171,7 +171,7 @@ public class IntervalUtil
 	}
 
 	public static final boolean createFilter (final SystemEnvironment sysEnv, final Long ivalId, final WithItem seSpec, final WithHash with)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector filtList = (Vector) with.get (ParseStr.S_FILTER);
 		if (filtList == null)
@@ -204,7 +204,7 @@ public class IntervalUtil
 	}
 
 	public static final void killSelections (final SystemEnvironment sysEnv, final Long ivalId)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector isList = SDMSIntervalSelectionTable.idx_intId.getVector (sysEnv, ivalId);
 		final Iterator isIt = isList.iterator();
@@ -215,7 +215,7 @@ public class IntervalUtil
 	}
 
 	public static final int createSelections (final SystemEnvironment sysEnv, final Long ivalId, final WithHash with)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector selList = (Vector) with.get (ParseStr.S_SELECTION);
 		if (selList == null)
@@ -246,12 +246,12 @@ public class IntervalUtil
 				if (dtTo == null)
 					dtTo = new DateTime (dtFrom);
 				else if ((   (dtFrom.year   == -1) != (dtTo.year   == -1))
-				         || ((dtFrom.month  == -1) != (dtTo.month  == -1))
-				         || ((dtFrom.week   == -1) != (dtTo.week   == -1))
-				         || ((dtFrom.day    == -1) != (dtTo.day    == -1))
-				         || ((dtFrom.hour   == -1) != (dtTo.hour   == -1))
-				         || ((dtFrom.minute == -1) != (dtTo.minute == -1))
-				         || ((dtFrom.second == -1) != (dtTo.second == -1)))
+					 || ((dtFrom.month  == -1) != (dtTo.month  == -1))
+					 || ((dtFrom.week   == -1) != (dtTo.week   == -1))
+					 || ((dtFrom.day    == -1) != (dtTo.day    == -1))
+					 || ((dtFrom.hour   == -1) != (dtTo.hour   == -1))
+					 || ((dtFrom.minute == -1) != (dtTo.minute == -1))
+					 || ((dtFrom.second == -1) != (dtTo.second == -1)))
 					throw new CommonErrorException (new SDMSMessage (sysEnv, "04210221611", "both limits must have the same type"));
 				if (dtTo.second != -1)
 					rc = Math.max (rc, IGNORED_SECONDS);

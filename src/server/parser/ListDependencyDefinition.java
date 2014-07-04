@@ -52,7 +52,7 @@ public class ListDependencyDefinition extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSOutputContainer d_container = null;
@@ -82,7 +82,7 @@ public class ListDependencyDefinition extends Node
 		desc.add("STATES");
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv,
-		                                      "02204291436", "Dependency Definitions"), desc);
+			"02204291436", "Dependency Definitions"), desc);
 
 		String name = (String) path.remove(path.size() -1);
 
@@ -96,14 +96,14 @@ public class ListDependencyDefinition extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "02204291509", "$1 Dependency Definition(s) found",
-		                        new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "02204291509", "$1 Dependency Definition(s) found",
+					new Integer(d_container.lines)));
 
 	}
 
 	private void fill_resolveMap(SystemEnvironment sysEnv,
-	                             SDMSSchedulingEntity se, Vector p_v_Path, String p_s_Path, HashMap resolveMap)
-	throws SDMSException
+			SDMSSchedulingEntity se, Vector p_v_Path, String p_s_Path, HashMap resolveMap)
+		throws SDMSException
 	{
 		String s_Path;
 		Vector v_Path;
@@ -176,7 +176,7 @@ public class ListDependencyDefinition extends Node
 	}
 
 	private String getStatesString(SystemEnvironment sysEnv, SDMSDependencyDefinition dd)
-	throws SDMSException
+		throws SDMSException
 	{
 		StringBuffer s = new StringBuffer();
 		Vector v_ds = SDMSDependencyStateTable.idx_ddId.getVector(sysEnv, dd.getId(sysEnv));
@@ -197,9 +197,9 @@ public class ListDependencyDefinition extends Node
 	}
 
 	private void resolveChildren(SystemEnvironment sysEnv,
-	                             SDMSSchedulingEntity se, Vector p_v_Path, String p_s_Path, HashMap resolveMap,
-	                             SDMSOutputContainer d_container)
-	throws SDMSException
+			SDMSSchedulingEntity se, Vector p_v_Path, String p_s_Path, HashMap resolveMap,
+			SDMSOutputContainer d_container)
+		throws SDMSException
 	{
 		String s_Path;
 		Vector v_Path;

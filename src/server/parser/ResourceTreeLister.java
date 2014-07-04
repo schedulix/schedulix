@@ -45,7 +45,7 @@ public class ResourceTreeLister extends TreeLister
 	HashMap      namedResources;
 
 	protected void initLister(SystemEnvironment sysEnv, Long sId)
-	throws SDMSException
+		throws SDMSException
 	{
 		systemEnvironment = sysEnv;
 		Long scopeId = sId;
@@ -64,7 +64,7 @@ public class ResourceTreeLister extends TreeLister
 	}
 
 	protected void enrollCategories(SystemEnvironment sysEnv, Long nrId, Long scopeId)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (!namedResources.containsKey(nrId)) {
 			namedResources.put(nrId, scopeId);
@@ -76,7 +76,7 @@ public class ResourceTreeLister extends TreeLister
 	}
 
 	public ResourceTreeLister(SystemEnvironment sysEnv, SDMSMessage t, Long scopeId)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(t);
 		initLister(sysEnv, scopeId);
@@ -93,7 +93,7 @@ public class ResourceTreeLister extends TreeLister
 	}
 
 	public Vector getChildren(SystemEnvironment sysEnv, SDMSProxy obj)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSProxy o = obj;
 		Long id = o.getId(sysEnv);
@@ -167,7 +167,7 @@ public class ResourceTreeLister extends TreeLister
 	}
 
 	protected Vector getPath(SystemEnvironment sysEnv, SDMSProxy o)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 
@@ -181,7 +181,7 @@ public class ResourceTreeLister extends TreeLister
 	}
 
 	protected Vector getScopePath(SystemEnvironment sysEnv, SDMSProxy o)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 

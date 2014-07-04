@@ -61,7 +61,7 @@ public class CopyNamedResource extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final String name1;
 		SDMSNamedResource src, r, p;
@@ -73,7 +73,7 @@ public class CopyNamedResource extends Node
 
 		if(opId == null) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03704102150",
-			                               "The category RESOURCE cannot be copied"));
+						"The category RESOURCE cannot be copied"));
 		}
 
 		if (newName == null) {
@@ -95,12 +95,12 @@ public class CopyNamedResource extends Node
 
 		if(p.getUsage(sysEnv).intValue() != SDMSNamedResource.CATEGORY) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03206250010",
-			                               "Resource cannot be contained within another Resource"));
+						"Resource cannot be contained within another Resource"));
 		}
 
 		if (SDMSNamedResourceTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(npId, name))) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03112191239",
-			                               "A resource or category with name $1 already exists within $2", name, p.pathString(sysEnv)));
+						"A resource or category with name $1 already exists within $2", name, p.pathString(sysEnv)));
 		}
 
 		myId = src.getId(sysEnv);

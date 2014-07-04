@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -319,28 +319,28 @@ public class Server
 
 		if(jdbcDriver == null)
 			throw new FatalException(new SDMSMessage(env,
-			                         "03110181509", "No JDBC Driver Specified"));
+							"03110181509", "No JDBC Driver Specified"));
 		if(dbUrl == null) throw new FatalException(new SDMSMessage(env,
-			                "03110181510", "No JDBC URL Specified"));
+							"03110181510", "No JDBC URL Specified"));
 
 		try {
 			Class.forName(jdbcDriver);
 		} catch(ClassNotFoundException cnf) {
 			throw new FatalException(new SDMSMessage(env,
-			                         "03110181511", "Class $1 not Found", jdbcDriver));
+							"03110181511", "Class $1 not Found", jdbcDriver));
 		}
 		try {
 			c = DriverManager.getConnection(dbUrl, dbUser, dbPasswd);
 		} catch(SQLException sqle) {
 			throw new FatalException(new SDMSMessage(env,
-			                         "03110181512", "Unable to connect to $1, $2", dbUrl, sqle.toString()));
+							"03110181512", "Unable to connect to $1, $2", dbUrl, sqle.toString()));
 		}
 		try {
 			c.setAutoCommit(false);
 			return c;
 		} catch(SQLException sqle) {
 			throw new FatalException(new SDMSMessage(env,
-			                         "03202071128", "Cannot set autocommit off", dbUrl));
+							"03202071128", "Cannot set autocommit off", dbUrl));
 		}
 	}
 
@@ -354,12 +354,12 @@ public class Server
 				startRenewTicketThread();
 			} catch(SDMSException fe1) {
 				SDMSThread.doTrace(null, (new SDMSMessage(env, "03302061700",
-				                          "Fatal exception while starting TicketThread:\n$1", fe1.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+							"Fatal exception while starting TicketThread:\n$1", fe1.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 			}
 			createRepository();
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03202252201",
-			                          "Fatal exception while loading Repository:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+							"Fatal exception while loading Repository:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
 		try {
 			SDMSThread.doTrace(null, "Initializing System Threads", SDMSThread.SEVERITY_INFO);
@@ -371,41 +371,41 @@ public class Server
 			initGC();
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03202252202",
-			                          "Fatal exception while initializing System Threads:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+							"Fatal exception while initializing System Threads:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
 		try {
 			startWorkers();
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03202252203",
-			                          "Fatal exception while starting Workerthreads:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+							"Fatal exception while starting Workerthreads:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
 		try {
 			startScheduling();
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03202252204",
-			                          "Fatal exception while starting SchedulingThread:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+							"Fatal exception while starting SchedulingThread:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
 		try {
 			startTimeScheduling();
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03206082124",
-			                          "Fatal exception while starting Time Scheduling:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+							"Fatal exception while starting Time Scheduling:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
 		try {
 			startTT();
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03407301455",
-			                          "Fatal exception while starting trigger thread:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+							"Fatal exception while starting trigger thread:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
 		try {
 			startGC();
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03311120827",
-			                          "Fatal exception while starting garbage collector:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+							"Fatal exception while starting garbage collector:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
 		startListener();
 		SDMSMessage m = new SDMSMessage(env, "03110212341", "-- $1 -- $2 -- $3 -- ready --",
-		                                "SDMS", "Server", "Systems");
+							"SDMS", "Server", "Systems");
 		SDMSThread.doTrace(null, m.toString(), SDMSThread.SEVERITY_INFO);
 
 		for(int i = 0; i < wt.length; ++i) {

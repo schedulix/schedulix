@@ -51,10 +51,10 @@ public abstract class JobDistribution extends Node
 	}
 
 	public abstract void go(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 
 	boolean startJob(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, SDMSScope s, Vector desc, Vector data)
-	throws SDMSException
+		throws SDMSException
 	{
 		boolean rc;
 		Long smeId = sme.getId(sysEnv);
@@ -131,7 +131,7 @@ public abstract class JobDistribution extends Node
 				while(true) {
 					try {
 						SDMSScopeConfig sc = (SDMSScopeConfig)
-						                     SDMSScopeConfigTable.idx_scopeId_key.getUnique(sysEnv, new SDMSKey(cfgScopeId, Config.DEFAULT_WORKDIR));
+							SDMSScopeConfigTable.idx_scopeId_key.getUnique(sysEnv, new SDMSKey(cfgScopeId, Config.DEFAULT_WORKDIR));
 						workdir = sc.getValue(sysEnv).substring(1);
 						break;
 					} catch (NotFoundException nfe) {
@@ -226,7 +226,7 @@ public abstract class JobDistribution extends Node
 	}
 
 	boolean	startKillJob(SystemEnvironment sysEnv, SDMSKillJob kj, SDMSScope s, Vector desc, Vector data)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long kjId;
 		Long sId = s.getId(sysEnv);
@@ -333,7 +333,7 @@ public abstract class JobDistribution extends Node
 	}
 
 	private Vector cmdlineScan(SystemEnvironment sysEnv, StringReader sr, SDMSSubmittedEntity sme, SDMSProxy job, Long id, String parseObject, String nullMessage)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector args = null;
 		SDMSMessage msg = null;
@@ -372,7 +372,7 @@ public abstract class JobDistribution extends Node
 	}
 
 	void setToError(SystemEnvironment sysEnv, SDMSProxy job, Long id, SDMSMessage errMsg)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(sysEnv.tx.subTxId > 0)
 			sysEnv.tx.rollbackSubTransaction(sysEnv);
@@ -398,7 +398,7 @@ public abstract class JobDistribution extends Node
 	}
 
 	void delFromQueue(SystemEnvironment sysEnv, Long smeId)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSRunnableQueue rq;
 		Vector v = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, smeId);
@@ -409,7 +409,7 @@ public abstract class JobDistribution extends Node
 	}
 
 	void fillEnvironment(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Vector data)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector env = new Vector();
 
@@ -425,7 +425,7 @@ public abstract class JobDistribution extends Node
 	}
 
 	void fillEnvironment(SystemEnvironment sysEnv, SDMSKillJob kj, Vector data)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector env = new Vector();
 		for(int i=0; i < SystemEnvironment.exportVariables.size(); i++) {

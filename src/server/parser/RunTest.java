@@ -91,39 +91,30 @@ public class RunTest extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(!SystemEnvironment.runMode.toUpperCase().equals("TEST")) {
 			return;
 		}
 
 		switch(testid) {
-		case 1:
-			do_test1(sysEnv);
+		case 1: do_test1(sysEnv);
 			break;
-		case 2:
-			do_test2(sysEnv);
+		case 2: do_test2(sysEnv);
 			break;
-		case 3:
-			do_test3(sysEnv);
+		case 3: do_test3(sysEnv);
 			break;
-		case 4:
-			do_test4(sysEnv);
+		case 4: do_test4(sysEnv);
 			break;
-		case 5:
-			do_test5(sysEnv);
+		case 5: do_test5(sysEnv);
 			break;
-		case 6:
-			do_test6(sysEnv);
+		case 6: do_test6(sysEnv);
 			break;
-		case 7:
-			do_test7(sysEnv);
+		case 7: do_test7(sysEnv);
 			break;
-		case 8:
-			do_test8(sysEnv);
+		case 8: do_test8(sysEnv);
 			break;
-		case 9:
-			do_test9(sysEnv);
+		case 9: do_test9(sysEnv);
 			break;
 		default:
 
@@ -132,7 +123,7 @@ public class RunTest extends Node
 	}
 
 	private void do_test1(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long id = new Long(str);
 		System.out.println("start release of "+id);
@@ -140,7 +131,7 @@ public class RunTest extends Node
 	}
 
 	private void do_test2(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			Thread.sleep(300000);
@@ -150,14 +141,14 @@ public class RunTest extends Node
 	}
 
 	private void do_test3(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSRunnableQueueTable t = (SDMSRunnableQueueTable) SystemEnvironment.repository.getTable(sysEnv, SDMSRunnableQueueTableGeneric.tableName);
 		t.dump(sysEnv);
 	}
 
 	private void do_test4(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(str == null) {
 			SDMSUserTable.idx_name.dumpIndex(sysEnv);
@@ -172,18 +163,18 @@ public class RunTest extends Node
 	}
 
 	private void do_test5(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 	}
 
 	private void do_test6(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SystemEnvironment.sched.notifyChange (sysEnv, (SDMSScope) null, SchedulingThread.REGISTER);
 	}
 
 	private void do_test7(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Long x = null;
@@ -193,13 +184,13 @@ public class RunTest extends Node
 	}
 
 	private void do_test8(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		throw new RuntimeException("Absichtlicher Crash");
 	}
 
 	private void do_test9(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		long low = Long.MAX_VALUE;
 		long totlow = Long.MAX_VALUE;
@@ -288,7 +279,7 @@ public class RunTest extends Node
 		data.add(t_container);
 
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage(sysEnv, "03212191002", "Memory Data Statistics"), desc, data);
+			new SDMSMessage(sysEnv, "03212191002", "Memory Data Statistics"), desc, data);
 
 		result.setOutputContainer(d_container);
 

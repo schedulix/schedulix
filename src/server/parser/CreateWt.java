@@ -53,7 +53,7 @@ public class CreateWt extends ManipWt
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_OBJECT_MONITOR);
 

@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -281,18 +281,18 @@ public class JProcessExecutor extends Jexecutor
 				System.exit(1);
 			}
 			switch(argState) {
-			case ARGS_RUN:
-				je.run();
-				break;
-			case ARGS_HELP:
-				System.out.println(getUsage());
-				break;
-			case ARGS_VERSION:
-				System.out.println(getVersion());
-				break;
-			default:
-				System.err.println("Invalid internal state! argState contains : " + argState);
-				System.exit(1);
+				case ARGS_RUN:
+					je.run();
+					break;
+				case ARGS_HELP:
+					System.out.println(getUsage());
+					break;
+				case ARGS_VERSION:
+					System.out.println(getVersion());
+					break;
+				default:
+					System.err.println("Invalid internal state! argState contains : " + argState);
+					System.exit(1);
 			}
 
 		} catch (Exception e) {

@@ -51,7 +51,7 @@ public class RenameEnvironment extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedEnvironment ne = (SDMSNamedEnvironment) url.resolve(sysEnv);
 		ne.setName(sysEnv, name2);

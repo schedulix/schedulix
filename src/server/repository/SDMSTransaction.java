@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -66,7 +66,7 @@ public class SDMSTransaction
 	private   HashSet touchList;
 
 	public SDMSTransaction(SystemEnvironment env, int m, Long version)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (nextId == null) {
 			nextId = new TxCounter(env);
@@ -93,43 +93,37 @@ public class SDMSTransaction
 		return nextId.next(env, READONLY);
 	}
 
-	public long txId()
-	{
-		return txId;
-	}
-	public int  mode()
-	{
-		return mode;
-	}
+	public long txId()	{ return txId; }
+	public int  mode()	{ return mode; }
 	public long versionId(SystemEnvironment env)	throws SDMSException
 	{
 		if (versionId == UNDEFINED) {
 			throw new FatalException(new SDMSMessage(env,
-			                         "03110181540", "VersionId not defined"));
+				"03110181540", "VersionId not defined"));
 		}
 		return versionId;
 	}
 
 	public void commit(SystemEnvironment env)
-	throws SQLException, SDMSException
+		throws SQLException, SDMSException
 	{
 		if(versionId == UNDEFINED) versionId = nextId.next(env, READWRITE);
 		commitOrRollback(env, true);
 	}
 
 	public void rollback(SystemEnvironment env)
-	throws SQLException, SDMSException
+		throws SQLException, SDMSException
 	{
 		commitOrRollback(env, false);
 	}
 
 	public void setContextVersionId(SystemEnvironment env, Long version)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		if (versionId == UNDEFINED || mode == READWRITE) {
 			throw new FatalException(new SDMSMessage(env,
-			                         "03212191505", "VersionId cannot be set within a writing transaction"));
+				"03212191505", "VersionId cannot be set within a writing transaction"));
 		} else {
 
 			synchronized(env.roTxList) {
@@ -141,28 +135,28 @@ public class SDMSTransaction
 	}
 
 	public void commitOrRollback(SystemEnvironment env, boolean isCommit)
-	throws SQLException, SDMSException
+		throws SQLException, SDMSException
 	{
 		if (isCommit) {
 
 			if(subTxId != 0) {
 				throw new FatalException (new SDMSMessage (env, "02110301918",
-				                          "Unclosed subtransaction in transaction commit or rollback"));
+					"Unclosed subtransaction in transaction commit or rollback"));
 			} else {
 				if(env.inExecution) {
 					SDMSThread.doTrace(null, "\n" +
-					                   "*********************************************************************\n" +
-					                   "*********************************************************************\n" +
-					                   "***                                                               ***\n" +
-					                   "*** W A T C H   O U T   ! ! ! ! !                                 ***\n" +
-					                   "***                                                               ***\n" +
-					                   "*** We are committing within a go() method !                      ***\n" +
-					                   "*** This might compromise our database                            ***\n" +
-					                   "***                                                               ***\n" +
-					                   "*********************************************************************\n" +
-					                   "*********************************************************************\n" ,
-					                   SDMSThread.SEVERITY_ERROR
-					                  );
+					"*********************************************************************\n" +
+					"*********************************************************************\n" +
+					"***                                                               ***\n" +
+					"*** W A T C H   O U T   ! ! ! ! !                                 ***\n" +
+					"***                                                               ***\n" +
+					"*** We are committing within a go() method !                      ***\n" +
+					"*** This might compromise our database                            ***\n" +
+					"***                                                               ***\n" +
+					"*********************************************************************\n" +
+					"*********************************************************************\n" ,
+					SDMSThread.SEVERITY_ERROR
+					);
 				}
 			}
 		} else {
@@ -182,7 +176,7 @@ public class SDMSTransaction
 
 		if(isCommit && smeCtr.intValue() > 0)
 			throw new FatalException(new SDMSMessage(env, "03406061057",
-			                         "Error in SME Counter, tried to submit $1 unregistered entities", smeCtr));
+					"Error in SME Counter, tried to submit $1 unregistered entities", smeCtr));
 
 		int i;
 		int maxElms = changeList.size();
@@ -223,7 +217,7 @@ public class SDMSTransaction
 	}
 
 	public void commitSubTransaction(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		commitOrRollbackSubTransaction(env, true);
 		ctrStack.pop();
@@ -237,7 +231,7 @@ public class SDMSTransaction
 	}
 
 	public void rollbackSubTransaction(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		commitOrRollbackSubTransaction(env, false);
 		smeCtr = (Integer) ctrStack.pop();
@@ -245,7 +239,7 @@ public class SDMSTransaction
 	}
 
 	private void commitOrRollbackSubTransaction(SystemEnvironment env, boolean isCommit)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSChangeListElement ce;
@@ -253,7 +247,7 @@ public class SDMSTransaction
 		subTxId --;
 		if (subTxId < 0) {
 			throw new FatalException(new SDMSMessage (env,
-			                         "02110261755", "sub transaction underflow"));
+						"02110261755", "sub transaction underflow"));
 		}
 		if (mode == READONLY || touchList == null) {
 			return;
@@ -311,7 +305,7 @@ public class SDMSTransaction
 	}
 
 	protected void addToTouchSet(SystemEnvironment env, SDMSVersions versions, boolean isNew)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSChangeListElement changeListElement = new SDMSChangeListElement(env, versions, isNew);
 		if (touchList == null) {
@@ -321,7 +315,7 @@ public class SDMSTransaction
 	}
 
 	protected void addToChangeSet(SystemEnvironment env, SDMSVersions versions, boolean isNew)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSChangeListElement changeListElement = new SDMSChangeListElement(env, versions, isNew);
 		if (changeList == null) {
@@ -333,13 +327,13 @@ public class SDMSTransaction
 	public String toString()
 	{
 		String rc = new String (
-		        "-- Start Transaction Data --\n" +
-		        "  subTxId   : " + subTxId + "\n" +
-		        "  txId      : " + txId + "\n" +
-		        "  mode      : " + (mode == READONLY ? "READONLY" : "READWRITE") + "\n" +
-		        "  versionId : " + (versionId == UNDEFINED ? "UNDEFINED" : "" + versionId) + "\n" +
-		        "  Changes   : " + changeList.size() + "\n" +
-		        "-- End Transaction Data --\n"
+			"-- Start Transaction Data --\n" +
+			"  subTxId   : " + subTxId + "\n" +
+			"  txId      : " + txId + "\n" +
+			"  mode      : " + (mode == READONLY ? "READONLY" : "READWRITE") + "\n" +
+			"  versionId : " + (versionId == UNDEFINED ? "UNDEFINED" : "" + versionId) + "\n" +
+			"  Changes   : " + changeList.size() + "\n" +
+			"-- End Transaction Data --\n"
 		);
 		return rc;
 	}
@@ -354,7 +348,7 @@ class TxCounter
 	private static long lastRoId;
 
 	public TxCounter(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		lastId = getNextQuantum(env);
 		nextId = lastId - QUANTUM + 1;
@@ -362,7 +356,7 @@ class TxCounter
 	}
 
 	private synchronized long next(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(nextId == lastId) {
 			lastId = getNextQuantum(env);
@@ -372,20 +366,20 @@ class TxCounter
 	}
 
 	public synchronized long next(SystemEnvironment env, int m)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(m == SDMSTransaction.READONLY)	return lastRoId;
 		else					return next(env);
 	}
 
 	public synchronized void releaseVersion(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		lastRoId = next(env);
 	}
 
 	private synchronized long getNextQuantum(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		long v;
 
@@ -393,30 +387,30 @@ class TxCounter
 			Statement stmt = env.dbConnection.createStatement();
 
 			ResultSet rset = stmt.executeQuery("SELECT LASTID" +
-			                                   " FROM VERSIONCOUNTER");
+							   " FROM VERSIONCOUNTER");
 			if(rset.next()) {
 				v = rset.getLong(1);
 			} else {
 				throw new FatalException(new SDMSMessage(env,
-				                         "03110181541", "Counter Value Missing"));
+						"03110181541", "Counter Value Missing"));
 			}
 			if(rset.next()) {
 				throw new FatalException(new SDMSMessage(env,
-				                         "03110181542", "Duplicate Counter Value"));
+						"03110181542", "Duplicate Counter Value"));
 			}
 			rset.close();
 
 			v = v + QUANTUM;
 
 			stmt.executeUpdate("UPDATE VERSIONCOUNTER " +
-			                   "SET LASTID = LASTID + " + QUANTUM);
+					   "SET LASTID = LASTID + " + QUANTUM);
 
 			stmt.close();
 			env.dbConnection.commit();
 		} catch (SQLException sqle) {
 			throw new FatalException(new SDMSMessage(env, "03110181543",
-			                         "SQLerror on updating the VersionCounter:\n$1",
-			                         "SQL Error : " + sqle.getMessage()));
+						"SQLerror on updating the VersionCounter:\n$1",
+						"SQL Error : " + sqle.getMessage()));
 		}
 
 		return v;

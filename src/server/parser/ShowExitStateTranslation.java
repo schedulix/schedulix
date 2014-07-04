@@ -51,7 +51,7 @@ public class ShowExitStateTranslation extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXIT_STATE_TRANSLATION);
 		SDMSOutputContainer d_container = null;
@@ -72,7 +72,7 @@ public class ShowExitStateTranslation extends ShowCommented
 
 		Vector data = new Vector();
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage(sysEnv, "02111282031", "Exit State Translation"), desc, data);
+			new SDMSMessage(sysEnv, "02111282031", "Exit State Translation"), desc, data);
 
 		result.setOutputContainer(d_container);
 

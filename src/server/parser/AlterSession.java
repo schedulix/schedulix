@@ -57,7 +57,7 @@ public class AlterSession extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		ThreadGroup tg;
 		SDMSThread[]    list;

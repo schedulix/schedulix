@@ -70,7 +70,7 @@ public class ListGrant extends Node
 	}
 
 	private void go_grantsForObject(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSGroup g;
 		SDMSGrant gr;
@@ -245,87 +245,46 @@ public class ListGrant extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03402110100", "$1 Grant(s) found", new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "03402110100", "$1 Grant(s) found", new Integer(d_container.lines)));
 	}
 
 	private SDMSProxy resolveById(SystemEnvironment sysEnv, Integer objType, Long objId)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSProxy p = null;
 		try {
 			switch (objType.intValue()) {
-			case SDMSObjectComment.ENVIRONMENT:
-				p = SDMSNamedEnvironmentTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.EVENT:
-				p = SDMSEventTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.EXIT_STATE_DEFINITION:
-				p = SDMSExitStateDefinitionTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.EXIT_STATE_PROFILE:
-				p = SDMSExitStateProfileTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.EXIT_STATE_MAPPING:
-				p = SDMSExitStateMappingProfileTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.FOLDER:
-			case SDMSObjectComment.JOB_DEFINITION:
-				try {
-					p = SDMSFolderTable.getObject(sysEnv, objId);
-					objType = new Integer(SDMSObjectComment.FOLDER);
-				} catch (NotFoundException nfe) {
-					p = SDMSSchedulingEntityTable.getObject(sysEnv, objId);
-					objType = new Integer(SDMSObjectComment.JOB_DEFINITION);
-				}
-				break;
-			case SDMSObjectComment.FOOTPRINT:
-				p = SDMSFootprintTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.GROUP:
-				p = SDMSGroupTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.INTERVAL:
-				p = SDMSIntervalTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.JOB:
-				p = SDMSSubmittedEntityTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.NAMED_RESOURCE:
-				p = SDMSNamedResourceTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.PARAMETER:
-				p = SDMSParameterDefinitionTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.RESOURCE:
-				p = SDMSResourceTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
-				p = SDMSResourceStateDefinitionTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.RESOURCE_STATE_PROFILE:
-				p = SDMSResourceStateProfileTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.RESOURCE_STATE_MAPPING:
-				p = SDMSResourceStateMappingProfileTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.SCHEDULE:
-				p = SDMSScheduleTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.SCHEDULED_EVENT:
-				p = SDMSScheduledEventTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.SCOPE:
-				p = SDMSScopeTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.TRIGGER:
-				p = SDMSTriggerTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.USER:
-				p = SDMSUserTable.getObject(sysEnv, objId);
-				break;
-			default:
-				break;
+				case SDMSObjectComment.ENVIRONMENT:		p = SDMSNamedEnvironmentTable.getObject(sysEnv, objId);		break;
+				case SDMSObjectComment.EVENT:			p = SDMSEventTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.EXIT_STATE_DEFINITION:	p = SDMSExitStateDefinitionTable.getObject(sysEnv, objId);	break;
+				case SDMSObjectComment.EXIT_STATE_PROFILE:	p = SDMSExitStateProfileTable.getObject(sysEnv, objId);		break;
+				case SDMSObjectComment.EXIT_STATE_MAPPING:	p = SDMSExitStateMappingProfileTable.getObject(sysEnv, objId);	break;
+				case SDMSObjectComment.FOLDER:
+				case SDMSObjectComment.JOB_DEFINITION:
+					try {
+						p = SDMSFolderTable.getObject(sysEnv, objId);
+						objType = new Integer(SDMSObjectComment.FOLDER);
+					} catch (NotFoundException nfe) {
+						p = SDMSSchedulingEntityTable.getObject(sysEnv, objId);
+						objType = new Integer(SDMSObjectComment.JOB_DEFINITION);
+					}
+					break;
+				case SDMSObjectComment.FOOTPRINT:		p = SDMSFootprintTable.getObject(sysEnv, objId);		break;
+				case SDMSObjectComment.GROUP:			p = SDMSGroupTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.INTERVAL:		p = SDMSIntervalTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.JOB:			p = SDMSSubmittedEntityTable.getObject(sysEnv, objId);		break;
+				case SDMSObjectComment.NAMED_RESOURCE:		p = SDMSNamedResourceTable.getObject(sysEnv, objId);		break;
+				case SDMSObjectComment.PARAMETER:		p = SDMSParameterDefinitionTable.getObject(sysEnv, objId);	break;
+				case SDMSObjectComment.RESOURCE:		p = SDMSResourceTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.RESOURCE_STATE_DEFINITION: p = SDMSResourceStateDefinitionTable.getObject(sysEnv, objId); break;
+				case SDMSObjectComment.RESOURCE_STATE_PROFILE:	p = SDMSResourceStateProfileTable.getObject(sysEnv, objId);	break;
+				case SDMSObjectComment.RESOURCE_STATE_MAPPING:	p = SDMSResourceStateMappingProfileTable.getObject(sysEnv, objId); break;
+				case SDMSObjectComment.SCHEDULE:		p = SDMSScheduleTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.SCHEDULED_EVENT:		p = SDMSScheduledEventTable.getObject(sysEnv, objId);		break;
+				case SDMSObjectComment.SCOPE:			p = SDMSScopeTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.TRIGGER:			p = SDMSTriggerTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.USER:			p = SDMSUserTable.getObject(sysEnv, objId);			break;
+				default: break;
 			}
 		} catch (NotFoundException nfe) {
 
@@ -334,7 +293,7 @@ public class ListGrant extends Node
 	}
 
 	private void go_grantsForGroup(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSGrant gr;
 		SDMSPrivilege p = new SDMSPrivilege();
@@ -433,11 +392,11 @@ public class ListGrant extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03402110100", "$1 Grant(s) found", new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "03402110100", "$1 Grant(s) found", new Integer(d_container.lines)));
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (objectGrants) {
 			obj = url.resolve(sysEnv);

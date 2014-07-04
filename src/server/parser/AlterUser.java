@@ -56,7 +56,7 @@ public class AlterUser extends ManipUser
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSUser u;
 		boolean suActive = false;

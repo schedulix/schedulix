@@ -106,7 +106,7 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	protected void evaluateWith(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		String s;
 		WithHash w;
@@ -211,7 +211,7 @@ public abstract class ManipJobDefinition extends Node
 		gName = (String) withs.get(ParseStr.S_GROUP);
 		if(gName != null) {
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			              sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId);
 		} else {
 			final SDMSUser u = SDMSUserTable.getObject(sysEnv, env.uid());
@@ -228,15 +228,12 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	protected void checkJob(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		if(runProgram == null || runProgram.equals("")) {
 			throw new CommonErrorException(
-			        new SDMSMessage(sysEnv, "02112141002",
-			                        "Job needs a Run Program"
-			                       )
-			);
+				new SDMSMessage(sysEnv, "02112141002", "Job needs a Run Program"));
 		}
 		if(logfile == null) truncLog = null;
 		if(errlogfile == null)  truncErrlog = null;
@@ -280,20 +277,12 @@ public abstract class ManipJobDefinition extends Node
 		if(dependencyOperation == null) dependencyOperation = new Integer (SDMSSchedulingEntity.AND);
 
 		if(esp == null) {
-			throw new CommonErrorException(
-			        new SDMSMessage(sysEnv, "02112140955",
-			                        "Missing Exit State Profile"
-			                       )
-			);
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "02112140955", "Missing Exit State Profile"));
 		}
 
 		if(esmpId == null) {
 			if(esp.getDefaultEsmpId(sysEnv) == null) {
-				throw new CommonErrorException(
-				        new SDMSMessage(sysEnv, "02112140957",
-				                        "Exit State Profile doesn't define a Default Exit State Mapping"
-				                       )
-				);
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "02112140957", "Exit State Profile doesn't define a Default Exit State Mapping"));
 			}
 		} else {
 
@@ -302,7 +291,7 @@ public abstract class ManipJobDefinition extends Node
 
 		if(neId == null) {
 			throw new CommonErrorException(
-			        new SDMSMessage(sysEnv, "03203062019", "Environment missing")
+				new SDMSMessage(sysEnv, "03203062019", "Environment missing")
 			);
 		}
 
@@ -311,9 +300,7 @@ public abstract class ManipJobDefinition extends Node
 		gv.add(gId);
 		if(ne.getPrivileges(sysEnv, SDMSPrivilege.USE, false, gv) != SDMSPrivilege.USE) {
 			String gName = SDMSGroupTable.getObject(sysEnv,gId).getName(sysEnv);
-			throw new AccessViolationException(
-			        new SDMSMessage(sysEnv, "03402131040", "Insufficient privileges of group $1 for environment $2", gName, ne.getName(sysEnv))
-			);
+			throw new AccessViolationException(new SDMSMessage(sysEnv, "03402131040", "Insufficient privileges of group $1 for environment $2", gName, ne.getName(sysEnv)));
 		}
 
 		getExpectedRuntime = null;
@@ -327,7 +314,7 @@ public abstract class ManipJobDefinition extends Node
 
 			if(to_esdId != null && !SDMSExitStateTable.idx_espId_esdId.containsKey(sysEnv, new SDMSKey(espId, to_esdId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03311031749",
-				                               "Timeout state $1 is not contained in profile $2", to_state, esp.getName(sysEnv)));
+					"Timeout state $1 is not contained in profile $2", to_state, esp.getName(sysEnv)));
 			}
 		}
 		if(sameNode == null) sameNode = Boolean.FALSE;
@@ -372,7 +359,7 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	protected void checkBatch(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		runProgram = null;
@@ -420,7 +407,7 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	protected String checkChildDependencies (SystemEnvironment sysEnv, Long checkId, Long childId)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSKey k = new SDMSKey(checkId, childId);
@@ -441,7 +428,7 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	public void addOrAlterChild(SystemEnvironment sysEnv, WithHash wh, SDMSSchedulingEntity seParent, boolean isAdd, boolean processError)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSchedulingHierarchy sh;
 
@@ -467,10 +454,10 @@ public abstract class ManipJobDefinition extends Node
 		cwh = (WithHash) wh.get(ParseStr.S_FULLNAME);
 		if(cwh == null) {
 			throw new CommonErrorException(
-			        new SDMSMessage(sysEnv, "03112141754",
-			                        "Missing Child Name"
-			                       )
-			);
+				new SDMSMessage(sysEnv, "03112141754",
+					"Missing Child Name"
+					)
+				);
 		}
 		cName = (String) cwh.get(ParseStr.S_NAME);
 		cPath = (Vector) cwh.get(ParseStr.S_PATH);
@@ -486,7 +473,7 @@ public abstract class ManipJobDefinition extends Node
 
 		if(parentType != SDMSSchedulingEntity.BATCH && parentType != SDMSSchedulingEntity.JOB && isStatic.equals(Boolean.TRUE)) {
 			throw new CommonErrorException(
-			        new SDMSMessage(sysEnv, "03406071422", "Only batches and Jobs can have static children"));
+				new SDMSMessage(sysEnv, "03406071422", "Only batches and Jobs can have static children"));
 		}
 
 		prio = (Integer) wh.get(ParseStr.S_PRIORITY);
@@ -526,8 +513,8 @@ public abstract class ManipJobDefinition extends Node
 		SDMSSchedulingEntity seChild = SDMSSchedulingEntityTable.get(sysEnv, cPath, cName);
 		if(!seChild.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
 			throw new AccessViolationException(
-			        new SDMSMessage(sysEnv, "03402131121", "Execute privilege missing for $1", seChild.pathString(sysEnv))
-			);
+					new SDMSMessage(sysEnv, "03402131121", "Execute privilege missing for $1", seChild.pathString(sysEnv))
+				);
 		childId = seChild.getId(sysEnv);
 
 		estpId = null;
@@ -539,14 +526,14 @@ public abstract class ManipJobDefinition extends Node
 		String s = checkChildDependencies (sysEnv, parentId, childId);
 		if (s != null) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "02112202010",
-			                                "Dependency from children not allowed [$1]", parentId.toString() + "->" + s
-			                                                ));
+				"Dependency from children not allowed [$1]", parentId.toString() + "->" + s
+				));
 		}
 
 		if(isAdd) {
 			try {
 				sh = SDMSSchedulingHierarchyTable.table.create(sysEnv, parentId, childId, aliasName, isStatic, prio,
-				                suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId);
+								suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId);
 			} catch (DuplicateKeyException dke) {
 				if(processError) {
 					sh = SDMSSchedulingHierarchyTable.idx_parentId_childId_getUnique(sysEnv, new SDMSKey(parentId, childId));
@@ -605,7 +592,7 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	private void buildResourceList(final SystemEnvironment sysEnv, SDMSSchedulingEntity se)
-	throws SDMSException
+		throws SDMSException
 	{
 		resourceList = new HashSet();
 
@@ -631,7 +618,7 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	protected boolean checkResourceRequirement(final SystemEnvironment sysEnv, Long nrId, SDMSSchedulingEntity se)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(resourceList == null) {
 			buildResourceList(sysEnv, se);
@@ -642,7 +629,7 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	public void addOrAlterParameters(SystemEnvironment sysEnv, WithHash wh, SDMSSchedulingEntity se, boolean isAdd, boolean processError)
-	throws SDMSException
+		throws SDMSException
 	{
 		String lpn;
 
@@ -658,46 +645,46 @@ public abstract class ManipJobDefinition extends Node
 			Integer aggFunction = new Integer(SDMSParameterDefinition.NONE);
 			Long linkPdId = null;
 			switch(type.intValue()) {
-			case SDMSParameterDefinition.PARAMETER:
-			case SDMSParameterDefinition.RESULT:
-			case SDMSParameterDefinition.IMPORT:
-				if(pdef != null) pdef = "=" + pdef;
-				break;
-			case SDMSParameterDefinition.EXPRESSION:
-				Vector pev = (Vector) pt.value;
-				aggFunction = (Integer) pev.get(0);
-				pdef = "=" + (String) pev.get(1);
-				break;
-			case SDMSParameterDefinition.CONSTANT:
-				pdef = "=" + (String) pt.value;
-				break;
-			case SDMSParameterDefinition.REFERENCE:
-			case SDMSParameterDefinition.CHILDREFERENCE:
-				if(pdef != null) pdef = "=" + pdef;
-				PathVector lsev = (PathVector) pt.value;
-				lpn = (String) lsev.remove(lsev.size() - 1);
-				Long lseId = SDMSSchedulingEntityTable.get(sysEnv, lsev, null).getId(sysEnv);
-				final SDMSParameterDefinition lpd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(lseId, lpn));
-				if(!lpd.getIsLocal(sysEnv).booleanValue()) {
-					linkPdId = lpd.getId(sysEnv);
-				} else {
-					throw new CommonErrorException(
-					        new SDMSMessage(sysEnv, "03603061409", "A local parameter cannot be referenced")
-					);
-				}
-				break;
-			case SDMSParameterDefinition.RESOURCEREFERENCE:
-				if(pdef != null) pdef = "=" + pdef;
-				PathVector lnrv = (PathVector) pt.value;
-				lpn = (String) lnrv.remove(lnrv.size() - 1);
-				Long lnrId = SDMSNamedResourceTable.getNamedResource(sysEnv, lnrv).getId(sysEnv);
+				case SDMSParameterDefinition.PARAMETER:
+				case SDMSParameterDefinition.RESULT:
+				case SDMSParameterDefinition.IMPORT:
+					if(pdef != null) pdef = "=" + pdef;
+					break;
+				case SDMSParameterDefinition.EXPRESSION:
+					Vector pev = (Vector) pt.value;
+					aggFunction = (Integer) pev.get(0);
+					pdef = "=" + (String) pev.get(1);
+					break;
+				case SDMSParameterDefinition.CONSTANT:
+					pdef = "=" + (String) pt.value;
+					break;
+				case SDMSParameterDefinition.REFERENCE:
+				case SDMSParameterDefinition.CHILDREFERENCE:
+					if(pdef != null) pdef = "=" + pdef;
+					PathVector lsev = (PathVector) pt.value;
+					lpn = (String) lsev.remove(lsev.size() - 1);
+					Long lseId = SDMSSchedulingEntityTable.get(sysEnv, lsev, null).getId(sysEnv);
+					final SDMSParameterDefinition lpd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(lseId, lpn));
+					if(!lpd.getIsLocal(sysEnv).booleanValue()) {
+						linkPdId = lpd.getId(sysEnv);
+					} else {
+						throw new CommonErrorException(
+							new SDMSMessage(sysEnv, "03603061409", "A local parameter cannot be referenced")
+						);
+					}
+					break;
+				case SDMSParameterDefinition.RESOURCEREFERENCE:
+					if(pdef != null) pdef = "=" + pdef;
+					PathVector lnrv = (PathVector) pt.value;
+					lpn = (String) lnrv.remove(lnrv.size() - 1);
+					Long lnrId = SDMSNamedResourceTable.getNamedResource(sysEnv, lnrv).getId(sysEnv);
 
-				if(!checkResourceRequirement(sysEnv, lnrId, se))
-					throw new CommonErrorException(
-					        new SDMSMessage(sysEnv, "03409281727", "Resource $2 for parameter $1 not required", pn, lnrv)
-					);
-				linkPdId = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(lnrId, lpn)).getId(sysEnv);
-				break;
+					if(!checkResourceRequirement(sysEnv, lnrId, se))
+						throw new CommonErrorException(
+							new SDMSMessage(sysEnv, "03409281727", "Resource $2 for parameter $1 not required", pn, lnrv)
+						);
+					linkPdId = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(lnrId, lpn)).getId(sysEnv);
+					break;
 			}
 			if(isAdd) {
 				try {
@@ -705,7 +692,7 @@ public abstract class ManipJobDefinition extends Node
 				} catch(DuplicateKeyException dke) {
 					if(processError) {
 						SDMSParameterDefinition pd =
-						        SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(se.getId(sysEnv), pn));
+							SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(se.getId(sysEnv), pn));
 						pd.setType(sysEnv, type);
 						pd.setAggFunction(sysEnv, aggFunction);
 						pd.setDefaultValue(sysEnv, pdef);
@@ -719,7 +706,7 @@ public abstract class ManipJobDefinition extends Node
 
 				try {
 					SDMSParameterDefinition pd =
-					        SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(se.getId(sysEnv), pn));
+						SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(se.getId(sysEnv), pn));
 					pd.setType(sysEnv, type);
 					pd.setAggFunction(sysEnv, aggFunction);
 					pd.setDefaultValue(sysEnv, pdef);
@@ -734,7 +721,7 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	public void addOrAlterResource(SystemEnvironment sysEnv, WithHash with, SDMSSchedulingEntity se, boolean isAdd, boolean processError)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector name;
 		Long   seId = se.getId(sysEnv);
@@ -812,12 +799,12 @@ public abstract class ManipJobDefinition extends Node
 		if(isAdd) {
 			try {
 				rr = SDMSResourceRequirementTable.table.create(sysEnv,
-				                nrId, seId, amount, keepMode, isSticky, stickyName, stickyParent,
-				                rsmpId, exp_mult, exp_interval, lockmode, condition);
+								nrId, seId, amount, keepMode, isSticky, stickyName, stickyParent,
+								rsmpId, exp_mult, exp_interval, lockmode, condition);
 			} catch (DuplicateKeyException dke) {
 				if(processError) {
 					rr = changeResourceRequirement(sysEnv, seId, nrId, amount, keepMode, isSticky, stickyName, stickyParent, rsmpId,
-					                               exp_mult, exp_interval, lockmode, condition);
+									exp_mult, exp_interval, lockmode, condition);
 				} else {
 					throw dke;
 				}
@@ -857,9 +844,9 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	private SDMSResourceRequirement changeResourceRequirement(SystemEnvironment sysEnv, Long seId, Long nrId, Integer amount, Integer keepMode,
-	                Boolean isSticky, String stickyName, Long stickyParent, Long rsmpId, Integer
-	                exp_mult, Integer exp_interval, Integer lockmode, String condition)
-	throws SDMSException
+			Boolean isSticky, String stickyName, Long stickyParent, Long rsmpId, Integer
+			exp_mult, Integer exp_interval, Integer lockmode, String condition)
+		throws SDMSException
 	{
 		SDMSResourceRequirement rr;
 		rr = SDMSResourceRequirementTable.idx_seId_nrId_getUnique(sysEnv, new SDMSKey(seId, nrId));
@@ -878,7 +865,7 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	public String canonizeCondition(SystemEnvironment sysEnv, String condition)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(condition == null) return null;
 		final String newCondition = condition.trim();
@@ -891,7 +878,7 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	public void addOrAlterRequirement(SystemEnvironment sysEnv, WithHash wh, SDMSSchedulingEntity seDependent, boolean isAdd, boolean processError)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSDependencyDefinition dd;
 		final WithHash rwh;
@@ -957,18 +944,18 @@ public abstract class ManipJobDefinition extends Node
 
 			try {
 				dd = SDMSDependencyDefinitionTable.table.create(sysEnv,
-				                seDependent.getId(sysEnv),
-				                rId,
-				                rdName,
-				                unresolved,
-				                mode,
-				                stateSelection,
-				                condition
-				                                               );
+					seDependent.getId(sysEnv),
+					rId,
+					rdName,
+					unresolved,
+					mode,
+					stateSelection,
+					condition
+				);
 			} catch (DuplicateKeyException dke) {
 				if(processError) {
 					dd = SDMSDependencyDefinitionTable.idx_DependentId_RequiredId_getUnique(sysEnv,
-					                new SDMSKey(seDependent.getId(sysEnv), rId));
+							new SDMSKey(seDependent.getId(sysEnv), rId));
 					dd.setName(sysEnv, rdName);
 					dd.setUnresolvedHandling(sysEnv, unresolved);
 					dd.setMode(sysEnv, mode);
@@ -990,7 +977,7 @@ public abstract class ManipJobDefinition extends Node
 		} else {
 			try {
 				dd = SDMSDependencyDefinitionTable.idx_DependentId_RequiredId_getUnique(sysEnv,
-				                new SDMSKey(seDependent.getId(sysEnv), rId));
+						new SDMSKey(seDependent.getId(sysEnv), rId));
 				dd.setName(sysEnv, rdName);
 				dd.setUnresolvedHandling(sysEnv, unresolved);
 				dd.setMode(sysEnv, mode);
@@ -1024,7 +1011,7 @@ public abstract class ManipJobDefinition extends Node
 					esd = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, esdName);
 				} catch (NotFoundException nfe) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "02201171210",
-					                               "Exit State $1 does not exist",	esdName));
+						"Exit State $1 does not exist",	esdName));
 				}
 				SDMSExitState es = null;
 				Long esdId = esd.getId(sysEnv);
@@ -1033,14 +1020,14 @@ public abstract class ManipJobDefinition extends Node
 				} catch (NotFoundException nfe) {
 					SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, rEspId);
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03201292036",
-					                               "Exit State $1 not in Exit State Profile $2 of $3",
-					                               esdName, esp.getName(sysEnv), rSe.pathString(sysEnv)));
+						"Exit State $1 not in Exit State Profile $2 of $3",
+						esdName, esp.getName(sysEnv), rSe.pathString(sysEnv)));
 				}
 				if (!es.getIsFinal(sysEnv).booleanValue()) {
 					SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, rEspId);
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03201292037",
-					                               "Exit State $1 in Exit State Profile $2 of $3 must be a final state",
-					                               esdName, esp.getName(sysEnv), rSe.pathString(sysEnv)));
+						"Exit State $1 in Exit State Profile $2 of $3 must be a final state",
+						esdName, esp.getName(sysEnv), rSe.pathString(sysEnv)));
 				}
 				if (!(SDMSDependencyStateTable.idx_ddId_esdId.containsKey(sysEnv, new SDMSKey (ddId, esdId))))
 					SDMSDependencyStateTable.table.create(sysEnv, ddId, esdId, condition);
@@ -1053,7 +1040,7 @@ public abstract class ManipJobDefinition extends Node
 	}
 
 	protected void checkParameterRI(SystemEnvironment sysEnv, Long seId)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector v = SDMSParameterDefinitionTable.idx_seId.getVector(sysEnv, seId);
 		final SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
@@ -1064,16 +1051,16 @@ public abstract class ManipJobDefinition extends Node
 				Long nrId = lpd.getSeId(sysEnv);
 				if(!checkResourceRequirement(sysEnv, nrId, se))
 					throw new CommonErrorException(
-					        new SDMSMessage(sysEnv, "03409291229", "Resource $2 for parameter $1 not required",
-					                        pd.getName(sysEnv),
-					                        SDMSNamedResourceTable.getObject(sysEnv, nrId).pathString(sysEnv))
+						new SDMSMessage(sysEnv, "03409291229", "Resource $2 for parameter $1 not required",
+							pd.getName(sysEnv),
+							SDMSNamedResourceTable.getObject(sysEnv, nrId).pathString(sysEnv))
 					);
 			}
 		}
 	}
 
 	abstract public void go(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 
 }
 

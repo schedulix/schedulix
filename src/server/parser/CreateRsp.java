@@ -53,7 +53,7 @@ public class CreateRsp extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSResourceStateProfile rsp;
@@ -77,7 +77,7 @@ public class CreateRsp extends Node
 		Vector states = (Vector) with.get(ParseStr.S_STATUS);
 		if(states == null) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03201102145",
-			                               "States missing"));
+				"States missing"));
 		}
 
 		String rs;
@@ -90,7 +90,7 @@ public class CreateRsp extends Node
 				SDMSResourceStateTable.table.create (sysEnv, rsdId, rspId);
 			} catch (DuplicateKeyException dke) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03110120918",
-				                               "State $1 specified more than once", rs));
+					"State $1 specified more than once", rs));
 			}
 		}
 

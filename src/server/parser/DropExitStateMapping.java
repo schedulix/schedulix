@@ -51,7 +51,7 @@ public class DropExitStateMapping extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateMappingProfile esmp;
 		try {
@@ -68,17 +68,17 @@ public class DropExitStateMapping extends Node
 		Vector v = SDMSExitStateProfileTable.idx_defaultEsmpId.getVector (sysEnv, esmpId);
 		if (v.size() > 0) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "02111082000",
-			                                "Exit State Mapping is default in Exit State Profile $1",
-			                                ((SDMSExitStateProfile)(v.elementAt(0))).getName(sysEnv) ));
+				"Exit State Mapping is default in Exit State Profile $1",
+				((SDMSExitStateProfile)(v.elementAt(0))).getName(sysEnv) ));
 
 		}
 
 		Vector se_v = SDMSSchedulingEntityTable.idx_esmpId.getVector(sysEnv, esmpId);
 		if (se_v.size() != 0) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "02112171836",
-			                                "Exit State Mapping in use by $1",
-			                                ((SDMSSchedulingEntity)(se_v.elementAt(0))).pathString(sysEnv)
-			                                                ));
+				"Exit State Mapping in use by $1",
+				((SDMSSchedulingEntity)(se_v.elementAt(0))).pathString(sysEnv)
+				));
 
 		}
 

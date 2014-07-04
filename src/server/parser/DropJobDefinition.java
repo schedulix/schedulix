@@ -55,7 +55,7 @@ public class DropJobDefinition extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFolder f = SDMSFolderTable.getFolder(sysEnv, path);
 		SDMSSchedulingEntity se = null;
@@ -74,29 +74,29 @@ public class DropJobDefinition extends Node
 		if(!force.booleanValue()) {
 			if(SDMSDependencyDefinitionTable.idx_seRequiredId.containsKey(sysEnv, seId)) {
 				SDMSDependencyDefinition dd =
-				        (SDMSDependencyDefinition) SDMSDependencyDefinitionTable.idx_seRequiredId.getVector(sysEnv, seId).get(0);
+					(SDMSDependencyDefinition) SDMSDependencyDefinitionTable.idx_seRequiredId.getVector(sysEnv, seId).get(0);
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03112202113",
-				                               "Dependent jobs ($1) exist, specify force to delete anyway",
-				                               SDMSSchedulingEntityTable.getObject(sysEnv, dd.getSeDependentId(sysEnv)).pathString(sysEnv)));
+						"Dependent jobs ($1) exist, specify force to delete anyway",
+						SDMSSchedulingEntityTable.getObject(sysEnv, dd.getSeDependentId(sysEnv)).pathString(sysEnv)));
 			}
 			if(SDMSSchedulingHierarchyTable.idx_seChildId.containsKey(sysEnv, seId)) {
 				SDMSSchedulingHierarchy sh =
-				        (SDMSSchedulingHierarchy) SDMSSchedulingHierarchyTable.idx_seChildId.getVector(sysEnv, seId).get(0);
+					(SDMSSchedulingHierarchy) SDMSSchedulingHierarchyTable.idx_seChildId.getVector(sysEnv, seId).get(0);
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03207042302",
-				                               "Job is used as a child of $1, specify force to delete anyway",
-				                               SDMSSchedulingEntityTable.getObject(sysEnv, sh.getSeParentId(sysEnv))));
+						"Job is used as a child of $1, specify force to delete anyway",
+						SDMSSchedulingEntityTable.getObject(sysEnv, sh.getSeParentId(sysEnv))));
 			}
 			if(SDMSTriggerTable.idx_seId.containsKey(sysEnv, seId)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03301221500",
-				                               "Job is used as a trigger job, specify force to delete anyway"));
+						"Job is used as a trigger job, specify force to delete anyway"));
 			}
 			if(SDMSTriggerTable.idx_mainSeId.containsKey(sysEnv, seId)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03109120829",
-				                               "Job is used as a trigger job (mainSe), specify force to delete anyway"));
+						"Job is used as a trigger job (mainSe), specify force to delete anyway"));
 			}
 			if(SDMSTriggerTable.idx_parentSeId.containsKey(sysEnv, seId)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03109120830",
-				                               "Job is used as a trigger job (parentSe), specify force to delete anyway"));
+						"Job is used as a trigger job (parentSe), specify force to delete anyway"));
 			}
 		}
 

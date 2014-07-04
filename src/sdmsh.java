@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -87,18 +87,9 @@ public class sdmsh extends App
 		return null;
 	}
 
-	public String getName()
-	{
-		return "sdmsh";
-	}
-	public boolean canRetry()
-	{
-		return false;
-	}
-	public String getUsageArguments()
-	{
-		return "user password host port";
-	}
+	public String getName() { return "sdmsh"; }
+	public boolean canRetry() { return false; }
+	public String getUsageArguments() { return "user password host port"; }
 
 	public boolean specificParse()
 	{
@@ -135,31 +126,31 @@ public class sdmsh extends App
 		for (int i = 0; i < options.rest.size(); ++i) {
 
 			switch (i) {
-			case 0:
-				user = (String) options.rest.get(i);
-				o = options.getOption(App.USER);
-				o.set(user, false);
-				break;
-			case 1:
-				pass = (String) options.rest.get(i);
-				o = options.getOption(App.PASS);
-				o.set(pass, false);
-				break;
-			case 2:
-				host = (String) options.rest.get(i);
-				o = options.getOption(App.HOST);
-				o.set(host, false);
-				break;
-			case 3:
-				try {
-					port = Integer.parseInt ((String) options.rest.get(i));
-				} catch (Exception e) {
-					if (!silent) System.err.println("port be an integer !");
-					return false;
-				}
-				o = options.getOption(App.PORT);
-				o.set((String) options.rest.get(i), false);
-				break;
+				case 0:
+					user = (String) options.rest.get(i);
+					o = options.getOption(App.USER);
+					o.set(user, false);
+					break;
+				case 1:
+					pass = (String) options.rest.get(i);
+					o = options.getOption(App.PASS);
+					o.set(pass, false);
+					break;
+				case 2:
+					host = (String) options.rest.get(i);
+					o = options.getOption(App.HOST);
+					o.set(host, false);
+					break;
+				case 3:
+					try {
+						port = Integer.parseInt ((String) options.rest.get(i));
+					} catch (Exception e) {
+						if (!silent) System.err.println("port be an integer !");
+						return false;
+					}
+					o = options.getOption(App.PORT);
+					o.set((String) options.rest.get(i), false);
+					break;
 			}
 		}
 
@@ -192,7 +183,7 @@ public class sdmsh extends App
 	}
 
 	public void render(SDMSOutput o)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (mp != null)	mp.render(o);
 	}
@@ -211,7 +202,7 @@ public class sdmsh extends App
 	}
 
 	public int go()
-	throws RetryException
+		throws RetryException
 	{
 		try {
 			mp.setServerConnection (serverConnection);
@@ -235,9 +226,6 @@ public class sdmsh extends App
 		return 0;
 	}
 
-	public static void main (String[] argv)
-	{
-		System.exit(new sdmsh().run(argv));
-	}
+	public static void main (String[] argv) { System.exit(new sdmsh().run(argv)); }
 
 }

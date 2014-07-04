@@ -53,7 +53,7 @@ public class AlterRsp extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSResourceStateProfile rsp;
@@ -96,7 +96,7 @@ public class AlterRsp extends Node
 					SDMSResourceStateTable.table.create (sysEnv, rsdId, rspId);
 				} catch (DuplicateKeyException dke) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03110120920",
-					                               "State $1 specified more than once", rsn));
+						"State $1 specified more than once", rsn));
 				}
 			}
 		}
@@ -118,10 +118,10 @@ public class AlterRsp extends Node
 				if(rsdId.equals(initialRsdId)) continue;
 				if(!SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(rsdId, rspId))) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03209181659",
-					                               "Profile does not contain state $1 of resource $2->$3",
-					                               SDMSResourceStateDefinitionTable.getObject(sysEnv, r.getRsdId(sysEnv)).getName(sysEnv),
-					                               SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv)),
-					                               ((SDMSNamedResource) v.get(i)).pathVector(sysEnv)));
+						"Profile does not contain state $1 of resource $2->$3",
+						SDMSResourceStateDefinitionTable.getObject(sysEnv, r.getRsdId(sysEnv)).getName(sysEnv),
+						SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv)),
+						((SDMSNamedResource) v.get(i)).pathVector(sysEnv)));
 
 				}
 			}

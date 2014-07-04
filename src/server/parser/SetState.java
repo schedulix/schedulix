@@ -51,7 +51,7 @@ public class SetState extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, sysEnv.cEnv.uid());
 

@@ -49,7 +49,7 @@ public class ListExitStateMapping extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateMappingProfile o;
 		SDMSOutputContainer d_container = null;
@@ -60,7 +60,7 @@ public class ListExitStateMapping extends Node
 		desc.add("PRIVS");
 
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage (sysEnv, "03201292004", "List of Exit State Mappings"), desc);
+			new SDMSMessage (sysEnv, "03201292004", "List of Exit State Mappings"), desc);
 
 		Iterator i = SDMSExitStateMappingProfileTable.table.iterator(sysEnv);
 		while(i.hasNext()) {
@@ -79,8 +79,8 @@ public class ListExitStateMapping extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03111272344", "$1 Exit State Mapping(s) found",
-		                        new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "03111272344", "$1 Exit State Mapping(s) found",
+					new Integer(d_container.lines)));
 	}
 }
 

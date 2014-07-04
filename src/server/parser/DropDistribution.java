@@ -52,7 +52,7 @@ public class DropDistribution extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_POOL);
 		SDMSMessage feedback = new SDMSMessage(sysEnv,"03603201409", "Distribution dropped");

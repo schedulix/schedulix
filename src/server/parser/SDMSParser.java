@@ -62,7 +62,7 @@ public class SDMSParser extends Parser
 	}
 
 	protected boolean post(Node n)
-	throws FatalException
+		throws FatalException
 	{
 
 		if(stmtInError) {
@@ -106,7 +106,7 @@ public class SDMSParser extends Parser
 	}
 
 	protected Node createError()
-	throws FatalException
+		throws FatalException
 	{
 
 		SyntaxError n;

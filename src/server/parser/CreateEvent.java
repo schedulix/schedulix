@@ -53,7 +53,7 @@ public class CreateEvent
 	}
 
 	public void go (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			obj.resolve(sysEnv);
@@ -70,7 +70,7 @@ public class CreateEvent
 
 		if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
 			throw new AccessViolationException(
-			        new SDMSMessage(sysEnv, "03402131255", "Submit privilege on $1 missing", se.pathString(sysEnv))
+				new SDMSMessage(sysEnv, "03402131255", "Submit privilege on $1 missing", se.pathString(sysEnv))
 			);
 		final Long seId = se.getId (sysEnv);
 
@@ -82,7 +82,7 @@ public class CreateEvent
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			              sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 		}
 		se.checkSubmitForGroup(sysEnv, gId);
 

@@ -80,7 +80,7 @@ public abstract class ManipUser extends Node
 	}
 
 	public abstract void go(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 
 	public static String generateSalt()
 	{
@@ -96,7 +96,7 @@ public abstract class ManipUser extends Node
 	}
 
 	protected void evaluate_with(SystemEnvironment sysEnv, String salt, int method)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSGroup g;
 

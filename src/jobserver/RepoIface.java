@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -71,15 +71,9 @@ public class RepoIface
 	private static final String[] REPO_HOST_REPO_PORT = {Config.REPO_HOST, Config.REPO_PORT};
 
 	private String currentHost;
-	public final synchronized String getHost()
-	{
-		return currentHost;
-	}
+	public final synchronized String getHost() { return currentHost; }
 	private int    currentPort;
-	public final synchronized int getPort()
-	{
-		return currentPort;
-	}
+	public final synchronized int getPort() { return currentPort; }
 
 	private final String mypid = Utils.getMyPid();
 
@@ -280,9 +274,9 @@ public class RepoIface
 			Boolean useSSL;
 			useSSL = Boolean.FALSE;
 			if (connect (((String) cfg.get (Config.REPO_HOST)),
-			             ((Long) cfg.get (Config.REPO_PORT)).intValue(),
-			             useSSL.booleanValue()
-			            )
+				     ((Long) cfg.get (Config.REPO_PORT)).intValue(),
+				     useSSL.booleanValue()
+				    )
 			   )
 				if (! request_reconnect)
 					break;

@@ -51,7 +51,7 @@ public class RenameExitStatusDef extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateDefinition esd;
 
@@ -59,7 +59,7 @@ public class RenameExitStatusDef extends Node
 		esd.setName(sysEnv, name2);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "02111082145", "Exit State Definition renamed"));
+			new SDMSMessage(sysEnv, "02111082145", "Exit State Definition renamed"));
 	}
 }
 

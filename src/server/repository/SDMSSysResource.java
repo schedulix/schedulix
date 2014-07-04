@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -37,35 +37,35 @@ public interface SDMSSysResource
 {
 
 	public void setAmount(SystemEnvironment sysEnv, Integer amount)
-	throws SDMSException;
+		throws SDMSException;
 
 	public void setFreeAmount(SystemEnvironment sysEnv, Integer amount)
-	throws SDMSException;
+		throws SDMSException;
 
 	public void setManagerId(SystemEnvironment sysEnv, Long managerId)
-	throws SDMSException;
+		throws SDMSException;
 
 	public void releaseAmount(SystemEnvironment sysEnv, int raAmount)
-	throws SDMSException;
+		throws SDMSException;
 
 	public Integer getAmount(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 
 	public Integer getFreeAmount(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 
 	public Integer getTotalFreeAmount(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 
 	public Long getManagerId(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 
 	public String getURL(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 
 	public Long getNrId(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 
 	public Long getScopeId(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 }

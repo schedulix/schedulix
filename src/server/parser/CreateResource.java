@@ -58,7 +58,7 @@ public class CreateResource extends ManipResource
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSNamedResource nr;
@@ -93,7 +93,7 @@ public class CreateResource extends ManipResource
 		HashSet groups = sysEnv.cEnv.gid();
 		if(!groups.contains(gId) && !groups.contains(SDMSObject.adminGId))
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "03402260151",
-			                                   "You cannot put a resource into a group you do not belong to"));
+				"You cannot put a resource into a group you do not belong to"));
 
 		nr = SDMSNamedResourceTable.getNamedResource(sysEnv, resourcepath);
 		nrId = nr.getId(sysEnv);
@@ -109,9 +109,7 @@ public class CreateResource extends ManipResource
 
 		if(replace) {
 			SDMSKey k = new SDMSKey(nrId, sId);
-			if(SDMSResourceTable.idx_nrId_scopeId.containsKey(sysEnv, k)
-			  ) {
-
+			if(SDMSResourceTable.idx_nrId_scopeId.containsKey(sysEnv, k)) {
 				SDMSProxy p = null;
 				try {
 					p = SDMSResourceTable.idx_nrId_scopeId_getUnique(sysEnv, k);
@@ -157,8 +155,8 @@ public class CreateResource extends ManipResource
 			amount = null;
 		}
 		r = SDMSResourceTable.table.create(sysEnv, nrId, sId, null,  gId, null, null, null, rsdId, ts, amount, requestableAmount,
-		                                   amount, amount, online, factor, traceInterval, traceBase, baseMultiplier,
-		                                   fzero, fzero, fzero, fzero, new Long(0), new Long(0));
+						amount, amount, online, factor, traceInterval, traceBase, baseMultiplier,
+						fzero, fzero, fzero, fzero, new Long(0), new Long(0));
 		r.createVariables(sysEnv, parms);
 
 		SystemEnvironment.sched.notifyChange(sysEnv, r, sId, SchedulingThread.CREATE);
@@ -166,7 +164,7 @@ public class CreateResource extends ManipResource
 	}
 
 	private Long check_resource(SystemEnvironment sysEnv, SDMSNamedResource nr, Long rsdId, Integer requestableAmount, Integer amount, boolean scopeResource)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateProfile rsp;
 		Long rspId;
@@ -189,7 +187,7 @@ public class CreateResource extends ManipResource
 
 				if(!SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(rsdId, rspId))) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03202211221", "Resource state is not defined in the profile $1",
-					                               rsp.getName(sysEnv)));
+						rsp.getName(sysEnv)));
 				}
 			}
 		}

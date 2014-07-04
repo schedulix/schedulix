@@ -77,5 +77,5 @@ public abstract class ManipResource extends Node
 	}
 
 	public abstract void go(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 }

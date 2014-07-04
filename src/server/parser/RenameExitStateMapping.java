@@ -51,7 +51,7 @@ public class RenameExitStateMapping extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final SDMSExitStateMappingProfile esmp;
 

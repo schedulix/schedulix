@@ -52,7 +52,7 @@ public class ShowResourceStatus extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateDefinition rsd;
 		SDMSOutputContainer d_container = null;
@@ -102,7 +102,7 @@ public class ShowResourceStatus extends ShowCommented
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03201100044", "Resource State Definition shown"));
+			new SDMSMessage(sysEnv, "03201100044", "Resource State Definition shown"));
 
 	}
 

@@ -45,6 +45,6 @@ public abstract class Filter
 	}
 
 	public abstract boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
-	throws SDMSException;
+		throws SDMSException;
 }
 

@@ -72,7 +72,7 @@ public class ListTrigger extends Node
 	}
 
 	private Long getFireId(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long fireId = null;
 		SDMSNamedResource nr;
@@ -108,7 +108,7 @@ public class ListTrigger extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer d_container = null;
 		SDMSTrigger t;
@@ -228,46 +228,46 @@ public class ListTrigger extends Node
 			Long fireId = t.getFireId(sysEnv);
 			int objType = t.getObjectType(sysEnv).intValue();
 			switch(objType) {
-			case SDMSTrigger.JOB_DEFINITION:
-				fire_se = SDMSSchedulingEntityTable.getObject(sysEnv, fireId);
-				if(!fire_se.checkPrivileges(sysEnv, SDMSPrivilege.VIEW)) continue;
-				break;
-			case SDMSTrigger.NAMED_RESOURCE:
-				fire_nr = SDMSNamedResourceTable.getObject(sysEnv, fireId);
-				if(!fire_nr.checkPrivileges(sysEnv, SDMSPrivilege.VIEW)) continue;
-				break;
-			case SDMSTrigger.RESOURCE:
-				fire_r = SDMSResourceTable.getObject(sysEnv, fireId);
-				if(!fire_r.checkPrivileges(sysEnv, SDMSPrivilege.VIEW)) continue;
-				break;
+				case SDMSTrigger.JOB_DEFINITION:
+					fire_se = SDMSSchedulingEntityTable.getObject(sysEnv, fireId);
+					if(!fire_se.checkPrivileges(sysEnv, SDMSPrivilege.VIEW)) continue;
+					break;
+				case SDMSTrigger.NAMED_RESOURCE:
+					fire_nr = SDMSNamedResourceTable.getObject(sysEnv, fireId);
+					if(!fire_nr.checkPrivileges(sysEnv, SDMSPrivilege.VIEW)) continue;
+					break;
+				case SDMSTrigger.RESOURCE:
+					fire_r = SDMSResourceTable.getObject(sysEnv, fireId);
+					if(!fire_r.checkPrivileges(sysEnv, SDMSPrivilege.VIEW)) continue;
+					break;
 			}
 			data = new Vector();
 			data.add(t.getId(sysEnv));
 			data.add(t.getName(sysEnv));
 			data.add(t.getObjectTypeAsString(sysEnv));
 			switch(objType) {
-			case SDMSTrigger.JOB_DEFINITION:
-				data.add(fire_se.getTypeAsString(sysEnv));
-				break;
-			case SDMSTrigger.NAMED_RESOURCE:
-				data.add(fire_nr.getUsageAsString(sysEnv));
-				break;
-			case SDMSTrigger.RESOURCE:
-				r = SDMSResourceTable.getObject(sysEnv, fireId);
-				nr = SDMSNamedResourceTable.getObject(sysEnv, r.getNrId(sysEnv));
-				data.add(nr.getUsageAsString(sysEnv));
-				break;
+				case SDMSTrigger.JOB_DEFINITION:
+					data.add(fire_se.getTypeAsString(sysEnv));
+					break;
+				case SDMSTrigger.NAMED_RESOURCE:
+					data.add(fire_nr.getUsageAsString(sysEnv));
+					break;
+				case SDMSTrigger.RESOURCE:
+					r = SDMSResourceTable.getObject(sysEnv, fireId);
+					nr = SDMSNamedResourceTable.getObject(sysEnv, r.getNrId(sysEnv));
+					data.add(nr.getUsageAsString(sysEnv));
+					break;
 			}
 			switch(objType) {
-			case SDMSTrigger.JOB_DEFINITION:
-				data.add(fire_se.pathVector(sysEnv));
-				break;
-			case SDMSTrigger.NAMED_RESOURCE:
-				data.add(fire_nr.pathVector(sysEnv));
-				break;
-			case SDMSTrigger.RESOURCE:
-				data.add(fire_r.getURLName(sysEnv));
-				break;
+				case SDMSTrigger.JOB_DEFINITION:
+					data.add(fire_se.pathVector(sysEnv));
+					break;
+				case SDMSTrigger.NAMED_RESOURCE:
+					data.add(fire_nr.pathVector(sysEnv));
+					break;
+				case SDMSTrigger.RESOURCE:
+					data.add(fire_r.getURLName(sysEnv));
+					break;
 			}
 
 			data.add(t.getIsActive(sysEnv));

@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -81,10 +81,7 @@ public abstract class ListenThread extends SDMSThread
 		return 0;
 	}
 
-	public boolean trace()
-	{
-		return trace;
-	}
+	public boolean trace()  { return trace; }
 
 	public void trace_on()
 	{
@@ -109,7 +106,7 @@ public abstract class ListenThread extends SDMSThread
 	}
 
 	abstract ServerSocket getServerSocket(int port)
-	throws IOException;
+		throws IOException;
 
 	private void init()
 	{
@@ -139,7 +136,7 @@ public abstract class ListenThread extends SDMSThread
 	}
 
 	protected Socket accept()
-	throws InterruptedIOException, IOException
+		throws InterruptedIOException, IOException
 	{
 		return serv.accept();
 	}
@@ -151,7 +148,7 @@ public abstract class ListenThread extends SDMSThread
 		init();
 
 		try {
-			run:		while(run) {
+run:			while(run) {
 				int next;
 
 				do {

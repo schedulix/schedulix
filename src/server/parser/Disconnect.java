@@ -49,10 +49,9 @@ public class Disconnect extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
-		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03201121208", "Disconnected"));
+		result.setFeedback(new SDMSMessage(sysEnv, "03201121208", "Disconnected"));
 	}
 }
 

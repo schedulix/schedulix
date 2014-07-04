@@ -47,20 +47,19 @@ public class ScopeConfig
 
 	private static final HashSet ADMIN_GID = new HashSet();
 
-	static
-	{
+	static {
 		ADMIN_GID.add (SDMSObject.adminGId);
 	}
 
 	public static final boolean isInternalEntry (final String key)
 	{
 		return key.startsWith     (PREFIX_SCOPEID)
-		       || key.startsWith (PREFIX_ANCEST_VALUE)
-		       || key.startsWith (PREFIX_ANCEST_SCOPE);
+			|| key.startsWith (PREFIX_ANCEST_VALUE)
+			|| key.startsWith (PREFIX_ANCEST_SCOPE);
 	}
 
 	public static final void create (final SystemEnvironment sysEnv, final Long sId, final WithHash cfg)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (cfg == null)
 			return;
@@ -88,7 +87,7 @@ public class ScopeConfig
 	}
 
 	private static final void createConfig (final SystemEnvironment sysEnv, final Long sId, final String key, final String value)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		final String sic = '=' + value;
@@ -97,7 +96,7 @@ public class ScopeConfig
 	}
 
 	private static final void createEnvMappings (final SystemEnvironment sysEnv, final Long sId, final WithHash mappings)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector keyList = new Vector (mappings.keySet());
 		final int size = keyList.size();
@@ -111,7 +110,7 @@ public class ScopeConfig
 	}
 
 	public static final void kill (final SystemEnvironment sysEnv, final SDMSScope s)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Long sId = s.getId (sysEnv);
 
@@ -122,7 +121,7 @@ public class ScopeConfig
 	}
 
 	private static final void killConfig (final SystemEnvironment sysEnv, final Long sId)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector list = SDMSScopeConfigTable.idx_sId.getVector (sysEnv, sId);
 		final int size = list.size();
@@ -133,7 +132,7 @@ public class ScopeConfig
 	}
 
 	private static final void killEnvMappings (final SystemEnvironment sysEnv, final Long sId)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector list = SDMSScopeConfigEnvMappingTable.idx_sId.getVector (sysEnv, sId);
 		final int size = list.size();
@@ -144,7 +143,7 @@ public class ScopeConfig
 	}
 
 	public static final void copy (final SystemEnvironment sysEnv, final Long oldId, final Long newId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector list;
 		int size;
@@ -167,7 +166,7 @@ public class ScopeConfig
 	}
 
 	public static final void markAltered (final SystemEnvironment sysEnv, final SDMSScope s)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector scopeList = SDMSScopeTable.idx_parentId.getVector (sysEnv, s.getId (sysEnv));
 		final int size = scopeList.size();
@@ -183,7 +182,7 @@ public class ScopeConfig
 	}
 
 	public static final void alter (final SystemEnvironment sysEnv, final SDMSScope s, final WithHash cfg)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (cfg == null)
 			kill (sysEnv, s);
@@ -210,7 +209,7 @@ public class ScopeConfig
 							((String) value).matches((String) value);
 						} catch (java.util.regex.PatternSyntaxException pse) {
 							throw new CommonErrorException (new SDMSMessage (sysEnv, "03910051735", "invalid regular expression : '" +
-							                                (String) value) + "' for rule " + key);
+											(String) value) + "' for rule " + key);
 						}
 					}
 
@@ -247,7 +246,7 @@ public class ScopeConfig
 								    state == SDMSSubmittedEntity.TO_KILL  ||
 								    state == SDMSSubmittedEntity.KILLED)
 									throw new CommonErrorException (new SDMSMessage (sysEnv, "03703151451",
-									                                "The job file prefix cannot be altered as long as there are running jobs"));
+										"The job file prefix cannot be altered as long as there are running jobs"));
 							}
 						}
 					}
@@ -269,7 +268,7 @@ public class ScopeConfig
 	}
 
 	private static Vector collectJobserver(SystemEnvironment sysEnv, SDMSScope s)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector v = new Vector();
 
@@ -286,7 +285,7 @@ public class ScopeConfig
 	}
 
 	public static final String getItem (final SystemEnvironment sysEnv, final SDMSScope s, final String item)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (item == null) return null;
 
@@ -298,7 +297,7 @@ public class ScopeConfig
 	}
 
 	public static final SDMSOutputContainer get (final SystemEnvironment sysEnv, final SDMSScope s)
-	throws SDMSException
+		throws SDMSException
 	{
 		final HashMap config     = new HashMap();
 		final HashMap envMapping = new HashMap();
@@ -337,7 +336,7 @@ public class ScopeConfig
 	}
 
 	private static final String quotedPath (final SystemEnvironment sysEnv, final Long sId)
-	throws SDMSException
+		throws SDMSException
 	{
 		final SDMSScope s = SDMSScopeTable.getObject (sysEnv, sId);
 
@@ -351,7 +350,7 @@ public class ScopeConfig
 	}
 
 	private static final void collect (final SystemEnvironment sysEnv, final SDMSScope s, final HashMap config, final HashMap envMapping, final HashSet dynamic)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		final Long parentId = s.getParentId (sysEnv);

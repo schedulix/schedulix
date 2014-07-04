@@ -48,7 +48,7 @@ public class ListExitStateProfile extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer d_container = null;
 		Vector desc = new Vector();
@@ -62,7 +62,7 @@ public class ListExitStateProfile extends Node
 		desc.add("PRIVS");
 
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage (sysEnv, "02111082016", "List of Exit State Profiles"), desc);
+			new SDMSMessage (sysEnv, "02111082016", "List of Exit State Profiles"), desc);
 
 		Vector esp_v = new Vector();
 		Iterator i = SDMSExitStateProfileTable.table.iterator(sysEnv);
@@ -99,8 +99,8 @@ public class ListExitStateProfile extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "02111082031",
-		                        "$1 Exit State Profile(s) found", new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "02111082031",
+				"$1 Exit State Profile(s) found", new Integer(d_container.lines)));
 	}
 }
 

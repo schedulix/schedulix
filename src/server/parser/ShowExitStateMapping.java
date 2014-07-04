@@ -52,7 +52,7 @@ public class ShowExitStateMapping extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final SDMSExitStateMappingProfile esmp;
 		SDMSOutputContainer d_container = null;
@@ -131,7 +131,7 @@ public class ShowExitStateMapping extends ShowCommented
 
 		data.add(r_container);
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage(sysEnv, "03201292005", "Exit State Mapping"), desc, data);
+			new SDMSMessage(sysEnv, "03201292005", "Exit State Mapping"), desc, data);
 
 		result.setOutputContainer(d_container);
 

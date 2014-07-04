@@ -55,7 +55,7 @@ public class AlterScheduledEvent
 	}
 
 	public void go (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final SDMSScheduledEvent scev = (SDMSScheduledEvent) obj.resolve (sysEnv);
 		boolean calUpdNeeded = false;
@@ -81,7 +81,7 @@ public class AlterScheduledEvent
 		if(with.containsKey(ParseStr.S_GROUP)) {
 			final String gName = (String) with.get (ParseStr.S_GROUP);
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			                         sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId);
 			scev.setOwnerId(sysEnv, gId);
 		}

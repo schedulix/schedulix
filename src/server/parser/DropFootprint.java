@@ -51,7 +51,7 @@ public class DropFootprint extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFootprint fp;
 		try {
@@ -69,7 +69,7 @@ public class DropFootprint extends Node
 		if(v.size() > 0) {
 			SDMSSchedulingEntity se = (SDMSSchedulingEntity) v.get(0);
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "02205190930",
-			                               "Footprint in use by Scheduling Entity $1", se.pathString(sysEnv)));
+				"Footprint in use by Scheduling Entity $1", se.pathString(sysEnv)));
 		}
 
 		v = SDMSResourceRequirementTable.idx_seId.getVector(sysEnv, fpId);

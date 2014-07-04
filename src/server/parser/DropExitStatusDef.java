@@ -51,7 +51,7 @@ public class DropExitStatusDef extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateDefinition esd;
 

@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -74,10 +74,10 @@ public class EiThread
 		final Feil feil = Server.getFeil(cfg, jid);
 		synchronized(feil) {
 			cmdarray = new String[] {
-			        cfg.get (Config.JOB_EXECUTOR).toString(),
-			        String.valueOf (ProcessInfo.getBoottimeHow()),
-			        feil.getFilename().toString(),
-			        ProcessInfo.getBoottime(ProcessInfo.getBoottimeHow())
+				cfg.get (Config.JOB_EXECUTOR).toString(),
+				String.valueOf (ProcessInfo.getBoottimeHow()),
+				feil.getFilename().toString(),
+				ProcessInfo.getBoottime(ProcessInfo.getBoottimeHow())
 			};
 		}
 
@@ -195,7 +195,7 @@ public class EiThread
 			synchronized(feil) {
 
 				ri.notifyError (RepoIface.NONFATAL, "(04302042025) Cannot operate on jobfile " + feil.getFilename() + ": " +
-				                ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
+					ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
 			}
 	}
 }

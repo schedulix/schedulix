@@ -64,7 +64,7 @@ public class SyntaxError extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSMessage m = new SDMSMessage (sysEnv, "01111281413", exp_message, env.actstmt, message);
 		SDMSThread.doTrace(env, m.toString(), SDMSThread.SEVERITY_WARNING);

@@ -56,7 +56,7 @@ public class DropScope extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope s;
 		Long parentId;

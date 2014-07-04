@@ -45,7 +45,7 @@ public class SeNameFilter extends Filter
 	Pattern pattern;
 
 	public SeNameFilter(SystemEnvironment sysEnv, String s)
-	throws SDMSException
+		throws SDMSException
 	{
 		super();
 
@@ -57,14 +57,8 @@ public class SeNameFilter extends Filter
 		sbt = new StringBuffer();
 		for(i = 0; i < sbf.length(); i++) {
 			c = sbf.charAt(i);
-			if(c == '_') {
-				sbt.append('.');
-				continue;
-			}
-			if(c == '%') {
-				sbt.append(".*");
-				continue;
-			}
+			if(c == '_') { sbt.append('.'); continue; }
+			if(c == '%') { sbt.append(".*"); continue; }
 			if(c == '\\') {
 				j = i+1;
 				if(j < sbf.length()) {
@@ -88,7 +82,7 @@ public class SeNameFilter extends Filter
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSubmittedEntity sme;
 		SDMSSchedulingEntity se;

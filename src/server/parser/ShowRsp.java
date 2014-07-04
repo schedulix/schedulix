@@ -52,7 +52,7 @@ public class ShowRsp extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateProfile rsp;
 		SDMSOutputContainer d_container = null;
@@ -140,12 +140,12 @@ public class ShowRsp extends ShowCommented
 		data.add(s_container);
 
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage(sysEnv, "03201101454", "Resource State Profile"), desc, data);
+			new SDMSMessage(sysEnv, "03201101454", "Resource State Profile"), desc, data);
 
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03201292056", "Resource State Profile shown"));
+			new SDMSMessage(sysEnv, "03201292056", "Resource State Profile shown"));
 
 	}
 

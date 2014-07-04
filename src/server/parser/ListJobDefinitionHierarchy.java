@@ -65,7 +65,7 @@ public class ListJobDefinitionHierarchy extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSSchedulingEntity se;
@@ -147,7 +147,7 @@ public class ListJobDefinitionHierarchy extends Node
 		desc.add("PRIVS");
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv,
-		                                      "03201292007", "Job Definition Hierarchy"), desc);
+			"03201292007", "Job Definition Hierarchy"), desc);
 
 		String name = (String) path.remove(path.size() -1);
 
@@ -242,11 +242,11 @@ public class ListJobDefinitionHierarchy extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(new SDMSMessage(sysEnv, "02204260958",
-		                                   "$1 Object(s) found", new Integer(d_container.lines)));
+				"$1 Object(s) found", new Integer(d_container.lines)));
 	}
 
 	private void add_childs(SystemEnvironment sysEnv, SDMSOutputContainer oc, Vector vc, String hPath)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateProfile esp;
 		SDMSExitStateMappingProfile esmp;
@@ -364,7 +364,7 @@ public class ListJobDefinitionHierarchy extends Node
 	}
 
 	private String getStateString(SystemEnvironment sysEnv, int p_seType, Long p_espId, Long p_esmpId, Long p_estpId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long esmpId = p_esmpId;
 		HashSet mappedExitStates = new HashSet();
@@ -412,32 +412,32 @@ public class ListJobDefinitionHierarchy extends Node
 		}
 
 		Collections.sort (v_resultStates,
-		new Comparator () {
-			public int compare (Object o1, Object o2) {
-				Vector v1 = (Vector)o1;
-				Vector v2 = (Vector)o2;
-				int p1 = ((Integer)v1.get(1)).intValue();
-				int p2 = ((Integer)v2.get(1)).intValue();
-				if (p1 != p2)
-					if (p1 < p2)
-						return -1;
+			new Comparator () {
+				public int compare (Object o1, Object o2) {
+					Vector v1 = (Vector)o1;
+					Vector v2 = (Vector)o2;
+					int p1 = ((Integer)v1.get(1)).intValue();
+					int p2 = ((Integer)v2.get(1)).intValue();
+					if (p1 != p2)
+						if (p1 < p2)
+							return -1;
+						else
+							return 1;
 					else
-						return 1;
-				else
-					return 0;
+						return 0;
+				}
+				public boolean equals (Object o1, Object o2) {
+					Vector v1 = (Vector)o1;
+					Vector v2 = (Vector)o2;
+					int p1 = ((Integer)v1.get(1)).intValue();
+					int p2 = ((Integer)v2.get(1)).intValue();
+					if (p1 == p2)
+						return true;
+					else
+						return false;
+				}
 			}
-			public boolean equals (Object o1, Object o2) {
-				Vector v1 = (Vector)o1;
-				Vector v2 = (Vector)o2;
-				int p1 = ((Integer)v1.get(1)).intValue();
-				int p2 = ((Integer)v2.get(1)).intValue();
-				if (p1 == p2)
-					return true;
-				else
-					return false;
-			}
-		}
-		                 );
+		);
 
 		String resultString = "";
 		String seperator = "";

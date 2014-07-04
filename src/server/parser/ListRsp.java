@@ -49,7 +49,7 @@ public class ListRsp extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateProfile o;
 		SDMSOutputContainer d_container = null;
@@ -87,8 +87,8 @@ public class ListRsp extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03201101444", "$1 Resource State Profile(s) found",
-		                        new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "03201101444", "$1 Resource State Profile(s) found",
+					new Integer(d_container.lines)));
 
 	}
 

@@ -55,7 +55,7 @@ public class CreateInterval
 	}
 
 	public void go (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long startTime = null;
 		Long endTime = null;
@@ -165,19 +165,19 @@ public class CreateInterval
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			              sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId)) &&
-			    !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
+			   !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03312161745",
-				                               "User $1 does not belong to Group $2", u.getName(sysEnv), gName));
+						"User $1 does not belong to Group $2", u.getName(sysEnv), gName));
 			}
 		}
 
 		SDMSInterval ival;
 		try {
 			ival = SDMSIntervalTable.table.create (sysEnv,
-			                                       obj.mappedName, gId, startTime, endTime, delay, baseInterval, baseIntervalMultiplier,
-			                                       duration, durationMultiplier, syncTime, isInverse, isMerge, embeddedIntervalId, obj.seId);
+							       obj.mappedName, gId, startTime, endTime, delay, baseInterval, baseIntervalMultiplier,
+							       duration, durationMultiplier, syncTime, isInverse, isMerge, embeddedIntervalId, obj.seId);
 		} catch (final DuplicateKeyException dke) {
 			if (replace) {
 				final AlterInterval ai = new AlterInterval (obj, with, Boolean.FALSE);

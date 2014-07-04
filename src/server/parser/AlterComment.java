@@ -55,7 +55,7 @@ public class AlterComment extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Integer infoType;
 

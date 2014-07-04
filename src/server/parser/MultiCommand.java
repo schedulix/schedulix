@@ -59,7 +59,7 @@ public class MultiCommand extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		for(last = 0; last<cmdlist.size(); last++) {
 			Node n;

@@ -52,7 +52,7 @@ public class ShowExitStatusDef extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateDefinition esd;
 		SDMSOutputContainer d_container = null;
@@ -103,7 +103,7 @@ public class ShowExitStatusDef extends ShowCommented
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03111280029", "Exit State Definition shown"));
+			new SDMSMessage(sysEnv, "03111280029", "Exit State Definition shown"));
 	}
 }
 

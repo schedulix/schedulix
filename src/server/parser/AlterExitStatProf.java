@@ -53,7 +53,7 @@ public class AlterExitStatProf extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSExitStateProfile esp;
@@ -97,11 +97,11 @@ public class AlterExitStatProf extends Node
 	}
 
 	private void removeExitStates(
-	        SystemEnvironment sysEnv,
-	        Long espId,
-	        Vector states
+		SystemEnvironment sysEnv,
+		Long espId,
+		Vector states
 	)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Iterator i = states.iterator();
@@ -113,11 +113,11 @@ public class AlterExitStatProf extends Node
 	}
 
 	private void insertExitStates(
-	        SystemEnvironment sysEnv,
-	        Long espId,
-	        Vector espStates
+		SystemEnvironment sysEnv,
+		Long espId,
+		Vector espStates
 	)
-	throws SDMSException
+		throws SDMSException
 	{
 		int idx = 1;
 
@@ -151,40 +151,40 @@ public class AlterExitStatProf extends Node
 			if (isUnreachable.booleanValue()) {
 				if (had_unreachable) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "02205311457",
-					                                "Only one state can be marked as unreachable state"));
+						"Only one state can be marked as unreachable state"));
 				}
 				had_unreachable = true;
 				if (isFinal.booleanValue() != true) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "02204301736",
-					                                "The unreachable state must be defined FINAL"));
+						"The unreachable state must be defined FINAL"));
 				}
 			}
 			if (isBroken.booleanValue()) {
 				if (had_broken) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "03504300807",
-					                                "Only one state can be marked as broken state"));
+						"Only one state can be marked as broken state"));
 				}
 				had_broken = true;
 				if (isRestartable.booleanValue() == false) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "03505041131",
-					                                "The broken state must be defined RESTARTABLE"));
+						"The broken state must be defined RESTARTABLE"));
 				}
 			}
 			if (isBatchDefault.booleanValue()) {
 				if (had_batchDefault) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "03202141012",
-					                                "Only one state can be marked as default exit stae for batches and milestones"));
+						"Only one state can be marked as default exit stae for batches and milestones"));
 				}
 				had_batchDefault = true;
 				if (isFinal.booleanValue() != true) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "03202141013",
-					                                "The default exit state for batches and milestones must be defined FINAL"));
+						"The default exit state for batches and milestones must be defined FINAL"));
 				}
 			}
 			if (isDependencyDefault.booleanValue()) {
 				if (isFinal.booleanValue() != true) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "03202141014",
-					                                "A default exit state for dependencies must be defined FINAL"));
+						"A default exit state for dependencies must be defined FINAL"));
 				}
 			}
 
@@ -198,13 +198,13 @@ public class AlterExitStatProf extends Node
 				SDMSExitStateTable.table.create (sysEnv, pref, isFinal, isRestartable, isUnreachable, isBroken, isBatchDefault, isDependencyDefault, espId, esdId);
 			} catch (DuplicateKeyException dke) {
 				throw new CommonErrorException (new SDMSMessage(sysEnv, "03110120950",
-				                                "Exit state definition $1 specified more than once", espState.name));
+						"Exit state definition $1 specified more than once", espState.name));
 			}
 		}
 	}
 
 	private void checkForFinalState(SystemEnvironment sysEnv, Long espId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = SDMSExitStateTable.idx_espId.getVector(sysEnv, espId);
 		boolean gotFinalState = false;
@@ -217,7 +217,7 @@ public class AlterExitStatProf extends Node
 		}
 		if (!gotFinalState) {
 			throw new CommonErrorException (new SDMSMessage(sysEnv, "03202241103",
-			                                "An exit state profile requires at least one final state"));
+					"An exit state profile requires at least one final state"));
 		}
 	}
 }

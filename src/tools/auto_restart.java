@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -52,21 +52,12 @@ class auto_restart extends App
 		addOption("m", "max"    , null, MAX    , null, "number"   , false, "Default max number of times the job should be restarted if job does not define AUTORESTART_MAX");
 		addOption("W", "warn"   , null, WARN   , null, null       , false, "[Don't] Set Warning if maximum number of restarts was reached");
 	}
-	public String getName()
-	{
-		return "auto_restart";
-	}
-	public boolean userOnly()
-	{
-		return true;
-	}
-	public boolean canRetry()
-	{
-		return true;
-	}
+	public String getName() { return "auto_restart"; }
+	public boolean userOnly() { return true; }
+	public boolean canRetry() { return true; }
 
 	public int go()
-	throws RetryException
+		throws RetryException
 	{
 		String failedJob = options.getValue(FAILED);
 
@@ -176,8 +167,5 @@ class auto_restart extends App
 		return 0;
 	}
 
-	public static void main (String[] argv)
-	{
-		System.exit(new auto_restart().run(argv));
-	}
+	public static void main (String[] argv) { System.exit(new auto_restart().run(argv)); }
 }

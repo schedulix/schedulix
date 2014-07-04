@@ -47,7 +47,7 @@ public class ShutdownServer extends ManipServer
 	}
 
 	protected void action(SystemEnvironment sysEnv, SDMSScope s)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(s.isConnected(sysEnv)) {
 			s.setIsTerminate(sysEnv, Boolean.TRUE);

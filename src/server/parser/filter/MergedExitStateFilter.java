@@ -50,7 +50,7 @@ public class MergedExitStateFilter extends Filter
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;

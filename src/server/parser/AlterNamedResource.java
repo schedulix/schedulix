@@ -60,7 +60,7 @@ public class AlterNamedResource extends Node
 	}
 
 	private void evaluateWith(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		usage = (Integer) with.get(ParseStr.S_USAGE);
 
@@ -81,7 +81,7 @@ public class AlterNamedResource extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedResource nr;
 		Long rspId;
@@ -206,7 +206,7 @@ public class AlterNamedResource extends Node
 	}
 
 	private void changeChildGroup(SystemEnvironment sysEnv, Long parentId, Long groupId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector cv = SDMSNamedResourceTable.idx_parentId.getVector(sysEnv, parentId);
 		for(int i = 0; i < cv.size(); i++) {

@@ -42,13 +42,13 @@ public class ManipParameters
 	private static final Integer aggFkt = new Integer (SDMSParameterDefinition.NONE);
 
 	public static final void create (final SystemEnvironment sysEnv, final Long id, final WithHash parms)
-	throws SDMSException
+		throws SDMSException
 	{
 		ManipParameters.create (sysEnv, id, parms, false);
 	}
 
 	public static final void create (final SystemEnvironment sysEnv, final Long id, final WithHash parms, boolean allTypes)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (parms == null)
 			return;
@@ -76,7 +76,7 @@ public class ManipParameters
 	}
 
 	public static final void kill (final SystemEnvironment sysEnv, final Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector list = SDMSParameterDefinitionTable.idx_seId.getVector (sysEnv, id);
 		final int size = list.size();
@@ -87,30 +87,30 @@ public class ManipParameters
 	}
 
 	public static final void copy (final SystemEnvironment sysEnv, final Long oldId, final Long newId)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector list = SDMSParameterDefinitionTable.idx_seId.getVector (sysEnv, oldId);
 		final int size = list.size();
 		for (int i = 0; i < size; ++i) {
 			final SDMSParameterDefinition pd = (SDMSParameterDefinition) list.get (i);
 			SDMSParameterDefinitionTable.table.create (sysEnv, newId,
-			                pd.getName (sysEnv),
-			                pd.getType (sysEnv),
-			                pd.getAggFunction (sysEnv),
-			                pd.getDefaultValue (sysEnv),
-			                pd.getIsLocal (sysEnv),
-			                null);
+								pd.getName (sysEnv),
+								pd.getType (sysEnv),
+								pd.getAggFunction (sysEnv),
+								pd.getDefaultValue (sysEnv),
+								pd.getIsLocal (sysEnv),
+								null);
 		}
 	}
 
 	public static final void alter (final SystemEnvironment sysEnv, final Long id, final WithHash parms)
-	throws SDMSException
+		throws SDMSException
 	{
 		ManipParameters.alter (sysEnv, id, parms, false);
 	}
 
 	public static final void alter (final SystemEnvironment sysEnv, final Long id, final WithHash parms, boolean allTypes)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSParameterDefinition pd;
 		String oldnm;
@@ -167,7 +167,7 @@ public class ManipParameters
 	}
 
 	public static final SDMSOutputContainer get (final SystemEnvironment sysEnv, final Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector c_desc = new Vector();
 
@@ -267,7 +267,7 @@ public class ManipParameters
 	}
 
 	public static final SDMSOutputContainer getReferences (final SystemEnvironment sysEnv, final Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Vector c_desc = new Vector();
 

@@ -55,7 +55,7 @@ public class DropFolder extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long parentId ;
 		SDMSFolder f;
@@ -73,7 +73,7 @@ public class DropFolder extends Node
 
 		if(parentId == null) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03704102211",
-			                               "Folder SYSTEM cannot be dropped"));
+				"Folder SYSTEM cannot be dropped"));
 		}
 
 		final Long fId = f.getId(sysEnv);
@@ -87,8 +87,8 @@ public class DropFolder extends Node
 				SDMSParameterDefinition pd = SDMSParameterDefinitionTable.getObject(sysEnv, (Long) i.next());
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, pd.getSeId(sysEnv));
 				throw new CommonErrorException (new SDMSMessage(sysEnv, "03402090156", "Parameter Reference from $1 ($2) still exists",
-				                                se.pathString(sysEnv),
-				                                pd.getName(sysEnv)));
+							se.pathString(sysEnv),
+							pd.getName(sysEnv)));
 			}
 		}
 		f.delete(sysEnv);

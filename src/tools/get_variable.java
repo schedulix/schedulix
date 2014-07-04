@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -45,14 +45,8 @@ class get_variable extends App
 		addOption("n", "name", null, NAME, null, "variablename", true , "Name of variable to get");
 		addOption("m", "mode", null, MODE, null, "mode"        , false, "Override retrieve mode (strict, warn or liberal)");
 	}
-	public String getName()
-	{
-		return "get_variable";
-	}
-	public boolean canRetry()
-	{
-		return true;
-	}
+	public String getName() { return "get_variable"; }
+	public boolean canRetry() { return true; }
 	public boolean validateOptions()
 	{
 		if (options.isSet(MODE)) {
@@ -65,7 +59,7 @@ class get_variable extends App
 		return true;
 	}
 	public int go()
-	throws RetryException
+		throws RetryException
 	{
 		String cmd = "GET PARAMETER ";
 		if (options.isSet(App.USER)) cmd = cmd + "OF " + options.getValue(JID);
@@ -79,8 +73,5 @@ class get_variable extends App
 		System.out.println(SDMSOutputUtil.getFromRecord(o,"VALUE"));
 		return 0;
 	}
-	public static void main (String[] argv)
-	{
-		System.exit(new get_variable().run(argv));
-	}
+	public static void main (String[] argv) { System.exit(new get_variable().run(argv)); }
 }

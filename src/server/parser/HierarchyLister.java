@@ -66,60 +66,25 @@ public abstract class HierarchyLister
 		filter = flt;
 	}
 
-	public HierarchyLister()
-	{
-		initLister(null, null, null, null, null, new Vector());
-	}
-	public HierarchyLister(Vector s, HashSet e)
-	{
-		initLister(s, e, null, null, null, new Vector());
-	}
-	public HierarchyLister(ObjectURL u, HashSet e)
-	{
-		initLister(u.path, e, null, null, null, new Vector());
-	}
-	public HierarchyLister(Vector s,
-	                       HashSet e,
-	                       Formatter f)
+	public HierarchyLister()			{ initLister(null, null, null, null, null, new Vector()); }
+	public HierarchyLister(Vector s, HashSet e)	{ initLister(s, e, null, null, null, new Vector()); }
+	public HierarchyLister(ObjectURL u, HashSet e)	{ initLister(u.path, e, null, null, null, new Vector()); }
+	public HierarchyLister(Vector s, HashSet e, Formatter f)
 	{
 		initLister(s, e, null, null, f, new Vector());
 	}
-	public HierarchyLister(Vector s,
-	                       HashSet e,
-	                       Formatter f,
-	                       Vector flt)
+	public HierarchyLister(Vector s, HashSet e, Formatter f, Vector flt)
 	{
 		initLister(s, e, null, null, f, flt);
 	}
 
-	public void setObjectsToList(Vector h)
-	{
-		objectsToList = h;
-	}
-	public void setStartpoint(Vector v)
-	{
-		startpoint = v;
-	}
-	public void setExpandIds(HashSet h)
-	{
-		expandIds = h;
-	}
-	public void setTitle(SDMSMessage s)
-	{
-		title = s;
-	}
-	public void setFormatter(Formatter f)
-	{
-		formatter = f;
-	}
-	public void setSortColumns(int c[])
-	{
-		sortColumns = c;
-	}
-	public void setFilter(Vector flt)
-	{
-		filter = flt;
-	}
+	public void setObjectsToList(Vector h)		{ objectsToList = h; }
+	public void setStartpoint(Vector v)		{ startpoint = v; }
+	public void setExpandIds(HashSet h)		{ expandIds = h; }
+	public void setTitle(SDMSMessage s)		{ title = s; }
+	public void setFormatter(Formatter f)		{ formatter = f; }
+	public void setSortColumns(int c[])		{ sortColumns = c; }
+	public void setFilter(Vector flt)		{ filter = flt; }
 
 	public abstract void setDefaultStartpoint(SystemEnvironment sysEnv)	throws SDMSException;
 	public abstract SDMSProxy getStartObject(SystemEnvironment sysEnv)	throws SDMSException;
@@ -129,13 +94,13 @@ public abstract class HierarchyLister
 	public abstract boolean isLeaf(SystemEnvironment sysEnv, SDMSProxy o)	throws SDMSException;
 
 	public SDMSOutputContainer list(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return list(sysEnv, true);
 	}
 
 	public SDMSOutputContainer list(SystemEnvironment sysEnv, boolean privCheck)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer d_container = null;
 		SDMSProxy startObject;
@@ -171,7 +136,7 @@ public abstract class HierarchyLister
 	}
 
 	private void listBottomUp(SystemEnvironment sysEnv, SDMSOutputContainer oc, boolean privCheck)
-	throws SDMSException
+		throws SDMSException
 	{
 		Iterator i = objectsToList.iterator();
 		Vector objectsToRender = new Vector();
@@ -226,7 +191,7 @@ public abstract class HierarchyLister
 	}
 
 	private boolean add_children(SystemEnvironment sysEnv, SDMSOutputContainer oc, SDMSProxy o, boolean privCheck)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector iv;
 		int i;
@@ -254,7 +219,7 @@ public abstract class HierarchyLister
 	}
 
 	private boolean checkChildren(SystemEnvironment sysEnv, SDMSProxy o, boolean privCheck)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector iv;
 		int i;
@@ -276,7 +241,7 @@ public abstract class HierarchyLister
 	}
 
 	public boolean checkValid(SystemEnvironment sysEnv, SDMSProxy co)
-	throws SDMSException
+		throws SDMSException
 	{
 		boolean valid = true;
 		if (useFilter) {

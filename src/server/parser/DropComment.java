@@ -53,7 +53,7 @@ public class DropComment extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long objId = null;
 

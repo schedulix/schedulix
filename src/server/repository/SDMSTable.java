@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -48,11 +48,11 @@ public abstract class SDMSTable
 	public final static String STAT_MAX_VERSIONS  = "MAX_VERSIONS";
 
 	protected SDMSTable(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(hashMap != null) {
 			throw new FatalException (new SDMSMessage(env,
-			                          "03110251129", "Tried to initialize table twice"));
+					"03110251129", "Tried to initialize table twice"));
 		}
 
 		hashMap = Collections.synchronizedMap(new HashMap());
@@ -60,14 +60,14 @@ public abstract class SDMSTable
 	}
 
 	public Iterator iterator(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		return iterator(env, null);
 	}
 
 	public Iterator iterator(SystemEnvironment env, SDMSFilter f)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Vector r = new Vector();
@@ -75,7 +75,7 @@ public abstract class SDMSTable
 		SDMSProxy p = null;
 		Object va[];
 		synchronized(hashMap) {
-			va = hashMap.values().toArray();
+		va = hashMap.values().toArray();
 		}
 		for (int i = 0; i < va.length; ++i) {
 			v = (SDMSVersions) va[i];
@@ -100,7 +100,7 @@ public abstract class SDMSTable
 	}
 
 	public void clearTable(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSVersions v;
@@ -120,13 +120,13 @@ public abstract class SDMSTable
 	}
 
 	protected abstract void loadTable(SystemEnvironment env)
-	throws SQLException, SDMSException;
+		throws SQLException, SDMSException;
 
 	protected abstract SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
-	throws SDMSException;
+		throws SDMSException;
 
 	protected boolean loadObject(SystemEnvironment env, ResultSet r)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSVersions versions;
 		SDMSObject   o;
@@ -144,12 +144,12 @@ public abstract class SDMSTable
 			index(env, o);
 		} catch (DuplicateKeyException e) {
 			throw new FatalException (new SDMSMessage(env,
-			                          "03110181537", "Duplicate id during load Object"));
+					"03110181537", "Duplicate id during load Object"));
 		}
 		if (getIsVersioned()) {
 			long s = versions.versions.size();
 			if( s > 1 ||
-			    (s == 1 && ((SDMSObject)(versions.versions.lastElement())).validTo != Long.MAX_VALUE)
+			   (s == 1 && ((SDMSObject)(versions.versions.lastElement())).validTo != Long.MAX_VALUE)
 			  ) {
 				env.vPurgeSet.add(env, versions);
 			}
@@ -158,23 +158,23 @@ public abstract class SDMSTable
 	}
 
 	protected void remove(SystemEnvironment env, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		throw new FatalException(new SDMSMessage(env,
-		                         "02110271229", "cannot remove id from an SDMSTables hashMap"));
+				"02110271229", "cannot remove id from an SDMSTables hashMap"));
 
 	}
 
 	public abstract String tableName();
 
 	protected abstract void index(SystemEnvironment env, SDMSObject o)
-	throws SDMSException;
+		throws SDMSException;
 
 	protected abstract void unIndex(SystemEnvironment env, SDMSObject o)
-	throws SDMSException;
+		throws SDMSException;
 
 	public synchronized SDMSProxy get (SystemEnvironment env, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSProxy p;
 		SDMSVersions versions;
@@ -190,7 +190,7 @@ public abstract class SDMSTable
 	}
 
 	public synchronized SDMSProxy get (SystemEnvironment env, Long id, long version)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSVersions versions;
 		versions = (SDMSVersions)(hashMap.get (id));
@@ -201,7 +201,7 @@ public abstract class SDMSTable
 	}
 
 	public synchronized boolean exists (SystemEnvironment env, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSVersions versions;
 
@@ -214,7 +214,7 @@ public abstract class SDMSTable
 	}
 
 	protected synchronized void put(SystemEnvironment env, Long id, SDMSVersions versions)
-	throws SDMSException
+		throws SDMSException
 	{
 		hashMap.put(id, versions);
 		try {
@@ -226,7 +226,7 @@ public abstract class SDMSTable
 	}
 
 	public void dump(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSVersions v;
 
@@ -240,7 +240,7 @@ public abstract class SDMSTable
 	}
 
 	synchronized void release(SystemEnvironment env, SDMSVersions v)
-	throws SDMSException
+		throws SDMSException
 	{
 		hashMap.remove(v.id);
 	}
@@ -251,7 +251,7 @@ public abstract class SDMSTable
 	}
 
 	public HashMap stat(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		HashMap result = new HashMap();
 

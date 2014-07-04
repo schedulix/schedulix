@@ -61,10 +61,10 @@ public abstract class ManipGroup extends Node
 	}
 
 	public abstract void go(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 
 	protected void evaluate_with(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long zero = new Long(0);
 		if(withEvaluated) return;

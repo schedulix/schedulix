@@ -93,7 +93,7 @@ public class ListNamedResource extends Node
 	}
 
 	public Vector fillVector(SystemEnvironment sysEnv, SDMSProxy co, HashSet parentSet)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = new Vector();
 		fillVector(sysEnv, (SDMSNamedResource) co, v);
@@ -101,7 +101,7 @@ public class ListNamedResource extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSNamedResource nr;
@@ -130,11 +130,11 @@ public class ListNamedResource extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(new SDMSMessage (sysEnv, "02111101415",
-		                                    "$1 Named Resource(s) found", new Integer(d_container.lines)));
+				"$1 Named Resource(s) found", new Integer(d_container.lines)));
 	}
 
 	private void fillVector(SystemEnvironment sysEnv, SDMSNamedResource nr, Vector v)
-	throws SDMSException
+		throws SDMSException
 	{
 		int subcat, res;
 

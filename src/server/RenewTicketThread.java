@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -77,13 +77,13 @@ public class RenewTicketThread extends SDMSThread
 	}
 
 	public void initRenewTicketThread(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			pSysEnv = (SystemEnvironment) env.clone();
 		} catch(CloneNotSupportedException cnse) {
 			throw new FatalException(new SDMSMessage(pSysEnv, "03302061654",
-			                         "Cannot Clone SystemEnvironment"));
+							"Cannot Clone SystemEnvironment"));
 		}
 		try {
 			pSysEnv.dbConnection = Server.connectToDB(pSysEnv);
@@ -99,15 +99,15 @@ public class RenewTicketThread extends SDMSThread
 		} catch (SQLException sqle) {
 			doTrace(null, "Error collecting Driver Information", SEVERITY_ERROR);
 			throw new FatalException(new SDMSMessage(pSysEnv, "03302061655",
-			                         "Error collecting Driver Information"));
+							"Error collecting Driver Information"));
 		}
 
 		updateString = "UPDATE REPOSITORY_LOCK " +
-		               (postgres ? "SET TICKET = CAST (? AS DECIMAL) WHERE TS = CAST (? AS DECIMAL)" :
-		                " SET TICKET = ? WHERE TS = ?");
+			(postgres ? "SET TICKET = CAST (? AS DECIMAL) WHERE TS = CAST (? AS DECIMAL)" :
+			" SET TICKET = ? WHERE TS = ?");
 		selectString = "SELECT TICKET FROM REPOSITORY_LOCK " +
-		               (postgres ? "WHERE TS = CAST (? AS DECIMAL)" :
-		                "WHERE TS = ?");
+			(postgres ? "WHERE TS = CAST (? AS DECIMAL)" :
+			"WHERE TS = ?");
 		getTicketString = "SELECT TS, TICKET FROM REPOSITORY_LOCK";
 		insertString = "INSERT INTO REPOSITORY_LOCK ( LOCKID, TS, TICKET ) VALUES ( 1 , ?, ?)";
 		deleteString = "DELETE FROM REPOSITORY_LOCK";
@@ -118,7 +118,7 @@ public class RenewTicketThread extends SDMSThread
 	}
 
 	public synchronized boolean checkTicket(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		long ticket = 0;
 
@@ -138,7 +138,7 @@ public class RenewTicketThread extends SDMSThread
 		} catch (SQLException sqle) {
 			doTrace(null, "Error while getting Ticket: " + sqle.getMessage(), SEVERITY_ERROR);
 			throw new FatalException(new SDMSMessage(sysEnv, "03302071708",
-			                         "Error while getting Ticket"));
+							"Error while getting Ticket"));
 		}
 
 		if(ticket != 0) return true;
@@ -146,7 +146,7 @@ public class RenewTicketThread extends SDMSThread
 	}
 
 	public synchronized void getTicket(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		long ts = 0;
 		long ticket = 0;
@@ -227,7 +227,7 @@ public class RenewTicketThread extends SDMSThread
 	}
 
 	private synchronized int lockTicket(SystemEnvironment sysEnv)
-	throws SQLException
+		throws SQLException
 	{
 		int rc;
 		pLock = sysEnv.dbConnection.prepareStatement(lockString);
@@ -238,7 +238,7 @@ public class RenewTicketThread extends SDMSThread
 	}
 
 	private synchronized int deleteTicket(SystemEnvironment sysEnv)
-	throws SQLException
+		throws SQLException
 	{
 		int rc;
 		pDelete = sysEnv.dbConnection.prepareStatement(deleteString);
@@ -249,7 +249,7 @@ public class RenewTicketThread extends SDMSThread
 	}
 
 	private synchronized int updateTicket(SystemEnvironment sysEnv)
-	throws SQLException
+		throws SQLException
 	{
 		int rc;
 		long newTicket = System.currentTimeMillis();
@@ -277,7 +277,7 @@ public class RenewTicketThread extends SDMSThread
 	}
 
 	public synchronized void renewTicket(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		int nrRows;
 
@@ -285,7 +285,7 @@ public class RenewTicketThread extends SDMSThread
 			nrRows = updateTicket(sysEnv);
 			if(nrRows == 0) {
 				throw new FatalException(new SDMSMessage(sysEnv, "03302071040",
-				                         "Error while setting Ticket (no rows updated)"));
+									"Error while setting Ticket (no rows updated)"));
 			}
 		} catch (SQLException sqle) {
 			throw new FatalException(new SDMSMessage(sysEnv, "03302061656", "Error while setting Ticket"));

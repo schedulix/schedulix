@@ -79,7 +79,7 @@ public class AlterTrigger extends ManipTrigger
 	}
 
 	private void checkWith(SystemEnvironment sysEnv, SDMSTrigger t)
-	throws SDMSException
+		throws SDMSException
 	{
 		int objType = t.getObjectType(sysEnv).intValue();
 		SDMSSchedulingEntity se = null;
@@ -104,7 +104,7 @@ public class AlterTrigger extends ManipTrigger
 			se = SDMSSchedulingEntityTable.get(sysEnv, folderpath, n);
 			if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
 				throw new AccessViolationException(
-				        new SDMSMessage(sysEnv, "03402131605", "Submit privilege on $1 missing", se.pathString(sysEnv))
+					new SDMSMessage(sysEnv, "03402131605", "Submit privilege on $1 missing", se.pathString(sysEnv))
 				);
 			seId = se.getId(sysEnv);
 			checkSeId = seId;
@@ -147,7 +147,7 @@ public class AlterTrigger extends ManipTrigger
 			if(objType != SDMSTrigger.JOB_DEFINITION && objType != SDMSTrigger.OBJECT_MONITOR) {
 				if(!isMaster.booleanValue()) {
 					throw new CommonErrorException(
-					        new SDMSMessage(sysEnv, "03206202334", "Only master submits allowed for resource triggers"));
+						new SDMSMessage(sysEnv, "03206202334", "Only master submits allowed for resource triggers"));
 				}
 			}
 			if (iaction == SDMSTrigger.RERUN) {
@@ -166,7 +166,7 @@ public class AlterTrigger extends ManipTrigger
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "02402180855", "Group clause is not allowed for child triggers"));
 			}
 			submitOwnerId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			                        sysEnv, new SDMSKey(submitOwnerName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(submitOwnerName, new Long(0))).getId(sysEnv);
 			checkSubmitOwnerId = submitOwnerId;
 		} else {
 			submitOwnerId = null;
@@ -186,7 +186,7 @@ public class AlterTrigger extends ManipTrigger
 				}
 				if(itt != SDMSTrigger.IMMEDIATE_LOCAL) {
 					throw new CommonErrorException(
-					        new SDMSMessage(sysEnv, "03206200913", "Triggertype must be Immediate for resource and object monitor triggers"));
+						new SDMSMessage(sysEnv, "03206200913", "Triggertype must be Immediate for resource and object monitor triggers"));
 				}
 
 			} else {
@@ -199,7 +199,7 @@ public class AlterTrigger extends ManipTrigger
 				if (!(itt == SDMSTrigger.BEFORE_FINAL ||
 				      itt == SDMSTrigger.IMMEDIATE_LOCAL ||
 				      itt == SDMSTrigger.IMMEDIATE_MERGE
-				     )) {
+				   )) {
 					sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXTENDED_TRIGGERS);
 				}
 
@@ -228,7 +228,7 @@ public class AlterTrigger extends ManipTrigger
 		if(maxRetry != null) {
 			if(objType != SDMSTrigger.JOB_DEFINITION) {
 				throw new CommonErrorException(
-				        new SDMSMessage(sysEnv, "03206202335", "Retry Count doesn't make sense for resource triggers"));
+					new SDMSMessage(sysEnv, "03206202335", "Retry Count doesn't make sense for resource triggers"));
 			}
 		}
 
@@ -237,7 +237,7 @@ public class AlterTrigger extends ManipTrigger
 			state = (Vector) with.get(ParseStr.S_STATUS);
 			if(with.containsKey(ParseStr.S_RSCSTATUS)) {
 				throw new CommonErrorException(
-				        new SDMSMessage(sysEnv, "03206200920", "Only job states are allowed for job triggers"));
+					new SDMSMessage(sysEnv, "03206200920", "Only job states are allowed for job triggers"));
 			}
 		}
 
@@ -249,9 +249,9 @@ public class AlterTrigger extends ManipTrigger
 				if (se == null)
 					se = SDMSSchedulingEntityTable.getObject(sysEnv, checkSeId);
 				if((mainSe == null && !se.getMasterSubmittable(sysEnv).booleanValue()) ||
-				    (mainSe != null && !mainSe.getMasterSubmittable(sysEnv).booleanValue()))
+				   (mainSe != null && !mainSe.getMasterSubmittable(sysEnv).booleanValue()))
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "02402180838",
-					                               "Master trigger defined for non master submittable job"));
+							"Master trigger defined for non master submittable job"));
 			}
 
 			if (isMaster != null || submitOwnerId != null || seId != null) {
@@ -265,7 +265,7 @@ public class AlterTrigger extends ManipTrigger
 	}
 
 	private void getFireId(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector objpath;
 		String objname;
@@ -273,12 +273,12 @@ public class AlterTrigger extends ManipTrigger
 
 		if(fireObj == null) {
 			switch(fireType) {
-			case SDMSTrigger.JOB_DEFINITION:
-				fireSe = SDMSSchedulingEntityTable.getObject(sysEnv, fireId);
-				break;
-			case SDMSTrigger.RESOURCE:
-				fireR = SDMSResourceTable.getObject(sysEnv, fireId);
-				break;
+				case SDMSTrigger.JOB_DEFINITION:
+					fireSe = SDMSSchedulingEntityTable.getObject(sysEnv, fireId);
+					break;
+				case SDMSTrigger.RESOURCE:
+					fireR = SDMSResourceTable.getObject(sysEnv, fireId);
+					break;
 			}
 			return;
 		}
@@ -292,7 +292,7 @@ public class AlterTrigger extends ManipTrigger
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSTrigger t;
 		Long tId;

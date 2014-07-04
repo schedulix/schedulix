@@ -51,7 +51,7 @@ public class RenameRsp extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateProfile rsp;
 
@@ -59,7 +59,7 @@ public class RenameRsp extends Node
 		rsp.setName(sysEnv, name2);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03203311318", "Resource State Profile renamed"));
+			new SDMSMessage(sysEnv, "03203311318", "Resource State Profile renamed"));
 	}
 }
 

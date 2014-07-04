@@ -52,7 +52,7 @@ public class ShowWt extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_OBJECT_MONITOR);
 		SDMSOutputContainer d_container = null;
@@ -73,12 +73,12 @@ public class ShowWt extends ShowCommented
 		Vector data = new Vector();
 
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage(sysEnv, "02108241021", "Watch Type"), desc, data);
+			new SDMSMessage(sysEnv, "02108241021", "Watch Type"), desc, data);
 
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "02108241022", "Watch Type shown"));
+			new SDMSMessage(sysEnv, "02108241022", "Watch Type shown"));
 
 	}
 

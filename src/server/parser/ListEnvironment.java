@@ -49,7 +49,7 @@ public class ListEnvironment extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedEnvironment ne;
 		SDMSOutputContainer d_container = null;
@@ -81,8 +81,8 @@ public class ListEnvironment extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03201232119", "$1 Environment(s) found",
-		                        new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "03201232119", "$1 Environment(s) found",
+					new Integer(d_container.lines)));
 	}
 }
 

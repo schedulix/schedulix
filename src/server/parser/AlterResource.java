@@ -59,7 +59,7 @@ public class AlterResource extends ManipResource
 	}
 
 	private void collectWith(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		status = (String) with.get(ParseStr.S_STATUS);
 		requestableAmount = (Integer) with.get(ParseStr.S_REQUESTABLE_AMOUNT);
@@ -70,7 +70,7 @@ public class AlterResource extends ManipResource
 	}
 
 	private void alterResource(SystemEnvironment sysEnv, SDMSResource r)
-	throws SDMSException
+		throws SDMSException
 	{
 		int notify = SchedulingThread.ALTER;
 		if(online != null) {
@@ -134,7 +134,7 @@ public class AlterResource extends ManipResource
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResource r;
 

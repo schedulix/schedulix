@@ -53,7 +53,7 @@ public class AlterRsm extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceStateMappingProfile rsmp;
 		SDMSResourceStateMapping rsm;

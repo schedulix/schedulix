@@ -52,7 +52,7 @@ public class ShowComment extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final SDMSOutputContainer d_container;
 		final Vector desc = new Vector();

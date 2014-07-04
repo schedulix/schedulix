@@ -50,7 +50,7 @@ public class ParameterFilter extends Filter
 	Caster cst;
 
 	public ParameterFilter(SystemEnvironment sysEnv, WithHash w)
-	throws SDMSException
+		throws SDMSException
 	{
 		super();
 		name = (String) w.get(ParseStr.S_NAME);
@@ -59,49 +59,28 @@ public class ParameterFilter extends Filter
 
 		cst = null;
 
-		if(cmpop.equals("=="))				{
-			c = new EQComparer(sysEnv, value);
-		} else if(cmpop.equals("!="))			{
-			c = new NQComparer(sysEnv, value);
-		} else if(cmpop.equals("<>"))			{
-			c = new NQComparer(sysEnv, value);
-		} else if(cmpop.equals(">"))			{
-			c = new GTComparer(sysEnv, value);
-		} else if(cmpop.equals(">="))			{
-			c = new GEComparer(sysEnv, value);
-		} else if(cmpop.equals("<"))			{
-			c = new LTComparer(sysEnv, value);
-		} else if(cmpop.equals("<="))			{
-			c = new LEComparer(sysEnv, value);
-		} else if(cmpop.equals("=~"))			{
-			c = new LikeComparer(sysEnv, value.toString());
-			cst = new StringCaster();
-		} else if(cmpop.equals(ParseStr.S_LIKE))		{
-			c = new LikeComparer(sysEnv, value.toString());
-			cst = new StringCaster();
-		} else if(cmpop.equals("!~"))			{
-			c = new NotLikeComparer(sysEnv, value.toString());
-			cst = new StringCaster();
-		} else if(cmpop.equals(ParseStr.S_NOTLIKE))	{
-			c = new NotLikeComparer(sysEnv, value.toString());
-			cst = new StringCaster();
-		} else throw new CommonErrorException(new SDMSMessage(sysEnv, "03511031050", "Unknown comparison operator: " + cmpop));
+		if(cmpop.equals("=="))				{ c = new EQComparer(sysEnv, value); }
+		else if(cmpop.equals("!="))			{ c = new NQComparer(sysEnv, value); }
+		else if(cmpop.equals("<>"))			{ c = new NQComparer(sysEnv, value); }
+		else if(cmpop.equals(">"))			{ c = new GTComparer(sysEnv, value); }
+		else if(cmpop.equals(">="))			{ c = new GEComparer(sysEnv, value); }
+		else if(cmpop.equals("<"))			{ c = new LTComparer(sysEnv, value); }
+		else if(cmpop.equals("<="))			{ c = new LEComparer(sysEnv, value); }
+		else if(cmpop.equals("=~"))			{ c = new LikeComparer(sysEnv, value.toString()); cst = new StringCaster(); }
+		else if(cmpop.equals(ParseStr.S_LIKE))		{ c = new LikeComparer(sysEnv, value.toString()); cst = new StringCaster(); }
+		else if(cmpop.equals("!~"))			{ c = new NotLikeComparer(sysEnv, value.toString()); cst = new StringCaster(); }
+		else if(cmpop.equals(ParseStr.S_NOTLIKE))	{ c = new NotLikeComparer(sysEnv, value.toString()); cst = new StringCaster(); }
+		else throw new CommonErrorException(new SDMSMessage(sysEnv, "03511031050", "Unknown comparison operator: " + cmpop));
 
 		if(cst == null) {
-			if(value instanceof String)	{
-				cst = new StringCaster();
-			}
-			if(value instanceof Integer)	{
-				cst = new IntegerCaster();
-			}
-			if(value instanceof Double)	{
-				cst = new DoubleCaster();
-			}
+			if(value instanceof String)	{ cst = new StringCaster(); }
+			if(value instanceof Integer)	{ cst = new IntegerCaster(); }
+			if(value instanceof Double)	{ cst = new DoubleCaster(); }
 		}
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
-	throws SDMSException
+		throws SDMSException
 	{
 		String parmVal = null;
 		ParameterFilterCache parameterFilterCache;
@@ -217,7 +196,7 @@ abstract class Comparer
 	Comparable wert;
 
 	Comparer(SystemEnvironment sysEnv, Comparable w)
-	throws SDMSException
+		throws SDMSException
 	{
 		wert = w;
 	}
@@ -230,7 +209,7 @@ class LTComparer extends Comparer
 {
 
 	LTComparer(SystemEnvironment sysEnv, Comparable w)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(sysEnv, w);
 	}
@@ -247,7 +226,7 @@ class LEComparer extends Comparer
 {
 
 	LEComparer(SystemEnvironment sysEnv, Comparable w)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(sysEnv, w);
 	}
@@ -264,7 +243,7 @@ class GTComparer extends Comparer
 {
 
 	GTComparer(SystemEnvironment sysEnv, Comparable w)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(sysEnv, w);
 	}
@@ -281,7 +260,7 @@ class GEComparer extends Comparer
 {
 
 	GEComparer(SystemEnvironment sysEnv, Comparable w)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(sysEnv, w);
 	}
@@ -298,7 +277,7 @@ class EQComparer extends Comparer
 {
 
 	EQComparer(SystemEnvironment sysEnv, Comparable w)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(sysEnv, w);
 	}
@@ -315,7 +294,7 @@ class NQComparer extends Comparer
 {
 
 	NQComparer(SystemEnvironment sysEnv, Comparable w)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(sysEnv, w);
 	}
@@ -334,7 +313,7 @@ class LikeComparer extends Comparer
 	Pattern p;
 
 	LikeComparer(SystemEnvironment sysEnv, Comparable w)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(sysEnv, w);
 		if(w == null) p = null;
@@ -365,7 +344,7 @@ class NotLikeComparer extends Comparer
 	Pattern p;
 
 	NotLikeComparer(SystemEnvironment sysEnv, Comparable w)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(sysEnv, w);
 		if(w == null) p = null;

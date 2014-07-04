@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -55,7 +55,7 @@ public class SDMSVersionList
 	}
 
 	public synchronized long first(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(versionList.size() == 0) return SDMSTransaction.getRoVersion(env);
 		return ((Long) versionList.get(0)).longValue();

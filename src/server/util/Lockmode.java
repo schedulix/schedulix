@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -49,10 +49,7 @@ public class Lockmode
 	public static final int SC  = 0x06;
 	public static final int N   = 0xFF;
 
-	public Lockmode()
-	{
-		mode = N;
-	}
+	public Lockmode() { mode = N; }
 	public Lockmode(SystemEnvironment env, int m) throws CommonErrorException
 	{
 		if (m != X    &&
@@ -69,10 +66,7 @@ public class Lockmode
 		mode = N;
 		if(m == X || m == SX || m == S || m == SC || m == N) mode = m;
 	}
-	public int getLockmode()
-	{
-		return mode;
-	}
+	public int getLockmode() { return mode; }
 	public int setLockmode(int m)
 	{
 		int rc = mode;
@@ -97,19 +91,13 @@ public class Lockmode
 	public String str(SystemEnvironment env) throws FatalException
 	{
 		switch(mode) {
-		case X:
-			return Exclusive;
-		case SX:
-			return SharedExcl;
-		case S:
-			return Shared;
-		case SC:
-			return SharedComp;
-		case N:
-			return Nolock;
-		default:
-			throw new FatalException(
-			        new SDMSMessage(env, "03110181508", "Invalid internal State $1", new Integer(mode)));
+			case X:		return Exclusive;
+			case SX:	return SharedExcl;
+			case S:		return Shared;
+			case SC:	return SharedComp;
+			case N:		return Nolock;
+			default:	throw new FatalException(
+						new SDMSMessage(env, "03110181508", "Invalid internal State $1", new Integer(mode)));
 		}
 	}
 	public static boolean isCompatible(Lockmode l1, Lockmode l2)

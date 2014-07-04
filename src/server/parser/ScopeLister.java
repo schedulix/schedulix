@@ -52,33 +52,33 @@ public class ScopeLister extends HierarchyLister
 	}
 
 	public void setDefaultStartpoint(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope s = SDMSScopeTable.idx_parentId_name_getUnique(sysEnv, new SDMSKey(null, "GLOBAL"));
 		startpoint = s.pathVector(sysEnv);
 	}
 
 	public SDMSProxy getStartObject(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SDMSScopeTable.getScope(sysEnv, startpoint);
 	}
 
 	public SDMSProxy getObject(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SDMSScopeTable.getObject(sysEnv, id);
 	}
 
 	public Vector getChildren(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = SDMSScopeTable.idx_parentId.getVector(sysEnv, id);
 		return v;
 	}
 
 	public Vector getParents(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = new Vector();
 		SDMSScope s = SDMSScopeTable.getObject(sysEnv, id);
@@ -92,7 +92,7 @@ public class ScopeLister extends HierarchyLister
 	}
 
 	public boolean isLeaf(SystemEnvironment sysEnv, SDMSProxy o)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(((SDMSScope) o).getType(sysEnv).intValue() == SDMSScope.SCOPE) return false;
 		return true;

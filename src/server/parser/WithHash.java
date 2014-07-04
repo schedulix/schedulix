@@ -39,7 +39,7 @@ public class WithHash extends HashMap
 	public final static String __version = "@(#) $Id: WithHash.java,v 2.1.14.1 2013/03/14 10:24:54 ronald Exp $";
 
 	public void addItem (WithItem wi)
-	throws SDMSEscape
+		throws SDMSEscape
 	{
 		boolean alreadyContained = containsKey (wi.key);
 

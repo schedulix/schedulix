@@ -56,7 +56,7 @@ public class AlterInterval
 	}
 
 	private void checkStructure (final SystemEnvironment sysEnv, final Long checkId)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (checkSet.contains (checkId))
 			return;
@@ -86,7 +86,7 @@ public class AlterInterval
 	}
 
 	public void go (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final DateTime dt = new DateTime (new Date());
 		boolean secondsIgnore = false;
@@ -221,7 +221,7 @@ public class AlterInterval
 		if(with.containsKey(ParseStr.S_GROUP)) {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			                         sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId);
 			ival.setOwnerId(sysEnv, gId);
 		}

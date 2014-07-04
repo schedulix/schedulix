@@ -61,7 +61,7 @@ public class RenameNamedResource extends Node
 	}
 
 	private void moveNamedResource(SystemEnvironment sysEnv, SDMSNamedResource src)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedResource p;
 		String name;
@@ -82,12 +82,12 @@ public class RenameNamedResource extends Node
 
 		if(opId == null) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03704102156",
-			                               "The category RESOURCE cannot be moved"));
+						"The category RESOURCE cannot be moved"));
 		}
 
 		if(p.getUsage(sysEnv).intValue() != SDMSNamedResource.CATEGORY) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03206250011",
-			                               "Resource cannot be contained within another Resource"));
+						"Resource cannot be contained within another Resource"));
 		}
 
 		myId = src.getId(sysEnv);
@@ -109,7 +109,7 @@ public class RenameNamedResource extends Node
 	}
 
 	private void renameNamedResource(SystemEnvironment sysEnv, SDMSNamedResource src)
-	throws SDMSException
+		throws SDMSException
 	{
 		src.setName(sysEnv, newName);
 
@@ -117,7 +117,7 @@ public class RenameNamedResource extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedResource src;
 

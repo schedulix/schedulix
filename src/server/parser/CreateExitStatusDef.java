@@ -51,7 +51,7 @@ public class CreateExitStatusDef extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			SDMSExitStateDefinitionTable.table.create (sysEnv, name);

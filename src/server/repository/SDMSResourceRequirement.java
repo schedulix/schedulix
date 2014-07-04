@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -47,7 +47,7 @@ public class SDMSResourceRequirement extends SDMSResourceRequirementProxyGeneric
 	}
 
 	public void delete(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Vector act_rrs = SDMSResourceReqStatesTable.idx_rrId.getVector(sysEnv, getId(sysEnv));
@@ -60,7 +60,7 @@ public class SDMSResourceRequirement extends SDMSResourceRequirementProxyGeneric
 	}
 
 	public void check(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long nrId = getNrId(sysEnv);
 		SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, nrId);
@@ -72,42 +72,42 @@ public class SDMSResourceRequirement extends SDMSResourceRequirementProxyGeneric
 		if(usage == SDMSNamedResource.STATIC) {
 			if(getAmount(sysEnv).intValue() != 0) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304102050",
-				                               "Amount option invalid for static Resources ($1)", nr.pathString(sysEnv)));
+							"Amount option invalid for static Resources ($1)", nr.pathString(sysEnv)));
 			}
 			if(getKeepMode(sysEnv).intValue() != NOKEEP) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304102045",
-				                               "Keep option invalid for static Resources ($1)", nr.pathString(sysEnv)));
+							"Keep option invalid for static Resources ($1)", nr.pathString(sysEnv)));
 			}
 		}
 
 		if(usage != SDMSNamedResource.STATIC) {
 			if(condition != null) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03710301113",
-				                               "Condition option invalid for non static Resources ($1)", nr.pathString(sysEnv)));
+							"Condition option invalid for non static Resources ($1)", nr.pathString(sysEnv)));
 			}
 		}
 
 		if(usage != SDMSNamedResource.SYNCHRONIZING) {
 			if(lockmode != SDMSResourceRequirement.N) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304101727",
-				                               "Lockmode invalid for non synchronizing Resources ($1)", nr.pathString(sysEnv)));
+							"Lockmode invalid for non synchronizing Resources ($1)", nr.pathString(sysEnv)));
 			}
 			if(rsmpId != null) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304110943",
-				                               "Resource Mapping invalid for non synchronizing Resources ($1)", nr.pathString(sysEnv)));
+							"Resource Mapping invalid for non synchronizing Resources ($1)", nr.pathString(sysEnv)));
 			}
 			if(getIsSticky(sysEnv).booleanValue()) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304101735",
-				                               "Sticky invalid for non synchronizing Resources ($1)", nr.pathString(sysEnv)));
+							"Sticky invalid for non synchronizing Resources ($1)", nr.pathString(sysEnv)));
 			}
 			if(getExpiredAmount(sysEnv) != null) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304101737",
-				                               "Expired invalid for non synchronizing Resources ($1)", nr.pathString(sysEnv)));
+							"Expired invalid for non synchronizing Resources ($1)", nr.pathString(sysEnv)));
 			}
 			Vector v = SDMSResourceReqStatesTable.idx_rrId.getVector(sysEnv, getId(sysEnv));
 			if(v.size() != 0) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304110942",
-				                               "Requesting States is invalid for non synchronizing Resources ($1)", nr.pathString(sysEnv)));
+							"Requesting States is invalid for non synchronizing Resources ($1)", nr.pathString(sysEnv)));
 			}
 			return;
 		}
@@ -117,7 +117,7 @@ public class SDMSResourceRequirement extends SDMSResourceRequirementProxyGeneric
 		if (rspId == null) {
 			if (v.size() > 0) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03709071145",
-				                               "Requesting States is invalid for Resources ($1) without Resource State Profile", nr.pathString(sysEnv)));
+					"Requesting States is invalid for Resources ($1) without Resource State Profile", nr.pathString(sysEnv)));
 			}
 		} else {
 			Long initalRsdId = SDMSResourceStateProfileTable.getObject(sysEnv, rspId).getInitialRsdId(sysEnv);
@@ -127,7 +127,7 @@ public class SDMSResourceRequirement extends SDMSResourceRequirementProxyGeneric
 				      rsdId.equals(initalRsdId)
 				     )) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03709071155",
-					                               "Requested State $1 not valid for Resource $2", rsdId, nr.pathString(sysEnv)));
+						"Requested State $1 not valid for Resource $2", rsdId, nr.pathString(sysEnv)));
 				}
 			}
 		}
@@ -135,19 +135,19 @@ public class SDMSResourceRequirement extends SDMSResourceRequirementProxyGeneric
 		if(rsmpId != null) {
 			if(lockmode != SDMSResourceRequirement.X) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304101619",
-				                               "For setting a resource state, an exclusive lock is required ($1)", nr.pathString(sysEnv)));
+					"For setting a resource state, an exclusive lock is required ($1)", nr.pathString(sysEnv)));
 			}
 
 			if(rspId == null) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304110944",
-				                               "Resource $1 doesn't have a state profile", nr.pathString(sysEnv)));
+					"Resource $1 doesn't have a state profile", nr.pathString(sysEnv)));
 			}
 			checkMapping(sysEnv, rspId, rsmpId, nr);
 		}
 	}
 
 	private void checkMapping(SystemEnvironment sysEnv, Long rspId, Long rsmpId, SDMSNamedResource nr)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = SDMSResourceStateMappingTable.idx_rsmpId.getVector(sysEnv, rsmpId);
 		for(int i = 0; i < v.size(); i++) {
@@ -161,18 +161,18 @@ public class SDMSResourceRequirement extends SDMSResourceRequirementProxyGeneric
 			      fromRsdId.equals(initialRsdId)
 			     )) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03709071205",
-				                               "Resource State Profile $1 of $2 doesn't contain 'from' State $3",
-				                               SDMSResourceStateProfileTable.getObject(sysEnv, rspId).getName(sysEnv),
-				                               nr.pathString(sysEnv),
-				                               SDMSResourceStateDefinitionTable.getObject(sysEnv, toRsdId).getName(sysEnv)));
+							"Resource State Profile $1 of $2 doesn't contain 'from' State $3",
+							SDMSResourceStateProfileTable.getObject(sysEnv, rspId).getName(sysEnv),
+							nr.pathString(sysEnv),
+							SDMSResourceStateDefinitionTable.getObject(sysEnv, toRsdId).getName(sysEnv)));
 			}
 
 			if (!SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(toRsdId, rspId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304111022",
-				                               "Resource State Profile $1 of $2 doesn't contain 'to' State $3",
-				                               SDMSResourceStateProfileTable.getObject(sysEnv, rspId).getName(sysEnv),
-				                               nr.pathString(sysEnv),
-				                               SDMSResourceStateDefinitionTable.getObject(sysEnv, toRsdId).getName(sysEnv)));
+							"Resource State Profile $1 of $2 doesn't contain 'to' State $3",
+							SDMSResourceStateProfileTable.getObject(sysEnv, rspId).getName(sysEnv),
+							nr.pathString(sysEnv),
+							SDMSResourceStateDefinitionTable.getObject(sysEnv, toRsdId).getName(sysEnv)));
 			}
 		}
 	}

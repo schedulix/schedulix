@@ -49,11 +49,11 @@ public abstract class ManipServer extends Node
 	}
 
 	protected abstract void action(SystemEnvironment sysEnv, SDMSScope s)
-	throws SDMSException;
+		throws SDMSException;
 	protected abstract String message();
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope s = SDMSScopeTable.getScope(sysEnv, path);
 		if(s.getType(sysEnv).intValue() != SDMSScope.SERVER) {
@@ -65,7 +65,7 @@ public abstract class ManipServer extends Node
 	}
 
 	private void recursiveAction(SystemEnvironment sysEnv, SDMSScope s)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = SDMSScopeTable.idx_parentId.getVector(sysEnv, s.getId(sysEnv));
 		for(int i = 0; i < v.size(); i++) {

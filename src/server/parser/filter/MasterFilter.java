@@ -46,7 +46,7 @@ public class MasterFilter extends Filter
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (p instanceof SDMSSubmittedEntity) {
 			try {

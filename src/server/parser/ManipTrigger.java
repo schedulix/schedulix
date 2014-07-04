@@ -74,7 +74,7 @@ public abstract class ManipTrigger extends Node
 	}
 
 	protected void analyzeResumeObj(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (resumeObj == null) return;
 		if (resumeObj instanceof WithHash) {
@@ -87,7 +87,7 @@ public abstract class ManipTrigger extends Node
 	}
 
 	protected void checkUniqueness(SystemEnvironment sysEnv, Long seId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector tv = SDMSTriggerTable.idx_fireId.getVector(sysEnv, seId);
 		int cnt = 0;
@@ -102,6 +102,6 @@ public abstract class ManipTrigger extends Node
 	}
 
 	public abstract void go(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 }
 

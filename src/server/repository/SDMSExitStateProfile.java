@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -47,7 +47,7 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 	}
 
 	public void validateMappingProfile(SystemEnvironment env, Long esmpId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long espId = getId(env);
 
@@ -74,13 +74,13 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 			}
 			if (found == false) {
 				throw new CommonErrorException (new SDMSMessage (env, "02111081735",
-				                                "Exit State Mapping not compatible with Exit State Profile"));
+					"Exit State Mapping not compatible with Exit State Profile"));
 			}
 		}
 	}
 
 	public void checkProfile(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long espId = getId(sysEnv);
 
@@ -107,17 +107,17 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 					SDMSExitStateMappingProfile se_esmp;
 					se_esmp = SDMSExitStateMappingProfileTable.getObject(sysEnv, se_esmpId);
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "02112191851",
-					                                "Exit State Mapping $1 of Job $2 not copatible with Profile",
-					                                se_esmp.getName(sysEnv), se.getName(sysEnv)));
+						"Exit State Mapping $1 of Job $2 not copatible with Profile",
+						se_esmp.getName(sysEnv), se.getName(sysEnv)));
 				}
 			}
 
 			Long timeoutStateId = se.getTimeoutStateId(sysEnv);
 			if(timeoutStateId != null && !SDMSExitStateTable.idx_espId_esdId.containsKey(sysEnv, new SDMSKey(espId, timeoutStateId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03311051011",
-				                               "Timeout state $1 of $2 not defined within profile",
-				                               SDMSExitStateDefinitionTable.getObject(sysEnv, timeoutStateId).getName(sysEnv),
-				                               se.pathString(sysEnv)));
+					"Timeout state $1 of $2 not defined within profile",
+					SDMSExitStateDefinitionTable.getObject(sysEnv, timeoutStateId).getName(sysEnv),
+					se.pathString(sysEnv)));
 			}
 
 			checkDependencies(sysEnv, espId, se);
@@ -127,11 +127,11 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 	}
 
 	private void checkDependencies(
-	        SystemEnvironment sysEnv,
-	        Long espId,
-	        SDMSSchedulingEntity se
-	)
-	throws SDMSException
+			SystemEnvironment sysEnv,
+			Long espId,
+			SDMSSchedulingEntity se
+		)
+		throws SDMSException
 	{
 
 		Vector v_es = SDMSExitStateTable.idx_espId.getVector(sysEnv, espId);
@@ -163,15 +163,15 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 				SDMSSchedulingEntity se_dep = SDMSSchedulingEntityTable.getObject(sysEnv, dd.getSeDependentId(sysEnv));
 				SDMSExitStateDefinition esd = SDMSExitStateDefinitionTable.getObject(sysEnv, esdId);
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "02112201408",
-				                               "Job $1 depends on Exit State $2 of Job $3, not longer a final exit state",
-				                               se_dep.pathString(sysEnv), esd.getName(sysEnv),se.pathString(sysEnv)
-				                                              ));
+					"Job $1 depends on Exit State $2 of Job $3, not longer a final exit state",
+					se_dep.pathString(sysEnv), esd.getName(sysEnv),se.pathString(sysEnv)
+					));
 			}
 		}
 	}
 
 	public boolean isPendingState(SystemEnvironment sysEnv, Long esdId, long seVersion)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		if (esdId == null) return false;
@@ -184,7 +184,7 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 	}
 
 	public Long getBrokenState(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(sysEnv.tx.mode == SDMSTransaction.READWRITE) {
 			return getBrokenState(sysEnv, Long.MAX_VALUE);
@@ -193,7 +193,7 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 		}
 	}
 	public Long getBrokenState(SystemEnvironment sysEnv, long seVersion)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitState es;
 		final Vector v;
@@ -208,7 +208,7 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 	}
 
 	public Long getUnreachableState(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(sysEnv.tx.mode == SDMSTransaction.READWRITE) {
 			return getUnreachableState(sysEnv, Long.MAX_VALUE);
@@ -217,7 +217,7 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 		}
 	}
 	public Long getUnreachableState(SystemEnvironment sysEnv, long seVersion)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitState es;
 		final Vector v;
@@ -232,7 +232,7 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 	}
 
 	public Integer getUnreachableStatePreference(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(sysEnv.tx.mode == SDMSTransaction.READWRITE) {
 			return getUnreachableStatePreference(sysEnv, Long.MAX_VALUE);
@@ -241,7 +241,7 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 		}
 	}
 	public Integer getUnreachableStatePreference(SystemEnvironment sysEnv, long seVersion)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitState es;
 		final Vector v;
@@ -256,13 +256,13 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getName(sysEnv);
 	}
 
 	public String getURL(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return "exit state profile " + getURLName(sysEnv);
 	}

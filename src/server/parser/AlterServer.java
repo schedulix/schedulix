@@ -61,7 +61,7 @@ public class AlterServer extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
 			Iterator i = sysEnv.cEnv.gid().iterator();
@@ -100,23 +100,23 @@ public class AlterServer extends Node
 			}
 			SystemEnvironment.setTraceLevel(traceLevel);
 			switch(traceLevel) {
-			case 0:
-				((ListenThread) list[i]).trace_off();
-				SDMSException.debugOff();
-				result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Server Trace disabled"));
-				break;
-			case 1:
-				SDMSException.debugOff();
-				result.setFeedback(new SDMSMessage(sysEnv, "03203191017", "Server Trace shows warnings"));
-				break;
-			case 2:
-				SDMSException.debugOff();
-				result.setFeedback(new SDMSMessage(sysEnv, "03203191019", "Server Trace shows messages"));
-				break;
-			default:
-				SDMSException.debugOn();
-				result.setFeedback(new SDMSMessage(sysEnv, "03203191020", "Server Trace shows everything"));
-				break;
+				case 0:
+					((ListenThread) list[i]).trace_off();
+					SDMSException.debugOff();
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Server Trace disabled"));
+					break;
+				case 1:
+					SDMSException.debugOff();
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191017", "Server Trace shows warnings"));
+					break;
+				case 2:
+					SDMSException.debugOff();
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191019", "Server Trace shows messages"));
+					break;
+				default:
+					SDMSException.debugOn();
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191020", "Server Trace shows everything"));
+					break;
 			}
 		}
 	}

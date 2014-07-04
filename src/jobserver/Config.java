@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -67,32 +67,27 @@ public class Config
 	public static final String CREATE_WORKDIR  = "CREATE_WORKDIR";
 
 	private static final String[] LONG_VALUES    = {REPO_PORT, TRACE_LEVEL, RECONNECT_DELAY, NOP_DELAY,
-	                                                NOTIFY_PORT, HTTP_PORT
-	                                               };
+							NOTIFY_PORT, HTTP_PORT};
 	private static final String[] BOOLEAN_VALUES = {USE_PATH, VERBOSE_LOGS, ONLINE_SERVER, USE_SSL,
-	                                                CREATE_WORKDIR
-	                                               };
+							CREATE_WORKDIR};
 	private static final String[] FILE_VALUES    = {DEFAULT_WORKDIR, JOB_EXECUTOR, JOB_FILE_PREFIX };
 	private static final String[] SECOND_VALUES  = {RECONNECT_DELAY, NOP_DELAY};
 	private static final String[] VECTOR_VALUES = {NAME_PATTERN};
 
 	private static final String[] REQUIRED = {REPO_HOST, REPO_PORT, REPO_USER, REPO_PASS};
 	private static final String[] WRITE_THROUGH = {REPO_HOST, REPO_PORT, REPO_USER, USE_SSL,
-	                                               KEYSTOREPW, TRUSTSTOREPW ,
-	                                               KEYSTORE, TRUSTSTORE
-	                                              };
+						       KEYSTOREPW, TRUSTSTOREPW ,
+						       KEYSTORE, TRUSTSTORE};
 	private static final String[] DEPRECATED = {RECONNECT_DELAY, NOP_DELAY, DEFAULT_WORKDIR, USE_PATH,
-	                                            VERBOSE_LOGS, NOP_DELAY, JOB_EXECUTOR, JOB_FILE_PREFIX,
-	                                            ENV_MAPPING, NOTIFY_PORT, ONLINE_SERVER, KEYSTORE, TRUSTSTORE,
-	                                            CREATE_WORKDIR
-	                                           };
+						    VERBOSE_LOGS, NOP_DELAY, JOB_EXECUTOR, JOB_FILE_PREFIX,
+						    ENV_MAPPING, NOTIFY_PORT, ONLINE_SERVER, KEYSTORE, TRUSTSTORE,
+						    CREATE_WORKDIR };
 	public static final String[] ALL_VALUES = {REPO_HOST, REPO_PORT, RECONNECT_DELAY, DEFAULT_WORKDIR,
-	                                           USE_PATH, VERBOSE_LOGS, TRACE_LEVEL, BOOTTIME, NOP_DELAY,
-	                                           JOB_EXECUTOR, JOB_FILE_PREFIX, ENV_MAPPING, DYNAMIC,
-	                                           NOTIFY_PORT, HTTP_PORT, HTTP_HOST, ONLINE_SERVER,
-	                                           NAME_PATTERN, KEYSTORE, TRUSTSTORE, KEYSTOREPW, TRUSTSTOREPW,
-	                                           USE_SSL, CREATE_WORKDIR
-	                                          };
+						   USE_PATH, VERBOSE_LOGS, TRACE_LEVEL, BOOTTIME, NOP_DELAY,
+						   JOB_EXECUTOR, JOB_FILE_PREFIX, ENV_MAPPING, DYNAMIC,
+						   NOTIFY_PORT, HTTP_PORT, HTTP_HOST, ONLINE_SERVER,
+						   NAME_PATTERN, KEYSTORE, TRUSTSTORE, KEYSTOREPW, TRUSTSTOREPW,
+						   USE_SSL, CREATE_WORKDIR};
 
 	private final File startupWorkdir;
 
@@ -105,23 +100,23 @@ public class Config
 	private static Boolean isWindows = null;
 
 	public static final String[] defaultKeys   = {	USE_PATH,
-	                                                VERBOSE_LOGS,
-	                                                RECONNECT_DELAY,
-	                                                NOP_DELAY,
-	                                                TRACE_LEVEL,
-	                                                BOOTTIME,
-	                                                ONLINE_SERVER,
-	                                                CREATE_WORKDIR
-	                                             };
+							VERBOSE_LOGS,
+							RECONNECT_DELAY,
+							NOP_DELAY,
+							TRACE_LEVEL,
+							BOOTTIME,
+							ONLINE_SERVER,
+							CREATE_WORKDIR
+						};
 	public static final Object[] defaultValues = {	Boolean.FALSE,
-	                                                Boolean.FALSE,
-	                                                new Long (30),
-	                                                new Long (5),
-	                                                new Integer (Trace.DEFAULT),
-	                                                "NONE",
-	                                                Boolean.TRUE,
-	                                                Boolean.FALSE
-	                                             };
+							Boolean.FALSE,
+							new Long (30),
+							new Long (5),
+							new Integer (Trace.DEFAULT),
+							"NONE",
+							Boolean.TRUE,
+							Boolean.FALSE
+						};
 
 	public static boolean isWindows()
 	{
@@ -143,7 +138,7 @@ public class Config
 	}
 
 	private final void initScanner()
-	throws IOException
+		throws IOException
 	{
 		scannerFile = new LineNumberReader (new InputStreamReader (new FileInputStream (cfgFileName)));
 		scanner = new StreamTokenizer (scannerFile);
@@ -164,7 +159,7 @@ public class Config
 	}
 
 	private final Object scanValue (final String what)
-	throws IOException, CommonErrorException
+		throws IOException, CommonErrorException
 	{
 		scanner.nextToken();
 		if ((scanner.ttype == '=') || (scanner.ttype == ':'))
@@ -188,7 +183,7 @@ public class Config
 	}
 
 	private final void scanFile()
-	throws IOException, CommonErrorException
+		throws IOException, CommonErrorException
 	{
 		final HashMap envMapping = new HashMap();
 
@@ -230,7 +225,7 @@ public class Config
 	}
 
 	public Config (final String configFileName)
-	throws CommonErrorException
+		throws CommonErrorException
 	{
 		super();
 
@@ -447,7 +442,7 @@ public class Config
 	}
 
 	private final Vector readAllLines()
-	throws IOException
+		throws IOException
 	{
 		final Vector allLines = new Vector();
 
@@ -465,7 +460,7 @@ public class Config
 	}
 
 	private final void writeAllLines (final Vector allLines)
-	throws IOException
+		throws IOException
 	{
 		final RandomAccessFile outFil = new RandomAccessFile (cfgFileName, "rws");
 		try {
@@ -481,7 +476,7 @@ public class Config
 	}
 
 	private final void skipValue()
-	throws IOException
+		throws IOException
 	{
 		scanner.nextToken();
 		if ((scanner.ttype == '=') || (scanner.ttype == ':'))
@@ -489,7 +484,7 @@ public class Config
 	}
 
 	private final Vector getNoOfAllLines (final String key)
-	throws IOException
+		throws IOException
 	{
 		final Vector result = new Vector();
 
@@ -540,7 +535,7 @@ public class Config
 	}
 
 	private final void updateConfigFile (final String key, final Object newValue)
-	throws IOException
+		throws IOException
 	{
 		final String placeHolder = key + " = THIS_WILL_BE_REPLACED!!!";
 
@@ -597,7 +592,7 @@ public class Config
 	}
 
 	private final void updateConfigFile (final String key)
-	throws IOException
+		throws IOException
 	{
 		final Vector allLines = readAllLines();
 

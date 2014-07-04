@@ -65,7 +65,7 @@ public class MoveJobDefinition extends Node
 	}
 
 	private void moveJobDefinition(SystemEnvironment sysEnv, SDMSSchedulingEntity se)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFolder f;
 		Long folderId;
@@ -86,7 +86,7 @@ public class MoveJobDefinition extends Node
 
 		if(SDMSFolderTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(folderId, name))) {
 			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "02204160909", "Object with name $1 already exists within $2",
-			                                name, f.pathString(sysEnv)));
+				name, f.pathString(sysEnv)));
 		}
 
 		se.set_FolderIdName (sysEnv, folderId, name);
@@ -95,12 +95,12 @@ public class MoveJobDefinition extends Node
 	}
 
 	private void renameJobDefinition(SystemEnvironment sysEnv, SDMSSchedulingEntity se)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		if(SDMSFolderTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(se.getFolderId(sysEnv), newName))) {
 			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03112161224", "Object with name $1 already exists",
-			                                newName));
+				newName));
 		}
 		se.setName (sysEnv, newName);
 
@@ -108,7 +108,7 @@ public class MoveJobDefinition extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.get(sysEnv, path1, name1);

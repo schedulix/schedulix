@@ -51,7 +51,7 @@ public class ShowExitStateProfile extends ShowCommented
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSExitStateProfile esp;
 		SDMSOutputContainer d_container = null;
@@ -166,7 +166,7 @@ public class ShowExitStateProfile extends ShowCommented
 		data.add(s_container);
 
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage(sysEnv, "02111082039", "Exit State Profile"), desc, data);
+			new SDMSMessage(sysEnv, "02111082039", "Exit State Profile"), desc, data);
 
 		result.setOutputContainer(d_container);
 

@@ -52,7 +52,7 @@ public class CopyDistribution extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_POOL);
 		result.setFeedback(new SDMSMessage(sysEnv,"03603241414", "Distribution copied"));

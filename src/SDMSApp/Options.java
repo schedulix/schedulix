@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -94,8 +94,7 @@ public class Options
 		} else {
 			b.append("<true|false>");
 		}
-		do b.append(" ");
-		while (b.length() < OPT_WIDTH);
+		do b.append(" "); while (b.length() < OPT_WIDTH);
 		b.append(formatDoc(o.doc));
 		b.append("\n");
 		return b;
@@ -195,10 +194,7 @@ public class Options
 		return true;
 	}
 
-	public Vector getRest()
-	{
-		return rest;
-	}
+	public Vector getRest() { return rest; }
 
 	public String getValue(String key)
 	{
@@ -240,7 +236,7 @@ public class Options
 			Enumeration e = props.propertyNames();
 			Option o = null;
 
-			MAIN:			while (e.hasMoreElements()) {
+MAIN:			while (e.hasMoreElements()) {
 				String key = (String) e.nextElement();
 				if (ignoreKeys != null)
 					for (int i = 0; i < ignoreKeys.length; ++i) {

@@ -79,7 +79,7 @@ public abstract class Node
 	}
 
 	public abstract void go(SystemEnvironment sysEnv)
-	throws SDMSException;
+		throws SDMSException;
 
 	public void setContextVersion(Long l)
 	{
@@ -97,7 +97,7 @@ public abstract class Node
 	}
 
 	public void render(PrintStream o)
-	throws FatalException
+		throws FatalException
 	{
 		env.renderer().render(o, result);
 	}

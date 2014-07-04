@@ -65,7 +65,7 @@ public class CreateTrigger extends ManipTrigger
 	}
 
 	private void checkJobWith(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		oType = SDMSTrigger.JOB_DEFINITION;
 		objpath = (Vector) objType.value;
@@ -105,7 +105,7 @@ public class CreateTrigger extends ManipTrigger
 			triggerJob = SDMSSchedulingEntityTable.get(sysEnv, folderpath, null);
 			if(!triggerJob.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
 				throw new AccessViolationException(
-				        new SDMSMessage(sysEnv, "03402131550", "Submit privilege on $1 missing", triggerJob.pathString(sysEnv))
+					new SDMSMessage(sysEnv, "03402131550", "Submit privilege on $1 missing", triggerJob.pathString(sysEnv))
 				);
 			seId = triggerJob.getId(sysEnv);
 			action = new Integer(SDMSTrigger.SUBMIT);
@@ -149,7 +149,7 @@ public class CreateTrigger extends ManipTrigger
 				if(tt != SDMSTrigger.AFTER_FINAL) {
 					if(!isMaster.booleanValue())
 						throw new CommonErrorException(
-						        new SDMSMessage(sysEnv, "03209201514", "Triggertype must be after final for non-master triggers on milestones"));
+							new SDMSMessage(sysEnv, "03209201514", "Triggertype must be after final for non-master triggers on milestones"));
 				}
 			}
 			if(tt == SDMSTrigger.UNTIL_FINISHED || tt == SDMSTrigger.UNTIL_FINAL) {
@@ -175,12 +175,12 @@ public class CreateTrigger extends ManipTrigger
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03108091437", "Master option not valid for rerun triggers"));
 			}
 			if((mainJob == null && !triggerJob.getMasterSubmittable(sysEnv).booleanValue()) ||
-			    (mainJob != null && !mainJob.getMasterSubmittable(sysEnv).booleanValue()))
+			   (mainJob != null && !mainJob.getMasterSubmittable(sysEnv).booleanValue()))
 				throw new CommonErrorException(
-				        new SDMSMessage(sysEnv, "03301280208", "Master trigger defined for non master submittable job"));
+						new SDMSMessage(sysEnv, "03301280208", "Master trigger defined for non master submittable job"));
 			if(!with.containsKey(ParseStr.S_GROUP))
 				throw new CommonErrorException(
-				        new SDMSMessage(sysEnv, "02402180658", "Group clause is mandatory for master triggers"));
+						new SDMSMessage(sysEnv, "02402180658", "Group clause is mandatory for master triggers"));
 
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
@@ -222,10 +222,10 @@ public class CreateTrigger extends ManipTrigger
 			check = (WithHash) with.get(ParseStr.S_CHECK);
 			if(condition == null)
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03407271556",
-				                               "Asynchroneous triggers are only valid in combination with a condition"));
+							"Asynchroneous triggers are only valid in combination with a condition"));
 			if(triggertype.intValue() != SDMSTrigger.UNTIL_FINISHED && triggertype.intValue() != SDMSTrigger.UNTIL_FINAL)
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03407271557",
-				                               "Check periods are only valid for asynchroneous triggers"));
+							"Check periods are only valid for asynchroneous triggers"));
 			checkAmount = (Integer) check.get(ParseStr.S_MULT);
 			checkBase = (Integer) check.get(ParseStr.S_INTERVAL);
 		} else	{
@@ -235,7 +235,7 @@ public class CreateTrigger extends ManipTrigger
 	}
 
 	private void checkWith(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(objType.key.equals(ParseStr.S_JOB)) {
 			checkJobWith(sysEnv);
@@ -260,7 +260,7 @@ public class CreateTrigger extends ManipTrigger
 			if (!(tt == SDMSTrigger.BEFORE_FINAL ||
 			      tt == SDMSTrigger.IMMEDIATE_LOCAL ||
 			      tt == SDMSTrigger.IMMEDIATE_MERGE
-			     )) {
+			   )) {
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXTENDED_TRIGGERS);
 			}
 		}
@@ -268,7 +268,7 @@ public class CreateTrigger extends ManipTrigger
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSTrigger t;
 		Long tId;
@@ -287,9 +287,9 @@ public class CreateTrigger extends ManipTrigger
 
 		try {
 			t = SDMSTriggerTable.table.create(sysEnv, name, fireId, objectType, seId, mainSeId, parentSeId, active, action,
-			                                  triggertype, isMaster, isSuspend, isCreate, isChange, isDelete, isGroup,
-			                                  resumeAt, resumeIn, resumeBase, isWarnOnLimit, maxRetry, gId, condition,
-			                                  checkAmount, checkBase);
+							triggertype, isMaster, isSuspend, isCreate, isChange, isDelete, isGroup,
+							resumeAt, resumeIn, resumeBase, isWarnOnLimit, maxRetry, gId, condition,
+							checkAmount, checkBase);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
 				AlterTrigger at = new AlterTrigger(name, fireId, objectType.intValue(), with, Boolean.FALSE);

@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -40,29 +40,31 @@ public class SDMSResourceAllocationTable extends SDMSResourceAllocationTableGene
 {
 
 	public SDMSResourceAllocationTable(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		super(env);
 	}
 	public SDMSResourceAllocation create(SystemEnvironment env
-	                                     ,Long p_rId
-	                                     ,Long p_smeId
-	                                     ,Long p_nrId
-	                                     ,Integer p_amount
-	                                     ,Integer p_origAmount
-	                                     ,Integer p_keepMode
-	                                     ,Boolean p_isSticky
-	                                     ,String p_stickyName
-	                                     ,Long p_stickyParent
-	                                     ,Integer p_allocationType
-	                                     ,Long p_rsmpId
-	                                     ,Integer p_lockmode
-	                                     ,Integer p_refcount
-	                                    )
-	throws SDMSException
+						,Long p_rId
+						,Long p_smeId
+						,Long p_nrId
+						,Integer p_amount
+						,Integer p_origAmount
+						,Integer p_keepMode
+						,Boolean p_isSticky
+						,String p_stickyName
+						,Long p_stickyParent
+						,Integer p_allocationType
+						,Long p_rsmpId
+						,Integer p_lockmode
+						,Integer p_refcount
+		)
+		throws SDMSException
 	{
 		int p_allocType = p_allocationType.intValue();
-		if(p_allocType != SDMSResourceAllocation.REQUEST && p_allocType != SDMSResourceAllocation.IGNORE) {
+		if(p_allocType != SDMSResourceAllocation.REQUEST &&
+		   p_allocType != SDMSResourceAllocation.MASTER_REQUEST &&
+		   p_allocType != SDMSResourceAllocation.IGNORE) {
 			SDMSResource r;
 			r = SDMSResourceTable.getObject(env, p_rId);
 			Integer rAmount = r.getFreeAmount(env);
@@ -73,19 +75,19 @@ public class SDMSResourceAllocationTable extends SDMSResourceAllocationTableGene
 			}
 		}
 		return super.create( env
-		                     , p_rId
-		                     , p_smeId
-		                     , p_nrId
-		                     , p_amount
-		                     , p_origAmount
-		                     , p_keepMode
-		                     , p_isSticky
-		                     , p_stickyName
-		                     , p_stickyParent
-		                     , p_allocationType
-		                     , p_rsmpId
-		                     , p_lockmode
-		                     , p_refcount
-		                   );
+					, p_rId
+					, p_smeId
+					, p_nrId
+					, p_amount
+					, p_origAmount
+					, p_keepMode
+					, p_isSticky
+					, p_stickyName
+					, p_stickyParent
+					, p_allocationType
+					, p_rsmpId
+					, p_lockmode
+					, p_refcount
+		);
 	}
 }

@@ -54,7 +54,7 @@ public class LinkResource extends ManipResource
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSResource r = (SDMSResource) resource.resolve(sysEnv);
@@ -69,7 +69,7 @@ public class LinkResource extends ManipResource
 		HashSet groups = sysEnv.cEnv.gid();
 		if(!groups.contains(gId) && !groups.contains(SDMSObject.adminGId))
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "03402260151",
-			                                   "You cannot create a resource with a group you do not belong to"));
+				"You cannot create a resource with a group you do not belong to"));
 
 		tag = null;
 		traceInterval = null;
@@ -85,8 +85,8 @@ public class LinkResource extends ManipResource
 
 		try {
 			r = SDMSResourceTable.table.create(sysEnv, nrId, sId, null, gId, linkTo, null, null, null, null, null,
-			                                   null, null, null, null, null, null, null, baseMultiplier,
-			                                   fzero, fzero, fzero, fzero, new Long(0), new Long(0));
+								null, null, null, null, null, null, null, baseMultiplier,
+								fzero, fzero, fzero, fzero, new Long(0), new Long(0));
 		} catch (DuplicateKeyException dke) {
 			if (!force) throw dke;
 			replaced = true;
@@ -100,8 +100,8 @@ public class LinkResource extends ManipResource
 
 					r.delete(sysEnv);
 					r = SDMSResourceTable.table.create(sysEnv, nrId, sId, null, gId, linkTo, null, null, null, null, null,
-					                                   null, null, null, null, null, null, null, baseMultiplier,
-					                                   fzero, fzero, fzero, fzero, new Long(0), new Long(0));
+									null, null, null, null, null, null, null, baseMultiplier,
+									fzero, fzero, fzero, fzero, new Long(0), new Long(0));
 				}
 			}
 		}
@@ -115,7 +115,7 @@ public class LinkResource extends ManipResource
 	}
 
 	private void check_link(SystemEnvironment sysEnv, SDMSResource r, Long sId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long scopeId = r.getScopeId(sysEnv);
 		SDMSScope s;
@@ -123,11 +123,11 @@ public class LinkResource extends ManipResource
 			s = SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv));
 		} catch (NotFoundException nfe) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03107151544",
-			                               "The resource linked to must reside within a scope"));
+				"The resource linked to must reside within a scope"));
 		}
 		if (sId.equals(s.getId(sysEnv))) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03107151545",
-			                               "The resource linked to must reside within a different scope"));
+				"The resource linked to must reside within a different scope"));
 		}
 
 		Long linkId = r.getLinkId(sysEnv);
@@ -136,7 +136,7 @@ public class LinkResource extends ManipResource
 			Long lsId = lr.getScopeId(sysEnv);
 			if (lsId.equals(sId)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03108021409",
-				                               "The resource link cycle detected"));
+					"The resource link cycle detected"));
 			}
 			linkId = lr.getLinkId(sysEnv);
 		}

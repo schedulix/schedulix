@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -83,24 +83,24 @@ public class SDMSPrivilege
 	public final static long MANAGE_SEL		= 0x0000400000000000L;
 
 	private final static long VALID_BITS		= CREATE|CREATE_CONTENT|CREATE_PARENT_CONTENT|DROP|
-	                EDIT|MONITOR|OPERATE|SUBMIT|USE|VIEW|GRANT|RESOURCE|
-	                EXECUTE|MANAGE_USER|MANAGE_GROUP|MANAGE_ESD|MANAGE_ESP|
-	                MANAGE_ESM|MANAGE_EST|MANAGE_RSD|MANAGE_RSP|MANAGE_RSM|
-	                MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL;
+							  EDIT|MONITOR|OPERATE|SUBMIT|USE|VIEW|GRANT|RESOURCE|
+							  EXECUTE|MANAGE_USER|MANAGE_GROUP|MANAGE_ESD|MANAGE_ESP|
+							  MANAGE_ESM|MANAGE_EST|MANAGE_RSD|MANAGE_RSP|MANAGE_RSM|
+							  MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL;
 
 	private final static long INVALID_BITS		= ~VALID_BITS;
 
 	public final static long ALL			= CREATE|CREATE_CONTENT|DROP|RESOURCE|EXECUTE|
-	                EDIT|MONITOR|OPERATE|SUBMIT|USE|VIEW|GRANT;
+							  EDIT|MONITOR|OPERATE|SUBMIT|USE|VIEW|GRANT;
 
 	public final static long MANAGE_ALL		= MANAGE_USER|MANAGE_GROUP|MANAGE_ESD|MANAGE_ESP|
-	                MANAGE_ESM|MANAGE_EST|MANAGE_RSD|MANAGE_RSP|MANAGE_RSM|
-	                MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL;
+							  MANAGE_ESM|MANAGE_EST|MANAGE_RSD|MANAGE_RSP|MANAGE_RSM|
+							  MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL;
 
 	public final static long MANAGE_PRIVS[] = 	{ MANAGE_USER, MANAGE_GROUP, MANAGE_ESD, MANAGE_ESP,
-	                MANAGE_ESM, MANAGE_EST, MANAGE_RSD, MANAGE_RSP, MANAGE_RSM,
-	                MANAGE_FP, MANAGE_ENV, MANAGE_SYS, MANAGE_SEL
-	                                           };
+							  MANAGE_ESM, MANAGE_EST, MANAGE_RSD, MANAGE_RSP, MANAGE_RSM,
+							  MANAGE_FP, MANAGE_ENV, MANAGE_SYS, MANAGE_SEL
+							};
 
 	public final static long NOPRIVS		= 0x0000000000000000L;
 
@@ -110,8 +110,7 @@ public class SDMSPrivilege
 
 	private final static HashMap mapper = new HashMap();
 
-	static
-	{
+	static {
 		mapper.put(new Integer(Parser.VIEW),		new Long(SDMSPrivilege.VIEW));
 		mapper.put(new Integer(Parser.USE),		new Long(SDMSPrivilege.USE));
 		mapper.put(new Integer(Parser.EDIT),		new Long(SDMSPrivilege.EDIT));
@@ -130,7 +129,7 @@ public class SDMSPrivilege
 	}
 
 	public SDMSPrivilege(SystemEnvironment sysEnv, long p)
-	throws SDMSException
+		throws SDMSException
 	{
 		if((p & INVALID_BITS) != 0) {
 
@@ -145,7 +144,7 @@ public class SDMSPrivilege
 	}
 
 	public void addPriv(SystemEnvironment sysEnv, long p)
-	throws SDMSException
+		throws SDMSException
 	{
 		if((p & INVALID_BITS) != 0)	{
 
@@ -155,13 +154,13 @@ public class SDMSPrivilege
 	}
 
 	public void addPriv(SystemEnvironment sysEnv, SDMSPrivilege p)
-	throws SDMSException
+		throws SDMSException
 	{
 		priv |= p.priv;
 	}
 
 	public void delPriv(SystemEnvironment sysEnv, long p)
-	throws SDMSException
+		throws SDMSException
 	{
 		if((p & INVALID_BITS) != 0) {
 
@@ -171,7 +170,7 @@ public class SDMSPrivilege
 	}
 
 	public void setPriv(SystemEnvironment sysEnv, long p)
-	throws SDMSException
+		throws SDMSException
 	{
 		if((p & INVALID_BITS) != 0) {
 

@@ -60,7 +60,7 @@ public class CleanupFolder
 	}
 
 	public void go (final SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Vector folders = new Vector();
@@ -105,8 +105,8 @@ public class CleanupFolder
 			SDMSParameterDefinition pd = SDMSParameterDefinitionTable.getObject(sysEnv, (Long) i.next());
 			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, pd.getSeId(sysEnv));
 			throw new CommonErrorException (new SDMSMessage(sysEnv, "02707191115", "Parameter Reference from $1 ($2) still exists",
-			                                se.pathString(sysEnv),
-			                                pd.getName(sysEnv)));
+						se.pathString(sysEnv),
+						pd.getName(sysEnv)));
 		}
 		result.setFeedback(new SDMSMessage(sysEnv, "02707191116", "Cleanup completed"));
 	}

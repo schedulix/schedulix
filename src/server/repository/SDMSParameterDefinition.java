@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -47,13 +47,13 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 	}
 
 	public void delete(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		delete(sysEnv, false, null);
 	}
 
 	public void delete(SystemEnvironment sysEnv, boolean force, HashSet links)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long id = getId(sysEnv);
 		Vector v = SDMSParameterDefinitionTable.idx_linkPdId.getVector(sysEnv, id);
@@ -62,9 +62,9 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 				SDMSParameterDefinition pd = (SDMSParameterDefinition) v.get(0);
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, pd.getSeId(sysEnv));
 				throw new CommonErrorException(
-				        new SDMSMessage(sysEnv, "03402082327",
-				                        "The parameter $1 is referenced by $2", getName(sysEnv), pd.getURL(sysEnv)
-				                       )
+						new SDMSMessage(sysEnv, "03402082327",
+							"The parameter $1 is referenced by $2", getName(sysEnv), pd.getURL(sysEnv)
+						)
 				);
 			} else {
 				if(force) {
@@ -86,7 +86,7 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSProxy p = null;
 		final Long seId = getSeId(sysEnv);
@@ -108,7 +108,7 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 	}
 
 	public String getURL(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return "parameter " + getURLName(sysEnv);
 	}

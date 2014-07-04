@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -47,7 +47,7 @@ public class Server
 	private static HashMap feilMap = null;
 
 	public Server (final String config_filnam)
-	throws CommonErrorException
+		throws CommonErrorException
 	{
 		cfg = new Config (config_filnam);
 		ri  = new RepoIface (cfg);
@@ -56,8 +56,8 @@ public class Server
 	public static final String getVersionInfo()
 	{
 		return "Jobserver (server) " + Utils.getVersion() + "\n"
-		       + Utils.getCopyright() + " " + Utils.getCompany()  + "\n"
-		       + "All rights reserved";
+			+ Utils.getCopyright() + " " + Utils.getCompany()  + "\n"
+			+ "All rights reserved";
 	}
 
 	public static final synchronized Feil getFeil(Config cfg, String jid)
@@ -137,7 +137,7 @@ public class Server
 				catch (final IOException ioe) {
 					feil.close();
 					ri.notifyError (RepoIface.NONFATAL,
-					                "(04301271508) Open() failed on jobfile " + feil.getFilename() + ": " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
+						"(04301271508) Open() failed on jobfile " + feil.getFilename() + ": " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
 					continue;
 				}
 

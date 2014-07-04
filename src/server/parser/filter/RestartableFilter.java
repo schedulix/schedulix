@@ -49,7 +49,7 @@ public class RestartableFilter extends Filter
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
@@ -57,11 +57,11 @@ public class RestartableFilter extends Filter
 			if(stateType.intValue() == SDMSExitState.RESTARTABLE) {
 				if(sme.getJobIsRestartable(sysEnv).booleanValue()) return true;
 				if(s == SDMSSubmittedEntity.BROKEN_ACTIVE ||
-				    s == SDMSSubmittedEntity.BROKEN_FINISHED ||
-				    s == SDMSSubmittedEntity.ERROR) return true;
+				   s == SDMSSubmittedEntity.BROKEN_FINISHED ||
+				   s == SDMSSubmittedEntity.ERROR) return true;
 			}
 			if(s != SDMSSubmittedEntity.FINAL &&
-			    s != SDMSSubmittedEntity.FINISHED) return false;
+			   s != SDMSSubmittedEntity.FINISHED) return false;
 			if(stateType.intValue() == SDMSExitState.FINAL) {
 				if(!sme.getJobIsFinal(sysEnv).booleanValue()) return false;
 				return true;

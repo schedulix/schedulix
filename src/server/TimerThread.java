@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -63,7 +63,7 @@ class TimeSchedule
 	}
 
 	public void go (final SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		switch (action) {
 		case SCHEDULE:
@@ -132,7 +132,7 @@ public class TimerThread
 	}
 
 	private final void loadLastRun (final SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			final SDMSPersistentValue persVal = SDMSPersistentValueTable.idx_name_getUnique (sysEnv, LAST_SCHEDULE_RUN);
@@ -152,7 +152,7 @@ public class TimerThread
 	}
 
 	private final void setLastRunToNow (final SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final SDMSPersistentValue persVal = SDMSPersistentValueTable.idx_name_getUnique (sysEnv, LAST_SCHEDULE_RUN);
 		persVal.setIntValue (sysEnv, new Integer (now.toMinutes()));
@@ -171,7 +171,7 @@ public class TimerThread
 	}
 
 	private final void doSubmit (final SystemEnvironment sysEnv, final SDMSEvent evt, final Long ownerId, final TimerDate triggerDate, final TimerDate suspendNow)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		final Long evtId = evt.getId (sysEnv);
@@ -200,7 +200,7 @@ public class TimerThread
 		final Boolean doSuspend = (forceSuspend || submitSuspended) ? Boolean.TRUE : Boolean.FALSE;
 
 		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, parmList, doSuspend, null ,
-		                                ownerId, null , "Event " + evt.getName (sysEnv));
+								ownerId, null , "Event " + evt.getName (sysEnv));
 
 		if (forceSuspend) {
 
@@ -211,13 +211,13 @@ public class TimerThread
 	}
 
 	private final void doSchedule (final SystemEnvironment sysEnv, final SDMSScheduledEvent scev)
-	throws SDMSException
+		throws SDMSException
 	{
 		doSchedule(sysEnv, scev, true);
 	}
 
 	private final void doSchedule (final SystemEnvironment sysEnv, final SDMSScheduledEvent scev, boolean submit)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		long startTimeInMillis = new Date().getTime();
@@ -302,9 +302,9 @@ public class TimerThread
 					submit_and_set (sysEnv, scev, evt, ownerId, lastDate, suspendNow);
 
 				if (   backlogHandling == SDMSScheduledEvent.NONE
-				       && aliveSinceLong
-				       && lastDate != null
-				       && ! trigDate.isNaD() && !trigDate.eq (now))
+				    && aliveSinceLong
+				    && lastDate != null
+				    && ! trigDate.isNaD() && !trigDate.eq (now))
 
 					submit_and_set (sysEnv, scev, evt, ownerId, lastDate, suspendNow);
 
@@ -338,8 +338,8 @@ public class TimerThread
 	}
 
 	private final void submit_and_set (final SystemEnvironment sysEnv, final SDMSScheduledEvent scev, final SDMSEvent evt, final Long ownerId, final TimerDate triggerDate,
-	                                   final TimerDate suspendNow)
-	throws SDMSException
+					   final TimerDate suspendNow)
+		throws SDMSException
 	{
 		try {
 			doSubmit (sysEnv, evt, ownerId, triggerDate, suspendNow);
@@ -352,7 +352,7 @@ public class TimerThread
 	}
 
 	private final void retire (final SystemEnvironment sysEnv, final SDMSScheduledEvent scev, final SDMSException e)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		final String msg = e.toString();
@@ -374,7 +374,7 @@ public class TimerThread
 	}
 
 	private final void scheduleAll (final SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		current = 0;
@@ -414,7 +414,7 @@ public class TimerThread
 	}
 
 	private final void createError (final SystemEnvironment sysEnv, final SDMSScheduledEvent scev, final String errorMsg)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		final Long evtId = scev.getEvtId (sysEnv);
@@ -427,7 +427,7 @@ public class TimerThread
 	}
 
 	final void initialize (final SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		loadNow();
@@ -437,7 +437,7 @@ public class TimerThread
 	}
 
 	public synchronized void schedule (final SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		loadNow();
@@ -449,7 +449,7 @@ public class TimerThread
 	}
 
 	public synchronized void notifyChange (final SystemEnvironment sysEnv, final SDMSEvent evt, final int action)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		if (action != ALTER)
@@ -460,7 +460,7 @@ public class TimerThread
 	private final HashSet ivalIds = new HashSet();
 
 	public synchronized final void notifyChange (final SystemEnvironment sysEnv, final SDMSInterval ival, final int action)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		if (action != ALTER)
@@ -489,7 +489,7 @@ public class TimerThread
 	}
 
 	private final void collectIvals (final SystemEnvironment sysEnv, final Long ivalId)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		ivalIds.add (ivalId);
@@ -515,7 +515,7 @@ public class TimerThread
 	}
 
 	public synchronized final void notifyChange (final SystemEnvironment sysEnv, final SDMSSchedule sce, final int action)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		final Long sceId = sce.getId (sysEnv);
@@ -534,7 +534,7 @@ public class TimerThread
 	}
 
 	public synchronized final void notifyChange (final SystemEnvironment sysEnv, final SDMSScheduledEvent scev, final int action)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		switch (action) {

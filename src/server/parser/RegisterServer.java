@@ -57,7 +57,7 @@ public class RegisterServer extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope s;
 		if(name == null) {
@@ -74,7 +74,7 @@ public class RegisterServer extends Node
 	}
 
 	private SDMSScope registerByOperator(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long parentId;
 
@@ -97,7 +97,7 @@ public class RegisterServer extends Node
 	}
 
 	private SDMSScope deregisterByOperator(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long parentId;
 
@@ -117,19 +117,19 @@ public class RegisterServer extends Node
 			int state = sme.getState(sysEnv).intValue();
 			int newState = SDMSSubmittedEntity.BROKEN_FINISHED;
 			switch (state) {
-			case SDMSSubmittedEntity.STARTED:
-			case SDMSSubmittedEntity.RUNNING:
-			case SDMSSubmittedEntity.TO_KILL:
-			case SDMSSubmittedEntity.KILLED:
-			case SDMSSubmittedEntity.BROKEN_ACTIVE:
-				sme.releaseResources(sysEnv, newState);
+				case SDMSSubmittedEntity.STARTED:
+				case SDMSSubmittedEntity.RUNNING:
+				case SDMSSubmittedEntity.TO_KILL:
+				case SDMSSubmittedEntity.KILLED:
+				case SDMSSubmittedEntity.BROKEN_ACTIVE:
+					sme.releaseResources(sysEnv, newState);
 
-				sme.setErrorMsg(sysEnv, "Jobserver deregistered");
-				sme.setState(sysEnv, new Integer(newState));
-				break;
-			case SDMSSubmittedEntity.STARTING:
-				sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.RUNNABLE));
-				break;
+					sme.setErrorMsg(sysEnv, "Jobserver deregistered");
+					sme.setState(sysEnv, new Integer(newState));
+					break;
+				case SDMSSubmittedEntity.STARTING:
+					sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.RUNNABLE));
+					break;
 			}
 		}
 
@@ -139,7 +139,7 @@ public class RegisterServer extends Node
 	}
 
 	private SDMSScope registerByServer(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope s = SDMSScopeTable.getObject(sysEnv, sysEnv.cEnv.uid());
 		s.setIsRegistered(sysEnv, Boolean.TRUE);

@@ -63,7 +63,7 @@ public class MoveScope extends Node
 	}
 
 	private void moveScope(SystemEnvironment sysEnv, SDMSScope f)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope p;
 		String name;
@@ -106,7 +106,7 @@ public class MoveScope extends Node
 	}
 
 	private void renameScope(SystemEnvironment sysEnv, SDMSScope f)
-	throws SDMSException
+		throws SDMSException
 	{
 		f.setName(sysEnv, newName);
 
@@ -114,7 +114,7 @@ public class MoveScope extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope f, p;
 		String name;

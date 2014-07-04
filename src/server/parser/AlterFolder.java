@@ -54,7 +54,7 @@ public class AlterFolder extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		String envName;
 		Long envId;
@@ -101,7 +101,7 @@ public class AlterFolder extends Node
 		if (with.containsKey(ParseStr.S_GROUP) || with.containsKey(ParseStr.S_GROUP_CASCADE)) {
 			if(with.containsKey(ParseStr.S_GROUP) && with.containsKey(ParseStr.S_GROUP_CASCADE))
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03402031527",
-				                               "You cannot specify both the group and the group cascade clause"));
+						"You cannot specify both the group and the group cascade clause"));
 			final String gName;
 			if (with.containsKey(ParseStr.S_GROUP_CASCADE)) {
 				gName = (String) with.get(ParseStr.S_GROUP_CASCADE);
@@ -109,7 +109,7 @@ public class AlterFolder extends Node
 				gName = (String) with.get(ParseStr.S_GROUP);
 			}
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			                         sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId);
 			f.setOwnerId(sysEnv, gId);
 			if (with.containsKey(ParseStr.S_GROUP_CASCADE)) {
@@ -121,7 +121,7 @@ public class AlterFolder extends Node
 	}
 
 	private void setChildOwner (SystemEnvironment sysEnv,Long pId, Long gId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v_c = SDMSFolderTable.idx_parentId.getVector (sysEnv, pId);
 		Iterator i_c = v_c.iterator();

@@ -52,7 +52,7 @@ public class DropNamedResource extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedResource nr;
 
@@ -71,7 +71,7 @@ public class DropNamedResource extends Node
 	}
 
 	private void dropNamedResource(SystemEnvironment sysEnv, SDMSNamedResource nr)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector rv;
 		final Long nrId = nr.getId(sysEnv);

@@ -45,7 +45,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 	}
 
 	protected void checkDependents(SystemEnvironment sysEnv, Long seId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector ddv = SDMSDependencyDefinitionTable.idx_seRequiredId.getVector(sysEnv, seId);
 		for(int i = 0; i < ddv.size(); i++) {
@@ -53,14 +53,14 @@ public class AlterJobDefinition extends ManipJobDefinition
 			if(dd.getMode(sysEnv).intValue() == SDMSDependencyDefinition.JOB_FINAL) {
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, dd.getSeDependentId(sysEnv));
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03210141809",
-				                               "JOB_FINAL Dependent $1 prohibits conversion from Job to Batch or Milestone",
-				                               se.pathVector(sysEnv)));
+					"JOB_FINAL Dependent $1 prohibits conversion from Job to Batch or Milestone",
+					se.pathVector(sysEnv)));
 			}
 		}
 	}
 
 	private void diffDependencies(SystemEnvironment sysEnv, Long seId, Vector dependencydeflist)
-	throws SDMSException
+		throws SDMSException
 	{
 		int idx;
 		SDMSDependencyDefinition dd;
@@ -154,7 +154,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 	}
 
 	private void diffDependencyState(SystemEnvironment sysEnv, SDMSDependencyDefinition dd, Vector rStateNames, SDMSSchedulingEntity se)
-	throws SDMSException
+		throws SDMSException
 	{
 		int idx;
 		Long ddId = dd.getId(sysEnv);
@@ -187,7 +187,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 						esd = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, dn);
 					} catch (NotFoundException nfe) {
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03205010115",
-						                               "Exit State $1 does not exist",	dn));
+							"Exit State $1 does not exist",	dn));
 					}
 					SDMSExitState es = null;
 					Long esdId = esd.getId(sysEnv);
@@ -196,14 +196,14 @@ public class AlterJobDefinition extends ManipJobDefinition
 					} catch (NotFoundException nfe) {
 						SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, rEspId);
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03205010116",
-						                               "Exit State $1 not in Exit State Profile $2 of $3",
-						                               dn, esp.getName(sysEnv), se.pathString(sysEnv)));
+							"Exit State $1 not in Exit State Profile $2 of $3",
+							dn, esp.getName(sysEnv), se.pathString(sysEnv)));
 					}
 					if (!es.getIsFinal(sysEnv).booleanValue()) {
 						SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, rEspId);
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03205010117",
-						                               "Exit State $1 in Exit State Profile $2 of $3 must be a final state",
-						                               dn, esp.getName(sysEnv), se.pathString(sysEnv)));
+							"Exit State $1 in Exit State Profile $2 of $3 must be a final state",
+							dn, esp.getName(sysEnv), se.pathString(sysEnv)));
 					}
 					SDMSDependencyStateTable.table.create(sysEnv, ddId, esdId, condition);
 				}
@@ -216,7 +216,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 	}
 
 	private void diffChildren(SystemEnvironment sysEnv, SDMSSchedulingEntity se, Vector childdeflist)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSchedulingHierarchy sh;
 		int idx;
@@ -337,11 +337,11 @@ public class AlterJobDefinition extends ManipJobDefinition
 					estpId = null;
 					if (parentId.equals(newChildId)) {
 						throw new CommonErrorException (new SDMSMessage(sysEnv, "03204292208",
-						                                "A job or batch cannot have itself as child"));
+							"A job or batch cannot have itself as child"));
 					}
 
 					sh = SDMSSchedulingHierarchyTable.table.create(sysEnv, parentId, newChildId, aliasName, isStatic, prio,
-					                suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId);
+							suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId);
 				}
 
 				if(aliasName != null) {
@@ -363,7 +363,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 	}
 
 	private void diffIgnoredDependencies(SystemEnvironment sysEnv, SDMSSchedulingHierarchy sh, Vector depNames)
-	throws SDMSException
+		throws SDMSException
 	{
 		int idx;
 		SDMSIgnoredDependency id;
@@ -397,7 +397,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 	}
 
 	private void diffParameters(SystemEnvironment sysEnv, Long seId, WithHash parameters)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSParameterDefinition pd;
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
@@ -420,47 +420,47 @@ public class AlterJobDefinition extends ManipJobDefinition
 				Integer aggFunction = new Integer(SDMSParameterDefinition.NONE);
 				Long linkPdId = null;
 				switch(type.intValue()) {
-				case SDMSParameterDefinition.PARAMETER:
-				case SDMSParameterDefinition.RESULT:
-				case SDMSParameterDefinition.IMPORT:
-					if(pdef != null) pdef = "=" + pdef;
-					break;
-				case SDMSParameterDefinition.EXPRESSION:
-					Vector pev = (Vector) pt.value;
-					aggFunction = (Integer) pev.get(0);
-					pdef = "=" + (String) pev.get(1);
-					break;
-				case SDMSParameterDefinition.CONSTANT:
-					pdef = "=" + (String) pt.value;
-					break;
-				case SDMSParameterDefinition.REFERENCE:
-				case SDMSParameterDefinition.CHILDREFERENCE:
-					if(pdef != null) pdef = "=" + pdef;
-					PathVector lsev = (PathVector) pt.value;
-					lpn = (String) lsev.remove(lsev.size() - 1);
-					Long lseId = SDMSSchedulingEntityTable.get(sysEnv, lsev, null).getId(sysEnv);
-					final SDMSParameterDefinition lpd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(lseId, lpn));
-					if(!lpd.getIsLocal(sysEnv).booleanValue()) {
-						linkPdId = lpd.getId(sysEnv);
-					} else {
-						throw new CommonErrorException(
-						        new SDMSMessage(sysEnv, "03603061310", "Local parameters cannot be referenced")
-						);
-					}
-					break;
-				case SDMSParameterDefinition.RESOURCEREFERENCE:
-					if(pdef != null) pdef = "=" + pdef;
-					PathVector lnrv = (PathVector) pt.value;
-					lpn = (String) lnrv.remove(lnrv.size() - 1);
-					Long lnrId = SDMSNamedResourceTable.getNamedResource(sysEnv, lnrv).getId(sysEnv);
+					case SDMSParameterDefinition.PARAMETER:
+					case SDMSParameterDefinition.RESULT:
+					case SDMSParameterDefinition.IMPORT:
+						if(pdef != null) pdef = "=" + pdef;
+						break;
+					case SDMSParameterDefinition.EXPRESSION:
+						Vector pev = (Vector) pt.value;
+						aggFunction = (Integer) pev.get(0);
+						pdef = "=" + (String) pev.get(1);
+						break;
+					case SDMSParameterDefinition.CONSTANT:
+						pdef = "=" + (String) pt.value;
+						break;
+					case SDMSParameterDefinition.REFERENCE:
+					case SDMSParameterDefinition.CHILDREFERENCE:
+						if(pdef != null) pdef = "=" + pdef;
+						PathVector lsev = (PathVector) pt.value;
+						lpn = (String) lsev.remove(lsev.size() - 1);
+						Long lseId = SDMSSchedulingEntityTable.get(sysEnv, lsev, null).getId(sysEnv);
+						final SDMSParameterDefinition lpd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(lseId, lpn));
+						if(!lpd.getIsLocal(sysEnv).booleanValue()) {
+							linkPdId = lpd.getId(sysEnv);
+						} else {
+							throw new CommonErrorException(
+								new SDMSMessage(sysEnv, "03603061310", "Local parameters cannot be referenced")
+							);
+						}
+						break;
+					case SDMSParameterDefinition.RESOURCEREFERENCE:
+						if(pdef != null) pdef = "=" + pdef;
+						PathVector lnrv = (PathVector) pt.value;
+						lpn = (String) lnrv.remove(lnrv.size() - 1);
+						Long lnrId = SDMSNamedResourceTable.getNamedResource(sysEnv, lnrv).getId(sysEnv);
 
-					if(!checkResourceRequirement(sysEnv, lnrId, se))
-						throw new CommonErrorException(
-						        new SDMSMessage(sysEnv, "03409290926", "Resource $2 for parameter $1 not required", pn, lnrv)
-						);
+						if(!checkResourceRequirement(sysEnv, lnrId, se))
+							throw new CommonErrorException(
+								new SDMSMessage(sysEnv, "03409290926", "Resource $2 for parameter $1 not required", pn, lnrv)
+							);
 
-					linkPdId = (SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(lnrId, lpn))).getId(sysEnv);
-					break;
+						linkPdId = (SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(lnrId, lpn))).getId(sysEnv);
+						break;
 				}
 
 				for(idx = 0; idx < act_parms.size(); idx++) {
@@ -495,7 +495,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 				rpd = (SDMSParameterDefinition) rpdv.get(0);
 				rpdse = SDMSSchedulingEntityTable.getObject(sysEnv, rpd.getSeId(sysEnv));
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03208291546", "Parameter $1 is referenced by $2($3)",
-				                               pd.getName(sysEnv), rpdse.pathString(sysEnv), rpd.getName(sysEnv)));
+										pd.getName(sysEnv), rpdse.pathString(sysEnv), rpd.getName(sysEnv)));
 			}
 			pd.delete(sysEnv);
 		}
@@ -503,7 +503,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 	}
 
 	private void diffResources(SystemEnvironment sysEnv, Long seId, Vector resourcedeflist)
-	throws SDMSException
+		throws SDMSException
 	{
 		int idx;
 		Vector newnm;
@@ -647,8 +647,8 @@ public class AlterJobDefinition extends ManipJobDefinition
 						exp_interval = (Integer) expired.get(ParseStr.S_INTERVAL);
 					}
 					rr = SDMSResourceRequirementTable.table.create(sysEnv,
-					                newNrId, seId, amount, keepMode, isSticky, stickyName, stickyParent,
-					                rsmpId, exp_mult, exp_interval, lockmode, condition);
+							newNrId, seId, amount, keepMode, isSticky, stickyName, stickyParent,
+							rsmpId, exp_mult, exp_interval, lockmode, condition);
 				}
 
 				if(wh.containsKey(ParseStr.S_STATUS))
@@ -666,7 +666,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 	}
 
 	private void checkNonAfterFinalTrigger(SystemEnvironment sysEnv, Long seId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = SDMSTriggerTable.idx_fireId.getVector(sysEnv, seId);
 		for(int i = 0; i < v.size(); i++) {
@@ -675,12 +675,12 @@ public class AlterJobDefinition extends ManipJobDefinition
 			if(t.getType(sysEnv).intValue() != SDMSTrigger.AFTER_FINAL && t.getAction(sysEnv).intValue() != SDMSTrigger.RERUN)
 				if(!t.getIsMaster(sysEnv).booleanValue())
 					throw new CommonErrorException(
-					        new SDMSMessage(sysEnv, "03209201623", "Cannot change type to milestone, other than AFTER FINAL trigger exist"));
+						new SDMSMessage(sysEnv, "03209201623", "Cannot change type to milestone, other than AFTER FINAL trigger exist"));
 		}
 	}
 
 	private void diffRequiredStates(SystemEnvironment sysEnv, SDMSResourceRequirement rr, Vector states)
-	throws SDMSException
+		throws SDMSException
 	{
 		int idx;
 		SDMSResourceReqStates rrs;
@@ -716,7 +716,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSchedulingEntity se;
 		Long seId;
@@ -773,7 +773,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 		if(!submitSuspended.booleanValue()) {
 			if (resumeAt != null || resumeIn != null) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03108161050",
-				                               "Resume option requires a suspend option"));
+						"Resume option requires a suspend option"));
 			}
 		}
 		if(!withs.containsKey(ParseStr.S_MASTER))		masterSubmittable = se.getMasterSubmittable(sysEnv);
@@ -793,29 +793,29 @@ public class AlterJobDefinition extends ManipJobDefinition
 
 			if(to_esdId != null && !SDMSExitStateTable.idx_espId_esdId.containsKey(sysEnv, new SDMSKey(espId, to_esdId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03311041003",
-				                               "Timeoutstate $1 is not defined by the exit state profile $2",
-				                               SDMSExitStateDefinitionTable.getObject(sysEnv, to_esdId).getName(sysEnv),
-				                               esp.getName(sysEnv)));
+						"Timeoutstate $1 is not defined by the exit state profile $2",
+						SDMSExitStateDefinitionTable.getObject(sysEnv, to_esdId).getName(sysEnv),
+						esp.getName(sysEnv)));
 			}
 		}
 		if(!withs.containsKey(ParseStr.S_GROUP)) 		gId = se.getOwnerId(sysEnv);
 
 		type = otype.intValue();
 		switch(type) {
-		case SDMSSchedulingEntity.JOB:
-			checkJob(sysEnv);
-			break;
-		case SDMSSchedulingEntity.BATCH:
-			checkBatch(sysEnv);
-			break;
-		case SDMSSchedulingEntity.MILESTONE:
-			sysEnv.checkFeatureAvailability(SystemEnvironment.S_MILESTONES);
-		default:
-			throw new FatalException(new SDMSMessage(sysEnv, "03204291141", "Unknown Job Definition Type $1", otype));
+			case SDMSSchedulingEntity.JOB:
+				checkJob(sysEnv);
+				break;
+			case SDMSSchedulingEntity.BATCH:
+				checkBatch(sysEnv);
+				break;
+			case SDMSSchedulingEntity.MILESTONE:
+				sysEnv.checkFeatureAvailability(SystemEnvironment.S_MILESTONES);
+			default:
+				throw new FatalException(new SDMSMessage(sysEnv, "03204291141", "Unknown Job Definition Type $1", otype));
 		}
 
 		if(oldType.intValue() == SDMSSchedulingEntity.JOB &&
-		    otype.intValue()   != SDMSSchedulingEntity.JOB)	{
+		   otype.intValue()   != SDMSSchedulingEntity.JOB)	{
 
 			checkDependents(sysEnv, seId);
 
@@ -873,8 +873,8 @@ public class AlterJobDefinition extends ManipJobDefinition
 		if (oldMasterSubmittable.booleanValue() && !masterSubmittable.booleanValue()) {
 			if (SDMSEventTable.idx_seId.containsKey(sysEnv, seId))
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
-				                               "02402181250", "Cannot change master submittable to false, because time scheduling events are defined on $1",
-				                               se.pathString(sysEnv)));
+						"02402181250", "Cannot change master submittable to false, because time scheduling events are defined on $1",
+						se.pathString(sysEnv)));
 
 			Vector tv = SDMSTriggerTable.idx_seId.getVector(sysEnv, seId);
 			for(int tvi = 0; tvi < tv.size(); ++tvi) {
@@ -884,9 +884,9 @@ public class AlterJobDefinition extends ManipJobDefinition
 						if (tt.getMainSeId(sysEnv) != null) continue;
 					}
 					throw new CommonErrorException(new SDMSMessage(sysEnv,
-					                               "02402181251",
-					                               "Cannot change master submittable to false, because master triggers are still defined using $1",
-					                               se.pathString(sysEnv)));
+						"02402181251",
+						"Cannot change master submittable to false, because master triggers are still defined using $1",
+						se.pathString(sysEnv)));
 				}
 			}
 
@@ -895,9 +895,9 @@ public class AlterJobDefinition extends ManipJobDefinition
 				final SDMSTrigger tt = (SDMSTrigger) tv.get(tvi);
 				if(tt.getIsMaster(sysEnv).booleanValue()) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv,
-					                               "03209191209",
-					                               "Cannot change master submittable to false, because master triggers are still defined using $1",
-					                               se.pathString(sysEnv)));
+						"03209191209",
+						"Cannot change master submittable to false, because master triggers are still defined using $1",
+						se.pathString(sysEnv)));
 				}
 			}
 		}
@@ -919,7 +919,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 			diffChildren(sysEnv, se, childdeflist);
 
 		if(withs.containsKey(ParseStr.S_RESOURCE) ||
-		    (oldType.intValue() == SDMSSchedulingEntity.JOB && otype.intValue() != SDMSSchedulingEntity.JOB)
+		   (oldType.intValue() == SDMSSchedulingEntity.JOB && otype.intValue() != SDMSSchedulingEntity.JOB)
 		  )
 			diffResources(sysEnv, seId, resourcedeflist);
 

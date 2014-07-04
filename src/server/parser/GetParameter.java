@@ -67,7 +67,7 @@ public class GetParameter extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer d_container = null;
 		Vector desc = new Vector();

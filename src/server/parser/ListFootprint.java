@@ -49,7 +49,7 @@ public class ListFootprint extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFootprint f;
 		SDMSOutputContainer d_container = null;
@@ -78,8 +78,8 @@ public class ListFootprint extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03204092036", "$1 Footprint(s) found",
-		                        new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "03204092036", "$1 Footprint(s) found",
+					new Integer(d_container.lines)));
 	}
 }
 
