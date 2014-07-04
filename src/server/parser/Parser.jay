@@ -33,7 +33,7 @@ public class Parser
 
 %token <Token>	ACTION ACTIVATE ACTIVE ADD AFTER AFTER_FINAL AGING
 %token <Token>	ALIAS ALL ALL_FINAL ALTER AMOUNT AND ANY AT AUDIT AVG
-%token <Token>	BACKLOG_HANDLING BACKUP BASE BATCH BEFORE BEFORE_FINAL BMULTICMD BROKEN BROKEN_ACTIVE BROKEN_FINISHED BY
+%token <Token>	BACKLOG_HANDLING BACKUP BASE BATCH BEFORE BEFORE_FINAL BETWEEN BMULTICMD BROKEN BROKEN_ACTIVE BROKEN_FINISHED BY
 %token <Token>	CALENDAR CANCEL CANCELLED CASCADE CATEGORY CHANGE_STATUS CHANGE CHILD CHECK CHILDREN CHILDSUSPEND CHILDTAG CLEANUP CLEAR CMPOP
 %token <Token>	COMMAND COMMENT CONDITION CONFIG CONNECT CONSTANT CONTENT COPY COUNT CREATE CYCLE
 %token <Token>	DAY DEFAULT DEFAULT_MAPPING DEFER DEFINITION DELAY DELETE DEPENDENCY DEPENDENCY_DEFINITION
@@ -2753,6 +2753,9 @@ filteratom:		EXIT_STATUS IN '(' lj_exitstatelist ')'			{ $$ = new WithItem(Parse
 	|		esp_state_type						{ $$ = new WithItem(ParseStr.S_RESTARTABLE, $1); }
 	|		MASTER							{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
 	|		history '=' period					{ $$ = new WithItem($1, $3); }
+	|		HISTORY BETWEEN period AND period			{ final Vector v = new Vector();
+										  v.addElement($3); v.addElement($5);
+										  $$ = new WithItem(ParseStr.map($1.token), v); }
 	|		MASTER_ID IN '(' jobid_list ')'				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
 	|		NAME IN '(' folderpathlist ')'				{ $$ = new WithItem(ParseStr.S_NAMELIST, $4); }
 	|		JOB '.' stridentifier cmpop rvalue			{ final WithHash w = new WithHash();
@@ -4388,6 +4391,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	BASE								{ $$ = (String) $1.value; }
 	|	BATCH								{ $$ = (String) $1.value; }
 	|	BEFORE								{ $$ = (String) $1.value; }
+	|	BETWEEN								{ $$ = (String) $1.value; }
 	|	BROKEN								{ $$ = (String) $1.value; }
 	|	BY								{ $$ = (String) $1.value; }
 	|	CALENDAR							{ $$ = (String) $1.value; }

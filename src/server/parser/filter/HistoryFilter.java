@@ -41,49 +41,77 @@ public class HistoryFilter extends Filter
 
 	public final static String __version = "@(#) $Id: HistoryFilter.java,v 2.1.6.1 2013/03/14 10:25:14 ronald Exp $";
 
-	long numMillis = 0;
+	long numMillisFrom = 0;
+	long numMillisTo = 0;
+
+	public HistoryFilter(SystemEnvironment sysEnv, WithHash interval1, WithHash interval2)
+	{
+		super();
+		numMillisFrom = convertInterval(interval1);
+		numMillisTo = convertInterval(interval2);
+		if (numMillisFrom > numMillisTo) {
+			long tmp = numMillisTo;
+			numMillisTo = numMillisFrom;
+			numMillisFrom = tmp;
+		}
+	}
 
 	public HistoryFilter(SystemEnvironment sysEnv, WithHash interval)
 	{
 		super();
+		numMillisFrom = convertInterval(interval);
+		numMillisTo = -1;
+	}
+
+	private long convertInterval(WithHash interval)
+	{
+		long numMillis;
+
 		Integer mult = (Integer) interval.get("MULT");
 		Integer base = (Integer) interval.get("INTERVAL");
 		if(mult == null || base == null) {
-			numMillis = 0;
-			return;
+			return 0L;
 		}
 		numMillis = System.currentTimeMillis();
 		switch(base.intValue()) {
-		case SDMSInterval.MINUTE:
-			numMillis -= mult.longValue() * 60 * 1000;
-			break;
-		case SDMSInterval.HOUR:
-			numMillis -= mult.longValue() * 60 * 60 * 1000;
-			break;
-		case SDMSInterval.DAY:
-			numMillis -= mult.longValue() * 24 * 60 * 60 * 1000;
-			break;
-		case SDMSInterval.WEEK:
-			numMillis -= mult.longValue() * 7 * 24 * 60 * 60 * 1000;
-			break;
-		case SDMSInterval.MONTH:
-			numMillis -= mult.longValue() * 30 * 24 * 60 * 60 * 1000;
-			break;
-		case SDMSInterval.YEAR:
-			numMillis -= mult.longValue() * 365 * 24 * 60 * 60 * 1000;
-			break;
+			case SDMSInterval.MINUTE:
+				numMillis -= mult.longValue() * 60 * 1000;
+				break;
+			case SDMSInterval.HOUR:
+				numMillis -= mult.longValue() * 60 * 60 * 1000;
+				break;
+			case SDMSInterval.DAY:
+				numMillis -= mult.longValue() * 24 * 60 * 60 * 1000;
+				break;
+			case SDMSInterval.WEEK:
+				numMillis -= mult.longValue() * 7 * 24 * 60 * 60 * 1000;
+				break;
+			case SDMSInterval.MONTH:
+				numMillis -= mult.longValue() * 30 * 24 * 60 * 60 * 1000;
+				break;
+			case SDMSInterval.YEAR:
+				numMillis -= mult.longValue() * 365 * 24 * 60 * 60 * 1000;
+				break;
 		}
+
+		return numMillis;
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			if (!(p instanceof SDMSSubmittedEntity))
-				return true;
+				if (numMillisTo == -1)
+					return true;
+				else
+					return false;
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
 			Long fts = sme.getFinalTs(sysEnv);
-			if(fts == null || fts.longValue() > numMillis) return true;
+			if(fts == null || fts.longValue() >= numMillisFrom) {
+				if (numMillisTo == -1 || (fts != null && fts <= numMillisTo))
+					return true;
+			}
 		} catch (Exception e) { }
 		return false;
 	}

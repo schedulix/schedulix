@@ -58,7 +58,7 @@ public class ObjectFilter
 	}
 
 	public Vector initialize_filter(SystemEnvironment sysEnv, Vector fi, int level, boolean positive)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector subFilter = new Vector();
 
@@ -104,7 +104,12 @@ public class ObjectFilter
 					item.addElement(new FutureFilter(sysEnv, (WithHash) w.value));
 					hasFuture = true;
 				} else if(((String) w.key).equals(ParseStr.S_HISTORY)) {
-					item.addElement(new HistoryFilter(sysEnv, (WithHash) w.value));
+					final Object val = w.value;
+					if (val instanceof java.util.Vector) {
+						item.addElement(new HistoryFilter(sysEnv, (WithHash) ((Vector) val).get(0), (WithHash) ((Vector) val).get(1)));
+					} else {
+						item.addElement(new HistoryFilter(sysEnv, (WithHash) val));
+					}
 				} else if(((String) w.key).equals(ParseStr.S_NAMELIST)) {
 					item.addElement(new NamelistFilter(sysEnv, (Vector) w.value));
 				} else if(((String) w.key).equals(ParseStr.S_FILTER)) {
@@ -150,7 +155,7 @@ public class ObjectFilter
 	}
 
 	public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		SDMSPrivilege priv = p.getPrivileges(sysEnv);
@@ -159,13 +164,13 @@ public class ObjectFilter
 	}
 
 	public boolean doFilter(SystemEnvironment sysEnv, SDMSProxy p)
-	throws SDMSException
+		throws SDMSException
 	{
 		return doFilter(sysEnv, p, filter);
 	}
 
 	public boolean doFilter(SystemEnvironment sysEnv, SDMSProxy p, Vector subFilter)
-	throws SDMSException
+		throws SDMSException
 	{
 		int i, j;
 		boolean b;

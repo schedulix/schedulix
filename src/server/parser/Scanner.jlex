@@ -52,6 +52,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("BASE",		new Integer(Parser.BASE));
 	tokens.put("BATCH",		new Integer(Parser.BATCH));
 	tokens.put("BEFORE",		new Integer(Parser.BEFORE));
+	tokens.put("BETWEEN",		new Integer(Parser.BETWEEN));
 	tokens.put("BROKEN",		new Integer(Parser.BROKEN));
 	tokens.put("BY",		new Integer(Parser.BY));
 	tokens.put("CALENDAR",		new Integer(Parser.CALENDAR));
