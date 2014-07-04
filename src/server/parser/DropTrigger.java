@@ -53,7 +53,7 @@ public class DropTrigger extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSTrigger t;
 
