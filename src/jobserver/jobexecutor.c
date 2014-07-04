@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -35,7 +35,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <limits.h>
 #include <signal.h>
 #include <sys/stat.h>
+#ifndef WINDOWS
 #include <sys/wait.h>
+#endif
 #include <sys/types.h>
 #ifdef WINDOWS
 #include <windows.h>
@@ -255,18 +257,18 @@ char *getUsage()
 {
 
 	return  "Usage:\n" \
-	        "Jexecutor [--version|-v] [--help|-h] [<boottime_how> <taskfileName> [boottime]]\n" \
-	        "\n" \
-	        "Exactly one of the optional argument sets must be specified\n" \
-	        "i.e. either the version request, or this help request or some specification on what to do\n";
+		"Jexecutor [--version|-v] [--help|-h] [<boottime_how> <taskfileName> [boottime]]\n" \
+		"\n" \
+		"Exactly one of the optional argument sets must be specified\n" \
+		"i.e. either the version request, or this help request or some specification on what to do\n";
 }
 
 char *getVersion()
 {
 
 	return  "Jobserver (executor) 2.6\n" \
-	        "Copyright (C) 2013 independIT Integrative Technologies GmbH\n" \
-	        "All rights reserved\n";
+		"Copyright (C) 2013 independIT Integrative Technologies GmbH\n" \
+		"All rights reserved\n";
 }
 
 void initFields()
@@ -554,13 +556,13 @@ HANDLE openTaskfile(callstatus *status)
 #else
 
 		taskfile = CreateFile (
-		                   taskfileName,
-		                   GENERIC_READ | GENERIC_WRITE,
-		                   0,
-		                   NULL,
-		                   OPEN_EXISTING,
-		                   FILE_ATTRIBUTE_NORMAL,
-		                   NULL);
+				taskfileName,
+				GENERIC_READ | GENERIC_WRITE,
+				0,
+				NULL,
+				OPEN_EXISTING,
+				FILE_ATTRIBUTE_NORMAL,
+				NULL);
 		if (taskfile != INVALID_HANDLE_VALUE)
 			break;
 
@@ -763,77 +765,77 @@ void processEntry(callstatus *status)
 	if (status->severity != STATUS_OK) return;
 
 	switch (taskfileBuf[bufpos]) {
-	case '\n':
-		/* Entry is ready */
-		advance(status);	/* skip the newline */
-		if (status->severity != STATUS_OK) return;
-		/* we accept an EOF instead of a '\n' */
-		break;
-	case '\'':
-		advance(status);
-		if (status->severity != STATUS_OK) return;
-		if (bufpos < 0) {
+		case '\n':
+			/* Entry is ready */
+			advance(status);	/* skip the newline */
+			if (status->severity != STATUS_OK) return;
+			/* we accept an EOF instead of a '\n' */
+			break;
+		case '\'':
+			advance(status);
+			if (status->severity != STATUS_OK) return;
+			if (bufpos < 0) {
+				status->severity = SEVERITY_FATAL;
+				status->msg = TFSYNTAX_ERROR;
+				status->msg2 = "Unexpected EOF, expected a number";
+				return;
+			}
+
+			readWhiteSpace(status);
+			if (status->severity != STATUS_OK) return;
+
+			readLength(status, &(vlength[0]));
+			if (status->severity != STATUS_OK) return;
+			length = atoi(vlength);
+
+			readWhiteSpace(status);
+			if (status->severity != STATUS_OK) return;
+
+			if (taskfileBuf[bufpos] != '=') {
+				status->severity = SEVERITY_FATAL;
+				status->msg = TFSYNTAX_ERROR;
+				status->msg2 = "Unexpected token, expected an equal sign";
+				return;
+			}
+			advance(status);
+			if (status->severity != STATUS_OK) return;
+			if (bufpos < 1) {
+				status->severity = SEVERITY_FATAL;
+				status->msg = TFSYNTAX_ERROR;
+				status->msg2 = "Unexpected EOF, expected a value";
+				return;
+			}
+
+			readValue(status, length, &(value[0]));
+			if (status->severity != STATUS_OK) return;
+
+			advance(status);
+			if (status->severity != STATUS_OK) return;
+
+			break;
+		case '=':
+			advance(status);
+			if (status->severity != STATUS_OK) return;
+			if (bufpos < 1) {
+				status->severity = SEVERITY_FATAL;
+				status->msg = TFSYNTAX_ERROR;
+				status->msg2 = "Unexpected EOF, expected a value";
+				return;
+			}
+
+			readValue(status, -1, &(value[0]));
+			if (status->severity != STATUS_OK) return;
+
+			advance(status);
+			if (status->severity != STATUS_OK) return;
+
+			break;
+		default:
+
 			status->severity = SEVERITY_FATAL;
 			status->msg = TFSYNTAX_ERROR;
-			status->msg2 = "Unexpected EOF, expected a number";
+			status->msg2 = "Unexpected Value, expected an equal sign, a quote or a newline";
 			return;
-		}
-
-		readWhiteSpace(status);
-		if (status->severity != STATUS_OK) return;
-
-		readLength(status, &(vlength[0]));
-		if (status->severity != STATUS_OK) return;
-		length = atoi(vlength);
-
-		readWhiteSpace(status);
-		if (status->severity != STATUS_OK) return;
-
-		if (taskfileBuf[bufpos] != '=') {
-			status->severity = SEVERITY_FATAL;
-			status->msg = TFSYNTAX_ERROR;
-			status->msg2 = "Unexpected token, expected an equal sign";
-			return;
-		}
-		advance(status);
-		if (status->severity != STATUS_OK) return;
-		if (bufpos < 1) {
-			status->severity = SEVERITY_FATAL;
-			status->msg = TFSYNTAX_ERROR;
-			status->msg2 = "Unexpected EOF, expected a value";
-			return;
-		}
-
-		readValue(status, length, &(value[0]));
-		if (status->severity != STATUS_OK) return;
-
-		advance(status);
-		if (status->severity != STATUS_OK) return;
-
-		break;
-	case '=':
-		advance(status);
-		if (status->severity != STATUS_OK) return;
-		if (bufpos < 1) {
-			status->severity = SEVERITY_FATAL;
-			status->msg = TFSYNTAX_ERROR;
-			status->msg2 = "Unexpected EOF, expected a value";
-			return;
-		}
-
-		readValue(status, -1, &(value[0]));
-		if (status->severity != STATUS_OK) return;
-
-		advance(status);
-		if (status->severity != STATUS_OK) return;
-
-		break;
-	default:
-
-		status->severity = SEVERITY_FATAL;
-		status->msg = TFSYNTAX_ERROR;
-		status->msg2 = "Unexpected Value, expected an equal sign, a quote or a newline";
-		return;
 	}
 
 	if (!strcmp(key, INCOMPLETE))		complete = false;
@@ -897,24 +899,24 @@ char *getTimestamp(time_t tim)
 	const struct tm *timeval = gmtime (&tim);
 #ifdef __GNUC__
 	snprintf (buf, sizeof (buf), "%c%2.2d-%2.2d-%4.4d %2.2d:%2.2d:%2.2d GMT%c",
-	          TIMESTAMP_LEADIN,
-	          timeval->tm_mday,
-	          timeval->tm_mon + 1,
-	          timeval->tm_year + 1900,
-	          timeval->tm_hour,
-	          timeval->tm_min,
-	          timeval->tm_sec,
-	          TIMESTAMP_LEADOUT);
+			TIMESTAMP_LEADIN,
+			timeval->tm_mday,
+			timeval->tm_mon + 1,
+			timeval->tm_year + 1900,
+			timeval->tm_hour,
+			timeval->tm_min,
+			timeval->tm_sec,
+			TIMESTAMP_LEADOUT);
 #else
 	snprintf (buf, sizeof (buf), "%c%02.2d-%02.2d-%04.4d %02.2d:%02.2d:%02.2d GMT%c",
-	          TIMESTAMP_LEADIN,
-	          timeval->tm_mday,
-	          timeval->tm_mon + 1,
-	          timeval->tm_year + 1900,
-	          timeval->tm_hour,
-	          timeval->tm_min,
-	          timeval->tm_sec,
-	          TIMESTAMP_LEADOUT);
+			TIMESTAMP_LEADIN,
+			timeval->tm_mday,
+			timeval->tm_mon + 1,
+			timeval->tm_year + 1900,
+			timeval->tm_hour,
+			timeval->tm_min,
+			timeval->tm_sec,
+			TIMESTAMP_LEADOUT);
 #endif
 
 #else
@@ -1047,22 +1049,22 @@ void openLog(callstatus *status)
 	}
 #else
 	myLog = CreateFile (
-	                privateLog,
-	                GENERIC_WRITE,
-	                FILE_SHARE_READ,
-	                NULL,
-	                CREATE_ALWAYS,
-	                FILE_ATTRIBUTE_NORMAL,
-	                NULL);
+			privateLog,
+			GENERIC_WRITE,
+			FILE_SHARE_READ,
+			NULL,
+			CREATE_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL);
 	if (myLog == INVALID_HANDLE_VALUE) {
 		myLog = CreateFile(
-		                NULLDEVICE,
-		                GENERIC_WRITE,
-		                FILE_SHARE_READ|FILE_SHARE_WRITE,
-		                NULL,
-		                OPEN_EXISTING,
-		                FILE_ATTRIBUTE_NORMAL,
-		                NULL);
+				NULLDEVICE,
+				GENERIC_WRITE,
+				FILE_SHARE_READ|FILE_SHARE_WRITE,
+				NULL,
+				OPEN_EXISTING,
+				FILE_ATTRIBUTE_NORMAL,
+				NULL);
 		if (myLog == INVALID_HANDLE_VALUE)
 			myLog = NULL;
 	}
@@ -1236,16 +1238,16 @@ void run(callstatus *status)
 	PROCESS_INFORMATION pi;
 
 	if (! CreateProcess (
-	            module,
-	            cmdline,
-	            NULL,
-	            NULL,
-	            TRUE,
-	            0,
-	            NULL,
-	            NULL,
-	            &si,
-	            &pi)) {
+			module,
+			cmdline,
+			NULL,
+			NULL,
+			TRUE,
+			0,
+			NULL,
+			NULL,
+			&si,
+			&pi)) {
 		status->severity = SEVERITY_FATAL;
 		status->msg = EXEC_FAILED;
 		return;
@@ -1293,36 +1295,36 @@ int main(int argc, char *argv[])
 	argsType = checkArgs(&status, argc, argv);
 
 	switch (argsType) {
-	case ARGS_NOTREAD:
+		case ARGS_NOTREAD:
 
-		fprintf(stderr, "%s\n", message[status.msg]);
-		fprintf(stderr, "%s", getUsage());
-		exit(1);
-	case ARGS_VERSION:
-		fprintf(stdout, "%s", getVersion());
-		exit(0);
-	case ARGS_HELP:
-		fprintf(stdout, "%s", getUsage());
-		exit(0);
-	case ARGS_RUN:
-		ignore_all_signals (&status);
-		if (status.severity != STATUS_OK) {
-			if (myLog != NULL) fprintf(myLog, "%s\n", message[status.msg]);
-			status.severity = STATUS_OK;
-			status.msg = MSG_NO_ERROR;
-		}
-		run(&status);
-		if (status.severity != STATUS_OK) {
+			fprintf(stderr, "%s\n", message[status.msg]);
+			fprintf(stderr, "%s", getUsage());
+			exit(1);
+		case ARGS_VERSION:
+			fprintf(stdout, "%s", getVersion());
+			exit(0);
+		case ARGS_HELP:
+			fprintf(stdout, "%s", getUsage());
+			exit(0);
+		case ARGS_RUN:
+			ignore_all_signals (&status);
+			if (status.severity != STATUS_OK) {
+				if (myLog != NULL) fprintf(myLog, "%s\n", message[status.msg]);
+				status.severity = STATUS_OK;
+				status.msg = MSG_NO_ERROR;
+			}
+			run(&status);
+			if (status.severity != STATUS_OK) {
 
-			if (myLog != NULL) fprintf(myLog, "%s\n", message[status.msg]);
-		}
-		closeLog(&status);
-		break;
-	default:
+				if (myLog != NULL) fprintf(myLog, "%s\n", message[status.msg]);
+			}
+			closeLog(&status);
+			break;
+		default:
 
-		fprintf(stderr, "Argument evaluation returned an unexpected value : %d\n", argsType);
-		fprintf(stderr, "%s", getUsage());
-		exit(1);
+			fprintf(stderr, "Argument evaluation returned an unexpected value : %d\n", argsType);
+			fprintf(stderr, "%s", getUsage());
+			exit(1);
 	}
 
 	return status.severity;
