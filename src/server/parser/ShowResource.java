@@ -49,8 +49,9 @@ public class ShowResource extends ShowCommented
 	private final static Integer RESERVATION        = new Integer(3);
 	private final static Integer AVAILABLE          = new Integer(4);
 	private final static Integer BLOCKED            = new Integer(5);
-	private final static Integer REQUESTED          = new Integer(6);
-	private final static Integer IGNORED            = new Integer(7);
+	private final static Integer MASTER_REQUEST     = new Integer(6);
+	private final static Integer REQUESTED          = new Integer(7);
+	private final static Integer IGNORED            = new Integer(8);
 	private final static int[] sortcols = { 11, 13, 1 };
 
 	public ShowResource(ObjectURL ra)
@@ -60,7 +61,7 @@ public class ShowResource extends ShowCommented
 	}
 
 	private Vector fill_desc(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector desc = new Vector();
 
@@ -139,151 +140,151 @@ public class ShowResource extends ShowCommented
 	}
 
 	private Long getId(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? rt.getId(sysEnv) : r.getId(sysEnv);
 	}
 
 	private Long getOwnerId(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? rt.getOwnerId(sysEnv) : r.getOwnerId(sysEnv);
 	}
 
 	private String getTag(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? null : r.getTag(sysEnv);
 	}
 
 	private Long getRsdId(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? rt.getRsdId(sysEnv) : r.getRsdId(sysEnv);
 	}
 
 	private Long getRsdTime(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? null : r.getRsdTime(sysEnv);
 	}
 
 	private Integer getRequestableAmount(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? rt.getRequestableAmount(sysEnv) : r.getRequestableAmount(sysEnv);
 	}
 
 	private Integer getDefinedAmount(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? rt.getAmount(sysEnv) : r.getDefinedAmount(sysEnv);
 	}
 
 	private Integer getAmount(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? rt.getAmount(sysEnv) : r.getAmount(sysEnv);
 	}
 
 	private Integer getFreeAmount(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? null : r.getFreeAmount(sysEnv);
 	}
 
 	private Boolean getIsOnline(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? rt.getIsOnline(sysEnv) : r.getIsOnline(sysEnv);
 	}
 
 	private Float getFactor(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? null : r.getFactor(sysEnv);
 	}
 
 	private Integer getTraceInterval(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? null : r.getTraceInterval(sysEnv);
 	}
 
 	private Integer getTraceBase(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? null : r.getTraceBase(sysEnv);
 	}
 
 	private Integer getTraceBaseMultiplier(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? null : r.getTraceBaseMultiplier(sysEnv);
 	}
 
 	private Float getTd0Avg(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? null : r.getTd0Avg(sysEnv);
 	}
 
 	private Float getTd1Avg(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? null : r.getTd1Avg(sysEnv);
 	}
 
 	private Float getTd2Avg(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? null : r.getTd2Avg(sysEnv);
 	}
 
 	private Float getLwAvg(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? null : r.getLwAvg(sysEnv);
 	}
 
 	private Long getLastWrite(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? null : r.getLastWrite(sysEnv);
 	}
 
 	private Long getCreatorUId(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? rt.getCreatorUId(sysEnv) : r.getCreatorUId(sysEnv);
 	}
 
 	private Long getCreateTs(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? rt.getCreateTs(sysEnv) : r.getCreateTs(sysEnv);
 	}
 
 	private Long getChangerUId(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? rt.getChangerUId(sysEnv) : r.getChangerUId(sysEnv);
 	}
 
 	private Long getChangeTs(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? rt.getChangeTs(sysEnv) : r.getChangeTs(sysEnv);
 	}
 
 	private SDMSPrivilege getPrivileges(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		return r == null ? rt.getPrivileges(sysEnv) : r.getPrivileges(sysEnv);
 	}
 
 	private SDMSOutputContainer getVariables(SystemEnvironment sysEnv, SDMSResource r, SDMSResourceTemplate rt)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer vars = null;
 		if (r != null)
@@ -292,7 +293,7 @@ public class ShowResource extends ShowCommented
 	}
 
 	private Vector fill_master(SystemEnvironment sysEnv, SDMSProxy prox, SDMSNamedResource nr, String containerPath)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResource r = null;
 		SDMSResourceTemplate rt = null;
@@ -359,8 +360,8 @@ public class ShowResource extends ShowCommented
 
 		final Date d = new Date();
 		if(ts != null &&
-		    nr.getUsage(sysEnv).intValue() == SDMSNamedResource.SYNCHRONIZING &&
-		    nr.getRspId(sysEnv) != null) {
+		   nr.getUsage(sysEnv).intValue() == SDMSNamedResource.SYNCHRONIZING &&
+		   nr.getRspId(sysEnv) != null) {
 			d.setTime(ts.longValue());
 			v.add(sysEnv.systemDateFormat.format(d));
 		} else v.add(null);
@@ -414,14 +415,8 @@ public class ShowResource extends ShowCommented
 			Vector rav = r.getAllocations(sysEnv);
 			for(int i = 0; i < rav.size(); i++) {
 				SDMSResourceAllocation ra = (SDMSResourceAllocation) rav.get(i);
-				if (ra.getSmeId(sysEnv).longValue() > 0)
+				if (ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.MASTER_REQUEST)
 					s_container.addData(sysEnv, fill_detail(sysEnv, ra, nr, r));
-				else {
-					Vector mrav = SDMSMasterAllocationTable.idx_raId.getVector(sysEnv, ra.getId(sysEnv));
-					for (int j = 0; j < mrav.size(); ++j) {
-						s_container.addData(sysEnv, fill_detail(sysEnv, ra, (SDMSMasterAllocation) mrav.get(j), nr, r));
-					}
-				}
 			}
 		}
 
@@ -434,7 +429,7 @@ public class ShowResource extends ShowCommented
 	}
 
 	private Vector fill_rdesc(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector rdesc = new Vector();
 
@@ -477,7 +472,7 @@ public class ShowResource extends ShowCommented
 	}
 
 	private Vector fill_detail(SystemEnvironment sysEnv, SDMSResourceAllocation ra, SDMSNamedResource nr, SDMSResource r)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = new Vector();
 		Long seId;
@@ -530,13 +525,13 @@ public class ShowResource extends ShowCommented
 				Long fpId = se.getFpId(sysEnv);
 				rr = SDMSResourceRequirementTable.idx_seId_nrId_getUnique(sysEnv, new SDMSKey(fpId, nrId), actVersion);
 			}
-			if(r.checkAllocate(sysEnv, rr, sme) == SDMSResource.REASON_AVAILABLE) {
+			if(r.checkAllocate(sysEnv, rr, sme, ra) == SDMSResource.REASON_AVAILABLE) {
 				if(SystemEnvironment.sched.isBlocked(sysEnv, oSmeId, r.getId(sysEnv))) {
 					v.add("BLOCKED");
 					v.add(BLOCKED);
 				} else {
 					if(ra.getIsSticky(sysEnv).booleanValue()) {
-						MasterReservationInfo mri = SystemEnvironment.sched.checkMasterReservation(sysEnv, sme, rr, ra.getStickyParent(sysEnv), r, actVersion);
+						MasterReservationInfo mri = SystemEnvironment.sched.checkMasterReservation(sysEnv, sme, rr, ra.getStickyParent(sysEnv), r);
 						if(mri.canAllocate) {
 							v.add("AVAILABLE");
 							v.add(AVAILABLE);
@@ -554,20 +549,18 @@ public class ShowResource extends ShowCommented
 				v.add(BLOCKED);
 			}
 		} else {
-			v.add(ra.getAllocationTypeAsString(sysEnv));
-			switch(allocType) {
-			case SDMSResourceAllocation.ALLOCATION:
-				v.add(ALLOCATION);
-				break;
-			case SDMSResourceAllocation.MASTER_RESERVATION:
-				v.add(MASTER_RESERVATION);
-				break;
-			case SDMSResourceAllocation.RESERVATION:
-				v.add(RESERVATION);
-				break;
-			case SDMSResourceAllocation.IGNORE:
-				v.add(IGNORED);
-				break;
+			if (allocType == SDMSResourceAllocation.MASTER_REQUEST) {
+
+				v.add(ra.getAllocationTypeAsString(sysEnv));
+				v.add(MASTER_REQUEST);
+			} else {
+				v.add(ra.getAllocationTypeAsString(sysEnv));
+				switch(allocType) {
+					case SDMSResourceAllocation.ALLOCATION:		v.add(ALLOCATION);		break;
+					case SDMSResourceAllocation.MASTER_RESERVATION: v.add(MASTER_RESERVATION);	break;
+					case SDMSResourceAllocation.RESERVATION:	v.add(RESERVATION);		break;
+					case SDMSResourceAllocation.IGNORE:		v.add(IGNORED);			break;
+				}
 			}
 		}
 		v.add(sme.getPriority(sysEnv));
@@ -577,75 +570,8 @@ public class ShowResource extends ShowCommented
 		return v;
 	}
 
-	private Vector fill_detail(SystemEnvironment sysEnv, SDMSResourceAllocation ra, SDMSMasterAllocation ma, SDMSNamedResource nr, SDMSResource r)
-	throws SDMSException
-	{
-		Vector v = new Vector();
-		Long seId;
-		long smeId;
-		Long oSmeId;
-		SDMSSubmittedEntity sme;
-		long actVersion;
-		SDMSSchedulingEntity se;
-		SDMSResourceRequirement rr;
-
-		v.add(ra.getId(sysEnv));
-		smeId = ra.getSmeId(sysEnv).longValue();
-		oSmeId = new Long(-smeId);
-		v.add(oSmeId);
-		sme = SDMSSubmittedEntityTable.getObject(sysEnv, oSmeId);
-		v.add(sme.getMasterId(sysEnv));
-		actVersion = sme.getSeVersion(sysEnv).longValue();
-		seId = sme.getSeId(sysEnv);
-		se = SDMSSchedulingEntityTable.getObject(sysEnv, seId, actVersion);
-
-		v.add(se.getTypeAsString(sysEnv));
-
-		v.add(sme.getSubmitPathString(sysEnv,true));
-		v.add(ra.getAmount(sysEnv));
-		v.add(ra.getKeepModeAsString(sysEnv));
-		v.add(ra.getIsSticky(sysEnv));
-		v.add(ma.getStickyName(sysEnv));
-		Long stickyParent = ma.getStickyParent(sysEnv);
-		v.add(stickyParent);
-		if (stickyParent == null)
-			v.add(null);
-		else {
-			final SDMSSubmittedEntity spsme = SDMSSubmittedEntityTable.getObject(sysEnv, stickyParent);
-			final SDMSSchedulingEntity spse = SDMSSchedulingEntityTable.getObject(sysEnv, spsme.getSeId(sysEnv), actVersion);
-			v.add(spse.getTypeAsString(sysEnv));
-		}
-		v.add(ma.getLockmodeAsString(sysEnv));
-		Long rsmpId = ra.getRsmpId(sysEnv);
-		if (rsmpId != null) {
-			SDMSResourceStateMappingProfile rsmp = SDMSResourceStateMappingProfileTable.getObject(sysEnv, ra.getRsmpId(sysEnv), actVersion);
-			v.add(rsmp.getName(sysEnv));
-		} else v.add(null);
-		int allocType = ra.getAllocationType(sysEnv).intValue();
-		v.add(ra.getAllocationTypeAsString(sysEnv));
-		switch(allocType) {
-		case SDMSResourceAllocation.ALLOCATION:
-			v.add(ALLOCATION);
-			break;
-		case SDMSResourceAllocation.MASTER_RESERVATION:
-			v.add(MASTER_RESERVATION);
-			break;
-		case SDMSResourceAllocation.RESERVATION:
-			v.add(RESERVATION);
-			break;
-		case SDMSResourceAllocation.IGNORE:
-			v.add(IGNORED);
-			break;
-		}
-		v.add(sme.getPriority(sysEnv));
-		v.add(new Integer(SystemEnvironment.sched.getDynPriority(sysEnv, sme)));
-		v.add(sme.getPrivileges(sysEnv).toString());
-
-		return v;
-	}
-
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResource r = null;
 		SDMSResourceTemplate rt = null;
@@ -677,7 +603,7 @@ public class ShowResource extends ShowCommented
 		}
 
 		d_container = new SDMSOutputContainer(sysEnv, "Resource", fill_desc(sysEnv),
-		                                      fill_master(sysEnv, r == null ? (SDMSProxy) rt : (SDMSProxy) r, nr, containerPath));
+				fill_master(sysEnv, r == null ? (SDMSProxy) rt : (SDMSProxy) r, nr, containerPath));
 
 		result.setOutputContainer(d_container);
 

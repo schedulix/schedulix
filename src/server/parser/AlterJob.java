@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -121,7 +121,7 @@ public class AlterJob extends Node
 	}
 
 	private boolean checkConsistency(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		int v = 0;
 		if(execPid        != null) v += EP;
@@ -151,11 +151,11 @@ public class AlterJob extends Node
 		if(warning        != null) v += SW;
 
 		if(((v & ~JS_ACTION) == 0) ||
-		    ((v & ~OP_ACTION) == 0) ||
-		    ((v & ~ES_ACTION) == 0) ||
-		    ((v & ~KI_ACTION) == 0) ||
-		    ((v & ~CN_ACTION) == 0) ||
-		    ((v & ~RC_ACTION) == 0)) {
+		   ((v & ~OP_ACTION) == 0) ||
+		   ((v & ~ES_ACTION) == 0) ||
+		   ((v & ~KI_ACTION) == 0) ||
+		   ((v & ~CN_ACTION) == 0) ||
+		   ((v & ~RC_ACTION) == 0)) {
 			if(nicevalue != null && renice != null) return false;
 			if(clearWarning != null && warning != null) return false;
 		} else {
@@ -165,7 +165,7 @@ public class AlterJob extends Node
 	}
 
 	private void collectWith(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector tmp;
 		execPid = (String) with.get(ParseStr.S_EXEC_PID);
@@ -186,7 +186,7 @@ public class AlterJob extends Node
 				d = sysEnv.systemDateFormat.parse (ts, pp);
 				if (pp.getErrorIndex() != -1)
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03205061602", "Error in date format: $1\nPosition: $2",
-					                               ts, pp.toString()));
+						ts, pp.toString()));
 			}
 			final GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
 			gc.setTime(d);
@@ -226,7 +226,7 @@ public class AlterJob extends Node
 	}
 
 	private void setSomeFields(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Integer status)
-	throws SDMSException
+		throws SDMSException
 	{
 		sme.setState(sysEnv, status);
 		if(with.containsKey(ParseStr.S_ERROR_TEXT))	sme.setErrorMsg(sysEnv, errText);
@@ -235,56 +235,56 @@ public class AlterJob extends Node
 	}
 
 	private void changeState(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, boolean force)
-	throws SDMSException
+		throws SDMSException
 	{
 		switch(status.intValue()) {
-		case SDMSSubmittedEntity.STARTED:
-			setSomeFields(sysEnv, sme, status);
-			if(tsLong != null)
-				sme.setStartTs(sysEnv, tsLong);
-			delFromQueue(sysEnv, sme);
-			break;
-		case SDMSSubmittedEntity.RUNNING:
-			int oldState = sme.getState(sysEnv);
-			setSomeFields(sysEnv, sme, status);
-			if (oldState != SDMSSubmittedEntity.STARTED && tsLong != null)
-				sme.setStartTs(sysEnv, tsLong);
-			delFromQueue(sysEnv, sme);
-			break;
-		case SDMSSubmittedEntity.FINISHED:
-			if(exitCode == null) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv,
-				                               "03212102041", "you cannot finish a job without an exit code"));
-			}
-			sme.finishJob(sysEnv, exitCode, errText, tsLong);
-
-			int newState = sme.getState(sysEnv);
-			if (newState == SDMSSubmittedEntity.FINISHED || newState == SDMSSubmittedEntity.FINAL)
+			case SDMSSubmittedEntity.STARTED:
+				setSomeFields(sysEnv, sme, status);
+				if(tsLong != null)
+					sme.setStartTs(sysEnv, tsLong);
 				delFromQueue(sysEnv, sme);
-			break;
-		case SDMSSubmittedEntity.BROKEN_ACTIVE:
-			setSomeFields(sysEnv, sme, status);
-			break;
-		case SDMSSubmittedEntity.BROKEN_FINISHED:
-			sme.releaseResources(sysEnv, status.intValue());
+				break;
+			case SDMSSubmittedEntity.RUNNING:
+				int oldState = sme.getState(sysEnv);
+				setSomeFields(sysEnv, sme, status);
+				if (oldState != SDMSSubmittedEntity.STARTED && tsLong != null)
+					sme.setStartTs(sysEnv, tsLong);
+				delFromQueue(sysEnv, sme);
+				break;
+			case SDMSSubmittedEntity.FINISHED:
+				if(exitCode == null) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv,
+							"03212102041", "you cannot finish a job without an exit code"));
+				}
+				sme.finishJob(sysEnv, exitCode, errText, tsLong);
 
-			setSomeFields(sysEnv, sme, status);
-			break;
-		case SDMSSubmittedEntity.ERROR:
-			sme.releaseResources(sysEnv, status.intValue());
-			sme.setToError(sysEnv, errText);
-			break;
-		default:
+				int newState = sme.getState(sysEnv);
+				if (newState == SDMSSubmittedEntity.FINISHED || newState == SDMSSubmittedEntity.FINAL)
+					delFromQueue(sysEnv, sme);
+				break;
+			case SDMSSubmittedEntity.BROKEN_ACTIVE:
+				setSomeFields(sysEnv, sme, status);
+				break;
+			case SDMSSubmittedEntity.BROKEN_FINISHED:
+				sme.releaseResources(sysEnv, status.intValue());
 
-			if(force) {
-				sme.setState(sysEnv, status);
-			}
-			break;
+				setSomeFields(sysEnv, sme, status);
+				break;
+			case SDMSSubmittedEntity.ERROR:
+				sme.releaseResources(sysEnv, status.intValue());
+				sme.setToError(sysEnv, errText);
+				break;
+			default:
+
+				if(force) {
+					sme.setState(sysEnv, status);
+				}
+				break;
 		}
 	}
 
 	private void setExitState(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, long actVersion)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		String oldExitState;
@@ -297,15 +297,15 @@ public class AlterJob extends Node
 
 		if(se.getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03403091701", "You can only change the exit state of a job, $1 is a $2",
-			                               se.pathString(sysEnv), se.getTypeAsString(sysEnv)));
+						se.pathString(sysEnv), se.getTypeAsString(sysEnv)));
 		}
 
 		boolean isSuspended = sme.getIsSuspended(sysEnv).booleanValue();
 		if((state != SDMSSubmittedEntity.FINISHED && state != SDMSSubmittedEntity.BROKEN_FINISHED && state != SDMSSubmittedEntity.ERROR && !isSuspended) ||
-		    (state == SDMSSubmittedEntity.ERROR && !sme.getJobIsRestartable(sysEnv).booleanValue()) ||
-		    (isSuspended && (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED ||
-		                     state == SDMSSubmittedEntity.RUNNING || state == SDMSSubmittedEntity.TO_KILL ||
-		                     state == SDMSSubmittedEntity.KILLED || state == SDMSSubmittedEntity.BROKEN_ACTIVE))) {
+		   (state == SDMSSubmittedEntity.ERROR && !sme.getJobIsRestartable(sysEnv).booleanValue()) ||
+		   (isSuspended && (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED ||
+				    state == SDMSSubmittedEntity.RUNNING || state == SDMSSubmittedEntity.TO_KILL ||
+				    state == SDMSSubmittedEntity.KILLED || state == SDMSSubmittedEntity.BROKEN_ACTIVE))) {
 
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03207082043", "you can only set a state for a (broken) finished  or a suspended not active job"));
 		}
@@ -318,7 +318,7 @@ public class AlterJob extends Node
 
 					if(sme.getJobIsFinal(sysEnv).booleanValue()) {
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03207082044",
-						                               "you can only set a state for a job in a nonfinal state"));
+										"you can only set a state for a job in a nonfinal state"));
 					}
 					oldExitState = SDMSExitStateDefinitionTable.getObject(sysEnv, sme.getJobEsdId(sysEnv), actVersion).getName(sysEnv);
 				} else {
@@ -345,8 +345,8 @@ public class AlterJob extends Node
 				esmpId = esp.getDefaultEsmpId(sysEnv);
 				if(esmpId == null) {
 					SDMSMessage m = new SDMSMessage(sysEnv, "03403090928",
-					                                "Couldn't determine the exit state mapping for job definition $1",
-					                                se.pathString(sysEnv));
+										"Couldn't determine the exit state mapping for job definition $1",
+										se.pathString(sysEnv));
 					SDMSThread.doTrace(sysEnv.cEnv, m.toString(), SDMSThread.SEVERITY_ERROR);
 					throw new CommonErrorException(m);
 				}
@@ -354,7 +354,7 @@ public class AlterJob extends Node
 
 			if(!SDMSExitStateMappingTable.idx_esmpId_esdId.containsKey(sysEnv, new SDMSKey(esmpId, esdId), actVersion)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03403090958",
-				                               "A mapping to exit state $1 doesn't exist, use force if you really want this", exitState));
+							"A mapping to exit state $1 doesn't exist, use force if you really want this", exitState));
 			}
 		}
 
@@ -363,7 +363,7 @@ public class AlterJob extends Node
 	}
 
 	private void alterByJob(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		long actVersion = sme.getSeVersion(sysEnv).longValue();
@@ -391,7 +391,7 @@ public class AlterJob extends Node
 	}
 
 	private void alterByJobserver(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, long actVersion)
-	throws SDMSException
+		throws SDMSException
 	{
 		auditFlag = false;
 		Long sId = sme.getScopeId(sysEnv);
@@ -419,7 +419,7 @@ public class AlterJob extends Node
 	}
 
 	private void alterByOperator(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, long actVersion)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(status != null) {
 
@@ -489,8 +489,8 @@ public class AlterJob extends Node
 		if(priority != null) {
 
 			if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getType(sysEnv).intValue()
-			    != SDMSSchedulingEntity.JOB) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03211211229", "Cannot change the priority of a batch or milestone"));
+				!= SDMSSchedulingEntity.JOB) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03211211229", "Cannot change the priority of a batch or milestone"));
 			}
 			if(priority.intValue() > SchedulingThread.MIN_PRIORITY) priority = new Integer(SchedulingThread.MIN_PRIORITY);
 			if(priority.intValue() < SchedulingThread.MAX_PRIORITY) priority = new Integer(SchedulingThread.MAX_PRIORITY);
@@ -515,7 +515,7 @@ public class AlterJob extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSubmittedEntity sme = null;
 		boolean ignore = false;
@@ -571,7 +571,7 @@ public class AlterJob extends Node
 	}
 
 	private void changeKillJobState(SystemEnvironment sysEnv, SDMSKillJob kj, boolean force)
-	throws SDMSException
+		throws SDMSException
 	{
 		int s;
 
@@ -585,45 +585,45 @@ public class AlterJob extends Node
 		if(with.containsKey(ParseStr.S_EXT_PID))	kj.setExtPid(sysEnv, extPid);
 
 		switch(status.intValue()) {
-		case SDMSSubmittedEntity.STARTED:
-			if(tsLong != null) 			kj.setStartTs(sysEnv, tsLong);
-			break;
-		case SDMSSubmittedEntity.RUNNING:
-			if(tsLong != null) 			kj.setStartTs(sysEnv, tsLong);
-			break;
-		case SDMSSubmittedEntity.FINISHED:
-			if(tsLong != null) 			kj.setFinishTs(sysEnv, tsLong);
-			if(with.containsKey(ParseStr.S_EXIT_CODE)) {
-				kj.setExitCode(sysEnv, exitCode);
-				sme.setKillExitCode(sysEnv, exitCode);
-			}
-			if(s == SDMSSubmittedEntity.TO_KILL) {
-				sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.KILLED));
-			}
-			break;
-		case SDMSSubmittedEntity.BROKEN_ACTIVE:
-			break;
-		case SDMSSubmittedEntity.BROKEN_FINISHED:
-			if(s == SDMSSubmittedEntity.TO_KILL) {
-				sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.KILLED));
-			}
-			break;
-		case SDMSSubmittedEntity.ERROR:
-			if(s == SDMSSubmittedEntity.TO_KILL) {
-				sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.RUNNING));
-			}
-			break;
-		default:
+			case SDMSSubmittedEntity.STARTED:
+				if(tsLong != null) 			kj.setStartTs(sysEnv, tsLong);
+				break;
+			case SDMSSubmittedEntity.RUNNING:
+				if(tsLong != null) 			kj.setStartTs(sysEnv, tsLong);
+				break;
+			case SDMSSubmittedEntity.FINISHED:
+				if(tsLong != null) 			kj.setFinishTs(sysEnv, tsLong);
+				if(with.containsKey(ParseStr.S_EXIT_CODE)) {
+					kj.setExitCode(sysEnv, exitCode);
+					sme.setKillExitCode(sysEnv, exitCode);
+				}
+				if(s == SDMSSubmittedEntity.TO_KILL) {
+					sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.KILLED));
+				}
+				break;
+			case SDMSSubmittedEntity.BROKEN_ACTIVE:
+				break;
+			case SDMSSubmittedEntity.BROKEN_FINISHED:
+				if(s == SDMSSubmittedEntity.TO_KILL) {
+					sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.KILLED));
+				}
+				break;
+			case SDMSSubmittedEntity.ERROR:
+				if(s == SDMSSubmittedEntity.TO_KILL) {
+					sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.RUNNING));
+				}
+				break;
+			default:
 
-			if(force) {
-				kj.setState(sysEnv, status);
-			}
-			break;
+				if(force) {
+					kj.setState(sysEnv, status);
+				}
+				break;
 		}
 	}
 
 	private void go_killjob(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSKillJob kj = null;
 
@@ -650,7 +650,7 @@ public class AlterJob extends Node
 	}
 
 	private void ignoreDeps(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v;
 
@@ -660,37 +660,47 @@ public class AlterJob extends Node
 			Boolean rec = (Boolean) v.get(1);
 			SDMSDependencyInstance di = SDMSDependencyInstanceTable.getObject(sysEnv, diId);
 			di.setIgnore(sysEnv, (rec.booleanValue()? SDMSDependencyInstance.RECURSIVE : SDMSDependencyInstance.YES),
-			             jobId, comment);
+					jobId, comment);
 		}
 	}
 
 	private void ignoreNamedResources(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 	}
 
 	private void ignoreResources(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long rId;
 		SDMSResourceAllocation ra = null;
 		final SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), sme.getSeVersion(sysEnv).longValue());
 		Long smeId = sme.getId(sysEnv);
+		boolean raFound = false;
 
 		for(int i = 0; i < resToIgnore.size(); i++) {
 			rId = (Long) resToIgnore.get(i);
 			try {
-				ra = SDMSResourceAllocationTable.idx_smeId_rId_getUnique(sysEnv, new SDMSKey(smeId, rId));
+				SDMSResource r = SDMSResourceTable.getObject(sysEnv, rId);
+				Vector rav = SDMSResourceAllocationTable.idx_smeId_nrId.getVector(sysEnv, new SDMSKey(smeId, r.getNrId(sysEnv)));
+				for (int j = 0; j < rav.size(); ++j) {
+					ra = (SDMSResourceAllocation) rav.get(j);
+					if (ra.getRId(sysEnv).equals(rId)) {
+						raFound = true;
+						break;
+					}
+				}
 			} catch(NotFoundException nfe) {
 				continue;
 			}
+			if (!raFound) continue;
 
 			if(se.checkParameterRI(sysEnv, ra.getNrId(sysEnv))) {
 				SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, ra.getNrId(sysEnv));
 				throw new CommonErrorException(
-				        new SDMSMessage(sysEnv, "03409291444", "You cannot ignore resource $1, parameter references exist",
-				                        nr.pathString(sysEnv)
-				                       )
+					new SDMSMessage(sysEnv, "03409291444", "You cannot ignore resource $1, parameter references exist",
+						nr.pathString(sysEnv)
+					)
 				);
 			}
 			ra.ignore(sysEnv);
@@ -698,7 +708,7 @@ public class AlterJob extends Node
 	}
 
 	private void delFromQueue(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUnique(sysEnv, new SDMSKey(sme.getId(sysEnv), sysEnv.cEnv.uid()));
@@ -709,7 +719,7 @@ public class AlterJob extends Node
 	}
 
 	private void delFromQueue(SystemEnvironment sysEnv, SDMSKillJob kj)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUnique(sysEnv, new SDMSKey(kj.getId(sysEnv), sysEnv.cEnv.uid()));

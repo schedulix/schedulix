@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -62,13 +62,13 @@ public class SDMSRepository
 			env.dbConnection.close();
 		} catch(SQLException sqle) {
 			throw new FatalException(new SDMSMessage(env, "03110181535",
-			                         "SQL Error : $1", sqle.getMessage()));
+						"SQL Error : $1", sqle.getMessage()));
 
 		}
 	}
 
 	private void fillSme2Load(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		long lowestActiveDate = getLowestActiveDate(env);
 		long historyDate = getHistoryDate(env);
@@ -104,18 +104,18 @@ public class SDMSRepository
 
 			Statement stmt = env.dbConnection.createStatement();
 			ResultSet rset = stmt.executeQuery("SELECT " + "ID" +
-			                                   ", " + squote + "SE_ID" + equote +
-			                                   ", " + squote + "SE_VERSION" + equote +
-			                                   ", " + squote + "STATE" + equote +
-			                                   ", " + squote + "FINAL_TS" + equote +
-			                                   ", " + squote + "SUBMIT_TS" + equote +
-			                                   "  FROM SUBMITTED_ENTITY" +
-			                                   " WHERE ID = MASTER_ID" +
-			                                   "   AND (" + squote + "STATE" + squote + " NOT IN (" + SDMSSubmittedEntity.CANCELLED + "," + SDMSSubmittedEntity.FINAL + ") OR" +
-			                                   "       FINAL_TS >= " + (postgres ?
-			                                                   "	   CAST (\'" + lowestActiveDate + "\' AS DECIMAL)" :
-			                                                   "	   " + lowestActiveDate) + ")" +
-			                                   " ORDER BY SE_ID, SUBMIT_TS DESC");
+					", " + squote + "SE_ID" + equote +
+					", " + squote + "SE_VERSION" + equote +
+					", " + squote + "STATE" + equote +
+					", " + squote + "FINAL_TS" + equote +
+					", " + squote + "SUBMIT_TS" + equote +
+					"  FROM SUBMITTED_ENTITY" +
+					" WHERE ID = MASTER_ID" +
+					"   AND (" + squote + "STATE" + squote + " NOT IN (" + SDMSSubmittedEntity.CANCELLED + "," + SDMSSubmittedEntity.FINAL + ") OR" +
+					"       FINAL_TS >= " + (postgres ?
+					"	   CAST (\'" + lowestActiveDate + "\' AS DECIMAL)" :
+					"	   " + lowestActiveDate) + ")" +
+					" ORDER BY SE_ID, SUBMIT_TS DESC");
 			int insctr = 0;
 			while(rset.next()) {
 				hit = false;
@@ -160,13 +160,13 @@ public class SDMSRepository
 
 			Statement fill = env.dbConnection.createStatement();
 			fill.executeUpdate("INSERT INTO SME2LOAD " +
-			                   "SELECT S.ID FROM SUBMITTED_ENTITY S, SME2LOAD M " +
-			                   " WHERE M.ID = S.MASTER_ID " +
-			                   "   AND S.ID != S.MASTER_ID");
+					   "SELECT S.ID FROM SUBMITTED_ENTITY S, SME2LOAD M " +
+					   " WHERE M.ID = S.MASTER_ID " +
+					   "   AND S.ID != S.MASTER_ID");
 			env.dbConnection.commit();
 		} catch(SQLException sqle) {
 			throw new FatalException(new SDMSMessage(env, "03401131304",
-			                         "SQL Error : $1", sqle.getMessage()));
+						"SQL Error : $1", sqle.getMessage()));
 		}
 	}
 
@@ -226,7 +226,6 @@ public class SDMSRepository
 		tables.put(SDMSNamedEnvironmentTableGeneric.tableName,            new SDMSNamedEnvironmentTable(env));
 		tables.put(SDMSNamedResourceTableGeneric.tableName,               new SDMSNamedResourceTable(env));
 		// M
-		tables.put(SDMSMasterAllocationTableGeneric.tableName,            new SDMSMasterAllocationTable(env));
 		tables.put(SDMSMemberTableGeneric.tableName,                      new SDMSMemberTable(env));
 		// O
 		tables.put(SDMSObjectCommentTableGeneric.tableName,               new SDMSObjectCommentTable(env));
@@ -269,10 +268,12 @@ public class SDMSRepository
 
 	private void loadTables(SystemEnvironment env) throws SDMSException
 	{
+		// Initialize Iterator
 		tableIterator = tables.values().iterator();
 
 		TableLoader tl[] = new TableLoader[SystemEnvironment.dbLoaders];
 
+		// start LoaderThreads
 		for(int i = 0; i < SystemEnvironment.dbLoaders; i++) {
 			tl[i] = new TableLoader(i, env);
 		}
@@ -288,7 +289,7 @@ public class SDMSRepository
 				i--;
 				continue;
 			}
-			tl[i] = null;
+			tl[i] = null;	// explicitly discard Thread
 		}
 		if(loaderException != null) throw loaderException;
 	}
@@ -310,13 +311,13 @@ public class SDMSRepository
 	}
 
 	public Iterator getTableIterator(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return tables.values().iterator();
 	}
 
 	public SDMSTable getTable(SystemEnvironment env, String n)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSTable retVal = (SDMSTable) tables.get(n);
 		if(retVal == null) {
@@ -326,7 +327,7 @@ public class SDMSRepository
 	}
 
 	public SDMSTable userGetTable(SystemEnvironment env, String n)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSTable retVal = (SDMSTable) tables.get(n);
 		if(retVal == null) {
@@ -377,7 +378,7 @@ class TableLoader extends SDMSThread
 				}
 			} catch (SQLException sqle) {
 				throw new FatalException(new SDMSMessage(sysEnv, "03110181536",
-				                         "SQL Error : " + sqle.getMessage()));
+							"SQL Error : " + sqle.getMessage()));
 			}
 		} catch (SDMSException e) {
 			SystemEnvironment.repository.notify(e);
@@ -386,7 +387,7 @@ class TableLoader extends SDMSThread
 				sysEnv.dbConnection.close();
 			} catch (SQLException sqle) {
 				SystemEnvironment.repository.notify(new FatalException(new SDMSMessage(sysEnv, "03305091627",
-				                                    "SQL Error : " + sqle.getMessage())));
+							"SQL Error : " + sqle.getMessage())));
 			}
 		}
 	}

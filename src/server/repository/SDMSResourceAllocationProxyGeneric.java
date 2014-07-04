@@ -52,6 +52,7 @@ public class SDMSResourceAllocationProxyGeneric extends SDMSProxy
 	public static final int MASTER_RESERVATION = 3;
 	public static final int ALLOCATION = 4;
 	public static final int IGNORE = 5;
+	public static final int MASTER_REQUEST = 6;
 	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP;
 
 	static final public int stickyName_size = 64;
@@ -406,7 +407,7 @@ public class SDMSResourceAllocationProxyGeneric extends SDMSProxy
 		((SDMSResourceAllocationGeneric)(object)).setChangeTs (env, p_changeTs);
 		return (SDMSResourceAllocation)this;
 	}
-	public SDMSResourceAllocation set_SmeIdRId (SystemEnvironment env, Long p_smeId, Long p_rId)
+	public SDMSResourceAllocation set_SmeIdRIdStickyName (SystemEnvironment env, Long p_smeId, Long p_rId, String p_stickyName)
 	throws SDMSException
 	{
 		checkRead(env);
@@ -414,7 +415,19 @@ public class SDMSResourceAllocationProxyGeneric extends SDMSProxy
 			throw new AccessViolationException (accessViolationMessage(env, "01312181242"));
 
 		touchMaster(env);
-		((SDMSResourceAllocationGeneric)(object)).set_SmeIdRId (env, p_smeId, p_rId);
+		((SDMSResourceAllocationGeneric)(object)).set_SmeIdRIdStickyName (env, p_smeId, p_rId, p_stickyName);
+		return (SDMSResourceAllocation)this;
+	}
+
+	public SDMSResourceAllocation set_StickyParentRIdStickyName (SystemEnvironment env, Long p_stickyParent, Long p_rId, String p_stickyName)
+	throws SDMSException
+	{
+		checkRead(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181242"));
+
+		touchMaster(env);
+		((SDMSResourceAllocationGeneric)(object)).set_StickyParentRIdStickyName (env, p_stickyParent, p_rId, p_stickyName);
 		return (SDMSResourceAllocation)this;
 	}
 

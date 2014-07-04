@@ -53,6 +53,7 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	public static final int MASTER_RESERVATION = 3;
 	public static final int ALLOCATION = 4;
 	public static final int IGNORE = 5;
+	public static final int MASTER_REQUEST = 6;
 
 	public final static int nr_id = 1;
 	public final static int nr_rId = 2;
@@ -465,6 +466,8 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		switch (v.intValue()) {
 		case SDMSResourceAllocation.REQUEST:
 			return "REQUEST";
+		case SDMSResourceAllocation.MASTER_REQUEST:
+			return "MASTER_REQUEST";
 		case SDMSResourceAllocation.RESERVATION:
 			return "RESERVATION";
 		case SDMSResourceAllocation.MASTER_RESERVATION:
@@ -735,7 +738,7 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return o;
 	}
 
-	public SDMSResourceAllocationGeneric set_SmeIdRId (SystemEnvironment env, Long p_smeId, Long p_rId)
+	public SDMSResourceAllocationGeneric set_SmeIdRIdStickyName (SystemEnvironment env, Long p_smeId, Long p_rId, String p_stickyName)
 	throws SDMSException
 	{
 		SDMSResourceAllocationGeneric o;
@@ -750,6 +753,46 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 			o = (SDMSResourceAllocationGeneric) change(env);
 			o.smeId = p_smeId;
 			o.rId = p_rId;
+			if (p_stickyName != null && p_stickyName.length() > 64) {
+				throw new CommonErrorException (
+				        new SDMSMessage(env, "01201290025",
+				                        "(ResourceAllocation) Length of $1 exceeds maximum length $2", "changeTs", "64")
+				);
+			}
+			o.stickyName = p_stickyName;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public SDMSResourceAllocationGeneric set_StickyParentRIdStickyName (SystemEnvironment env, Long p_stickyParent, Long p_rId, String p_stickyName)
+	throws SDMSException
+	{
+		SDMSResourceAllocationGeneric o;
+
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141637", "(ResourceAllocation) Change of system object not allowed")
+				);
+			}
+			o = (SDMSResourceAllocationGeneric) change(env);
+			o.stickyParent = p_stickyParent;
+			o.rId = p_rId;
+			if (p_stickyName != null && p_stickyName.length() > 64) {
+				throw new CommonErrorException (
+				        new SDMSMessage(env, "01201290025",
+				                        "(ResourceAllocation) Length of $1 exceeds maximum length $2", "changeTs", "64")
+				);
+			}
+			o.stickyName = p_stickyName;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
@@ -1073,6 +1116,7 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	{
 		switch (p.intValue()) {
 		case SDMSResourceAllocation.REQUEST:
+		case SDMSResourceAllocation.MASTER_REQUEST:
 		case SDMSResourceAllocation.RESERVATION:
 		case SDMSResourceAllocation.MASTER_RESERVATION:
 		case SDMSResourceAllocation.ALLOCATION:
@@ -1118,6 +1162,7 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "changeTs : " + changeTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "validFrom : " + validFrom, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "validTo : " + validTo, SDMSThread.SEVERITY_MESSAGE);
+		dumpVersions(SDMSThread.SEVERITY_MESSAGE);
 	}
 
 	public String toString(int indent)

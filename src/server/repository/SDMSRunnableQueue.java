@@ -43,4 +43,10 @@ public class SDMSRunnableQueue extends SDMSRunnableQueueProxyGeneric
 	{
 		super(p_object);
 	}
+
+	public void delete(SystemEnvironment sysEnv)
+		throws SDMSException
+	{
+		super.delete(sysEnv);
+	}
 }

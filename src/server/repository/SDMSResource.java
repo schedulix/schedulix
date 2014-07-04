@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -53,7 +53,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public String getName(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		String s;
 		final SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, getNrId(sysEnv));
@@ -64,7 +64,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public SDMSResource getBase(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResource r = this;
 		Long linkId = getLinkId(sysEnv);
@@ -78,28 +78,28 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public String getTag (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		return (linkId == null ? super.getTag(sysEnv) : getBase(sysEnv).getTag(sysEnv));
 	}
 
 	public Long getRsdId (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		return (linkId == null ? super.getRsdId(sysEnv) : getBase(sysEnv).getRsdId(sysEnv));
 	}
 
 	public Long getRsdTime (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		return (linkId == null ? super.getRsdTime(sysEnv) : getBase(sysEnv).getRsdTime(sysEnv));
 	}
 
 	public void setRsdTime (SystemEnvironment sysEnv, Long p_rsdTime)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId == null) {
@@ -109,14 +109,14 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		}
 	}
 	public Integer getDefinedAmount (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		return (linkId == null ? super.getDefinedAmount(sysEnv) : getBase(sysEnv).getDefinedAmount(sysEnv));
 	}
 
 	public void setDefinedAmount (SystemEnvironment sysEnv, Integer p_definedAmount)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId == null) {
@@ -126,35 +126,35 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		}
 	}
 	public Integer getRequestableAmount (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		return (linkId == null ? super.getRequestableAmount(sysEnv) : getBase(sysEnv).getRequestableAmount(sysEnv));
 	}
 
 	public Integer getAmount (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		return (linkId == null ? super.getAmount(sysEnv) : getBase(sysEnv).getAmount(sysEnv));
 	}
 
 	public Integer getFreeAmount (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		return (linkId == null ? super.getFreeAmount(sysEnv) : getBase(sysEnv).getFreeAmount(sysEnv));
 	}
 
 	public Boolean getIsOnline (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		return (linkId == null ? super.getIsOnline(sysEnv) : getBase(sysEnv).getIsOnline(sysEnv));
 	}
 
 	public void setIsOnline (SystemEnvironment sysEnv, Boolean p_isOnline)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId == null) {
@@ -165,14 +165,14 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public Long getLastEval (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		return (linkId == null ? super.getLastEval(sysEnv) : getBase(sysEnv).getLastEval(sysEnv));
 	}
 
 	public void setLastEval (SystemEnvironment sysEnv, Long p_lastEval)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId == null) {
@@ -182,14 +182,14 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		}
 	}
 	public Long getLastWrite (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		return (linkId == null ? super.getLastWrite(sysEnv) : getBase(sysEnv).getLastWrite(sysEnv));
 	}
 
 	public void setLastWrite (SystemEnvironment sysEnv, Long p_lastWrite)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId == null) {
@@ -200,39 +200,39 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public Integer getTotalFreeAmount(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getFreeAmount(sysEnv);
 	}
 
-	public int checkAllocate(SystemEnvironment sysEnv, SDMSResourceRequirement rr, SDMSSubmittedEntity sme)
-	throws SDMSException
+	public int checkAllocate(SystemEnvironment sysEnv, SDMSResourceRequirement rr, SDMSSubmittedEntity sme, SDMSResourceAllocation ra)
+		throws SDMSException
 	{
 		SDMSResource r = this.getBase(sysEnv);
-		return r.checkAllocate(sysEnv, rr, sme, 0, new Lockmode());
+		return r.checkAllocate(sysEnv, rr, sme, ra, 0, new Lockmode());
 	}
 
-	public int checkAllocate(SystemEnvironment sysEnv, SDMSResourceRequirement rr, SDMSSubmittedEntity sme, int waitAmount, Lockmode waitLock)
-	throws SDMSException
+	public int checkAllocate(SystemEnvironment sysEnv, SDMSResourceRequirement rr, SDMSSubmittedEntity sme, SDMSResourceAllocation ra, int waitAmount, Lockmode waitLock)
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null)
-			return this.getBase(sysEnv).checkAllocate(sysEnv, rr, sme, waitAmount, waitLock);
+			return this.getBase(sysEnv).checkAllocate(sysEnv, rr, sme, ra, waitAmount, waitLock);
 
 		int rc = REASON_AVAILABLE;
 
 		if(!getIsOnline(sysEnv).booleanValue())			return REASON_OFFLINE;
 
-		Long masterId = sme.getMasterId(sysEnv);
+		Long stickyParent = ra.getStickyParent(sysEnv);
 		SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, getNrId(sysEnv));
 		int usage = nr.getUsage(sysEnv).intValue();
 		if(usage == SDMSNamedResource.STATIC) return REASON_AVAILABLE;
 
 		if(nr.getUsage(sysEnv).intValue() == SDMSNamedResource.SYNCHRONIZING) {
-			if(!syncCheckState(sysEnv, rr))				return REASON_STATE;
-			if(!syncCheckExpired(sysEnv, rr, nr, sme))		return REASON_EXPIRE;
-			if(!checkAmount(sysEnv, rr, masterId, waitAmount))	rc |= REASON_AMOUNT;
-			if(!syncCheckLockmode(sysEnv, rr, masterId, waitLock))	rc |= REASON_LOCKMODE;
+			if(!syncCheckState(sysEnv, rr))					return REASON_STATE;
+			if(!syncCheckExpired(sysEnv, rr, nr, sme))			return REASON_EXPIRE;
+			if(!checkAmount(sysEnv, rr, stickyParent, waitAmount))		rc |= REASON_AMOUNT;
+			if(!syncCheckLockmode(sysEnv, rr, stickyParent, waitLock))	rc |= REASON_LOCKMODE;
 		} else {
 			float factor = 1;
 			final int rrAmount = rr.getAmount(sysEnv).intValue();
@@ -242,12 +242,12 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		return rc;
 	}
 
-	public boolean checkAmount(SystemEnvironment sysEnv, SDMSResourceRequirement rr, Long masterId, int waitAmount)
-	throws SDMSException
+	public boolean checkAmount(SystemEnvironment sysEnv, SDMSResourceRequirement rr, Long stickyParent, int waitAmount)
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null)
-			return this.getBase(sysEnv).checkAmount(sysEnv, rr, masterId, waitAmount);
+			return this.getBase(sysEnv).checkAmount(sysEnv, rr, stickyParent, waitAmount);
 
 		final Integer rrAmount = rr.getAmount(sysEnv);
 		final Integer rAmount = getFreeAmount(sysEnv);
@@ -267,29 +267,29 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 
 		float factor = 1;
 		final int crrAmount = (int) Math.ceil(irrAmount * factor);
-		if(crrAmount > dAmount) {
+		if(crrAmount > dAmount && rr.getIsSticky(sysEnv).booleanValue()) {
 			try {
 
-				Long nMasterId = new Long(-masterId.longValue());
-				SDMSResourceAllocation ra = (SDMSResourceAllocation)
-				                            SDMSResourceAllocationTable.idx_smeId_rId.getUnique(sysEnv, new SDMSKey(nMasterId, getId(sysEnv)));
+				Long nStickyParent = new Long(-stickyParent.longValue());
+				SDMSResourceAllocation mra = (SDMSResourceAllocation)
+					SDMSResourceAllocationTable.idx_smeId_rId_stickyName.getUnique(
+						sysEnv, new SDMSKey(nStickyParent, getId(sysEnv), rr.getStickyName(sysEnv)));
 
-				totalAmount = Math.max(ra.getAmount(sysEnv).intValue(), 0) + Math.max (dAmount, 0);
+				if (mra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.MASTER_REQUEST) return false;
 
+				totalAmount = Math.max(mra.getAmount(sysEnv).intValue(), 0) + Math.max (dAmount, 0);
 				if(totalAmount >= crrAmount) {
 					return true;
 				}
 				return false;
-			} catch(NotFoundException nfe) {
-				return false;
-			}
+			} catch(NotFoundException nfe) { return false;   }
 		}
 
 		return true;
 	}
 
 	public boolean checkAmount(SystemEnvironment sysEnv, int amount, int uncorrectedAmount, int waitAmount)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null)
@@ -304,15 +304,13 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			return true;
 		}
 		int irAmount = rAmount.intValue();
-		if (
-		        (amount > irAmount - waitAmount)
-		)
+		if (amount > irAmount - waitAmount)
 			return false;
 		return true;
 	}
 
 	public boolean syncCheckState(SystemEnvironment sysEnv, SDMSResourceRequirement rr)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null)
@@ -330,30 +328,39 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		return false;
 	}
 
-	public boolean syncCheckLockmode(SystemEnvironment sysEnv, SDMSResourceRequirement rr, Long masterId, Lockmode waitLockmode)
-	throws SDMSException
+	public boolean syncCheckLockmode(SystemEnvironment sysEnv, SDMSResourceRequirement rr, Long stickyParent, Lockmode waitLockmode)
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null)
-			return this.getBase(sysEnv).syncCheckLockmode(sysEnv, rr, masterId, waitLockmode);
+			return this.getBase(sysEnv).syncCheckLockmode(sysEnv, rr, stickyParent, waitLockmode);
+
+		String rrStickyName = rr.getStickyName(sysEnv);
 
 		Vector rav = SDMSResourceAllocationTable.idx_rId.getVector(sysEnv, getId(sysEnv));
 		Integer lock = rr.getLockmode(sysEnv);
 		boolean isMasterReservation = false;
+
 		if(lock == null) lock = new Integer(Lockmode.N);
 		for(int j = 0; j < rav.size(); j++) {
 			SDMSResourceAllocation ra = (SDMSResourceAllocation) rav.get(j);
 			int allocType = ra.getAllocationType(sysEnv).intValue();
 			if(allocType == SDMSResourceAllocation.REQUEST) continue;
+			if(allocType == SDMSResourceAllocation.MASTER_REQUEST) continue;
 			if(allocType == SDMSResourceAllocation.IGNORE) continue;
-			if(ra.getSmeId(sysEnv).intValue() == - masterId.intValue()) {
-				isMasterReservation = true;
-				continue;
+			if(stickyParent != null && ra.getSmeId(sysEnv).longValue() == - stickyParent.longValue()) {
+				String raStickyName = ra.getStickyName(sysEnv);
+				if ((rrStickyName == null && raStickyName == null) ||
+				    (rrStickyName != null && rrStickyName.equals(raStickyName))) {
+					isMasterReservation = true;
+					continue;
+				}
 			}
 			if(! Lockmode.isCompatible(lock, ra.getLockmode(sysEnv))) {
 				return false;
 			}
 		}
+
 		if(! Lockmode.isCompatible(waitLockmode, lock) && !isMasterReservation) {
 			return false;
 		}
@@ -361,7 +368,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public boolean syncCheckLockmode(SystemEnvironment sysEnv, int lockmode, Lockmode waitLockmode)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null)
@@ -376,6 +383,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			SDMSResourceAllocation ra = (SDMSResourceAllocation) rav.get(j);
 			int allocType = ra.getAllocationType(sysEnv).intValue();
 			if(allocType == SDMSResourceAllocation.REQUEST) continue;
+			if(allocType == SDMSResourceAllocation.MASTER_REQUEST) continue;
 			if(allocType == SDMSResourceAllocation.IGNORE) continue;
 			if(! Lockmode.isCompatible(lock, ra.getLockmode(sysEnv))) {
 				return false;
@@ -385,7 +393,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public boolean syncCheckExpired(SystemEnvironment sysEnv, SDMSResourceRequirement rr, SDMSNamedResource nr, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null)
@@ -397,24 +405,12 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 				long rsdTime = getRsdTime(sysEnv).longValue();
 				long expTime = rr.getExpiredAmount(sysEnv).longValue();
 				switch(expBase.intValue()) {
-				case SDMSInterval.MINUTE:
-					expTime *= SDMSInterval.MINUTE_DUR;
-					break;
-				case SDMSInterval.HOUR:
-					expTime *= SDMSInterval.HOUR_DUR;
-					break;
-				case SDMSInterval.DAY:
-					expTime *= SDMSInterval.DAY_DUR;
-					break;
-				case SDMSInterval.WEEK:
-					expTime *= SDMSInterval.WEEK_DUR;
-					break;
-				case SDMSInterval.MONTH:
-					expTime *= SDMSInterval.MONTH_DUR;
-					break;
-				case SDMSInterval.YEAR:
-					expTime *= SDMSInterval.YEAR_DUR;
-					break;
+					case SDMSInterval.MINUTE: expTime *= SDMSInterval.MINUTE_DUR; break;
+					case SDMSInterval.HOUR:   expTime *= SDMSInterval.HOUR_DUR;   break;
+					case SDMSInterval.DAY:    expTime *= SDMSInterval.DAY_DUR;    break;
+					case SDMSInterval.WEEK:   expTime *= SDMSInterval.WEEK_DUR;   break;
+					case SDMSInterval.MONTH:  expTime *= SDMSInterval.MONTH_DUR;  break;
+					case SDMSInterval.YEAR:   expTime *= SDMSInterval.YEAR_DUR;   break;
 				}
 				long ts;
 				long dts = (new java.util.Date()).getTime();
@@ -435,7 +431,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public void setAmount(SystemEnvironment sysEnv, Integer amount)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null) {
@@ -483,7 +479,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public void setRequestableAmount(SystemEnvironment sysEnv, Integer amount)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null) {
@@ -498,7 +494,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		if(nr.getUsage(sysEnv).intValue() == SDMSNamedResource.STATIC) {
 			if(amount != null)
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202211142",
-				                               "A static resource cannot have a requestable amount other than infinite"));
+							"A static resource cannot have a requestable amount other than infinite"));
 		}
 
 		SystemEnvironment.sched.notifyChange(sysEnv, this, this.getScopeId(sysEnv), SchedulingThread.ALTER_REQAMOUNT);
@@ -506,14 +502,14 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public void setRsdId(SystemEnvironment sysEnv, Long rsdId)
-	throws SDMSException
+		throws SDMSException
 	{
 		this.getBase(sysEnv).setRsdId(sysEnv, rsdId, null);
 		return;
 	}
 
 	public void setRsdId(SystemEnvironment sysEnv, Long rsdId, SDMSSubmittedEntity causeSme)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null) {
@@ -531,7 +527,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			if(!SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(rsdId, rspId))) {
 				SDMSResourceStateProfile rsp = SDMSResourceStateProfileTable.getObject(sysEnv, rspId);
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202211222", "Resource state is not defined in the profile $1",
-				                               rsp.getName(sysEnv)));
+							rsp.getName(sysEnv)));
 			}
 		}
 
@@ -546,13 +542,13 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public void delete(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		delete(sysEnv, false);
 	}
 
 	public void delete(SystemEnvironment sysEnv, boolean force)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long sId = getScopeId(sysEnv);
 		Long rId = getId(sysEnv);
@@ -582,7 +578,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public Vector getAllocations(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector result;
 		Long id = getId(sysEnv);
@@ -598,7 +594,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public long getPrivileges(SystemEnvironment sysEnv, long checkPrivs, boolean fastFail, Vector checkGroups)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null)
@@ -639,7 +635,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public void releaseAmount(SystemEnvironment sysEnv, int raAmount)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null) {
@@ -655,14 +651,14 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public void setFreeAmount(SystemEnvironment sysEnv, Integer newFree)
-	throws SDMSException
+		throws SDMSException
 	{
 		this.getBase(sysEnv).setFreeAmount(sysEnv, newFree, getAmount(sysEnv));
 		return;
 	}
 
 	public void setFreeAmount(SystemEnvironment sysEnv, Integer newFree, Integer oldAmount)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null) {
@@ -673,7 +669,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, getNrId(sysEnv));
 		String ps;
@@ -694,13 +690,13 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public String getURL(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return "resource " + getURLName(sysEnv);
 	}
 
 	protected final SDMSParameterDefinition getParameterDefinition(final SystemEnvironment sysEnv, final String name)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSParameterDefinition pd = null;
 
@@ -709,14 +705,14 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			pd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(nrId, name));
 		} catch(NotFoundException nfe) {
 			throw new CommonErrorException(
-			        new SDMSMessage(sysEnv, "03409111747", "Parameter $1 not defined for this resource", name));
+				new SDMSMessage(sysEnv, "03409111747", "Parameter $1 not defined for this resource", name));
 		}
 
 		return pd;
 	}
 
 	public final void createVariables (final SystemEnvironment sysEnv, final WithHash parms)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (parms == null)
 			return;
@@ -741,7 +737,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			int type = pd.getType(sysEnv).intValue();
 			if(type == SDMSParameterDefinition.CONSTANT)
 				throw new CommonErrorException(
-				        new SDMSMessage(sysEnv, "03409111750", "Parameter $1 is defined as a $2 for this resource", name, pd.getTypeAsString(sysEnv)));
+					new SDMSMessage(sysEnv, "03409111750", "Parameter $1 is defined as a $2 for this resource", name, pd.getTypeAsString(sysEnv)));
 
 			if(value == null) {
 				continue;
@@ -754,7 +750,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public final void killVariables (final SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null) {
@@ -772,7 +768,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public final void copyVariables (final SystemEnvironment sysEnv, final Long newId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null) {
@@ -790,7 +786,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public final void alterVariables (final SystemEnvironment sysEnv, final WithHash parms, long version)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null) {
@@ -818,8 +814,8 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 				pd = getParameterDefinition(sysEnv, pn);
 				if(pd.getType(sysEnv).intValue() == SDMSParameterDefinition.CONSTANT)
 					throw new CommonErrorException(
-					        new SDMSMessage(sysEnv, "03409131150",
-					                        "Parameter $1 is defined as a $2 for this resource", pn, pd.getTypeAsString(sysEnv)));
+						new SDMSMessage(sysEnv, "03409131150",
+							"Parameter $1 is defined as a $2 for this resource", pn, pd.getTypeAsString(sysEnv)));
 
 				pdId = pd.getId(sysEnv);
 
@@ -852,7 +848,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public final SDMSOutputContainer getVariables (final SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkId = getLinkId(sysEnv);
 		if (linkId != null)
@@ -943,19 +939,19 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	}
 
 	public String getVariableValue(SystemEnvironment sysEnv, String name)
-	throws SDMSException
+		throws SDMSException
 	{
 		return RVR.getVariableValue(sysEnv, this.getBase(sysEnv), name, null);
 	}
 
 	public String getVariableValue(SystemEnvironment sysEnv, String name, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 		return RVR.getVariableValue(sysEnv, this.getBase(sysEnv), name, sme);
 	}
 
 	public void setVariableValue(SystemEnvironment sysEnv, String name, Long smeId, String value)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSParameterDefinition pd;
 		SDMSResourceAllocation ra;
@@ -963,11 +959,10 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		final Long rId = getId(sysEnv);
 		final Long pdId;
 
-		try {
-			ra = SDMSResourceAllocationTable.idx_smeId_rId_getUnique(sysEnv, new SDMSKey(smeId, rId));
-		} catch (NotFoundException nfe) {
+		final Vector rav = SDMSResourceAllocationTable.idx_smeId_nrId.getVector(sysEnv, new SDMSKey(smeId, getNrId(sysEnv)));
+		if (rav.size() == 0)
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03409221436", "Resource not allocated"));
-		}
+		ra = (SDMSResourceAllocation) rav.get(0);
 		if(ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.ALLOCATION) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03409221438", "Resource not allocated"));
 		}

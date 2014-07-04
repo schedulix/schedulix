@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -102,8 +102,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 	protected final static HashMap mapper = new HashMap();
 
-	static
-	{
+	static {
 		mapper.put(new Integer(Parser.SUBMITTED),		new Integer(SDMSSubmittedEntity.SUBMITTED));
 		mapper.put(new Integer(Parser.DEPENDENCY_WAIT),		new Integer(SDMSSubmittedEntity.DEPENDENCY_WAIT));
 		mapper.put(new Integer(Parser.SYNCHRONIZE_WAIT),	new Integer(SDMSSubmittedEntity.SYNCHRONIZE_WAIT));
@@ -134,13 +133,13 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public String getSubmitPathString(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getSubmitPathString(sysEnv, false);
 	}
 
 	public String getSubmitPathString(SystemEnvironment sysEnv, boolean withChildTag)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long seId;
 		long actVersion;
@@ -179,19 +178,19 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void suspend (SystemEnvironment sysEnv, boolean local)
-	throws SDMSException
+		throws SDMSException
 	{
 		int state = getState(sysEnv).intValue();
 
 		if (state == FINAL || state == CANCELLED || getIsCancelled(sysEnv).booleanValue()) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "02201121213",
-			                                "Cannot suspend an already final (or cancelled) submitted entity"));
+				"Cannot suspend an already final (or cancelled) submitted entity"));
 		}
 		suspend (sysEnv, true, local);
 	}
 
 	public void resume (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		setResumeTs(sysEnv, null);
@@ -214,17 +213,17 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void rerun (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (!getJobIsRestartable(sysEnv).booleanValue()) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "03205191052",
-			                                "Submitted entity not rerunable"));
+				"Submitted entity not rerunable"));
 		}
 		rerunEntity(sysEnv);
 	}
 
 	public boolean rerunEntity (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (getJobIsRestartable(sysEnv).booleanValue()) {
 
@@ -249,7 +248,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void rerunRecursive (SystemEnvironment sysEnv, Long originId, String comment, boolean topLevel)
-	throws SDMSException
+		throws SDMSException
 	{
 		boolean rerun = rerunEntity(sysEnv);
 
@@ -265,13 +264,13 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void kill (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		int state = getState(sysEnv).intValue();
 
 		if (state != RUNNING && state != KILLED && state != BROKEN_ACTIVE) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "03207081340",
-			                                "Cannot kill a submitted entity which is not in a running State"));
+				"Cannot kill a submitted entity which is not in a running State"));
 		}
 
 		Date dts = new Date();
@@ -281,20 +280,20 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if(cmdLine == null) return;
 
 		SDMSKillJob kj = SDMSKillJobTable.table.create(sysEnv, getSeId(sysEnv),
-		                 getSeVersion(sysEnv),
-		                 getId(sysEnv),
-		                 getScopeId(sysEnv),
-		                 new Integer(RUNNABLE),
-		                 null,
-		                 cmdLine,
-		                 getLogfile(sysEnv),
-		                 getErrlogfile(sysEnv),
-		                 null,
-		                 null,
-		                 null,
-		                 ts,
-		                 null,
-		                 null);
+								       getSeVersion(sysEnv),
+								       getId(sysEnv),
+								       getScopeId(sysEnv),
+								       new Integer(RUNNABLE),
+								       null,
+								       cmdLine,
+								       getLogfile(sysEnv),
+								       getErrlogfile(sysEnv),
+								       null,
+								       null,
+								       null,
+								       ts,
+								       null,
+								       null);
 
 		Long scopeId = getScopeId(sysEnv);
 		SDMSScope s = SDMSScopeTable.getObject(sysEnv, scopeId);
@@ -307,7 +306,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private boolean isActive(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		int state = getState(sysEnv).intValue();
 		if (state == STARTING ||
@@ -329,13 +328,13 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void cancel (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		int state = getState(sysEnv).intValue();
 
 		if (state == FINAL || state == CANCELLED) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "02204260751",
-			                                "Cannot cancel an already final (or cancelled) submitted entity"));
+					"Cannot cancel an already final (or cancelled) submitted entity"));
 		}
 		Long id = getId(sysEnv);
 		Vector v_hi = SDMSHierarchyInstanceTable.idx_childId.getVector(sysEnv, id);
@@ -358,7 +357,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void do_cancel (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long smeId = getId(sysEnv);
 
@@ -404,7 +403,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void doDeferredCancel (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Long id = getId(sysEnv);
@@ -429,7 +428,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void checkDeferStall(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSubmittedEntity sme = this;
 
@@ -439,37 +438,37 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 
 		if (
-		        sme.getState(sysEnv).intValue()		!= CANCELLED		&&
-		        sme.getIsSuspended(sysEnv).booleanValue()	== false	&&
-		        sme.getChildSuspended(sysEnv).intValue()	<= 0		&&
-		        sme.getJobIsFinal(sysEnv).booleanValue()	== true		&&
+			sme.getState(sysEnv).intValue()		!= CANCELLED		&&
+			sme.getIsSuspended(sysEnv).booleanValue()	== false	&&
+			sme.getChildSuspended(sysEnv).intValue()	<= 0		&&
+			sme.getJobIsFinal(sysEnv).booleanValue()	== true		&&
 
-		        sme.getCntSubmitted(sysEnv).intValue()	== 0 			&&
-		        sme.getCntDependencyWait(sysEnv).intValue()	> 0 		&&
-		        sme.getCntSynchronizeWait(sysEnv).intValue()== 0		&&
-		        sme.getCntResourceWait(sysEnv).intValue()   == 0		&&
-		        sme.getCntRunnable(sysEnv).intValue()	== 0			&&
-		        sme.getCntStarting(sysEnv).intValue()	== 0			&&
-		        sme.getCntStarted(sysEnv).intValue()	== 0			&&
-		        sme.getCntRunning(sysEnv).intValue()	== 0			&&
-		        sme.getCntToKill(sysEnv).intValue()		== 0 		&&
-		        sme.getCntKilled(sysEnv).intValue()		== 0 		&&
-		        sme.getCntFinished(sysEnv).intValue()	== 0 			&&
-		        sme.getCntBrokenActive(sysEnv).intValue()	== 0 		&&
-		        sme.getCntBrokenFinished(sysEnv).intValue()	== 0 		&&
-		        sme.getCntError(sysEnv).intValue()		== 0 		&&
-		        sme.getCntUnreachable(sysEnv).intValue()	== 0
+			sme.getCntSubmitted(sysEnv).intValue()	== 0 			&&
+			sme.getCntDependencyWait(sysEnv).intValue()	> 0 		&&
+			sme.getCntSynchronizeWait(sysEnv).intValue()== 0		&&
+			sme.getCntResourceWait(sysEnv).intValue()   == 0		&&
+			sme.getCntRunnable(sysEnv).intValue()	== 0			&&
+			sme.getCntStarting(sysEnv).intValue()	== 0			&&
+			sme.getCntStarted(sysEnv).intValue()	== 0			&&
+			sme.getCntRunning(sysEnv).intValue()	== 0			&&
+			sme.getCntToKill(sysEnv).intValue()		== 0 		&&
+			sme.getCntKilled(sysEnv).intValue()		== 0 		&&
+			sme.getCntFinished(sysEnv).intValue()	== 0 			&&
+			sme.getCntBrokenActive(sysEnv).intValue()	== 0 		&&
+			sme.getCntBrokenFinished(sysEnv).intValue()	== 0 		&&
+			sme.getCntError(sysEnv).intValue()		== 0 		&&
+			sme.getCntUnreachable(sysEnv).intValue()	== 0
 		) {
 
 			Vector dwSme_v = SDMSSubmittedEntityTable.idx_masterId.getVector(sysEnv, mSmeId,
-			new SDMSFilter() {
-				public boolean isValid(SystemEnvironment sysEnv, SDMSProxy obj) throws SDMSException {
-					if (((SDMSSubmittedEntity)obj).getState(sysEnv).intValue() == DEPENDENCY_WAIT)
-						return true;
-					else
-						return false;
-				}
-			});
+				new SDMSFilter() {
+					public boolean isValid(SystemEnvironment sysEnv, SDMSProxy obj) throws SDMSException {
+						if (((SDMSSubmittedEntity)obj).getState(sysEnv).intValue() == DEPENDENCY_WAIT)
+							return true;
+						else
+							return false;
+					}
+				});
 
 			Vector vTest = new Vector();
 			for(int i = 0; i < dwSme_v.size(); i++) {
@@ -497,30 +496,30 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private boolean canFinalize(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (
-		        getState(sysEnv).intValue()		!= CANCELLED	&&
-		        getIsSuspended(sysEnv).booleanValue()	== false	&&
-		        getParentSuspended(sysEnv).intValue()	== 0		&&
-		        getChildSuspended(sysEnv).intValue()	<= 0		&&
-		        getJobIsFinal(sysEnv).booleanValue()	== true		&&
+			getState(sysEnv).intValue()		!= CANCELLED	&&
+			getIsSuspended(sysEnv).booleanValue()	== false	&&
+			getParentSuspended(sysEnv).intValue()	== 0		&&
+			getChildSuspended(sysEnv).intValue()	<= 0		&&
+			getJobIsFinal(sysEnv).booleanValue()	== true		&&
 
-		        getCntSubmitted(sysEnv).intValue()	== 0 		&&
-		        getCntDependencyWait(sysEnv).intValue()	== 0 		&&
-		        getCntSynchronizeWait(sysEnv).intValue()== 0		&&
-		        getCntResourceWait(sysEnv).intValue()   == 0		&&
-		        getCntRunnable(sysEnv).intValue()	== 0		&&
-		        getCntStarting(sysEnv).intValue()	== 0		&&
-		        getCntStarted(sysEnv).intValue()	== 0		&&
-		        getCntRunning(sysEnv).intValue()	== 0		&&
-		        getCntToKill(sysEnv).intValue()		== 0 		&&
-		        getCntKilled(sysEnv).intValue()		== 0 		&&
-		        getCntFinished(sysEnv).intValue()	== 0 		&&
-		        getCntBrokenActive(sysEnv).intValue()	== 0 		&&
-		        getCntBrokenFinished(sysEnv).intValue()	== 0 		&&
-		        getCntError(sysEnv).intValue()		== 0 		&&
-		        getCntUnreachable(sysEnv).intValue()	== 0
+			getCntSubmitted(sysEnv).intValue()	== 0 		&&
+			getCntDependencyWait(sysEnv).intValue()	== 0 		&&
+			getCntSynchronizeWait(sysEnv).intValue()== 0		&&
+			getCntResourceWait(sysEnv).intValue()   == 0		&&
+			getCntRunnable(sysEnv).intValue()	== 0		&&
+			getCntStarting(sysEnv).intValue()	== 0		&&
+			getCntStarted(sysEnv).intValue()	== 0		&&
+			getCntRunning(sysEnv).intValue()	== 0		&&
+			getCntToKill(sysEnv).intValue()		== 0 		&&
+			getCntKilled(sysEnv).intValue()		== 0 		&&
+			getCntFinished(sysEnv).intValue()	== 0 		&&
+			getCntBrokenActive(sysEnv).intValue()	== 0 		&&
+			getCntBrokenFinished(sysEnv).intValue()	== 0 		&&
+			getCntError(sysEnv).intValue()		== 0 		&&
+			getCntUnreachable(sysEnv).intValue()	== 0
 		) {
 			return true;
 		}
@@ -528,7 +527,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void checkFinal (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		if (getState(sysEnv).intValue() == CANCELLED || getState(sysEnv).intValue() == FINAL) {
@@ -592,7 +591,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void deleteLocalResources(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Long masterId = getMasterId(sysEnv);
@@ -607,7 +606,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void suspend (SystemEnvironment sysEnv, boolean suspend, boolean local)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		if (!suspend) {
@@ -631,28 +630,28 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (!local)
 			addParentSuspendedToChildren (sysEnv, suspend ? 1 : - 1);
 		fixCntInParents(sysEnv,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0 ,
-		                suspend ? 1 : -1 ,
-		                0
-		               );
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				0 ,
+				suspend ? 1 : -1 ,
+				0
+			);
 		if(suspend) {
 
 			int state = getState(sysEnv).intValue();
@@ -669,7 +668,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void addParentSuspendedToChildren (SystemEnvironment sysEnv, int parentSuspended)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Vector childs = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, getId(sysEnv));
@@ -679,8 +678,18 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 			SDMSSubmittedEntity child_sme = SDMSSubmittedEntityTable.getObject(sysEnv, hi.getChildId(sysEnv));
 
-			int newParentSuspended = parentSuspended + child_sme.getParentSuspended(sysEnv).intValue();
+			Integer childParentSuspended = child_sme.getParentSuspended(sysEnv).intValue();
+			int newParentSuspended = parentSuspended + childParentSuspended;
 			child_sme.setParentSuspended(sysEnv, new Integer (newParentSuspended));
+			if(childParentSuspended == 0 && parentSuspended > 0) {
+
+				int state = child_sme.getState(sysEnv).intValue();
+				if(state == RESOURCE_WAIT || state == RUNNABLE) {
+					child_sme.releaseResources(sysEnv, SYNCHRONIZE_WAIT);
+					child_sme.setState(sysEnv, new Integer(DEPENDENCY_WAIT));
+					child_sme.setState(sysEnv, new Integer(SYNCHRONIZE_WAIT));
+				}
+			}
 
 			child_sme.addParentSuspendedToChildren (sysEnv, parentSuspended);
 
@@ -706,7 +715,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	protected void checkParameters (SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		long seVersion = getSeVersion(sysEnv).longValue();
@@ -723,31 +732,31 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			} catch (NotFoundException nfe) {
 				final SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, getSeId(sysEnv), seVersion);
 				throw new NotFoundException (new SDMSMessage(sysEnv, "03606211020", "Couldn't resolve parameter $1 of $2",
-				                             pd.getName(sysEnv), se.pathString(sysEnv)));
+							 pd.getName(sysEnv), se.pathString(sysEnv)));
 			}
 		}
 	}
 
 	public String getVariableValue(SystemEnvironment sysEnv, String key, boolean fastAccess, String mode, boolean triggercontext, SDMSScope evalScope)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SVR.getVariableValue(sysEnv, this, key, fastAccess, mode, triggercontext, evalScope);
 	}
 
 	public String getVariableValue(SystemEnvironment sysEnv, String key, boolean fastAccess, String mode, boolean triggercontext)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SVR.getVariableValue(sysEnv, this, key, fastAccess, mode, triggercontext, null);
 	}
 
 	public String getVariableValue(SystemEnvironment sysEnv, String key, boolean fastAccess, String mode)
-	throws SDMSException
+		throws SDMSException
 	{
 		return SVR.getVariableValue(sysEnv, this, key, fastAccess, mode, false, null);
 	}
 
 	public void setVariableValue(SystemEnvironment sysEnv, String key, String value)
-	throws SDMSException
+		throws SDMSException
 	{
 		long seVersion = getSeVersion(sysEnv).longValue();
 		String val = "=" + value;
@@ -757,10 +766,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			SDMSParameterDefinition pd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(getSeId(sysEnv), key), seVersion);
 			int type = pd.getType(sysEnv).intValue();
 			if(type != SDMSParameterDefinition.PARAMETER &&
-			    type != SDMSParameterDefinition.RESULT &&
-			    type != SDMSParameterDefinition.RESOURCEREFERENCE) {
+			   type != SDMSParameterDefinition.RESULT &&
+			   type != SDMSParameterDefinition.RESOURCEREFERENCE) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03208090253", "Attempt to write the readonly variable $1 ($2)",
-				                               key, pd.getTypeAsString(sysEnv)));
+							key, pd.getTypeAsString(sysEnv)));
 			}
 
 			if(type == SDMSParameterDefinition.RESOURCEREFERENCE) {
@@ -790,7 +799,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	protected void resolveDependencies(SystemEnvironment sysEnv, boolean master)
-	throws SDMSException
+		throws SDMSException
 	{
 		resolveRequired(sysEnv);
 
@@ -809,7 +818,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void resolveRequired(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long id   = getId(sysEnv);
 		long seVersion = getSeVersion(sysEnv).longValue();
@@ -838,32 +847,32 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 					if(msmeUnresolvedHandling != null) unresolvedHandling = msmeUnresolvedHandling.intValue();
 				}
 				switch (unresolvedHandling) {
-				case SDMSDependencyDefinition.IGNORE:
+					case SDMSDependencyDefinition.IGNORE:
 
-					continue;
+						continue;
 
-				case SDMSDependencyDefinition.ERROR:
-					SDMSSchedulingEntity dse = SDMSSchedulingEntityTable.getObject(sysEnv, seId, seVersion);
-					SDMSSchedulingEntity rse = SDMSSchedulingEntityTable.getObject(sysEnv, requiredId, seVersion);
-					throw new CommonErrorException (new SDMSMessage(sysEnv, "02201110833",
-					                                "Cannot resolve dependency of $1 from $2 for Version $3",
-					                                dse.pathString(sysEnv, seVersion),
-					                                rse.pathString(sysEnv, seVersion),
-					                                new Long (seVersion)
-					                                               ));
+					case SDMSDependencyDefinition.ERROR:
+						SDMSSchedulingEntity dse = SDMSSchedulingEntityTable.getObject(sysEnv, seId, seVersion);
+						SDMSSchedulingEntity rse = SDMSSchedulingEntityTable.getObject(sysEnv, requiredId, seVersion);
+						throw new CommonErrorException (new SDMSMessage(sysEnv, "02201110833",
+							"Cannot resolve dependency of $1 from $2 for Version $3",
+							dse.pathString(sysEnv, seVersion),
+							rse.pathString(sysEnv, seVersion),
+							new Long (seVersion)
+							));
 
-				case SDMSDependencyDefinition.SUSPEND:
-					suspend(sysEnv, true, false);
-					Date dts = new Date();
-					Long ts = new Long (dts.getTime());
-					if(internalId == null)
-						internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, new Long(0))).getId(sysEnv);
+					case SDMSDependencyDefinition.SUSPEND:
+						suspend(sysEnv, true, false);
+						Date dts = new Date();
+						Long ts = new Long (dts.getTime());
+						if(internalId == null)
+							internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, new Long(0))).getId(sysEnv);
 
-					continue;
+						continue;
 
-				case SDMSDependencyDefinition.DEFER:
-					state = new Integer(SDMSDependencyInstance.DEFERED);
-					break;
+					case SDMSDependencyDefinition.DEFER:
+						state = new Integer(SDMSDependencyInstance.DEFERED);
+						break;
 				}
 			} else {
 				Long smeId = sme.getId(sysEnv);
@@ -876,18 +885,18 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			SDMSDependencyInstance di;
 			try {
 				di = SDMSDependencyInstanceTable.table.create(sysEnv,
-				                ddId,
-				                id,
-				                id,
+						ddId,
+						id,
+						id,
 
-				                dependencyOperation,
+						dependencyOperation,
 
-				                requiredId,
-				                state,
-				                ignore,
-				                new Long(0),
-				                new Long(seVersion)
-				                                             );
+						requiredId,
+						state,
+						ignore,
+						new Long(0),
+						new Long(seVersion)
+					);
 
 				Long diIdOrig = di.getId(sysEnv);
 				di.setDiIdOrig(sysEnv, diIdOrig);
@@ -895,7 +904,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				di.check(sysEnv, null);
 
 				createChildDependencyInstances (sysEnv, ddId, ddName, id,
-				                                dependencyOperation, requiredId, di.getState(sysEnv), ignore, diIdOrig);
+								dependencyOperation, requiredId, di.getState(sysEnv), ignore, diIdOrig);
 			} catch (DuplicateKeyException dke) {
 
 			}
@@ -903,7 +912,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void resolveDependent(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long id = getId(sysEnv);
 		long seVersion = getSeVersion(sysEnv).longValue();
@@ -920,7 +929,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			Long ddSeDependentId = dd.getSeDependentId(sysEnv);
 
 			Vector v_dSme = SDMSSubmittedEntityTable.idx_masterId_seId.getVector(
-			                        sysEnv, new SDMSKey(masterId, ddSeDependentId));
+						sysEnv, new SDMSKey(masterId, ddSeDependentId));
 			Iterator i_dSme = v_dSme.iterator();
 			while (i_dSme.hasNext()) {
 				SDMSSubmittedEntity dSme = (SDMSSubmittedEntity)i_dSme.next();
@@ -931,14 +940,14 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				SDMSSubmittedEntity rSme;
 
 				rSme = dSme.getNearestSubmittedEntity (sysEnv, seId,
-				                                       false,
-				                                       false,
-				                                       true
-				                                      );
+								       false,
+								       false,
+								       true
+								      );
 				if (rSme == null) {
 
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "02201111122",
-					                               "Cannot resolve $1 from $2", seId, dSmeId));
+									"Cannot resolve $1 from $2", seId, dSmeId));
 				}
 				Long rSmeId = rSme.getId(sysEnv);
 
@@ -949,7 +958,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 				try {
 					SDMSDependencyInstance di = SDMSDependencyInstanceTable.idx_ddId_dependentId_RequiredId_getUnique(sysEnv,
-					                            new SDMSKey (ddId, dSmeId, seId));
+									new SDMSKey (ddId, dSmeId, seId));
 
 					if (di.getState(sysEnv).intValue() == SDMSDependencyInstance.DEFERED)
 						di.delete(sysEnv);
@@ -979,7 +988,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 						if (!replacedRequiredId.equals(id)) {
 
 							Vector v_di_r = SDMSDependencyInstanceTable.idx_diIdOrig.getVector(sysEnv,
-							                tdi.getId(sysEnv));
+									tdi.getId(sysEnv));
 							Iterator i_di_r = v_di_r.iterator();
 							while (i_di_r.hasNext()) {
 								SDMSDependencyInstance di_r = (SDMSDependencyInstance)i_di_r.next();
@@ -995,23 +1004,23 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 					if (!found) {
 						Integer ignore = new Integer(SDMSDependencyInstance.NO);
 						SDMSDependencyInstance di = SDMSDependencyInstanceTable.table.create(sysEnv,
-						                            ddId,
-						                            dSmeId,
-						                            dSmeId,
+										ddId,
+										dSmeId,
+										dSmeId,
 
-						                            dependencyOperation,
+										dependencyOperation,
 
-						                            id,
-						                            state,
-						                            ignore,
-						                            new Long(0),
-						                            new Long(seVersion)
-						                                                                    );
+										id,
+										state,
+										ignore,
+										new Long(0),
+										new Long(seVersion)
+							);
 						Long diIdOrig = di.getId(sysEnv);
 						di.setDiIdOrig(sysEnv, diIdOrig);
 
 						dSme.createChildDependencyInstances (sysEnv, ddId, ddName, dSmeId,
-						                                     dependencyOperation, id, state, ignore, diIdOrig);
+							dependencyOperation, id, state, ignore, diIdOrig);
 					}
 				} catch (DuplicateKeyException dke) {
 
@@ -1021,10 +1030,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void createChildDependencyInstances (SystemEnvironment sysEnv,
-	                Long ddId, String ddName, Long dependentIdOrig,
-	                Integer dependencyOperation, Long requiredId, Integer state,
-	                Integer ignore,	Long diIdOrig)
-	throws SDMSException
+			Long ddId, String ddName, Long dependentIdOrig,
+			Integer dependencyOperation, Long requiredId, Integer state,
+			Integer ignore,	Long diIdOrig)
+		throws SDMSException
 	{
 		long seVersion = getSeVersion(sysEnv).longValue();
 
@@ -1051,29 +1060,29 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 			try {
 				SDMSDependencyInstanceTable.table.create(sysEnv,
-				                ddId,
-				                smeId,
-				                dependentIdOrig,
+						ddId,
+						smeId,
+						dependentIdOrig,
 
-				                dependencyOperation,
+						dependencyOperation,
 
-				                requiredId,
-				                state,
-				                ignore,
-				                diIdOrig,
-				                new Long(seVersion)
-				                                        );
+						requiredId,
+						state,
+						ignore,
+						diIdOrig,
+						new Long(seVersion)
+					);
 
 				sme.createChildDependencyInstances (sysEnv,
-				                                    ddId,
-				                                    ddName,
-				                                    dependentIdOrig,
-				                                    dependencyOperation,
-				                                    requiredId,
-				                                    state,
-				                                    ignore,
-				                                    diIdOrig
-				                                   );
+						ddId,
+						ddName,
+						dependentIdOrig,
+						dependencyOperation,
+						requiredId,
+						state,
+						ignore,
+						diIdOrig
+					);
 			} catch (DuplicateKeyException dke) {
 
 			}
@@ -1081,22 +1090,22 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	SDMSSubmittedEntity getNearestSubmittedEntity (SystemEnvironment sysEnv,
-	                Long seId,
-	                boolean stopAtDynamicParent,
-	                boolean ignoreNoMerge
-	                                              )
-	throws SDMSException
+			Long seId,
+			boolean stopAtDynamicParent,
+			boolean ignoreNoMerge
+		)
+		throws SDMSException
 	{
 		return getNearestSubmittedEntity (sysEnv, seId, stopAtDynamicParent, ignoreNoMerge, false);
 	}
 
 	SDMSSubmittedEntity getNearestSubmittedEntity (SystemEnvironment sysEnv,
-	                Long seId,
-	                boolean stopAtDynamicParent,
-	                boolean ignoreNoMerge,
-	                boolean usePath
-	                                              )
-	throws SDMSException
+			Long seId,
+			boolean stopAtDynamicParent,
+			boolean ignoreNoMerge,
+			boolean usePath
+		)
+		throws SDMSException
 	{
 		SDMSSubmittedEntity sme = null;
 		Long parentId = getParentId(sysEnv);
@@ -1108,10 +1117,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				if(parentSme.getSeId(sysEnv).equals(seId)) return parentSme;
 			}
 			sme = parentSme.getChildSubmittedEntity(sysEnv,
-			                                        seId,
-			                                        childIdToIgnore,
-			                                        this,
-			                                        ignoreNoMerge);
+								seId,
+								childIdToIgnore,
+								this,
+								ignoreNoMerge);
 			if (sme != null) {
 
 				break;
@@ -1127,14 +1136,14 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public SDMSSubmittedEntity getChildSubmittedEntity (SystemEnvironment sysEnv,
-	                Long seId,
-	                Long childIdToIgnore,
+			Long seId,
+			Long childIdToIgnore,
 
-	                SDMSSubmittedEntity smeOrig,
+			SDMSSubmittedEntity smeOrig,
 
-	                boolean ignoreNoMerge
-	                                                   )
-	throws SDMSException
+			boolean ignoreNoMerge
+		)
+		throws SDMSException
 	{
 		long seVersion = getSeVersion(sysEnv).longValue();
 		SDMSSubmittedEntity sme = null;
@@ -1166,8 +1175,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			} else {
 
 				foundSme = childSme.getChildSubmittedEntity (sysEnv, seId,
-				                null,
-				                smeOrig, ignoreNoMerge);
+						null,
+						smeOrig, ignoreNoMerge);
 			}
 			if (foundSme != null) {
 
@@ -1188,7 +1197,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 					p[5] = se3.pathString(sysEnv, seVersion);
 					p[6] = smeOrigId;
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "02201111026",
-					                               "Ambigous resolution for $1[$2,$3] at $4[$5] from $6[$7]", p));
+						"Ambigous resolution for $1[$2,$3] at $4[$5] from $6[$7]", p));
 				}
 			}
 		}
@@ -1196,7 +1205,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void checkDependencies(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		testDependencies(sysEnv);
@@ -1210,7 +1219,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	protected void testDependencies(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		int s = getState(sysEnv).intValue();
 		if (s != SDMSSubmittedEntity.SUBMITTED &&
@@ -1310,57 +1319,57 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 		int type = se.getType(sysEnv).intValue();
 		switch (result) {
-		case NOTYET:
+			case NOTYET:
 
-			setState(sysEnv, new Integer(DEPENDENCY_WAIT));
-			break;
-		case FULFILLED:
-			if(getState(sysEnv).intValue() == SUBMITTED)
 				setState(sysEnv, new Integer(DEPENDENCY_WAIT));
-
-			if(getState(sysEnv).intValue() == ERROR)
 				break;
-			switch (type) {
-			case SDMSSchedulingEntity.JOB:
-				setState(sysEnv, new Integer(SYNCHRONIZE_WAIT));
+			case FULFILLED:
+				if(getState(sysEnv).intValue() == SUBMITTED)
+					setState(sysEnv, new Integer(DEPENDENCY_WAIT));
+
+				if(getState(sysEnv).intValue() == ERROR)
+					break;
+				switch (type) {
+					case SDMSSchedulingEntity.JOB:
+						setState(sysEnv, new Integer(SYNCHRONIZE_WAIT));
+						break;
+					case SDMSSchedulingEntity.BATCH:
+
+						setJobIsFinal(sysEnv, Boolean.TRUE);
+						setState(sysEnv, new Integer(FINISHED));
+						trigger (sysEnv, SDMSTrigger.UNTIL_FINISHED);
+						trigger (sysEnv, SDMSTrigger.UNTIL_FINAL);
+
+						mergeExitStates(sysEnv);
+						checkFinal(sysEnv);
+						break;
+				}
 				break;
-			case SDMSSchedulingEntity.BATCH:
+			case UNREACHABLE:
 
-				setJobIsFinal(sysEnv, Boolean.TRUE);
-				setState(sysEnv, new Integer(FINISHED));
-				trigger (sysEnv, SDMSTrigger.UNTIL_FINISHED);
-				trigger (sysEnv, SDMSTrigger.UNTIL_FINAL);
+				final Long espId = se.getEspId(sysEnv);
+				final SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, espId, seVersion);
+				final Long esdIdUR = esp.getUnreachableState(sysEnv, seVersion);
 
-				mergeExitStates(sysEnv);
-				checkFinal(sysEnv);
+				if (esdIdUR == null) {
+					setState(sysEnv, new Integer(UNREACHABLE));
+				} else {
+					final Integer esdPrevUR = esp.getUnreachableStatePreference(sysEnv, seVersion);
+					final SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, esdIdUR), seVersion);
+					changeState(sysEnv, esdIdUR, es, null, null, null);
+				}
 				break;
-			}
-			break;
-		case UNREACHABLE:
-
-			final Long espId = se.getEspId(sysEnv);
-			final SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, espId, seVersion);
-			final Long esdIdUR = esp.getUnreachableState(sysEnv, seVersion);
-
-			if (esdIdUR == null) {
+			case UNREACHABLE_CANCELLED:
 				setState(sysEnv, new Integer(UNREACHABLE));
-			} else {
-				final Integer esdPrevUR = esp.getUnreachableStatePreference(sysEnv, seVersion);
-				final SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, esdIdUR), seVersion);
-				changeState(sysEnv, esdIdUR, es, null, null, null);
-			}
-			break;
-		case UNREACHABLE_CANCELLED:
-			setState(sysEnv, new Integer(UNREACHABLE));
-			break;
-		case BROKEN:
-			setToError(sysEnv, "Broken Dependency");
-			break;
+				break;
+			case BROKEN:
+				setToError(sysEnv, "Broken Dependency");
+				break;
 		}
 	}
 
 	protected void submitChilds (SystemEnvironment sysEnv, int parentSuspended, Long ownerId, Long replaceSmeId)
-	throws SDMSException
+		throws SDMSException
 	{
 		long seVersion = getSeVersion(sysEnv).longValue();
 
@@ -1376,7 +1385,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				if (replaceSmeId != null) {
 
 					Vector v_rSme = SDMSSubmittedEntityTable.idx_parentId_seId.getVector(sysEnv,
-					                new SDMSKey(replaceSmeId, seId));
+							new SDMSKey(replaceSmeId, seId));
 					boolean found = false;
 					Iterator i_rSme = v_rSme.iterator();
 					while (i_rSme.hasNext()) {
@@ -1389,18 +1398,18 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 					}
 					if (!found) {
 						throw new CommonErrorException (new SDMSMessage(sysEnv, "02305141559",
-						                                "Cannot find child to replace for smeId $1, seId $2", replaceSmeId, seId));
+										"Cannot find child to replace for smeId $1, seId $2", replaceSmeId, seId));
 					}
 				}
 				doSubmitChild(sysEnv, seId, parentSuspended, null ,
-				              ownerId, sh, seVersion, newReplaceSmeId, null , null , null , true );
+					ownerId, sh, seVersion, newReplaceSmeId, null , null , null , true );
 			}
 		}
 	}
 
 	private void checkMergeFailure(SystemEnvironment sysEnv, Long masterId, Long seChildId,
-	                               SDMSSchedulingEntity se, SDMSSchedulingHierarchy sh)
-	throws SDMSException
+				       SDMSSchedulingEntity se, SDMSSchedulingHierarchy sh)
+		throws SDMSException
 	{
 
 		SDMSKey k = new SDMSKey (masterId, seChildId, new Integer(SDMSSchedulingHierarchy.FAILURE));
@@ -1408,11 +1417,11 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (v.size() != 0) {
 			Long failId = ((SDMSSubmittedEntity)(v.elementAt(0))).getId(sysEnv);
 			throw new CommonErrorException (
-			        new SDMSMessage(sysEnv, "02201201334",
-			                        "$1 alread submitted with id $2 and merge mode FAILURE in same Master run",
-			                        se.pathString(sysEnv, getSeVersion(sysEnv).longValue()),
-			                        failId
-			                       ));
+				new SDMSMessage(sysEnv, "02201201334",
+					"$1 alread submitted with id $2 and merge mode FAILURE in same Master run",
+					se.pathString(sysEnv, getSeVersion(sysEnv).longValue()),
+					failId
+					));
 		}
 
 		int mergeMode = sh.getMergeMode(sysEnv).intValue();
@@ -1421,35 +1430,35 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			if (SDMSSubmittedEntityTable.idx_masterId_seId.containsKey(sysEnv, k)) {
 
 				throw new CommonErrorException (
-				        new SDMSMessage(sysEnv, "02201101318",
-				                        "$1 has merge mode FAILURE and cannot be submitted twice in same Master run",
-				                        se.pathString(sysEnv, getSeVersion(sysEnv).longValue())));
+					new SDMSMessage(sysEnv, "02201101318",
+						"$1 has merge mode FAILURE and cannot be submitted twice in same Master run",
+						se.pathString(sysEnv, getSeVersion(sysEnv).longValue())));
 			}
 		}
 	}
 
 	private Boolean determineSuspend(SystemEnvironment sysEnv, SDMSSchedulingEntity se, SDMSSchedulingHierarchy sh)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		int suspend = sh.getSuspend(sysEnv).intValue();
 		Boolean suspended = Boolean.FALSE;
 		switch (suspend) {
-		case SDMSSchedulingHierarchy.CHILDSUSPEND:
-			suspended = se.getSubmitSuspended(sysEnv);
-			break;
-		case SDMSSchedulingHierarchy.NOSUSPEND:
-			suspended = Boolean.FALSE;
-			break;
-		case SDMSSchedulingHierarchy.SUSPEND:
-			suspended = Boolean.TRUE;
-			break;
+			case SDMSSchedulingHierarchy.CHILDSUSPEND:
+				suspended = se.getSubmitSuspended(sysEnv);
+				break;
+			case SDMSSchedulingHierarchy.NOSUSPEND:
+				suspended = Boolean.FALSE;
+				break;
+			case SDMSSchedulingHierarchy.SUSPEND:
+				suspended = Boolean.TRUE;
+				break;
 		}
 		return suspended;
 	}
 
 	private Long determineResumeTs(SystemEnvironment sysEnv, SDMSSchedulingEntity se, SDMSSchedulingHierarchy sh, Long defaultResumeTs, Long submitTs)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long resumeTs = defaultResumeTs;
 		String resumeAt;
@@ -1459,24 +1468,24 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		int suspend = sh.getSuspend(sysEnv).intValue();
 		Boolean suspended = Boolean.FALSE;
 		switch (suspend) {
-		case SDMSSchedulingHierarchy.CHILDSUSPEND:
+			case SDMSSchedulingHierarchy.CHILDSUSPEND:
 
-			resumeTs = SubmitJob.evalResumeObj(sysEnv, se.getResumeAt(sysEnv), se.getResumeIn(sysEnv), se.getResumeBase(sysEnv), submitTs, true );
-			break;
-		case SDMSSchedulingHierarchy.NOSUSPEND:
+				resumeTs = SubmitJob.evalResumeObj(sysEnv, se.getResumeAt(sysEnv), se.getResumeIn(sysEnv), se.getResumeBase(sysEnv), submitTs, true );
+				break;
+			case SDMSSchedulingHierarchy.NOSUSPEND:
 
-			resumeTs = null;
-			break;
-		case SDMSSchedulingHierarchy.SUSPEND:
+				resumeTs = null;
+				break;
+			case SDMSSchedulingHierarchy.SUSPEND:
 
-			resumeTs = SubmitJob.evalResumeObj(sysEnv, sh.getResumeAt(sysEnv), sh.getResumeIn(sysEnv), sh.getResumeBase(sysEnv), submitTs, true );
-			break;
+				resumeTs = SubmitJob.evalResumeObj(sysEnv, sh.getResumeAt(sysEnv), sh.getResumeIn(sysEnv), sh.getResumeBase(sysEnv), submitTs, true );
+				break;
 		}
 		return resumeTs;
 	}
 
 	private void fixMergedCounters(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		int fixSubmitted = sme.getCntSubmitted(sysEnv).intValue();
@@ -1501,57 +1510,23 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		int fixChildSuspended = sme.getChildSuspended(sysEnv).intValue();
 		int fixPending = sme.getCntPending(sysEnv).intValue();
 		switch(sme.getState(sysEnv).intValue()) {
-		case SDMSSubmittedEntity.SUBMITTED:
-			fixSubmitted ++;
-			break;
-		case SDMSSubmittedEntity.DEPENDENCY_WAIT:
-			fixDependencyWait ++;
-			break;
-		case SDMSSubmittedEntity.SYNCHRONIZE_WAIT:
-			fixSynchronizeWait ++;
-			break;
-		case SDMSSubmittedEntity.RESOURCE_WAIT:
-			fixResourceWait ++;
-			break;
-		case SDMSSubmittedEntity.RUNNABLE:
-			fixRunnable ++;
-			break;
-		case SDMSSubmittedEntity.STARTING:
-			fixStarting ++;
-			break;
-		case SDMSSubmittedEntity.STARTED:
-			fixStarted ++;
-			break;
-		case SDMSSubmittedEntity.RUNNING:
-			fixRunning ++;
-			break;
-		case SDMSSubmittedEntity.TO_KILL:
-			fixToKill ++;
-			break;
-		case SDMSSubmittedEntity.KILLED:
-			fixKilled ++;
-			break;
-		case SDMSSubmittedEntity.CANCELLED:
-			fixCancelled ++;
-			break;
-		case SDMSSubmittedEntity.FINISHED:
-			fixFinished ++;
-			break;
-		case SDMSSubmittedEntity.FINAL:
-			fixFinal ++;
-			break;
-		case SDMSSubmittedEntity.BROKEN_ACTIVE:
-			fixBrokenActive ++;
-			break;
-		case SDMSSubmittedEntity.BROKEN_FINISHED:
-			fixBrokenFinished ++;
-			break;
-		case SDMSSubmittedEntity.ERROR:
-			fixError ++;
-			break;
-		case SDMSSubmittedEntity.UNREACHABLE:
-			fixUnreachable ++;
-			break;
+			case SDMSSubmittedEntity.SUBMITTED:	fixSubmitted ++;	break;
+			case SDMSSubmittedEntity.DEPENDENCY_WAIT: fixDependencyWait ++; break;
+			case SDMSSubmittedEntity.SYNCHRONIZE_WAIT: fixSynchronizeWait ++; break;
+			case SDMSSubmittedEntity.RESOURCE_WAIT:	fixResourceWait ++;	break;
+			case SDMSSubmittedEntity.RUNNABLE:	fixRunnable ++;		break;
+			case SDMSSubmittedEntity.STARTING:	fixStarting ++;		break;
+			case SDMSSubmittedEntity.STARTED:	fixStarted ++;		break;
+			case SDMSSubmittedEntity.RUNNING:	fixRunning ++;		break;
+			case SDMSSubmittedEntity.TO_KILL:	fixToKill ++;		break;
+			case SDMSSubmittedEntity.KILLED:	fixKilled ++;		break;
+			case SDMSSubmittedEntity.CANCELLED:	fixCancelled ++;	break;
+			case SDMSSubmittedEntity.FINISHED:	fixFinished ++;		break;
+			case SDMSSubmittedEntity.FINAL:		fixFinal ++;		break;
+			case SDMSSubmittedEntity.BROKEN_ACTIVE:	fixBrokenActive ++;	break;
+			case SDMSSubmittedEntity.BROKEN_FINISHED: fixBrokenFinished ++;	break;
+			case SDMSSubmittedEntity.ERROR:		fixError ++;		break;
+			case SDMSSubmittedEntity.UNREACHABLE:	fixUnreachable ++;	break;
 		}
 		if (sme.getJobIsRestartable(sysEnv).booleanValue() == true) fixRestartable ++;
 		if (sme.getIsSuspended(sysEnv).booleanValue() == true) fixChildSuspended ++;
@@ -1578,13 +1553,13 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (fixPending		!= 0) setCntPending(sysEnv, new Integer(getCntPending(sysEnv).intValue() + fixPending));
 
 		fixCntInParents(sysEnv, fixSubmitted, fixDependencyWait, fixSynchronizeWait, fixResourceWait,
-		                fixRunnable, fixStarting, fixStarted, fixRunning, fixToKill, fixKilled,
-		                fixCancelled, fixFinished, fixFinal, fixBrokenActive, fixBrokenFinished,
-		                fixError, fixUnreachable, fixRestartable, fixWarn, fixChildSuspended, fixPending);
+				fixRunnable, fixStarting, fixStarted, fixRunning, fixToKill, fixKilled,
+				fixCancelled, fixFinished, fixFinal, fixBrokenActive, fixBrokenFinished,
+				fixError, fixUnreachable, fixRestartable, fixWarn, fixChildSuspended, fixPending);
 	}
 
 	private void checkValidESP(SystemEnvironment sysEnv, SDMSSchedulingEntity se, long seVersion)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Long espId = se.getEspId(sysEnv);
@@ -1596,9 +1571,9 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private SDMSSubmittedEntity doSubmitChild(SystemEnvironment sysEnv, Long seChildId, int parentSuspended, Long resumeTs, Long ownerId,
-	                SDMSSchedulingHierarchy sh, long seVersion, Long replaceSmeId, Boolean forceSuspend, String childTag,
-	                String submitTag, boolean isStatic)
-	throws SDMSException
+				SDMSSchedulingHierarchy sh, long seVersion, Long replaceSmeId, Boolean forceSuspend, String childTag,
+				String submitTag, boolean isStatic)
+		throws SDMSException
 	{
 		Long id = getId(sysEnv);
 		Long masterId  = getMasterId(sysEnv);
@@ -1614,7 +1589,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		int myState = getState(sysEnv).intValue();
 		if (myState == CANCELLED || myState == FINAL)
 			throw new CommonErrorException (new SDMSMessage(sysEnv, "03703141457",
-			                                "Submitting children of a cancelled or final parent isn't allowed"));
+							"Submitting children of a cancelled or final parent isn't allowed"));
 
 		checkMergeFailure(sysEnv, masterId, seChildId, se, sh);
 
@@ -1664,45 +1639,45 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 
 		SDMSHierarchyInstance hi = SDMSHierarchyInstanceTable.table.create(sysEnv,
-		                           id,
-		                           sme.getId(sysEnv),
-		                           sh.getId(sysEnv),
-		                           sh.getPriority(sysEnv),
-		                           null,
-		                           null,
-		                           new Long(seVersion)
-		                                                                  );
+					   id,
+					   sme.getId(sysEnv),
+					   sh.getId(sysEnv),
+					   sh.getPriority(sysEnv),
+					   null,
+					   null,
+					   new Long(seVersion)
+		);
 		if (submit) {
 			int msParentSuspended = 0;
 
 			sme.getInitialNiceValueFromParents(sysEnv);
 
 			sme.submitChilds(sysEnv, parentSuspended + (suspended.booleanValue() ? 1 : 0) + msParentSuspended,
-			                 ownerId, replaceSmeId);
+				ownerId, replaceSmeId);
 
 			sme.fixCntInParents(sysEnv,
-			                    1 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    0 ,
-			                    suspended.booleanValue() ? 1 : 0 ,
-			                    0
-			                   );
+						1 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						0 ,
+						suspended.booleanValue() ? 1 : 0 ,
+						0
+			);
 
 		} else {
 
@@ -1714,8 +1689,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	protected void inheritDependencies(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, long seVersion,
-	                                   SDMSHierarchyInstance hi)
-	throws SDMSException
+					   SDMSHierarchyInstance hi)
+		throws SDMSException
 	{
 
 		int smeState = sme.getState(sysEnv).intValue();
@@ -1751,21 +1726,21 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				Integer state = di.getState(sysEnv);
 				Long diIdOrig = di.getDiIdOrig(sysEnv);
 				SDMSDependencyInstanceTable.table.create(sysEnv,
-				                ddId,
-				                sme.getId(sysEnv),
-				                dependentIdOrig,
+						ddId,
+						sme.getId(sysEnv),
+						dependentIdOrig,
 
-				                dependencyOperation,
+						dependencyOperation,
 
-				                requiredId,
-				                state,
-				                ignore,
-				                diIdOrig,
-				                new Long(seVersion)
-				                                        );
+						requiredId,
+						state,
+						ignore,
+						diIdOrig,
+						new Long(seVersion)
+				);
 
 				sme.createChildDependencyInstances (sysEnv, ddId, ddName, dependentIdOrig,
-				                                    dependencyOperation, requiredId, state, ignore, diIdOrig);
+								    dependencyOperation, requiredId, state, ignore, diIdOrig);
 			} catch (DuplicateKeyException dke) {
 
 			}
@@ -1773,7 +1748,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void finishJob(SystemEnvironment sysEnv, Integer exitCode, String errmsg, Long finishTs)
-	throws SDMSException
+		throws SDMSException
 	{
 		long seVersion = getSeVersion(sysEnv).longValue();
 
@@ -1797,15 +1772,15 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		} catch (NotFoundException nfe) {
 
 			throw new FatalException(new SDMSMessage(sysEnv, "02201111630",
-			                         "Invalid Exit State Mapping Profile $1 maps to exit state definition $2 not in exit state profile $3",
-			                         esmpId, esdId, espId));
+				"Invalid Exit State Mapping Profile $1 maps to exit state definition $2 not in exit state profile $3",
+				esmpId, esdId, espId));
 
 		}
 		changeState(sysEnv, esdId, es, exitCode, errmsg, finishTs);
 	}
 
 	private void finishChildTriggers(SystemEnvironment sysEnv, Long esdId)
-	throws SDMSException
+		throws SDMSException
 	{
 		HashSet rhs = new HashSet();
 
@@ -1815,7 +1790,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void do_finishChildTriggers(SystemEnvironment sysEnv, HashSet rhs, Long esdId, Stack rs, boolean is_reason)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long id = getId(sysEnv);
 		long seVersion = getSeVersion(sysEnv).longValue();
@@ -1838,7 +1813,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		while (i_p.hasNext()) {
 			SDMSHierarchyInstance hi = (SDMSHierarchyInstance)i_p.next();
 			SDMSSchedulingHierarchy sh = SDMSSchedulingHierarchyTable.getObject(sysEnv,
-			                             hi.getShId(sysEnv), seVersion);
+									hi.getShId(sysEnv), seVersion);
 			Long tresdId = esdId;
 			boolean p_is_reason = false;
 			SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, hi.getParentId(sysEnv));
@@ -1848,13 +1823,13 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void changeState(SystemEnvironment sysEnv, Long esdId, SDMSExitState es, Integer exitCode, String errmsg, Long finishTs)
-	throws SDMSException
+		throws SDMSException
 	{
 		changeState(sysEnv, esdId, es, exitCode, errmsg, finishTs, true);
 	}
 
 	public void changeState(SystemEnvironment sysEnv, Long esdId, SDMSExitState es, Integer exitCode, String errmsg, Long finishTs, boolean evalRerunTrigger)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Long baseSmeId = (Long)sysEnv.tx.txData.get(SystemEnvironment.S_BASE_SME_ID);
@@ -1916,18 +1891,18 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void mergeExitStates(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		mergeExitStates(sysEnv, true, null);
 	}
 
 	private void mergeExitStates(SystemEnvironment sysEnv, boolean doTrigger)
-	throws SDMSException
+		throws SDMSException
 	{
 		mergeExitStates(sysEnv, doTrigger, null);
 	}
 	private void mergeExitStates(SystemEnvironment sysEnv, boolean doTrigger, SDMSSubmittedEntity sme_to_ignore)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		if (getState(sysEnv).intValue() == CANCELLED) return;
@@ -1966,7 +1941,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void translateToParent(SystemEnvironment sysEnv, boolean doTrigger)
-	throws SDMSException
+		throws SDMSException
 	{
 		long seVersion = getSeVersion(sysEnv).longValue();
 		Long id = getId(sysEnv);
@@ -2000,8 +1975,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 					if (translated) {
 
 						throw new FatalException(new SDMSMessage(sysEnv, "02201112130",
-						                         "Invalid Exit State Translation Profile $1 translates to exit state definition $2 not in exit state profile $3",
-						                         estpId, trEsdId, espId));
+									"Invalid Exit State Translation Profile $1 translates to exit state definition $2 not in exit state profile $3",
+									estpId, trEsdId, espId));
 					} else {
 						trEsdId = null;
 						es_pref = null;
@@ -2020,7 +1995,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private boolean checkParentCancelled(SystemEnvironment sysEnv, Long smeId, HashSet chs)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (chs == null) return false;
 		Vector pv = SDMSHierarchyInstanceTable.idx_childId.getVector(sysEnv, smeId);
@@ -2039,7 +2014,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void setState(SystemEnvironment sysEnv, Integer state)
-	throws SDMSException
+		throws SDMSException
 	{
 		long actVersion = getSeVersion(sysEnv).longValue();
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, getSeId(sysEnv), actVersion);
@@ -2066,122 +2041,54 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		int fixUnreachable = 0;
 
 		switch (oldState) {
-		case SUBMITTED:
-			fixSubmitted		-= 1;
-			break;
-		case DEPENDENCY_WAIT:
-			fixDependencyWait	-= 1;
-			break;
-		case SYNCHRONIZE_WAIT:
-			fixSynchronizeWait	-= 1;
-			break;
-		case RESOURCE_WAIT:
-			fixResourceWait		-= 1;
-			break;
-		case RUNNABLE:
-			fixRunnable		-= 1;
-			break;
-		case STARTING:
-			fixStarting		-= 1;
-			break;
-		case STARTED:
-			fixStarted		-= 1;
-			break;
-		case RUNNING:
-			fixRunning		-= 1;
-			break;
-		case TO_KILL:
-			fixToKill		-= 1;
-			break;
-		case KILLED:
-			fixKilled		-= 1;
-			break;
-		case CANCELLED:
-			fixCancelled		-= 1;
-			break;
-		case FINISHED:
-			fixFinished		-= 1;
-			break;
-		case FINAL:
-			fixFinal		-= 1;
-			break;
-		case BROKEN_ACTIVE:
-			fixBrokenActive		-= 1;
-			break;
-		case BROKEN_FINISHED:
-			fixBrokenFinished	-= 1;
-			break;
-		case ERROR:
-			fixError		-= 1;
-			break;
-		case UNREACHABLE:
-			fixUnreachable		-= 1;
-			break;
+			case SUBMITTED:		fixSubmitted		-= 1; break;
+			case DEPENDENCY_WAIT:	fixDependencyWait	-= 1; break;
+			case SYNCHRONIZE_WAIT:	fixSynchronizeWait	-= 1; break;
+			case RESOURCE_WAIT:	fixResourceWait		-= 1; break;
+			case RUNNABLE:		fixRunnable		-= 1; break;
+			case STARTING:		fixStarting		-= 1; break;
+			case STARTED:		fixStarted		-= 1; break;
+			case RUNNING:		fixRunning		-= 1; break;
+			case TO_KILL:		fixToKill		-= 1; break;
+			case KILLED:		fixKilled		-= 1; break;
+			case CANCELLED:		fixCancelled		-= 1; break;
+			case FINISHED:		fixFinished		-= 1; break;
+			case FINAL:		fixFinal		-= 1; break;
+			case BROKEN_ACTIVE:	fixBrokenActive		-= 1; break;
+			case BROKEN_FINISHED:	fixBrokenFinished	-= 1; break;
+			case ERROR:		fixError		-= 1; break;
+			case UNREACHABLE:	fixUnreachable		-= 1; break;
 		}
 		switch (newState) {
-		case SUBMITTED:
-			fixSubmitted		+= 1;
-			break;
-		case DEPENDENCY_WAIT:
-			fixDependencyWait	+= 1;
-			break;
-		case SYNCHRONIZE_WAIT:
-			fixSynchronizeWait	+= 1;
-			break;
-		case RESOURCE_WAIT:
-			fixResourceWait		+= 1;
-			break;
-		case RUNNABLE:
-			fixRunnable		+= 1;
-			break;
-		case STARTING:
-			fixStarting		+= 1;
-			break;
-		case STARTED:
-			fixStarted		+= 1;
-			break;
-		case RUNNING:
-			fixRunning		+= 1;
-			break;
-		case TO_KILL:
-			fixToKill		+= 1;
-			break;
-		case KILLED:
-			fixKilled		+= 1;
-			break;
-		case CANCELLED:
-			fixCancelled		+= 1;
-			break;
-		case FINISHED:
-			fixFinished		+= 1;
-			break;
-		case FINAL:
-			fixFinal		+= 1;
-			break;
-		case BROKEN_ACTIVE:
-			fixBrokenActive		+= 1;
-			break;
-		case BROKEN_FINISHED:
-			fixBrokenFinished	+= 1;
-			break;
-		case ERROR:
-			fixError		+= 1;
-			break;
-		case UNREACHABLE:
-			fixUnreachable		+= 1;
-			break;
+			case SUBMITTED:		fixSubmitted		+= 1; break;
+			case DEPENDENCY_WAIT:	fixDependencyWait	+= 1; break;
+			case SYNCHRONIZE_WAIT:	fixSynchronizeWait	+= 1; break;
+			case RESOURCE_WAIT:	fixResourceWait		+= 1; break;
+			case RUNNABLE:		fixRunnable		+= 1; break;
+			case STARTING:		fixStarting		+= 1; break;
+			case STARTED:		fixStarted		+= 1; break;
+			case RUNNING:		fixRunning		+= 1; break;
+			case TO_KILL:		fixToKill		+= 1; break;
+			case KILLED:		fixKilled		+= 1; break;
+			case CANCELLED:		fixCancelled		+= 1; break;
+			case FINISHED:		fixFinished		+= 1; break;
+			case FINAL:		fixFinal		+= 1; break;
+			case BROKEN_ACTIVE:	fixBrokenActive		+= 1; break;
+			case BROKEN_FINISHED:	fixBrokenFinished	+= 1; break;
+			case ERROR:		fixError		+= 1; break;
+			case UNREACHABLE:	fixUnreachable		+= 1; break;
 		}
 
 		super.setState(sysEnv, state);
 
 		fixCntInParents(sysEnv, fixSubmitted, fixDependencyWait, fixSynchronizeWait, fixResourceWait, fixRunnable,
-		                fixStarting, fixStarted, fixRunning, fixToKill, fixKilled, fixCancelled, fixFinished, fixFinal,
-		                fixBrokenActive, fixBrokenFinished, fixError, fixUnreachable,
-		                0 ,
-		                0 ,
-		                0 ,
-		                0
-		               );
+				fixStarting, fixStarted, fixRunning, fixToKill, fixKilled, fixCancelled, fixFinished, fixFinal,
+				fixBrokenActive, fixBrokenFinished, fixError, fixUnreachable,
+				0 ,
+				0 ,
+				0 ,
+				0
+		);
 
 		if (getIsCancelled(sysEnv).booleanValue() && newState != CANCELLED) {
 			doDeferredCancel(sysEnv);
@@ -2240,7 +2147,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 					super.setState(sysEnv, state);
 
 					fixCntInParents(sysEnv, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1 , 0, 0,
-					                newState == BROKEN_FINISHED ? 1 : 0, newState == ERROR ? 1 : 0, 0, 0, 0, 0, 0 );
+							newState == BROKEN_FINISHED ? 1 : 0, newState == ERROR ? 1 : 0, 0, 0, 0, 0, 0 );
 
 				}
 			}
@@ -2263,8 +2170,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			}
 		}
 
-		if (newState == DEPENDENCY_WAIT && oldState != UNREACHABLE) {
-			SystemEnvironment.sched.requestSyncSme(sysEnv, this);
+		if (newState == DEPENDENCY_WAIT) {
+			SystemEnvironment.sched.requestSyncSme(sysEnv, this, oldState);
 		}
 		if (newState == SYNCHRONIZE_WAIT) {
 			SystemEnvironment.sched.reevaluateJSAssignment(sysEnv, this);
@@ -2301,7 +2208,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void checkDependents(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long id = getId(sysEnv);
 		Vector v_di = SDMSDependencyInstanceTable.idx_requiredId.getVector(sysEnv, id);
@@ -2323,13 +2230,13 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void fixCntInParents(SystemEnvironment sysEnv,
-	                             int fixSubmitted, int fixDependencyWait, int fixSynchronizeWait, int fixResourceWait,
-	                             int fixRunnable, int fixStarting, int fixStarted, int fixRunning,
-	                             int fixToKill, int fixKilled, int fixCancelled, int fixFinished, int fixFinal,
-	                             int fixBrokenActive, int fixBrokenFinished, int fixError, int fixUnreachable,
-	                             int fixRestartable, int fixWarn, int fixChildSuspended, int fixPending
-	                            )
-	throws SDMSException
+			int fixSubmitted, int fixDependencyWait, int fixSynchronizeWait, int fixResourceWait,
+			int fixRunnable, int fixStarting, int fixStarted, int fixRunning,
+			int fixToKill, int fixKilled, int fixCancelled, int fixFinished, int fixFinal,
+			int fixBrokenActive, int fixBrokenFinished, int fixError, int fixUnreachable,
+			int fixRestartable, int fixWarn, int fixChildSuspended, int fixPending
+		)
+		throws SDMSException
 	{
 		Vector v_sh = SDMSHierarchyInstanceTable.idx_childId.getVector(sysEnv, getId(sysEnv));
 		Iterator i = v_sh.iterator();
@@ -2403,8 +2310,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			}
 
 			sme.fixCntInParents(sysEnv, fixSubmitted, fixDependencyWait, fixSynchronizeWait, fixResourceWait, fixRunnable,
-			                    fixStarting, fixStarted, fixRunning, fixToKill, fixKilled, fixCancelled, fixFinished, fixFinal,
-			                    fixBrokenActive, fixBrokenFinished, fixError, fixUnreachable, fixRestartable, fixWarn, fixChildSuspended, fixPending);
+					    fixStarting, fixStarted, fixRunning, fixToKill, fixKilled, fixCancelled, fixFinished, fixFinal,
+					    fixBrokenActive, fixBrokenFinished, fixError, fixUnreachable, fixRestartable, fixWarn, fixChildSuspended, fixPending);
 
 			sme.checkFinal(sysEnv);
 		}
@@ -2412,13 +2319,13 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void setFinalEsdId(SystemEnvironment sysEnv, Long esdId)
-	throws SDMSException
+		throws SDMSException
 	{
 		setFinalEsdId(sysEnv, esdId, true);
 	}
 
 	public void setFinalEsdId(SystemEnvironment sysEnv, Long esdId, boolean doTrigger)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSubmittedEntity ret;
 		Long finalEsdId = getFinalEsdId(sysEnv);
@@ -2439,52 +2346,52 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void setJobIsRestartable(SystemEnvironment sysEnv, Boolean flag)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (flag.booleanValue() != getJobIsRestartable(sysEnv).booleanValue()) {
 			super.setJobIsRestartable(sysEnv, flag);
 
 			fixCntInParents(sysEnv,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                flag.booleanValue() ? 1 : -1 ,
-			                0 ,
-			                0 ,
-			                0
-			               );
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					flag.booleanValue() ? 1 : -1 ,
+					0 ,
+					0 ,
+					0
+			);
 		}
 		return;
 	}
 
 	public void setJobEsdId(SystemEnvironment sysEnv, Long esdId)
-	throws SDMSException
+		throws SDMSException
 	{
 		setJobEsdId(sysEnv, esdId, true);
 	}
 
 	boolean isPending(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return isPendingState(sysEnv, getJobEsdId(sysEnv));
 	}
 
 	boolean isPendingState(SystemEnvironment sysEnv, Long esdId)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		if (esdId == null) return false;
@@ -2500,7 +2407,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void setJobEsdId(SystemEnvironment sysEnv, Long newEsdId, boolean doTrigger)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long oldEsdId = getJobEsdId(sysEnv);
 
@@ -2508,28 +2415,28 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		boolean newIsPending = isPendingState(sysEnv, newEsdId);
 		if (oldIsPending != newIsPending)
 			fixCntInParents(sysEnv,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                0 ,
-			                newIsPending ? 1 : -1
-			               );
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					0 ,
+					newIsPending ? 1 : -1
+			);
 		if (newEsdId == null && oldEsdId == null) return;
 		if ((newEsdId != null && oldEsdId == null) ||
 		    (newEsdId == null && oldEsdId != null) ||
@@ -2540,15 +2447,15 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public SDMSSubmittedEntity submitChild (SystemEnvironment sysEnv,
-	                                        Vector params, Boolean suspended, Long resumeTs, Long childId, String childTag, Long replaceSmeId, String submitTag)
-	throws SDMSException
+			Vector params, Boolean suspended, Long resumeTs, Long childId, String childTag, Long replaceSmeId, String submitTag)
+		throws SDMSException
 	{
 		return submitChild (sysEnv, params, suspended, resumeTs, childId, childTag, replaceSmeId, submitTag, true);
 	}
 
 	public SDMSSubmittedEntity submitChild (SystemEnvironment sysEnv,
-	                                        Vector params, Boolean suspended, Long resumeTs, Long childId, String childTag, Long replaceSmeId, String submitTag, boolean forceChildDef)
-	throws SDMSException
+			Vector params, Boolean suspended, Long resumeTs, Long childId, String childTag, Long replaceSmeId, String submitTag, boolean forceChildDef)
+		throws SDMSException
 	{
 		long seVersion = getSeVersion(sysEnv).longValue();
 		Long thisSeId = getSeId(sysEnv);
@@ -2561,7 +2468,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, childId, seVersion);
 				SDMSSchedulingEntity thisSe = SDMSSchedulingEntityTable.getObject(sysEnv, thisSeId, seVersion);
 				throw new CommonErrorException (new SDMSMessage(sysEnv, "02210120844",
-				                                "$1 not a child of $2", se.pathString(sysEnv, seVersion), thisSe.pathString(sysEnv, seVersion)));
+					"$1 not a child of $2", se.pathString(sysEnv, seVersion), thisSe.pathString(sysEnv, seVersion)));
 			} else
 				sh = SDMSSchedulingHierarchyTable.getObject(sysEnv, SDMSObject.dummyShId, seVersion);
 		}
@@ -2572,8 +2479,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, childId, seVersion);
 				SDMSSchedulingEntity thisSe = SDMSSchedulingEntityTable.getObject(sysEnv, thisSeId, seVersion);
 				throw new CommonErrorException (new SDMSMessage(sysEnv, "02210120849",
-				                                "$1 must not be a static child of $2",
-				                                se.pathString(sysEnv, seVersion), thisSe.pathString(sysEnv, seVersion)));
+					"$1 must not be a static child of $2",
+					se.pathString(sysEnv, seVersion), thisSe.pathString(sysEnv, seVersion)));
 			}
 		}
 
@@ -2584,7 +2491,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		Long ownerId = getOwnerId(sysEnv);
 
 		SDMSSubmittedEntity sme = doSubmitChild(sysEnv, childId, parentSuspended, resumeTs, ownerId,
-		                                        sh, seVersion, replaceSmeId, suspended, childTag, submitTag, false );
+							sh, seVersion, replaceSmeId, suspended, childTag, submitTag, false );
 
 		if(params != null) {
 			Iterator i = params.iterator();
@@ -2610,7 +2517,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void copySmeParameters(SystemEnvironment sysEnv, Long fromSmeId, Long toSmeId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v_p = SDMSEntityVariableTable.idx_smeId.getVector(sysEnv, fromSmeId);
 		Iterator i_p = v_p.iterator();
@@ -2619,18 +2526,18 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 			if (!from_ev.getIsLocal(sysEnv).booleanValue()) {
 				SDMSEntityVariableTable.table.create (sysEnv,
-				                                      toSmeId,
-				                                      from_ev.getName(sysEnv),
-				                                      from_ev.getValue(sysEnv),
-				                                      Boolean.FALSE,
-				                                      null
-				                                     );
+					toSmeId,
+					from_ev.getName(sysEnv),
+					from_ev.getValue(sysEnv),
+					Boolean.FALSE,
+					null
+				);
 			}
 		}
 	}
 
 	public void releaseResources(SystemEnvironment sysEnv, int newState)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSResourceAllocation ra;
 		SDMSResource r;
@@ -2657,97 +2564,86 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 						continue;
 					}
 				}
+				boolean skip = false;
 				r = SDMSResourceTable.getObject(sysEnv, ra.getRId(sysEnv));
-				try {
+				if (ra.getIsSticky(sysEnv).booleanValue()) {
 					releaseStickyResource(sysEnv, ra, r, newState);
-				} catch (NotFoundException nfe) {  }
+					if(! getJobIsFinal(sysEnv).booleanValue() && state != CANCELLED)	{
+						ra.setAllocationType(sysEnv, SDMSResourceAllocation.REQUEST);
+						skip = true;
+					}
+				}
 
 				if(state == FINISHED || state == FINAL)
 
 					if((ra.getRsmpId(sysEnv) != null) && (ra.getLockmode(sysEnv).intValue() == Lockmode.X)) {
 						setResourceState(sysEnv, r, ra.getRsmpId(sysEnv));
 					}
+				if (skip) continue;
 			}
-			ra.delete(sysEnv);
+			ra.delete(sysEnv, false);
 		}
 
 		sysEnv.cEnv.popGid(sysEnv);
 	}
 
 	public void releaseStickyResource(SystemEnvironment sysEnv, SDMSResourceAllocation ra, SDMSResource r, int newState)
-	throws SDMSException
+		throws SDMSException
 	{
 		final SDMSResourceAllocation mra;
-		final SDMSMasterAllocation ma;
-		SDMSSubmittedEntity sme;
-		final Vector v;
-		SDMSResourceRequirement rr;
+		Vector rav;
 		int lockmode = Lockmode.N;
-		boolean release = true;
-		Long seId;
-		Long nrId = r.getNrId(sysEnv);
-		long actVersion;
-		String mraStickyName;
-		Long mraStickyParent;
+		Long rId = r.getId(sysEnv);
+		Long raId = ra.getId(sysEnv);
+		Long draId;
+		String raStickyName = ra.getStickyName(sysEnv);
+		Long raStickyParent = ra.getStickyParent(sysEnv);
+		int amount = 0;
+		int draAmount;
 
-		actVersion = getSeVersion(sysEnv).longValue();
+		try {
+			mra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(sysEnv,
+				new SDMSKey(new Long(-raStickyParent.longValue()), rId, raStickyName));
+		}
+		catch (NotFoundException nfe) {
+			return;
+		}
+		Long mraId = mra.getId(sysEnv);
+		rav = SDMSResourceAllocationTable.idx_stickyParent_rId_stickyName.getVector(sysEnv,
+				new SDMSKey(raStickyParent, rId, raStickyName));
 
-		long masterId = getMasterId(sysEnv).longValue();
-		mra = SDMSResourceAllocationTable.idx_smeId_rId_getUnique(sysEnv, new SDMSKey(new Long(-masterId), r.getId(sysEnv)));
-		System.out.println("Trying to find MasterAllocation (" + mra.getId(sysEnv) + ", " + ra.getStickyParent(sysEnv) + ", " + ra.getStickyName(sysEnv) + "), base = " + ra.getId(sysEnv));
-		ma = SDMSMasterAllocationTable.idx_raId_stickyParent_stickyName_getUnique(sysEnv, new SDMSKey(mra.getId(sysEnv), ra.getStickyParent(sysEnv), ra.getStickyName(sysEnv)));
-		mraStickyName = ma.getStickyName(sysEnv);
-		mraStickyParent = ma.getStickyParent(sysEnv);
+		for (int i = 0; i < rav.size(); ++i) {
+			SDMSResourceAllocation dra = (SDMSResourceAllocation) rav.get(i);
 
-		v = SDMSSubmittedEntityTable.idx_masterId.getVector(sysEnv, getMasterId(sysEnv));
-		for(int i = 0; i < v.size(); i++) {
-			sme = (SDMSSubmittedEntity) v.get(i);
+			draId = dra.getId(sysEnv);
+			if (draId.equals(mraId)) continue;
+			if (draId.equals(raId) &&
+			       (newState == FINAL ||
+				newState == CANCELLED ||
+				(getJobIsFinal(sysEnv) && dra.getKeepMode(sysEnv).intValue() != SDMSResourceRequirement.KEEP_FINAL)))
+					continue;
 
-			if(sme.getState(sysEnv).intValue() == SDMSSubmittedEntity.CANCELLED ||
-			    sme.getId(sysEnv).equals(this.getId(sysEnv)) && newState == CANCELLED) {
-				continue;
-			}
+			if(dra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.IGNORE) continue;
 
-			if(sme.getJobIsFinal(sysEnv).booleanValue())
-				continue;
+			draAmount = dra.getAmount(sysEnv).intValue();
+			if (draAmount > amount) amount = draAmount;
 
-			SDMSResourceAllocation tmp_ra = null;
-			try {
-				tmp_ra = SDMSResourceAllocationTable.idx_smeId_rId_getUnique(sysEnv, new SDMSKey(sme.getId(sysEnv), r.getId(sysEnv)));
-				SDMSThread.doTrace(null, "Found an allocation", SDMSThread.SEVERITY_DEBUG);
-				if(tmp_ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.IGNORE) continue;
-				SDMSThread.doTrace(null, "no ignore", SDMSThread.SEVERITY_DEBUG);
-				if(! tmp_ra.getIsSticky(sysEnv).booleanValue()) continue;
-
-				String tmpStickyName = tmp_ra.getStickyName(sysEnv);
-				Long tmpStickyParent = tmp_ra.getStickyParent(sysEnv);
-				if (mraStickyName == null) {
-					if (tmpStickyName != null) continue;
-				} else if (! mraStickyName.equals(tmpStickyName)) continue;
-
-				if (mraStickyParent == null) {
-					if (tmpStickyParent != null) continue;
-				} else if (! mraStickyParent.equals(tmpStickyParent)) continue;
-
-			} catch (NotFoundException nfe) {
-
-				continue;
-			}
-
-			release = false;
-
-			lockmode &= tmp_ra.getLockmode(sysEnv).intValue();
+			lockmode &= dra.getLockmode(sysEnv).intValue();
 		}
 
-		ma.setLockmode(sysEnv, new Integer(lockmode));
+		mra.setLockmode(sysEnv, new Integer(lockmode));
 
-		if(release) {
-			ma.delete(sysEnv);
+		int origAmount = mra.getOrigAmount(sysEnv).intValue();
+		if (origAmount > amount) {
+			int mraAmount = mra.getAmount(sysEnv).intValue() - (origAmount - amount);
+
+			mra.setOrigAmount(sysEnv, new Integer(amount));
+			mra.setAmount(sysEnv, new Integer(mraAmount));
 		}
 	}
 
 	public void setResourceState(SystemEnvironment sysEnv, SDMSResource r, Long rsmpId)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Long ts = new Long ((new Date()).getTime());
 		Vector v = SDMSResourceStateMappingTable.idx_rsmpId.getVector(sysEnv, rsmpId);
@@ -2788,7 +2684,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public Vector pathStrings(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSHierarchyInstance hi;
 		SDMSSubmittedEntity sme;
@@ -2833,7 +2729,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void removeAsyncTrigger(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Vector trv = SDMSTriggerQueueTable.idx_smeId.getVector(sysEnv, getId(sysEnv));
@@ -2844,13 +2740,13 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	protected boolean trigger(SystemEnvironment sysEnv, int trigger_type)
-	throws SDMSException
+		throws SDMSException
 	{
 		return trigger (sysEnv, trigger_type, false);
 	}
 
 	protected boolean trigger(SystemEnvironment sysEnv, int trigger_type, boolean evaluateRerun)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long esdId;
 		if (trigger_type == SDMSTrigger.IMMEDIATE_LOCAL)
@@ -2861,7 +2757,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private boolean trigger(SystemEnvironment sysEnv, int trigger_type, Long esdId, Long reasonSmeId, boolean evaluateRerun)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		if (getIsCancelled(sysEnv).booleanValue())
@@ -2895,9 +2791,9 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private SDMSSubmittedEntity createSme(SystemEnvironment sysEnv, SDMSSchedulingEntity se, SDMSSchedulingHierarchy sh,
-	                                      String childTag, Long ownerId, boolean isStatic, Boolean suspended, int parentSuspended,
-	                                      Long resumeTs, Long replaceSmeId, String submitTag, Long submitTs)
-	throws SDMSException
+					      String childTag, Long ownerId, boolean isStatic, Boolean suspended, int parentSuspended,
+					      Long resumeTs, Long replaceSmeId, String submitTag, Long submitTs)
+		throws SDMSException
 	{
 		SDMSSubmittedEntity sme;
 		Long seId = se.getId(sysEnv);
@@ -2922,105 +2818,105 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 
 		switch(agingBase.intValue()) {
-		case SDMSInterval.MINUTE:
-			break;
-		case SDMSInterval.HOUR:
-			agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.HOUR_DUR_M));
-			break;
-		case SDMSInterval.DAY:
-			agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.DAY_DUR_M));
-			break;
-		case SDMSInterval.WEEK:
-			agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.WEEK_DUR_M));
-			break;
-		case SDMSInterval.MONTH:
-			agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.MONTH_DUR_M));
-			break;
-		case SDMSInterval.YEAR:
-			agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.YEAR_DUR_M));
-			break;
+			case SDMSInterval.MINUTE:
+				break;
+			case SDMSInterval.HOUR:
+				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.HOUR_DUR_M));
+				break;
+			case SDMSInterval.DAY:
+				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.DAY_DUR_M));
+				break;
+			case SDMSInterval.WEEK:
+				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.WEEK_DUR_M));
+				break;
+			case SDMSInterval.MONTH:
+				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.MONTH_DUR_M));
+				break;
+			case SDMSInterval.YEAR:
+				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.YEAR_DUR_M));
+				break;
 		}
 		agingBase = new Integer(SDMSInterval.MINUTE);
 
 		sme = SDMSSubmittedEntityTable.table.create(sysEnv,
-		                sysEnv.randomLong(),
-		                getMasterId(sysEnv),
-		                submitTag,
-		                null,
-		                seId,
-		                childTag,
-		                getSeVersion(sysEnv),
-		                ownerId,
-		                getId(sysEnv),
-		                null,
-		                new Boolean(isStatic),
-		                sh.getMergeMode(sysEnv),
-		                new Integer(SDMSSubmittedEntity.SUBMITTED),
-		                null,
-		                null,
-		                Boolean.FALSE,
-		                Boolean.FALSE,
-		                null,
-		                null,
-		                null,
-		                null,
-		                zero,
-		                Boolean.FALSE,
-		                Boolean.FALSE,
-		                null,
-		                null,
-		                null,
-		                null,
-		                null,
-		                null,
-		                null,
-		                zero,
-		                null,
-		                null,
-		                null,
-		                null,
-		                null,
-		                null,
-		                null,
-		                null,
-		                suspended,
-		                prio,
-		                nice,
-		                minEP,
-		                agingAmount,
-		                new Integer(parentSuspended),
-		                zero,
-		                zero,
-		                null,
-		                submitTs,
-		                resumeTs,
-		                null,
-		                null,
-		                null,
-		                null,
-		                null,
-		                null,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero,
-		                zero
-		                                           );
+				sysEnv.randomLong(),
+				getMasterId(sysEnv),
+				submitTag,
+				null,
+				seId,
+				childTag,
+				getSeVersion(sysEnv),
+				ownerId,
+				getId(sysEnv),
+				null,
+				new Boolean(isStatic),
+				sh.getMergeMode(sysEnv),
+				new Integer(SDMSSubmittedEntity.SUBMITTED),
+				null,
+				null,
+				Boolean.FALSE,
+				Boolean.FALSE,
+				null,
+				null,
+				null,
+				null,
+				zero,
+				Boolean.FALSE,
+				Boolean.FALSE,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				zero,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				suspended,
+				prio,
+				nice,
+				minEP,
+				agingAmount,
+				new Integer(parentSuspended),
+				zero,
+				zero,
+				null,
+				submitTs,
+				resumeTs,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero,
+				zero
+		);
 
 		if (replaceSmeId != null) {
 			copySmeParameters(sysEnv, replaceSmeId, sme.getId(sysEnv));
@@ -3041,7 +2937,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void getInitialNiceValueFromParents(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		int oldNice = getNice(sysEnv).intValue();
 		int oldPrio = getPriority(sysEnv).intValue();
@@ -3073,7 +2969,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void mergeNiceValueFromParents(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, SDMSHierarchyInstance hi)
-	throws SDMSException
+		throws SDMSException
 	{
 		int oldNice = sme.getNice(sysEnv).intValue();
 		int oldPrio = sme.getPriority(sysEnv).intValue();
@@ -3120,7 +3016,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void renice(SystemEnvironment sysEnv, Integer nicevalue, String comment)
-	throws SDMSException
+		throws SDMSException
 	{
 		Integer nv;
 		Integer pr;
@@ -3129,7 +3025,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		int state = getState(sysEnv).intValue();
 		if(state == CANCELLED || state == FINAL) {
 			throw new CommonErrorException (new SDMSMessage(sysEnv, "03303061417",
-			                                "Cannot renice a cancelled or final job"));
+				"Cannot renice a cancelled or final job"));
 		}
 
 		inv = nicevalue.intValue();
@@ -3162,7 +3058,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void renice(SystemEnvironment sysEnv, SDMSHierarchyInstance hi, SDMSSubmittedEntity sme, SDMSSubmittedEntity psme, Integer newNice, String comment)
-	throws SDMSException
+		throws SDMSException
 	{
 		Integer nv;
 		Integer pr;
@@ -3225,25 +3121,25 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 	}
 	public synchronized void releaseMaster(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long id = getId(sysEnv);
 		int state = getState(sysEnv).intValue();
 
 		if(!id.equals(getMasterId(sysEnv))) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03311061650",
-			                               "Tried to release a nonmaster submitted entity ($1)", id));
+					"Tried to release a nonmaster submitted entity ($1)", id));
 		}
 		if(state != CANCELLED && state != FINAL) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03311061638",
-			                               "Tried to release a nonfinal submitted entity ($1)", id));
+					"Tried to release a nonfinal submitted entity ($1)", id));
 		}
 		sysEnv.seVersionList.remove(getSeVersion(sysEnv).longValue());
 		release(sysEnv);
 	}
 
 	synchronized void release(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long id = getId(sysEnv);
 		int i;
@@ -3282,7 +3178,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public long getPrivileges(SystemEnvironment sysEnv, long checkPrivs, boolean fastFail, Vector checkGroups)
-	throws SDMSException
+		throws SDMSException
 	{
 		long p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
 		if(sysEnv.cEnv.isUser()) {
@@ -3317,7 +3213,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void setToError(SystemEnvironment sysEnv, String msg)
-	throws SDMSException
+		throws SDMSException
 	{
 		setState(sysEnv, new Integer(ERROR));
 		if(msg != null) {
@@ -3326,13 +3222,13 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return getId(sysEnv).toString();
 	}
 
 	public String getURL(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return "job " + getURLName(sysEnv);
 	}

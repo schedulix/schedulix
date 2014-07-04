@@ -45,7 +45,8 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 	public static SDMSIndex idx_rId;
 	public static SDMSIndex idx_smeId;
 	public static SDMSIndex idx_nrId;
-	public static SDMSIndex idx_smeId_rId;
+	public static SDMSIndex idx_smeId_rId_stickyName;
+	public static SDMSIndex idx_stickyParent_rId_stickyName;
 	public static SDMSIndex idx_smeId_nrId;
 
 	public SDMSResourceAllocationTableGeneric(SystemEnvironment env)
@@ -62,7 +63,8 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		idx_rId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
 		idx_smeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
 		idx_nrId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_smeId_rId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_smeId_rId_stickyName = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_stickyParent_rId_stickyName = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
 		idx_smeId_nrId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
 	}
 	public SDMSResourceAllocation create(SystemEnvironment env
@@ -333,7 +335,13 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		k = new SDMSKey();
 		k.add(((SDMSResourceAllocationGeneric) o).smeId);
 		k.add(((SDMSResourceAllocationGeneric) o).rId);
-		idx_smeId_rId.put(env, k, o);
+		k.add(((SDMSResourceAllocationGeneric) o).stickyName);
+		idx_smeId_rId_stickyName.put(env, k, o);
+		k = new SDMSKey();
+		k.add(((SDMSResourceAllocationGeneric) o).stickyParent);
+		k.add(((SDMSResourceAllocationGeneric) o).rId);
+		k.add(((SDMSResourceAllocationGeneric) o).stickyName);
+		idx_stickyParent_rId_stickyName.put(env, k, o);
 		k = new SDMSKey();
 		k.add(((SDMSResourceAllocationGeneric) o).smeId);
 		k.add(((SDMSResourceAllocationGeneric) o).nrId);
@@ -350,7 +358,13 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		k = new SDMSKey();
 		k.add(((SDMSResourceAllocationGeneric) o).smeId);
 		k.add(((SDMSResourceAllocationGeneric) o).rId);
-		idx_smeId_rId.remove(env, k, o);
+		k.add(((SDMSResourceAllocationGeneric) o).stickyName);
+		idx_smeId_rId_stickyName.remove(env, k, o);
+		k = new SDMSKey();
+		k.add(((SDMSResourceAllocationGeneric) o).stickyParent);
+		k.add(((SDMSResourceAllocationGeneric) o).rId);
+		k.add(((SDMSResourceAllocationGeneric) o).stickyName);
+		idx_stickyParent_rId_stickyName.remove(env, k, o);
 		k = new SDMSKey();
 		k.add(((SDMSResourceAllocationGeneric) o).smeId);
 		k.add(((SDMSResourceAllocationGeneric) o).nrId);
@@ -369,16 +383,16 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		return (SDMSResourceAllocation) table.get(env, id, version);
 	}
 
-	public static SDMSResourceAllocation idx_smeId_rId_getUnique(SystemEnvironment env, Object key)
+	public static SDMSResourceAllocation idx_smeId_rId_stickyName_getUnique(SystemEnvironment env, Object key)
 	throws SDMSException
 	{
-		return (SDMSResourceAllocation)  SDMSResourceAllocationTableGeneric.idx_smeId_rId.getUnique(env, key);
+		return (SDMSResourceAllocation)  SDMSResourceAllocationTableGeneric.idx_smeId_rId_stickyName.getUnique(env, key);
 	}
 
-	public static SDMSResourceAllocation idx_smeId_rId_getUnique(SystemEnvironment env, Object key, long version)
+	public static SDMSResourceAllocation idx_smeId_rId_stickyName_getUnique(SystemEnvironment env, Object key, long version)
 	throws SDMSException
 	{
-		return (SDMSResourceAllocation)  SDMSResourceAllocationTableGeneric.idx_smeId_rId.getUnique(env, key, version);
+		return (SDMSResourceAllocation)  SDMSResourceAllocationTableGeneric.idx_smeId_rId_stickyName.getUnique(env, key, version);
 	}
 
 	public String tableName()
