@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -54,10 +54,10 @@ public class BICServer
 	private static void say_hello(String argv[])
 	{
 		final String serverStart = "**************************************************************************";
-		final String prog        = "** BICsuite!step";
+		final String prog        = "** BICsuite!Server";
 		final String version     = "** Version " + SystemEnvironment.programVersion;
 		final String copyright1  = "** Copyright (C) 2000-2002 topIT Informationstechnologie GmbH";
-		final String copyright2  = "** Copyright (C) 2003-2011 independIT Integrative Technologies GmbH";
+		final String copyright2  = "** Copyright (C) 2003-2014 independIT Integrative Technologies GmbH";
 
 		SDMSThread.doTrace(null, serverStart, SDMSThread.SEVERITY_INFO);
 		try {
@@ -114,7 +114,7 @@ public class BICServer
 				gotAdmin = true;
 			} else if(argv[i].toLowerCase().equals(PROTECT_OPTION)) {
 				SDMSThread.doTrace(null, "Server will start in protected mode, logins and internal threads disabled" ,
-				                   SDMSThread.SEVERITY_INFO);
+							SDMSThread.SEVERITY_INFO);
 				if(gotProtect) {
 					SDMSThread.doTrace(null, "Duplicate option: " + PROTECT_OPTION, SDMSThread.SEVERITY_INFO);
 				}
