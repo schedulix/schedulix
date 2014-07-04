@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -68,7 +68,7 @@ public abstract class SDMSObject implements Cloneable, Comparable
 	}
 
 	protected SDMSObject(SystemEnvironment env, SDMSTable table)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (nextId == null) {
 			nextId = new ObjectCounter(env);
@@ -87,23 +87,23 @@ public abstract class SDMSObject implements Cloneable, Comparable
 	}
 
 	protected SDMSObject change(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (versions.tx != null) {
 			if (env.tx != versions.tx) {
 				throw new FatalException (new SDMSMessage(env,
-				                          "03110181611", "Trying to change object locked by other transaction"));
+					"03110181611", "Trying to change object locked by other transaction"));
 			}
 			if (versions.o_v == null) {
 				throw new FatalException (new SDMSMessage(env,
-				                          "03110181612", "Already touched versions without vector o_v"));
+					"03110181612", "Already touched versions without vector o_v"));
 			}
 
 			if (versions.o_v.size() != 0) {
 
 				if (subTxId == env.tx.subTxId) {
 					throw new FatalException (new SDMSMessage(env,
-					                          "03111021044", "No two changes within the same subtx permitted"));
+						"03111021044", "No two changes within the same subtx permitted"));
 				}
 			}
 		} else {
@@ -123,7 +123,7 @@ public abstract class SDMSObject implements Cloneable, Comparable
 			o.isCurrent = true;
 		} catch (CloneNotSupportedException exception) {
 			throw new FatalException (new SDMSMessage(env,
-			                          "03110181614", "Trying to clone uncloneable Object"));
+				"03110181614", "Trying to clone uncloneable Object"));
 		}
 		o.validFrom = -1;
 		o.validTo = -1;
@@ -133,40 +133,40 @@ public abstract class SDMSObject implements Cloneable, Comparable
 	}
 
 	public void delete(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		deleteObject(env, false);
 	}
 
 	public void memDelete(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		deleteObject(env, true);
 	}
 
 	private void deleteObject(SystemEnvironment env, boolean memOnly)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSObject o;
 
 		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
 			throw new CommonErrorException(
-			        new SDMSMessage (env, "03201292032", "Change of system object not allowed")
+				new SDMSMessage (env, "03201292032", "Change of system object not allowed")
 			);
 		}
 		if (memOnly && versions.table.getIsVersioned()) {
 			throw new FatalException (new SDMSMessage(env,
-			                          "03204260808", "Trying to do a memOnly delete on a versioned table"));
+				"03204260808", "Trying to do a memOnly delete on a versioned table"));
 		}
 
 		if (versions.tx != null) {
 			if (env.tx != versions.tx) {
 				throw new FatalException (new SDMSMessage(env,
-				                          "03110181615", "Trying to delete object locked by other transaction"));
+					"03110181615", "Trying to delete object locked by other transaction"));
 			}
 			if (versions.o_v == null) {
 				throw new FatalException (new SDMSMessage(env,
-				                          "03110261614", "Already touched versions without vector o_v"));
+					"03110261614", "Already touched versions without vector o_v"));
 			}
 			if (versions.o_v.size() != 0) {
 
@@ -196,7 +196,7 @@ public abstract class SDMSObject implements Cloneable, Comparable
 			o.isCurrent = false;
 		} catch (CloneNotSupportedException exception) {
 			throw new FatalException (new SDMSMessage(env,
-			                          "02110261714", "Trying to clone uncloneable Object"));
+				"02110261714", "Trying to clone uncloneable Object"));
 		}
 		versions.o_v.add(o);
 		env.tx.addToTouchSet(env, versions, false);
@@ -205,28 +205,28 @@ public abstract class SDMSObject implements Cloneable, Comparable
 	protected abstract SDMSProxy toProxy();
 
 	protected abstract void insertDBObject(SystemEnvironment env)
-	throws SDMSException;
+		throws SDMSException;
 
 	protected abstract void updateDBObject(SystemEnvironment env, SDMSObject old)
-	throws SDMSException;
+		throws SDMSException;
 
 	protected abstract void deleteDBObject(SystemEnvironment env)
-	throws SDMSException;
+		throws SDMSException;
 
 	public long getValidFrom(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		return validFrom;
 	}
 
 	public long getValidTo(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		return validTo;
 	}
 
 	public Long getId(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		return id;
 	}
@@ -236,12 +236,21 @@ public abstract class SDMSObject implements Cloneable, Comparable
 
 	public void dumpVersions()
 	{
-		SDMSThread.doTrace(null, "-- Object is --", SDMSThread.SEVERITY_DEBUG);
-		SDMSThread.doTrace(null, "id : " + id.toString(), SDMSThread.SEVERITY_DEBUG);
-		SDMSThread.doTrace(null, "subTxId : " + subTxId, SDMSThread.SEVERITY_DEBUG);
-		SDMSThread.doTrace(null, "validFrom : " + validFrom, SDMSThread.SEVERITY_DEBUG);
-		SDMSThread.doTrace(null, "validTo : " + validTo, SDMSThread.SEVERITY_DEBUG);
-		versions.dump();
+		dumpVersions(SDMSThread.SEVERITY_DEBUG);
+	}
+
+	public void dumpVersions(int severity)
+	{
+		SDMSThread.doTrace(null, "-- Object is --", severity);
+		SDMSThread.doTrace(null, "id : " + id.toString(), severity);
+		SDMSThread.doTrace(null, "subTxId : " + subTxId, severity);
+		SDMSThread.doTrace(null, "validFrom : " + validFrom, severity);
+		SDMSThread.doTrace(null, "validTo : " + validTo, severity);
+		SDMSThread.doTrace(null, "subTxId : " + subTxId, severity);
+		SDMSThread.doTrace(null, "isDeleted : " + isDeleted, severity);
+		SDMSThread.doTrace(null, "memOnly : " + memOnly, severity);
+		SDMSThread.doTrace(null, "isCurrent : " + isCurrent, severity);
+		versions.dump(severity);
 	}
 
 	public int compareTo(Object o)
@@ -264,14 +273,14 @@ class ObjectCounter
 	private static long lastId;
 
 	public ObjectCounter(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		lastId = getNextQuantum(env);
 		nextId = lastId - QUANTUM + 1;
 	}
 
 	public synchronized long next(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(nextId == lastId)
 			lastId = getNextQuantum(env);
@@ -279,7 +288,7 @@ class ObjectCounter
 	}
 
 	private synchronized long getNextQuantum(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		long l;
 
@@ -292,11 +301,11 @@ class ObjectCounter
 				l = rset.getLong(1);
 			} else {
 				throw new FatalException(new SDMSMessage(env,
-				                         "03110181618", "Counter Value Missing"));
+						"03110181618", "Counter Value Missing"));
 			}
 			if(rset.next()) {
 				throw new FatalException(new SDMSMessage(env,
-				                         "03110181619", "Duplicate Counter Value"));
+						"03110181619", "Duplicate Counter Value"));
 			}
 			rset.close();
 
@@ -306,8 +315,8 @@ class ObjectCounter
 
 		} catch (SQLException sqle) {
 			throw new FatalException(new SDMSMessage(env, "03110181620",
-			                         "Error on updating the ObjectCounter:\n$1",
-			                         "SQLError : " + sqle.getMessage()));
+								"Error on updating the ObjectCounter:\n$1",
+								"SQLError : " + sqle.getMessage()));
 		}
 
 		return l;

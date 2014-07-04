@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
+schedulix is free software: 
+you can redistribute it and/or modify it under the terms of the 
+GNU Affero General Public License as published by the 
+Free Software Foundation, either version 3 of the License, 
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -63,15 +63,15 @@ public class SDMSVersions
 	}
 
 	protected void flush(SystemEnvironment env, boolean isNew)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (env.tx.versionId == SDMSTransaction.UNDEFINED) {
 			throw new FatalException (new SDMSMessage(env, "03110181544",
-			                          "Cannot flush without transaction versionId"));
+						  "Cannot flush without transaction versionId"));
 		}
 		if (o_v == null) {
 			throw new FatalException (new SDMSMessage(env, "02110261539",
-			                          "Cannot flush an unchanged versions"));
+						  "Cannot flush an unchanged versions"));
 		}
 		if (o_v.size() == 0) {
 
@@ -98,8 +98,8 @@ public class SDMSVersions
 	}
 
 	protected synchronized void commitOrRollback(SystemEnvironment env, long versionId,
-	                boolean isNew, boolean isCommit)
-	throws SDMSException
+					boolean isNew, boolean isCommit)
+		throws SDMSException
 	{
 		int s;
 		SDMSPurgeSet purgeSet;
@@ -118,7 +118,7 @@ public class SDMSVersions
 
 		if (o_v == null) {
 			throw new FatalException (new SDMSMessage(env, "02110261556",
-			                          "Cannot commit or rollback an unchanged versions"));
+						  "Cannot commit or rollback an unchanged versions"));
 		}
 
 		if (o_v.size() == 0) {
@@ -135,7 +135,7 @@ public class SDMSVersions
 			if (isNew == false) {
 				if (s == 0) {
 					throw new FatalException (new SDMSMessage(env, "03110181545",
-					                          "Cannot update or delete commit empty versions"));
+								  "Cannot update or delete commit empty versions"));
 				}
 				((SDMSObject)(versions.lastElement())).validTo = versionId;
 			}
@@ -147,7 +147,7 @@ public class SDMSVersions
 
 			s = versions.size();
 			if( s > 1 ||
-			    (s == 1 && ((SDMSObject)(versions.lastElement())).validTo != Long.MAX_VALUE)
+			   (s == 1 && ((SDMSObject)(versions.lastElement())).validTo != Long.MAX_VALUE)
 			  ) {
 				purgeSet.add(env, this);
 			}
@@ -158,7 +158,7 @@ public class SDMSVersions
 			if(isNew == false) {
 				if (s == 0) {
 					throw new FatalException (new SDMSMessage(env, "03111021305",
-					                          "Cannot update or delete rollback empty versions"));
+								  "Cannot update or delete rollback empty versions"));
 				}
 				((SDMSObject)(versions.lastElement())).isCurrent = true;
 			}
@@ -170,15 +170,15 @@ public class SDMSVersions
 	}
 
 	protected void add(SystemEnvironment env, SDMSObject p_o)
-	throws SDMSException
+		throws SDMSException
 	{
 		int s;
 
 		if (!id.equals(p_o.id)) {
 
 			throw new FatalException (new SDMSMessage(env, "03110181546",
-			                          "versions id ( $1 ) does not match objects id ( $2 )",
-			                          id, p_o.id));
+						  "versions id ( $1 ) does not match objects id ( $2 )",
+						  id, p_o.id));
 		}
 		s = versions.size() - 1;
 		while (s >= 0) {
@@ -197,12 +197,10 @@ public class SDMSVersions
 	}
 
 	public synchronized void purge (SystemEnvironment env, long versionId, Iterator i)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (i == null) {
-			throw new FatalException(
-			        new SDMSMessage (env, "02225041315",
-			                         "purge with null iterator !"));
+			throw new FatalException(new SDMSMessage (env, "02225041315", "purge with null iterator !"));
 		}
 		int s = versions.size();
 
@@ -217,7 +215,7 @@ public class SDMSVersions
 		}
 
 		if ( s == 0 ||
-		     (s == 1 && ((SDMSObject)(versions.elementAt(0))).validTo == Long.MAX_VALUE)
+		    (s == 1 && ((SDMSObject)(versions.elementAt(0))).validTo == Long.MAX_VALUE)
 		   )
 			i.remove();
 
@@ -231,7 +229,7 @@ public class SDMSVersions
 	}
 
 	protected SDMSObject get (SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSObject obj = getRaw (env);
 
@@ -242,7 +240,7 @@ public class SDMSVersions
 	}
 
 	protected SDMSObject getRaw (SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSObject o;
 		if (tx == env.tx) {
@@ -251,9 +249,7 @@ public class SDMSVersions
 				o = (SDMSObject) getRaw(env, Long.MAX_VALUE);
 				if (o == null) return null;
 				if (!o.isCurrent) {
-					throw new FatalException(
-					        new SDMSMessage (env, "02110301833",
-					                         "get returned non current version"));
+					throw new FatalException( new SDMSMessage (env, "02110301833", "get returned non current version"));
 				}
 				return o;
 			} else {
@@ -261,9 +257,7 @@ public class SDMSVersions
 				o = (SDMSObject)(o_v.getLast());
 				if (! o.isDeleted) {
 					if (!o.isCurrent) {
-						throw new FatalException(
-						        new SDMSMessage (env, "02110301834",
-						                         "get returned non current version"));
+						throw new FatalException( new SDMSMessage (env, "02110301834", "get returned non current version"));
 					}
 					return o;
 				} else {
@@ -277,9 +271,7 @@ public class SDMSVersions
 				lockShared(env);
 				o = (SDMSObject)getRaw(env, Long.MAX_VALUE);
 				if (o != null && !o.isCurrent) {
-					throw new FatalException(
-					        new SDMSMessage (env, "02110301835",
-					                         "get returned non current version"));
+					throw new FatalException( new SDMSMessage (env, "02110301835", "get returned non current version"));
 				}
 				return o;
 			}
@@ -287,7 +279,7 @@ public class SDMSVersions
 	}
 
 	protected synchronized SDMSObject get (SystemEnvironment env, long versionId)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSObject obj = getRaw (env, versionId);
 		if(obj == null) {
@@ -297,7 +289,7 @@ public class SDMSVersions
 	}
 
 	private void raiseNotFoundException(SystemEnvironment env, long versionId)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (versionId == 0)
 			if (env.tx.mode == SDMSTransaction.READONLY)
@@ -307,12 +299,12 @@ public class SDMSVersions
 		if(env.traceLevel >= SDMSThread.SEVERITY_DEBUG)
 			SDMSThread.doTrace(env.cEnv, "Version " + versionId + " of id " + id + " not found\n" + this, SDMSThread.SEVERITY_DEBUG);
 		throw new NotFoundException(new SDMSMessage(env, "03210252200",
-		                            "Version $1 of id $2 not found",
-		                            new Long(versionId), id));
+					    "Version $1 of id $2 not found",
+					    new Long(versionId), id));
 	}
 
 	private synchronized SDMSObject getRaw (SystemEnvironment env, long versionId)
-	throws SDMSException
+		throws SDMSException
 	{
 		int s = versions.size();
 		SDMSObject obj;
@@ -332,32 +324,37 @@ public class SDMSVersions
 
 	public void dump()
 	{
-		SDMSThread.doTrace(null, toString(), SDMSThread.SEVERITY_DEBUG);
+		dump(SDMSThread.SEVERITY_DEBUG);
+	}
+
+	public void dump(int severity)
+	{
+		SDMSThread.doTrace(null, toString(), severity);
 	}
 
 	public String toString(int indent)
 	{
 		try {
 			StringBuffer result = new StringBuffer(
-			        "-- Start SDMSVersions dump --\n" +
-			        "Dump of SDMSVersions object for Object : " + id.toString() + "\n" +
-			        "Object is a " + table.tableName() + "\n" +
-			        "Tx : " + (tx == null ? "null" : "\n" + tx.toString()) + "\n" +
-			        "-- Start Committed Versions --\n");
+				"-- Start SDMSVersions dump --\n" +
+				"Dump of SDMSVersions object for Object : " + id.toString() + "\n" +
+				"Object is a " + table.tableName() + "\n" +
+				"Tx : " + (tx == null ? "null" : "\n" + tx.toString()) + "\n" +
+				"-- Start Committed Versions --\n");
 
 			Iterator i = versions.iterator();
 			SDMSObject o;
 			while (i.hasNext()) {
 				o = (SDMSObject)(i.next());
 				result.append(
-				        "\n==========================\n" +
-				        "validFrom : " + o.validFrom + "\n" +
-				        "validTo : " + o.validTo + "\n" +
-				        "subTxId : " + o.subTxId + "\n" +
-				        "isDeleted : " + o.isDeleted + "\n" +
-				        "memOnly : " + o.memOnly + "\n" +
-				        "--------------------------\n" +
-				        o.toString(indent));
+					"\n==========================\n" +
+					"validFrom : " + o.validFrom + "\n" +
+					"validTo : " + o.validTo + "\n" +
+					"subTxId : " + o.subTxId + "\n" +
+					"isDeleted : " + o.isDeleted + "\n" +
+					"memOnly : " + o.memOnly + "\n" +
+					"--------------------------\n" +
+					o.toString(indent));
 			}
 			result.append("-- End Committed Versions --\n");
 
@@ -367,12 +364,12 @@ public class SDMSVersions
 				while (i.hasNext()) {
 					o = (SDMSObject)(i.next());
 					result.append(o.toString(indent) + "\n" +
-					              "----------------------------\n" +
-					              "subTxId : " + o.subTxId + "\n" +
-					              "isDeleted : " + o.isDeleted + "\n" +
-					              "isCurrent : " + o.isDeleted + "\n" +
-					              "memOnly : " + o.memOnly + "\n" +
-					              "============================\n");
+						"----------------------------\n" +
+						"subTxId : " + o.subTxId + "\n" +
+						"isDeleted : " + o.isDeleted + "\n" +
+						"isCurrent : " + o.isDeleted + "\n" +
+						"memOnly : " + o.memOnly + "\n" +
+						"============================\n");
 				}
 				result.append("-- End Uncommitted Versions --\n");
 			}
@@ -391,17 +388,17 @@ public class SDMSVersions
 	}
 
 	private void lock(SystemEnvironment env, int mode)
-	throws SDMSException
+		throws SDMSException
 	{
 
 	}
 	protected void lockExclusive(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		lock(env, SDMSLock.X);
 	}
 	protected void lockShared(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		lock(env, SDMSLock.S);
 	}
@@ -411,7 +408,7 @@ public class SDMSVersions
 	}
 
 	public synchronized HashMap stat(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		HashMap result = new HashMap();
 

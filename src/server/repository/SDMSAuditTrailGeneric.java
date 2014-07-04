@@ -971,6 +971,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "changeTs : " + changeTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "validFrom : " + validFrom, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "validTo : " + validTo, SDMSThread.SEVERITY_MESSAGE);
+		dumpVersions(SDMSThread.SEVERITY_MESSAGE);
 	}
 
 	public String toString(int indent)
