@@ -47,7 +47,18 @@ ADD COLUMN STICKY_NAME VARCHAR(64) WITH NULL;
 ALTER TABLE RESOURCE_ALLOCATION
 ADD COLUMN STICKY_PARENT DECIMAL(20) WITH NULL;
 
-And create the new table MASTER_ALLOCATION as well as the table SME2LOAD (see sql directory)
+-------------------------------------------------------------------------------------------
+
+We fixed a (more or less severe) bug in the sticky handling.
+In this context the previously defined table MASTER_ALLOCATION was eliminated.
+This means that anyone having 2.6 running will have to take care a bit.
+
+The general idea is:
+- Make sure no jobs with sticky resource requests are submitted and not final or cancelled
+- shut down the server
+- recompile
+- drop the table MASTER_ALLOCATION
+- start up the server
 
 -------------------------------------------------------------------------------------------
 
