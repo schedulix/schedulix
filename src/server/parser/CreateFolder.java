@@ -62,7 +62,7 @@ public class CreateFolder extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (af != null) {
 			af.setEnv(env);
@@ -81,7 +81,7 @@ public class CreateFolder extends Node
 
 		if(SDMSSchedulingEntityTable.idx_folderId_name.containsKey(sysEnv, new SDMSKey(parentId, name))) {
 			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03201290935", "Object with name $1 already exists within $2",
-			                                name, SDMSFolderTable.getObject(sysEnv, parentId).pathString(sysEnv)));
+					name, SDMSFolderTable.getObject(sysEnv, parentId).pathString(sysEnv)));
 		}
 		envName = (String) with.get(ParseStr.S_ENVIRONMENT);
 		if(envName != null) {
@@ -97,27 +97,26 @@ public class CreateFolder extends Node
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			              sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId)) &&
-			    !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
+			   !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03312162226",
-				                               "User $1 does not belong to Group $2", u.getName(sysEnv), gName));
+						"User $1 does not belong to Group $2", u.getName(sysEnv), gName));
 			}
 		}
 
-		Long inheritPrivs;
-		if (with.containsKey(ParseStr.S_INHERIT)) {
-			inheritPrivs = (Long) with.get(ParseStr.S_INHERIT);
-			if (inheritPrivs == null) inheritPrivs = new Long(0);
-		} else
-			inheritPrivs = new Long(parent.getPrivilegeMask());
+		long lpriv = SDMSPrivilege.NOPRIVS;
+		if (with.containsKey(ParseStr.S_INHERIT) && with.get(ParseStr.S_INHERIT) != null)
+			lpriv = ((Long) with.get(ParseStr.S_INHERIT)).longValue();
+		else
+			if (parent.getOwnerId(sysEnv).equals(gId))
+				lpriv = parent.getPrivilegeMask();
 
-		long lpriv = inheritPrivs.longValue();
 		if((parent.getPrivilegeMask() & lpriv) != lpriv) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061110", "Incompatible grant"));
 		}
 
-		inheritPrivs = new Long(lpriv);
+		Long inheritPrivs = new Long(lpriv);
 
 		try {
 			f = SDMSFolderTable.table.create(sysEnv, name, gId, envId, parentId, inheritPrivs);
