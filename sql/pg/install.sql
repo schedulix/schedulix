@@ -50,7 +50,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 \i pg_gen/INTERVAL_HIERARCHY.sql
 \i pg_gen/INTERVAL_SELECTION.sql
 \i pg_gen/KILL_JOB.sql
-\i pg_gen/MASTER_ALLOCATION.sql
 \i pg_gen/MEMBER.sql
 \i pg_gen/NAMED_ENVIRONMENT.sql
 \i pg_gen/NAMED_RESOURCE.sql
