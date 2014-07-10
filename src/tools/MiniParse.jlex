@@ -72,7 +72,7 @@ public static void main(String argv[])
 	int i;
 
 	try {
-		MiniParse s = new MiniParse(System.in);
+		MiniParse s = new MiniParse(new InputStreamReader(System.in));
 		while(s.advance()) {
 			if(s.token() == STATEMENT) {
 				System.err.println("\"" + s.value().toString() + "\"");

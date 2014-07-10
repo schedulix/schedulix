@@ -190,7 +190,7 @@ public class sdmsh extends App
 
 	public boolean setupApp()
 	{
-		scanner = new MiniScanner (System.in);
+		scanner = new MiniScanner (new InputStreamReader(System.in));
 		mp = new MiniParser();
 		SDMSLineRenderer renderer = new SDMSLineRenderer("[" + user + "@" + host + ":" + port + "] SDMS> ");
 		mp.setOutputRenderer (renderer);
