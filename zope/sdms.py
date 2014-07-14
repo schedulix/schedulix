@@ -33,6 +33,13 @@ import threading
 import os
 
 try:
+        import pytz
+        import datetime
+        have_pytz = True
+except:
+        have_pytz = False
+
+try:
 	from M2Crypto import SSL
 except:
 	pass
@@ -556,12 +563,17 @@ def sendCommand(soc, command):
 
 import rfc822
 
-def convertFormat(s, offset):
-    # offset no longer needed
-    return time.strftime('%d.%m.%Y %H:%M:%S',time.localtime(rfc822.mktime_tz(rfc822.parsedate_tz(s))))
+def convertFormat(s, timeformat = '%d.%m.%Y %H:%M:%S', timezone = None):
+    return convertClockTime(rfc822.mktime_tz(rfc822.parsedate_tz(s)), timeformat, timezone)
 
-def convertClockTime(ct):
-    return time.strftime('%d.%m.%Y %H:%M:%S',time.localtime(ct))
+def convertClockTime(ct, timeformat = '%d.%m.%Y %H:%M:%S', timezone = None):
+    # print str(ct) + ' ' + timeformat + ' ' + str(timezone)
+    if timezone == None or have_pytz == False:
+        return time.strftime(timeformat, time.localtime(ct))
+    else:
+        dt = datetime.datetime.fromtimestamp(ct, pytz.timezone(timezone))
+        return dt.strftime(timeformat)
+
 
 def numericTime(s):
     # local not supported under windows
