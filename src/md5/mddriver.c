@@ -1,30 +1,21 @@
-/*
-Copyright (c) 2000-2013 "independIT Integrative Technologies GmbH",
-Authors: Ronald Jeninga, Dieter Stubler
+/* MDDRIVER.C - test driver for MD2, MD4 and MD5
+ *  */
 
-schedulix Enterprise Job Scheduling System
+/* Copyright (C) 1990-2, RSA Data Security, Inc. Created 1990. All
+ * rights reserved.
+ *
+ * RSA Data Security, Inc. makes no representations concerning either
+ * the merchantability of this software or the suitability of this
+ * software for any particular purpose. It is provided "as is"
+ * without express or implied warranty of any kind.
+ *
+ * These notices must be retained in any copies of any part of this
+ * documentation and/or software.
+ *  */
 
-independIT Integrative Technologies GmbH [http://www.independit.de]
-mailto:contact@independit.de
-
-This file is part of schedulix
-
-schedulix is free software:
-you can redistribute it and/or modify it under the terms of the
-GNU Affero General Public License as published by the
-Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
+/* The following makes MD default to MD5 if it has not already been
+ *   defined with C compiler flags.
+ */
 #ifndef MD
 #define MD 5
 #endif
@@ -43,6 +34,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "md5.h"
 #endif
 
+/* Length of test block, number of test blocks.
+ *  */
 #define TEST_BLOCK_LEN 1000
 #define TEST_BLOCK_COUNT 1000
 
@@ -72,9 +65,18 @@ static void MDPrint PROTO_LIST ((unsigned char [16]));
 #define MDFinal MD5Final
 #endif
 
+/* Main driver.
+ *
+ * Arguments (may be any combination):
+ * -sstring - digests string
+ * -t       - runs time trial
+ * -x       - runs test script
+ * filename - digests file
+ * (none)   - digests standard input
+ */
 int main (argc, argv)
-int argc;
-char *argv[];
+	int argc;
+	char *argv[];
 {
 	int i;
 
@@ -94,8 +96,10 @@ char *argv[];
 	return (0);
 }
 
+/* Digests a string and prints the result.
+ */
 static void MDString (string)
-char *string;
+	char *string;
 {
 	MD_CTX context;
 	unsigned char digest[16];
@@ -110,6 +114,9 @@ char *string;
 	printf ("\n");
 }
 
+/* Measures the time to digest TEST_BLOCK_COUNT TEST_BLOCK_LEN-byte
+ *   blocks.
+ */
 static void MDTimeTrial ()
 {
 	MD_CTX context;
@@ -118,18 +125,22 @@ static void MDTimeTrial ()
 	unsigned int i;
 
 	printf ("MD%d time trial. Digesting %d %d-byte blocks ...", MD,
-	        TEST_BLOCK_LEN, TEST_BLOCK_COUNT);
+		TEST_BLOCK_LEN, TEST_BLOCK_COUNT);
 
+	/* Initialize block */
 	for (i = 0; i < TEST_BLOCK_LEN; i++)
 		block[i] = (unsigned char)(i & 0xff);
 
+	/* Start timer */
 	time (&startTime);
 
+	/* Digest blocks */
 	MDInit (&context);
 	for (i = 0; i < TEST_BLOCK_COUNT; i++)
 		MDUpdate (&context, block, TEST_BLOCK_LEN);
 	MDFinal (digest, &context);
 
+	/* Stop timer */
 	time (&endTime);
 
 	printf (" done\n");
@@ -137,9 +148,11 @@ static void MDTimeTrial ()
 	MDPrint (digest);
 	printf ("\nTime = %ld seconds\n", (long)(endTime-startTime));
 	printf ("Speed = %ld bytes/second\n",
-	        (long)TEST_BLOCK_LEN * (long)TEST_BLOCK_COUNT/(endTime-startTime));
+		(long)TEST_BLOCK_LEN * (long)TEST_BLOCK_COUNT/(endTime-startTime));
 }
 
+/* Digests a reference suite of strings and prints the results.
+ */
 static void MDTestSuite ()
 {
 	printf ("MD%d test suite:\n", MD);
@@ -154,8 +167,10 @@ static void MDTestSuite ()
 			1234567890123456789012345678901234567890");
 }
 
+/* Digests a file and prints the result.
+ */
 static void MDFile (filename)
-char *filename;
+	char *filename;
 {
 	FILE *file;
 	MD_CTX context;
@@ -179,6 +194,8 @@ char *filename;
 	}
 }
 
+/* Digests the standard input and prints the result.
+ */
 static void MDFilter ()
 {
 	MD_CTX context;
@@ -194,12 +211,15 @@ static void MDFilter ()
 	printf ("\n");
 }
 
+/* Prints a message digest in hexadecimal.
+ */
 static void MDPrint (digest)
-unsigned char digest[16];
+	unsigned char digest[16];
 {
 	unsigned int i;
 
 	for (i = 0; i < 16; i++)
 		printf ("%02x", digest[i]);
 }
+
 

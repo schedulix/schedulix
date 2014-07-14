@@ -1,29 +1,15 @@
-/*
-Copyright (c) 2000-2013 "independIT Integrative Technologies GmbH",
-Authors: Ronald Jeninga, Dieter Stubler
-
-schedulix Enterprise Job Scheduling System
-
-independIT Integrative Technologies GmbH [http://www.independit.de]
-mailto:contact@independit.de
-
-This file is part of schedulix
-
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+/* Copyright (c) 2007 Timothy Wall, All Rights Reserved
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.  
+ */
 package de.independit.scheduler.jobserver;
 
 import java.util.HashMap;
@@ -36,9 +22,14 @@ import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIFunctionMapper;
 import com.sun.jna.win32.W32APITypeMapper;
 
+/** Base type for most W32 API libraries.  Provides standard options
+ * for unicode/ASCII mappings.  Set the system property w32.ascii
+ * to true to default to the ASCII mappings.
+ */
 public interface W32API extends StdCallLibrary, W32Errors
 {
 
+	/** Standard options to use the unicode version of a w32 API. */
 	Map UNICODE_OPTIONS = new HashMap() {
 		{
 			put(OPTION_TYPE_MAPPER, W32APITypeMapper.UNICODE);
@@ -46,6 +37,7 @@ public interface W32API extends StdCallLibrary, W32Errors
 		}
 	};
 
+	/** Standard options to use the ASCII/MBCS version of a w32 API. */
 	Map ASCII_OPTIONS = new HashMap() {
 		{
 			put(OPTION_TYPE_MAPPER, W32APITypeMapper.ASCII);
@@ -67,6 +59,7 @@ public interface W32API extends StdCallLibrary, W32Errors
 		}
 	}
 
+	/** Constant value representing an invalid HANDLE. */
 	HANDLE INVALID_HANDLE_VALUE = new HANDLE() {
 		{ super.setPointer(Pointer.createConstant(-1)); }
 		@Override

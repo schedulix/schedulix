@@ -800,8 +800,8 @@ public class SmeVariableResolver extends VariableResolver
 					Long rId = (Long) sfp.get(nrId);
 					if (rId == null) {
 						throw new NotFoundException(new SDMSMessage(sysEnv, "03711091158",
-					                            "Couldn't resolve reference $1 unambigiously",
-					                            SDMSNamedResourceTable.getObject(sysEnv, nrId, seVersion).pathString(sysEnv)));
+									"Couldn't resolve reference $1 unambigiously",
+									SDMSNamedResourceTable.getObject(sysEnv, nrId, seVersion).pathString(sysEnv)));
 					}
 					r = SDMSResourceTable.getObject(sysEnv, rId);
 				}
@@ -826,7 +826,7 @@ public class SmeVariableResolver extends VariableResolver
 							long vers =  baseSme.getSeVersion(sysEnv).longValue();
 							SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, seId, vers);
 							throw new CommonErrorException(new SDMSMessage(sysEnv, "03805140836",
-						                               "Run into a loop while trying to resolve variable $1 of job $2", newKey, se.pathString(sysEnv, vers)));
+											"Run into a loop while trying to resolve variable $1 of job $2", newKey, se.pathString(sysEnv, vers)));
 						} else {
 							if (baseSmeId != null && baseSmeId.equals(tsmeId) && pd != null) {
 

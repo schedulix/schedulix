@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -94,9 +94,9 @@ public class App
 			addOption("k", "key"     , null,      KEY     , null, "jobkey"    , false,
 			          "Job Key (must be specified if user is not specified)");
 		}
-		addOption("s", "silent"  , "Silent",   SILENT  , null, null        , false,
+		addOption("s", "silent"  , "Silent",   SILENT  , null, null	, false,
 		          "[No] (error) messages, feedbacks and additional messages are printed");
-		addOption("v", "verbose" , "Verbose",  VERBOSE , null, null        , false,
+		addOption("v", "verbose" , "Verbose",  VERBOSE , null, null	, false,
 		          "[No] commands are printed");
 		if (this.canRetry()) {
 			addOption("t", "timeout" , "Timeout", TIMEOUT , null, "minutes"   , false,
@@ -106,9 +106,9 @@ public class App
 				  "Number of minutes to wait between retries." +
 				  " Minimal value and default is 1 minute");
 		}
-		addOption("ini",   "ini"  , null,                 INI     , null, "inifile", false, "Use inifile for configuration of standard options");
-		addOption(null,    "help" , null,                 HELP    , null, null, false, "Displays this help");
-		addOption(null,    "info" , "Info",               INFO,     null, "sessioninfo", false, "Additional information for identifying the session");
+		addOption("ini",   "ini"  , null,		INI     , null, "inifile", false, "Use inifile for configuration of standard options");
+		addOption(null,    "help" , null,		HELP    , null, null, false, "Displays this help");
+		addOption(null,    "info" , "Info",		INFO,     null, "sessioninfo", false, "Additional information for identifying the session");
 	}
 
 	private boolean validateStandardOptions()
@@ -171,7 +171,7 @@ public class App
 		return true;
 	}
 
-	public void    addOptions()        			{ }
+	public void    addOptions()				{ }
 	public int     go() throws RetryException		{ return 0; }
 	public String  getName()				{ return "?"; }
 	public String  getUsageArguments()			{ return ""; }
@@ -271,7 +271,9 @@ public class App
 		int r = 1;
 		if (connect()) {
 			r = this.go();
-			try { serverConnection.finish(); } catch (IOException ie) {}
+			try {
+				serverConnection.finish();
+			} catch (IOException ie) {}
 		}
 		return r;
 	}
@@ -284,9 +286,13 @@ public class App
 		if (this.canRetry()) {
 			if (options.isSet(TIMEOUT)) {
 				stime_ms = new Date().getTime();
-				try { timeout_min = Integer.parseInt (options.getValue(TIMEOUT)); } catch (Exception e) {}
+				try {
+					timeout_min = Integer.parseInt (options.getValue(TIMEOUT));
+				} catch (Exception e) {}
 			}
-			try { cycle_min = Integer.parseInt (options.getValue(CYCLE)); } catch (Exception e) {}
+			try {
+				cycle_min = Integer.parseInt (options.getValue(CYCLE));
+			} catch (Exception e) {}
 		}
 		executions = 0;
 		boolean retry = true;
@@ -305,7 +311,10 @@ public class App
 							retry = false;
 						}
 					}
-					if (retry) try { Thread.sleep (cycle_min * 60 * 1000); } catch (InterruptedException ie) {}
+					if (retry)
+						try {
+							Thread.sleep (cycle_min * 60 * 1000);
+						} catch (InterruptedException ie) {}
 				}
 			}
 		}

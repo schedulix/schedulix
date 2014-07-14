@@ -94,8 +94,7 @@ public class SDMSsubmitThreads
 
 		if (host == null || port == null || id == null || key == null
 		    || child == null) {
-			System.err
-			.println("usage: SDMSsubmitThreads -h|--host host -p|--port port -i|--id jobid -k|--key jobkey -c|--child alias [-d|--delay delay] [-n|--number number]");
+			System.err.println("usage: SDMSsubmitThreads -h|--host host -p|--port port -i|--id jobid -k|--key jobkey -c|--child alias [-d|--delay delay] [-n|--number number]");
 			System.exit(1);
 		}
 

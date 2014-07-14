@@ -2604,8 +2604,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		try {
 			mra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(sysEnv,
 				new SDMSKey(new Long(-raStickyParent.longValue()), rId, raStickyName));
-		}
-		catch (NotFoundException nfe) {
+		} catch (NotFoundException nfe) {
 			return;
 		}
 		Long mraId = mra.getId(sysEnv);

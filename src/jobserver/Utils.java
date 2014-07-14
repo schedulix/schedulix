@@ -97,7 +97,8 @@ public class Utils
 		for (int i = buf.length() - 1; i >= 0; --i)
 			switch (buf.charAt (i)) {
 				case '\'':
-				case '\\': buf.insert (i, '\\');
+				case '\\':
+					buf.insert (i, '\\');
 			}
 
 		return buf.toString();
