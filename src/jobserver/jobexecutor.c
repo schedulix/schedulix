@@ -76,8 +76,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define Fread(a,b,c,d,e)   (ReadFile((d), (a), (b) * (c), (&e), NULL), e)
 #define Fwrite(a,b,c,d,e)  (WriteFile((d), (a), (b) * (c), (&e), NULL), e)
 #define Fseek(a,b,c)       SetFilePointer((a), (b), NULL, (c))
-#define Fflush(a)          FlushFileBuffers((a))
-#define Fclose(a)          CloseHandle(a)
 #else
 #define FILE_BEGIN         SEEK_SET
 #define FILE_CURRENT	   SEEK_CUR
@@ -85,8 +83,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define Fread(a,b,c,d,e)   fread((a), (b), (c), (d))
 #define Fwrite(a,b,c,d,e)  fwrite((a), (b), (c), (d))
 #define Fseek(a, b, c)     fseek((a), (b), (c))
-#define Fflush(a)          fflush((a))
-#define Fclose(a)          fclose(a)
 #endif
 
 #define STATUS_OK      0
@@ -257,7 +253,7 @@ char *getUsage()
 {
 
 	return  "Usage:\n" \
-		"Jexecutor [--version|-v] [--help|-h] [<boottime_how> <taskfileName> [boottime]]\n" \
+		"jobexecutor [--version|-v] [--help|-h] [<boottime_how> <taskfileName> [boottime]]\n" \
 		"\n" \
 		"Exactly one of the optional argument sets must be specified\n" \
 		"i.e. either the version request, or this help request or some specification on what to do\n";
@@ -333,6 +329,7 @@ void set_all_signals (struct sigaction aktschn, callstatus *status)
 	}
 }
 
+
 void ignore_all_signals (callstatus *status)
 {
 	struct sigaction aktschn;
@@ -398,6 +395,8 @@ void default_all_signals (callstatus *status)
 	set_all_signals (SIG_DFL, status);
 }
 #endif
+
+
 
 void printJobFields()
 {
@@ -513,7 +512,6 @@ int checkArgs(callstatus *status, int argc, char *argv[])
 			status->msg = TF_INCOMPLETE;
 			return ARGS_NOTREAD;
 		}
-
 		return ARGS_RUN;
 	}
 	status->severity = SEVERITY_FATAL;
@@ -598,8 +596,6 @@ HANDLE openTaskfile(callstatus *status)
 		sleep(RETRY_LOCK_TIME + retry_cnt);
 		retry_cnt++;
 	}
-#else
-
 #endif
 
 	return taskfile;
@@ -608,12 +604,20 @@ HANDLE openTaskfile(callstatus *status)
 void closeTaskfile(callstatus *status, HANDLE taskfile)
 {
 	if (taskfile != NULL) {
-		if (Fflush(taskfile) != 0) {
+#ifndef WINDOWS
+		if (fflush(taskfile) != 0) {		/* releases locks */
+#else
+		if (FlushFileBuffers(taskfile) == 0) {		/* releases locks */
+#endif
 			status->severity = SEVERITY_FATAL;
 			status->msg = TFWRITE_FAILED;
 			return;
 		}
-		if (Fclose(taskfile) != 0) {
+#ifndef WINDOWS
+		if (fclose(taskfile) != 0) {		/* releases locks */
+#else
+		if (CloseHandle(taskfile) == 0) {		/* releases locks */
+#endif
 			status->severity = SEVERITY_WARNING;
 			status->msg = TFCLOSE_FAILED;
 		}
@@ -689,7 +693,8 @@ void readTimestamp(callstatus *status)
 
 void readWhiteSpace(callstatus *status)
 {
-	while (bufpos >= 0 && isblank(taskfileBuf[bufpos])) {
+//	while (bufpos >= 0 && isblank(taskfileBuf[bufpos])) {
+	while (bufpos >= 0 && (taskfileBuf[bufpos] == ' ' || taskfileBuf[bufpos] == '\t' || taskfileBuf[bufpos] == '\r' || taskfileBuf[bufpos] == 0)) {
 		advance(status);
 		if (status->severity != STATUS_OK) return;
 	}
@@ -707,7 +712,6 @@ void readKey(callstatus *status, char *key)
 		if (status->severity != STATUS_OK) return;
 		i++;
 	}
-
 	return;
 }
 
@@ -974,7 +978,7 @@ void appendTaskfile(callstatus *status, char *key, char *value, int alreadyOpen)
 
 	tfWriteBuf[numBytes] = '\0';
 
-	bytesWritten = Fwrite(tfWriteBuf, numBytes, 1, taskfile, bytesWritten) * numBytes;
+	bytesWritten = Fwrite(tfWriteBuf, 1, numBytes, taskfile, bytesWritten);
 	if (bytesWritten != numBytes) {
 		status->severity = SEVERITY_FATAL;
 		status->msg = WRITE_FAILED;
@@ -985,7 +989,11 @@ void appendTaskfile(callstatus *status, char *key, char *value, int alreadyOpen)
 	if (alreadyOpen == 0) {
 		closeTaskfile(status, taskfile);
 	} else {
-		Fflush(taskfile);
+#ifndef WINDOWS
+		fflush(taskfile);
+#else
+		FlushFileBuffers(taskfile);
+#endif
 	}
 
 	return;
@@ -1001,19 +1009,39 @@ void redirect(callstatus *status)
 			return;
 		}
 	}
-	if (freopen(logfile == NULL ? NULLDEVICE : logfile , logfileappend ? "a" : "w", stdout) < 0) {
+#ifndef WINDOWS
+#define APPENDFLAG "a"
+#else
+#define APPENDFLAG "a+"
+#endif
+
+	if (!freopen(logfile == NULL ? NULLDEVICE : logfile , logfileappend ? APPENDFLAG : "w", stdout)) {
 		status->severity = SEVERITY_FATAL;
 		status->msg = LOGOPEN_FAILED;
 		status->syserror = errno;
 		return;
 	}
+#ifdef WINDOWS
+        // except from visual C documentation:
+        //
+        // When a file is opened with the "a" or "a+" access type, all write operations take place
+        // at the end of the file. Although the file pointer can be repositioned using fseek or rewind,
+        // the file pointer is always moved back to the end of the file before any write operation is
+        // carried out. Thus, existing data cannot be overwritten.
+        // 
+        // since this statement is wrong, we'll have to do the seek manually
+        if (logfileappend) fseek(stdout, 0, SEEK_END);
+#endif
 	if (!samelogs) {
-		if (freopen(errlog == NULL ? NULLDEVICE : errlog , errlogappend ? "a" : "w", stderr) < 0) {
+		if (!freopen(errlog == NULL ? NULLDEVICE : errlog , errlogappend ? APPENDFLAG : "w", stderr)) {
 			status->severity = SEVERITY_FATAL;
 			status->msg = ERROPEN_FAILED;
 			status->syserror = errno;
 			return;
 		}
+#ifdef WINDOWS
+        	if (errlogappend) fseek(stderr, 0, SEEK_END);
+#endif
 	} else {
 		if (dup2(fileno(stdout), fileno(stderr)) < 0) {
 			status->severity = SEVERITY_FATAL;
@@ -1030,8 +1058,6 @@ void openLog(callstatus *status)
 	char privateLog[PATH_MAX + 1];
 	int myLogFd;
 	mode_t mode = S_IRUSR | S_IWUSR;
-
-	fclose(stdin);
 
 	pl = getenv(JOBEXECUTORLOG);
 	if (pl == NULL) strncpy(privateLog, NULLDEVICE, PATH_MAX);
@@ -1077,7 +1103,11 @@ void openLog(callstatus *status)
 void closeLog(callstatus *status)
 {
 	if (myLog != NULL)
+#ifndef WINDOWS
 		fclose(myLog);
+#else
+		CloseHandle(myLog);
+#endif
 	return;
 }
 
@@ -1108,6 +1138,18 @@ void run(callstatus *status)
 	execpid = getUniquePid(status, getpid());
 	if (status->severity != STATUS_OK) return;
 
+	/* We open and lock the taskfile here.
+	 * Afterwards, we'll close it in both the parent and
+	 * after some more appends, in the child (Unix Version).
+	 * Although this seems to decrease concurrency, this is
+	 * needed for W95/W98 and some more platforms, where no
+	 * modern Java (like 1.6) is available. It turned out that
+	 * Java 1.4 sometimes starts multiple processes within _one_
+	 * RunTime.exec() call.
+	 * Since we lock here, and release first when we wrote the
+	 * RUNNING state, this can be used to detect multiple starts
+	 * of a jobexecutor (for the same taskfile)
+	 */
 	taskfile = openTaskfile(status);
 	if (status->severity != STATUS_OK) return;
 
@@ -1161,9 +1203,9 @@ void run(callstatus *status)
 		snprintf(buf, 20, "%d", exitcode);
 		taskfile = openTaskfile(status);
 		if (status->severity != STATUS_OK) return;
-		appendTaskfile(status, STATUS, STATUS_FINISHED, 1);
-		if (status->severity != STATUS_OK) return;
 		appendTaskfile(status, RETURNCODE, buf, 1);
+		if (status->severity != STATUS_OK) return;
+		appendTaskfile(status, STATUS, STATUS_FINISHED, 1);
 		if (status->severity != STATUS_OK) return;
 		closeTaskfile(status, taskfile);
 		return;
@@ -1186,13 +1228,19 @@ void run(callstatus *status)
 
 	closeTaskfile(status, taskfile);
 
+	/* start a new session. This way we will be in a new process group
+	   and we (and our children) can be easily killed by a "kill -PID".
+	   We also don't have a controlling tty. This is normally that what
+	   we want. (and it closes some potential security issues)
+	*/
 	if (setsid() == -1) {
-
+		/* could not set group, permission thing */
+		/* we ignore this for now */
 	}
 
 	if (verboselogs) {
 		fprintf(stdout, "------- %s Start --------\n", getTimestamp(time(NULL)));
-		Fflush(stdout);
+		fflush(stdout);
 	}
 
 	if (usepath) {
@@ -1205,6 +1253,17 @@ void run(callstatus *status)
 	status->msg = EXEC_FAILED;
 	status->syserror = errno;
 #else
+	if (verboselogs) {
+		fprintf(stdout, "------- %s Start --------\n", getTimestamp(time(NULL)));
+		fflush(stdout);		/* seems to be necessary */
+	}
+        // It seems that Windoof only really *appends* to files if something has happend with them before the child is started,
+        // even if the file has been reopen()ed with "a"! (I really *LOVE* that too!!!)
+        // So by explicitly moving the filepointer to the end of the stream, even Windoof can't refuse to *append* child's output...
+        else {
+                fseek (stdout, 0, SEEK_END);
+                fseek (stderr, 0, SEEK_END);
+        }
 
 	size_t size = strlen(argv[0]) + sizeof ('\0');
 	for (i = 1; argv[i]; ++i)
@@ -1262,6 +1321,9 @@ void run(callstatus *status)
 	if (status->severity != STATUS_OK) return;
 	closeTaskfile(status, taskfile);
 
+	CloseHandle (pi.hThread);
+
+	/* now wait for the child to terminate */
 	if (WaitForSingleObject (pi.hProcess, INFINITE) == WAIT_FAILED) {
 		status->severity = SEVERITY_FATAL;
 		status->msg = CHLDWAIT_FAILED;
@@ -1273,7 +1335,21 @@ void run(callstatus *status)
 		return;
 	}
 
+	snprintf(buf, 20, "%d", exitcode);
+	taskfile = openTaskfile(status);
+	if (status->severity != STATUS_OK) return;
+	appendTaskfile(status, RETURNCODE, buf, 1);
+	if (status->severity != STATUS_OK) return;
+	appendTaskfile(status, STATUS, STATUS_FINISHED, 1);
+	if (status->severity != STATUS_OK) return;
+	closeTaskfile(status, taskfile);
+
 	CloseHandle (pi.hProcess);
+
+	if (verboselogs) {
+		fprintf(stdout, "------- %s End (%d) --------\n", getTimestamp(time(NULL)), exitcode);
+		fflush(stdout);
+	}
 
 #endif
 	return;
