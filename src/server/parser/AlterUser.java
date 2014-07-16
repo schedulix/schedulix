@@ -106,16 +106,19 @@ public class AlterUser extends ManipUser
 				HashSet hg = new HashSet();
 				hg.add(SDMSObject.adminGId);
 				sysEnv.cEnv.pushGid(sysEnv, hg);
-				if(passwd != null)
+				if(passwd != null) {
 					u.setPasswd(sysEnv, passwd);
+					u.setSalt(sysEnv, salt);
+				}
 				if(with.containsKey(ParseStr.S_DEFAULTGROUP))
 					u.setDefaultGId(sysEnv, defaultGId);
 				sysEnv.cEnv.popGid(sysEnv);
 			}
 		} else {
-			if(passwd != null && uId != 0)
+			if(passwd != null && uId != 0) {
 				u.setPasswd(sysEnv, passwd);
-			else {
+				u.setSalt(sysEnv, salt);
+			} else {
 				if (passwd != null) {
 
 					if (sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
