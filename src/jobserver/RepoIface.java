@@ -91,7 +91,6 @@ public class RepoIface
 
 	private boolean isConnected = false;
 
-	private TimeoutThread timeoutThread = new TimeoutThread(5*60); //hardcoded timeout for command execution is set to 5 minutes
 
 	public final boolean isConnected()
 	{
@@ -100,6 +99,8 @@ public class RepoIface
 
 	private final SDMSOutput sdmsExec (final String cmd)
 	{
+		TimeoutThread timeoutThread = new TimeoutThread(5*60); //hardcoded timeout for command execution is set to 5 minutes
+
 		while (true) {
 			if (!isConnected)
 				openConnection();
