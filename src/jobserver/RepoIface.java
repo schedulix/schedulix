@@ -67,6 +67,8 @@ public class RepoIface
 	public static final String     ALTER_CONFIG    = "CONFIG";
 	public static final String CMD_DISPOSE         = "DISPOSE";
 
+	public static final int SO_TIMEOUT = 240000;
+
 	private static final String[] REQUIRED_CONFIG     = {Config.REPO_USER, Config.REPO_PASS, Config.DEFAULT_WORKDIR, Config.JOB_EXECUTOR, Config.JOB_FILE_PREFIX};
 	private static final String[] REPO_HOST_REPO_PORT = {Config.REPO_HOST, Config.REPO_PORT};
 
@@ -89,6 +91,8 @@ public class RepoIface
 
 	private boolean isConnected = false;
 
+	private TimeoutThread timeoutThread = new TimeoutThread(5*60); //hardcoded timeout for command execution is set to 5 minutes
+
 	public final boolean isConnected()
 	{
 		return isConnected;
@@ -102,6 +106,8 @@ public class RepoIface
 			Trace.debug ("> " + cmd);
 
 			try {
+				timeoutThread.start();
+
 				repoOut.write (cmd.getBytes());
 				repoOut.write ('\n');
 				repoOut.flush();
@@ -110,17 +116,18 @@ public class RepoIface
 				final SDMSOutput retval = (SDMSOutput) repoInp.readObject();
 
 				Trace.debug ("< " + Trace.dump (retval));
+
+				timeoutThread.setExecuting(false);
+				timeoutThread.interrupt();
+
 				return retval;
-			}
-
-			catch (final IOException ioe) {
+			} catch (final IOException ioe) {
+				timeoutThread.setExecuting(false);
+				timeoutThread.interrupt();
 				Trace.error ("(04504092058) Error executing command (" + cmd + ")" + ": " + ioe.getMessage()  + " (" + ioe.getClass().getName() + ")");
-
 				closeConnection();
 				openConnection();
-			}
-
-			catch (final ClassNotFoundException cnfe) {
+			} catch (final ClassNotFoundException cnfe) {
 				Utils.abortProgram ("(04301271453) Cannot execute command (" + cmd + ")" + ": " + cnfe.getMessage() + " (" + cnfe.getClass().getName() + ")");
 			}
 		}
@@ -161,9 +168,7 @@ public class RepoIface
 						if (Utils.isOneOf (key, REPO_HOST_REPO_PORT)
 						    && ! value.toString().equals (oldValue.toString()))
 							request_reconnect = true;
-					}
-
-					catch (final IllegalArgumentException iae) {
+					} catch (final IllegalArgumentException iae) {
 						notifyError (NONFATAL, "(04305141859) Invalid config entry: " + key + "=" + value + ": " + iae.getMessage());
 						good = false;
 					}
@@ -230,6 +235,19 @@ public class RepoIface
 			return false;
 		} catch (final IOException ioe) {
 			Trace.error ("(04301271455) " + currentHost + ":" + currentPort + ": " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
+			isConnected = false;
+			return false;
+		}
+
+		try {
+			repoSock.setSoTimeout(SO_TIMEOUT);
+		} catch (SocketException se) {
+			Trace.error ("(03407161423) Cannot set Timeout on socket: " + se.getMessage() + " (" + se.getClass().getName() + ")");
+			try {
+				repoSock.close();
+			} catch (IOException _ ) {
+				// ignore
+			}
 			isConnected = false;
 			return false;
 		}
@@ -603,6 +621,33 @@ public class RepoIface
 			} else {
 				Utils.abortProgram (this, "(04301271507) Unexpected response: (" + res.error.code + ") " + res.error.message);
 			}
+		}
+	}
+}
+
+class TimeoutThread extends Thread {
+
+	volatile boolean executing;
+	long timeout;
+
+	TimeoutThread(long timeout) {
+		this.timeout = timeout;
+		executing = false;
+	}
+
+	public void setExecuting(boolean executing) {
+		this.executing = executing;
+	}
+
+	public void run() {
+		try {
+			executing = true;
+			sleep(timeout*1000);
+		} catch (InterruptedException ie) {
+			// just do nothing
+		}
+		if (executing) {
+			Utils.abortProgram ("(04407171144) Timeout on Command execution");
 		}
 	}
 }
