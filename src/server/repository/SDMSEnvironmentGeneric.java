@@ -369,7 +369,7 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				String squote = "";
 				String equote = "";
-				if (driverName.startsWith("MySQL")) {
+				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
 					squote = "`";
 					equote = "`";
 				}

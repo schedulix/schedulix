@@ -194,7 +194,7 @@ public class SDMSDependencyStateTableGeneric extends SDMSTable
 		final boolean postgres = driverName.startsWith("PostgreSQL");
 		String squote = "";
 		String equote = "";
-		if (driverName.startsWith("MySQL")) {
+		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
 			squote = "`";
 			equote = "`";
 		}
