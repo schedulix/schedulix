@@ -98,13 +98,13 @@ public class RepoIface
 
 	private final SDMSOutput sdmsExec (final String cmd)
 	{
-		TimeoutThread timeoutThread = new TimeoutThread(5*60); //hardcoded timeout for command execution is set to 5 minutes
 
 		while (true) {
 			if (!isConnected)
 				openConnection();
 			Trace.debug ("> " + cmd);
 
+			TimeoutThread timeoutThread = new TimeoutThread(5*60); //hardcoded timeout for command execution is set to 5 minutes
 			try {
 				timeoutThread.start();
 
