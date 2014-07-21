@@ -57,7 +57,6 @@ GENTABLES = \
 	KillJob \
 	NamedEnvironment \
 	NamedResource \
-	MasterAllocation \
 	Member \
 	ObjectComment \
 	ParameterDefinition \
