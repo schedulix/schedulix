@@ -57,7 +57,7 @@ DbPasswd=NOT_SET
 # in case of Postgres, use something like:
 # DbUrl=jdbc:postgresql:dbname
 #
-# in case of Mysql, use something like:
+# in case of Mysql or MariaDB (also uses ...mysql... in url), use something like:
 # DbUrl=jdbc:mysql://hostname:port/dbname
 DbUrl=NOT_SET
 
@@ -102,6 +102,9 @@ Hostname=hostname.domain.de
 #
 # in case of Mysql, use something like:
 # JdbcDriver=com.mysql.jdbc.Driver
+#
+# in case of MariaDB, use something like:
+# JdbcDriver=com.mariadb.jdbc.Driver
 JdbcDriver=NOT_SET
 
 #
