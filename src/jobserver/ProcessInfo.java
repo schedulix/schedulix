@@ -184,9 +184,13 @@ public class ProcessInfo
 		return result;
 	}
 
-	public static HashMap<String,Long> getStartTimes()
+	public static HashMap<String,Long> getStartTimes(HashMap<String,Long> startTimes)
 	{
-		HashMap<String,Long> result = new HashMap<String,Long>();
+		HashMap<String,Long> result = startTimes;
+		if (result == null)
+			result = new HashMap<String,Long>();
+		else
+			result.clear();
 		String os = System.getProperty("os.name").toLowerCase();
 		if(   os.contains("mac")
 		   || os.contains("nix")
@@ -219,7 +223,7 @@ public class ProcessInfo
 			}
 		} else if (os.contains("win")) {
 			try {
-				Process p = Runtime.getRuntime().exec("WMIC PROCESS GET HANDLE, CREATIONDATE");
+				Process p = Runtime.getRuntime().exec("CMD /C WMIC PROCESS GET HANDLE, CREATIONDATE");
 				BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				p.getOutputStream().close();
 				String line;
@@ -290,7 +294,7 @@ public class ProcessInfo
 		if (!(startTimes.containsKey(strPid))) {
 			startTimeJob = getStartTime(strPid);
 			if (startTimeJob == 0) {
-				System.err.println("NOT alive : startTimes doesn't contain pid " + strPid + " and getStartTime(" + strPid + ") returned 0 !");
+
 				return false;
 			}
 		} else {
@@ -302,9 +306,6 @@ public class ProcessInfo
 			System.err.println("startTimeJob = " + new Long(startTimeJob).toString() + " startTimePid = " + starttime);
 			return false;
 		}
-
-		System.err.println("ALIVE : getBoottime(how) = " + getBoottime(how) + " boottime = " + boottime);
-		System.err.println("        startTimeJob = " + new Long(startTimeJob).toString() + " startTimePid = " + starttime);
 
 		return true;
 	}
