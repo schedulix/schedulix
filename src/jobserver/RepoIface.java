@@ -105,9 +105,10 @@ public class RepoIface
 				openConnection();
 			Trace.debug ("> " + cmd);
 
-			TimeoutThread timeoutThread = new TimeoutThread(5*60); //hardcoded timeout for command execution is set to 5 minutes
-
+			TimeoutThread timeoutThread = new TimeoutThread(5*60);
 			try {
+
+				timeoutThread.setExecuting(true);
 				timeoutThread.start();
 
 				repoOut.write (cmd.getBytes());
@@ -120,6 +121,7 @@ public class RepoIface
 				Trace.debug ("< " + Trace.dump (retval));
 
 				timeoutThread.setExecuting(false);
+
 				timeoutThread.interrupt();
 
 				return retval;
@@ -627,29 +629,44 @@ public class RepoIface
 	}
 }
 
-class TimeoutThread extends Thread {
+class TimeoutThread extends Thread
+{
 
 	volatile boolean executing;
 	long timeout;
 
-	TimeoutThread(long timeout) {
-		this.timeout = timeout;
+	TimeoutThread(long timeout)
+	{
+		this.timeout = timeout * 1000;
 		executing = false;
 	}
 
-	public void setExecuting(boolean executing) {
+	public void setExecuting(boolean executing)
+	{
 		this.executing = executing;
 	}
 
-	public void run() {
-		try {
-			executing = true;
-			sleep(timeout*1000);
-		} catch (InterruptedException ie) {
-			// just do nothing
-		}
-		if (executing) {
-			Utils.abortProgram ("(04407171144) Timeout on Command execution");
+	public void run()
+	{
+		long startTime = System.currentTimeMillis();
+		long timeoutLeft = timeout;
+
+		while (executing) {
+			try {
+				sleep(timeoutLeft);
+			} catch (InterruptedException ie) {
+
+				long now = System.currentTimeMillis();
+				if (executing && (now - startTime < timeout)) {
+					timeoutLeft = timeout - (now - startTime);
+					continue;
+				}
+			}
+
+			if (executing) {
+				Utils.abortProgram ("(04407171144) Timeout on Command execution");
+			}
+
 		}
 	}
 }
