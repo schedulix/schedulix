@@ -31,7 +31,7 @@ CodePage=latin1
 #                     valid values are: ENTERPRISE, PROFESSIONAL, BASIC
 #                     default depends on the licensed product
 #
-CompatibilityLevel=ENTERPRISE
+CompatibilityLevel=BASIC
 
 #
 # DbLoaders: Number of DB Loaders
