@@ -31,7 +31,7 @@ CodePage=latin1
 #                     valid values are: ENTERPRISE, PROFESSIONAL, BASIC
 #                     default depends on the licensed product
 #
-CompatibilityLevel=ENTERPRISE
+CompatibilityLevel=BASIC
 
 #
 # DbLoaders: Number of DB Loaders
@@ -104,7 +104,7 @@ Hostname=hostname.domain.de
 # JdbcDriver=com.mysql.jdbc.Driver
 #
 # in case of MariaDB, use something like:
-# JdbcDriver=com.mariadb.jdbc.Driver
+# JdbcDriver=org.mariadb.jdbc.Driver
 JdbcDriver=NOT_SET
 
 #
