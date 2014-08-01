@@ -49,7 +49,7 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP|SDMSPrivilege.CREATE_CONTENT|SDMSPrivilege.CREATE_PARENT_CONTENT|SDMSPrivilege.RESOURCE|SDMSPrivilege.GRANT|SDMSPrivilege.EXECUTE;
 
 	static final public int name_size = 64;
-	static final public int passwd_size = 40;
+	static final public int passwd_size = 64;
 	static final public int salt_size = 64;
 	static final public int pid_size = 32;
 	static final public int node_size = 32;
