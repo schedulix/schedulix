@@ -46,6 +46,16 @@ ADD COLUMN SALT VARCHAR(64) WITH NULL;
 ALTER TABLE SCOPE
 ADD COLUMN METHOD INTEGER NOT NULL WITH DEFAULT; /* 0 */
 
+Now depending on your DBMS you'll have to find some method to change the definition
+of the PASSWD column in the table SCOPE. It has length 40 which should be 64.
+In case of Ingres, one has to go the long way, like:
+CREATE TABLE X AS SELECT * FROM SCOPE;
+DROP TABLE SCOPE;
+\i sql/ing_gen/SCOPE.sql  /* \i stands for "include" */
+INSERT INTO SCOPE SELECT * FROM X;
+DROP TABLE X;
+COMMIT;
+
 ALTER TABLE RESOURCE_REQUIREMENT
 ADD COLUMN STICKY_NAME VARCHAR(64) WITH NULL;
 
