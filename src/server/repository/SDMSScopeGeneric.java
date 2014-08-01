@@ -145,7 +145,7 @@ public class SDMSScopeGeneric extends SDMSObject
 		isEnabled = p_isEnabled;
 		isRegistered = p_isRegistered;
 		state = p_state;
-		if (p_passwd != null && p_passwd.length() > 40) {
+		if (p_passwd != null && p_passwd.length() > 64) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141528",
 			                        "(Scope) Length of $1 exceeds maximum length $2", "passwd", "40")
@@ -560,7 +560,7 @@ public class SDMSScopeGeneric extends SDMSObject
 				);
 			}
 			o = (SDMSScopeGeneric) change(env);
-			if (p_passwd != null && p_passwd.length() > 40) {
+			if (p_passwd != null && p_passwd.length() > 64) {
 				throw new CommonErrorException (
 				        new SDMSMessage(env, "01112141510",
 				                        "(Scope) Length of $1 exceeds maximum length $2", "passwd", "40")

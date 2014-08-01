@@ -38,7 +38,7 @@ CREATE TABLE SCOPE (
     , IS_ENABLED                     integer         WITH NULL
     , IS_REGISTERED                  integer         WITH NULL
     , STATE                          integer         WITH NULL
-    , PASSWD                         varchar(40)     WITH NULL
+    , PASSWD                         varchar(64)     WITH NULL
     , SALT                           varchar(64)     WITH NULL
     , METHOD                         integer         NOT NULL
     , PID                            varchar(32)     WITH NULL
