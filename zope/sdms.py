@@ -33,6 +33,11 @@ import threading
 import os
 
 try:
+	import json
+	have_json = True
+except:
+	have_json = False
+try:
         import pytz
         import datetime
         have_pytz = True
@@ -563,6 +568,9 @@ def sendCommand(soc, command):
 
 import rfc822
 
+def havePytz():
+    return have_pytz
+
 def convertFormat(s, timeformat = '%d.%m.%Y %H:%M:%S', timezone = None):
     return convertClockTime(rfc822.mktime_tz(rfc822.parsedate_tz(s)), timeformat, timezone)
 
@@ -573,7 +581,6 @@ def convertClockTime(ct, timeformat = '%d.%m.%Y %H:%M:%S', timezone = None):
     else:
         dt = datetime.datetime.fromtimestamp(ct, pytz.timezone(timezone))
         return dt.strftime(timeformat)
-
 
 def numericTime(s):
     # local not supported under windows
@@ -757,6 +764,12 @@ def readDoc(index):
     data = f.read()
     f.close()
     return data
+
+def json_dumps(o):
+	if have_json:
+		return json.dumps(o)
+	else:
+		return '{ "ERROR" : { "ERRORCODE" : "WSI-0001", "ERRORMESSAGE" : "Web Service not available" }}'
 
 # print SDMSCommand('localhost', 2506, 'DONALD', 'duck', 'create exit state definition xxx')
 # print SDMSCommand('localhost', 2506, 'DONALD', 'duck', 'rename exit state definition xxx to \'\'')
