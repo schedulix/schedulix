@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -151,7 +151,27 @@ public class SchedulingThread extends InternalSession
 		}
 	}
 
-	protected synchronized void schedule(SystemEnvironment sysEnv, boolean scheduled)
+	protected void scheduleProtected(SystemEnvironment sysEnv)
+	{
+		try {
+			schedule(sysEnv);
+		} catch (Throwable e) {
+			String header = getHeader(sysEnv.cEnv, SEVERITY_FATAL);
+			StackTraceElement[] ste = e.getStackTrace();
+
+			System.err.println(header + "****************** Start Stacktrace *********************");
+			for(int i = 0; i < ste.length; i++) {
+				System.err.println(header + ste[i].toString());
+			}
+			System.err.println(header + "****************** End Stacktrace   *********************");
+
+			doTrace(sysEnv.cEnv, "Schedule threw an exception; server will abort", SEVERITY_FATAL);
+			System.exit(1);
+		}
+
+	}
+
+	protected synchronized void schedule(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
 
@@ -215,7 +235,7 @@ public class SchedulingThread extends InternalSession
 		sysEnv.cEnv.pushGid(sysEnv, myGroups);
 		sysEnv.cEnv.setUser();
 
-		schedule(sysEnv, false);
+		scheduleProtected(sysEnv);
 
 		sysEnv.cEnv.popGid(sysEnv);
 		sysEnv.cEnv.setJobServer();
@@ -228,7 +248,7 @@ public class SchedulingThread extends InternalSession
 		if(needReSched)
 			return false;
 
-		schedule(sysEnv, false);
+		scheduleProtected(sysEnv);
 
 		return true;
 	}
@@ -2104,7 +2124,7 @@ class DoSchedule extends Node
 	{
 		switch(action) {
 			case SCHEDULE:
-				SystemEnvironment.sched.schedule(sysEnv, true);
+				SystemEnvironment.sched.scheduleProtected(sysEnv);
 				break;
 			case INITIALIZE:
 				SystemEnvironment.sched.buildEnvironment(sysEnv);
