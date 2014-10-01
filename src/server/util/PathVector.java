@@ -118,31 +118,45 @@ public class PathVector extends Vector implements Comparable
 
 	public String toQuotedString(HashMap mapping)
 	{
+		if (size() == 0) return "";
+
 		PathVector testv = new PathVector();
+		int tvs = 0;
 		if (mapping != null) {
 			testv.addAll(this);
 			while (!mapping.containsKey(testv) && testv.size() > 0) {
 				testv.removeElementAt(testv.size() - 1);
 			}
-			if (testv.size() != 0) {
+			tvs = testv.size();
+			if (tvs != 0) {
 				testv = (PathVector) mapping.get(testv);
 			}
 		}
 
 		StringBuffer s = new StringBuffer();
 
-		if (size() == 0) return "";
-		int sz = size() - 1;
-		int tvs = testv.size();
-		for(int i = 0; i < sz; i++) {
-			if (i != 0) s.append('\'');
-			s.append((i < tvs ? testv.get(i).toString() : get(i).toString()));
-			if (i != 0) s.append('\'');
-			s.append(sep);
+		int sz = size();
+
+		if (testv.size() > 0) {
+			for(int i = 0; i < testv.size(); i++) {
+				if (i != 0) {
+					s.append(sep);
+					s.append('\'');
+				}
+				s.append(testv.get(i).toString());
+				if (i != 0) s.append('\'');
+			}
 		}
-		if (sz != 0) s.append('\'');
-		s.append((sz < tvs ? testv.get(sz).toString() : get(sz).toString()));
-		if (sz != 0) s.append('\'');
+
+		for (int i = tvs; i < sz; ++i) {
+			if (i != 0) {
+				s.append(sep);
+				s.append('\'');
+			}
+			s.append(get(i).toString());
+			if (i != 0) s.append('\'');
+		}
+
 		return s.toString();
 	}
 
