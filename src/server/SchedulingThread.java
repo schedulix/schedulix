@@ -1181,7 +1181,7 @@ public class SchedulingThread extends InternalSession
 					SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, ra.getNrId(sysEnv));
 					if(nr.getUsage(sysEnv).intValue() != SDMSNamedResource.SYSTEM)
 						continue;
-					ra.delete(sysEnv, true);
+					ra.delete(sysEnv, true, true);
 				}
 			}
 
