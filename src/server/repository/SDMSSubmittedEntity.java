@@ -2581,7 +2581,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 					}
 				if (skip) continue;
 			}
-			ra.delete(sysEnv, false);
+
+			ra.delete(sysEnv, false, true);
 		}
 
 		sysEnv.cEnv.popGid(sysEnv);

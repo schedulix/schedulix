@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -51,16 +51,15 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 		throws SDMSException
 	{
 		SDMSThread.doTrace(sysEnv.cEnv, "Deleting RA without stickyCleanup ------------------------------------", SDMSThread.SEVERITY_ERROR);
-		delete(sysEnv, false);
+		delete(sysEnv, false, false);
 	}
 
-	public void delete(SystemEnvironment sysEnv, boolean stickyCleanup)
+	public void delete(SystemEnvironment sysEnv, boolean stickyCleanup, boolean deleteAll)
 		throws SDMSException
 	{
-		SDMSThread.doTrace(sysEnv.cEnv, "#### Deleting RA (" + stickyCleanup + ")-- (" + getSmeId(sysEnv) + ", " + getRId(sysEnv) + ", " + getRefcount(sysEnv) + ", " + getAllocationTypeAsString(sysEnv) + ") ----------------------------------", SDMSThread.SEVERITY_ERROR);
-		print();
+
 		int refcount = getRefcount(sysEnv).intValue();
-		if (refcount > 1) {
+		if (refcount > 1 && !deleteAll) {
 			setRefcount(sysEnv, new Integer(refcount -1));
 			return;
 		}
@@ -74,7 +73,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 			if ( smeId.longValue() > 0) {
 				try {
 					masterra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(sysEnv,
-						new SDMSKey(new Long(-getStickyParent(sysEnv).longValue()),getRId(sysEnv), getStickyName(sysEnv)));
+							new SDMSKey(new Long(-getStickyParent(sysEnv).longValue()),getRId(sysEnv), getStickyName(sysEnv)));
 
 				} catch(NotFoundException nfe) {
 
@@ -119,17 +118,15 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 
 				}
 			}
-			if (allocType == ALLOCATION)
-				setRefcount(sysEnv, ONE);
 		}
 		super.delete(sysEnv);
 
 		if (masterra != null) {
 
 			if (stickyCleanup) {
-					masterra.cleanupStickyGroup(sysEnv);
+				masterra.cleanupStickyGroup(sysEnv);
 			}
-			masterra.delete(sysEnv, stickyCleanup);
+			masterra.delete(sysEnv, stickyCleanup, false);
 		}
 	}
 
@@ -142,7 +139,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 		String stickyName = getStickyName(sysEnv);
 
 		Vector rargv = SDMSResourceAllocationTable.idx_stickyParent_rId_stickyName.getVector(sysEnv,
-							new SDMSKey(getStickyParent(sysEnv), getRId(sysEnv), stickyName));
+				new SDMSKey(getStickyParent(sysEnv), getRId(sysEnv), stickyName));
 		for (int i = 0; i < rargv.size(); ++i) {
 			SDMSResourceAllocation ra = (SDMSResourceAllocation) rargv.get(i);
 			if (getId(sysEnv).equals(ra.getId(sysEnv)))
@@ -166,7 +163,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 							SDMSResourceAllocation ra2d = (SDMSResourceAllocation) riv.get(k);
 							if (sfpRId.equals(ra2d.getRId(sysEnv))) {
 
-								ra2d.delete(sysEnv, true);
+								ra2d.delete(sysEnv, true, false);
 							}
 						}
 					}
@@ -192,7 +189,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 	public void setAllocationType (SystemEnvironment sysEnv, Integer p_allocationType)
 		throws SDMSException
 	{
-
 		int allocType = getAllocationType(sysEnv).intValue();
 		int p_allocType = p_allocationType.intValue();
 		SDMSResource r;

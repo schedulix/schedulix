@@ -323,7 +323,7 @@ public class SchedulingThread extends InternalSession
 				if(allocType != SDMSResourceAllocation.ALLOCATION &&
 				   allocType != SDMSResourceAllocation.IGNORE &&
 				   !ra.getIsSticky(sysEnv).booleanValue()) {
-					ra.delete(sysEnv, false);
+					ra.delete(sysEnv, false, true);
 				}
 			}
 
@@ -520,7 +520,7 @@ public class SchedulingThread extends InternalSession
 				}
 			}
 
-			if (ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.ALLOCATION) ra.delete(sysEnv, true);
+			if (ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.ALLOCATION) ra.delete(sysEnv, true, true);
 		}
 
 		SystemEnvironment.sched.needSched = true;
@@ -661,7 +661,7 @@ public class SchedulingThread extends InternalSession
 					for (int k = 0; k < rav.size(); ++k) {
 						SDMSResourceAllocation ra = (SDMSResourceAllocation) rav.get(k);
 						if (ra.getRId(sysEnv).equals(rId)) {
-							ra.delete(sysEnv, true);
+							ra.delete(sysEnv, true, false);
 							break;
 						}
 					}
@@ -981,7 +981,7 @@ public class SchedulingThread extends InternalSession
 					SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, ra.getNrId(sysEnv));
 					if(nr.getUsage(sysEnv).intValue() != SDMSNamedResource.SYNCHRONIZING)
 						continue;
-					ra.delete(sysEnv, true);
+					ra.delete(sysEnv, true, true);
 				}
 			}
 
