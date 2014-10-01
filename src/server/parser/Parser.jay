@@ -2481,6 +2481,7 @@ dump_mapitem:	NAMED_RESOURCE resourcepath TO resourcepath			{ $$ = new WithItem 
 	|	SCOPE serverpath TO serverpath					{ $$ = new WithItem (new WithItem ($2, $4), ParseStr.map($1.token)); }
 	|	SCHEDULE schedulepath TO schedulepath				{ $$ = new WithItem (new WithItem ($2, $4), ParseStr.map($1.token)); }
 	|	GROUP groupname TO groupname					{ $$ = new WithItem (new WithItem ($2, $4), ParseStr.map($1.token)); }
+	|	ENVIRONMENT environmentname TO environmentname			{ $$ = new WithItem (new WithItem ($2, $4), ParseStr.map($1.token)); }
 
 daliasname:	aliasname							{ $$ = $1; }
 	|	'*'								{ $$ = "*"; }
