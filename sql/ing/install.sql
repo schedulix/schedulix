@@ -97,10 +97,11 @@ set autocommit on;
 \i ing_gen/WATCH_TYPE_PARAMETER.sql
 \i ing/OBJECTCOUNTER.sql
 \i ing/VERSIONCOUNTER.sql
-\i ing/SME2LOAD.sql
 \i REPOSITORY_LOCK.sql
 \g
 \i MASTER_STATE.sql
+\g
+\i ing/SME2LOAD.sql
 \g
 \i init.sql
 \g
