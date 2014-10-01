@@ -447,20 +447,20 @@ public class SystemEnvironment implements Cloneable
 
 	private void getHistory()
 	{
-		String s_preserveTime = props.getProperty(S_HISTORY, "1440");
+		String s_preserveTime = props.getProperty(S_HISTORY, "14400");
 		int minTime = 60;
 		if (runMode.equals("TEST")) minTime = 5;
-		preserveTime = checkIntProperty(s_preserveTime, S_HISTORY, minTime, 1440, 0, "Invalid History : ");
+		preserveTime = checkIntProperty(s_preserveTime, S_HISTORY, minTime, 14400, 0, "Invalid History : ");
 		props.setProperty(S_HISTORY, "" + preserveTime);
 		preserveTime *= 1000 * 60;
 	}
 
 	private void getHistoryLimit()
 	{
-		String s_preserveTime = props.getProperty(S_HISTORYLIMIT, "1440");
+		String s_preserveTime = props.getProperty(S_HISTORYLIMIT, "14400");
 		int minTime = (int) preserveTime / (60 * 1000);
 		if (runMode.equals("TEST")) minTime = 5;
-		maxPreserveTime = checkIntProperty(s_preserveTime, S_HISTORYLIMIT, minTime, 2880, 0, "Invalid HistoryLimit : ");
+		maxPreserveTime = checkIntProperty(s_preserveTime, S_HISTORYLIMIT, minTime, 14400, 0, "Invalid HistoryLimit : ");
 		props.setProperty(S_HISTORYLIMIT, "" + maxPreserveTime);
 		maxPreserveTime *= 1000 * 60;
 	}
