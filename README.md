@@ -19,6 +19,7 @@ to use this version of jflex at the moment.
 After contacting the jflex guys, the flaw has been fixed. This fix will be part of jflex 1.7
 It will also be part of the current development release.
 It is worth to note though, that not all problems are resolved yet. We're working on it.
+
 **It is highly recommended to use one of the 1.4.x versions of jflex.**
 
 -------------------------------------------------------------------------------------------
