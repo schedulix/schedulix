@@ -13,8 +13,7 @@
  */
 package de.independit.scheduler.jobserver;
 
-public interface W32Errors
-{
+public interface W32Errors {
 
 	int NO_ERROR               = 0;
 	int ERROR_INVALID_FUNCTION = 1;

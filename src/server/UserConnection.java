@@ -87,7 +87,10 @@ public class UserConnection extends SDMSThread
 		return true;
 	}
 
-	public ConnectionEnvironment getEnv() { return env; }
+	public ConnectionEnvironment getEnv()
+	{
+		return env;
+	}
 
 	public int id()
 	{

@@ -102,7 +102,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 	protected final static HashMap mapper = new HashMap();
 
-	static {
+	static
+	{
 		mapper.put(new Integer(Parser.SUBMITTED),		new Integer(SDMSSubmittedEntity.SUBMITTED));
 		mapper.put(new Integer(Parser.DEPENDENCY_WAIT),		new Integer(SDMSSubmittedEntity.DEPENDENCY_WAIT));
 		mapper.put(new Integer(Parser.SYNCHRONIZE_WAIT),	new Integer(SDMSSubmittedEntity.SYNCHRONIZE_WAIT));

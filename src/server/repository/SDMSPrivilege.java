@@ -110,7 +110,8 @@ public class SDMSPrivilege
 
 	private final static HashMap mapper = new HashMap();
 
-	static {
+	static
+	{
 		mapper.put(new Integer(Parser.VIEW),		new Long(SDMSPrivilege.VIEW));
 		mapper.put(new Integer(Parser.USE),		new Long(SDMSPrivilege.USE));
 		mapper.put(new Integer(Parser.EDIT),		new Long(SDMSPrivilege.EDIT));

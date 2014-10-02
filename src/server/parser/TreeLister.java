@@ -61,7 +61,10 @@ public abstract class TreeLister implements Comparator
 
 	public abstract Vector getChildren(SystemEnvironment sysEnv, SDMSProxy o) throws SDMSException;
 
-	public int compare(Object o1, Object o2) { return 0; }
+	public int compare(Object o1, Object o2)
+	{
+		return 0;
+	}
 
 	public SDMSOutputContainer list(SystemEnvironment sysEnv, Vector rootObjects, HashSet expandList)
 		throws SDMSException

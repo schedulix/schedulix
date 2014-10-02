@@ -137,7 +137,8 @@ public class SmeVariableResolver extends VariableResolver
 
 	private final static HashMap specialNames = new HashMap();
 
-	static {
+	static
+	{
 		specialNames.put(S_JOBID,	new Integer(I_JOBID));
 		specialNames.put(S_SEID,	new Integer(I_SEID));
 		specialNames.put(S_MASTERID,	new Integer(I_MASTERID));

@@ -263,7 +263,8 @@ public class ExpandParser
 	final static int C_GU_USER              = 70;
 	final static int C_OT_WATCH_TYPE	= 71;
 
-	static {
+	static
+	{
 		validTypes.put(ST_ALL,             new Integer(T_ALL));
 		validTypes.put(ST_DISTRIBUTION,    new Integer(T_DISTRIBUTION));
 		validTypes.put(ST_ENVIRONMENT,     new Integer(T_ENVIRONMENT));

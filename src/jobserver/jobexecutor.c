@@ -602,18 +602,18 @@ void closeTaskfile(callstatus *status, HANDLE taskfile)
 {
 	if (taskfile != NULL) {
 #ifndef WINDOWS
-		if (fflush(taskfile) != 0) {		/* releases locks */
+		if (fflush(taskfile) != 0) {
 #else
-		if (FlushFileBuffers(taskfile) == 0) {		/* releases locks */
+		if (FlushFileBuffers(taskfile) == 0) {
 #endif
 			status->severity = SEVERITY_FATAL;
 			status->msg = TFWRITE_FAILED;
 			return;
 		}
 #ifndef WINDOWS
-		if (fclose(taskfile) != 0) {		/* releases locks */
+		if (fclose(taskfile) != 0) {
 #else
-		if (CloseHandle(taskfile) == 0) {		/* releases locks */
+		if (CloseHandle(taskfile) == 0) {
 #endif
 			status->severity = SEVERITY_WARNING;
 			status->msg = TFCLOSE_FAILED;
@@ -690,7 +690,7 @@ void readTimestamp(callstatus *status)
 
 void readWhiteSpace(callstatus *status)
 {
-//	while (bufpos >= 0 && isblank(taskfileBuf[bufpos])) {
+
 	while (bufpos >= 0 && (taskfileBuf[bufpos] == ' ' || taskfileBuf[bufpos] == '\t' || taskfileBuf[bufpos] == '\r' || taskfileBuf[bufpos] == 0)) {
 		advance(status);
 		if (status->severity != STATUS_OK) return;
@@ -893,36 +893,40 @@ void processTaskfile(callstatus *status)
 	return;
 }
 
-char *getTimestamp(time_t tim)
+char *getTimestamp(time_t tim, int local)
 {
-	static char buf [32];
+	static char buf [64];
 #ifndef SOLARIS
-	const struct tm *timeval = gmtime (&tim);
-#ifdef __GNUC__
-	snprintf (buf, sizeof (buf), "%c%2.2d-%2.2d-%4.4d %2.2d:%2.2d:%2.2d GMT%c",
-			TIMESTAMP_LEADIN,
-			timeval->tm_mday,
-			timeval->tm_mon + 1,
-			timeval->tm_year + 1900,
-			timeval->tm_hour,
-			timeval->tm_min,
-			timeval->tm_sec,
-			TIMESTAMP_LEADOUT);
-#else
-	snprintf (buf, sizeof (buf), "%c%02.2d-%02.2d-%04.4d %02.2d:%02.2d:%02.2d GMT%c",
-			TIMESTAMP_LEADIN,
-			timeval->tm_mday,
-			timeval->tm_mon + 1,
-			timeval->tm_year + 1900,
-			timeval->tm_hour,
-			timeval->tm_min,
-			timeval->tm_sec,
-			TIMESTAMP_LEADOUT);
+#ifdef WINDOWS
+	_tzset();
 #endif
 
+	const struct tm *timeval;
+	if (local)
+		timeval = localtime (&tim);
+	else
+		timeval = gmtime(&tim);
+#ifdef __GNUC__
+	snprintf (buf, sizeof (buf), "%c%2.2d-%2.2d-%4.4d %2.2d:%2.2d:%2.2d %s%c",
+#else
+	snprintf (buf, sizeof (buf), "%c%02.2d-%02.2d-%04.4d %02.2d:%02.2d:%02.2d %s%c",
+#endif
+	          TIMESTAMP_LEADIN,
+	          timeval->tm_mday,
+	          timeval->tm_mon + 1,
+	          timeval->tm_year + 1900,
+	          timeval->tm_hour,
+	          timeval->tm_min,
+	          timeval->tm_sec,
+#ifdef WINDOWS
+	          (local ? (timeval->tm_isdst > 0 ? _tzname[1] : _tzname[0]) : "GMT"),
+#else
+	          timeval->tm_zone,
+#endif
+		          TIMESTAMP_LEADOUT);
 #else
 	buf [0] = TIMESTAMP_LEADIN;
-	const size_t len = strftime (buf + 1, sizeof (buf) - 3 * sizeof (char), "%d-%m-%Y %H:%M:%S GMT", gmtime (&tim));
+	const size_t len = strftime (buf + 1, sizeof (buf) - 3 * sizeof (char), "%d-%m-%Y %H:%M:%S %Z", local ? localtime (&tim) : gmtime(&tim));
 	buf [len + 1] = TIMESTAMP_LEADOUT;
 	buf [len + 2] = '\0';
 #endif
@@ -966,7 +970,7 @@ void appendTaskfile(callstatus *status, char *key, char *value, int alreadyOpen)
 		return;
 	}
 
-	if ((numBytes = snprintf(tfWriteBuf, TF_BUFSIZE, "%s %s=%s\n", getTimestamp(time(NULL)), key, value)) >= TF_BUFSIZE) {
+	if ((numBytes = snprintf(tfWriteBuf, TF_BUFSIZE, "%s %s=%s\n", getTimestamp(time(NULL), 0), key, value)) >= TF_BUFSIZE) {
 		status->severity = SEVERITY_FATAL;
 		status->msg = WRITE_FAILED;
 		status->syserror = errno;
@@ -1193,7 +1197,7 @@ void run(callstatus *status)
 		}
 
 		if (verboselogs) {
-			fprintf(stdout, "------- %s End (%d) --------\n", getTimestamp(time(NULL)), exitcode);
+			fprintf(stdout, "------- %s End (%d) --------\n", getTimestamp(time(NULL), 1), exitcode);
 		}
 
 		snprintf(buf, 20, "%d", exitcode);
@@ -1235,7 +1239,7 @@ void run(callstatus *status)
 	}
 
 	if (verboselogs) {
-		fprintf(stdout, "------- %s Start --------\n", getTimestamp(time(NULL)));
+		fprintf(stdout, "------- %s Start --------\n", getTimestamp(time(NULL), 1));
 		fflush(stdout);
 	}
 
@@ -1250,7 +1254,7 @@ void run(callstatus *status)
 	status->syserror = errno;
 #else
 	if (verboselogs) {
-		fprintf(stdout, "------- %s Start --------\n", getTimestamp(time(NULL)));
+		fprintf(stdout, "------- %s Start --------\n", getTimestamp(time(NULL), 1));
 		fflush(stdout);		/* seems to be necessary */
 	}
         // It seems that Windows only really *appends* to files if something has happend with them before the child is started,
@@ -1343,7 +1347,7 @@ void run(callstatus *status)
 	CloseHandle (pi.hProcess);
 
 	if (verboselogs) {
-		fprintf(stdout, "------- %s End (%d) --------\n", getTimestamp(time(NULL)), exitcode);
+		fprintf(stdout, "------- %s End (%d) --------\n", getTimestamp(time(NULL), 1), exitcode);
 		fflush(stdout);
 	}
 
@@ -1370,6 +1374,7 @@ int main(int argc, char *argv[])
 		case ARGS_NOTREAD:
 
 			fprintf(stderr, "%s\n", message[status.msg]);
+
 			fprintf(stderr, "%s", getUsage());
 			exit(1);
 		case ARGS_VERSION:

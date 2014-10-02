@@ -93,8 +93,14 @@ public class SDMSTransaction
 		return nextId.next(env, READONLY);
 	}
 
-	public long txId()	{ return txId; }
-	public int  mode()	{ return mode; }
+	public long txId()
+	{
+		return txId;
+	}
+	public int  mode()
+	{
+		return mode;
+	}
 	public long versionId(SystemEnvironment env)	throws SDMSException
 	{
 		if (versionId == UNDEFINED) {
