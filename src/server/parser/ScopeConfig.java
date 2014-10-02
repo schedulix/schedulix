@@ -175,9 +175,14 @@ public class ScopeConfig
 			markAltered (sysEnv, (SDMSScope) scopeList.get (i));
 
 		if (s.getType (sysEnv).intValue() == SDMSScope.SERVER) {
-			sysEnv.cEnv.pushGid (sysEnv, ADMIN_GID);
-			s.setHasAlteredConfig (sysEnv, Boolean.TRUE);
-			sysEnv.cEnv.popGid (sysEnv);
+			try {
+				sysEnv.cEnv.pushGid (sysEnv, ADMIN_GID);
+				s.setHasAlteredConfig (sysEnv, Boolean.TRUE);
+				sysEnv.cEnv.popGid (sysEnv);
+			} catch (Throwable t) {
+				sysEnv.cEnv.popGid (sysEnv);
+				throw t;
+			}
 		}
 	}
 

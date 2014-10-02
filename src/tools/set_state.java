@@ -46,8 +46,14 @@ class set_state extends App
 		addOption("S", "state", null, STATE, null, "state", true , "Exit State to set");
 		addOption("f", "force", null, FORCE, null, null   , false, "[Don't] Force if job does not define a mapping for that state");
 	}
-	public String getName() { return "set_state"; }
-	public boolean canRetry() { return true; }
+	public String getName()
+	{
+		return "set_state";
+	}
+	public boolean canRetry()
+	{
+		return true;
+	}
 	public int go()
 		throws RetryException
 	{

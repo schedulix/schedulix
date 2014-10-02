@@ -51,16 +51,15 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 		throws SDMSException
 	{
 		SDMSThread.doTrace(sysEnv.cEnv, "Deleting RA without stickyCleanup ------------------------------------", SDMSThread.SEVERITY_ERROR);
-		delete(sysEnv, false);
+		delete(sysEnv, false, false);
 	}
 
-	public void delete(SystemEnvironment sysEnv, boolean stickyCleanup)
+	public void delete(SystemEnvironment sysEnv, boolean stickyCleanup, boolean deleteAll)
 		throws SDMSException
 	{
-		SDMSThread.doTrace(sysEnv.cEnv, "#### Deleting RA (" + stickyCleanup + ")-- (" + getSmeId(sysEnv) + ", " + getRId(sysEnv) + ", " + getRefcount(sysEnv) + ", " + getAllocationTypeAsString(sysEnv) + ") ----------------------------------", SDMSThread.SEVERITY_ERROR);
-		print();
+
 		int refcount = getRefcount(sysEnv).intValue();
-		if (refcount > 1) {
+		if (refcount > 1 && !deleteAll) {
 			setRefcount(sysEnv, new Integer(refcount -1));
 			return;
 		}
@@ -119,8 +118,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 
 				}
 			}
-			if (allocType == ALLOCATION)
-				setRefcount(sysEnv, ONE);
 		}
 		super.delete(sysEnv);
 
@@ -129,7 +126,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 			if (stickyCleanup) {
 					masterra.cleanupStickyGroup(sysEnv);
 			}
-			masterra.delete(sysEnv, stickyCleanup);
+			masterra.delete(sysEnv, stickyCleanup, false);
 		}
 	}
 
@@ -166,7 +163,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 							SDMSResourceAllocation ra2d = (SDMSResourceAllocation) riv.get(k);
 							if (sfpRId.equals(ra2d.getRId(sysEnv))) {
 
-								ra2d.delete(sysEnv, true);
+								ra2d.delete(sysEnv, true, false);
 							}
 						}
 					}
@@ -192,7 +189,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 	public void setAllocationType (SystemEnvironment sysEnv, Integer p_allocationType)
 		throws SDMSException
 	{
-
 		int allocType = getAllocationType(sysEnv).intValue();
 		int p_allocType = p_allocationType.intValue();
 		SDMSResource r;

@@ -429,7 +429,7 @@ public class ListSubmitted extends Node
 		String finishTs;
 		String finalTs;
 		String hit = "";
-		Boolean is_suspended;
+		String is_suspended;
 		Boolean is_restartable;
 		Integer parent_suspended;
 		Integer child_suspended;
@@ -592,7 +592,7 @@ public class ListSubmitted extends Node
 		if(pathhit.equals("P")) pathhits.add(jobId);
 		String submitPath = "*";
 
-		is_suspended = job.getIsSuspended(sysEnv);
+		is_suspended = job.getIsSuspendedAsString(sysEnv);
 		is_restartable = job.getJobIsRestartable(sysEnv);
 		parent_suspended = job.getParentSuspended(sysEnv);
 

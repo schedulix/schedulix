@@ -344,7 +344,12 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 		hg.add(SDMSObject.publicGId);
 
 		sysEnv.cEnv.pushGid(sysEnv, hg);
-		p = new SDMSPrivilege(sysEnv, getPrivileges(sysEnv, SDMSPrivilege.EXECUTE, true, null));
+		try {
+			p = new SDMSPrivilege(sysEnv, getPrivileges(sysEnv, SDMSPrivilege.EXECUTE, true, null));
+		} catch (Throwable t) {
+			sysEnv.cEnv.popGid(sysEnv);
+			throw t;
+		}
 		sysEnv.cEnv.popGid(sysEnv);
 
 		return p.can(SDMSPrivilege.EXECUTE);

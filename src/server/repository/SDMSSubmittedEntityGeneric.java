@@ -57,8 +57,9 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	public static final int BROKEN_FINISHED = 14;
 	public static final int ERROR = 15;
 	public static final int UNREACHABLE = 16;
-	public static final boolean SUSPEND = true;
-	public static final boolean NOSUSPEND = false;
+	public static final int SUSPEND = 1;
+	public static final int NOSUSPEND = 0;
+	public static final int ADMINSUSPEND = 2;
 	public static final int UH_IGNORE = SDMSDependencyDefinition.IGNORE;
 	public static final int UH_ERROR = SDMSDependencyDefinition.ERROR;
 	public static final int UH_SUSPEND = SDMSDependencyDefinition.SUSPEND;
@@ -118,45 +119,59 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	public final static int nr_isSuspended = 42;
 	public final static int nr_isSuspendedLocal = 43;
 	public final static int nr_priority = 44;
-	public final static int nr_nice = 45;
-	public final static int nr_minPriority = 46;
-	public final static int nr_agingAmount = 47;
-	public final static int nr_parentSuspended = 48;
-	public final static int nr_childSuspended = 49;
-	public final static int nr_warnCount = 50;
-	public final static int nr_warnLink = 51;
-	public final static int nr_submitTs = 52;
-	public final static int nr_resumeTs = 53;
-	public final static int nr_syncTs = 54;
-	public final static int nr_resourceTs = 55;
-	public final static int nr_runnableTs = 56;
-	public final static int nr_startTs = 57;
-	public final static int nr_finishTs = 58;
-	public final static int nr_finalTs = 59;
-	public final static int nr_cntSubmitted = 60;
-	public final static int nr_cntDependencyWait = 61;
-	public final static int nr_cntSynchronizeWait = 62;
-	public final static int nr_cntResourceWait = 63;
-	public final static int nr_cntRunnable = 64;
-	public final static int nr_cntStarting = 65;
-	public final static int nr_cntStarted = 66;
-	public final static int nr_cntRunning = 67;
-	public final static int nr_cntToKill = 68;
-	public final static int nr_cntKilled = 69;
-	public final static int nr_cntCancelled = 70;
-	public final static int nr_cntFinished = 71;
-	public final static int nr_cntFinal = 72;
-	public final static int nr_cntBrokenActive = 73;
-	public final static int nr_cntBrokenFinished = 74;
-	public final static int nr_cntError = 75;
-	public final static int nr_cntUnreachable = 76;
-	public final static int nr_cntRestartable = 77;
-	public final static int nr_cntWarn = 78;
-	public final static int nr_cntPending = 79;
-	public final static int nr_creatorUId = 80;
-	public final static int nr_createTs = 81;
-	public final static int nr_changerUId = 82;
-	public final static int nr_changeTs = 83;
+	public final static int nr_rawPriority = 45;
+	public final static int nr_nice = 46;
+	public final static int nr_npNice = 47;
+	public final static int nr_minPriority = 48;
+	public final static int nr_agingAmount = 49;
+	public final static int nr_parentSuspended = 50;
+	public final static int nr_childSuspended = 51;
+	public final static int nr_warnCount = 52;
+	public final static int nr_warnLink = 53;
+	public final static int nr_submitTs = 54;
+	public final static int nr_resumeTs = 55;
+	public final static int nr_syncTs = 56;
+	public final static int nr_resourceTs = 57;
+	public final static int nr_runnableTs = 58;
+	public final static int nr_startTs = 59;
+	public final static int nr_finishTs = 60;
+	public final static int nr_finalTs = 61;
+	public final static int nr_cntSubmitted = 62;
+	public final static int nr_cntDependencyWait = 63;
+	public final static int nr_cntSynchronizeWait = 64;
+	public final static int nr_cntResourceWait = 65;
+	public final static int nr_cntRunnable = 66;
+	public final static int nr_cntStarting = 67;
+	public final static int nr_cntStarted = 68;
+	public final static int nr_cntRunning = 69;
+	public final static int nr_cntToKill = 70;
+	public final static int nr_cntKilled = 71;
+	public final static int nr_cntCancelled = 72;
+	public final static int nr_cntFinished = 73;
+	public final static int nr_cntFinal = 74;
+	public final static int nr_cntBrokenActive = 75;
+	public final static int nr_cntBrokenFinished = 76;
+	public final static int nr_cntError = 77;
+	public final static int nr_cntUnreachable = 78;
+	public final static int nr_cntRestartable = 79;
+	public final static int nr_cntWarn = 80;
+	public final static int nr_cntPending = 81;
+	public final static int nr_dwEndTs = 82;
+	public final static int nr_idleTs = 83;
+	public final static int nr_idleTime = 84;
+	public final static int nr_susresTs = 85;
+	public final static int nr_suspendTime = 86;
+	public final static int nr_syncTime = 87;
+	public final static int nr_resourceTime = 88;
+	public final static int nr_jobserverTime = 89;
+	public final static int nr_restartableTime = 90;
+	public final static int nr_childWaitTime = 91;
+	public final static int nr_opSusresTs = 92;
+	public final static int nr_npeId = 93;
+	public final static int nr_creatorUId = 94;
+	public final static int nr_createTs = 95;
+	public final static int nr_changerUId = 96;
+	public final static int nr_changeTs = 97;
 
 	public static String tableName = SDMSSubmittedEntityTableGeneric.tableName;
 
@@ -200,10 +215,12 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	protected String errorMsg;
 	protected Long killId;
 	protected Integer killExitCode;
-	protected Boolean isSuspended;
+	protected Integer isSuspended;
 	protected Boolean isSuspendedLocal;
 	protected Integer priority;
+	protected Integer rawPriority;
 	protected Integer nice;
+	protected Integer npNice;
 	protected Integer minPriority;
 	protected Integer agingAmount;
 	protected Integer parentSuspended;
@@ -238,6 +255,18 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	protected Integer cntRestartable;
 	protected Integer cntWarn;
 	protected Integer cntPending;
+	protected Integer dwEndTs;
+	protected Integer idleTs;
+	protected Integer idleTime;
+	protected Integer susresTs;
+	protected Integer suspendTime;
+	protected Integer syncTime;
+	protected Integer resourceTime;
+	protected Integer jobserverTime;
+	protected Integer restartableTime;
+	protected Integer childWaitTime;
+	protected Long opSusresTs;
+	protected Long npeId;
 	protected Long creatorUId;
 	protected Long createTs;
 	protected Long changerUId;
@@ -289,10 +318,12 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	        String p_errorMsg,
 	        Long p_killId,
 	        Integer p_killExitCode,
-	        Boolean p_isSuspended,
+	        Integer p_isSuspended,
 	        Boolean p_isSuspendedLocal,
 	        Integer p_priority,
+	        Integer p_rawPriority,
 	        Integer p_nice,
+	        Integer p_npNice,
 	        Integer p_minPriority,
 	        Integer p_agingAmount,
 	        Integer p_parentSuspended,
@@ -327,6 +358,18 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	        Integer p_cntRestartable,
 	        Integer p_cntWarn,
 	        Integer p_cntPending,
+	        Integer p_dwEndTs,
+	        Integer p_idleTs,
+	        Integer p_idleTime,
+	        Integer p_susresTs,
+	        Integer p_suspendTime,
+	        Integer p_syncTime,
+	        Integer p_resourceTime,
+	        Integer p_jobserverTime,
+	        Integer p_restartableTime,
+	        Integer p_childWaitTime,
+	        Long p_opSusresTs,
+	        Long p_npeId,
 	        Long p_creatorUId,
 	        Long p_createTs,
 	        Long p_changerUId,
@@ -420,7 +463,9 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		isSuspended = p_isSuspended;
 		isSuspendedLocal = p_isSuspendedLocal;
 		priority = p_priority;
+		rawPriority = p_rawPriority;
 		nice = p_nice;
+		npNice = p_npNice;
 		minPriority = p_minPriority;
 		agingAmount = p_agingAmount;
 		parentSuspended = p_parentSuspended;
@@ -455,6 +500,18 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		cntRestartable = p_cntRestartable;
 		cntWarn = p_cntWarn;
 		cntPending = p_cntPending;
+		dwEndTs = p_dwEndTs;
+		idleTs = p_idleTs;
+		idleTime = p_idleTime;
+		susresTs = p_susresTs;
+		suspendTime = p_suspendTime;
+		syncTime = p_syncTime;
+		resourceTime = p_resourceTime;
+		jobserverTime = p_jobserverTime;
+		restartableTime = p_restartableTime;
+		childWaitTime = p_childWaitTime;
+		opSusresTs = p_opSusresTs;
+		npeId = p_npeId;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -1856,7 +1913,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		return o;
 	}
 
-	public Boolean getIsSuspended (SystemEnvironment env)
+	public Integer getIsSuspended (SystemEnvironment env)
 	throws SDMSException
 	{
 		return (isSuspended);
@@ -1865,19 +1922,22 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	public String getIsSuspendedAsString (SystemEnvironment env)
 	throws SDMSException
 	{
-		final Boolean v = getIsSuspended (env);
-		final boolean b = v.booleanValue();
-		if (b == SDMSSubmittedEntity.SUSPEND)
+		final Integer v = getIsSuspended (env);
+		switch (v.intValue()) {
+		case SDMSSubmittedEntity.ADMINSUSPEND:
+			return "ADMINSUSPEND";
+		case SDMSSubmittedEntity.SUSPEND:
 			return "SUSPEND";
-		if (b == SDMSSubmittedEntity.NOSUSPEND)
+		case SDMSSubmittedEntity.NOSUSPEND:
 			return "NOSUSPEND";
+		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
 		                          "Unknown SubmittedEntity.isSuspended: $1",
 		                          getIsSuspended (env)));
 	}
 
-	public	SDMSSubmittedEntityGeneric setIsSuspended (SystemEnvironment env, Boolean p_isSuspended)
+	public	SDMSSubmittedEntityGeneric setIsSuspended (SystemEnvironment env, Integer p_isSuspended)
 	throws SDMSException
 	{
 		if(isSuspended.equals(p_isSuspended)) return this;
@@ -1965,6 +2025,37 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		return o;
 	}
 
+	public Integer getRawPriority (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (rawPriority);
+	}
+
+	public	SDMSSubmittedEntityGeneric setRawPriority (SystemEnvironment env, Integer p_rawPriority)
+	throws SDMSException
+	{
+		if(rawPriority.equals(p_rawPriority)) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.rawPriority = p_rawPriority;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
 	public Integer getNice (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -1985,6 +2076,37 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 			}
 			o = (SDMSSubmittedEntityGeneric) change(env);
 			o.nice = p_nice;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getNpNice (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (npNice);
+	}
+
+	public	SDMSSubmittedEntityGeneric setNpNice (SystemEnvironment env, Integer p_npNice)
+	throws SDMSException
+	{
+		if(npNice.equals(p_npNice)) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.npNice = p_npNice;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
@@ -3058,6 +3180,390 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		return o;
 	}
 
+	public Integer getDwEndTs (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (dwEndTs);
+	}
+
+	public	SDMSSubmittedEntityGeneric setDwEndTs (SystemEnvironment env, Integer p_dwEndTs)
+	throws SDMSException
+	{
+		if(p_dwEndTs != null && p_dwEndTs.equals(dwEndTs)) return this;
+		if(p_dwEndTs == null && dwEndTs == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.dwEndTs = p_dwEndTs;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getIdleTs (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (idleTs);
+	}
+
+	public	SDMSSubmittedEntityGeneric setIdleTs (SystemEnvironment env, Integer p_idleTs)
+	throws SDMSException
+	{
+		if(p_idleTs != null && p_idleTs.equals(idleTs)) return this;
+		if(p_idleTs == null && idleTs == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.idleTs = p_idleTs;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getIdleTime (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (idleTime);
+	}
+
+	public	SDMSSubmittedEntityGeneric setIdleTime (SystemEnvironment env, Integer p_idleTime)
+	throws SDMSException
+	{
+		if(p_idleTime != null && p_idleTime.equals(idleTime)) return this;
+		if(p_idleTime == null && idleTime == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.idleTime = p_idleTime;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getSusresTs (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (susresTs);
+	}
+
+	public	SDMSSubmittedEntityGeneric setSusresTs (SystemEnvironment env, Integer p_susresTs)
+	throws SDMSException
+	{
+		if(p_susresTs != null && p_susresTs.equals(susresTs)) return this;
+		if(p_susresTs == null && susresTs == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.susresTs = p_susresTs;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getSuspendTime (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (suspendTime);
+	}
+
+	public	SDMSSubmittedEntityGeneric setSuspendTime (SystemEnvironment env, Integer p_suspendTime)
+	throws SDMSException
+	{
+		if(p_suspendTime != null && p_suspendTime.equals(suspendTime)) return this;
+		if(p_suspendTime == null && suspendTime == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.suspendTime = p_suspendTime;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getSyncTime (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (syncTime);
+	}
+
+	public	SDMSSubmittedEntityGeneric setSyncTime (SystemEnvironment env, Integer p_syncTime)
+	throws SDMSException
+	{
+		if(p_syncTime != null && p_syncTime.equals(syncTime)) return this;
+		if(p_syncTime == null && syncTime == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.syncTime = p_syncTime;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getResourceTime (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (resourceTime);
+	}
+
+	public	SDMSSubmittedEntityGeneric setResourceTime (SystemEnvironment env, Integer p_resourceTime)
+	throws SDMSException
+	{
+		if(p_resourceTime != null && p_resourceTime.equals(resourceTime)) return this;
+		if(p_resourceTime == null && resourceTime == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.resourceTime = p_resourceTime;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getJobserverTime (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (jobserverTime);
+	}
+
+	public	SDMSSubmittedEntityGeneric setJobserverTime (SystemEnvironment env, Integer p_jobserverTime)
+	throws SDMSException
+	{
+		if(p_jobserverTime != null && p_jobserverTime.equals(jobserverTime)) return this;
+		if(p_jobserverTime == null && jobserverTime == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.jobserverTime = p_jobserverTime;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getRestartableTime (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (restartableTime);
+	}
+
+	public	SDMSSubmittedEntityGeneric setRestartableTime (SystemEnvironment env, Integer p_restartableTime)
+	throws SDMSException
+	{
+		if(p_restartableTime != null && p_restartableTime.equals(restartableTime)) return this;
+		if(p_restartableTime == null && restartableTime == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.restartableTime = p_restartableTime;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getChildWaitTime (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (childWaitTime);
+	}
+
+	public	SDMSSubmittedEntityGeneric setChildWaitTime (SystemEnvironment env, Integer p_childWaitTime)
+	throws SDMSException
+	{
+		if(p_childWaitTime != null && p_childWaitTime.equals(childWaitTime)) return this;
+		if(p_childWaitTime == null && childWaitTime == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.childWaitTime = p_childWaitTime;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Long getOpSusresTs (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (opSusresTs);
+	}
+
+	public	SDMSSubmittedEntityGeneric setOpSusresTs (SystemEnvironment env, Long p_opSusresTs)
+	throws SDMSException
+	{
+		if(p_opSusresTs != null && p_opSusresTs.equals(opSusresTs)) return this;
+		if(p_opSusresTs == null && opSusresTs == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.opSusresTs = p_opSusresTs;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Long getNpeId (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (npeId);
+	}
+
+	public	SDMSSubmittedEntityGeneric setNpeId (SystemEnvironment env, Long p_npeId)
+	throws SDMSException
+	{
+		if(p_npeId != null && p_npeId.equals(npeId)) return this;
+		if(p_npeId == null && npeId == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.npeId = p_npeId;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -3380,10 +3886,12 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	                                     String p_errorMsg,
 	                                     Long p_killId,
 	                                     Integer p_killExitCode,
-	                                     Boolean p_isSuspended,
+	                                     Integer p_isSuspended,
 	                                     Boolean p_isSuspendedLocal,
 	                                     Integer p_priority,
+	                                     Integer p_rawPriority,
 	                                     Integer p_nice,
+	                                     Integer p_npNice,
 	                                     Integer p_minPriority,
 	                                     Integer p_agingAmount,
 	                                     Integer p_parentSuspended,
@@ -3418,6 +3926,18 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	                                     Integer p_cntRestartable,
 	                                     Integer p_cntWarn,
 	                                     Integer p_cntPending,
+	                                     Integer p_dwEndTs,
+	                                     Integer p_idleTs,
+	                                     Integer p_idleTime,
+	                                     Integer p_susresTs,
+	                                     Integer p_suspendTime,
+	                                     Integer p_syncTime,
+	                                     Integer p_resourceTime,
+	                                     Integer p_jobserverTime,
+	                                     Integer p_restartableTime,
+	                                     Integer p_childWaitTime,
+	                                     Long p_opSusresTs,
+	                                     Long p_npeId,
 	                                     Long p_creatorUId,
 	                                     Long p_createTs,
 	                                     Long p_changerUId,
@@ -3468,7 +3988,9 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		isSuspended = p_isSuspended;
 		isSuspendedLocal = p_isSuspendedLocal;
 		priority = p_priority;
+		rawPriority = p_rawPriority;
 		nice = p_nice;
+		npNice = p_npNice;
 		minPriority = p_minPriority;
 		agingAmount = p_agingAmount;
 		parentSuspended = p_parentSuspended;
@@ -3503,6 +4025,18 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		cntRestartable = p_cntRestartable;
 		cntWarn = p_cntWarn;
 		cntPending = p_cntPending;
+		dwEndTs = p_dwEndTs;
+		idleTs = p_idleTs;
+		idleTime = p_idleTime;
+		susresTs = p_susresTs;
+		suspendTime = p_suspendTime;
+		syncTime = p_syncTime;
+		resourceTime = p_resourceTime;
+		jobserverTime = p_jobserverTime;
+		restartableTime = p_restartableTime;
+		childWaitTime = p_childWaitTime;
+		opSusresTs = p_opSusresTs;
+		npeId = p_npeId;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -3579,7 +4113,9 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        ", " + squote + "IS_SUSPENDED" + equote +
 				        ", " + squote + "IS_SUSPENDED_LOCAL" + equote +
 				        ", " + squote + "PRIORITY" + equote +
+				        ", " + squote + "RAW_PRIORITY" + equote +
 				        ", " + squote + "NICE" + equote +
+				        ", " + squote + "NP_NICE" + equote +
 				        ", " + squote + "MIN_PRIORITY" + equote +
 				        ", " + squote + "AGING_AMOUNT" + equote +
 				        ", " + squote + "PARENT_SUSPENDED" + equote +
@@ -3614,11 +4150,37 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        ", " + squote + "CNT_RESTARTABLE" + equote +
 				        ", " + squote + "CNT_WARN" + equote +
 				        ", " + squote + "CNT_PENDING" + equote +
+				        ", " + squote + "DW_END_TS" + equote +
+				        ", " + squote + "IDLE_TS" + equote +
+				        ", " + squote + "IDLE_TIME" + equote +
+				        ", " + squote + "SUSRES_TS" + equote +
+				        ", " + squote + "SUSPEND_TIME" + equote +
+				        ", " + squote + "SYNC_TIME" + equote +
+				        ", " + squote + "RESOURCE_TIME" + equote +
+				        ", " + squote + "JOBSERVER_TIME" + equote +
+				        ", " + squote + "RESTARTABLE_TIME" + equote +
+				        ", " + squote + "CHILD_WAIT_TIME" + equote +
+				        ", " + squote + "OP_SUSRES_TS" + equote +
+				        ", " + squote + "NPE_ID" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ") VALUES (?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -3833,75 +4395,125 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				pInsert.setNull(41, Types.INTEGER);
 			else
 				pInsert.setInt(41, killExitCode.intValue());
-			pInsert.setInt (42, isSuspended.booleanValue() ? 1 : 0);
+			pInsert.setInt(42, isSuspended.intValue());
 			if (isSuspendedLocal == null)
 				pInsert.setNull(43, Types.INTEGER);
 			else
 				pInsert.setInt (43, isSuspendedLocal.booleanValue() ? 1 : 0);
 			pInsert.setInt(44, priority.intValue());
-			pInsert.setInt(45, nice.intValue());
-			pInsert.setInt(46, minPriority.intValue());
-			pInsert.setInt(47, agingAmount.intValue());
-			pInsert.setInt(48, parentSuspended.intValue());
-			pInsert.setInt(49, childSuspended.intValue());
-			pInsert.setInt(50, warnCount.intValue());
+			pInsert.setInt(45, rawPriority.intValue());
+			pInsert.setInt(46, nice.intValue());
+			pInsert.setInt(47, npNice.intValue());
+			pInsert.setInt(48, minPriority.intValue());
+			pInsert.setInt(49, agingAmount.intValue());
+			pInsert.setInt(50, parentSuspended.intValue());
+			pInsert.setInt(51, childSuspended.intValue());
+			pInsert.setInt(52, warnCount.intValue());
 			if (warnLink == null)
-				pInsert.setNull(51, Types.INTEGER);
-			else
-				pInsert.setLong (51, warnLink.longValue());
-			pInsert.setLong (52, submitTs.longValue());
-			if (resumeTs == null)
 				pInsert.setNull(53, Types.INTEGER);
 			else
-				pInsert.setLong (53, resumeTs.longValue());
-			if (syncTs == null)
-				pInsert.setNull(54, Types.INTEGER);
-			else
-				pInsert.setLong (54, syncTs.longValue());
-			if (resourceTs == null)
+				pInsert.setLong (53, warnLink.longValue());
+			pInsert.setLong (54, submitTs.longValue());
+			if (resumeTs == null)
 				pInsert.setNull(55, Types.INTEGER);
 			else
-				pInsert.setLong (55, resourceTs.longValue());
-			if (runnableTs == null)
+				pInsert.setLong (55, resumeTs.longValue());
+			if (syncTs == null)
 				pInsert.setNull(56, Types.INTEGER);
 			else
-				pInsert.setLong (56, runnableTs.longValue());
-			if (startTs == null)
+				pInsert.setLong (56, syncTs.longValue());
+			if (resourceTs == null)
 				pInsert.setNull(57, Types.INTEGER);
 			else
-				pInsert.setLong (57, startTs.longValue());
-			if (finishTs == null)
+				pInsert.setLong (57, resourceTs.longValue());
+			if (runnableTs == null)
 				pInsert.setNull(58, Types.INTEGER);
 			else
-				pInsert.setLong (58, finishTs.longValue());
-			if (finalTs == null)
+				pInsert.setLong (58, runnableTs.longValue());
+			if (startTs == null)
 				pInsert.setNull(59, Types.INTEGER);
 			else
-				pInsert.setLong (59, finalTs.longValue());
-			pInsert.setInt(60, cntSubmitted.intValue());
-			pInsert.setInt(61, cntDependencyWait.intValue());
-			pInsert.setInt(62, cntSynchronizeWait.intValue());
-			pInsert.setInt(63, cntResourceWait.intValue());
-			pInsert.setInt(64, cntRunnable.intValue());
-			pInsert.setInt(65, cntStarting.intValue());
-			pInsert.setInt(66, cntStarted.intValue());
-			pInsert.setInt(67, cntRunning.intValue());
-			pInsert.setInt(68, cntToKill.intValue());
-			pInsert.setInt(69, cntKilled.intValue());
-			pInsert.setInt(70, cntCancelled.intValue());
-			pInsert.setInt(71, cntFinished.intValue());
-			pInsert.setInt(72, cntFinal.intValue());
-			pInsert.setInt(73, cntBrokenActive.intValue());
-			pInsert.setInt(74, cntBrokenFinished.intValue());
-			pInsert.setInt(75, cntError.intValue());
-			pInsert.setInt(76, cntUnreachable.intValue());
-			pInsert.setInt(77, cntRestartable.intValue());
-			pInsert.setInt(78, cntWarn.intValue());
-			pInsert.setInt(79, cntPending.intValue());
-			pInsert.setLong (80, creatorUId.longValue());
-			pInsert.setLong (81, createTs.longValue());
-			pInsert.setLong (82, changerUId.longValue());
-			pInsert.setLong (83, changeTs.longValue());
+				pInsert.setLong (59, startTs.longValue());
+			if (finishTs == null)
+				pInsert.setNull(60, Types.INTEGER);
+			else
+				pInsert.setLong (60, finishTs.longValue());
+			if (finalTs == null)
+				pInsert.setNull(61, Types.INTEGER);
+			else
+				pInsert.setLong (61, finalTs.longValue());
+			pInsert.setInt(62, cntSubmitted.intValue());
+			pInsert.setInt(63, cntDependencyWait.intValue());
+			pInsert.setInt(64, cntSynchronizeWait.intValue());
+			pInsert.setInt(65, cntResourceWait.intValue());
+			pInsert.setInt(66, cntRunnable.intValue());
+			pInsert.setInt(67, cntStarting.intValue());
+			pInsert.setInt(68, cntStarted.intValue());
+			pInsert.setInt(69, cntRunning.intValue());
+			pInsert.setInt(70, cntToKill.intValue());
+			pInsert.setInt(71, cntKilled.intValue());
+			pInsert.setInt(72, cntCancelled.intValue());
+			pInsert.setInt(73, cntFinished.intValue());
+			pInsert.setInt(74, cntFinal.intValue());
+			pInsert.setInt(75, cntBrokenActive.intValue());
+			pInsert.setInt(76, cntBrokenFinished.intValue());
+			pInsert.setInt(77, cntError.intValue());
+			pInsert.setInt(78, cntUnreachable.intValue());
+			pInsert.setInt(79, cntRestartable.intValue());
+			pInsert.setInt(80, cntWarn.intValue());
+			pInsert.setInt(81, cntPending.intValue());
+			if (dwEndTs == null)
+				pInsert.setNull(82, Types.INTEGER);
+			else
+				pInsert.setInt(82, dwEndTs.intValue());
+			if (idleTs == null)
+				pInsert.setNull(83, Types.INTEGER);
+			else
+				pInsert.setInt(83, idleTs.intValue());
+			if (idleTime == null)
+				pInsert.setNull(84, Types.INTEGER);
+			else
+				pInsert.setInt(84, idleTime.intValue());
+			if (susresTs == null)
+				pInsert.setNull(85, Types.INTEGER);
+			else
+				pInsert.setInt(85, susresTs.intValue());
+			if (suspendTime == null)
+				pInsert.setNull(86, Types.INTEGER);
+			else
+				pInsert.setInt(86, suspendTime.intValue());
+			if (syncTime == null)
+				pInsert.setNull(87, Types.INTEGER);
+			else
+				pInsert.setInt(87, syncTime.intValue());
+			if (resourceTime == null)
+				pInsert.setNull(88, Types.INTEGER);
+			else
+				pInsert.setInt(88, resourceTime.intValue());
+			if (jobserverTime == null)
+				pInsert.setNull(89, Types.INTEGER);
+			else
+				pInsert.setInt(89, jobserverTime.intValue());
+			if (restartableTime == null)
+				pInsert.setNull(90, Types.INTEGER);
+			else
+				pInsert.setInt(90, restartableTime.intValue());
+			if (childWaitTime == null)
+				pInsert.setNull(91, Types.INTEGER);
+			else
+				pInsert.setInt(91, childWaitTime.intValue());
+			if (opSusresTs == null)
+				pInsert.setNull(92, Types.INTEGER);
+			else
+				pInsert.setLong (92, opSusresTs.longValue());
+			if (npeId == null)
+				pInsert.setNull(93, Types.INTEGER);
+			else
+				pInsert.setLong (93, npeId.longValue());
+			pInsert.setLong (94, creatorUId.longValue());
+			pInsert.setLong (95, createTs.longValue());
+			pInsert.setLong (96, changerUId.longValue());
+			pInsert.setLong (97, changeTs.longValue());
 			pInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
@@ -3995,7 +4607,9 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        ", " + squote + "IS_SUSPENDED" + equote + " = ? " +
 				        ", " + squote + "IS_SUSPENDED_LOCAL" + equote + " = ? " +
 				        ", " + squote + "PRIORITY" + equote + " = ? " +
+				        ", " + squote + "RAW_PRIORITY" + equote + " = ? " +
 				        ", " + squote + "NICE" + equote + " = ? " +
+				        ", " + squote + "NP_NICE" + equote + " = ? " +
 				        ", " + squote + "MIN_PRIORITY" + equote + " = ? " +
 				        ", " + squote + "AGING_AMOUNT" + equote + " = ? " +
 				        ", " + squote + "PARENT_SUSPENDED" + equote + " = ? " +
@@ -4030,6 +4644,18 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        ", " + squote + "CNT_RESTARTABLE" + equote + " = ? " +
 				        ", " + squote + "CNT_WARN" + equote + " = ? " +
 				        ", " + squote + "CNT_PENDING" + equote + " = ? " +
+				        ", " + squote + "DW_END_TS" + equote + " = ? " +
+				        ", " + squote + "IDLE_TS" + equote + " = ? " +
+				        ", " + squote + "IDLE_TIME" + equote + " = ? " +
+				        ", " + squote + "SUSRES_TS" + equote + " = ? " +
+				        ", " + squote + "SUSPEND_TIME" + equote + " = ? " +
+				        ", " + squote + "SYNC_TIME" + equote + " = ? " +
+				        ", " + squote + "RESOURCE_TIME" + equote + " = ? " +
+				        ", " + squote + "JOBSERVER_TIME" + equote + " = ? " +
+				        ", " + squote + "RESTARTABLE_TIME" + equote + " = ? " +
+				        ", " + squote + "CHILD_WAIT_TIME" + equote + " = ? " +
+				        ", " + squote + "OP_SUSRES_TS" + equote + " = ? " +
+				        ", " + squote + "NPE_ID" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +
 				        ", " + squote + "CREATE_TS" + equote + " = ? " +
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
@@ -4164,76 +4790,126 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				pUpdate.setNull(40, Types.INTEGER);
 			else
 				pUpdate.setInt(40, killExitCode.intValue());
-			pUpdate.setInt (41, isSuspended.booleanValue() ? 1 : 0);
+			pUpdate.setInt(41, isSuspended.intValue());
 			if (isSuspendedLocal == null)
 				pUpdate.setNull(42, Types.INTEGER);
 			else
 				pUpdate.setInt (42, isSuspendedLocal.booleanValue() ? 1 : 0);
 			pUpdate.setInt(43, priority.intValue());
-			pUpdate.setInt(44, nice.intValue());
-			pUpdate.setInt(45, minPriority.intValue());
-			pUpdate.setInt(46, agingAmount.intValue());
-			pUpdate.setInt(47, parentSuspended.intValue());
-			pUpdate.setInt(48, childSuspended.intValue());
-			pUpdate.setInt(49, warnCount.intValue());
+			pUpdate.setInt(44, rawPriority.intValue());
+			pUpdate.setInt(45, nice.intValue());
+			pUpdate.setInt(46, npNice.intValue());
+			pUpdate.setInt(47, minPriority.intValue());
+			pUpdate.setInt(48, agingAmount.intValue());
+			pUpdate.setInt(49, parentSuspended.intValue());
+			pUpdate.setInt(50, childSuspended.intValue());
+			pUpdate.setInt(51, warnCount.intValue());
 			if (warnLink == null)
-				pUpdate.setNull(50, Types.INTEGER);
-			else
-				pUpdate.setLong (50, warnLink.longValue());
-			pUpdate.setLong (51, submitTs.longValue());
-			if (resumeTs == null)
 				pUpdate.setNull(52, Types.INTEGER);
 			else
-				pUpdate.setLong (52, resumeTs.longValue());
-			if (syncTs == null)
-				pUpdate.setNull(53, Types.INTEGER);
-			else
-				pUpdate.setLong (53, syncTs.longValue());
-			if (resourceTs == null)
+				pUpdate.setLong (52, warnLink.longValue());
+			pUpdate.setLong (53, submitTs.longValue());
+			if (resumeTs == null)
 				pUpdate.setNull(54, Types.INTEGER);
 			else
-				pUpdate.setLong (54, resourceTs.longValue());
-			if (runnableTs == null)
+				pUpdate.setLong (54, resumeTs.longValue());
+			if (syncTs == null)
 				pUpdate.setNull(55, Types.INTEGER);
 			else
-				pUpdate.setLong (55, runnableTs.longValue());
-			if (startTs == null)
+				pUpdate.setLong (55, syncTs.longValue());
+			if (resourceTs == null)
 				pUpdate.setNull(56, Types.INTEGER);
 			else
-				pUpdate.setLong (56, startTs.longValue());
-			if (finishTs == null)
+				pUpdate.setLong (56, resourceTs.longValue());
+			if (runnableTs == null)
 				pUpdate.setNull(57, Types.INTEGER);
 			else
-				pUpdate.setLong (57, finishTs.longValue());
-			if (finalTs == null)
+				pUpdate.setLong (57, runnableTs.longValue());
+			if (startTs == null)
 				pUpdate.setNull(58, Types.INTEGER);
 			else
-				pUpdate.setLong (58, finalTs.longValue());
-			pUpdate.setInt(59, cntSubmitted.intValue());
-			pUpdate.setInt(60, cntDependencyWait.intValue());
-			pUpdate.setInt(61, cntSynchronizeWait.intValue());
-			pUpdate.setInt(62, cntResourceWait.intValue());
-			pUpdate.setInt(63, cntRunnable.intValue());
-			pUpdate.setInt(64, cntStarting.intValue());
-			pUpdate.setInt(65, cntStarted.intValue());
-			pUpdate.setInt(66, cntRunning.intValue());
-			pUpdate.setInt(67, cntToKill.intValue());
-			pUpdate.setInt(68, cntKilled.intValue());
-			pUpdate.setInt(69, cntCancelled.intValue());
-			pUpdate.setInt(70, cntFinished.intValue());
-			pUpdate.setInt(71, cntFinal.intValue());
-			pUpdate.setInt(72, cntBrokenActive.intValue());
-			pUpdate.setInt(73, cntBrokenFinished.intValue());
-			pUpdate.setInt(74, cntError.intValue());
-			pUpdate.setInt(75, cntUnreachable.intValue());
-			pUpdate.setInt(76, cntRestartable.intValue());
-			pUpdate.setInt(77, cntWarn.intValue());
-			pUpdate.setInt(78, cntPending.intValue());
-			pUpdate.setLong (79, creatorUId.longValue());
-			pUpdate.setLong (80, createTs.longValue());
-			pUpdate.setLong (81, changerUId.longValue());
-			pUpdate.setLong (82, changeTs.longValue());
-			pUpdate.setLong(83, id.longValue());
+				pUpdate.setLong (58, startTs.longValue());
+			if (finishTs == null)
+				pUpdate.setNull(59, Types.INTEGER);
+			else
+				pUpdate.setLong (59, finishTs.longValue());
+			if (finalTs == null)
+				pUpdate.setNull(60, Types.INTEGER);
+			else
+				pUpdate.setLong (60, finalTs.longValue());
+			pUpdate.setInt(61, cntSubmitted.intValue());
+			pUpdate.setInt(62, cntDependencyWait.intValue());
+			pUpdate.setInt(63, cntSynchronizeWait.intValue());
+			pUpdate.setInt(64, cntResourceWait.intValue());
+			pUpdate.setInt(65, cntRunnable.intValue());
+			pUpdate.setInt(66, cntStarting.intValue());
+			pUpdate.setInt(67, cntStarted.intValue());
+			pUpdate.setInt(68, cntRunning.intValue());
+			pUpdate.setInt(69, cntToKill.intValue());
+			pUpdate.setInt(70, cntKilled.intValue());
+			pUpdate.setInt(71, cntCancelled.intValue());
+			pUpdate.setInt(72, cntFinished.intValue());
+			pUpdate.setInt(73, cntFinal.intValue());
+			pUpdate.setInt(74, cntBrokenActive.intValue());
+			pUpdate.setInt(75, cntBrokenFinished.intValue());
+			pUpdate.setInt(76, cntError.intValue());
+			pUpdate.setInt(77, cntUnreachable.intValue());
+			pUpdate.setInt(78, cntRestartable.intValue());
+			pUpdate.setInt(79, cntWarn.intValue());
+			pUpdate.setInt(80, cntPending.intValue());
+			if (dwEndTs == null)
+				pUpdate.setNull(81, Types.INTEGER);
+			else
+				pUpdate.setInt(81, dwEndTs.intValue());
+			if (idleTs == null)
+				pUpdate.setNull(82, Types.INTEGER);
+			else
+				pUpdate.setInt(82, idleTs.intValue());
+			if (idleTime == null)
+				pUpdate.setNull(83, Types.INTEGER);
+			else
+				pUpdate.setInt(83, idleTime.intValue());
+			if (susresTs == null)
+				pUpdate.setNull(84, Types.INTEGER);
+			else
+				pUpdate.setInt(84, susresTs.intValue());
+			if (suspendTime == null)
+				pUpdate.setNull(85, Types.INTEGER);
+			else
+				pUpdate.setInt(85, suspendTime.intValue());
+			if (syncTime == null)
+				pUpdate.setNull(86, Types.INTEGER);
+			else
+				pUpdate.setInt(86, syncTime.intValue());
+			if (resourceTime == null)
+				pUpdate.setNull(87, Types.INTEGER);
+			else
+				pUpdate.setInt(87, resourceTime.intValue());
+			if (jobserverTime == null)
+				pUpdate.setNull(88, Types.INTEGER);
+			else
+				pUpdate.setInt(88, jobserverTime.intValue());
+			if (restartableTime == null)
+				pUpdate.setNull(89, Types.INTEGER);
+			else
+				pUpdate.setInt(89, restartableTime.intValue());
+			if (childWaitTime == null)
+				pUpdate.setNull(90, Types.INTEGER);
+			else
+				pUpdate.setInt(90, childWaitTime.intValue());
+			if (opSusresTs == null)
+				pUpdate.setNull(91, Types.INTEGER);
+			else
+				pUpdate.setLong (91, opSusresTs.longValue());
+			if (npeId == null)
+				pUpdate.setNull(92, Types.INTEGER);
+			else
+				pUpdate.setLong (92, npeId.longValue());
+			pUpdate.setLong (93, creatorUId.longValue());
+			pUpdate.setLong (94, createTs.longValue());
+			pUpdate.setLong (95, changerUId.longValue());
+			pUpdate.setLong (96, changeTs.longValue());
+			pUpdate.setLong(97, id.longValue());
 			pUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
@@ -4287,10 +4963,14 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		}
 		return false;
 	}
-	static public boolean checkIsSuspended(Boolean p)
+	static public boolean checkIsSuspended(Integer p)
 	{
-		if(p.booleanValue() == SDMSSubmittedEntity.SUSPEND) return true;
-		if(p.booleanValue() == SDMSSubmittedEntity.NOSUSPEND) return true;
+		switch (p.intValue()) {
+		case SDMSSubmittedEntity.ADMINSUSPEND:
+		case SDMSSubmittedEntity.SUSPEND:
+		case SDMSSubmittedEntity.NOSUSPEND:
+			return true;
+		}
 		return false;
 	}
 
@@ -4341,7 +5021,9 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "isSuspended : " + isSuspended, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isSuspendedLocal : " + isSuspendedLocal, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "priority : " + priority, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "rawPriority : " + rawPriority, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "nice : " + nice, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "npNice : " + npNice, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "minPriority : " + minPriority, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "agingAmount : " + agingAmount, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "parentSuspended : " + parentSuspended, SDMSThread.SEVERITY_MESSAGE);
@@ -4376,6 +5058,18 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "cntRestartable : " + cntRestartable, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "cntWarn : " + cntWarn, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "cntPending : " + cntPending, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "dwEndTs : " + dwEndTs, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "idleTs : " + idleTs, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "idleTime : " + idleTime, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "susresTs : " + susresTs, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "suspendTime : " + suspendTime, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "syncTime : " + syncTime, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "resourceTime : " + resourceTime, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "jobserverTime : " + jobserverTime, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "restartableTime : " + restartableTime, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "childWaitTime : " + childWaitTime, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "opSusresTs : " + opSusresTs, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "npeId : " + npeId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "changerUId : " + changerUId, SDMSThread.SEVERITY_MESSAGE);
@@ -4435,7 +5129,9 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		        indentString + "isSuspended        : " + isSuspended + "\n" +
 		        indentString + "isSuspendedLocal   : " + isSuspendedLocal + "\n" +
 		        indentString + "priority           : " + priority + "\n" +
+		        indentString + "rawPriority        : " + rawPriority + "\n" +
 		        indentString + "nice               : " + nice + "\n" +
+		        indentString + "npNice             : " + npNice + "\n" +
 		        indentString + "minPriority        : " + minPriority + "\n" +
 		        indentString + "agingAmount        : " + agingAmount + "\n" +
 		        indentString + "parentSuspended    : " + parentSuspended + "\n" +
@@ -4470,6 +5166,18 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		        indentString + "cntRestartable     : " + cntRestartable + "\n" +
 		        indentString + "cntWarn            : " + cntWarn + "\n" +
 		        indentString + "cntPending         : " + cntPending + "\n" +
+		        indentString + "dwEndTs            : " + dwEndTs + "\n" +
+		        indentString + "idleTs             : " + idleTs + "\n" +
+		        indentString + "idleTime           : " + idleTime + "\n" +
+		        indentString + "susresTs           : " + susresTs + "\n" +
+		        indentString + "suspendTime        : " + suspendTime + "\n" +
+		        indentString + "syncTime           : " + syncTime + "\n" +
+		        indentString + "resourceTime       : " + resourceTime + "\n" +
+		        indentString + "jobserverTime      : " + jobserverTime + "\n" +
+		        indentString + "restartableTime    : " + restartableTime + "\n" +
+		        indentString + "childWaitTime      : " + childWaitTime + "\n" +
+		        indentString + "opSusresTs         : " + opSusresTs + "\n" +
+		        indentString + "npeId              : " + npeId + "\n" +
 		        indentString + "creatorUId         : " + creatorUId + "\n" +
 		        indentString + "createTs           : " + createTs + "\n" +
 		        indentString + "changerUId         : " + changerUId + "\n" +

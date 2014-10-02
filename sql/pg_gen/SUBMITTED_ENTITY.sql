@@ -71,7 +71,9 @@ CREATE TABLE SUBMITTED_ENTITY (
     , IS_SUSPENDED                   integer         NOT NULL
     , IS_SUSPENDED_LOCAL             integer             NULL
     , PRIORITY                       integer         NOT NULL
+    , RAW_PRIORITY                   integer         NOT NULL
     , NICE                           integer         NOT NULL
+    , NP_NICE                        integer         NOT NULL
     , MIN_PRIORITY                   integer         NOT NULL
     , AGING_AMOUNT                   integer         NOT NULL
     , PARENT_SUSPENDED               integer         NOT NULL
@@ -106,6 +108,18 @@ CREATE TABLE SUBMITTED_ENTITY (
     , CNT_RESTARTABLE                integer         NOT NULL
     , CNT_WARN                       integer         NOT NULL
     , CNT_PENDING                    integer         NOT NULL
+    , DW_END_TS                      integer             NULL
+    , IDLE_TS                        integer             NULL
+    , IDLE_TIME                      integer             NULL
+    , SUSRES_TS                      integer             NULL
+    , SUSPEND_TIME                   integer             NULL
+    , SYNC_TIME                      integer             NULL
+    , RESOURCE_TIME                  integer             NULL
+    , JOBSERVER_TIME                 integer             NULL
+    , RESTARTABLE_TIME               integer             NULL
+    , CHILD_WAIT_TIME                integer             NULL
+    , OP_SUSRES_TS                   decimal(20)         NULL
+    , NPE_ID                         decimal(20)         NULL
     , CREATOR_U_ID                   decimal(20)     NOT NULL
     , CREATE_TS                      decimal(20)     NOT NULL
     , CHANGER_U_ID                   decimal(20)     NOT NULL
@@ -155,10 +169,12 @@ SELECT
     , ERROR_MSG                      AS ERROR_MSG
     , KILL_ID                        AS KILL_ID
     , KILL_EXIT_CODE                 AS KILL_EXIT_CODE
-    , CASE IS_SUSPENDED WHEN 1 THEN 'SUSPEND' WHEN 0 THEN 'NOSUSPEND' END AS IS_SUSPENDED
+    , CASE IS_SUSPENDED WHEN 2 THEN 'ADMINSUSPEND' WHEN 1 THEN 'SUSPEND' WHEN 0 THEN 'NOSUSPEND' END AS IS_SUSPENDED
     , CASE IS_SUSPENDED_LOCAL WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_SUSPENDED_LOCAL
     , PRIORITY                       AS PRIORITY
+    , RAW_PRIORITY                   AS RAW_PRIORITY
     , NICE                           AS NICE
+    , NP_NICE                        AS NP_NICE
     , MIN_PRIORITY                   AS MIN_PRIORITY
     , AGING_AMOUNT                   AS AGING_AMOUNT
     , PARENT_SUSPENDED               AS PARENT_SUSPENDED
@@ -173,8 +189,20 @@ SELECT
     , timestamp 'epoch' + cast(to_char(mod(START_TS, 1125899906842624)/1000, '999999999999') as interval) AS START_TS
     , timestamp 'epoch' + cast(to_char(mod(FINSH_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINSH_TS
     , timestamp 'epoch' + cast(to_char(mod(FINAL_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINAL_TS
+    , DW_END_TS                      AS DEPENDENCY_WAIT_TIME
+    , IDLE_TIME                      AS IDLE_TIME
+    , SUSPEND_TIME                   AS SUSPEND_TIME
+    , SYNC_TIME                      AS SYNC_TIME
+    , RESOURCE_TIME                  AS RESOURCE_TIME
+    , JOBSERVER_TIME                 AS JOBSERVER_TIME
+    , RESTARTABLE_TIME               AS RESTARTABLE_TIME
+    , CHILD_WAIT_TIME                AS CHILD_WAIT_TIME
+    , OP_SUSRES_TS                   AS OP_SUSRES_TS
+    , NPE_ID                         AS NPE_ID
     , CREATOR_U_ID                   AS CREATOR_U_ID
     , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
     , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , ((FINAL_TS - SUBMIT_TS) / 1000) - DW_END_TS AS PROCESS_TIME
+    , (IDLE_TIME / (((FINAL_TS - SUBMIT_TS) / 1000) - DW_END_TS)) * 100 AS IDLE_PCT
   FROM SUBMITTED_ENTITY;

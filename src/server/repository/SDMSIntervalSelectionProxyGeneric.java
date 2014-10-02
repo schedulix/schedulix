@@ -246,20 +246,20 @@ public class SDMSIntervalSelectionProxyGeneric extends SDMSProxy
 		else groups = checkGroups;
 
 		long p = 0;
-		p = checkPrivs;
-		SDMSTable t;
+			p = checkPrivs;
+			SDMSTable t;
 
-		t = SystemEnvironment.repository.getTable(env, SDMSIntervalTable.tableName);
-		try {
-			SDMSProxy o = t.get(env, getIntId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+			t = SystemEnvironment.repository.getTable(env, SDMSIntervalTable.tableName);
+			try {
+				SDMSProxy o = t.get(env, getIntId(env));
+				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+				}
+				p = p & sp;
+			} catch (NotFoundException nfe) {
+
 			}
-			p = p & sp;
-		} catch (NotFoundException nfe) {
-
-		}
 		return p;
 	}
 

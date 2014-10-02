@@ -48,7 +48,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_PROFESSIONAL = "PROFESSIONAL";
 	public static final String S_ENTERPRISE   = "ENTERPRISE";
 
-	public static final String programVersion = "2.6";
+	public static final String programVersion = "2.6.1";
 	public static String programLevel = null;
 
 	public static final long SYSTEM_OBJECTS_BOUNDARY = 1000;
@@ -208,6 +208,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_EXIT_STATE_TRANSLATION   = "EXIT_STATE_TRANSLATION";
 	public static final String S_POOL		      = "POOL";
 	public static final String S_OBJECT_MONITOR	      = "OBJECT_MONITOR";
+	public static final String S_NICE_PROFILE	      = "NICE_PROFILE";
 
 	private HashMap featureLevels;
 
@@ -266,6 +267,7 @@ public class SystemEnvironment implements Cloneable
 		featureLevels.put(S_EXIT_STATE_TRANSLATION,   new Feature(S_PROFESSIONAL, "Use of Exit State Translations"));
 		featureLevels.put(S_POOL,		      new Feature(S_ENTERPRISE,   "Use of Pools and Distributions"));
 		featureLevels.put(S_OBJECT_MONITOR,	      new Feature(S_PROFESSIONAL, "Use of Object Monitors"));
+		featureLevels.put(S_NICE_PROFILE,	      new Feature(S_ENTERPRISE,   "Use of Nice Profiles"));
 	}
 
 	private void setProperties()
@@ -447,20 +449,20 @@ public class SystemEnvironment implements Cloneable
 
 	private void getHistory()
 	{
-		String s_preserveTime = props.getProperty(S_HISTORY, "1440");
+		String s_preserveTime = props.getProperty(S_HISTORY, "14400");
 		int minTime = 60;
 		if (runMode.equals("TEST")) minTime = 5;
-		preserveTime = checkIntProperty(s_preserveTime, S_HISTORY, minTime, 1440, 0, "Invalid History : ");
+		preserveTime = checkIntProperty(s_preserveTime, S_HISTORY, minTime, 14400, 0, "Invalid History : ");
 		props.setProperty(S_HISTORY, "" + preserveTime);
 		preserveTime *= 1000 * 60;
 	}
 
 	private void getHistoryLimit()
 	{
-		String s_preserveTime = props.getProperty(S_HISTORYLIMIT, "1440");
+		String s_preserveTime = props.getProperty(S_HISTORYLIMIT, "14400");
 		int minTime = (int) preserveTime / (60 * 1000);
 		if (runMode.equals("TEST")) minTime = 5;
-		maxPreserveTime = checkIntProperty(s_preserveTime, S_HISTORYLIMIT, minTime, 2880, 0, "Invalid HistoryLimit : ");
+		maxPreserveTime = checkIntProperty(s_preserveTime, S_HISTORYLIMIT, minTime, 14400, 0, "Invalid HistoryLimit : ");
 		props.setProperty(S_HISTORYLIMIT, "" + maxPreserveTime);
 		maxPreserveTime *= 1000 * 60;
 	}

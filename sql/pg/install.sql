@@ -53,6 +53,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 \i pg_gen/MEMBER.sql
 \i pg_gen/NAMED_ENVIRONMENT.sql
 \i pg_gen/NAMED_RESOURCE.sql
+\i pg_gen/NICE_PROFILE.sql
+\i pg_gen/NICE_PROFILE_ENTRY.sql
 \i pg_gen/OBJECT_COMMENT.sql
 \i pg_gen/OBJECT_EVENT.sql
 \i pg_gen/OBJECT_INSTANCE.sql

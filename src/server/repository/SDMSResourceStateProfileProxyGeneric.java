@@ -207,14 +207,29 @@ public class SDMSResourceStateProfileProxyGeneric extends SDMSProxy
 		else groups = checkGroups;
 
 		long p = 0;
-		if(env.cEnv.isUser()) {
-			if(checkGroups == null)
-				groups.addAll(env.cEnv.gid());
-			if(groups.contains(SDMSObject.adminGId)) p = checkPrivs;
-			else {
-				p = p | SDMSPrivilege.VIEW & checkPrivs;
+		try {
+			if(env.cEnv.isUser() || env.cEnv.isJob()) {
+				if (env.cEnv.isJob()) {
+					HashSet hg = new HashSet();
+					SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(env, env.cEnv.uid());
+					Long smeOwner = sme.getOwnerId(env);
+					hg.add(smeOwner);
+					hg.add(SDMSObject.publicGId);
+					env.cEnv.pushGid(env, hg);
+				}
+				if(checkGroups == null)
+					groups.addAll(env.cEnv.gid());
+				if(groups.contains(SDMSObject.adminGId)) p = checkPrivs;
+				else {
+					p = p | SDMSPrivilege.VIEW & checkPrivs;
+				}
+			} else p = checkPrivs;
+		} catch(Throwable t) {
+			if (env.cEnv.isJob()) {
+				env.cEnv.popGid(env);
 			}
-		} else p = checkPrivs;
+			throw t;
+		}
 		return p;
 	}
 

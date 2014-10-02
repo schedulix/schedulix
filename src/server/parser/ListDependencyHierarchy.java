@@ -384,7 +384,7 @@ public class ListDependencyHierarchy
 				}
 				row.add (new String (states));
 
-				row.add (sme.getIsSuspended (sysEnv));
+				row.add (sme.getIsSuspendedAsString (sysEnv));
 				row.add (sme.getParentSuspended (sysEnv));
 				row.add (sme.getCntUnreachable (sysEnv));
 
@@ -694,7 +694,7 @@ public class ListDependencyHierarchy
 		c = SDMSDependencyInstanceTable.idx_dependentId.getVector (sysEnv, sme.getId (sysEnv));
 		row.add (new Integer (c.size()));
 		row.add (empty);
-		row.add (sme.getIsSuspended (sysEnv));
+		row.add (sme.getIsSuspendedAsString (sysEnv));
 		row.add (sme.getParentSuspended (sysEnv));
 		row.add (sme.getCntUnreachable (sysEnv));
 		row.add (empty);

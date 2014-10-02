@@ -54,6 +54,7 @@ public class AlterJob extends Node
 	private Integer exitCode	= null;
 	private String errText		= null;
 	private Boolean suspend		= null;
+	private Boolean adminSuspend	= null;
 	private Object resumeObj	= null;
 	private String runProgram	= null;
 	private String rerunProgram	= null;
@@ -197,7 +198,15 @@ public class AlterJob extends Node
 		errText = (String) with.get(ParseStr.S_ERROR_TEXT);
 		runProgram = (String) with.get(ParseStr.S_RUN_PROGRAM);
 		rerunProgram = (String) with.get(ParseStr.S_RERUN_PROGRAM);
-		suspend = (Boolean) with.get(ParseStr.S_SUSPEND);
+		Object o = with.get(ParseStr.S_SUSPEND);
+		if (o != null) {
+			if (o instanceof Boolean) {
+				suspend = (Boolean) o;
+			} else {
+				suspend = Boolean.TRUE;
+				adminSuspend = Boolean.TRUE;
+			}
+		}
 		resumeObj = with.get(ParseStr.S_RESUME);
 		if(suspend == null && resumeObj != null) {
 
@@ -205,6 +214,18 @@ public class AlterJob extends Node
 				suspend = (Boolean) resumeObj;
 				resumeObj = null;
 			}
+		}
+		if (suspend != null) {
+			if(sysEnv.cEnv.isUser()) {
+				if(sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+					if (!suspend.booleanValue())
+						adminSuspend = Boolean.TRUE;
+				} else if (adminSuspend != null && adminSuspend.booleanValue()) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408071555", "Insufficient privileges for admin suspend"));
+				}
+				if (adminSuspend == null) adminSuspend = Boolean.FALSE;
+			}
+
 		}
 		rerun = (Boolean) with.get(ParseStr.S_RERUN);
 		rerunSeq = (Integer) with.get(ParseStr.S_RUN);
@@ -300,7 +321,7 @@ public class AlterJob extends Node
 						se.pathString(sysEnv), se.getTypeAsString(sysEnv)));
 		}
 
-		boolean isSuspended = sme.getIsSuspended(sysEnv).booleanValue();
+		boolean isSuspended = (sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND);
 		if((state != SDMSSubmittedEntity.FINISHED && state != SDMSSubmittedEntity.BROKEN_FINISHED && state != SDMSSubmittedEntity.ERROR && !isSuspended) ||
 		   (state == SDMSSubmittedEntity.ERROR && !sme.getJobIsRestartable(sysEnv).booleanValue()) ||
 		   (isSuspended && (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED ||
@@ -434,7 +455,7 @@ public class AlterJob extends Node
 			resumeTs = SubmitJob.evalResumeObj(sysEnv, resumeObj, null , true);
 
 			if (resumeTs == null || resumeTs.longValue() == -1l) {
-				if (sme.getIsSuspended(sysEnv).booleanValue())
+				if (sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND)
 					suspend = Boolean.FALSE;
 				else {
 					suspend = null;
@@ -444,10 +465,12 @@ public class AlterJob extends Node
 		}
 		if(suspend != null) {
 			if(suspend.booleanValue()) {
-				sme.suspend(sysEnv, false);
+				sme.suspend(sysEnv, false, adminSuspend.booleanValue());
 				SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.SUSPEND);
 			} else {
-				sme.resume(sysEnv);
+				if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.ADMINSUSPEND && !adminSuspend.booleanValue())
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408080757", "Insufficient privileges for admin resume"));
+				sme.resume(sysEnv, adminSuspend.booleanValue());
 				SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.RESUME);
 			}
 		}
@@ -492,23 +515,19 @@ public class AlterJob extends Node
 				!= SDMSSchedulingEntity.JOB) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03211211229", "Cannot change the priority of a batch or milestone"));
 			}
-			if(priority.intValue() > SchedulingThread.MIN_PRIORITY) priority = new Integer(SchedulingThread.MIN_PRIORITY);
-			if(priority.intValue() < SchedulingThread.MAX_PRIORITY) priority = new Integer(SchedulingThread.MAX_PRIORITY);
+
 			if(priority.intValue() < SystemEnvironment.priorityLowerBound && !sysEnv.cEnv.gid().contains(SDMSObject.adminGId))
 				priority = new Integer(SystemEnvironment.priorityLowerBound);
 			sme.setPriority(sysEnv, priority);
-			SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.PRIORITY);
 		}
 		if(nicevalue != null) {
 
-			sme.renice(sysEnv, nicevalue, comment);
-			SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.PRIORITY);
+			sme.renice(sysEnv, nicevalue, null, comment);
 		}
 		if(renice != null) {
 
 			int nv = renice.intValue() + sme.getNice(sysEnv).intValue();
-			sme.renice(sysEnv, new Integer(nv), comment);
-			SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.PRIORITY);
+			sme.renice(sysEnv, new Integer(nv), null, comment);
 		}
 		if(with.containsKey(ParseStr.S_ERROR_TEXT))	sme.setErrorMsg(sysEnv, errText);
 

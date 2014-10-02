@@ -91,9 +91,11 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 	                                  ,String p_errorMsg
 	                                  ,Long p_killId
 	                                  ,Integer p_killExitCode
-	                                  ,Boolean p_isSuspended
+	                                  ,Integer p_isSuspended
 	                                  ,Integer p_priority
+	                                  ,Integer p_raw_priority
 	                                  ,Integer p_nice
+	                                  ,Integer p_np_nice
 	                                  ,Integer p_minEP
 	                                  ,Integer p_agingAmount
 	                                  ,Integer p_parentSuspended
@@ -128,6 +130,18 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 	                                  ,Integer p_cntRestartable
 	                                  ,Integer p_cntWarn
 	                                  ,Integer p_cntPending
+	                                  ,Integer p_dwEndTs
+	                                  ,Integer p_idleTs
+	                                  ,Integer p_idleTime
+	                                  ,Integer p_susresTs
+	                                  ,Integer p_suspendTime
+	                                  ,Integer p_syncTime
+	                                  ,Integer p_resourceTime
+	                                  ,Integer p_jobserverTime
+	                                  ,Integer p_restartableTime
+	                                  ,Integer p_childWaitTime
+	                                  ,Long	 p_opSusresTs
+	                                  ,Long	 p_npeId
 	                                 )
 	throws SDMSException
 	{
@@ -175,7 +189,9 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       ,p_isSuspended
 		                                       ,Boolean.FALSE
 		                                       ,p_priority
+		                                       ,p_raw_priority
 		                                       ,p_nice
+		                                       ,p_np_nice
 		                                       ,p_minEP
 		                                       ,p_agingAmount
 		                                       ,p_parentSuspended
@@ -210,6 +226,18 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       ,p_cntRestartable
 		                                       ,p_cntWarn
 		                                       ,p_cntPending
+		                                       ,p_dwEndTs
+		                                       ,p_idleTs
+		                                       ,p_idleTime
+		                                       ,p_susresTs
+		                                       ,p_suspendTime
+		                                       ,p_syncTime
+		                                       ,p_resourceTime
+		                                       ,p_jobserverTime
+		                                       ,p_restartableTime
+		                                       ,p_childWaitTime
+		                                       ,p_opSusresTs
+		                                       ,p_npeId
 		                                      );
 
 		final Long smeId = sme.getId(env);
@@ -281,8 +309,9 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       ,p_errorMsg
 		                                       ,null
 		                                       ,null
+		                                       ,new Integer(SDMSSubmittedEntity.NOSUSPEND)
 		                                       ,Boolean.FALSE
-		                                       ,Boolean.FALSE
+		                                       ,p_priority
 		                                       ,p_priority
 		                                       ,p_nice
 		                                       ,zero
@@ -290,6 +319,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       ,zero
 		                                       ,zero
 		                                       ,zero
+						       ,zero
 		                                       ,null
 		                                       ,p_submitTs
 		                                       ,null
@@ -304,6 +334,9 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       zero, zero, zero, zero, zero,
 		                                       zero, zero, zero, zero, zero,
 		                                       zero
+		                                       ,null,null,zero,null,zero
+		                                       ,zero,zero,zero,zero,zero
+		                                       , null, null
 		                                      );
 
 		final Long smeId = sme.getId(env);

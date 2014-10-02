@@ -40,6 +40,8 @@ public class DropUser extends Node
 
 	public final static String __version = "@(#) $Id: DropUser.java,v 2.5.4.1 2013/03/14 10:24:31 ronald Exp $";
 
+	private final static Integer ZERO = new Integer(0);
+
 	private ObjectURL url;
 	private boolean noerr;
 
@@ -64,21 +66,49 @@ public class DropUser extends Node
 			}
 			throw nfe;
 		}
+
 		Long uid = u.getId(sysEnv);
+		boolean suActive = false;
 
-		HashSet hg = new HashSet();
-		hg.add(SDMSObject.adminGId);
-		sysEnv.cEnv.pushGid(sysEnv, hg);
+		try {
+			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+				SDMSPrivilege p = new SDMSPrivilege();
+				Iterator i = sysEnv.cEnv.gid().iterator();
+				while(i.hasNext()) {
+					Long gId = (Long) i.next();
+					try {
+						SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
+						p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
+					} catch (NotFoundException nfe) {
 
-		Vector v = SDMSMemberTable.idx_uId.getVector(sysEnv, u.getId(sysEnv));
-		for(int i = 0; i < v.size(); i++) {
-			SDMSMember m = (SDMSMember) v.get(i);
-			m.delete(sysEnv);
+					}
+				}
+				if (p.can(SDMSPrivilege.MANAGE_USER)) {
+					HashSet hg = new HashSet();
+					hg.add(SDMSObject.adminGId);
+					sysEnv.cEnv.pushGid(sysEnv, hg);
+					suActive = true;
+				} else {
+					throw new AccessViolationException(new SDMSMessage(sysEnv, "03408281223", "Insufficient Privileges"));
+				}
+			}
+
+			Vector v = SDMSMemberTable.idx_uId.getVector(sysEnv, u.getId(sysEnv));
+			for(int i = 0; i < v.size(); i++) {
+				SDMSMember m = (SDMSMember) v.get(i);
+				m.delete(sysEnv);
+			}
+			u.setIsEnabled(sysEnv, Boolean.FALSE);
+			u.setDeleteVersion(sysEnv, new Long(sysEnv.tx.txId));
+			if (suActive)
+				sysEnv.cEnv.popGid(sysEnv);
+
+		} catch (Throwable t) {
+			if (suActive)
+				sysEnv.cEnv.popGid(sysEnv);
+			throw t;
 		}
-		sysEnv.cEnv.popGid(sysEnv);
 
-		u.setIsEnabled(sysEnv, Boolean.FALSE);
-		u.setDeleteVersion(sysEnv, new Long(sysEnv.tx.txId));
 		result.setFeedback(new SDMSMessage(sysEnv, "03301272337", "User dropped"));
 	}
 }

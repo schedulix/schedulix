@@ -199,7 +199,8 @@ public class TimerThread
 
 		final Boolean doSuspend = (forceSuspend || submitSuspended) ? Boolean.TRUE : Boolean.FALSE;
 
-		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, parmList, doSuspend, null ,
+		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, parmList, new Integer(doSuspend.booleanValue() ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
+		                                null ,
 								ownerId, null , "Event " + evt.getName (sysEnv));
 
 		if (forceSuspend) {

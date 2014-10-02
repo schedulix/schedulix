@@ -62,86 +62,105 @@ public class CreateUser extends ManipUser
 		if(passwd == null)
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03312101400", "Either " + ParseStr.S_PASSWORD + " or " + ParseStr.S_RAWPASSWORD + " must be specified"));
 
-		if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
-			boolean canCreate = true;
-			SDMSPrivilege p = new SDMSPrivilege();
-			for (int i = 0; i < grouplist.size(); i++) {
-				Long gId = (Long) grouplist.get(i);
-				if (!sysEnv.cEnv.gid().contains(gId)) {
-					canCreate = false;
+		try {
+
+			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+				boolean canCreate = true;
+				SDMSPrivilege p = new SDMSPrivilege();
+				for (int i = 0; i < grouplist.size(); i++) {
+					Long gId = (Long) grouplist.get(i);
+					if (!sysEnv.cEnv.gid().contains(gId)) {
+						canCreate = false;
+						break;
+					}
+					try {
+						SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
+						p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
+					} catch (NotFoundException nfe) {
+
+					}
+				}
+				if (canCreate && p.can(SDMSPrivilege.MANAGE_USER)) {
+					HashSet hg = new HashSet();
+					hg.add(SDMSObject.adminGId);
+					sysEnv.cEnv.pushGid(sysEnv, hg);
+					suActive = true;
+				}
+			}
+
+			Vector v = SDMSUserTable.idx_name.getVector(sysEnv, user);
+			Iterator i1 = v.iterator();
+			while (i1.hasNext()) {
+				SDMSUser u1 = (SDMSUser)i1.next();
+				if (!u1.getDeleteVersion(sysEnv).equals(new Long(0))) {
+					u1.setDeleteVersion(sysEnv, new Long(0));
+
+					try {
+						SDMSMemberTable.table.create(sysEnv, publicGId, u1.getId(sysEnv));
+					} catch (DuplicateKeyException dke) {
+
+					} catch (SDMSException e) {
+						if (suActive) {
+							sysEnv.cEnv.popGid(sysEnv);
+							suActive = false;
+						}
+						throw e;
+					}
+					replace = true;
 					break;
 				}
-				try {
-					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
-					p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
-				} catch (NotFoundException nfe) {
+			}
 
+			try {
+				u = SDMSUserTable.table.create( sysEnv, user, passwd, salt, method, enable, defaultGId, new Long(0));
+			} catch (DuplicateKeyException dke) {
+				if(replace) {
+					try {
+						AlterUser au = new AlterUser(user, with, Boolean.FALSE);
+						au.setEnv(env);
+						au.go(sysEnv);
+						result = au.result;
+						if (suActive) {
+							sysEnv.cEnv.popGid(sysEnv);
+								suActive = false;
+							}
+						return;
+					} catch (SDMSException e) {
+						if (suActive) {
+							sysEnv.cEnv.popGid(sysEnv);
+							suActive = false;
+						}
+						throw e;
+					}
+				} else {
+					if (suActive) {
+						sysEnv.cEnv.popGid(sysEnv);
+						suActive = false;
+					}
+					throw dke;
 				}
 			}
-			if (canCreate && p.can(SDMSPrivilege.MANAGE_USER)) {
-				HashSet hg = new HashSet();
-				hg.add(SDMSObject.adminGId);
-				sysEnv.cEnv.pushGid(sysEnv, hg);
-				suActive = true;
+
+			Long uId = u.getId(sysEnv);
+			SDMSMemberTable.table.create(sysEnv, publicGId, uId);
+
+			for(int i = 0; i < grouplist.size(); i++) {
+				Long gId = (Long) grouplist.get(i);
+				if(gId != publicGId)
+					SDMSMemberTable.table.create(sysEnv, gId, uId);
 			}
-		}
 
-		Vector v = SDMSUserTable.idx_name.getVector(sysEnv, user);
-		Iterator i1 = v.iterator();
-		while (i1.hasNext()) {
-			SDMSUser u1 = (SDMSUser)i1.next();
-			if (!u1.getDeleteVersion(sysEnv).equals(new Long(0))) {
-				u1.setDeleteVersion(sysEnv, new Long(0));
-
-				try {
-					SDMSMemberTable.table.create(sysEnv, publicGId, u1.getId(sysEnv));
-				} catch (DuplicateKeyException dke) {
-
-				} catch (SDMSException e) {
-					if (suActive)
-						sysEnv.cEnv.popGid(sysEnv);
-					throw e;
-				}
-				replace = true;
-				break;
+			if (suActive) {
+				sysEnv.cEnv.popGid(sysEnv);
+				suActive = false;
 			}
-		}
-
-		try {
-			u = SDMSUserTable.table.create( sysEnv, user, passwd, salt, method, enable, defaultGId, new Long(0));
-		} catch (DuplicateKeyException dke) {
-			if(replace) {
-				try {
-					AlterUser au = new AlterUser(user, with, Boolean.FALSE);
-					au.setEnv(env);
-					au.go(sysEnv);
-					result = au.result;
-					if (suActive)
-						sysEnv.cEnv.popGid(sysEnv);
-					return;
-				} catch (SDMSException e) {
-					if (suActive)
-						sysEnv.cEnv.popGid(sysEnv);
-					throw e;
-				}
-			} else {
-				if (suActive)
-					sysEnv.cEnv.popGid(sysEnv);
-				throw dke;
-			}
-		}
-
-		Long uId = u.getId(sysEnv);
-		SDMSMemberTable.table.create(sysEnv, publicGId, uId);
-
-		for(int i = 0; i < grouplist.size(); i++) {
-			Long gId = (Long) grouplist.get(i);
-			if(gId != publicGId)
-				SDMSMemberTable.table.create(sysEnv, gId, uId);
-		}
-
-		if (suActive)
+		} catch (Throwable t) {
+			if (suActive) {
 			sysEnv.cEnv.popGid(sysEnv);
+				suActive = false;
+			}
+			throw t;
+		}
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03201291636", "User created"));
 	}

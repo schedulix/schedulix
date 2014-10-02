@@ -225,7 +225,11 @@ public class ShowSubmitted extends Node
 
 		desc.add("PRIORITY");
 
+		desc.add("RAW_PRIORITY");
+
 		desc.add("NICEVALUE");
+
+		desc.add("NP_NICEVALUE");
 
 		desc.add("MIN_PRIORITY");
 
@@ -462,12 +466,14 @@ public class ShowSubmitted extends Node
 		data.add(sme.getErrorMsg(sysEnv));
 		data.add(sme.getKillId(sysEnv));
 		data.add(sme.getKillExitCode(sysEnv));
-		data.add(sme.getIsSuspended(sysEnv));
+		data.add(sme.getIsSuspendedAsString(sysEnv));
 		Boolean isSuspendedLocal = sme.getIsSuspendedLocal(sysEnv);
 		if (isSuspendedLocal == null) isSuspendedLocal = Boolean.FALSE;
 		data.add(isSuspendedLocal);
 		data.add(sme.getPriority(sysEnv));
+		data.add(sme.getRawPriority(sysEnv));
 		data.add(sme.getNice(sysEnv));
+		data.add(sme.getNpNice(sysEnv));
 		data.add(sme.getMinPriority(sysEnv));
 		data.add(sme.getAgingAmount(sysEnv));
 		data.add("MINUTES");
@@ -986,7 +992,7 @@ public class ShowSubmitted extends Node
 
 			if (sme != null) {
 				c_data.add(sme.getStateAsString(sysEnv));
-				c_data.add(sme.getIsSuspended(sysEnv));
+				c_data.add(sme.getIsSuspendedAsString(sysEnv));
 				c_data.add(sme.getParentSuspended(sysEnv));
 
 				c_data.add(sme.getCntSubmitted(sysEnv));

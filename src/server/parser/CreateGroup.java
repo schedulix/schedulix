@@ -82,28 +82,6 @@ public class CreateGroup extends ManipGroup
 
 		Vector v = SDMSGroupTable.idx_name.getVector(sysEnv, group);
 		Iterator i1 = v.iterator();
-		while (i1.hasNext()) {
-			SDMSGroup g1 = (SDMSGroup)i1.next();
-			if (!g1.getDeleteVersion(sysEnv).equals(new Long(0))) {
-				replace = true;
-				if (manageGroup) {
-					HashSet hg = new HashSet();
-					hg.add(SDMSObject.adminGId);
-					sysEnv.cEnv.pushGid(sysEnv, hg);
-					setgid = true;
-				}
-				g1.setDeleteVersion(sysEnv, new Long(0));
-				newGroupId = g1.getId(sysEnv);
-				SDMSMemberTable.table.create(sysEnv, newGroupId, myUId);
-				addedMe = true;
-				if (setgid) {
-					sysEnv.cEnv.popGid(sysEnv);
-					setgid = false;
-				}
-				break;
-			}
-		}
-
 		try {
 			if (manageGroup) {
 				HashSet hg = new HashSet();
@@ -111,45 +89,83 @@ public class CreateGroup extends ManipGroup
 				sysEnv.cEnv.pushGid(sysEnv, hg);
 				setgid = true;
 			}
-
-			g = SDMSGroupTable.table.create( sysEnv, group, new Long(0));
-		} catch (DuplicateKeyException dke) {
+			while (i1.hasNext()) {
+				SDMSGroup g1 = (SDMSGroup)i1.next();
+				if (!g1.getDeleteVersion(sysEnv).equals(new Long(0))) {
+					replace = true;
+					g1.setDeleteVersion(sysEnv, new Long(0));
+					newGroupId = g1.getId(sysEnv);
+					SDMSMemberTable.table.create(sysEnv, newGroupId, myUId);
+					addedMe = true;
+					break;
+				}
+			}
 			if (setgid) {
 				sysEnv.cEnv.popGid(sysEnv);
 				setgid = false;
 			}
-			if(replace) {
-				try {
-					AlterGroup ag = new AlterGroup(new ObjectURL(new Integer(Parser.GROUP), group), with, Boolean.FALSE);
-					ag.setEnv(env);
-					ag.go(sysEnv);
-					result = ag.result;
-
-					if (addedMe) sysEnv.cEnv.addGid(newGroupId);
-				} catch (SDMSException e) {
-					throw e;
-				}
-				return;
-			} else {
-				throw dke;
+		} catch (Throwable t) {
+			if (setgid) {
+				sysEnv.cEnv.popGid(sysEnv);
+				setgid = false;
 			}
+			throw t;
 		}
 
-		newGroupId = g.getId(sysEnv);
-		for(int i = 0; i < userlist.size(); i++) {
-			Long uid = (Long) userlist.get(i);
-			if (uid.equals(myUId)) addedMe = true;
-			SDMSMemberTable.table.create(sysEnv, newGroupId, uid);
-		}
+		try {
+			try {
+				if (manageGroup) {
+					HashSet hg = new HashSet();
+					hg.add(SDMSObject.adminGId);
+					sysEnv.cEnv.pushGid(sysEnv, hg);
+					setgid = true;
+				}
 
-		if (manageGroup && !addedMe) {
-			SDMSMemberTable.table.create(sysEnv, newGroupId, myUId);
-			addedMe = true;
-		}
+				g = SDMSGroupTable.table.create( sysEnv, group, new Long(0));
+			} catch (DuplicateKeyException dke) {
+				if (setgid) {
+					sysEnv.cEnv.popGid(sysEnv);
+					setgid = false;
+				}
+				if(replace) {
+					try {
+						AlterGroup ag = new AlterGroup(new ObjectURL(new Integer(Parser.GROUP), group), with, Boolean.FALSE);
+						ag.setEnv(env);
+						ag.go(sysEnv);
+						result = ag.result;
 
-		if (setgid) {
-			sysEnv.cEnv.popGid(sysEnv);
-			setgid = false;
+						if (addedMe) sysEnv.cEnv.addGid(newGroupId);
+					} catch (SDMSException e) {
+						throw e;
+					}
+					return;
+				} else {
+					throw dke;
+				}
+			}
+
+			newGroupId = g.getId(sysEnv);
+			for(int i = 0; i < userlist.size(); i++) {
+				Long uid = (Long) userlist.get(i);
+				if (uid.equals(myUId)) addedMe = true;
+				SDMSMemberTable.table.create(sysEnv, newGroupId, uid);
+			}
+
+			if (manageGroup && !addedMe) {
+				SDMSMemberTable.table.create(sysEnv, newGroupId, myUId);
+				addedMe = true;
+			}
+
+			if (setgid) {
+				sysEnv.cEnv.popGid(sysEnv);
+				setgid = false;
+			}
+		} catch (Throwable t) {
+			if (setgid) {
+				sysEnv.cEnv.popGid(sysEnv);
+				setgid = false;
+			}
+			throw t;
 		}
 
 		if (addedMe) sysEnv.cEnv.addGid(newGroupId);

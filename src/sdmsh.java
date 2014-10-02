@@ -87,9 +87,18 @@ public class sdmsh extends App
 		return null;
 	}
 
-	public String getName() { return "sdmsh"; }
-	public boolean canRetry() { return false; }
-	public String getUsageArguments() { return "user password host port"; }
+	public String getName()
+	{
+		return "sdmsh";
+	}
+	public boolean canRetry()
+	{
+		return false;
+	}
+	public String getUsageArguments()
+	{
+		return "user password host port";
+	}
 
 	public boolean specificParse()
 	{

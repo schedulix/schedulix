@@ -178,7 +178,7 @@ public class ProcessInfo
 				BasicFileAttributes attr = Files.readAttributes(Paths.get("/proc/" + strPid), BasicFileAttributes.class);
 				result = attr.creationTime().to(TimeUnit.SECONDS);
 			} catch (Exception e) {
-				throw new RuntimeException("(02310291000) Exception in getStartTime(" + strPid + ") : " + e.toString());
+				return 0;
 			}
 		}
 		return result;

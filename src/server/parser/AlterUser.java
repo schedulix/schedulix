@@ -106,12 +106,17 @@ public class AlterUser extends ManipUser
 				HashSet hg = new HashSet();
 				hg.add(SDMSObject.adminGId);
 				sysEnv.cEnv.pushGid(sysEnv, hg);
-				if(passwd != null) {
-					u.setPasswd(sysEnv, passwd);
-					u.setSalt(sysEnv, salt);
+				try {
+					if(passwd != null) {
+						u.setPasswd(sysEnv, passwd);
+						u.setSalt(sysEnv, salt);
+					}
+					if(with.containsKey(ParseStr.S_DEFAULTGROUP))
+						u.setDefaultGId(sysEnv, defaultGId);
+				} catch (Throwable t) {
+					sysEnv.cEnv.popGid(sysEnv);
+					throw t;
 				}
-				if(with.containsKey(ParseStr.S_DEFAULTGROUP))
-					u.setDefaultGId(sysEnv, defaultGId);
 				sysEnv.cEnv.popGid(sysEnv);
 			}
 		} else {
@@ -137,129 +142,148 @@ public class AlterUser extends ManipUser
 			u.setIsEnabled(sysEnv, enable);
 		}
 
-		if(with.containsKey(ParseStr.S_GROUPLIST)) {
+		try {
+			if(with.containsKey(ParseStr.S_GROUPLIST)) {
 
-			Vector oldgroups = SDMSMemberTable.idx_uId.getVector(sysEnv, uId);
-			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
-				boolean canAlter = true;
-				SDMSPrivilege p = new SDMSPrivilege();
-				for (int i = 0; i < grouplist.size(); i++) {
-					Long gId = (Long) grouplist.get(i);
-					if (!sysEnv.cEnv.gid().contains(gId)) {
-						canAlter = false;
-						for(int j = 0; j < oldgroups.size(); j++) {
-							SDMSMember m = (SDMSMember) oldgroups.get(j);
-							Long mGId = m.getGId(sysEnv);
-							if(gId.equals(mGId)) {
+				Vector oldgroups = SDMSMemberTable.idx_uId.getVector(sysEnv, uId);
+				if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+					boolean canAlter = true;
+					SDMSPrivilege p = new SDMSPrivilege();
+					for (int i = 0; i < grouplist.size(); i++) {
+						Long gId = (Long) grouplist.get(i);
+						if (!sysEnv.cEnv.gid().contains(gId)) {
+							canAlter = false;
+							for(int j = 0; j < oldgroups.size(); j++) {
+								SDMSMember m = (SDMSMember) oldgroups.get(j);
+								Long mGId = m.getGId(sysEnv);
+								if(gId.equals(mGId)) {
 
-								canAlter = true;
+									canAlter = true;
+								}
+							}
+							if (!canAlter) {
+								break;
 							}
 						}
-						if (!canAlter) {
+					}
+					if (canAlter && manageUser) {
+						HashSet hg = new HashSet();
+						hg.add(SDMSObject.adminGId);
+						sysEnv.cEnv.pushGid(sysEnv, hg);
+						suActive = true;
+					}
+				}
+
+				Long gId;
+				if(!grouplist.contains(defaultGId) && !publicGId.equals(defaultGId))
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03401271115", "You cannot remove the default group"));
+
+				for(int i = 0; i < oldgroups.size(); i++) {
+					SDMSMember m = (SDMSMember) oldgroups.get(i);
+					Long mGId = m.getGId(sysEnv);
+					if(!grouplist.contains(mGId) && !mGId.equals(publicGId) && !mGId.equals(defaultGId)) {
+						m.delete(sysEnv);
+					} else {
+						grouplist.remove(mGId);
+					}
+				}
+				for(int i = 0; i < grouplist.size(); i++) {
+					gId = (Long) grouplist.get(i);
+					SDMSThread.doTrace(sysEnv.cEnv, "uId = " + uId + ", gId = " + gId + ", defaultGId = " + defaultGId + ", publicGId = " + publicGId, SDMSThread.SEVERITY_DEBUG);
+					if(!gId.equals(defaultGId) && !gId.equals(publicGId))
+						SDMSMemberTable.table.create(sysEnv, gId, uId);
+				}
+				try {
+					SDMSMemberTable.table.create(sysEnv, defaultGId, uId);
+				} catch (DuplicateKeyException dke) {
+
+				}
+				if (suActive)
+					sysEnv.cEnv.popGid(sysEnv);
+			}
+		} catch (Throwable t) {
+			if (suActive)
+				sysEnv.cEnv.popGid(sysEnv);
+			throw t;
+		}
+
+		try {
+			if(with.containsKey(ParseStr.S_ADDGROUP)) {
+
+				if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+					boolean canAlter = true;
+					SDMSPrivilege p = new SDMSPrivilege();
+					for (int i = 0; i < addlist.size(); i++) {
+						Long gId = (Long) addlist.get(i);
+						if (!sysEnv.cEnv.gid().contains(gId)) {
+							canAlter = false;
 							break;
 						}
 					}
+					if (canAlter && manageUser) {
+						HashSet hg = new HashSet();
+						hg.add(SDMSObject.adminGId);
+						sysEnv.cEnv.pushGid(sysEnv, hg);
+						suActive = true;
+					}
 				}
-				if (canAlter && manageUser) {
+
+				Long gId;
+				for(int i = 0; i < addlist.size(); i++) {
+					gId = (Long) addlist.get(i);
+					if(!gId.equals(defaultGId)) {
+						try {
+							SDMSMemberTable.table.create(sysEnv, gId, uId);
+						} catch (DuplicateKeyException dke) {
+
+						}
+					}
+				}
+				if (suActive)
+					sysEnv.cEnv.popGid(sysEnv);
+			}
+		} catch (Throwable t) {
+			if (suActive)
+				sysEnv.cEnv.popGid(sysEnv);
+			throw t;
+		}
+
+		try {
+			if(with.containsKey(ParseStr.S_DELGROUP)) {
+				if (manageUser) {
 					HashSet hg = new HashSet();
 					hg.add(SDMSObject.adminGId);
 					sysEnv.cEnv.pushGid(sysEnv, hg);
 					suActive = true;
 				}
-			}
+				SDMSMember m;
+				Long gId;
+				for(int i = 0; i < dellist.size(); i++) {
+					gId = (Long) dellist.get(i);
+					if(!gId.equals(defaultGId)) {
+						if(gId.equals(publicGId)) continue;
+						try {
+							m = SDMSMemberTable.idx_gId_uId_getUnique(sysEnv, new SDMSKey(gId, uId));
+							m.delete(sysEnv);
+						} catch (NotFoundException nfe) {
 
-			Long gId;
-			if(!grouplist.contains(defaultGId) && !publicGId.equals(defaultGId))
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03401271115", "You cannot remove the default group"));
-
-			for(int i = 0; i < oldgroups.size(); i++) {
-				SDMSMember m = (SDMSMember) oldgroups.get(i);
-				Long mGId = m.getGId(sysEnv);
-				if(!grouplist.contains(mGId) && !mGId.equals(publicGId) && !mGId.equals(defaultGId)) {
-					m.delete(sysEnv);
-				} else {
-					grouplist.remove(mGId);
-				}
-			}
-			for(int i = 0; i < grouplist.size(); i++) {
-				gId = (Long) grouplist.get(i);
-				SDMSThread.doTrace(sysEnv.cEnv, "uId = " + uId + ", gId = " + gId + ", defaultGId = " + defaultGId + ", publicGId = " + publicGId, SDMSThread.SEVERITY_DEBUG);
-				if(!gId.equals(defaultGId) && !gId.equals(publicGId))
-					SDMSMemberTable.table.create(sysEnv, gId, uId);
-			}
-			try {
-				SDMSMemberTable.table.create(sysEnv, defaultGId, uId);
-			} catch (DuplicateKeyException dke) {
-
-			}
-			if (suActive)
-				sysEnv.cEnv.popGid(sysEnv);
-		}
-
-		if(with.containsKey(ParseStr.S_ADDGROUP)) {
-
-			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
-				boolean canAlter = true;
-				SDMSPrivilege p = new SDMSPrivilege();
-				for (int i = 0; i < addlist.size(); i++) {
-					Long gId = (Long) addlist.get(i);
-					if (!sysEnv.cEnv.gid().contains(gId)) {
-						canAlter = false;
-						break;
+						}
+					} else {
+						if (suActive)
+							sysEnv.cEnv.popGid(sysEnv);
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03312102203",
+									       "You cannot remove the default group"));
 					}
 				}
-				if (canAlter && manageUser) {
-					HashSet hg = new HashSet();
-					hg.add(SDMSObject.adminGId);
-					sysEnv.cEnv.pushGid(sysEnv, hg);
-					suActive = true;
-				}
+				if (suActive)
+					sysEnv.cEnv.popGid(sysEnv);
 			}
-
-			Long gId;
-			for(int i = 0; i < addlist.size(); i++) {
-				gId = (Long) addlist.get(i);
-				if(!gId.equals(defaultGId)) {
-					try {
-						SDMSMemberTable.table.create(sysEnv, gId, uId);
-					} catch (DuplicateKeyException dke) {
-
-					}
-				}
-			}
+		} catch (Throwable t) {
 			if (suActive)
 				sysEnv.cEnv.popGid(sysEnv);
+			throw t;
 		}
 
-		if(with.containsKey(ParseStr.S_DELGROUP)) {
-			if (manageUser) {
-				HashSet hg = new HashSet();
-				hg.add(SDMSObject.adminGId);
-				sysEnv.cEnv.pushGid(sysEnv, hg);
-				suActive = true;
-			}
-			SDMSMember m;
-			Long gId;
-			for(int i = 0; i < dellist.size(); i++) {
-				gId = (Long) dellist.get(i);
-				if(!gId.equals(defaultGId)) {
-					if(gId.equals(publicGId)) continue;
-					try {
-						m = SDMSMemberTable.idx_gId_uId_getUnique(sysEnv, new SDMSKey(gId, uId));
-						m.delete(sysEnv);
-					} catch (NotFoundException nfe) {
-
-					}
-				} else {
-					if (suActive)
-						sysEnv.cEnv.popGid(sysEnv);
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03312102203",
-					                               "You cannot remove the default group"));
-				}
-			}
-			if (suActive)
-				sysEnv.cEnv.popGid(sysEnv);
-		}
 		if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(defaultGId, uId)))
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03312130121", "a user must belong to his default group"));
 

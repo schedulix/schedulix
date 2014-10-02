@@ -44,9 +44,18 @@ class set_variable extends App
 		addOption("j", "jid",  null, JID,  null, "jobid", true,  "Id of job to set variable for");
 		addOption("C", "case", null, CASE, null, null,    false, "[Don't] Treat variable names case sensitive");
 	}
-	public String getUsageArguments() { return "variable value { variable value }"; }
-	public String getName() { return "set_variable"; }
-	public boolean canRetry() { return true; }
+	public String getUsageArguments()
+	{
+		return "variable value { variable value }";
+	}
+	public String getName()
+	{
+		return "set_variable";
+	}
+	public boolean canRetry()
+	{
+		return true;
+	}
 	public boolean validateOptions()
 	{
 		if (options.rest.size() == 0) {

@@ -306,7 +306,7 @@ public class SchedulingThread extends InternalSession
 			if(se.getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) continue;
 			smeId = sme.getId(sysEnv);
 
-			if(sme.getIsSuspended(sysEnv).booleanValue() || sme.getParentSuspended(sysEnv).intValue() > 0)
+			if(sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND || sme.getParentSuspended(sysEnv).intValue() > 0)
 				suspended = true;
 			else
 				suspended = false;
@@ -323,7 +323,7 @@ public class SchedulingThread extends InternalSession
 				if(allocType != SDMSResourceAllocation.ALLOCATION &&
 				   allocType != SDMSResourceAllocation.IGNORE &&
 				   !ra.getIsSticky(sysEnv).booleanValue()) {
-					ra.delete(sysEnv, false);
+					ra.delete(sysEnv, false, true);
 				}
 			}
 
@@ -374,7 +374,7 @@ public class SchedulingThread extends InternalSession
 
 		for(i = 0; i < smev.size(); ++i) {
 			sme = (SDMSSubmittedEntity) smev.get(i);
-			if(sme.getIsSuspended(sysEnv).booleanValue() || sme.getParentSuspended(sysEnv).intValue() > 0)
+			if(sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND || sme.getParentSuspended(sysEnv).intValue() > 0)
 				continue;
 
 			syncScheduleSme(sysEnv, sme, resourceChain);
@@ -520,7 +520,7 @@ public class SchedulingThread extends InternalSession
 				}
 			}
 
-			if (ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.ALLOCATION) ra.delete(sysEnv, true);
+			if (ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.ALLOCATION) ra.delete(sysEnv, true, true);
 		}
 
 		SystemEnvironment.sched.needSched = true;
@@ -661,7 +661,7 @@ public class SchedulingThread extends InternalSession
 					for (int k = 0; k < rav.size(); ++k) {
 						SDMSResourceAllocation ra = (SDMSResourceAllocation) rav.get(k);
 						if (ra.getRId(sysEnv).equals(rId)) {
-							ra.delete(sysEnv, true);
+							ra.delete(sysEnv, true, false);
 							break;
 						}
 					}
@@ -981,7 +981,7 @@ public class SchedulingThread extends InternalSession
 					SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, ra.getNrId(sysEnv));
 					if(nr.getUsage(sysEnv).intValue() != SDMSNamedResource.SYNCHRONIZING)
 						continue;
-					ra.delete(sysEnv, true);
+					ra.delete(sysEnv, true, true);
 				}
 			}
 
@@ -1123,7 +1123,7 @@ public class SchedulingThread extends InternalSession
 
 		for(int i = 0; i < sv.size(); ++i) {
 			sme = (SDMSSubmittedEntity) sv.get(i);
-			if(sme.getIsSuspended(sysEnv).booleanValue() || sme.getParentSuspended(sysEnv).intValue() > 0)
+			if(sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND || sme.getParentSuspended(sysEnv).intValue() > 0)
 				continue;
 
 			resourceScheduleSme(sysEnv, sme, resourceChain);
@@ -1181,7 +1181,7 @@ public class SchedulingThread extends InternalSession
 					SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, ra.getNrId(sysEnv));
 					if(nr.getUsage(sysEnv).intValue() != SDMSNamedResource.SYSTEM)
 						continue;
-					ra.delete(sysEnv, true);
+					ra.delete(sysEnv, true, true);
 				}
 			}
 
@@ -2188,6 +2188,12 @@ class prioComparator implements Comparator
 			p2 = dynPrio(sme2);
 			if(p1 < p2) return -1;
 			if(p1 > p2) return 1;
+
+			int rp1, rp2;
+			rp1 = sme1.getRawPriority(sysEnv).intValue();
+			rp2 = sme2.getRawPriority(sysEnv).intValue();
+			if(rp1 < rp2) return -1;
+			if(rp1 > rp2) return 1;
 
 			long l1, l2;
 			l1 = sme1.getId(sysEnv).longValue();

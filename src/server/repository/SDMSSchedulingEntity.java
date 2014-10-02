@@ -149,21 +149,21 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		return SEVR.getVariableValue(sysEnv, this, key, version);
 	}
 
-	public SDMSSubmittedEntity submitMaster (SystemEnvironment sysEnv, Vector params, Boolean suspended, Long resumeTs, Long ownerId,
+	public SDMSSubmittedEntity submitMaster (SystemEnvironment sysEnv, Vector params, Integer suspended, Long resumeTs, Long ownerId,
 	                Integer niceValue, String auditEintrag)
 	throws SDMSException
 	{
 		return submitMaster (sysEnv,params,suspended,resumeTs,ownerId,niceValue,auditEintrag,null,null);
 	}
 
-	public SDMSSubmittedEntity submitMaster (SystemEnvironment sysEnv, Vector params, Boolean suspended, Long resumeTs, Long ownerId,
+	public SDMSSubmittedEntity submitMaster (SystemEnvironment sysEnv, Vector params, Integer suspended, Long resumeTs, Long ownerId,
 	                Integer niceValue, String auditEintrag, String submitTag, Integer unresolvedHandling)
 	throws SDMSException
 	{
 		return submitMaster (sysEnv, params, suspended, resumeTs, ownerId, niceValue, auditEintrag, submitTag, null, unresolvedHandling);
 	}
 
-	public SDMSSubmittedEntity submitMaster (SystemEnvironment sysEnv, Vector params, Boolean suspended, Long resumeTs, Long ownerId,
+	public SDMSSubmittedEntity submitMaster (SystemEnvironment sysEnv, Vector params, Integer suspended, Long resumeTs, Long ownerId,
 	                Integer niceValue, String auditEintrag, String submitTag, String childTag, Integer unresolvedHandling)
 	throws SDMSException
 	{
@@ -188,15 +188,19 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		}
 
 		if (suspended == null) {
-			suspended = getSubmitSuspended(sysEnv);
-			if (suspended.booleanValue()) {
+			suspended = new Integer(getSubmitSuspended(sysEnv) ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND);
+			if (suspended.intValue() == SDMSSubmittedEntity.SUSPEND) {
 				resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv), submitTs, true );
 			}
 		}
+		Long opSusresTs = null;
+		if (suspended.intValue() != SDMSSubmittedEntity.NOSUSPEND)
+			opSusresTs = new Long(-submitTs.longValue());
 
 		long seVersion = SDMSTransaction.drawVersion(sysEnv);
 
 		Integer prio = getPriority(sysEnv);
+		Integer rawPrio = zero;
 		Integer nice = (niceValue == null ? new Integer(0) : niceValue);
 		switch(getType(sysEnv).intValue() ) {
 		case JOB:
@@ -209,6 +213,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 						prio = new Integer(SystemEnvironment.priorityLowerBound);
 					}
 				}
+				rawPrio = new Integer(prio.intValue() * 100);
 			}
 			break;
 		case BATCH:
@@ -219,7 +224,8 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			break;
 		case MILESTONE:
 			prio = new Integer(SchedulingThread.DEFAULT_PRIORITY);
-			nice = new Integer(0);
+			if (nice == null)
+				nice = new Integer(0);
 			break;
 		}
 		Integer minEP = null;
@@ -292,7 +298,9 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                                null,
 		                                suspended,
 		                                prio,
+						rawPrio,
 		                                nice,
+						zero,
 		                                minEP,
 		                                agingAmount,
 		                                zero,
@@ -327,6 +335,9 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                                zero,
 		                                zero,
 		                                zero
+		                                ,null,null,zero,null,zero
+		                                ,zero,zero,zero,zero,zero
+		                                ,opSusresTs, null
 		                                                                     );
 
 		Long smeId = sme.getId(sysEnv);
@@ -339,7 +350,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			}
 		}
 
-		sme.submitChilds(sysEnv, suspended.booleanValue() ? 1 : 0, ownerId, null);
+		sme.submitChilds(sysEnv, suspended.intValue() == SDMSSubmittedEntity.NOSUSPEND ? 0 : 1, ownerId, null, nice.intValue() * 100);
 
 		sme.resolveDependencies(sysEnv, true );
 
@@ -876,6 +887,24 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 	public void delete(SystemEnvironment sysEnv)
 	throws SDMSException
 	{
+
+		SDMSNiceProfileEntry npe;
+		SDMSNiceProfile np;
+		Vector npev = SDMSNiceProfileEntryTable.idx_folderId.getVector(sysEnv, getId(sysEnv));
+		for (int i = 0; i < npev.size(); ++i) {
+			npe = (SDMSNiceProfileEntry) npev.get(i);
+			if (npe.getIsActive(sysEnv).booleanValue()) {
+				np = SDMSNiceProfileTable.getObject(sysEnv, npe.getNpId(sysEnv));
+				if (!np.getIsActive(sysEnv).booleanValue())
+					npe.delete(sysEnv);
+				else
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408211534",
+					                               "Job Definition $1 is addressed by active Nice Profile $2", pathString(sysEnv), np.getName(sysEnv)));
+			} else {
+				npe.delete(sysEnv);
+			}
+		}
+
 		HashSet parmLinks = new HashSet();
 		delete(sysEnv, false, parmLinks);
 		if (!parmLinks.isEmpty()) {

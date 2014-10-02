@@ -55,6 +55,8 @@ set autocommit on;
 \i ing_gen/MEMBER.sql
 \i ing_gen/NAMED_ENVIRONMENT.sql
 \i ing_gen/NAMED_RESOURCE.sql
+\i ing_gen/NICE_PROFILE.sql
+\i ing_gen/NICE_PROFILE_ENTRY.sql
 \i ing_gen/OBJECT_COMMENT.sql
 \i ing_gen/OBJECT_EVENT.sql
 \i ing_gen/OBJECT_INSTANCE.sql
@@ -97,10 +99,11 @@ set autocommit on;
 \i ing_gen/WATCH_TYPE_PARAMETER.sql
 \i ing/OBJECTCOUNTER.sql
 \i ing/VERSIONCOUNTER.sql
-\i ing/SME2LOAD.sql
 \i REPOSITORY_LOCK.sql
 \g
 \i MASTER_STATE.sql
+\g
+\i ing/SME2LOAD.sql
 \g
 \i init.sql
 \g

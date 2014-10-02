@@ -36,9 +36,15 @@ class TestApp extends App
 		addOption("e", "env", null, "ENV", null, "environment", true, "Environment to show");
 	}
 
-	public String getName() { return "TestApp"; }
+	public String getName()
+	{
+		return "TestApp";
+	}
 
-	public boolean canRetry() { return true; }
+	public boolean canRetry()
+	{
+		return true;
+	}
 
 	public int go()
 		throws RetryException

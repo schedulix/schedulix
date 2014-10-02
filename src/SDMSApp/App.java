@@ -172,17 +172,44 @@ public class App
 	}
 
 	public void    addOptions()				{ }
-	public int     go() throws RetryException		{ return 0; }
-	public String  getName()				{ return "?"; }
-	public String  getUsageArguments()			{ return ""; }
-	public boolean validateOptions()			{ return true; }
-	public boolean canRetry()				{ return false; }
-	public boolean userOnly()				{ return false; }
-	public boolean specificParse()				{ return true; }
+	public int     go() throws RetryException
+	{
+		return 0;
+	}
+	public String  getName()
+	{
+		return "?";
+	}
+	public String  getUsageArguments()
+	{
+		return "";
+	}
+	public boolean validateOptions()
+	{
+		return true;
+	}
+	public boolean canRetry()
+	{
+		return false;
+	}
+	public boolean userOnly()
+	{
+		return false;
+	}
+	public boolean specificParse()
+	{
+		return true;
+	}
 
-	public void render(SDMSOutput o) throws SDMSException	{ return; }
+	public void render(SDMSOutput o) throws SDMSException
+	{
+		return;
+	}
 
-	public boolean setupApp()				{ return true; }
+	public boolean setupApp()
+	{
+		return true;
+	}
 
 	private String getUsage()
 	{
@@ -311,8 +338,7 @@ public class App
 							retry = false;
 						}
 					}
-					if (retry)
-						try {
+					if (retry) try {
 							Thread.sleep (cycle_min * 60 * 1000);
 						} catch (InterruptedException ie) {}
 				}

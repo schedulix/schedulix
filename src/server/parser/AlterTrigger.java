@@ -150,7 +150,7 @@ public class AlterTrigger extends ManipTrigger
 						new SDMSMessage(sysEnv, "03206202334", "Only master submits allowed for resource triggers"));
 				}
 			}
-			if (iaction == SDMSTrigger.RERUN) {
+			if (iaction == SDMSTrigger.RERUN && isMaster.booleanValue()) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03108091455", "Master option not valid for rerun triggers"));
 			}
 		} else

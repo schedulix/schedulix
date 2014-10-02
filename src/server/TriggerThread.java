@@ -76,10 +76,9 @@ public class TriggerThread extends InternalSession
 		i = SDMSSubmittedEntityTable.table.iterator(sysEnv,
 			new SDMSFilter() {
 				public boolean isValid(SystemEnvironment sysEnv, SDMSProxy p)
-					throws SDMSException
-				{
+					throws SDMSException {
 					SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
-					if (!sme.getIsSuspended(sysEnv).booleanValue()) return false;
+					if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) return false;
 					if (sme.getResumeTs(sysEnv) == null) return false;
 					return true;
 				}
@@ -87,13 +86,13 @@ public class TriggerThread extends InternalSession
 		);
 		while (i.hasNext()) {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) i.next();
-			if (!sme.getIsSuspended(sysEnv).booleanValue()) continue;
+			if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) continue;
 			Long resumeTs = sme.getResumeTs(sysEnv);
 			if (resumeTs != null) {
 
 				long rts = resumeTs.longValue();
 				if (rts <= now) {
-					sme.resume(sysEnv);
+					sme.resume(sysEnv, false);
 				} else {
 					if (rts < nextTime) nextTime = rts;
 				}

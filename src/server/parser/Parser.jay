@@ -51,7 +51,7 @@ public class Parser
 %token <Token>	LAST LEVEL LIBERAL LIKE LIMITS LINE LINK LIST LOCAL LOCAL_CONSTANT LOCKMODE LOGFILE LOOPS
 %token <Token>	MAIN MANAGE MANAGED MANAGE_SELECT MAP MAPPING MAPS MASTER MASTER_ID MAX MAXPCT MERGE MERGED MERGE_GLOBAL MERGE_LOCAL MERGE_MODE MILESTONE
 %token <Token>	MIN MINPCT MINUTE MODE MONITOR MONTH MOVE MULTICOMMAND MULTIPLIER
-%token <Token>	N NAME NAMED_RESOURCE NICEVALUE NODE NOINVERSE NOKEEP NOMASTER NOMERGE NOMINALPCT NONE NONFATAL
+%token <Token>	N NAME NAMED_RESOURCE NICE_PROFILE NICEVALUE NODE NOINVERSE NOKEEP NOMASTER NOMERGE NOMINALPCT NONE NONFATAL
 %token <Token>	NORESUME NOSTICKY NOSUSPEND NOT NOTRACE NOTRUNC NOWARN
 %token <Token>	OBJECT OF OFFLINE ON ONLINE ONLY OPERATE OR OTHER OWNER
 %token <Token>	PARENT PARAMETERS PASSWORD PATH PENDING PERFORMANCE PERL PID POOL PRIORITY PROFILE PROTOCOL PUBLIC PYTHON
@@ -74,7 +74,7 @@ public class Parser
 
 %type <Node>	alter_cmd, alter_comment, alter_dist
 %type <Node>	alter_environment, alter_event, alter_exit_status_prof, alter_exit_status_mapping, alter_exit_status_trans
-%type <Node>	alter_folder, alter_footprint, alter_group, alter_interval, alter_job, alter_job_definition, alter_jobservers, alter_named_resource
+%type <Node>	alter_folder, alter_footprint, alter_group, alter_interval, alter_job, alter_job_definition, alter_jobservers, alter_named_resource, alter_nice_profile
 %type <Node>	alter_om, alter_omj, alter_pool, alter_resource, alter_rsm, alter_rsp, alter_schedule, alter_scheduled_event, alter_scope, alter_server
 %type <Node>	alter_session, alter_trigger, alter_user, alter_wt
 %type <Node>	child_submit_cmd, cleanup_folder, cmd,
@@ -83,12 +83,12 @@ public class Parser
 %type <Node>	create_cmd, create_comment, create_dist
 %type <Node>	create_environment, create_event, create_exit_status_prof, create_exit_status_def, create_exit_status_mapping
 %type <Node>	create_exit_status_trans
-%type <Node>	create_folder, create_footprint, create_group, create_interval, create_job_definition, create_named_resource
+%type <Node>	create_folder, create_footprint, create_group, create_interval, create_job_definition, create_named_resource, create_nice_profile
 %type <Node>	create_om, create_pool, create_resource, create_resource_stat_def, create_rsm, create_rsp, create_schedule
 %type <Node>	create_scheduled_event, create_scope, create_trigger, create_user create_wt
 %type <Node>	deregister_cmd, disconnect_cmd, drop_cmd, drop_comment, drop_dist, drop_environment, drop_event, drop_exit_status_prof, drop_exit_status_def
 %type <Node>	drop_exit_status_mapping, drop_exit_status_trans, drop_folder, drop_footprint, drop_group, drop_interval, drop_job_definition
-%type <Node>	drop_named_resource, drop_om, drop_pool, drop_resource, drop_resource_stat_def, drop_rsm, drop_rsp, drop_schedule
+%type <Node>	drop_named_resource, drop_nice_profile, drop_om, drop_pool, drop_resource, drop_resource_stat_def, drop_rsm, drop_rsp, drop_schedule
 %type <Node>	drop_scheduled_event, drop_scope, drop_trigger, drop_user, drop_wt, dump_cmd
 %type <Node>	empty_cmd, event_submit_cmd
 %type <Node>	finish_job_cmd, full_submit_cmd
@@ -98,18 +98,18 @@ public class Parser
 %type <Node>	list_calendar, list_cmd, list_dependency_definition, list_dependency_hierarchy, list_environment, list_event, list_exit_status_def
 %type <Node>	list_exit_status_mapping, list_exit_status_profile, list_exit_status_trans, list_folder, list_footprint, list_group, list_grant
 %type <Node>	list_interval, list_job
-%type <Node>	list_job_definition_hierarchy, list_named_resource, list_om, list_pool, list_resource_stat_def, list_rsm, list_rsp, list_schedule
+%type <Node>	list_job_definition_hierarchy, list_named_resource, list_nice_profile, list_om, list_pool, list_resource_stat_def, list_rsm, list_rsp, list_schedule
 %type <Node>	list_scheduled_event, list_scope, list_session, list_trigger, list_user, list_wt
 %type <Node>	move_folder, move_job_definition, move_pool, move_schedule, move_scope, multicmd
 %type <Node>	ordinarycmd
 %type <Node>	reassure_cmd, register_cmd, rename_cmd, rename_dist, rename_environment, rename_event, rename_exit_status_prof, rename_exit_status_def
 %type <Node>	rename_exit_status_mapping, rename_exit_status_trans, rename_folder, rename_footprint, rename_group, rename_interval, rename_job_definition,
-%type <Node>	move_named_resource, rename_named_resource, rename_om, rename_resource_stat_def, rename_rsm, rename_rsp, rename_scope, rename_schedule,
+%type <Node>	move_named_resource, rename_named_resource, rename_nice_profile, rename_om, rename_resource_stat_def, rename_rsm, rename_rsp, rename_scope, rename_schedule,
 %type <Node>	rename_trigger, rename_user, rename_wt, resume_cmd, revoke_cmd, run_test_cmd
 %type <Node>	select_cmd, set_parm_cmd, set_status_cmd
 %type <Node>	show_comment, show_cmd, show_dist, show_environment, show_event, show_exit_status_def, show_exit_status_mapping
 %type <Node>	show_exit_status_profile, show_exit_status_trans, show_folder, show_footprint, show_group, show_interval, show_job, show_job_definition
-%type <Node>	show_named_resource, show_om, show_pool, show_resource, show_resource_stat_def, show_rsm, show_rsp, show_schedule
+%type <Node>	show_named_resource, show_nice_profile, show_om, show_pool, show_resource, show_resource_stat_def, show_rsm, show_rsp, show_schedule
 %type <Node>	show_scheduled_event, show_scope
 %type <Node>	show_session, show_system, show_trigger, show_user, show_wt, shutdown_cmd, stop_svr_cmd, submit_cmd, suspend_cmd
 %type <Node>	versionedcmd
@@ -180,6 +180,7 @@ public class Parser
 %type <Vector>	job_childdeflist, jobdeflist, job_requiredlist, job_resource_definitionlist, jobid_list, jrd_statelist, jrq_statelist
 %type <Vector>	lc_filterexpression, lc_filterterm, lf_filterexpression, lf_filterterm, lj_exitstatelist, lj_jobserverlist, lj_nodelist, lj_parameterlist, lj_userlist 
 %type <Vector>	lnr_filterexpression, lnr_filterterm, lnr_usagelist
+%type <Vector>  npentrylist
 %type <Vector>	opt_dump_list, opt_env_with_clause, opt_esm_maplist, opt_lj_idlist
 %type <Vector>	opt_ordinarycmdlist, ordinarycmdlist
 %type <Vector>	parmlist
@@ -203,8 +204,9 @@ public class Parser
 %type <WithHash>	job_childdef, job_parameterslist, job_required, job_resource_definition, job_with_clause, job_withitemlist, jobsvr_parm,
 %type <WithHash>	jrd_sticky, js_with, js_withwith, jw_filespec
 %type <WithHash>	lc_withlist, lf_withlist, lj_withlist, lnr_withlist, lnr_withwith
+%type <WithHash>	npwith, npentry
 %type <WithHash>	opt_connect_with, opt_dump_with, opt_event_submit_with, opt_ival_with, opt_gr_with, opt_lc_withlist, opt_lf_withlist, opt_lj_withlist, opt_lnr_withwith
-%type <WithHash>	opt_om_instancelist, opt_period, opt_schevwith, opt_show_with, opt_schedwith, opt_sel_with, opt_sj_with, opt_stickyspec, opt_submit_with,
+%type <WithHash>	opt_npwith, opt_om_instancelist, opt_period, opt_schevwith, opt_show_with, opt_schedwith, opt_sel_with, opt_sj_with, opt_stickyspec, opt_submit_with,
 %type <WithHash>	om_parameterlist, om_period, om_with_clause, om_withitemlist, om_instancelist
 %type <WithHash>	period
 %type <WithHash>	system_resource_req, rsp_with_clause, rsp_withitemlist
@@ -222,6 +224,7 @@ public class Parser
 %type <WithItem>	ival_selitem, ival_withitem
 %type <WithItem>	jcd_item, job_parameter, job_withitem, jp_nondefwith, jp_withitem, jrd_item, jrd_static_item, jrd_sync_item, jrd_system_item, jrq_item, jrq_req_state, js_withitem
 %type <WithItem>	lc_filteratom, lc_filteritem, lc_withitem, lf_filteratom, lf_filteritem, lf_withitem, lj_withitem, lnr_filteratom, lnr_filteritem, lnr_withitem
+%type <WithItem>	npwithitem, npentryitem
 %type <WithItem>	opt_jp_withitem, om_parameteritem, om_withitem, om_instanceitem
 %type <WithItem>	password, parm_is_string
 %type <WithItem>	resume, rsp_withitem
@@ -229,7 +232,7 @@ public class Parser
 %type <WithItem>	us_add_delitem, us_withitem, wt_withitem, with_group, with_inherit_grant
 
 %type <ObjectURL>	all_dump_url, dist_url, dump_objecturl, env_url, esd_url, esm_url, esp_url, est_url, event_url, folder_url, folderresource_url, fp_url
-%type <ObjectURL>	folder_or_job, group_url, interval_url, job_url, jobdef_url, nr_url, objecturl, om_url
+%type <ObjectURL>	folder_or_job, group_url, interval_url, job_url, jobdef_url, np_url, nr_url, objecturl, om_url
 %type <ObjectURL>	parameter_url, param_loc, pool_url, restrict_url, resource_url, rsd_url, rsm_url, rsp_url, scheduledevent_url, schedule_url
 %type <ObjectURL>	scope_url, scoperesource_url, t_url, trigger_url, user_url, wt_url
 
@@ -342,6 +345,7 @@ alter_cmd:	alter_user							{ $$ = $1; }
 	|	alter_job							{ $$ = $1; }
 	|	alter_job_definition						{ $$ = $1; }
 	|	alter_named_resource						{ $$ = $1; }
+	|	alter_nice_profile  						{ $$ = $1; }
 	|	alter_om							{ $$ = $1; }
 	|	alter_omj							{ $$ = $1; }
 	|	alter_pool							{ $$ = $1; }
@@ -371,6 +375,7 @@ create_cmd:	create_user							{ $$ = $1; }
 	|	create_interval							{ $$ = $1; }
 	|	create_job_definition						{ $$ = $1; }
 	|	create_named_resource						{ $$ = $1; }
+	|	create_nice_profile						{ $$ = $1; }
 	|	create_om							{ $$ = $1; }
 	|	create_pool							{ $$ = $1; }
 	|	create_resource							{ $$ = $1; }
@@ -399,6 +404,7 @@ drop_cmd:	drop_user							{ $$ = $1; }
 	|	drop_interval							{ $$ = $1; }
 	|	drop_job_definition						{ $$ = $1; }
 	|	drop_named_resource						{ $$ = $1; }
+	|	drop_nice_profile						{ $$ = $1; }
 	|	drop_om								{ $$ = $1; }
 	|	drop_pool							{ $$ = $1; }
 	|	drop_resource							{ $$ = $1; }
@@ -431,6 +437,7 @@ rename_cmd:	rename_user							{ $$ = $1; }
 	|	rename_interval							{ $$ = $1; }
 	|	rename_job_definition						{ $$ = $1; }
 	|	rename_named_resource						{ $$ = $1; }
+	|	rename_nice_profile						{ $$ = $1; }
 	|	rename_om							{ $$ = $1; }
 	|	rename_resource_stat_def					{ $$ = $1; }
 	|	rename_rsm							{ $$ = $1; }
@@ -464,6 +471,7 @@ list_cmd:	list_named_resource						{ $$ = $1; }
 	|	list_interval							{ $$ = $1; }
 	|	list_job							{ $$ = $1; }
 	|	list_job_definition_hierarchy					{ $$ = $1; }
+	|	list_nice_profile						{ $$ = $1; }
 	|	list_om								{ $$ = $1; }
 	|	list_pool							{ $$ = $1; }
 	|	list_resource_stat_def						{ $$ = $1; }
@@ -492,6 +500,7 @@ show_cmd:	show_named_resource						{ $$ = $1; }
 	|	show_interval							{ $$ = $1; }
 	|	show_job							{ $$ = $1; }
 	|	show_job_definition						{ $$ = $1; }
+	|	show_nice_profile						{ $$ = $1; }
 	|	show_om								{ $$ = $1; }
 	|	show_pool							{ $$ = $1; }
 	|	show_resource							{ $$ = $1; }
@@ -1983,6 +1992,77 @@ est_trans:			statusname TO statusname			{ $$ = new StatusTranslation($1, $3); }
 
 
 
+// -----------------------------------------------------------------------------------
+//     N I C E   P R O F I L E
+// -----------------------------------------------------------------------------------
+
+//D:MASTER
+//D:LEVEL enterprise
+//D:NT-ALIAS = create nice profile
+//D:PURPOSE P206
+//D:DESCRIPTION create_nice_profile.tex
+create_nice_profile:	create NICE_PROFILE profilename	opt_npwith		{ $$ = new CreateNiceProfile($3, $4, $1); }
+
+//D:MASTER
+//D:LEVEL enterprise
+//D:NT-ALIAS = alter nice profile
+//D:PURPOSE P207
+//D:DESCRIPTION alter_nice_profile.tex
+alter_nice_profile:	alter np_url WITH npwith				{ $$ = new AlterNiceProfile($2, $4, $1); }
+
+//D:MASTER
+//D:LEVEL enterprise
+//D:NT-ALIAS = drop nice profile
+//D:PURPOSE P208
+//D:DESCRIPTION drop_nice_profile.tex
+drop_nice_profile:	drop np_url			 			{ $$ = new DropNiceProfile($2, $1); }
+
+//D:MASTER
+//D:LEVEL enterprise
+//D:NT-ALIAS = rename nice profile
+//D:PURPOSE P209
+//D:DESCRIPTION rename_nice_profile.tex
+rename_nice_profile:	RENAME np_url TO profilename				{ $$ = new RenameNiceProfile($2, $4); }
+
+//D:MASTER
+//D:LEVEL enterprise
+//D:NT-ALIAS = list nice profile
+//D:DESCRIPTION list_nice_profile.tex
+//D:PURPOSE P210
+list_nice_profile:	LIST NICE_PROFILE					{ $$ = new ListNiceProfile(); }
+
+//D:MASTER
+//D:LEVEL enterprise
+//D:NT-ALIAS = show nice profile
+//D:DESCRIPTION show_nice_profile.tex
+//D:PURPOSE P211
+show_nice_profile:		SHOW np_url					{ $$ = new ShowNiceProfile($2); }
+
+opt_npwith:									{ $$ = new WithHash(); }
+	|		WITH npwith						{ $$ = $2; }
+
+npwith:			npwithitem						{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
+	|		npwith ',' npwithitem					{ $1.addItem($3); }
+
+npwithitem:		active							{ $$ = new WithItem(ParseStr.S_ACTIVE, $1); }
+	|		PROFILE '=' '(' npentrylist ')'				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
+	|		PROFILE '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
+
+npentrylist:		npentry							{ $$ = new Vector(); $<Vector>$.add($1); }
+	|		npentrylist ',' npentry					{ $1.add($3); }
+
+npentry:		npentryitem						{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
+	|		npentry npentryitem					{ $1.addItem($2); }
+
+npentryitem:		active							{ $$ = new WithItem(ParseStr.S_ACTIVE, $1); }
+	|		folder_url						{ $$ = new WithItem(ParseStr.S_FOLDER, $1); }
+	|		RENICE '=' signed_integer				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
+	|		SUSPEND							{ $$ = new WithItem(ParseStr.map($1.token), new Integer(SDMSNiceProfileEntry.SUSPEND)); }
+	|		NOSUSPEND						{ $$ = new WithItem(ParseStr.S_SUSPEND, new Integer(SDMSNiceProfileEntry.NOSUSPEND)); }
+	|		SUSPEND	RESTRICT					{ $$ = new WithItem(ParseStr.map($1.token), new Integer(SDMSNiceProfileEntry.ADMINSUSPEND)); }
+
+
+
 //--------------------------------------------------------------------------
 //     J O B  /  B A T C H  /  M I L E S T O N E  /  P I P E L I N E
 //--------------------------------------------------------------------------
@@ -2481,6 +2561,7 @@ dump_mapitem:	NAMED_RESOURCE resourcepath TO resourcepath			{ $$ = new WithItem 
 	|	SCOPE serverpath TO serverpath					{ $$ = new WithItem (new WithItem ($2, $4), ParseStr.map($1.token)); }
 	|	SCHEDULE schedulepath TO schedulepath				{ $$ = new WithItem (new WithItem ($2, $4), ParseStr.map($1.token)); }
 	|	GROUP groupname TO groupname					{ $$ = new WithItem (new WithItem ($2, $4), ParseStr.map($1.token)); }
+	|	ENVIRONMENT environmentname TO environmentname			{ $$ = new WithItem (new WithItem ($2, $4), ParseStr.map($1.token)); }
 
 daliasname:	aliasname							{ $$ = $1; }
 	|	'*'								{ $$ = "*"; }
@@ -2604,6 +2685,7 @@ aj_withitem:	CANCEL								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.T
 	|	RUN_PROGRAM '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 	|	STATUS '=' jobstate						{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|	SUSPEND								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
+	|	SUSPEND	RESTRICT						{ $$ = new WithItem(ParseStr.map($1.token), new Integer(SDMSSubmittedEntity.ADMINSUSPEND)); }
 	|	TIMESTAMP '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 	|	WARNING '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 
@@ -3781,6 +3863,8 @@ restrict_url:	dist_url							{ $$ = $1; }
 	|	group_url							{ $$ = $1; }
 	|	interval_url							{ $$ = $1; }
 	|	jobdef_url							{ $$ = $1; }
+		//D:LEVEL enterprise
+	|	np_url								{ $$ = $1; }
 	|	nr_url								{ $$ = $1; }
 		//D:LEVEL professional
 	|	om_url								{ $$ = $1; }
@@ -3822,6 +3906,8 @@ objecttype:	DISTRIBUTION							{ $$ = $1; }
 	|	INTERVAL							{ $$ = $1; }
 	|	JOB_DEFINITION							{ $$ = $1; }
 	|	NAMED_RESOURCE							{ $$ = $1; }
+		//D:LEVEL enterprise
+	|	NICE_PROFILE							{ $$ = $1; }
 		//D:LEVEL professional
 	|	OBJECT MONITOR							{ $$ = $1; }
 		//D:LEVEL enterprise
@@ -3912,6 +3998,10 @@ jobdef_url:	JOB_DEFINITION folderpath					{ $$ = new ObjectURL($1.token, $2); }
 nr_url:		NAMED_RESOURCE resourcepath					{ $$ = new ObjectURL($1.token, $2); }
 		//D:SUPPRESS
 	|	NAMED_RESOURCE id						{ $$ = new ObjectURL($1.token, $2); }
+
+np_url:		NICE_PROFILE profilename					{ $$ = new ObjectURL($1.token, $2); }
+		//D:SUPPRESS
+	|	NICE_PROFILE id							{ $$ = new ObjectURL($1.token, $2); }
 
 om_url:	OBJECT MONITOR objecttypename						{ $$ = new ObjectURL($1.token, $3); }
 		//D:SUPPRESS

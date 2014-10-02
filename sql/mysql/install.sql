@@ -53,6 +53,8 @@ source mysql_gen/KILL_JOB.sql
 source mysql_gen/MEMBER.sql
 source mysql_gen/NAMED_ENVIRONMENT.sql
 source mysql_gen/NAMED_RESOURCE.sql
+source mysql_gen/NICE_PROFILE.sql
+source mysql_gen/NICE_PROFILE_ENTRY.sql
 source mysql_gen/OBJECT_COMMENT.sql
 source mysql_gen/OBJECT_EVENT.sql
 source mysql_gen/OBJECT_INSTANCE.sql

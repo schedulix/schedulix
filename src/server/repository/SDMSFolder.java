@@ -182,6 +182,23 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	{
 		final Long fId = getId(sysEnv);
 
+		SDMSNiceProfileEntry npe;
+		SDMSNiceProfile np;
+		Vector npev = SDMSNiceProfileEntryTable.idx_folderId.getVector(sysEnv, fId);
+		for (int i = 0; i < npev.size(); ++i) {
+			npe = (SDMSNiceProfileEntry) npev.get(i);
+			if (npe.getIsActive(sysEnv).booleanValue()) {
+				np = SDMSNiceProfileTable.getObject(sysEnv, npe.getNpId(sysEnv));
+				if (!np.getIsActive(sysEnv).booleanValue())
+					npe.delete(sysEnv);
+				else
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408211524",
+					                               "Folder $1 is addressed by active Nice Profile $2", pathString(sysEnv), np.getName(sysEnv)));
+			} else {
+				npe.delete(sysEnv);
+			}
+		}
+
 		boolean dropped_all_resources = dropResources(sysEnv, keeplist);
 
 		if (dropped_all_resources && (keeplist == null || !(keeplist.contains(fId)))) {

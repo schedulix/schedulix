@@ -262,6 +262,7 @@ public class ParseStr
 	public static final String S_NAMED_RESOURCE	= "NAMED_RESOURCE";
 	public static final String S_NAMELIST		= "NAMELIST";
 	public static final String S_NEGFILTER		= "NEGFILTER";
+	public static final String S_NICE		= "NICE";
 	public static final String S_NICEVALUE		= "NICEVALUE";
 	public static final String S_NODE		= "NODE";
 	public static final String S_NOINVERSE		= "NOINVERSE";

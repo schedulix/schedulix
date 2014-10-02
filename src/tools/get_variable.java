@@ -45,8 +45,14 @@ class get_variable extends App
 		addOption("n", "name", null, NAME, null, "variablename", true , "Name of variable to get");
 		addOption("m", "mode", null, MODE, null, "mode"        , false, "Override retrieve mode (strict, warn or liberal)");
 	}
-	public String getName() { return "get_variable"; }
-	public boolean canRetry() { return true; }
+	public String getName()
+	{
+		return "get_variable";
+	}
+	public boolean canRetry()
+	{
+		return true;
+	}
 	public boolean validateOptions()
 	{
 		if (options.isSet(MODE)) {

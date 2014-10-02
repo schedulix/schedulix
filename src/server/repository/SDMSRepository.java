@@ -111,7 +111,7 @@ public class SDMSRepository
 					", " + squote + "SUBMIT_TS" + equote +
 					"  FROM SUBMITTED_ENTITY" +
 					" WHERE ID = MASTER_ID" +
-					"   AND (" + squote + "STATE" + squote + " NOT IN (" + SDMSSubmittedEntity.CANCELLED + "," + SDMSSubmittedEntity.FINAL + ") OR" +
+					"   AND (" + squote + "STATE" + equote + " NOT IN (" + SDMSSubmittedEntity.CANCELLED + "," + SDMSSubmittedEntity.FINAL + ") OR" +
 					"       FINAL_TS >= " + (postgres ?
 					"	   CAST (\'" + lowestActiveDate + "\' AS DECIMAL)" :
 					"	   " + lowestActiveDate) + ")" +
@@ -225,6 +225,8 @@ public class SDMSRepository
 		// N
 		tables.put(SDMSNamedEnvironmentTableGeneric.tableName,            new SDMSNamedEnvironmentTable(env));
 		tables.put(SDMSNamedResourceTableGeneric.tableName,               new SDMSNamedResourceTable(env));
+		tables.put(SDMSNiceProfileTableGeneric.tableName,	       new SDMSNiceProfileTable(env));
+		tables.put(SDMSNiceProfileEntryTableGeneric.tableName,	       new SDMSNiceProfileEntryTable(env));
 		// M
 		tables.put(SDMSMemberTableGeneric.tableName,                      new SDMSMemberTable(env));
 		// O

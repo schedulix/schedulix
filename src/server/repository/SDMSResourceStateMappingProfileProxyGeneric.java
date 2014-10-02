@@ -196,14 +196,14 @@ public class SDMSResourceStateMappingProfileProxyGeneric extends SDMSProxy
 		else groups = checkGroups;
 
 		long p = 0;
-		if(env.cEnv.isUser()) {
-			if(checkGroups == null)
-				groups.addAll(env.cEnv.gid());
-			if(groups.contains(SDMSObject.adminGId)) p = checkPrivs;
-			else {
-				p = p | SDMSPrivilege.VIEW & checkPrivs;
-			}
-		} else p = checkPrivs;
+			if(env.cEnv.isUser()) {
+				if(checkGroups == null)
+					groups.addAll(env.cEnv.gid());
+				if(groups.contains(SDMSObject.adminGId)) p = checkPrivs;
+				else {
+					p = p | SDMSPrivilege.VIEW & checkPrivs;
+				}
+			} else p = checkPrivs;
 		return p;
 	}
 

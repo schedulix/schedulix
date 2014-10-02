@@ -282,7 +282,9 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 					return true;
 				}
 				return false;
-			} catch(NotFoundException nfe) { return false;   }
+			} catch(NotFoundException nfe) {
+				return false;
+			}
 		}
 
 		return true;

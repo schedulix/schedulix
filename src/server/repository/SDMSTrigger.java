@@ -46,7 +46,8 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 
 	private final static HashMap mapper = new HashMap();
 
-	static {
+	static
+	{
 		mapper.put(new Integer(Parser.IMMEDIATE_LOCAL),		new Integer(SDMSTrigger.IMMEDIATE_LOCAL));
 		mapper.put(new Integer(Parser.IMMEDIATE_MERGE),		new Integer(SDMSTrigger.IMMEDIATE_MERGE));
 		mapper.put(new Integer(Parser.BEFORE_FINAL),		new Integer(SDMSTrigger.BEFORE_FINAL));
@@ -225,7 +226,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				thisSme.rerun(sysEnv);
 				Long resumeTs = null;
 				if (getIsSuspend(sysEnv).booleanValue()) {
-					thisSme.suspend(sysEnv, true);
+					thisSme.suspend(sysEnv, true, false);
 					Long finishTs = thisSme.getFinishTs(sysEnv);
 					resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv),
 							finishTs, true );
@@ -284,12 +285,14 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			}
 
 			Boolean suspend = getIsSuspend(sysEnv);
-			if (suspend.booleanValue() == false) suspend = null;
+			Integer doSuspend;
+			if (suspend.booleanValue() == false) doSuspend = null;
+			else				     doSuspend = new Integer(SDMSSubmittedEntity.SUSPEND);
 			if(isMasterTrigger) {
 				final SDMSSchedulingEntity thisSe = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
 				sme = se.submitMaster(sysEnv,
 					null,
-					suspend,
+					doSuspend,
 					null,
 					getSubmitOwnerId(sysEnv),
 					new Integer(0),
@@ -305,7 +308,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				else forceChildDef = false;
 				sme = psme.submitChild(sysEnv,
 					null,
-					suspend,
+					doSuspend,
 					null,
 					submitSeId,
 					childTag,
@@ -388,7 +391,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, getSeId(sysEnv));
 				sme = se.submitMaster(sysEnv,
 					null,
-					getIsSuspend(sysEnv),
+				                      new Integer(getIsSuspend(sysEnv).booleanValue() ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
 					null,
 					getSubmitOwnerId(sysEnv),
 					new Integer(0),

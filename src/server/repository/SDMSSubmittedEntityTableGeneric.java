@@ -122,10 +122,12 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                                  ,String p_errorMsg
 	                                  ,Long p_killId
 	                                  ,Integer p_killExitCode
-	                                  ,Boolean p_isSuspended
+	                                  ,Integer p_isSuspended
 	                                  ,Boolean p_isSuspendedLocal
 	                                  ,Integer p_priority
+	                                  ,Integer p_rawPriority
 	                                  ,Integer p_nice
+	                                  ,Integer p_npNice
 	                                  ,Integer p_minPriority
 	                                  ,Integer p_agingAmount
 	                                  ,Integer p_parentSuspended
@@ -160,6 +162,18 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                                  ,Integer p_cntRestartable
 	                                  ,Integer p_cntWarn
 	                                  ,Integer p_cntPending
+	                                  ,Integer p_dwEndTs
+	                                  ,Integer p_idleTs
+	                                  ,Integer p_idleTime
+	                                  ,Integer p_susresTs
+	                                  ,Integer p_suspendTime
+	                                  ,Integer p_syncTime
+	                                  ,Integer p_resourceTime
+	                                  ,Integer p_jobserverTime
+	                                  ,Integer p_restartableTime
+	                                  ,Integer p_childWaitTime
+	                                  ,Long p_opSusresTs
+	                                  ,Long p_npeId
 	                                 )
 	throws SDMSException
 	{
@@ -216,7 +230,9 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		         , p_isSuspended
 		         , p_isSuspendedLocal
 		         , p_priority
+		         , p_rawPriority
 		         , p_nice
+		         , p_npNice
 		         , p_minPriority
 		         , p_agingAmount
 		         , p_parentSuspended
@@ -251,6 +267,18 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		         , p_cntRestartable
 		         , p_cntWarn
 		         , p_cntPending
+		         , p_dwEndTs
+		         , p_idleTs
+		         , p_idleTime
+		         , p_susresTs
+		         , p_suspendTime
+		         , p_syncTime
+		         , p_resourceTime
+		         , p_jobserverTime
+		         , p_restartableTime
+		         , p_childWaitTime
+		         , p_opSusresTs
+		         , p_npeId
 		         , p_creatorUId
 		         , p_createTs
 		         , p_changerUId
@@ -302,7 +330,9 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                , p_isSuspended
 		                , p_isSuspendedLocal
 		                , p_priority
+		                , p_rawPriority
 		                , p_nice
+		                , p_npNice
 		                , p_minPriority
 		                , p_agingAmount
 		                , p_parentSuspended
@@ -337,6 +367,18 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                , p_cntRestartable
 		                , p_cntWarn
 		                , p_cntPending
+		                , p_dwEndTs
+		                , p_idleTs
+		                , p_idleTime
+		                , p_susresTs
+		                , p_suspendTime
+		                , p_syncTime
+		                , p_resourceTime
+		                , p_jobserverTime
+		                , p_restartableTime
+		                , p_childWaitTime
+		                , p_opSusresTs
+		                , p_npeId
 		                , p_creatorUId
 		                , p_createTs
 		                , p_changerUId
@@ -411,10 +453,12 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                        ,String p_errorMsg
 	                        ,Long p_killId
 	                        ,Integer p_killExitCode
-	                        ,Boolean p_isSuspended
+	                        ,Integer p_isSuspended
 	                        ,Boolean p_isSuspendedLocal
 	                        ,Integer p_priority
+	                        ,Integer p_rawPriority
 	                        ,Integer p_nice
+	                        ,Integer p_npNice
 	                        ,Integer p_minPriority
 	                        ,Integer p_agingAmount
 	                        ,Integer p_parentSuspended
@@ -449,6 +493,18 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                        ,Integer p_cntRestartable
 	                        ,Integer p_cntWarn
 	                        ,Integer p_cntPending
+	                        ,Integer p_dwEndTs
+	                        ,Integer p_idleTs
+	                        ,Integer p_idleTime
+	                        ,Integer p_susresTs
+	                        ,Integer p_suspendTime
+	                        ,Integer p_syncTime
+	                        ,Integer p_resourceTime
+	                        ,Integer p_jobserverTime
+	                        ,Integer p_restartableTime
+	                        ,Integer p_childWaitTime
+	                        ,Long p_opSusresTs
+	                        ,Long p_npeId
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
 	                        ,Long p_changerUId
@@ -515,10 +571,12 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		String errorMsg;
 		Long killId;
 		Integer killExitCode;
-		Boolean isSuspended;
+		Integer isSuspended;
 		Boolean isSuspendedLocal;
 		Integer priority;
+		Integer rawPriority;
 		Integer nice;
+		Integer npNice;
 		Integer minPriority;
 		Integer agingAmount;
 		Integer parentSuspended;
@@ -553,6 +611,18 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		Integer cntRestartable;
 		Integer cntWarn;
 		Integer cntPending;
+		Integer dwEndTs;
+		Integer idleTs;
+		Integer idleTime;
+		Integer susresTs;
+		Integer suspendTime;
+		Integer syncTime;
+		Integer resourceTime;
+		Integer jobserverTime;
+		Integer restartableTime;
+		Integer childWaitTime;
+		Long opSusresTs;
+		Long npeId;
 		Long creatorUId;
 		Long createTs;
 		Long changerUId;
@@ -629,57 +699,83 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 			if (r.wasNull()) killId = null;
 			killExitCode = new Integer (r.getInt(41));
 			if (r.wasNull()) killExitCode = null;
-			isSuspended = new Boolean ((r.getInt(42) == 0 ? false : true));
+			isSuspended = new Integer (r.getInt(42));
 			isSuspendedLocal = new Boolean ((r.getInt(43) == 0 ? false : true));
 			if (r.wasNull()) isSuspendedLocal = null;
 			priority = new Integer (r.getInt(44));
-			nice = new Integer (r.getInt(45));
-			minPriority = new Integer (r.getInt(46));
-			agingAmount = new Integer (r.getInt(47));
-			parentSuspended = new Integer (r.getInt(48));
-			childSuspended = new Integer (r.getInt(49));
-			warnCount = new Integer (r.getInt(50));
-			warnLink = new Long (r.getLong(51));
+			rawPriority = new Integer (r.getInt(45));
+			nice = new Integer (r.getInt(46));
+			npNice = new Integer (r.getInt(47));
+			minPriority = new Integer (r.getInt(48));
+			agingAmount = new Integer (r.getInt(49));
+			parentSuspended = new Integer (r.getInt(50));
+			childSuspended = new Integer (r.getInt(51));
+			warnCount = new Integer (r.getInt(52));
+			warnLink = new Long (r.getLong(53));
 			if (r.wasNull()) warnLink = null;
-			submitTs = new Long (r.getLong(52));
-			resumeTs = new Long (r.getLong(53));
+			submitTs = new Long (r.getLong(54));
+			resumeTs = new Long (r.getLong(55));
 			if (r.wasNull()) resumeTs = null;
-			syncTs = new Long (r.getLong(54));
+			syncTs = new Long (r.getLong(56));
 			if (r.wasNull()) syncTs = null;
-			resourceTs = new Long (r.getLong(55));
+			resourceTs = new Long (r.getLong(57));
 			if (r.wasNull()) resourceTs = null;
-			runnableTs = new Long (r.getLong(56));
+			runnableTs = new Long (r.getLong(58));
 			if (r.wasNull()) runnableTs = null;
-			startTs = new Long (r.getLong(57));
+			startTs = new Long (r.getLong(59));
 			if (r.wasNull()) startTs = null;
-			finishTs = new Long (r.getLong(58));
+			finishTs = new Long (r.getLong(60));
 			if (r.wasNull()) finishTs = null;
-			finalTs = new Long (r.getLong(59));
+			finalTs = new Long (r.getLong(61));
 			if (r.wasNull()) finalTs = null;
-			cntSubmitted = new Integer (r.getInt(60));
-			cntDependencyWait = new Integer (r.getInt(61));
-			cntSynchronizeWait = new Integer (r.getInt(62));
-			cntResourceWait = new Integer (r.getInt(63));
-			cntRunnable = new Integer (r.getInt(64));
-			cntStarting = new Integer (r.getInt(65));
-			cntStarted = new Integer (r.getInt(66));
-			cntRunning = new Integer (r.getInt(67));
-			cntToKill = new Integer (r.getInt(68));
-			cntKilled = new Integer (r.getInt(69));
-			cntCancelled = new Integer (r.getInt(70));
-			cntFinished = new Integer (r.getInt(71));
-			cntFinal = new Integer (r.getInt(72));
-			cntBrokenActive = new Integer (r.getInt(73));
-			cntBrokenFinished = new Integer (r.getInt(74));
-			cntError = new Integer (r.getInt(75));
-			cntUnreachable = new Integer (r.getInt(76));
-			cntRestartable = new Integer (r.getInt(77));
-			cntWarn = new Integer (r.getInt(78));
-			cntPending = new Integer (r.getInt(79));
-			creatorUId = new Long (r.getLong(80));
-			createTs = new Long (r.getLong(81));
-			changerUId = new Long (r.getLong(82));
-			changeTs = new Long (r.getLong(83));
+			cntSubmitted = new Integer (r.getInt(62));
+			cntDependencyWait = new Integer (r.getInt(63));
+			cntSynchronizeWait = new Integer (r.getInt(64));
+			cntResourceWait = new Integer (r.getInt(65));
+			cntRunnable = new Integer (r.getInt(66));
+			cntStarting = new Integer (r.getInt(67));
+			cntStarted = new Integer (r.getInt(68));
+			cntRunning = new Integer (r.getInt(69));
+			cntToKill = new Integer (r.getInt(70));
+			cntKilled = new Integer (r.getInt(71));
+			cntCancelled = new Integer (r.getInt(72));
+			cntFinished = new Integer (r.getInt(73));
+			cntFinal = new Integer (r.getInt(74));
+			cntBrokenActive = new Integer (r.getInt(75));
+			cntBrokenFinished = new Integer (r.getInt(76));
+			cntError = new Integer (r.getInt(77));
+			cntUnreachable = new Integer (r.getInt(78));
+			cntRestartable = new Integer (r.getInt(79));
+			cntWarn = new Integer (r.getInt(80));
+			cntPending = new Integer (r.getInt(81));
+			dwEndTs = new Integer (r.getInt(82));
+			if (r.wasNull()) dwEndTs = null;
+			idleTs = new Integer (r.getInt(83));
+			if (r.wasNull()) idleTs = null;
+			idleTime = new Integer (r.getInt(84));
+			if (r.wasNull()) idleTime = null;
+			susresTs = new Integer (r.getInt(85));
+			if (r.wasNull()) susresTs = null;
+			suspendTime = new Integer (r.getInt(86));
+			if (r.wasNull()) suspendTime = null;
+			syncTime = new Integer (r.getInt(87));
+			if (r.wasNull()) syncTime = null;
+			resourceTime = new Integer (r.getInt(88));
+			if (r.wasNull()) resourceTime = null;
+			jobserverTime = new Integer (r.getInt(89));
+			if (r.wasNull()) jobserverTime = null;
+			restartableTime = new Integer (r.getInt(90));
+			if (r.wasNull()) restartableTime = null;
+			childWaitTime = new Integer (r.getInt(91));
+			if (r.wasNull()) childWaitTime = null;
+			opSusresTs = new Long (r.getLong(92));
+			if (r.wasNull()) opSusresTs = null;
+			npeId = new Long (r.getLong(93));
+			if (r.wasNull()) npeId = null;
+			creatorUId = new Long (r.getLong(94));
+			createTs = new Long (r.getLong(95));
+			changerUId = new Long (r.getLong(96));
+			changeTs = new Long (r.getLong(97));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -732,7 +828,9 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                      isSuspended,
 		                                      isSuspendedLocal,
 		                                      priority,
+		                                      rawPriority,
 		                                      nice,
+		                                      npNice,
 		                                      minPriority,
 		                                      agingAmount,
 		                                      parentSuspended,
@@ -767,6 +865,18 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                      cntRestartable,
 		                                      cntWarn,
 		                                      cntPending,
+		                                      dwEndTs,
+		                                      idleTs,
+		                                      idleTime,
+		                                      susresTs,
+		                                      suspendTime,
+		                                      syncTime,
+		                                      resourceTime,
+		                                      jobserverTime,
+		                                      restartableTime,
+		                                      childWaitTime,
+		                                      opSusresTs,
+		                                      npeId,
 		                                      creatorUId,
 		                                      createTs,
 		                                      changerUId,
@@ -838,7 +948,9 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                   ", " + squote + "IS_SUSPENDED" + equote +
 		                                   ", " + squote + "IS_SUSPENDED_LOCAL" + equote +
 		                                   ", " + squote + "PRIORITY" + equote +
+		                                   ", " + squote + "RAW_PRIORITY" + equote +
 		                                   ", " + squote + "NICE" + equote +
+		                                   ", " + squote + "NP_NICE" + equote +
 		                                   ", " + squote + "MIN_PRIORITY" + equote +
 		                                   ", " + squote + "AGING_AMOUNT" + equote +
 		                                   ", " + squote + "PARENT_SUSPENDED" + equote +
@@ -873,6 +985,18 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                   ", " + squote + "CNT_RESTARTABLE" + equote +
 		                                   ", " + squote + "CNT_WARN" + equote +
 		                                   ", " + squote + "CNT_PENDING" + equote +
+		                                   ", " + squote + "DW_END_TS" + equote +
+		                                   ", " + squote + "IDLE_TS" + equote +
+		                                   ", " + squote + "IDLE_TIME" + equote +
+		                                   ", " + squote + "SUSRES_TS" + equote +
+		                                   ", " + squote + "SUSPEND_TIME" + equote +
+		                                   ", " + squote + "SYNC_TIME" + equote +
+		                                   ", " + squote + "RESOURCE_TIME" + equote +
+		                                   ", " + squote + "JOBSERVER_TIME" + equote +
+		                                   ", " + squote + "RESTARTABLE_TIME" + equote +
+		                                   ", " + squote + "CHILD_WAIT_TIME" + equote +
+		                                   ", " + squote + "OP_SUSRES_TS" + equote +
+		                                   ", " + squote + "NPE_ID" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +

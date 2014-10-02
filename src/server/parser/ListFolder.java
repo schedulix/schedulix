@@ -232,10 +232,28 @@ public class ListFolder extends Node
 	private void add_empties(Vector v)
 	{
 		String empty = "";
-		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
-		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
-		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
-		v.add(empty); v.add(empty); v.add(empty); v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
 	}
 
 	private void fillFVector(SystemEnvironment sysEnv, SDMSFolder f, Vector v)

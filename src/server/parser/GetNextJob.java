@@ -132,7 +132,7 @@ public class GetNextJob extends JobDistribution
 					Long smeId = ((SDMSRunnableQueue)obj).getSmeId(sysEnv);
 					try {
 						SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
-						if(sme.getIsSuspended(sysEnv).booleanValue() == false && sme.getParentSuspended(sysEnv).intValue() == 0)
+						if(sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND && sme.getParentSuspended(sysEnv).intValue() == 0)
 							return true;
 						else
 							return false;
@@ -163,7 +163,7 @@ public class GetNextJob extends JobDistribution
 						smeId = rq.getSmeId(sysEnv);
 						SDMSSubmittedEntity tmpsme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
 						if (tmpsme.getRunnableTs(sysEnv) > minRunnableTs) continue;
-						if(tmpsme.getIsSuspended(sysEnv).booleanValue() == false && tmpsme.getParentSuspended(sysEnv).intValue( )== 0) {
+						if(tmpsme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND && tmpsme.getParentSuspended(sysEnv).intValue( )== 0) {
 							candidates++;
 							sme = tmpsme;
 							minRunnableTs = sme.getRunnableTs(sysEnv);

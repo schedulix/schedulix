@@ -262,7 +262,7 @@ char *getUsage()
 char *getVersion()
 {
 
-	return  "Jobserver (executor) 2.6\n" \
+	return  "Jobserver (executor) 2.6.1\n" \
 		"Copyright (C) 2013 independIT Integrative Technologies GmbH\n" \
 		"All rights reserved\n";
 }
@@ -329,7 +329,6 @@ void set_all_signals (struct sigaction aktschn, callstatus *status)
 	}
 }
 
-
 void ignore_all_signals (callstatus *status)
 {
 	struct sigaction aktschn;
@@ -395,8 +394,6 @@ void default_all_signals (callstatus *status)
 	set_all_signals (SIG_DFL, status);
 }
 #endif
-
-
 
 void printJobFields()
 {
@@ -1022,7 +1019,7 @@ void redirect(callstatus *status)
 		return;
 	}
 #ifdef WINDOWS
-        // except from visual C documentation:
+        // excerpt from visual C documentation:
         //
         // When a file is opened with the "a" or "a+" access type, all write operations take place
         // at the end of the file. Although the file pointer can be repositioned using fseek or rewind,
@@ -1170,7 +1167,6 @@ void run(callstatus *status)
 
 	redirect(status);
 	if (status->severity != STATUS_OK) return;
-
 #ifndef WINDOWS
 
 	cpid = fork();
@@ -1257,7 +1253,7 @@ void run(callstatus *status)
 		fprintf(stdout, "------- %s Start --------\n", getTimestamp(time(NULL)));
 		fflush(stdout);		/* seems to be necessary */
 	}
-        // It seems that Windoof only really *appends* to files if something has happend with them before the child is started,
+        // It seems that Windows only really *appends* to files if something has happend with them before the child is started,
         // even if the file has been reopen()ed with "a"! (I really *LOVE* that too!!!)
         // So by explicitly moving the filepointer to the end of the stream, even Windoof can't refuse to *append* child's output...
         else {
@@ -1403,5 +1399,5 @@ int main(int argc, char *argv[])
 			exit(1);
 	}
 
-	return status.severity;
+	return (status.severity == SEVERITY_FATAL ? status.msg : 0);
 }

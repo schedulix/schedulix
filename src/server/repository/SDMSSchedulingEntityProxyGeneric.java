@@ -919,20 +919,20 @@ public class SDMSSchedulingEntityProxyGeneric extends SDMSProxy
 		else groups = checkGroups;
 
 		long p = 0;
-		if(env.cEnv.isUser()) {
-			if(checkGroups == null)
-				groups.addAll(env.cEnv.gid());
-			if(groups.contains(SDMSObject.adminGId)) {
-				return checkPrivs;
-			}
-			if(groups.contains(getOwnerId(env))) {
+			if(env.cEnv.isUser()) {
+				if(checkGroups == null)
+					groups.addAll(env.cEnv.gid());
+				if(groups.contains(SDMSObject.adminGId)) {
+					return checkPrivs;
+				}
+				if(groups.contains(getOwnerId(env))) {
 
-				p = checkPrivs & (~SDMSPrivilege.CREATE_PARENT_CONTENT);
-				if (p == checkPrivs) {
-					return p;
+					p = checkPrivs & (~SDMSPrivilege.CREATE_PARENT_CONTENT);
+					if (p == checkPrivs) {
+						return p;
+					}
 				}
 			}
-		}
 		return p;
 	}
 

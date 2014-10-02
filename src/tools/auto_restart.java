@@ -52,9 +52,18 @@ class auto_restart extends App
 		addOption("m", "max"    , null, MAX    , null, "number"   , false, "Default max number of times the job should be restarted if job does not define AUTORESTART_MAX");
 		addOption("W", "warn"   , null, WARN   , null, null       , false, "[Don't] Set Warning if maximum number of restarts was reached");
 	}
-	public String getName() { return "auto_restart"; }
-	public boolean userOnly() { return true; }
-	public boolean canRetry() { return true; }
+	public String getName()
+	{
+		return "auto_restart";
+	}
+	public boolean userOnly()
+	{
+		return true;
+	}
+	public boolean canRetry()
+	{
+		return true;
+	}
 
 	public int go()
 		throws RetryException

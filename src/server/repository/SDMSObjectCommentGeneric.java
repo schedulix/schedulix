@@ -53,6 +53,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	public static final int USER = 8;
 	public static final int JOB_DEFINITION = 9;
 	public static final int NAMED_RESOURCE = 10;
+	public static final int NICE_PROFILE = 31;
 	public static final int PARAMETER = 23;
 	public static final int POOL = 24;
 	public static final int RESOURCE = 11;
@@ -192,6 +193,8 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 			return "SCOPE";
 		case SDMSObjectComment.NAMED_RESOURCE:
 			return "NAMED_RESOURCE";
+		case SDMSObjectComment.NICE_PROFILE:
+			return "NICE_PROFILE";
 		case SDMSObjectComment.RESOURCE:
 			return "RESOURCE";
 		case SDMSObjectComment.ENVIRONMENT:
@@ -654,6 +657,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		case SDMSObjectComment.FOLDER:
 		case SDMSObjectComment.SCOPE:
 		case SDMSObjectComment.NAMED_RESOURCE:
+		case SDMSObjectComment.NICE_PROFILE:
 		case SDMSObjectComment.RESOURCE:
 		case SDMSObjectComment.ENVIRONMENT:
 		case SDMSObjectComment.FOOTPRINT:

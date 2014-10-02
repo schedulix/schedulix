@@ -178,7 +178,7 @@ public class SubmitJob extends Node
 			}
 		}
 
-		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, params, suspend, resumeTs, gId, niceValue,
+		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, params, suspend == null ? null : new Integer(suspend ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND), resumeTs, gId, niceValue,
 								"manually submitted", submitTag, childTag, unresolvedHandling);
 		return sme.getId(sysEnv);
 	}
@@ -210,7 +210,7 @@ public class SubmitJob extends Node
 		}
 		resumeTs = evalResumeObj(sysEnv, resumeObj, null, true);
 
-		final SDMSSubmittedEntity smec = sme.submitChild(sysEnv, params, suspend, resumeTs, se.getId(sysEnv), childTag, null, submitTag);
+		final SDMSSubmittedEntity smec = sme.submitChild(sysEnv, params, (suspend ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND), resumeTs, se.getId(sysEnv), childTag, null, submitTag);
 		return smec.getId(sysEnv);
 	}
 
