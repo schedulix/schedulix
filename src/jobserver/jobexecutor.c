@@ -302,7 +302,7 @@ char *Strdup(callstatus *status, char *src)
 	if (*src == '\0') {
 		status->severity = SEVERITY_FATAL;
 		status->msg = TFMISSING_VALUE;
-		return;
+		return NULL;
 	}
 	trg = strdup(src);
 	if (trg == NULL) {
