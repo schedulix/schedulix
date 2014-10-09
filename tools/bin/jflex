@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if ! echo $CLASSPATH | grep -i jflex >/dev/null 2>&1; then
 	echo "WARNING: Didn't find jflex.jar or similar in CLASSPATH"
