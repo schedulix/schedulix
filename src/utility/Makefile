@@ -34,8 +34,8 @@ endif
 ifeq ($(OSTYPE),linux)
         LINUX=1
 else
-        ifeq ($(OSTYPE),netbsdelf)
-                NETBSD=1
+        ifneq ($(shell echo $(OSTYPE) | grep bsd),)
+                BSD=1
         else
                 ifeq ($(OSTYPE),sunos)
                         SOLARIS=1
@@ -80,8 +80,8 @@ CXXFLAGS += -fno-exceptions -pedantic -Wall -Wshadow -Wpointer-arith \
 ifdef LINUX
 CXXFLAGS += -DLINUX -Winline
 else
-ifdef NETBSD
-CXXFLAGS += -DNETBSD -Winline
+ifdef BSD
+CXXFLAGS += -DBSD -Winline
 else
 ifdef SOLARIS
 CXXFLAGS += -DSOLARIS

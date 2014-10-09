@@ -34,8 +34,8 @@ endif
 ifeq ($(OSTYPE),linux)
         LINUX=1
 else
-        ifeq ($(OSTYPE),netbsdelf)
-                NETBSD=1
+        ifneq ($(shell echo $(OSTYPE) | grep bsd),)
+                BSD=1
         else
                 ifeq ($(OSTYPE),sunos)
                         SOLARIS=1
@@ -61,7 +61,7 @@ JAR_FILE = $(SDMSHOME)/lib/BICsuite.jar
 MANIFEST = /tmp/sdms.manifest
 
 ECHO = /bin/echo
-ifeq ($(OSTYPE),sunos)
+ifneq ($(OSTYPE),linux)
 ECHOOPTS =
 else
 ECHOOPTS = -e
