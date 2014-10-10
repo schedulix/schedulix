@@ -42,6 +42,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifdef WINDOWS
 #include <windows.h>
 #endif
+#ifdef BSD
+#include <ctype.h>
+#endif
 
 #ifndef WINDOWS
 #define NULLDEVICE   "/dev/null"
@@ -302,7 +305,7 @@ char *Strdup(callstatus *status, char *src)
 	if (*src == '\0') {
 		status->severity = SEVERITY_FATAL;
 		status->msg = TFMISSING_VALUE;
-		return;
+		return NULL;
 	}
 	trg = strdup(src);
 	if (trg == NULL) {
@@ -333,7 +336,7 @@ void ignore_all_signals (callstatus *status)
 {
 	struct sigaction aktschn;
 
-#ifdef NETBSD
+#ifdef BSD
 	sigemptyset (&aktschn.sa_mask);
 
 	aktschn.sa_flags   = 0;
@@ -346,7 +349,7 @@ void ignore_all_signals (callstatus *status)
 void default_all_signals (callstatus *status)
 {
 	struct sigaction aktschn;
-#ifdef NETBSD
+#ifdef BSD
 	sigemptyset (&aktschn.sa_mask);
 
 	aktschn.sa_flags   = 0;
@@ -531,7 +534,11 @@ HANDLE openTaskfile(callstatus *status)
 
 	while (1) {
 #ifndef WINDOWS
+#ifdef O_RSYNC
 		tffd = open(taskfileName, O_RDWR|O_SYNC|O_RSYNC);
+#else
+		tffd = open(taskfileName, O_RDWR|O_SYNC);
+#endif
 		if (tffd < 0) {
 			exit(1);
 		}

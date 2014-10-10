@@ -25,7 +25,7 @@
 JAY = $(SDMSHOME)/tools/bin/jay
 SKELETON = $(SDMSHOME)/tools/lib/skeleton
 JLEX = $(SDMSHOME)/tools/bin/jflex
-AWK = /usr/bin/gawk
+AWK = /usr/bin/awk
 SED = sed
 
 JAVAC = javac -cp $(SDMSHOME)/src:$(SWTJAR):$(JNAJAR)
@@ -45,14 +45,14 @@ JAY_FLAGS = -v
 commonsubdirs:
 	@for DIR in $(SUBDIRS); do \
 		if [ $$DIR != "." ]; then \
-			$(MAKE) -$(MAKEFLAGS) -C $$DIR all || exit; \
+			$(MAKE) -C $$DIR -$(MAKEFLAGS) all || exit; \
 		fi; \
 	done
 
 commonclean:
 	@for DIR in $(SUBDIRS); do \
 		if [ $$DIR != "." ]; then \
-			$(MAKE) -$(MAKEFLAGS) -C $$DIR clean || exit; \
+			$(MAKE) -C $$DIR -$(MAKEFLAGS) clean || exit; \
 		fi; \
 	done
 	rm -f *~ *.class 
@@ -60,7 +60,7 @@ commonclean:
 commongensubdirs:
 	@for DIR in $(SUBDIRS); do \
 		if [ $$DIR != "." ]; then \
-			$(MAKE) -$(MAKEFLAGS) -C $$DIR generate || exit; \
+			$(MAKE) -C $$DIR -$(MAKEFLAGS) generate || exit; \
 		fi; \
 	done
 

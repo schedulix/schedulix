@@ -34,8 +34,8 @@ endif
 ifeq ($(OSTYPE),linux)
         LINUX=1
 else
-        ifeq ($(OSTYPE),netbsdelf)
-                NETBSD=1
+        ifneq ($(shell echo $(OSTYPE) | grep bsd),)
+                BSD=1
         else
                 ifeq ($(OSTYPE),sunos)
                         SOLARIS=1
@@ -59,13 +59,6 @@ BUILD = $(shell git log | awk '/commit/ { print $$2; exit }')
 
 JAR_FILE = $(SDMSHOME)/lib/BICsuite.jar
 MANIFEST = /tmp/sdms.manifest
-
-ECHO = /bin/echo
-ifeq ($(OSTYPE),sunos)
-ECHOOPTS =
-else
-ECHOOPTS = -e
-endif
 
 all: prereq generate subdirs $(CLASSES) $(JAR_FILE)
 
@@ -101,8 +94,8 @@ $(JAR_FILE): BICServer.class sdmsh.class \
 			ln -s $(SDMSHOME)/src/$${fff} de/independit/scheduler/$${fff}; \
 		fi; \
 	done; \
-	$(ECHO) $(ECHOOPTS) "Manifest-Version: 1.1\nProgram-Version: $(PROGRAM_VERSION)\nLevel: OPEN\nBuild: $(BUILD)\nBuild-Date: $(BUILD_DATE)\nCopyright: $(COPYRIGHT) $(COMPANY)\nCompany: $(COMPANY)"; \
-	$(ECHO) $(ECHOOPTS) "Manifest-Version: 1.1\nProgram-Version: $(PROGRAM_VERSION)\nLevel: OPEN\nBuild: $(BUILD)\nBuild-Date: $(BUILD_DATE)\nCopyright: $(COPYRIGHT) $(COMPANY)\nCompany: $(COMPANY)" >$(MANIFEST); \
+	printf "Manifest-Version: 1.1\nProgram-Version: $(PROGRAM_VERSION)\nLevel: OPEN\nBuild: $(BUILD)\nBuild-Date: $(BUILD_DATE)\nCopyright: $(COPYRIGHT) $(COMPANY)\nCompany: $(COMPANY)"; \
+	printf "Manifest-Version: 1.1\nProgram-Version: $(PROGRAM_VERSION)\nLevel: OPEN\nBuild: $(BUILD)\nBuild-Date: $(BUILD_DATE)\nCopyright: $(COPYRIGHT) $(COMPANY)\nCompany: $(COMPANY)" >$(MANIFEST); \
 	$(JAR) $(JARCREATEFLAGS) $(MANIFEST) $(JAR_FILE) \
 		de/independit/scheduler/BICServer.class \
 		de/independit/scheduler/sdmsh.class \

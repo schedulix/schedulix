@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 for FILE in component.xml datatypes.py __init__.py
 do
         if ! diff $BICSUITEHOME/zope/https/chk/$FILE $HOME/software/Zope/lib/python2.7/site-packages/Zope2-2.13.6-py2.7.egg/ZServer/$FILE >/dev/null

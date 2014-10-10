@@ -302,7 +302,7 @@ int mylock(int fd)
 #ifdef LINUX
 	rc = flock(fd, LOCK_EX|LOCK_NB);
 #endif
-#ifdef NETBSD
+#ifdef BSD
 
 	struct stat buf;
 	static FILE *shadowfile=NULL;

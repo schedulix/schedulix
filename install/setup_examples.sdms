@@ -4277,7 +4277,7 @@ with
 	resource = none,
 	runtime = 0,
 	runtime final = 0,
-	run program = '/bin/bash -c "P=0; while [ \\$P -lt 100 ]; do P=`expr \\$P + $STEP`; if [ \\$P -gt 100 ]; then P=100; fi; sleep 2; sdms-set_variable --host $SDMSHOST --port $SDMSPORT --jid $JOBID --key $KEY PERC_PROCESSED \\$P; done"',
+	run program = '/bin/sh -c "P=0; while [ \\$P -lt 100 ]; do P=`expr \\$P + $STEP`; if [ \\$P -gt 100 ]; then P=100; fi; sleep 2; sdms-set_variable --host $SDMSHOST --port $SDMSPORT --jid $JOBID --key $KEY PERC_PROCESSED \\$P; done"',
 	NOSUSPEND,
 	type = JOB,
 	workdir = none;
@@ -4305,7 +4305,7 @@ with
 	resource = none,
 	runtime = 0,
 	runtime final = 0,
-	run program = '/bin/bash -c "P=0; while [ \\$P -lt 100 ]; do P=`expr \\$P + $STEP`; if [ \\$P -gt 100 ]; then P=100; fi; sleep 2; sdms-set_variable --host $SDMSHOST --port $SDMSPORT --jid $JOBID --key $KEY PERC_PROCESSED \\$P; done"',
+	run program = '/bin/sh -c "P=0; while [ \\$P -lt 100 ]; do P=`expr \\$P + $STEP`; if [ \\$P -gt 100 ]; then P=100; fi; sleep 2; sdms-set_variable --host $SDMSHOST --port $SDMSPORT --jid $JOBID --key $KEY PERC_PROCESSED \\$P; done"',
 	NOSUSPEND,
 	type = JOB,
 	workdir = none;
@@ -4333,7 +4333,7 @@ with
 	resource = none,
 	runtime = 0,
 	runtime final = 0,
-	run program = '/bin/bash -c "P=0; while [ \\$P -lt 100 ]; do P=`expr \\$P + $STEP`; if [ \\$P -gt 100 ]; then P=100; fi; sleep 2; sdms-set_variable --host $SDMSHOST --port $SDMSPORT --jid $JOBID --key $KEY PERC_PROCESSED \\$P; done"',
+	run program = '/bin/sh -c "P=0; while [ \\$P -lt 100 ]; do P=`expr \\$P + $STEP`; if [ \\$P -gt 100 ]; then P=100; fi; sleep 2; sdms-set_variable --host $SDMSHOST --port $SDMSPORT --jid $JOBID --key $KEY PERC_PROCESSED \\$P; done"',
 	NOSUSPEND,
 	type = JOB,
 	workdir = none;
