@@ -34,8 +34,8 @@ endif
 ifeq ($(OSTYPE),linux)
         LINUX=1
 else
-        ifeq ($(OSTYPE),netbsdelf)
-                NETBSD=1
+        ifneq ($(shell echo $(OSTYPE) | grep bsd),)
+                BSD=1
         else
                 ifeq ($(OSTYPE),sunos)
                         SOLARIS=1
@@ -55,7 +55,7 @@ JAVAINC   = $(JAVAHOME)/include
 JAVAINCOS = $(JAVAINC)/solaris
 MYSTRIP   = /bin/true
 else
-ifdef NETBSD
+ifdef BSD
 JAVAINC   = $(JAVAHOME)/include
 JAVAINCOS = $(JAVAINC)/solaris
 MYSTRIP   = $(STRIP)
@@ -108,8 +108,8 @@ ifdef SOLARIS
 CXXFLAGS   += -DSOLARIS
 LDLIBFLAGS += -dy -G
 else
-ifdef NETBSD
-CXXFLAGS   += -DNETBSD
+ifdef BSD
+CXXFLAGS   += -DBSD
 LDLIBFLAGS += -shared
 endif
 endif

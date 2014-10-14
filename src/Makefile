@@ -34,8 +34,8 @@ endif
 ifeq ($(OSTYPE),linux)
         LINUX=1
 else
-        ifeq ($(OSTYPE),netbsdelf)
-                NETBSD=1
+        ifneq ($(shell echo $(OSTYPE) | grep bsd),)
+                BSD=1
         else
                 ifeq ($(OSTYPE),sunos)
                         SOLARIS=1
