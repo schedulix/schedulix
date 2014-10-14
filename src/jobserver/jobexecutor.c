@@ -699,18 +699,18 @@ void closeTaskfile(callstatus *status, HANDLE taskfile)
 {
 	if (taskfile != NULL) {
 #ifndef WINDOWS
-		if (fflush(taskfile) != 0) {
+		if (fflush(taskfile) != 0) {		/* releases locks */
 #else
-		if (FlushFileBuffers(taskfile) == 0) {
+		if (FlushFileBuffers(taskfile) == 0) {		/* releases locks */
 #endif
 			status->severity = SEVERITY_FATAL;
 			status->msg = TFWRITE_FAILED;
 			return;
 		}
 #ifndef WINDOWS
-		if (fclose(taskfile) != 0) {
+		if (fclose(taskfile) != 0) {		/* releases locks */
 #else
-		if (CloseHandle(taskfile) == 0) {
+		if (CloseHandle(taskfile) == 0) {		/* releases locks */
 #endif
 			status->severity = SEVERITY_WARNING;
 			status->msg = TFCLOSE_FAILED;
@@ -787,7 +787,6 @@ void readTimestamp(callstatus *status)
 
 void readWhiteSpace(callstatus *status)
 {
-
 	while (global.bufpos >= 0 && (global.taskfileBuf[global.bufpos] == ' ' ||
 				      global.taskfileBuf[global.bufpos] == '\t' ||
 				      global.taskfileBuf[global.bufpos] == '\r' ||
