@@ -115,6 +115,9 @@ endif
 endif
 endif
 
+jobexecutor.o: jobexecutor.c
+	$(CXX) -c $(CXXFLAGS) $<
+
 $(JOBEXECUTOR): jobexecutor.o
 	$(CXX) -o $@ $<
 
