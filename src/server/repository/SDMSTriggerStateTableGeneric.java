@@ -42,6 +42,16 @@ public class SDMSTriggerStateTableGeneric extends SDMSTable
 	public final static String tableName = "TRIGGER_STATE";
 	public static SDMSTriggerStateTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "TRIGGER_ID"
+		, "FROM_STATE_ID"
+		, "TO_STATE_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_triggerId;
 	public static SDMSIndex idx_fromStateId;
 	public static SDMSIndex idx_toStateId;
@@ -261,5 +271,9 @@ public class SDMSTriggerStateTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

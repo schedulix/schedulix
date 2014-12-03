@@ -42,6 +42,20 @@ public class SDMSHierarchyInstanceTableGeneric extends SDMSTable
 	public final static String tableName = "HIERARCHY_INSTANCE";
 	public static SDMSHierarchyInstanceTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "PARENT_ID"
+		, "CHILD_ID"
+		, "SH_ID"
+		, "NICE"
+		, "CHILD_ESD_ID"
+		, "CHILD_ES_PREFERENCE"
+		, "SE_VERSION"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_parentId;
 	public static SDMSIndex idx_childId;
 	public static SDMSIndex idx_parentId_childId;
@@ -310,5 +324,9 @@ public class SDMSHierarchyInstanceTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

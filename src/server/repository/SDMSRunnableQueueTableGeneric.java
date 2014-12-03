@@ -42,6 +42,16 @@ public class SDMSRunnableQueueTableGeneric extends SDMSTable
 	public final static String tableName = "RUNNABLE_QUEUE";
 	public static SDMSRunnableQueueTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "SME_ID"
+		, "SCOPE_ID"
+		, "STATE"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_smeId;
 	public static SDMSIndex idx_scopeId;
 	public static SDMSIndex idx_state;
@@ -289,5 +299,9 @@ public class SDMSRunnableQueueTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

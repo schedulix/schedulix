@@ -42,6 +42,16 @@ public class SDMSDependencyStateTableGeneric extends SDMSTable
 	public final static String tableName = "DEPENDENCY_STATE";
 	public static SDMSDependencyStateTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "DD_ID"
+		, "ESD_ID"
+		, "CONDITION"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_ddId;
 	public static SDMSIndex idx_ddId_esdId;
 
@@ -276,5 +286,9 @@ public class SDMSDependencyStateTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

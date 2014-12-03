@@ -42,6 +42,22 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 	public final static String tableName = "DEPENDENCY_INSTANCE";
 	public static SDMSDependencyInstanceTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "DD_ID"
+		, "DEPENDENT_ID"
+		, "DEPENDENT_ID_ORIG"
+		, "DEPENDENCY_OPERATION"
+		, "REQUIRED_ID"
+		, "STATE"
+		, "IGNORE"
+		, "DI_ID_ORIG"
+		, "SE_VERSION"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_ddId;
 	public static SDMSIndex idx_dependentId;
 	public static SDMSIndex idx_requiredId;
@@ -355,5 +371,9 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

@@ -42,6 +42,37 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 	public final static String tableName = "TRIGGER_DEFINITION";
 	public static SDMSTriggerTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "FIRE_ID"
+		, "OBJECT_TYPE"
+		, "SE_ID"
+		, "MAIN_SE_ID"
+		, "PARENT_SE_ID"
+		, "IS_ACTIVE"
+		, "ACTION"
+		, "TYPE"
+		, "IS_MASTER"
+		, "IS_SUSPEND"
+		, "IS_CREATE"
+		, "IS_CHANGE"
+		, "IS_DELETE"
+		, "IS_GROUP"
+		, "RESUME_AT"
+		, "RESUME_IN"
+		, "RESUME_BASE"
+		, "IS_WARN_ON_LIMIT"
+		, "MAX_RETRY"
+		, "SUBMIT_OWNER_ID"
+		, "CONDITION"
+		, "CHECK_AMOUNT"
+		, "CHECK_BASE"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_fireId;
 	public static SDMSIndex idx_seId;
 	public static SDMSIndex idx_mainSeId;
@@ -503,5 +534,9 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

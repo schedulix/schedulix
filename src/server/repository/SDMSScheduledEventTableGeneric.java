@@ -42,6 +42,28 @@ public class SDMSScheduledEventTableGeneric extends SDMSTable
 	public final static String tableName = "SCHEDULED_EVENT";
 	public static SDMSScheduledEventTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "OWNER_ID"
+		, "SCE_ID"
+		, "EVT_ID"
+		, "ACTIVE"
+		, "BROKEN"
+		, "ERROR_CODE"
+		, "ERROR_MSG"
+		, "LAST_START_TIME"
+		, "NEXT_START_TIME"
+		, "NEXT_IS_TRIGGER"
+		, "BACKLOG_HANDLING"
+		, "SUSPEND_LIMIT"
+		, "SUSPEND_LIMIT_MULTIPLIER"
+		, "IS_CALENDAR"
+		, "CALENDAR_HORIZON"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_ownerId;
 	public static SDMSIndex idx_sceId;
 	public static SDMSIndex idx_evtId;
@@ -394,5 +416,9 @@ public class SDMSScheduledEventTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

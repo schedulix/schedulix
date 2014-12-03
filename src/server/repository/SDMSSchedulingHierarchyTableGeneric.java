@@ -42,6 +42,24 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 	public final static String tableName = "SCHEDULING_HIERARCHY";
 	public static SDMSSchedulingHierarchyTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "SE_PARENT_ID"
+		, "SE_CHILD_ID"
+		, "ALIAS_NAME"
+		, "IS_STATIC"
+		, "PRIORITY"
+		, "SUSPEND"
+		, "RESUME_AT"
+		, "RESUME_IN"
+		, "RESUME_BASE"
+		, "MERGE_MODE"
+		, "ESTP_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_seParentId;
 	public static SDMSIndex idx_seChildId;
 	public static SDMSIndex idx_estpId;
@@ -376,5 +394,9 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

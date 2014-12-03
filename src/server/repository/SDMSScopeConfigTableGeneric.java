@@ -42,6 +42,16 @@ public class SDMSScopeConfigTableGeneric extends SDMSTable
 	public final static String tableName = "SCOPE_CONFIG";
 	public static SDMSScopeConfigTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "KEY"
+		, "VALUE"
+		, "S_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_sId;
 	public static SDMSIndex idx_scopeId_key;
 
@@ -271,5 +281,9 @@ public class SDMSScopeConfigTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

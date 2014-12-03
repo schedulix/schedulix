@@ -42,6 +42,105 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	public final static String tableName = "SUBMITTED_ENTITY";
 	public static SDMSSubmittedEntityTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "ACCESS_KEY"
+		, "MASTER_ID"
+		, "SUBMIT_TAG"
+		, "UNRESOLVED_HANDLING"
+		, "SE_ID"
+		, "CHILD_TAG"
+		, "SE_VERSION"
+		, "OWNER_ID"
+		, "PARENT_ID"
+		, "SCOPE_ID"
+		, "IS_STATIC"
+		, "MERGE_MODE"
+		, "STATE"
+		, "JOB_ESD_ID"
+		, "JOB_ESD_PREF"
+		, "JOB_IS_FINAL"
+		, "JOB_IS_RESTARTABLE"
+		, "FINAL_ESD_ID"
+		, "EXIT_CODE"
+		, "COMMANDLINE"
+		, "RR_COMMANDLINE"
+		, "RERUN_SEQ"
+		, "IS_REPLACED"
+		, "IS_CANCELLED"
+		, "BASE_SME_ID"
+		, "REASON_SME_ID"
+		, "FIRE_SME_ID"
+		, "FIRE_SE_ID"
+		, "TR_ID"
+		, "TR_SD_ID_OLD"
+		, "TR_SD_ID_NEW"
+		, "TR_SEQ"
+		, "WORKDIR"
+		, "LOGFILE"
+		, "ERRLOGFILE"
+		, "PID"
+		, "EXTPID"
+		, "ERROR_MSG"
+		, "KILL_ID"
+		, "KILL_EXIT_CODE"
+		, "IS_SUSPENDED"
+		, "IS_SUSPENDED_LOCAL"
+		, "PRIORITY"
+		, "RAW_PRIORITY"
+		, "NICE"
+		, "NP_NICE"
+		, "MIN_PRIORITY"
+		, "AGING_AMOUNT"
+		, "PARENT_SUSPENDED"
+		, "CHILD_SUSPENDED"
+		, "WARN_COUNT"
+		, "WARN_LINK"
+		, "SUBMIT_TS"
+		, "RESUME_TS"
+		, "SYNC_TS"
+		, "RESOURCE_TS"
+		, "RUNNABLE_TS"
+		, "START_TS"
+		, "FINSH_TS"
+		, "FINAL_TS"
+		, "CNT_SUBMITTED"
+		, "CNT_DEPENDENCY_WAIT"
+		, "CNT_SYNCHRONIZE_WAIT"
+		, "CNT_RESOURCE_WAIT"
+		, "CNT_RUNNABLE"
+		, "CNT_STARTING"
+		, "CNT_STARTED"
+		, "CNT_RUNNING"
+		, "CNT_TO_KILL"
+		, "CNT_KILLED"
+		, "CNT_CANCELLED"
+		, "CNT_FINISHED"
+		, "CNT_FINAL"
+		, "CNT_BROKEN_ACTIVE"
+		, "CNT_BROKEN_FINISHED"
+		, "CNT_ERROR"
+		, "CNT_UNREACHABLE"
+		, "CNT_RESTARTABLE"
+		, "CNT_WARN"
+		, "CNT_PENDING"
+		, "IDLE_TS"
+		, "IDLE_TIME"
+		, "STATISTIC_TS"
+		, "DEPENDENCY_WAIT_TIME"
+		, "SUSPEND_TIME"
+		, "SYNC_TIME"
+		, "RESOURCE_TIME"
+		, "JOBSERVER_TIME"
+		, "RESTARTABLE_TIME"
+		, "CHILD_WAIT_TIME"
+		, "OP_SUSRES_TS"
+		, "NPE_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_masterId;
 	public static SDMSIndex idx_submitTag;
 	public static SDMSIndex idx_seId;
@@ -162,10 +261,10 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                                  ,Integer p_cntRestartable
 	                                  ,Integer p_cntWarn
 	                                  ,Integer p_cntPending
-	                                  ,Integer p_dwEndTs
 	                                  ,Integer p_idleTs
 	                                  ,Integer p_idleTime
-	                                  ,Integer p_susresTs
+	                                  ,Integer p_statisticTs
+	                                  ,Integer p_dependencyWaitTime
 	                                  ,Integer p_suspendTime
 	                                  ,Integer p_syncTime
 	                                  ,Integer p_resourceTime
@@ -267,10 +366,10 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		         , p_cntRestartable
 		         , p_cntWarn
 		         , p_cntPending
-		         , p_dwEndTs
 		         , p_idleTs
 		         , p_idleTime
-		         , p_susresTs
+		         , p_statisticTs
+		         , p_dependencyWaitTime
 		         , p_suspendTime
 		         , p_syncTime
 		         , p_resourceTime
@@ -367,10 +466,10 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                , p_cntRestartable
 		                , p_cntWarn
 		                , p_cntPending
-		                , p_dwEndTs
 		                , p_idleTs
 		                , p_idleTime
-		                , p_susresTs
+		                , p_statisticTs
+		                , p_dependencyWaitTime
 		                , p_suspendTime
 		                , p_syncTime
 		                , p_resourceTime
@@ -493,10 +592,10 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                        ,Integer p_cntRestartable
 	                        ,Integer p_cntWarn
 	                        ,Integer p_cntPending
-	                        ,Integer p_dwEndTs
 	                        ,Integer p_idleTs
 	                        ,Integer p_idleTime
-	                        ,Integer p_susresTs
+	                        ,Integer p_statisticTs
+	                        ,Integer p_dependencyWaitTime
 	                        ,Integer p_suspendTime
 	                        ,Integer p_syncTime
 	                        ,Integer p_resourceTime
@@ -611,10 +710,10 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		Integer cntRestartable;
 		Integer cntWarn;
 		Integer cntPending;
-		Integer dwEndTs;
 		Integer idleTs;
 		Integer idleTime;
-		Integer susresTs;
+		Integer statisticTs;
+		Integer dependencyWaitTime;
 		Integer suspendTime;
 		Integer syncTime;
 		Integer resourceTime;
@@ -748,14 +847,14 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 			cntRestartable = new Integer (r.getInt(79));
 			cntWarn = new Integer (r.getInt(80));
 			cntPending = new Integer (r.getInt(81));
-			dwEndTs = new Integer (r.getInt(82));
-			if (r.wasNull()) dwEndTs = null;
-			idleTs = new Integer (r.getInt(83));
+			idleTs = new Integer (r.getInt(82));
 			if (r.wasNull()) idleTs = null;
-			idleTime = new Integer (r.getInt(84));
+			idleTime = new Integer (r.getInt(83));
 			if (r.wasNull()) idleTime = null;
-			susresTs = new Integer (r.getInt(85));
-			if (r.wasNull()) susresTs = null;
+			statisticTs = new Integer (r.getInt(84));
+			if (r.wasNull()) statisticTs = null;
+			dependencyWaitTime = new Integer (r.getInt(85));
+			if (r.wasNull()) dependencyWaitTime = null;
 			suspendTime = new Integer (r.getInt(86));
 			if (r.wasNull()) suspendTime = null;
 			syncTime = new Integer (r.getInt(87));
@@ -865,10 +964,10 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                      cntRestartable,
 		                                      cntWarn,
 		                                      cntPending,
-		                                      dwEndTs,
 		                                      idleTs,
 		                                      idleTime,
-		                                      susresTs,
+		                                      statisticTs,
+		                                      dependencyWaitTime,
 		                                      suspendTime,
 		                                      syncTime,
 		                                      resourceTime,
@@ -985,10 +1084,10 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                   ", " + squote + "CNT_RESTARTABLE" + equote +
 		                                   ", " + squote + "CNT_WARN" + equote +
 		                                   ", " + squote + "CNT_PENDING" + equote +
-		                                   ", " + squote + "DW_END_TS" + equote +
 		                                   ", " + squote + "IDLE_TS" + equote +
 		                                   ", " + squote + "IDLE_TIME" + equote +
-		                                   ", " + squote + "SUSRES_TS" + equote +
+		                                   ", " + squote + "STATISTIC_TS" + equote +
+		                                   ", " + squote + "DEPENDENCY_WAIT_TIME" + equote +
 		                                   ", " + squote + "SUSPEND_TIME" + equote +
 		                                   ", " + squote + "SYNC_TIME" + equote +
 		                                   ", " + squote + "RESOURCE_TIME" + equote +
@@ -1120,5 +1219,9 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

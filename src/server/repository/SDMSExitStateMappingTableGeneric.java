@@ -42,6 +42,17 @@ public class SDMSExitStateMappingTableGeneric extends SDMSTable
 	public final static String tableName = "EXIT_STATE_MAPPING";
 	public static SDMSExitStateMappingTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "ESMP_ID"
+		, "ESD_ID"
+		, "ECR_START"
+		, "ECR_END"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_esmpId;
 	public static SDMSIndex idx_esdId;
 	public static SDMSIndex idx_esmpId_esdId;
@@ -277,5 +288,9 @@ public class SDMSExitStateMappingTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

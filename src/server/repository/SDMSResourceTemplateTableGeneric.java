@@ -42,6 +42,20 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 	public final static String tableName = "RESOURCE_TEMPLATE";
 	public static SDMSResourceTemplateTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NR_ID"
+		, "SE_ID"
+		, "OWNER_ID"
+		, "RSD_ID"
+		, "REQUESTABLE_AMOUNT"
+		, "AMOUNT"
+		, "IS_ONLINE"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_nrId;
 	public static SDMSIndex idx_seId;
 	public static SDMSIndex idx_ownerId;
@@ -318,5 +332,9 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

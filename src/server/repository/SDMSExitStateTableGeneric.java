@@ -42,6 +42,22 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 	public final static String tableName = "EXIT_STATE";
 	public static SDMSExitStateTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "PREFERENCE"
+		, "IS_FINAL"
+		, "IS_RESTARTABLE"
+		, "IS_UNREACHABLE"
+		, "IS_BROKEN"
+		, "IS_BATCH_DEFAULT"
+		, "IS_DEPENDENCY_DEFAULT"
+		, "ESP_ID"
+		, "ESD_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_espId;
 	public static SDMSIndex idx_esdId;
 	public static SDMSIndex idx_espId_esdId;
@@ -327,5 +343,9 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

@@ -42,6 +42,20 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 	public final static String tableName = "DEPENDENCY_DEFINITION";
 	public static SDMSDependencyDefinitionTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "SE_DEPENDENT_ID"
+		, "SE_REQUIRED_ID"
+		, "NAME"
+		, "UNRESOLVED_HANDLING"
+		, "DMODE"
+		, "STATE_SELECTION"
+		, "CONDITION"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_seDependentId;
 	public static SDMSIndex idx_seRequiredId;
 	public static SDMSIndex idx_name;
@@ -326,5 +340,9 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

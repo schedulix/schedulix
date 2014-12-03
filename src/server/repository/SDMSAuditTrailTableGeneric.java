@@ -42,6 +42,23 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 	public final static String tableName = "AUDIT_TRAIL";
 	public static SDMSAuditTrailTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "USER_ID"
+		, "TS"
+		, "TXID"
+		, "ACTION"
+		, "OBJECT_TYPE"
+		, "OBJECT_ID"
+		, "ORIGIN_ID"
+		, "IS_SET_WARNING"
+		, "ACTION_INFO"
+		, "ACTION_COMMENT"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_userId;
 	public static SDMSIndex idx_objectId;
 	public static SDMSIndex idx_originId;
@@ -321,5 +338,9 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

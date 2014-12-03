@@ -42,6 +42,20 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 	public final static String tableName = "PARAMETER_DEFINITION";
 	public static SDMSParameterDefinitionTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "SE_ID"
+		, "NAME"
+		, "TYPE"
+		, "AGG_FUNCTION"
+		, "DEFAULTVALUE"
+		, "IS_LOCAL"
+		, "LINK_PD_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_seId;
 	public static SDMSIndex idx_linkPdId;
 	public static SDMSIndex idx_seId_Name;
@@ -319,5 +333,9 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

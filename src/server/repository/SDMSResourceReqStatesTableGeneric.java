@@ -42,6 +42,15 @@ public class SDMSResourceReqStatesTableGeneric extends SDMSTable
 	public final static String tableName = "RESOURCE_REQ_STATES";
 	public static SDMSResourceReqStatesTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "RR_ID"
+		, "RSD_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_rrId;
 	public static SDMSIndex idx_rsdId;
 	public static SDMSIndex idx_rr_rsd_pk;
@@ -271,5 +280,9 @@ public class SDMSResourceReqStatesTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

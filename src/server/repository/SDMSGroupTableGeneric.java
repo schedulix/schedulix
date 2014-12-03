@@ -42,6 +42,15 @@ public class SDMSGroupTableGeneric extends SDMSTable
 	public final static String tableName = "GROUPS";
 	public static SDMSGroupTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "DELETE_VERSION"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_name;
 	public static SDMSIndex idx_name_deleteVersion;
 
@@ -274,5 +283,9 @@ public class SDMSGroupTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

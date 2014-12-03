@@ -42,6 +42,15 @@ public class SDMSCalendarTableGeneric extends SDMSTable
 	public final static String tableName = "CALENDAR";
 	public static SDMSCalendarTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "SCEV_ID"
+		, "STARTTIME"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_scevId;
 	public static SDMSIndex idx_scevId_starttime;
 
@@ -263,5 +272,9 @@ public class SDMSCalendarTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

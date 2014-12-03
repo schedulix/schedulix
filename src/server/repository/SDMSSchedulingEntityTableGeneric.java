@@ -42,6 +42,49 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 	public final static String tableName = "SCHEDULING_ENTITY";
 	public static SDMSSchedulingEntityTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "FOLDER_ID"
+		, "OWNER_ID"
+		, "TYPE"
+		, "RUN_PROGRAM"
+		, "RERUN_PROGRAM"
+		, "KILL_PROGRAM"
+		, "WORKDIR"
+		, "LOGFILE"
+		, "TRUNC_LOG"
+		, "ERRLOGFILE"
+		, "TRUNC_ERRLOG"
+		, "EXPECTED_RUNTIME"
+		, "EXPECTED_FINALTIME"
+		, "GET_EXPECTED_RUNTIME"
+		, "PRIORITY"
+		, "MIN_PRIORITY"
+		, "AGING_AMOUNT"
+		, "AGING_BASE"
+		, "SUBMIT_SUSPENDED"
+		, "RESUME_AT"
+		, "RESUME_IN"
+		, "RESUME_BASE"
+		, "MASTER_SUBMITTABLE"
+		, "TIMEOUT_AMOUNT"
+		, "TIMEOUT_BASE"
+		, "TIMEOUT_STATE_ID"
+		, "SAME_NODE"
+		, "GANG_SCHEDULE"
+		, "DEPENDENCY_OPERATION"
+		, "ESMP_ID"
+		, "ESP_ID"
+		, "QA_ID"
+		, "NE_ID"
+		, "FP_ID"
+		, "INHERIT_PRIVS"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_folderId;
 	public static SDMSIndex idx_ownerId;
 	public static SDMSIndex idx_esmpId;
@@ -629,5 +672,9 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

@@ -42,6 +42,20 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 	public final static String tableName = "NAMED_RESOURCE";
 	public static SDMSNamedResourceTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "OWNER_ID"
+		, "PARENT_ID"
+		, "USAGE"
+		, "RSP_ID"
+		, "FACTOR"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+		, "INHERIT_PRIVS"
+	};
 	public static SDMSIndex idx_name;
 	public static SDMSIndex idx_ownerId;
 	public static SDMSIndex idx_parentId;
@@ -365,5 +379,9 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

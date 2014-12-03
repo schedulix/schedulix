@@ -42,6 +42,19 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 	public final static String tableName = "NICE_PROFILE_ENTRY";
 	public static SDMSNiceProfileEntryTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NP_ID"
+		, "PREFERENCE"
+		, "FOLDER_ID"
+		, "IS_SUSPENDED"
+		, "RENICE"
+		, "IS_ACTIVE"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_npId;
 	public static SDMSIndex idx_folderId;
 
@@ -279,5 +292,9 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

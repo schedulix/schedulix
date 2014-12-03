@@ -42,6 +42,18 @@ public class SDMSFolderTableGeneric extends SDMSTable
 	public final static String tableName = "FOLDER";
 	public static SDMSFolderTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "OWNER_ID"
+		, "ENV_ID"
+		, "PARENT_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+		, "INHERIT_PRIVS"
+	};
 	public static SDMSIndex idx_ownerId;
 	public static SDMSIndex idx_envId;
 	public static SDMSIndex idx_parentId;
@@ -345,5 +357,9 @@ public class SDMSFolderTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

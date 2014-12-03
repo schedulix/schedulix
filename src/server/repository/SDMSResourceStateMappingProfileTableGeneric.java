@@ -42,6 +42,14 @@ public class SDMSResourceStateMappingProfileTableGeneric extends SDMSTable
 	public final static String tableName = "RESOURCE_STATE_MAP_PROF";
 	public static SDMSResourceStateMappingProfileTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_name;
 
 	public SDMSResourceStateMappingProfileTableGeneric(SystemEnvironment env)
@@ -246,5 +254,9 @@ public class SDMSResourceStateMappingProfileTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

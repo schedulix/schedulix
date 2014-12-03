@@ -42,6 +42,16 @@ public class SDMSExitStateProfileTableGeneric extends SDMSTable
 	public final static String tableName = "EXIT_STATE_PROFILE";
 	public static SDMSExitStateProfileTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "DEFAULT_ESMP_ID"
+		, "IS_VALID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_name;
 	public static SDMSIndex idx_defaultEsmpId;
 
@@ -267,5 +277,9 @@ public class SDMSExitStateProfileTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

@@ -42,6 +42,27 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 	public final static String tableName = "INTERVALL";
 	public static SDMSIntervalTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "OWNER_ID"
+		, "START_TIME"
+		, "END_TIME"
+		, "DELAY"
+		, "BASE_INTERVAL"
+		, "BASE_INTERVAL_MULTIPLIER"
+		, "DURATION"
+		, "DURATION_MULTIPLIER"
+		, "SYNC_TIME"
+		, "IS_INVERSE"
+		, "IS_MERGE"
+		, "EMBEDDED_INT_ID"
+		, "SE_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_name;
 	public static SDMSIndex idx_ownerId;
 	public static SDMSIndex idx_embeddedIntervalId;
@@ -370,5 +391,9 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

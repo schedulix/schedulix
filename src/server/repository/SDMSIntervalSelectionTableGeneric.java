@@ -42,6 +42,17 @@ public class SDMSIntervalSelectionTableGeneric extends SDMSTable
 	public final static String tableName = "INTERVAL_SELECTION";
 	public static SDMSIntervalSelectionTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "INT_ID"
+		, "VALUE"
+		, "PERIOD_FROM"
+		, "PERIOD_TO"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_intId;
 
 	public SDMSIntervalSelectionTableGeneric(SystemEnvironment env)
@@ -258,5 +269,9 @@ public class SDMSIntervalSelectionTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

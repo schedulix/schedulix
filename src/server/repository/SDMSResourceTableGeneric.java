@@ -42,6 +42,37 @@ public class SDMSResourceTableGeneric extends SDMSTable
 	public final static String tableName = "RESSOURCE";
 	public static SDMSResourceTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NR_ID"
+		, "SCOPE_ID"
+		, "MASTER_ID"
+		, "OWNER_ID"
+		, "LINK_ID"
+		, "MANAGER_ID"
+		, "TAG"
+		, "RSD_ID"
+		, "RSD_TIME"
+		, "DEFINED_AMOUNT"
+		, "REQUESTABLE_AMOUNT"
+		, "AMOUNT"
+		, "FREE_AMOUNT"
+		, "IS_ONLINE"
+		, "FACTOR"
+		, "TRACE_INTERVAL"
+		, "TRACE_BASE"
+		, "TRACE_BASE_MULTIPLIER"
+		, "TD0_AVG"
+		, "TD1_AVG"
+		, "TD2_AVG"
+		, "LW_AVG"
+		, "LAST_EVAL"
+		, "LAST_WRITE"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_nrId;
 	public static SDMSIndex idx_scopeId;
 	public static SDMSIndex idx_masterId;
@@ -478,5 +509,9 @@ public class SDMSResourceTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

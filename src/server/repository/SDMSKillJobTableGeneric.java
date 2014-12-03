@@ -42,6 +42,28 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 	public final static String tableName = "KILL_JOB";
 	public static SDMSKillJobTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "SE_ID"
+		, "SE_VERSION"
+		, "SME_ID"
+		, "SCOPE_ID"
+		, "STATE"
+		, "EXIT_CODE"
+		, "COMMANDLINE"
+		, "LOGFILE"
+		, "ERRLOGFILE"
+		, "PID"
+		, "EXTPID"
+		, "ERROR_MSG"
+		, "RUNNABLE_TS"
+		, "START_TS"
+		, "FINSH_TS"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_seId;
 	public static SDMSIndex idx_smeId;
 	public static SDMSIndex idx_scopeId;
@@ -370,5 +392,9 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

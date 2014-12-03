@@ -42,6 +42,21 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 	public final static String tableName = "SCHEDULE";
 	public static SDMSScheduleTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "OWNER_ID"
+		, "INT_ID"
+		, "PARENT_ID"
+		, "TIME_ZONE"
+		, "SE_ID"
+		, "ACTIVE"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+		, "INHERIT_PRIVS"
+	};
 	public static SDMSIndex idx_ownerId;
 	public static SDMSIndex idx_intId;
 	public static SDMSIndex idx_parentId;
@@ -373,5 +388,9 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

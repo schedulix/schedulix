@@ -42,6 +42,16 @@ public class SDMSnpSrvrSRFootprintTableGeneric extends SDMSTable
 	public final static String tableName = "NPSRVR_SR_FOOTPRINT";
 	public static SDMSnpSrvrSRFootprintTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "S_ID"
+		, "SESSION_ID"
+		, "FP"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_sId;
 
 	public SDMSnpSrvrSRFootprintTableGeneric(SystemEnvironment env)
@@ -186,5 +196,9 @@ public class SDMSnpSrvrSRFootprintTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

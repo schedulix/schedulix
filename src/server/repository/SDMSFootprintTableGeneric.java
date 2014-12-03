@@ -42,6 +42,14 @@ public class SDMSFootprintTableGeneric extends SDMSTable
 	public final static String tableName = "FOOTPRINT";
 	public static SDMSFootprintTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_name;
 
 	public SDMSFootprintTableGeneric(SystemEnvironment env)
@@ -242,5 +250,9 @@ public class SDMSFootprintTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

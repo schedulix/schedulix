@@ -42,6 +42,16 @@ public class SDMSNiceProfileTableGeneric extends SDMSTable
 	public final static String tableName = "NICE_PROFILE";
 	public static SDMSNiceProfileTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "IS_ACTIVE"
+		, "ACTIVE_TS"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_name;
 
 	public SDMSNiceProfileTableGeneric(SystemEnvironment env)
@@ -259,5 +269,9 @@ public class SDMSNiceProfileTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

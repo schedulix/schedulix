@@ -42,6 +42,16 @@ public class SDMSEventParameterTableGeneric extends SDMSTable
 	public final static String tableName = "EVENT_PARAMETER";
 	public static SDMSEventParameterTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "KEY"
+		, "VALUE"
+		, "EVT_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_evtId;
 	public static SDMSIndex idx_eventId_key;
 
@@ -271,5 +281,9 @@ public class SDMSEventParameterTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

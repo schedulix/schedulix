@@ -42,6 +42,16 @@ public class SDMSEnvironmentTableGeneric extends SDMSTable
 	public final static String tableName = "ENVIRONMENT";
 	public static SDMSEnvironmentTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NE_ID"
+		, "NR_ID"
+		, "CONDITION"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_neId;
 	public static SDMSIndex idx_nrId;
 	public static SDMSIndex idx_neId_nrId;
@@ -280,5 +290,9 @@ public class SDMSEnvironmentTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

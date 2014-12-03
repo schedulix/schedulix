@@ -42,6 +42,16 @@ public class SDMSResourceVariableTableGeneric extends SDMSTable
 	public final static String tableName = "RESOURCE_VARIABLE";
 	public static SDMSResourceVariableTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "PD_ID"
+		, "R_ID"
+		, "VALUE"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_pdId;
 	public static SDMSIndex idx_rId;
 	public static SDMSIndex idx_pdId_rId;
@@ -275,5 +285,9 @@ public class SDMSResourceVariableTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

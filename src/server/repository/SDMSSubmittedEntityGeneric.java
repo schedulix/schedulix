@@ -156,10 +156,10 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	public final static int nr_cntRestartable = 79;
 	public final static int nr_cntWarn = 80;
 	public final static int nr_cntPending = 81;
-	public final static int nr_dwEndTs = 82;
-	public final static int nr_idleTs = 83;
-	public final static int nr_idleTime = 84;
-	public final static int nr_susresTs = 85;
+	public final static int nr_idleTs = 82;
+	public final static int nr_idleTime = 83;
+	public final static int nr_statisticTs = 84;
+	public final static int nr_dependencyWaitTime = 85;
 	public final static int nr_suspendTime = 86;
 	public final static int nr_syncTime = 87;
 	public final static int nr_resourceTime = 88;
@@ -255,10 +255,10 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	protected Integer cntRestartable;
 	protected Integer cntWarn;
 	protected Integer cntPending;
-	protected Integer dwEndTs;
 	protected Integer idleTs;
 	protected Integer idleTime;
-	protected Integer susresTs;
+	protected Integer statisticTs;
+	protected Integer dependencyWaitTime;
 	protected Integer suspendTime;
 	protected Integer syncTime;
 	protected Integer resourceTime;
@@ -358,10 +358,10 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	        Integer p_cntRestartable,
 	        Integer p_cntWarn,
 	        Integer p_cntPending,
-	        Integer p_dwEndTs,
 	        Integer p_idleTs,
 	        Integer p_idleTime,
-	        Integer p_susresTs,
+	        Integer p_statisticTs,
+	        Integer p_dependencyWaitTime,
 	        Integer p_suspendTime,
 	        Integer p_syncTime,
 	        Integer p_resourceTime,
@@ -500,10 +500,10 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		cntRestartable = p_cntRestartable;
 		cntWarn = p_cntWarn;
 		cntPending = p_cntPending;
-		dwEndTs = p_dwEndTs;
 		idleTs = p_idleTs;
 		idleTime = p_idleTime;
-		susresTs = p_susresTs;
+		statisticTs = p_statisticTs;
+		dependencyWaitTime = p_dependencyWaitTime;
 		suspendTime = p_suspendTime;
 		syncTime = p_syncTime;
 		resourceTime = p_resourceTime;
@@ -3180,38 +3180,6 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		return o;
 	}
 
-	public Integer getDwEndTs (SystemEnvironment env)
-	throws SDMSException
-	{
-		return (dwEndTs);
-	}
-
-	public	SDMSSubmittedEntityGeneric setDwEndTs (SystemEnvironment env, Integer p_dwEndTs)
-	throws SDMSException
-	{
-		if(p_dwEndTs != null && p_dwEndTs.equals(dwEndTs)) return this;
-		if(p_dwEndTs == null && dwEndTs == null) return this;
-		SDMSSubmittedEntityGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
-				);
-			}
-			o = (SDMSSubmittedEntityGeneric) change(env);
-			o.dwEndTs = p_dwEndTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
-	}
-
 	public Integer getIdleTs (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -3276,17 +3244,17 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		return o;
 	}
 
-	public Integer getSusresTs (SystemEnvironment env)
+	public Integer getStatisticTs (SystemEnvironment env)
 	throws SDMSException
 	{
-		return (susresTs);
+		return (statisticTs);
 	}
 
-	public	SDMSSubmittedEntityGeneric setSusresTs (SystemEnvironment env, Integer p_susresTs)
+	public	SDMSSubmittedEntityGeneric setStatisticTs (SystemEnvironment env, Integer p_statisticTs)
 	throws SDMSException
 	{
-		if(p_susresTs != null && p_susresTs.equals(susresTs)) return this;
-		if(p_susresTs == null && susresTs == null) return this;
+		if(p_statisticTs != null && p_statisticTs.equals(statisticTs)) return this;
+		if(p_statisticTs == null && statisticTs == null) return this;
 		SDMSSubmittedEntityGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -3296,7 +3264,39 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				);
 			}
 			o = (SDMSSubmittedEntityGeneric) change(env);
-			o.susresTs = p_susresTs;
+			o.statisticTs = p_statisticTs;
+			o.changerUId = env.cEnv.euid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
+	public Integer getDependencyWaitTime (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (dependencyWaitTime);
+	}
+
+	public	SDMSSubmittedEntityGeneric setDependencyWaitTime (SystemEnvironment env, Integer p_dependencyWaitTime)
+	throws SDMSException
+	{
+		if(p_dependencyWaitTime != null && p_dependencyWaitTime.equals(dependencyWaitTime)) return this;
+		if(p_dependencyWaitTime == null && dependencyWaitTime == null) return this;
+		SDMSSubmittedEntityGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSubmittedEntityGeneric) change(env);
+			o.dependencyWaitTime = p_dependencyWaitTime;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
@@ -3926,10 +3926,10 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	                                     Integer p_cntRestartable,
 	                                     Integer p_cntWarn,
 	                                     Integer p_cntPending,
-	                                     Integer p_dwEndTs,
 	                                     Integer p_idleTs,
 	                                     Integer p_idleTime,
-	                                     Integer p_susresTs,
+	                                     Integer p_statisticTs,
+	                                     Integer p_dependencyWaitTime,
 	                                     Integer p_suspendTime,
 	                                     Integer p_syncTime,
 	                                     Integer p_resourceTime,
@@ -4025,10 +4025,10 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		cntRestartable = p_cntRestartable;
 		cntWarn = p_cntWarn;
 		cntPending = p_cntPending;
-		dwEndTs = p_dwEndTs;
 		idleTs = p_idleTs;
 		idleTime = p_idleTime;
-		susresTs = p_susresTs;
+		statisticTs = p_statisticTs;
+		dependencyWaitTime = p_dependencyWaitTime;
 		suspendTime = p_suspendTime;
 		syncTime = p_syncTime;
 		resourceTime = p_resourceTime;
@@ -4150,10 +4150,10 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        ", " + squote + "CNT_RESTARTABLE" + equote +
 				        ", " + squote + "CNT_WARN" + equote +
 				        ", " + squote + "CNT_PENDING" + equote +
-				        ", " + squote + "DW_END_TS" + equote +
 				        ", " + squote + "IDLE_TS" + equote +
 				        ", " + squote + "IDLE_TIME" + equote +
-				        ", " + squote + "SUSRES_TS" + equote +
+				        ", " + squote + "STATISTIC_TS" + equote +
+				        ", " + squote + "DEPENDENCY_WAIT_TIME" + equote +
 				        ", " + squote + "SUSPEND_TIME" + equote +
 				        ", " + squote + "SYNC_TIME" + equote +
 				        ", " + squote + "RESOURCE_TIME" + equote +
@@ -4462,22 +4462,22 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 			pInsert.setInt(79, cntRestartable.intValue());
 			pInsert.setInt(80, cntWarn.intValue());
 			pInsert.setInt(81, cntPending.intValue());
-			if (dwEndTs == null)
+			if (idleTs == null)
 				pInsert.setNull(82, Types.INTEGER);
 			else
-				pInsert.setInt(82, dwEndTs.intValue());
-			if (idleTs == null)
+				pInsert.setInt(82, idleTs.intValue());
+			if (idleTime == null)
 				pInsert.setNull(83, Types.INTEGER);
 			else
-				pInsert.setInt(83, idleTs.intValue());
-			if (idleTime == null)
+				pInsert.setInt(83, idleTime.intValue());
+			if (statisticTs == null)
 				pInsert.setNull(84, Types.INTEGER);
 			else
-				pInsert.setInt(84, idleTime.intValue());
-			if (susresTs == null)
+				pInsert.setInt(84, statisticTs.intValue());
+			if (dependencyWaitTime == null)
 				pInsert.setNull(85, Types.INTEGER);
 			else
-				pInsert.setInt(85, susresTs.intValue());
+				pInsert.setInt(85, dependencyWaitTime.intValue());
 			if (suspendTime == null)
 				pInsert.setNull(86, Types.INTEGER);
 			else
@@ -4644,10 +4644,10 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        ", " + squote + "CNT_RESTARTABLE" + equote + " = ? " +
 				        ", " + squote + "CNT_WARN" + equote + " = ? " +
 				        ", " + squote + "CNT_PENDING" + equote + " = ? " +
-				        ", " + squote + "DW_END_TS" + equote + " = ? " +
 				        ", " + squote + "IDLE_TS" + equote + " = ? " +
 				        ", " + squote + "IDLE_TIME" + equote + " = ? " +
-				        ", " + squote + "SUSRES_TS" + equote + " = ? " +
+				        ", " + squote + "STATISTIC_TS" + equote + " = ? " +
+				        ", " + squote + "DEPENDENCY_WAIT_TIME" + equote + " = ? " +
 				        ", " + squote + "SUSPEND_TIME" + equote + " = ? " +
 				        ", " + squote + "SYNC_TIME" + equote + " = ? " +
 				        ", " + squote + "RESOURCE_TIME" + equote + " = ? " +
@@ -4857,22 +4857,22 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 			pUpdate.setInt(78, cntRestartable.intValue());
 			pUpdate.setInt(79, cntWarn.intValue());
 			pUpdate.setInt(80, cntPending.intValue());
-			if (dwEndTs == null)
+			if (idleTs == null)
 				pUpdate.setNull(81, Types.INTEGER);
 			else
-				pUpdate.setInt(81, dwEndTs.intValue());
-			if (idleTs == null)
+				pUpdate.setInt(81, idleTs.intValue());
+			if (idleTime == null)
 				pUpdate.setNull(82, Types.INTEGER);
 			else
-				pUpdate.setInt(82, idleTs.intValue());
-			if (idleTime == null)
+				pUpdate.setInt(82, idleTime.intValue());
+			if (statisticTs == null)
 				pUpdate.setNull(83, Types.INTEGER);
 			else
-				pUpdate.setInt(83, idleTime.intValue());
-			if (susresTs == null)
+				pUpdate.setInt(83, statisticTs.intValue());
+			if (dependencyWaitTime == null)
 				pUpdate.setNull(84, Types.INTEGER);
 			else
-				pUpdate.setInt(84, susresTs.intValue());
+				pUpdate.setInt(84, dependencyWaitTime.intValue());
 			if (suspendTime == null)
 				pUpdate.setNull(85, Types.INTEGER);
 			else
@@ -5058,10 +5058,10 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "cntRestartable : " + cntRestartable, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "cntWarn : " + cntWarn, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "cntPending : " + cntPending, SDMSThread.SEVERITY_MESSAGE);
-		SDMSThread.doTrace(null, "dwEndTs : " + dwEndTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "idleTs : " + idleTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "idleTime : " + idleTime, SDMSThread.SEVERITY_MESSAGE);
-		SDMSThread.doTrace(null, "susresTs : " + susresTs, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "statisticTs : " + statisticTs, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "dependencyWaitTime : " + dependencyWaitTime, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "suspendTime : " + suspendTime, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "syncTime : " + syncTime, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "resourceTime : " + resourceTime, SDMSThread.SEVERITY_MESSAGE);
@@ -5166,10 +5166,10 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		        indentString + "cntRestartable     : " + cntRestartable + "\n" +
 		        indentString + "cntWarn            : " + cntWarn + "\n" +
 		        indentString + "cntPending         : " + cntPending + "\n" +
-		        indentString + "dwEndTs            : " + dwEndTs + "\n" +
 		        indentString + "idleTs             : " + idleTs + "\n" +
 		        indentString + "idleTime           : " + idleTime + "\n" +
-		        indentString + "susresTs           : " + susresTs + "\n" +
+		        indentString + "statisticTs        : " + statisticTs + "\n" +
+		        indentString + "dependencyWaitTime : " + dependencyWaitTime + "\n" +
 		        indentString + "suspendTime        : " + suspendTime + "\n" +
 		        indentString + "syncTime           : " + syncTime + "\n" +
 		        indentString + "resourceTime       : " + resourceTime + "\n" +

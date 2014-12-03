@@ -42,6 +42,25 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 	public final static String tableName = "RESOURCE_REQUIREMENT";
 	public static SDMSResourceRequirementTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NR_ID"
+		, "SE_ID"
+		, "AMOUNT"
+		, "KEEP_MODE"
+		, "IS_STICKY"
+		, "STICKY_NAME"
+		, "STICKY_PARENT"
+		, "RSMP_ID"
+		, "EXPIRED_AMOUNT"
+		, "EXPIRED_BASE"
+		, "LOCKMODE"
+		, "CONDITION"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_nrId;
 	public static SDMSIndex idx_seId;
 	public static SDMSIndex idx_rsmpId;
@@ -372,5 +391,9 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

@@ -42,6 +42,15 @@ public class SDMSResourceStateProfileTableGeneric extends SDMSTable
 	public final static String tableName = "RESOURCE_STATE_PROFILE";
 	public static SDMSResourceStateProfileTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "INITIAL_RSD_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_name;
 	public static SDMSIndex idx_initialRsdId;
 
@@ -255,5 +264,9 @@ public class SDMSResourceStateProfileTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

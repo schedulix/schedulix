@@ -42,6 +42,15 @@ public class SDMSIgnoredDependencyTableGeneric extends SDMSTable
 	public final static String tableName = "IGNORED_DEPENDENCY";
 	public static SDMSIgnoredDependencyTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "SH_ID"
+		, "DD_NAME"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_shId;
 	public static SDMSIndex idx_shId_ddName;
 
@@ -267,5 +276,9 @@ public class SDMSIgnoredDependencyTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

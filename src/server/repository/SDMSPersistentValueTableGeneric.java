@@ -42,6 +42,15 @@ public class SDMSPersistentValueTableGeneric extends SDMSTable
 	public final static String tableName = "PERSISTENT_VALUE";
 	public static SDMSPersistentValueTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "INT_VALUE"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_name;
 
 	public SDMSPersistentValueTableGeneric(SystemEnvironment env)
@@ -248,5 +257,9 @@ public class SDMSPersistentValueTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

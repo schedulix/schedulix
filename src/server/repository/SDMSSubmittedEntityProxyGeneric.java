@@ -1479,23 +1479,6 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 		((SDMSSubmittedEntityGeneric)(object)).setCntPending (env, p_cntPending);
 		return ;
 	}
-	public Integer getDwEndTs (SystemEnvironment env)
-	throws SDMSException
-	{
-		checkRead(env);
-		return (((SDMSSubmittedEntityGeneric)(object)).getDwEndTs (env));
-	}
-
-	public void setDwEndTs (SystemEnvironment env, Integer p_dwEndTs)
-	throws SDMSException
-	{
-		checkWrite(env);
-		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
-			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
-
-		((SDMSSubmittedEntityGeneric)(object)).setDwEndTs (env, p_dwEndTs);
-		return ;
-	}
 	public Integer getIdleTs (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -1530,21 +1513,38 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 		((SDMSSubmittedEntityGeneric)(object)).setIdleTime (env, p_idleTime);
 		return ;
 	}
-	public Integer getSusresTs (SystemEnvironment env)
+	public Integer getStatisticTs (SystemEnvironment env)
 	throws SDMSException
 	{
 		checkRead(env);
-		return (((SDMSSubmittedEntityGeneric)(object)).getSusresTs (env));
+		return (((SDMSSubmittedEntityGeneric)(object)).getStatisticTs (env));
 	}
 
-	public void setSusresTs (SystemEnvironment env, Integer p_susresTs)
+	public void setStatisticTs (SystemEnvironment env, Integer p_statisticTs)
 	throws SDMSException
 	{
 		checkWrite(env);
 		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
 			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
 
-		((SDMSSubmittedEntityGeneric)(object)).setSusresTs (env, p_susresTs);
+		((SDMSSubmittedEntityGeneric)(object)).setStatisticTs (env, p_statisticTs);
+		return ;
+	}
+	public Integer getDependencyWaitTime (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSubmittedEntityGeneric)(object)).getDependencyWaitTime (env));
+	}
+
+	public void setDependencyWaitTime (SystemEnvironment env, Integer p_dependencyWaitTime)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSubmittedEntityGeneric)(object)).setDependencyWaitTime (env, p_dependencyWaitTime);
 		return ;
 	}
 	public Integer getSuspendTime (SystemEnvironment env)

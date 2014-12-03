@@ -42,6 +42,17 @@ public class SDMSResourceStateMappingTableGeneric extends SDMSTable
 	public final static String tableName = "RESOURCE_STATE_MAPPING";
 	public static SDMSResourceStateMappingTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "RSMP_ID"
+		, "ESD_ID"
+		, "FROM_RSD_ID"
+		, "TO_RSD_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_rsmpId;
 	public static SDMSIndex idx_esdId;
 	public static SDMSIndex idx_fromRsdId;
@@ -298,5 +309,9 @@ public class SDMSResourceStateMappingTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

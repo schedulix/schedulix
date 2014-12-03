@@ -42,6 +42,15 @@ public class SDMSMemberTableGeneric extends SDMSTable
 	public final static String tableName = "MEMBER";
 	public static SDMSMemberTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "G_ID"
+		, "U_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_gId;
 	public static SDMSIndex idx_uId;
 	public static SDMSIndex idx_gId_uId;
@@ -267,5 +276,9 @@ public class SDMSMemberTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

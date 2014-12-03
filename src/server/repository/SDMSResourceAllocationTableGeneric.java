@@ -42,6 +42,26 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 	public final static String tableName = "RESOURCE_ALLOCATION";
 	public static SDMSResourceAllocationTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "R_ID"
+		, "SME_ID"
+		, "NR_ID"
+		, "AMOUNT"
+		, "ORIG_AMOUNT"
+		, "KEEP_MODE"
+		, "IS_STICKY"
+		, "STICKY_NAME"
+		, "STICKY_PARENT"
+		, "ALLOCATION_TYPE"
+		, "RSMP_ID"
+		, "LOCKMODE"
+		, "REFCOUNT"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_rId;
 	public static SDMSIndex idx_smeId;
 	public static SDMSIndex idx_nrId;
@@ -398,5 +418,9 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

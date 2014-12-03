@@ -42,6 +42,14 @@ public class SDMSExitStateDefinitionTableGeneric extends SDMSTable
 	public final static String tableName = "EXIT_STATE_DEFINITION";
 	public static SDMSExitStateDefinitionTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_name;
 
 	public SDMSExitStateDefinitionTableGeneric(SystemEnvironment env)
@@ -246,5 +254,9 @@ public class SDMSExitStateDefinitionTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

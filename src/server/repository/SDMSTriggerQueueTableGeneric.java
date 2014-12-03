@@ -42,6 +42,18 @@ public class SDMSTriggerQueueTableGeneric extends SDMSTable
 	public final static String tableName = "TRIGGER_QUEUE";
 	public static SDMSTriggerQueueTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "SME_ID"
+		, "TR_ID"
+		, "NEXT_TRIGGER_TIME"
+		, "TIMES_CHECKED"
+		, "TIMES_TRIGGERED"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_smeId;
 	public static SDMSIndex idx_trId;
 	public static SDMSIndex idx_smeId_trId;
@@ -287,5 +299,9 @@ public class SDMSTriggerQueueTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

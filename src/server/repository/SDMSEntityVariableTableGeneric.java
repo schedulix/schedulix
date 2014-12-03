@@ -42,6 +42,18 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 	public final static String tableName = "ENTITY_VARIABLE";
 	public static SDMSEntityVariableTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "SME_ID"
+		, "NAME"
+		, "VALUE"
+		, "IS_LOCAL"
+		, "EV_LINK"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_smeId;
 	public static SDMSIndex idx_smeId_Name;
 
@@ -291,5 +303,9 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

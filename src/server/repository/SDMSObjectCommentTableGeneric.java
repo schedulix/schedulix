@@ -42,6 +42,18 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 	public final static String tableName = "OBJECT_COMMENT";
 	public static SDMSObjectCommentTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "OBJECT_ID"
+		, "OBJECT_TYPE"
+		, "INFO_TYPE"
+		, "SEQUENCE_NUMBER"
+		, "DESCRIPTION"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_objectId;
 	public static SDMSIndex idx_objectType;
 
@@ -289,5 +301,9 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

@@ -42,6 +42,15 @@ public class SDMSIntervalHierarchyTableGeneric extends SDMSTable
 	public final static String tableName = "INTERVAL_HIERARCHY";
 	public static SDMSIntervalHierarchyTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "CHILD_ID"
+		, "PARENT_ID"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_childId;
 	public static SDMSIndex idx_parentId;
 
@@ -243,5 +252,9 @@ public class SDMSIntervalHierarchyTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

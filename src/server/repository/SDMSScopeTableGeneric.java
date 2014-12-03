@@ -42,6 +42,31 @@ public class SDMSScopeTableGeneric extends SDMSTable
 	public final static String tableName = "SCOPE";
 	public static SDMSScopeTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "OWNER_ID"
+		, "PARENT_ID"
+		, "TYPE"
+		, "IS_TERMINATE"
+		, "HAS_ALTEREDCONFIG"
+		, "IS_SUSPENDED"
+		, "IS_ENABLED"
+		, "IS_REGISTERED"
+		, "STATE"
+		, "PASSWD"
+		, "SALT"
+		, "METHOD"
+		, "PID"
+		, "NODE"
+		, "ERRMSG"
+		, "LAST_ACTIVE"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+		, "INHERIT_PRIVS"
+	};
 	public static SDMSIndex idx_ownerId;
 	public static SDMSIndex idx_parentId;
 	public static SDMSIndex idx_type;
@@ -469,5 +494,9 @@ public class SDMSScopeTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

@@ -42,6 +42,20 @@ public class SDMSUserTableGeneric extends SDMSTable
 	public final static String tableName = "USERS";
 	public static SDMSUserTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "NAME"
+		, "PASSWD"
+		, "SALT"
+		, "METHOD"
+		, "IS_ENABLED"
+		, "DEFAULT_G_ID"
+		, "DELETE_VERSION"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_name;
 	public static SDMSIndex idx_name_deleteVersion;
 
@@ -318,5 +332,9 @@ public class SDMSUserTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

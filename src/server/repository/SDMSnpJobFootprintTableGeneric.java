@@ -42,6 +42,17 @@ public class SDMSnpJobFootprintTableGeneric extends SDMSTable
 	public final static String tableName = "NP_JOB_FOOTPRINT";
 	public static SDMSnpJobFootprintTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "SME_ID"
+		, "FP_SCOPE"
+		, "FP_FOLDER"
+		, "FP_LOCAL"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_smeId;
 
 	public SDMSnpJobFootprintTableGeneric(SystemEnvironment env)
@@ -190,5 +201,9 @@ public class SDMSnpJobFootprintTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }

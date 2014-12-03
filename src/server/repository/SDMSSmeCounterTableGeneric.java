@@ -42,6 +42,18 @@ public class SDMSSmeCounterTableGeneric extends SDMSTable
 	public final static String tableName = "SME_COUNTER";
 	public static SDMSSmeCounterTable table  = null;
 
+	public final static String[] columnNames = {
+		"ID"
+		, "JAHR"
+		, "MONAT"
+		, "TAG"
+		, "ANZAHL"
+		, "CHECKSUM"
+		, "CREATOR_U_ID"
+		, "CREATE_TS"
+		, "CHANGER_U_ID"
+		, "CHANGE_TS"
+	};
 	public static SDMSIndex idx_jahr_monat_tag;
 
 	public SDMSSmeCounterTableGeneric(SystemEnvironment env)
@@ -281,5 +293,9 @@ public class SDMSSmeCounterTableGeneric extends SDMSTable
 	public String tableName()
 	{
 		return tableName;
+	}
+	public String[] columnNames()
+	{
+		return columnNames;
 	}
 }
