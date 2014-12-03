@@ -90,6 +90,18 @@ public class SmeVariableResolver extends VariableResolver
 	public final static String S_RERUNSEQ	= SDMSSubmittedEntity.S_RERUNSEQ;
 	public final static String S_SCOPENAME	= SDMSSubmittedEntity.S_SCOPENAME;
 
+	public final static String S_IDLE_TIME	= SDMSSubmittedEntity.S_IDLE_TIME;
+	public final static String S_DEPENDENCY_WAIT_TIME	= SDMSSubmittedEntity.S_DEPENDENCY_WAIT_TIME;
+	public final static String S_SUSPEND_TIME	= SDMSSubmittedEntity.S_SUSPEND_TIME;
+	public final static String S_SYNC_TIME	= SDMSSubmittedEntity.S_SYNC_TIME;
+	public final static String S_RESOURCE_TIME	= SDMSSubmittedEntity.S_RESOURCE_TIME;
+	public final static String S_JOBSERVER_TIME	= SDMSSubmittedEntity.S_JOBSERVER_TIME;
+	public final static String S_RESTARTABLE_TIME	= SDMSSubmittedEntity.S_RESTARTABLE_TIME;
+	public final static String S_CHILD_WAIT_TIME	= SDMSSubmittedEntity.S_CHILD_WAIT_TIME;
+	public final static String S_PROCESS_TIME	= SDMSSubmittedEntity.S_PROCESS_TIME;
+	public final static String S_ACTIVE_TIME	= SDMSSubmittedEntity.S_ACTIVE_TIME;
+	public final static String S_IDLE_PCT		= SDMSSubmittedEntity.S_IDLE_PCT;
+
 	public final static int I_JOBID		= 1;
 	public final static int I_MASTERID	= 2;
 	public final static int I_KEY		= 3;
@@ -134,6 +146,17 @@ public class SmeVariableResolver extends VariableResolver
 	public final static int I_RERUNSEQ	= 43;
 	public final static int I_SCOPENAME	= 44;
 	public final static int I_EXPFINALTIME	= 45;
+	public final static int I_IDLE_TIME	= 46;
+	public final static int I_DEPENDENCY_WAIT_TIME	= 47;
+	public final static int I_SUSPEND_TIME	= 48;
+	public final static int I_SYNC_TIME	= 49;
+	public final static int I_RESOURCE_TIME	= 50;
+	public final static int I_JOBSERVER_TIME	= 51;
+	public final static int I_RESTARTABLE_TIME	= 52;
+	public final static int I_CHILD_WAIT_TIME	= 53;
+	public final static int I_PROCESS_TIME		= 54;
+	public final static int I_ACTIVE_TIME		= 55;
+	public final static int I_IDLE_PCT		= 56;
 
 	private final static HashMap specialNames = new HashMap();
 
@@ -183,6 +206,17 @@ public class SmeVariableResolver extends VariableResolver
 		specialNames.put(S_WARNING,	new Integer(I_WARNING));
 		specialNames.put(S_RERUNSEQ,	new Integer(I_RERUNSEQ));
 		specialNames.put(S_SCOPENAME,	new Integer(I_SCOPENAME));
+		specialNames.put(S_IDLE_TIME,	new Integer(I_IDLE_TIME));
+		specialNames.put(S_SUSPEND_TIME,	new Integer(I_SUSPEND_TIME));
+		specialNames.put(S_DEPENDENCY_WAIT_TIME,	new Integer(I_DEPENDENCY_WAIT_TIME));
+		specialNames.put(S_SYNC_TIME,	new Integer(I_SYNC_TIME));
+		specialNames.put(S_RESOURCE_TIME,	new Integer(I_RESOURCE_TIME));
+		specialNames.put(S_JOBSERVER_TIME,	new Integer(I_JOBSERVER_TIME));
+		specialNames.put(S_RESTARTABLE_TIME,	new Integer(I_RESTARTABLE_TIME));
+		specialNames.put(S_CHILD_WAIT_TIME,	new Integer(I_CHILD_WAIT_TIME));
+		specialNames.put(S_PROCESS_TIME,	new Integer(I_PROCESS_TIME));
+		specialNames.put(S_ACTIVE_TIME,	new Integer(I_ACTIVE_TIME));
+		specialNames.put(S_IDLE_PCT,	new Integer(I_IDLE_PCT));
 	}
 
 	protected String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, boolean fastAccess, String mode, boolean triggercontext, long version, SDMSScope evalScope)
@@ -638,6 +672,55 @@ public class SmeVariableResolver extends VariableResolver
 				Long scopeId = thisSme.getScopeId(sysEnv);
 				SDMSScope scope = SDMSScopeTable.getObject(sysEnv, scopeId);
 				return (scope == null ? emptyString : scope.pathString(sysEnv));
+
+			case I_IDLE_TIME:
+				return thisSme.evaluateTime(sysEnv, thisSme.getIdleTime(sysEnv), thisSme.getIdleTs(sysEnv), -1).toString();
+
+			case I_DEPENDENCY_WAIT_TIME:
+				return thisSme.evaluateTime(sysEnv, thisSme.getDependencyWaitTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_DEPENDENCY_WAIT).toString();
+
+			case I_SUSPEND_TIME:
+				return thisSme.evaluateTime(sysEnv, thisSme.getSuspendTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SUSPEND).toString();
+
+			case I_SYNC_TIME:
+				return thisSme.evaluateTime(sysEnv, thisSme.getSyncTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SYNCHRONIZE).toString();
+
+			case I_RESOURCE_TIME:
+				return thisSme.evaluateTime(sysEnv, thisSme.getResourceTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_RESOURCE).toString();
+
+			case I_JOBSERVER_TIME:
+				return thisSme.evaluateTime(sysEnv, thisSme.getJobserverTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_JOBSERVER).toString();
+
+			case I_RESTARTABLE_TIME:
+				return thisSme.evaluateTime(sysEnv, thisSme.getRestartableTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_RESTARTABLE).toString();
+
+			case I_CHILD_WAIT_TIME:
+				return thisSme.evaluateTime(sysEnv, thisSme.getChildWaitTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_CHILD_WAIT).toString();
+
+			case I_PROCESS_TIME:
+			case I_ACTIVE_TIME:
+			case I_IDLE_PCT: {
+				Integer dwTime = thisSme.evaluateTime(sysEnv, thisSme.getDependencyWaitTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_DEPENDENCY_WAIT);
+				Long finalTs = thisSme.getFinalTs(sysEnv);
+				int endTs;
+				if (finalTs != null)
+					endTs = (int)((finalTs.longValue() - thisSme.getSubmitTs(sysEnv).longValue()) / 1000);
+				else
+					endTs = (int)((sysEnv.cEnv.last() - thisSme.getSubmitTs(sysEnv).longValue()) / 1000);
+				int processTime = endTs - dwTime.intValue();
+				switch(varno) {
+				case I_PROCESS_TIME:
+					return new Integer(processTime).toString();
+				case I_ACTIVE_TIME:
+				case I_IDLE_PCT:
+					Integer idleTime = thisSme.evaluateTime(sysEnv, thisSme.getIdleTime(sysEnv), thisSme.getIdleTs(sysEnv), -1);
+					if (varno == I_ACTIVE_TIME)
+						return new Integer(processTime  - idleTime.intValue()).toString();
+					else if (processTime == 0) return emptyString;
+					return new Integer(idleTime.intValue() * 100 / processTime).toString();
+				}
+			}
+
 		}
 		throw new FatalException(new SDMSMessage(sysEnv, "03208090953", "Unknown special Parameter : $1", key));
 	}

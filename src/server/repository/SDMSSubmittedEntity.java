@@ -46,6 +46,15 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	protected static final int UNREACHABLE_CANCELLED = 2;
 	protected static final int BROKEN = 3;
 
+	public static final int STAT_NONE = 0;
+	public static final int STAT_DEPENDENCY_WAIT = 1;
+	public static final int STAT_SUSPEND = 2;
+	public static final int STAT_SYNCHRONIZE = 3;
+	public static final int STAT_RESOURCE = 4;
+	public static final int STAT_JOBSERVER = 5;
+	public static final int STAT_RESTARTABLE = 6;
+	public static final int STAT_CHILD_WAIT = 7;
+
 	public static final String S_JOBID	= "JOBID";
 	public static final String S_SEID	= "SEID";
 	public static final String S_MASTERID	= "MASTERID";
@@ -93,6 +102,17 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	public static final String S_WARNING	= "LAST_WARNING";
 	public static final String S_RERUNSEQ	= "RERUNSEQ";
 	public static final String S_SCOPENAME	= "SCOPENAME";
+	public static final String S_IDLE_TIME	= "IDLE_TIME";
+	public static final String S_DEPENDENCY_WAIT_TIME	= "DEPENDENCY_WAIT_TIME";
+	public static final String S_SUSPEND_TIME	= "SUSPEND_TIME";
+	public static final String S_SYNC_TIME	= "SYNC_TIME";
+	public static final String S_RESOURCE_TIME	= "RESOURCE_TIME";
+	public static final String S_JOBSERVER_TIME	= "JOBSERVER_TIME";
+	public static final String S_RESTARTABLE_TIME	= "RESTARTABLE_TIME";
+	public static final String S_CHILD_WAIT_TIME	= "CHILD_WAIT_TIME";
+	public static final String S_PROCESS_TIME	= "PROCESS_TIME";
+	public static final String S_ACTIVE_TIME	= "ACTIVE_TIME";
+	public static final String S_IDLE_PCT	= "IDLE_PCT";
 
 	protected static Long internalId = null;
 	protected static final Integer zero = new Integer(0);
@@ -686,6 +706,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				suspend ? 1 : -1 ,
 				0
 			);
+			updateStatistics(sysEnv);
 		}
 		long ts = new Date().getTime();
 
@@ -1893,11 +1914,6 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 			setJobIsFinal(sysEnv, Boolean.TRUE);
 		}
-
-		setState(sysEnv, new Integer (FINISHED));
-		if (finishTs != null)
-			setFinishTs(sysEnv, finishTs);
-
 		if (es.getIsRestartable(sysEnv).booleanValue()) {
 
 			setJobIsRestartable(sysEnv, Boolean.TRUE);
@@ -1910,6 +1926,11 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		} else {
 			setJobIsRestartable(sysEnv, Boolean.FALSE);
 		}
+
+		setState(sysEnv, new Integer (FINISHED));
+		if (finishTs != null)
+			setFinishTs(sysEnv, finishTs);
+
 		setExitCode(sysEnv, exitCode);
 		setErrorMsg(sysEnv, errmsg);
 
@@ -2088,6 +2109,9 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		int fixError = 0;
 		int fixUnreachable = 0;
 
+		if (oldState == newState)
+			return;
+
 		switch (oldState) {
 			case SUBMITTED:		fixSubmitted		-= 1; break;
 			case DEPENDENCY_WAIT:	fixDependencyWait	-= 1; break;
@@ -2251,7 +2275,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 			checkDeferStall(sysEnv);
 		}
-
+		updateStatistics(sysEnv);
 		return;
 	}
 
@@ -2364,6 +2388,36 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			sme.checkFinal(sysEnv);
 		}
 
+		Integer idleTs = getIdleTs(sysEnv);
+		boolean idle = false;
+		int state = getState(sysEnv).intValue();
+		if (state != SDMSSubmittedEntity.SUBMITTED &&
+		    state != SDMSSubmittedEntity.DEPENDENCY_WAIT &&
+		    state != SDMSSubmittedEntity.STARTED &&
+		    state != SDMSSubmittedEntity.RUNNING &&
+		    state != SDMSSubmittedEntity.TO_KILL &&
+		    state != SDMSSubmittedEntity.KILLED &&
+		    state != SDMSSubmittedEntity.BROKEN_ACTIVE &&
+		    state != SDMSSubmittedEntity.FINAL &&
+		    state != SDMSSubmittedEntity.CANCELLED &&
+		    getCntRunning(sysEnv).intValue() == 0 &&
+		    getCntStarted(sysEnv).intValue() == 0 &&
+		    getCntToKill(sysEnv).intValue() == 0 &&
+		    getCntKilled(sysEnv).intValue() == 0 &&
+		    getCntBrokenActive(sysEnv).intValue() == 0
+		   )
+			idle = true;
+		if (idle && idleTs == null) {
+			setIdleTs(sysEnv, new Integer((int)((sysEnv.cEnv.last() - getSubmitTs(sysEnv).longValue()) / 1000)));
+		}
+		if (!idle && idleTs != null) {
+			Integer idleTime = getIdleTime(sysEnv);
+			int iT = 0;
+			if (idleTime != null) iT = idleTime.intValue();
+			setIdleTime(sysEnv,
+			            new Integer(iT + (int)((sysEnv.cEnv.last() - getSubmitTs(sysEnv).longValue()) / 1000) - idleTs.intValue()));
+			setIdleTs(sysEnv, null);
+		}
 	}
 
 	public void setFinalEsdId(SystemEnvironment sysEnv, Long esdId)
@@ -2978,10 +3032,19 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				zero,
 				zero,
 				zero,
-				zero
-		                ,null,null,zero,null,zero
-		                ,zero,zero,zero,zero,zero
-		                ,opSusresTs, null
+				zero,
+		                null,
+				zero,
+				zero,
+				zero,
+				zero,
+		                zero,
+				zero,
+				zero,
+				zero,
+				zero,
+		                opSusresTs,
+				null
 		);
 
 		if (replaceSmeId != null) {
@@ -3231,5 +3294,147 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	{
 		return "job " + getURLName(sysEnv);
 	}
-}
 
+	public void updateStatistics(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+
+		int statTs = 0;
+		Integer statisticTs = getStatisticTs(sysEnv);
+		if (statisticTs != null) {
+			statTs = statisticTs.intValue();
+		}
+		int oldStatSelect = statTs % 10;
+		statTs = statTs / 10;
+
+		int newStatSelect = STAT_NONE;
+		boolean suspended = getIsSuspended(sysEnv).intValue() != NOSUSPEND || getParentSuspended(sysEnv).intValue() > 0;
+
+		int state = getState(sysEnv).intValue();
+
+		switch (state) {
+			case SUBMITTED:
+				if (suspended) newStatSelect = STAT_SUSPEND;
+				break;
+			case UNREACHABLE:
+			case DEPENDENCY_WAIT:
+				if (suspended) newStatSelect = STAT_SUSPEND;
+				else newStatSelect = STAT_DEPENDENCY_WAIT;
+				break;
+
+			case SYNCHRONIZE_WAIT:
+				if (suspended) newStatSelect = STAT_SUSPEND;
+				else newStatSelect = STAT_SYNCHRONIZE;
+				break;
+
+			case RESOURCE_WAIT:
+				if (suspended) newStatSelect = STAT_SUSPEND;
+				else newStatSelect = STAT_RESOURCE;
+				break;
+			case RUNNABLE:
+			case STARTING:
+				newStatSelect = STAT_JOBSERVER;
+				break;
+			case STARTED:
+			case RUNNING:
+			case TO_KILL:
+			case BROKEN_ACTIVE:
+			case CANCELLED:
+			case FINAL:
+			case KILLED:
+				newStatSelect = STAT_NONE;
+				break;
+
+			case FINISHED:
+				if (getJobIsRestartable(sysEnv).booleanValue())
+					newStatSelect = STAT_RESTARTABLE;
+				else if (suspended) newStatSelect = STAT_SUSPEND;
+				else newStatSelect = STAT_CHILD_WAIT;
+				break;
+			case BROKEN_FINISHED:
+			case ERROR:
+				newStatSelect = STAT_RESTARTABLE;
+				break;
+		}
+
+		if (newStatSelect != oldStatSelect) {
+			Integer statTime = null;
+			switch (oldStatSelect) {
+				case STAT_DEPENDENCY_WAIT:
+					statTime = getDependencyWaitTime(sysEnv);
+					break;
+				case STAT_SUSPEND:
+					statTime = getSuspendTime(sysEnv);
+					break;
+				case STAT_SYNCHRONIZE:
+					statTime = getSyncTime(sysEnv);
+					break;
+				case STAT_RESOURCE:
+					statTime = getResourceTime(sysEnv);
+					break;
+				case STAT_JOBSERVER:
+					statTime = getJobserverTime(sysEnv);
+					break;
+				case STAT_RESTARTABLE:
+					statTime = getRestartableTime(sysEnv);
+					break;
+				case STAT_CHILD_WAIT:
+					statTime = getChildWaitTime(sysEnv);
+					break;
+			}
+			if (statTime == null)
+				statTime = new Integer(0);
+
+			int now = (int)((sysEnv.cEnv.last() - getSubmitTs(sysEnv).longValue()) / 1000);
+			if (now < 0) now = 0;
+
+			int delta = now - statTs;
+
+			statTime = new Integer(statTime.intValue() + delta);
+
+			switch (oldStatSelect) {
+				case STAT_DEPENDENCY_WAIT:
+					setDependencyWaitTime(sysEnv, statTime);
+					break;
+				case STAT_SUSPEND:
+					setSuspendTime(sysEnv, statTime);
+					break;
+				case STAT_SYNCHRONIZE:
+					setSyncTime(sysEnv, statTime);
+					break;
+				case STAT_RESOURCE:
+					setResourceTime(sysEnv, statTime);
+					break;
+				case STAT_JOBSERVER:
+					setJobserverTime(sysEnv, statTime);
+					break;
+				case STAT_RESTARTABLE:
+					setRestartableTime(sysEnv, statTime);
+					break;
+				case STAT_CHILD_WAIT:
+					setChildWaitTime(sysEnv, statTime);
+					break;
+			}
+			setStatisticTs(sysEnv, new Integer(now * 10 + newStatSelect));
+		}
+	}
+
+	public Integer evaluateTime(SystemEnvironment sysEnv, Integer time, Integer timeStamp, int selector)
+	throws SDMSException
+	{
+		int t = 0;
+		if (time != null)
+			t = time.intValue();
+		if (timeStamp != null) {
+			int ts = timeStamp.intValue();
+			int tsType = ts % 10;
+			if (selector >= 0)
+				ts = ts / 10;
+			if (selector == -1 || tsType == selector) {
+				int now = (int)((sysEnv.cEnv.last() - getSubmitTs(sysEnv).longValue()) / 1000);
+				t += now - ts;
+			}
+		}
+		return new Integer(t);
+	}
+}

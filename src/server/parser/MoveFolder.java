@@ -38,9 +38,6 @@ import de.independit.scheduler.server.output.*;
 
 public class MoveFolder extends Node
 {
-
-	public final static String __version = "@(#) $Id: MoveFolder.java,v 2.3.2.1 2013/03/14 10:24:41 ronald Exp $";
-
 	private ObjectURL url;
 	private Vector name2;
 	private String newName;
@@ -74,7 +71,7 @@ public class MoveFolder extends Node
 			name = f.getName(sysEnv);
 
 		} catch(NotFoundException nfe) {
-			name = (String) name2.remove(name2.size() -1);
+			name = (String) name2.remove(name2.size() - 1);
 			p = SDMSFolderTable.getFolder(sysEnv, name2);
 
 		}

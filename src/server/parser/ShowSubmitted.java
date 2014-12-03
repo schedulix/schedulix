@@ -297,6 +297,28 @@ public class ShowSubmitted extends Node
 
 		desc.add("WARN_COUNT");
 
+		desc.add("IDLE_TIME");
+
+		desc.add("DEPENDENCY_WAIT_TIME");
+
+		desc.add("SUSPEND_TIME");
+
+		desc.add("SYNC_TIME");
+
+		desc.add("RESOURCE_TIME");
+
+		desc.add("JOBSERVER_TIME");
+
+		desc.add("RESTARTABLE_TIME");
+
+		desc.add("CHILD_WAIT_TIME");
+
+		desc.add("PROCESS_TIME");
+
+		desc.add("ACTIVE_TIME");
+
+		desc.add("IDLE_PCT");
+
 		desc.add("CHILDREN");
 
 		desc.add("PARENTS");
@@ -484,9 +506,9 @@ public class ShowSubmitted extends Node
 		}
 		data.add(sme.getParentSuspended(sysEnv));
 
-		ts = sme.getSubmitTs(sysEnv);
-		if(ts != null) {
-			d.setTime(ts.longValue());
+		Long submitTs = sme.getSubmitTs(sysEnv);
+		if(submitTs != null) {
+			d.setTime(submitTs.longValue());
 			data.add(sysEnv.systemDateFormat.format(d));
 		} else data.add(null);
 		ts = sme.getResumeTs(sysEnv);
@@ -519,9 +541,9 @@ public class ShowSubmitted extends Node
 			d.setTime(ts.longValue());
 			data.add(sysEnv.systemDateFormat.format(d));
 		} else data.add(null);
-		ts = sme.getFinalTs(sysEnv);
-		if(ts != null) {
-			d.setTime(ts.longValue());
+		Long finalTs = sme.getFinalTs(sysEnv);
+		if(finalTs != null) {
+			d.setTime(finalTs.longValue());
 			data.add(sysEnv.systemDateFormat.format(d));
 		} else data.add(null);
 
@@ -545,6 +567,36 @@ public class ShowSubmitted extends Node
 		data.add(sme.getCntUnreachable(sysEnv));
 		data.add(sme.getCntWarn(sysEnv));
 		data.add(sme.getWarnCount(sysEnv));
+
+		Integer idleTime = sme.evaluateTime(sysEnv, sme.getIdleTime(sysEnv), sme.getIdleTs(sysEnv), -1);
+		data.add(idleTime.toString());
+		Integer dwTime = sme.evaluateTime(sysEnv, sme.getDependencyWaitTime(sysEnv), sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_DEPENDENCY_WAIT);
+		data.add(dwTime.toString());
+		Integer suspendTime = sme.evaluateTime(sysEnv, sme.getSuspendTime(sysEnv), sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SUSPEND);
+		data.add(suspendTime.toString());
+		Integer syncTime = sme.evaluateTime(sysEnv, sme.getSyncTime(sysEnv), sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SYNCHRONIZE);
+		data.add(syncTime.toString());
+		Integer resourceTime = sme.evaluateTime(sysEnv, sme.getResourceTime(sysEnv), sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_RESOURCE);
+		data.add(resourceTime.toString());
+		Integer jobserverTime = sme.evaluateTime(sysEnv, sme.getJobserverTime(sysEnv), sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_JOBSERVER);
+		data.add(jobserverTime.toString());
+		Integer restartableTime = sme.evaluateTime(sysEnv, sme.getRestartableTime(sysEnv), sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_RESTARTABLE);
+		data.add(restartableTime.toString());
+		Integer childWaitTime = sme.evaluateTime(sysEnv, sme.getChildWaitTime(sysEnv), sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_CHILD_WAIT);
+		data.add(childWaitTime.toString());
+
+		int endTs;
+		if (finalTs != null)
+			endTs = (int)((finalTs.longValue() - submitTs.longValue()) / 1000);
+		else
+			endTs = (int)((sysEnv.cEnv.last() - submitTs.longValue()) / 1000);
+		int processTime = endTs - dwTime.intValue();
+		data.add(new Integer (processTime));
+		data.add(new Integer(processTime - idleTime.intValue()));
+		if (processTime == 0)
+			data.add("");
+		else
+			data.add(new Integer(idleTime.intValue() * 100 / processTime));
 
 		data.add(childContainer(sysEnv, smeId));
 		data.add(parentContainer(sysEnv, smeId));

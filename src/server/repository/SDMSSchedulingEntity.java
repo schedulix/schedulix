@@ -334,10 +334,19 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                                zero,
 		                                zero,
 		                                zero,
-		                                zero
-		                                ,null,null,zero,null,zero
-		                                ,zero,zero,zero,zero,zero
-		                                ,opSusresTs, null
+		                                zero,
+		                                null,
+						zero,
+						zero,
+						zero,
+						zero,
+		                                zero,
+						zero,
+						zero,
+						zero,
+						zero,
+		                                opSusresTs,
+						null
 		                                                                     );
 
 		Long smeId = sme.getId(sysEnv);

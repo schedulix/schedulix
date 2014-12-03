@@ -186,7 +186,7 @@ public class SubmitJob extends Node
 	public Long child_submit(SystemEnvironment sysEnv, String submitTag)
 		throws SDMSException
 	{
-		Boolean suspend = (Boolean) with.get(ParseStr.S_SUSPEND);
+		Integer suspended = (Integer) with.get(ParseStr.S_SUSPEND);
 		Object resumeObj = with.get(ParseStr.S_RESUME);
 		Vector params = (Vector) with.get(ParseStr.S_PARAMETERS);
 		String childTag = (String) with.get(ParseStr.S_CHILDTAG);
@@ -210,7 +210,7 @@ public class SubmitJob extends Node
 		}
 		resumeTs = evalResumeObj(sysEnv, resumeObj, null, true);
 
-		final SDMSSubmittedEntity smec = sme.submitChild(sysEnv, params, (suspend ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND), resumeTs, se.getId(sysEnv), childTag, null, submitTag);
+		final SDMSSubmittedEntity smec = sme.submitChild(sysEnv, params, suspended, resumeTs, se.getId(sysEnv), childTag, null, submitTag);
 		return smec.getId(sysEnv);
 	}
 

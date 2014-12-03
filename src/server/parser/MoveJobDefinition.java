@@ -38,58 +38,59 @@ import de.independit.scheduler.server.output.*;
 
 public class MoveJobDefinition extends Node
 {
-
-	public final static String __version = "@(#) $Id: MoveJobDefinition.java,v 2.1.2.1 2013/03/14 10:24:41 ronald Exp $";
-
-	private Vector path1;
-	private String name1;
-	private Vector path2;
+	private ObjectURL url;
+	private Vector name2;
 	private String newName;
 
-	public MoveJobDefinition(Vector p1, String from, Vector p2)
+	public MoveJobDefinition(ObjectURL u, Vector to)
 	{
 		super();
-		path1 = p1;
-		name1 = from;
-		path2 = p2;
+		url = u;
+		name2 = to;
 		newName = null;
 	}
 
-	public MoveJobDefinition(Vector p1, String from, String to)
+	public MoveJobDefinition(ObjectURL u, String to)
 	{
 		super();
-		path1 = p1;
-		name1 = from;
-		path2 = null;
+		url = u;
+		name2 = null;
 		newName = to;
 	}
 
 	private void moveJobDefinition(SystemEnvironment sysEnv, SDMSSchedulingEntity se)
 		throws SDMSException
 	{
-		SDMSFolder f;
+		SDMSFolder p;
 		Long folderId;
 		String name;
+		Long npId, opId, myId;
 
 		try {
-			f = SDMSFolderTable.getFolder(sysEnv, path2);
+			p = SDMSFolderTable.getFolder(sysEnv, name2);
 
-			name = name1;
+			name = se.getName(sysEnv);
 
 		} catch(NotFoundException nfe) {
 
-			name = (String) path2.remove(path2.size() -1);
-			f = SDMSFolderTable.getFolder(sysEnv, path2);
+			name = (String) name2.remove(name2.size() - 1);
+			p = SDMSFolderTable.getFolder(sysEnv, name2);
 
 		}
-		folderId = f.getId(sysEnv);
+		npId = p.getId(sysEnv);
+		opId = se.getFolderId(sysEnv);
 
-		if(SDMSFolderTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(folderId, name))) {
+		if(SDMSFolderTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(npId, name))) {
 			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "02204160909", "Object with name $1 already exists within $2",
-				name, f.pathString(sysEnv)));
+				name, p.pathString(sysEnv)));
 		}
 
-		se.set_FolderIdName (sysEnv, folderId, name);
+		if(SDMSSchedulingEntityTable.idx_folderId_name.containsKey(sysEnv, new SDMSKey(npId, name))) {
+			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03410311345", "Object with name $1 already exists within $2",
+			                                name, p.pathString(sysEnv)));
+		}
+
+		se.set_FolderIdName (sysEnv, npId, name);
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03202201037", "Job Definition moved"));
 	}
@@ -97,11 +98,19 @@ public class MoveJobDefinition extends Node
 	private void renameJobDefinition(SystemEnvironment sysEnv, SDMSSchedulingEntity se)
 		throws SDMSException
 	{
+		Long opId;
 
-		if(SDMSFolderTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(se.getFolderId(sysEnv), newName))) {
-			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03112161224", "Object with name $1 already exists",
+		opId = se.getFolderId(sysEnv);
+
+		if(SDMSSchedulingEntityTable.idx_folderId_name.containsKey(sysEnv, new SDMSKey(opId, newName))) {
+			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03112161101", "Object with name $1 already exists",
 				newName));
 		}
+		if(SDMSFolderTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(opId, newName))) {
+			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03112161103", "Object with name $1 already exists",
+			                                newName));
+		}
+
 		se.setName (sysEnv, newName);
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03202201037", "Job Definition renamed"));
@@ -110,8 +119,14 @@ public class MoveJobDefinition extends Node
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
+		SDMSSchedulingEntity se;
 
-		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.get(sysEnv, path1, name1);
+		SDMSProxy prox = url.resolve(sysEnv);
+		if (prox instanceof SDMSSchedulingEntity)
+			se = (SDMSSchedulingEntity) url.resolve(sysEnv);
+		else {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03410311333", "The object $1 is not a scheduling entity", url.toString()));
+		}
 
 		if (newName == null)
 			moveJobDefinition(sysEnv, se);

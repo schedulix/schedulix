@@ -76,8 +76,8 @@ public abstract class SDMSProxy implements Comparable
 					"03110182335", "Illegal write access in Readonly Transaction"));
 		}
 		if (!current) {
-			throw new FatalException (new SDMSMessage (env,
-					"02110292014", "Trying to change object via readonly object reference"));
+			throw new FatalException (new SDMSMessage (env, "02110292014",
+						  "Trying to change object via readonly object reference"));
 		}
 
 		if (!lockedExclusive) {

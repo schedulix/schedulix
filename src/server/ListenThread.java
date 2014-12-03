@@ -81,7 +81,10 @@ public abstract class ListenThread extends SDMSThread
 		return 0;
 	}
 
-	public boolean trace()  { return trace; }
+	public boolean trace()
+	{
+		return trace;
+	}
 
 	public void trace_on()
 	{
