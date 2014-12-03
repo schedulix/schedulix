@@ -46,7 +46,7 @@ public class Parser
 %token <Token>	HEADER HISTORY HORIZON HOUR
 %token <Token>	IDENTIFIED IDENTIFIER IGNORE IGNORE_DEPENDENCY IMMEDIATE IMMEDIATE_LOCAL IMMEDIATE_MERGE IMPORT IN INACTIVE
 %token <Token>	INFINITE INFO INHERIT INITIAL_STATUS INSTANCE INTERVAL INVERSE IS ISX IX
-%token <Token>	JOB JOB_DEFINITION JOB_DEFINITION_HIERARCHY JOB_FINAL JOB_SERVER JOB_STATUS
+%token <Token>	JOB JOB_DEFINITION JOB_DEFINITION_HIERARCHY JOB_FINAL JOB_SERVER JOB_STATUS JSON
 %token <Token>	KEEP KEEP_FINAL KILL KILLED KILL_PROGRAM
 %token <Token>	LAST LEVEL LIBERAL LIKE LIMITS LINE LINK LIST LOCAL LOCAL_CONSTANT LOCKMODE LOGFILE LOOPS
 %token <Token>	MAIN MANAGE MANAGED MANAGE_SELECT MAP MAPPING MAPS MASTER MASTER_ID MAX MAXPCT MERGE MERGED MERGE_GLOBAL MERGE_LOCAL MERGE_MODE MILESTONE
@@ -629,6 +629,7 @@ protocol:	XML								{ $$ = $1; }
 	|	SERIAL								{ $$ = $1; }
 	|	PYTHON								{ $$ = $1; }
 	|	PERL								{ $$ = $1; }
+	|	JSON								{ $$ = $1; }
 
 
 
@@ -880,7 +881,6 @@ rename_folder:	RENAME folder_url TO foldername					{ $$ = new MoveFolder($2, $4)
 //D:DESCRIPTION copy_folder.tex
 copy_folder:	COPY url_list TO folderpath					{ $$ = new CopyFolder($2, $4); }
 //D:OVERRIDE
-//	|	COPY folder_url TO foldername
 	|	COPY url_list TO foldername					{ $$ = new CopyFolder($2, $4); }
 
 url_list:	folder_or_job							{ $$ = new Vector(); $<Vector>$.addElement($1); }
@@ -2094,15 +2094,13 @@ alter_job_definition:	alter JOB_DEFINITION folderpath '.' jobname job_with_claus
 //D:NT-ALIAS = move job definition
 //D:PURPOSE P164
 //D:DESCRIPTION move_job_definition.tex
-move_job_definition:	MOVE JOB_DEFINITION folderpath '.' jobname TO folderpath
-										{ $$ = new MoveJobDefinition($3, $5, $7); }
+move_job_definition:	MOVE jobdef_url TO folderpath				{ $$ = new MoveJobDefinition($2, $4); }
 
 //D:MASTER
 //D:NT-ALIAS = rename job definition
 //D:PURPOSE P200
 //D:DESCRIPTION rename_job_definition.tex
-rename_job_definition:	RENAME JOB_DEFINITION folderpath '.' jobname TO jobname
-										{ $$ = new MoveJobDefinition($3, $5, $7); }
+rename_job_definition:	RENAME jobdef_url TO jobname				{ $$ = new MoveJobDefinition($2, $4); }
 
 job_with_clause:	with job_withitemlist					{ $$ = $2; }
 
@@ -4570,6 +4568,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	ISX								{ $$ = (String) $1.value; }
 	|	IX								{ $$ = (String) $1.value; }
 	|	JOB								{ $$ = (String) $1.value; }
+	|	JSON								{ $$ = (String) $1.value; }
 	|	KILL								{ $$ = (String) $1.value; }
 	|	KILLED								{ $$ = (String) $1.value; }
 	|	LEVEL								{ $$ = (String) $1.value; }

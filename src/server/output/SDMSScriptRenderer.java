@@ -67,4 +67,31 @@ public abstract class SDMSScriptRenderer extends SDMSOutputRenderer
 		}
 		return result.toString();
 	}
+
+	protected String maskJsonQuotes(String str)
+	{
+		StringBuffer sb = new StringBuffer(str);
+		StringBuffer result = new StringBuffer(2 * str.length());
+		int l = sb.length();
+
+		for(int i = 0; i < l; i++) {
+			char c = sb.charAt(i);
+			if(c == '\\') {
+				result.append("\\\\");
+			} else if(c == '/') {
+				result.append("\\/");
+			} else if(c == '\"') {
+				result.append("\\\"");
+			} else if(c == '\r') {
+				result.append("\\r");
+			} else if(c == '\n') {
+				result.append("\\n");
+			} else if(c == '\t') {
+				result.append("\\t");
+			} else {
+				result.append(c);
+			}
+		}
+		return result.toString();
+	}
 }

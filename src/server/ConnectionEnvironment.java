@@ -230,6 +230,9 @@ public class ConnectionEnvironment
 			case Parser.PYTHON:
 				renderer = new SDMSPythonRenderer();
 				break;
+		case Parser.JSON:
+			renderer = new SDMSJsonRenderer();
+			break;
 			case Parser.SERIAL:
 				renderer = new SDMSSerialRenderer();
 				break;

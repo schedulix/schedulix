@@ -213,6 +213,7 @@ public class ParseStr
 	public static final String S_JOB_FINAL		= "JOB_FINAL";
 	public static final String S_JOB_SERVER		= "JOB_SERVER";
 	public static final String S_JOB_STATUS		= "JOB_STATUS";
+	public static final String S_JSON		= "JSON";
 	public static final String S_KEEP		= "KEEP";
 	public static final String S_KEEP_FINAL		= "KEEP_FINAL";
 	public static final String S_KILL		= "KILL";
@@ -590,6 +591,7 @@ public class ParseStr
 		mapper.put(new Integer(Parser.JOB_FINAL),		ParseStr.S_JOB_FINAL);
 		mapper.put(new Integer(Parser.JOB_SERVER),		ParseStr.S_JOB_SERVER);
 		mapper.put(new Integer(Parser.JOB_STATUS),		ParseStr.S_JOB_STATUS);
+		mapper.put(new Integer(Parser.JSON),			ParseStr.S_JSON);
 		mapper.put(new Integer(Parser.KEEP),			ParseStr.S_KEEP);
 		mapper.put(new Integer(Parser.KEEP_FINAL),		ParseStr.S_KEEP_FINAL);
 		mapper.put(new Integer(Parser.KILL),			ParseStr.S_KILL);
