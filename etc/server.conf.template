@@ -8,6 +8,21 @@
 #
 
 #
+# Archive: enable/disable archiving of data when using DbHistory != 0
+#          removed data will be copied to ARC_... tables before removal
+#          specify column lists (comma seperated column names) if you do not want to archive all columns
+#          specify NONE if you don't want a specific table to be archived
+#          specify ALL if all columns should be archived, which is also the default if archiving is switched on
+#
+Archive=false
+ArchiveSMEColumns=ALL
+ArchiveAuditColumns=ALL
+ArchiveDependencyColumns=ALL
+ArchiveVariableColumns=ALL
+ArchiveHierarchyColumns=ALL
+ArchiveKillJobColumns=ALL
+
+#
 # CalendarEntries: The maximum number of starttimes stored in the calendar
 #
 CalendarEntries=250
@@ -32,6 +47,16 @@ CodePage=latin1
 #                     default depends on the licensed product
 #
 CompatibilityLevel=BASIC
+
+#
+# DbHistory: Number of minutes to keep in BICsuite repository database
+#            If the Archive option is disabled, data of older job executions will get lost !!!
+#            Set to 0 if you do not want to remove data of older job executions from the BICsuite repository
+#            Set to 1 to remove all data which isn't any longer in server memory
+#            Set to 45000 to keep the data for approximately 1 month
+#            Set to 540000 to keep data for approximately 1 year
+#
+DbHistory=0
 
 #
 # DbLoaders: Number of DB Loaders

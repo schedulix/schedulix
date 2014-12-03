@@ -167,6 +167,8 @@ public abstract class SDMSTable
 
 	public abstract String tableName();
 
+	public abstract String[] columnNames();
+
 	protected abstract void index(SystemEnvironment env, SDMSObject o)
 		throws SDMSException;
 

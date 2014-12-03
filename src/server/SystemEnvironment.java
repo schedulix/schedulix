@@ -57,6 +57,9 @@ public class SystemEnvironment implements Cloneable
 	public static final int ADMIN    = 1;
 	public static final int SHUTDOWN = 2;
 
+	private static final String NONE = "NONE";
+	private static final String ALL = "ALL";
+
 	public static SDMSRepository repository;
 	public static Properties props;
 	public static long startTime;
@@ -65,6 +68,7 @@ public class SystemEnvironment implements Cloneable
 	public static GarbageThread garb;
 	public static TriggerThread tt;
 	public static RenewTicketThread ticketThread;
+	public static DBCleanupThread dbCleanupThread;
 	public static TimerThread timer;
 	public static ThreadGroup utg;
 	public static ThreadGroup wg;
@@ -91,6 +95,8 @@ public class SystemEnvironment implements Cloneable
 	public static int txRetryCount;
 	public static long preserveTime;
 	public static long maxPreserveTime;
+	public static long dbPreserveTime;
+	public static boolean archive;
 	public static int minHistoryCount;
 	public static int maxHistoryCount;
 	public static int maxWorker;
@@ -126,9 +132,22 @@ public class SystemEnvironment implements Cloneable
 	public static boolean strict_variables;
 	public static boolean warn_variables;
 	public static Vector exportVariables;
+	public static Vector smeColumns;
+	public static Vector atColumns;
+	public static Vector diColumns;
+	public static Vector evColumns;
+	public static Vector hiColumns;
+	public static Vector kjColumns;
 
 	private static boolean got_properties = false;
 
+	public static final String S_ARCHIVE               = "Archive";
+	public static final String S_ARCSMECOLS            = "ArchiveSMEColumns";
+	public static final String S_ARCATCOLS             = "ArchiveAuditColumns";
+	public static final String S_ARCDICOLS             = "ArchiveDependencyColumns";
+	public static final String S_ARCEVCOLS             = "ArchiveVariableColumns";
+	public static final String S_ARCHICOLS             = "ArchiveHierarchyColumns";
+	public static final String S_ARCKJCOLS             = "ArchiveKillJobColumns";
 	public static final String S_AUDITFILE             = "AuditFile";
 	public static final String S_CALHORIZON            = "CalendarHorizon";
 	public static final String S_CALENTRIES            = "CalendarEntries";
@@ -139,6 +158,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_EXPORTVARIABLES       = "ExportVariables";
 	public static final String S_GCWAKEUP              = "GCWakeup";
 	public static final String S_HISTORY               = "History";
+	public static final String S_DBHISTORY             = "DbHistory";
 	public static final String S_HISTORYLIMIT          = "HistoryLimit";
 	public static final String S_MINHISTORYCOUNT       = "MinHistoryCount";
 	public static final String S_MAXHISTORYCOUNT       = "MaxHistoryCount";
@@ -274,6 +294,8 @@ public class SystemEnvironment implements Cloneable
 	{
 		getSimpleValues();
 		getPropsTraceLevel();
+		getArchive();
+		getArchiveCols();
 		getParameterHandling();
 		getTimerHorizon();
 		getTimerRecalc();
@@ -281,6 +303,7 @@ public class SystemEnvironment implements Cloneable
 		getServicePort();
 		getTxRetryCount();
 		getHistory();
+		getDbHistory();
 		getHistoryLimit();
 		getMinHistoryCount();
 		getMaxHistoryCount();
@@ -396,6 +419,13 @@ public class SystemEnvironment implements Cloneable
 		auditFile = props.getProperty(S_AUDITFILE);
 	}
 
+	private void getArchive()
+	{
+		String s_archive = props.getProperty(S_ARCHIVE, "false");
+		archive = Boolean.parseBoolean(s_archive.trim());
+		props.setProperty(S_ARCHIVE, archive ? "true" : "false" );
+	}
+
 	private void getPropsTraceLevel()
 	{
 		String s_traceLevel = props.getProperty(S_TRACELEVEL, "1");
@@ -455,6 +485,13 @@ public class SystemEnvironment implements Cloneable
 		preserveTime = checkIntProperty(s_preserveTime, S_HISTORY, minTime, 14400, 0, "Invalid History : ");
 		props.setProperty(S_HISTORY, "" + preserveTime);
 		preserveTime *= 1000 * 60;
+	}
+	private void getDbHistory()
+	{
+		String s_dbPreserveTime = props.getProperty(S_DBHISTORY, "0");
+		dbPreserveTime = checkIntProperty(s_dbPreserveTime, S_DBHISTORY, 0, 0, 0, "Invalid DbHistory : ");
+		props.setProperty(S_DBHISTORY, "" + dbPreserveTime);
+		dbPreserveTime *= 1000 * 60;
 	}
 
 	private void getHistoryLimit()
@@ -629,10 +666,9 @@ public class SystemEnvironment implements Cloneable
 		props.setProperty(S_PARAMETERHANDLING, parameterHandling);
 	}
 
-	private void setExportVars()
+	private Vector convertEntryToVector(String s, String msg)
 	{
-		final String expVars = exportVariablesString;
-		final StringReader sr = new StringReader(expVars);
+		final StringReader sr = new StringReader(s);
 		final StreamTokenizer st = new StreamTokenizer(sr);
 		int tok;
 
@@ -645,13 +681,69 @@ public class SystemEnvironment implements Cloneable
 			while((tok = st.nextToken()) != StreamTokenizer.TT_EOF) {
 				if(tok ==  StreamTokenizer.TT_WORD) {
 					vars.add(st.sval.toUpperCase());
-					SDMSThread.doTrace(null, "Exporting " + st.sval, SDMSThread.SEVERITY_INFO);
+					if (msg != null)
+						SDMSThread.doTrace(null, msg + st.sval, SDMSThread.SEVERITY_INFO);
 				}
 			}
 		} catch(java.io.IOException ioe) {
 
 		}
-		exportVariables = vars;
+		return vars;
+	}
+
+	private void getArchiveCols()
+	{
+		String s_smeColumns = props.getProperty(S_ARCSMECOLS, ALL);
+		String s_atColumns = props.getProperty(S_ARCATCOLS, ALL);
+		String s_diColumns = props.getProperty(S_ARCDICOLS, ALL);
+		String s_evColumns = props.getProperty(S_ARCEVCOLS, ALL);
+		String s_hiColumns = props.getProperty(S_ARCHICOLS, ALL);
+		String s_kjColumns = props.getProperty(S_ARCKJCOLS, ALL);
+
+		if (!archive) return;
+
+		if (s_smeColumns.toUpperCase().equals(NONE))
+			smeColumns = null;
+		else if (s_smeColumns.toUpperCase().equals(ALL))
+			smeColumns = new Vector();
+		else
+			smeColumns = convertEntryToVector(s_smeColumns, null);
+
+		if (s_atColumns.toUpperCase().equals(NONE))
+			atColumns = null;
+		else if (s_atColumns.toUpperCase().equals(ALL))
+			atColumns = new Vector();
+		else
+			atColumns = convertEntryToVector(s_atColumns, null);
+
+		if (s_diColumns.toUpperCase().equals(NONE))
+			diColumns = null;
+		else if (s_diColumns.toUpperCase().equals(ALL))
+			diColumns = new Vector();
+		else
+			diColumns = convertEntryToVector(s_diColumns, null);
+
+		if (s_evColumns.toUpperCase().equals(NONE))
+			evColumns = null;
+		else if (s_evColumns.toUpperCase().equals(ALL))
+			evColumns = new Vector();
+		else
+			evColumns = convertEntryToVector(s_evColumns, null);
+
+		if (s_hiColumns.toUpperCase().equals(NONE))
+			hiColumns = null;
+		else if (s_hiColumns.toUpperCase().equals(ALL))
+			hiColumns = new Vector();
+		else
+			hiColumns = convertEntryToVector(s_hiColumns, null);
+
+		if (s_kjColumns.toUpperCase().equals(NONE))
+			kjColumns = null;
+		else if (s_kjColumns.toUpperCase().equals(ALL))
+			kjColumns = new Vector();
+		else
+			kjColumns = convertEntryToVector(s_kjColumns, null);
+
 	}
 
 	private void getExportVariables()
@@ -706,7 +798,7 @@ public class SystemEnvironment implements Cloneable
 		userExportVariablesString = props.getProperty(S_USEREXPORTVARIABLES, "");
 		if (userExportVariablesString.length() != 0)
 			exportVariablesString = exportVariablesString + "," + userExportVariablesString;
-		setExportVars();
+		exportVariables = convertEntryToVector(exportVariablesString, "Exporting ");
 		StringBuffer ergebnis = new StringBuffer();
 		for (int i = 0; i < exportVariables.size(); ++i) {
 			ergebnis.append(exportVariables.get(i).toString());

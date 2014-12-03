@@ -56,6 +56,7 @@ public class Server
 	private WorkerThread[] wt;
 	private ShutdownThread shutt;
 	private RenewTicketThread rtt;
+	private DBCleanupThread dbct;
 
 	private SystemEnvironment env;
 
@@ -108,6 +109,19 @@ public class Server
 	{
 		SDMSThread.doTrace(null, "Starting Renew Ticket Thread", SDMSThread.SEVERITY_INFO);
 		rtt.start();
+	}
+
+	private void initDBCleanupThread() throws SDMSException
+	{
+		dbct = new DBCleanupThread(this);
+		SystemEnvironment.dbCleanupThread = dbct;
+		dbct.initDBCleanupThread(env);
+	}
+
+	private void startDBCleanupThread() throws SDMSException
+	{
+		SDMSThread.doTrace(null, "Starting Database Cleanup Thread", SDMSThread.SEVERITY_INFO);
+		dbct.start();
 	}
 
 	private void createRepository() throws SDMSException
@@ -263,6 +277,12 @@ public class Server
 				SDMSThread.doTrace(null, "Stopped " + rtt.toString(), SDMSThread.SEVERITY_INFO);
 			}
 		}
+		if (dbct != null) {
+			if (dbct.isAlive()) {
+				dbct.do_stop();
+				SDMSThread.doTrace(null, "Stopped " + dbct.toString(), SDMSThread.SEVERITY_INFO);
+			}
+		}
 		if(wt != null) {
 			for(int i = 0; i < wt.length; ++i) {
 				if(wt[i] != null) {
@@ -369,6 +389,10 @@ public class Server
 			initTimeScheduling();
 			initTT();
 			initGC();
+			if (env.dbPreserveTime > 0)
+				initDBCleanupThread();
+			else
+				dbct = null;
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03202252202",
 							"Fatal exception while initializing System Threads:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
@@ -403,6 +427,12 @@ public class Server
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03311120827",
 							"Fatal exception while starting garbage collector:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
+		try {
+			if (dbct != null) startDBCleanupThread();
+		} catch(SDMSException fe) {
+			SDMSThread.doTrace(null, (new SDMSMessage(env, "03311141139",
+			                          "Fatal exception while starting dbCleanupThread:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+		}
 		startListener();
 		SDMSMessage m = new SDMSMessage(env, "03110212341", "-- $1 -- $2 -- $3 -- ready --",
 							"SDMS", "Server", "Systems");
@@ -425,10 +455,20 @@ public class Server
 				ult.interrupt();
 				ult.join();
 				SDMSThread.doTrace(null, "Listener terminated", SDMSThread.SEVERITY_INFO);
+				if (svt != null) {
 				SDMSThread.doTrace(null, "Waiting for ServiceThread", SDMSThread.SEVERITY_INFO);
 				svt.interrupt();
 				svt.join();
 				SDMSThread.doTrace(null, "ServiceThread terminated", SDMSThread.SEVERITY_INFO);
+				}
+				if (dbct != null) {
+					SDMSThread.doTrace(null, "Waiting for DBCleanup", SDMSThread.SEVERITY_INFO);
+					if (dbct.isAlive()) {
+
+						dbct.join();
+					}
+					SDMSThread.doTrace(null, "DBCleanup Thread terminated", SDMSThread.SEVERITY_INFO);
+				}
 			} catch(InterruptedException ie) {
 				continue;
 			}
