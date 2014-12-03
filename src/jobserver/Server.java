@@ -216,14 +216,17 @@ public class Server
 						}
 					}
 					if (feil.getStatus().equals (Feil.STATUS_RUNNING)) {
-						if (! ProcessInfo.isAlive (feil.getExecPid(), startTimes))
-							if (ProcessInfo.isAlive (feil.getExtPid(), startTimes))
+						if (! ProcessInfo.isAlive (feil.getExecPid(), startTimes)) {
+							if (ProcessInfo.isAlive (feil.getExtPid(), startTimes)) {
 								feil.setStatus (Feil.STATUS_BROKEN_ACTIVE);
-							else
+							} else {
 								feil.setStatus (Feil.STATUS_BROKEN_FINISHED);
+							}
+						}
 					} else if (feil.getStatus().equals (Feil.STATUS_BROKEN_ACTIVE))
-						if (! ProcessInfo.isAlive (feil.getExtPid(), startTimes))
+						if (! ProcessInfo.isAlive (feil.getExtPid(), startTimes)) {
 							feil.setStatus (Feil.STATUS_BROKEN_FINISHED);
+						}
 
 					if (! feil.getStatus().equals (feil.getStatus_Tx())) {
 						feil.close();

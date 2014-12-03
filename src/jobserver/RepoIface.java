@@ -73,9 +73,15 @@ public class RepoIface
 	private static final String[] REPO_HOST_REPO_PORT = {Config.REPO_HOST, Config.REPO_PORT};
 
 	private String currentHost;
-	public final synchronized String getHost() { return currentHost; }
+	public final synchronized String getHost()
+	{
+		return currentHost;
+	}
 	private int    currentPort;
-	public final synchronized int getPort() { return currentPort; }
+	public final synchronized int getPort()
+	{
+		return currentPort;
+	}
 
 	private final String mypid = Utils.getMyPid();
 
@@ -91,7 +97,6 @@ public class RepoIface
 
 	private boolean isConnected = false;
 
-
 	public final boolean isConnected()
 	{
 		return isConnected;
@@ -99,7 +104,6 @@ public class RepoIface
 
 	private final SDMSOutput sdmsExec (final String cmd)
 	{
-
 		while (true) {
 			if (!isConnected)
 				openConnection();

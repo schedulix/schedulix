@@ -67,9 +67,11 @@ public class Config
 	public static final String CREATE_WORKDIR  = "CREATE_WORKDIR";
 
 	private static final String[] LONG_VALUES    = {REPO_PORT, TRACE_LEVEL, RECONNECT_DELAY, NOP_DELAY,
-							NOTIFY_PORT, HTTP_PORT};
+							NOTIFY_PORT, HTTP_PORT
+							};
 	private static final String[] BOOLEAN_VALUES = {USE_PATH, VERBOSE_LOGS, ONLINE_SERVER, USE_SSL,
-							CREATE_WORKDIR};
+							CREATE_WORKDIR
+							};
 	private static final String[] FILE_VALUES    = {DEFAULT_WORKDIR, JOB_EXECUTOR, JOB_FILE_PREFIX };
 	private static final String[] SECOND_VALUES  = {RECONNECT_DELAY, NOP_DELAY};
 	private static final String[] VECTOR_VALUES = {NAME_PATTERN};
@@ -77,17 +79,20 @@ public class Config
 	private static final String[] REQUIRED = {REPO_HOST, REPO_PORT, REPO_USER, REPO_PASS};
 	private static final String[] WRITE_THROUGH = {REPO_HOST, REPO_PORT, REPO_USER, USE_SSL,
 						       KEYSTOREPW, TRUSTSTOREPW ,
-						       KEYSTORE, TRUSTSTORE};
+						       KEYSTORE, TRUSTSTORE
+							};
 	private static final String[] DEPRECATED = {RECONNECT_DELAY, NOP_DELAY, DEFAULT_WORKDIR, USE_PATH,
 						    VERBOSE_LOGS, NOP_DELAY, JOB_EXECUTOR, JOB_FILE_PREFIX,
 						    ENV_MAPPING, NOTIFY_PORT, ONLINE_SERVER, KEYSTORE, TRUSTSTORE,
-						    CREATE_WORKDIR };
+						    CREATE_WORKDIR
+							 };
 	public static final String[] ALL_VALUES = {REPO_HOST, REPO_PORT, RECONNECT_DELAY, DEFAULT_WORKDIR,
 						   USE_PATH, VERBOSE_LOGS, TRACE_LEVEL, BOOTTIME, NOP_DELAY,
 						   JOB_EXECUTOR, JOB_FILE_PREFIX, ENV_MAPPING, DYNAMIC,
 						   NOTIFY_PORT, HTTP_PORT, HTTP_HOST, ONLINE_SERVER,
 						   NAME_PATTERN, KEYSTORE, TRUSTSTORE, KEYSTOREPW, TRUSTSTOREPW,
-						   USE_SSL, CREATE_WORKDIR};
+						   USE_SSL, CREATE_WORKDIR
+							};
 
 	private final File startupWorkdir;
 
