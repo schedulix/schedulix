@@ -146,8 +146,13 @@ public class SchedulingThread extends InternalSession
 	{
 		Iterator i = jsToNotify.iterator();
 		while(i.hasNext()) {
-			SDMSScope s = SDMSScopeTable.getObject(sysEnv, (Long) i.next());
-			s.notify(sysEnv);
+			try {
+				SDMSScope s = SDMSScopeTable.getObject(sysEnv, (Long) i.next());
+				s.notify(sysEnv);
+			} catch (NotFoundException nfe) {
+
+				i.remove();
+			}
 		}
 	}
 
@@ -549,8 +554,12 @@ public class SchedulingThread extends InternalSession
 		jsv = new Vector();
 		if (checkStickyResources(sysEnv, smeId, smefp, jsv, v)) v = jsv;
 
-		requestLocalResourceSme(sysEnv, sme, type, masterMap, oldState);
-		requestFolderResourceSme(sysEnv, sme, type, masterMap, oldState);
+		try {
+			requestLocalResourceSme(sysEnv, sme, type, masterMap, oldState);
+			requestFolderResourceSme(sysEnv, sme, type, masterMap, oldState);
+		} catch (SDMSEscape e) {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03411141525", "Sticky Resource resolution conflict for job $1", se.pathString(sysEnv)));
+		}
 
 		for(int j = 0; j < v.size(); ++j) {
 			s = (SDMSScope) v.get(j);
@@ -760,6 +769,21 @@ public class SchedulingThread extends InternalSession
 		}
 	}
 
+	private boolean isVisible(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Long folderId)
+	throws SDMSException
+	{
+		Long seVersion = sme.getSeVersion(sysEnv);
+		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), seVersion);
+		Long parentFolderId = se.getFolderId(sysEnv);
+		SDMSFolder f;
+		while (parentFolderId != null) {
+			if (parentFolderId.equals(folderId)) return true;
+			f = SDMSFolderTable.getObject(sysEnv, parentFolderId, seVersion);
+			parentFolderId = f.getParentId(sysEnv);
+		}
+		return false;
+	}
+
 	private void createRequest(SystemEnvironment sysEnv, Long smeId, SDMSResourceRequirement rr, SDMSResource r, Long nrId, int type, HashMap masterMap)
 		throws SDMSException
 	{
@@ -800,6 +824,30 @@ public class SchedulingThread extends InternalSession
 					}
 
 					if (pId != null || stickyParentSeId.equals(psme.getSeId(sysEnv))) stickyParentId = psme.getId(sysEnv);
+				} else {
+
+					Long sId = r.getScopeId(sysEnv);
+					if (!SDMSScopeTable.table.exists(sysEnv, sId)) {
+
+						if (SDMSFolderTable.table.exists(sysEnv, sId)) {
+							Long stickyParentCandidate = smeId;
+							SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
+							Long parentId = sme.getParentId(sysEnv);
+							while (parentId != null) {
+
+								sme = SDMSSubmittedEntityTable.getObject(sysEnv, parentId);
+
+								if (isVisible(sysEnv, sme, sId))
+									stickyParentCandidate = parentId;
+								parentId = sme.getParentId(sysEnv);
+							}
+							stickyParentId = stickyParentCandidate;
+						} else {
+
+							stickyParentId = sId;
+						}
+
+					}
 				}
 			}
 		} else {
