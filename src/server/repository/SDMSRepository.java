@@ -111,7 +111,7 @@ public class SDMSRepository
 					", " + squote + "SUBMIT_TS" + equote +
 					"  FROM SUBMITTED_ENTITY" +
 					" WHERE ID = MASTER_ID" +
-					"   AND (" + squote + "STATE" + squote + " NOT IN (" + SDMSSubmittedEntity.CANCELLED + "," + SDMSSubmittedEntity.FINAL + ") OR" +
+					"   AND (" + squote + "STATE" + equote + " NOT IN (" + SDMSSubmittedEntity.CANCELLED + "," + SDMSSubmittedEntity.FINAL + ") OR" +
 					"       FINAL_TS >= " + (postgres ?
 					"	   CAST (\'" + lowestActiveDate + "\' AS DECIMAL)" :
 					"	   " + lowestActiveDate) + ")" +
