@@ -26,8 +26,7 @@ import com.sun.jna.win32.W32APITypeMapper;
  * for unicode/ASCII mappings.  Set the system property w32.ascii
  * to true to default to the ASCII mappings.
  */
-public interface W32API extends StdCallLibrary, W32Errors
-{
+public interface W32API extends StdCallLibrary, W32Errors {
 
 	/** Standard options to use the unicode version of a w32 API. */
 	Map UNICODE_OPTIONS = new HashMap() {

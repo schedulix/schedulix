@@ -35,7 +35,7 @@ import de.independit.scheduler.server.SystemEnvironment;
 class Libjni
 {
 
-	public static final String copyright = "Copyright (c) 2002-2013";
+	public static final String copyright = "Copyright (c) 2002-2014";
 	public static final String company   = "independIT Integrative Technologies GmbH";
 	public static final String version   = SystemEnvironment.programVersion;
 
@@ -157,7 +157,10 @@ class Libjni
 		return null;
 	}
 
-	public String chdir(String path) { return null; }
+	public String chdir(String path)
+	{
+		return null;
+	}
 
 	public boolean setBoottimeHow(char how)
 	{

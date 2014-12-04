@@ -178,7 +178,8 @@ public class ProcessInfo
 				BasicFileAttributes attr = Files.readAttributes(Paths.get("/proc/" + strPid), BasicFileAttributes.class);
 				result = attr.creationTime().to(TimeUnit.SECONDS);
 			} catch (Exception e) {
-				throw new RuntimeException("(02310291000) Exception in getStartTime(" + strPid + ") : " + e.toString());
+				return 0;
+
 			}
 		}
 		return result;
@@ -194,6 +195,7 @@ public class ProcessInfo
 		String os = System.getProperty("os.name").toLowerCase();
 		if(   os.contains("mac")
 		   || os.contains("nix")
+		      || os.contains("nux")
 		   || os.contains("aix")
 		  ) {
 			try {
@@ -315,8 +317,12 @@ public class ProcessInfo
 		if (! bootTimes.containsKey("" + how)) {
 			String bootTime = "0";
 			switch (how) {
-				case 'S': bootTime = getBootTimeSystem(); break;
-				case 'F': bootTime = getBootTimeFile(); break;
+				case 'S':
+					bootTime = getBootTimeSystem();
+					break;
+				case 'F':
+					bootTime = getBootTimeFile();
+					break;
 			}
 			bootTimes.put("" + how, new Long(bootTime));
 		}
