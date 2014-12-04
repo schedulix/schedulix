@@ -148,7 +148,7 @@ public class SDMSScopeGeneric extends SDMSObject
 		if (p_passwd != null && p_passwd.length() > 64) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141528",
-			                        "(Scope) Length of $1 exceeds maximum length $2", "passwd", "40")
+			                        "(Scope) Length of $1 exceeds maximum length $2", "passwd", "64")
 			);
 		}
 		passwd = p_passwd;
@@ -563,7 +563,7 @@ public class SDMSScopeGeneric extends SDMSObject
 			if (p_passwd != null && p_passwd.length() > 64) {
 				throw new CommonErrorException (
 				        new SDMSMessage(env, "01112141510",
-				                        "(Scope) Length of $1 exceeds maximum length $2", "passwd", "40")
+				                        "(Scope) Length of $1 exceeds maximum length $2", "passwd", "64")
 				);
 			}
 			o.passwd = p_passwd;
