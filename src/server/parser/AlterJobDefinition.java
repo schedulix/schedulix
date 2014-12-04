@@ -569,22 +569,28 @@ public class AlterJobDefinition extends ManipJobDefinition
 							rr.setRsmpId(sysEnv, rsmpId);
 						}
 						if(wh.containsKey(ParseStr.S_KEEP))	rr.setKeepMode(sysEnv, keepMode);
-						if(wh.containsKey(ParseStr.S_STICKY) && sticky != null) {
-							isSticky = Boolean.TRUE;
-							stickyName = (String) sticky.get(ParseStr.S_NAME);
-							PathVector spv = (PathVector) sticky.get(ParseStr.S_JOB_DEFINITION);
-							if (spv == null) {
-								stickyParent = null;
-							} else {
-								String pName = (String) spv.remove(spv.size() -1);
-								try {
-									SDMSSchedulingEntity spse = SDMSSchedulingEntityTable.get(sysEnv, spv, pName);
-									if(!spse.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
-										throw new AccessViolationException(new SDMSMessage(sysEnv, "03309241513", "Insufficient privileges"));
-									stickyParent = spse.getId(sysEnv);
-								} catch(NotFoundException nfe) {
-									throw new CommonErrorException(new SDMSMessage(sysEnv, "03309250927", "The specified sticky parent isn't a job definition"));
+						if(wh.containsKey(ParseStr.S_STICKY)) {
+							if (sticky != null) {
+								isSticky = Boolean.TRUE;
+								stickyName = (String) sticky.get(ParseStr.S_NAME);
+								PathVector spv = (PathVector) sticky.get(ParseStr.S_JOB_DEFINITION);
+								if (spv == null) {
+									stickyParent = null;
+								} else {
+									String pName = (String) spv.remove(spv.size() -1);
+									try {
+										SDMSSchedulingEntity spse = SDMSSchedulingEntityTable.get(sysEnv, spv, pName);
+										if(!spse.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
+											throw new AccessViolationException(new SDMSMessage(sysEnv, "03309241513", "Insufficient privileges"));
+										stickyParent = spse.getId(sysEnv);
+									} catch(NotFoundException nfe) {
+										throw new CommonErrorException(new SDMSMessage(sysEnv, "03309250927", "The specified sticky parent isn't a job definition"));
+									}
 								}
+							} else {
+								isSticky = Boolean.FALSE;
+								stickyParent = null;
+								stickyName = null;
 							}
 							rr.setIsSticky(sysEnv, isSticky);
 							rr.setStickyName(sysEnv, stickyName);
