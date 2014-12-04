@@ -24,6 +24,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -77,6 +78,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define Fwrite(a,b,c,d,e)  (WriteFile((d), (a), (b) * (c), (&e), NULL), e)
 #define Fseek(a,b,c)       SetFilePointer((a), (b), NULL, (c))
 #define Hprintf            hprintf
+#define Strerror           winStrerror
 #else
 #define FILE_BEGIN         SEEK_SET
 #define FILE_CURRENT	   SEEK_CUR
@@ -85,6 +87,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define Fwrite(a,b,c,d,e)  fwrite((a), (b), (c), (d))
 #define Fseek(a, b, c)     fseek((a), (b), (c))
 #define Hprintf            fprintf
+#define Strerror           strerror
 #endif
 
 #define STATUS_OK      0
@@ -118,7 +121,7 @@ errmsg_t message[] = {
 #define TFWRITE_FAILED   3
 	{ "Write to taskfile failed", T_NONE },
 #define TFCLOSE_FAILED   4
-	{ "Close of taskfile failed", T_NONE },
+	{ "Close of taskfile failed (%d / %s)", T_BOTH },
 #define TF_EMPTY         5
 	{ "Task file empty", T_NONE },
 #define TFREAD_ERROR     6
@@ -259,6 +262,7 @@ void ignore_all_signals(callstatus *status);
 void set_all_signals(struct sigaction aktschn, callstatus *status);
 #else
 void set_all_signals (void (__cdecl *aktschn) (int), callstatus *status);
+char *winStrerror(DWORD errorno);
 DWORD hprintf(HANDLE wrc, char *format, ...);
 #endif
 char *Strdup(callstatus *status, char *src);
@@ -332,7 +336,7 @@ char *renderError(callstatus *status)
 			break;
 		case T_BOTH:
 			len += 10;
-			syserr = strdup(strerror(status->syserror));	/* we need a copy, could get overwritten; accepted memory leak */
+			syserr = strdup(Strerror(status->syserror));	/* we need a copy, could get overwritten; accepted memory leak */
 			if (syserr == NULL)
 				syserr = (char *) "(unable to retrieve system error message)";
 			len += (int) strlen(syserr);
@@ -363,6 +367,28 @@ char *renderError(callstatus *status)
 }
 
 #ifdef WINDOWS
+char *winStrerror(DWORD errorno)
+{
+	LPTSTR result = NULL;
+	DWORD retSize;
+
+	retSize=FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|
+	                      FORMAT_MESSAGE_FROM_SYSTEM|
+	                      FORMAT_MESSAGE_ARGUMENT_ARRAY,
+	                      NULL,
+	                      errorno,
+	                      LANG_NEUTRAL,
+	                      (LPTSTR) &result,
+	                      0,
+	                      NULL );
+	if (!retSize || result == NULL) {
+		return (char *) "(Failed to render error message)";
+	}
+	result[strlen(result)-2]='\0';
+
+	return (char *) result;
+}
+
 DWORD hprintf(HANDLE wrc, char *format, ...)
 {
 #define BUFSIZE 2048
@@ -396,9 +422,11 @@ char *Strdup(callstatus *status, char *src)
 	char *trg;
 
 	if (*src == '\0') {
-		status->severity = SEVERITY_FATAL;
+		status->severity = SEVERITY_WARNING;
 		status->msg = TFMISSING_VALUE;
-		return NULL;
+		trg = (char *) malloc(1);
+		*trg = '\0';
+		return trg;
 	}
 	trg = strdup(src);
 	if (trg == NULL) {
@@ -430,7 +458,7 @@ void ignore_all_signals (callstatus *status)
 {
 	struct sigaction aktschn;
 
-#ifdef NETBSD
+#ifdef BSD
 	sigemptyset (&aktschn.sa_mask);
 
 	aktschn.sa_flags   = 0;
@@ -443,7 +471,7 @@ void ignore_all_signals (callstatus *status)
 void default_all_signals (callstatus *status)
 {
 	struct sigaction aktschn;
-#ifdef NETBSD
+#ifdef BSD
 	sigemptyset (&aktschn.sa_mask);
 
 	aktschn.sa_flags   = 0;
@@ -492,35 +520,33 @@ void default_all_signals (callstatus *status)
 }
 #endif
 
-
-
 void printJobFields()
 {
 	int i;
 
-	fprintf(stdout, "command       = %s\n", global.command != NULL ? global.command : "NULL");
-	fprintf(stdout, "arguments:\n");
+	Hprintf(myLog, "command       = %s\n", global.command != NULL ? global.command : "NULL");
+	Hprintf(myLog, "arguments:\n");
 	if (global.argument == NULL)
-		fprintf(stdout, "\tNULL\n");
+		Hprintf(myLog, "\tNULL\n");
 	else {
 		for (i = 0; i < global.num_args; ++i)
-			fprintf(stdout, "\t%2.2d: %s\n", i, global.argument[i]);
+			Hprintf(myLog, "\t%2.2d: %s\n", i, global.argument[i]);
 	}
-	fprintf(stdout, "workdir       = %s\n", global.workdir != NULL ? global.workdir : "NULL");
-	fprintf(stdout, "usepath       = %s\n", global.usepath == false ? "false" : "true");
-	fprintf(stdout, "verboselogs   = %s\n", global.verboselogs == false ? "false" : "true");
-	fprintf(stdout, "logfile       = %s\n", global.logfile != NULL ? global.logfile : "NULL");
-	fprintf(stdout, "logfileappend = %s\n", global.logfileappend == false ? "false" : "true");
-	fprintf(stdout, "errlog        = %s\n", global.errlog != NULL ? global.errlog : "NULL");
-	fprintf(stdout, "errlogappend  = %s\n", global.errlogappend == false ? "false" : "true");
-	fprintf(stdout, "samelogs      = %s\n", global.samelogs == false ? "false" : "true");
-	fprintf(stdout, "execpid       = %s\n", global.execpid != NULL ? global.execpid : "NULL");
-	fprintf(stdout, "extpid        = %s\n", global.extpid != NULL ? global.extpid : "NULL");
-	fprintf(stdout, "returncode    = %s\n", global.returncode != NULL ? global.returncode : "NULL");
-	fprintf(stdout, "error         = %s\n", global.error != NULL ? global.error : "NULL");
-	fprintf(stdout, "jstatus       = %s\n", global.jstatus != NULL ? global.jstatus : "NULL");
-	fprintf(stdout, "jstatus_tx    = %s\n", global.jstatus_tx != NULL ? global.jstatus_tx : "NULL");
-	fprintf(stdout, "complete      = %s\n", global.complete == false ? "false" : "true");
+	Hprintf(myLog, "workdir       = %s\n", global.workdir != NULL ? global.workdir : "NULL");
+	Hprintf(myLog, "usepath       = %s\n", global.usepath == false ? "false" : "true");
+	Hprintf(myLog, "verboselogs   = %s\n", global.verboselogs == false ? "false" : "true");
+	Hprintf(myLog, "logfile       = %s\n", global.logfile != NULL ? global.logfile : "NULL");
+	Hprintf(myLog, "logfileappend = %s\n", global.logfileappend == false ? "false" : "true");
+	Hprintf(myLog, "errlog        = %s\n", global.errlog != NULL ? global.errlog : "NULL");
+	Hprintf(myLog, "errlogappend  = %s\n", global.errlogappend == false ? "false" : "true");
+	Hprintf(myLog, "samelogs      = %s\n", global.samelogs == false ? "false" : "true");
+	Hprintf(myLog, "execpid       = %s\n", global.execpid != NULL ? global.execpid : "NULL");
+	Hprintf(myLog, "extpid        = %s\n", global.extpid != NULL ? global.extpid : "NULL");
+	Hprintf(myLog, "returncode    = %s\n", global.returncode != NULL ? global.returncode : "NULL");
+	Hprintf(myLog, "error         = %s\n", global.error != NULL ? global.error : "NULL");
+	Hprintf(myLog, "jstatus       = %s\n", global.jstatus != NULL ? global.jstatus : "NULL");
+	Hprintf(myLog, "jstatus_tx    = %s\n", global.jstatus_tx != NULL ? global.jstatus_tx : "NULL");
+	Hprintf(myLog, "complete      = %s\n", global.complete == false ? "false" : "true");
 }
 
 void addArgument(callstatus *status, char *value)
@@ -550,9 +576,13 @@ void addArgument(callstatus *status, char *value)
 			for (i = global.num_args; i < global.argsize; ++i) global.argument[i] = NULL;
 		}
 	}
+
 	global.argument[global.num_args] = Strdup(status, value);
-	if (status->severity == STATUS_OK)
+
+	if (status->severity != SEVERITY_FATAL)  {
+		status->severity = STATUS_OK;
 		global.num_args++;
+	}
 
 	return;
 }
@@ -628,7 +658,11 @@ HANDLE openTaskfile(callstatus *status)
 
 	while (1) {
 #ifndef WINDOWS
+#ifdef O_RSYNC
 		tffd = open(global.taskfileName, O_RDWR|O_SYNC|O_RSYNC);
+#else
+		tffd = open(global.taskfileName, O_RDWR|O_SYNC);
+#endif
 		if (tffd < 0) {
 			exit(1);
 		}
@@ -714,6 +748,12 @@ void closeTaskfile(callstatus *status, HANDLE taskfile)
 #endif
 			status->severity = SEVERITY_WARNING;
 			status->msg = TFCLOSE_FAILED;
+#ifndef WINDOWS
+			status->syserror = errno;
+#else
+			status->syserror = GetLastError();
+#endif
+			if (myLog != NULL) Hprintf(myLog, "%s\n", renderError(status));
 		}
 	}
 
@@ -838,6 +878,7 @@ void readValue(callstatus *status, int lgth, char *value)
 		if (status->severity != STATUS_OK) return;
 		i++;
 	}
+	*(value + i) = '\0';
 
 	return;
 }
@@ -1027,8 +1068,11 @@ char *getTimestamp(time_t tim, int local)
 #endif
 		          TIMESTAMP_LEADOUT);
 #else
+	static const char *gmtformat = "%d-%m-%Y %H:%M:%S GMT";
+	static const char *localformat = "%d-%m-%Y %H:%M:%S %Z";
+	char *format = (local ? localformat : gmtformat);
 	buf [0] = TIMESTAMP_LEADIN;
-	const size_t len = strftime (buf + 1, sizeof (buf) - 3 * sizeof (char), "%d-%m-%Y %H:%M:%S %Z", local ? localtime (&tim) : gmtime(&tim));
+	const size_t len = strftime (buf + 1, sizeof (buf) - 3 * sizeof (char), format, local ? localtime (&tim) : gmtime(&tim));
 	buf [len + 1] = TIMESTAMP_LEADOUT;
 	buf [len + 2] = '\0';
 #endif
@@ -1363,7 +1407,7 @@ void run(callstatus *status)
 	}
         // It seems that Windows only really *appends* to files if something has happend with them before the child is started,
         // even if the file has been reopen()ed with "a"! (I really *LOVE* that too!!!)
-        // So by explicitly moving the filepointer to the end of the stream, even Windoof can't refuse to *append* child's output...
+        // So by explicitly moving the filepointer to the end of the stream, even Windows can't refuse to *append* child's output...
         else {
                 fseek (stdout, 0, SEEK_END);
                 fseek (stderr, 0, SEEK_END);
@@ -1488,9 +1532,11 @@ int main(int argc, char *argv[])
 			fprintf(stdout, "%s", getUsage());
 			exit(0);
 		case ARGS_RUN:
+			if (myLog != NULL)
+				printJobFields();
 			ignore_all_signals (&status);
 			if (status.severity != STATUS_OK) {
-				if (myLog != NULL) fprintf(myLog, "%s\n", renderError(&status));
+				if (myLog != NULL) Hprintf(myLog, "%s\n", renderError(&status));
 				status.severity = STATUS_OK;
 				status.msg = MSG_NO_ERROR;
 			}
