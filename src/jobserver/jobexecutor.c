@@ -110,7 +110,6 @@ typedef struct _errmsg_t {
 	int  argType;
 } errmsg_t;
 
-
 errmsg_t message[] = {
 #define MSG_NO_ERROR     0
 	{ "No error", T_NONE },
@@ -233,6 +232,12 @@ struct _global {
 
 	char taskfileBuf[TF_BUFSIZE];
 	char tfWriteBuf[TF_BUFSIZE];
+
+#ifndef WINDOWS
+	char *errorTaskfilePath;
+	char *errorTaskfileName;
+	int etflinked;
+#endif
 } global;
 HANDLE myLog = NULL;
 
@@ -242,6 +247,10 @@ void initFields();
 int checkArgs(callstatus *status, int argc, char *argv[]);
 HANDLE openTaskfile(callstatus *status);
 void closeTaskfile(callstatus *status, HANDLE taskfile);
+#ifndef WINDOWS
+void createErrorTaskfileName(char *tfn);
+void createTfLink();
+#endif
 void advance(callstatus *status);
 void readTimestamp(callstatus *status);
 void readWhiteSpace(callstatus *status);
@@ -311,7 +320,75 @@ void initFields()
 	global.buflen = 0;
 	global.bufpos = 0;
 	global.filepos = -1;
+
+#ifndef WINDOWS
+	global.etflinked = false;
+	global.errorTaskfilePath = NULL;
+	global.errorTaskfileName = NULL;
+#endif
 }
+
+#ifndef WINDOWS
+void createErrorTaskfileName(char *tfn)
+{
+	static const char *errorDir = "errorTaskfiles";
+	global.errorTaskfileName = NULL;
+	global.errorTaskfilePath = NULL;
+	char *dirname;
+	char *filename;
+	int len;
+
+	dirname = strdup(tfn);
+	if (dirname == NULL) return;
+	len = (int) strlen(dirname);
+	while (len > 0 && dirname[len - 1] != '/') {
+		len--;
+		dirname[len] = '\0';
+	}
+	if (len == 0) return;
+	filename = tfn + len;
+
+	len += (int) strlen(errorDir);
+	global.errorTaskfilePath = (char *) malloc(len + 1);
+	if (global.errorTaskfilePath == NULL) {
+		free(dirname);
+		return;
+	}
+
+	global.errorTaskfilePath[0] = '\0';
+	strcat(global.errorTaskfilePath, dirname);
+	strcat(global.errorTaskfilePath, errorDir);
+	free(dirname);
+
+	global.errorTaskfileName = (char *) malloc(len + 1 + strlen(filename) + 1);
+	if (global.errorTaskfileName == NULL) {
+		free(global.errorTaskfilePath);
+		global.errorTaskfilePath = NULL;
+		return;
+	}
+	strcat(global.errorTaskfileName, global.errorTaskfilePath);
+	strcat(global.errorTaskfileName, "/");
+	strcat(global.errorTaskfileName, filename);
+}
+
+void createTfLink()
+{
+
+	if (global.etflinked || global.errorTaskfilePath == NULL)
+		return;
+
+	if (mkdir(global.errorTaskfilePath, 0700) != 0) {
+		if (errno != EEXIST) return;
+	}
+
+	if (link(global.taskfileName, global.errorTaskfileName) != 0) {
+
+		if (errno != EEXIST)
+			return;
+	}
+	global.etflinked = true;
+}
+#endif
 
 char *renderError(callstatus *status)
 {
@@ -453,7 +530,6 @@ void set_all_signals (struct sigaction aktschn, callstatus *status)
 	}
 }
 
-
 void ignore_all_signals (callstatus *status)
 {
 	struct sigaction aktschn;
@@ -589,14 +665,17 @@ void addArgument(callstatus *status, char *value)
 
 int checkArgs(callstatus *status, int argc, char *argv[])
 {
+	int argsType = ARGS_NOTREAD;
 	status->severity = STATUS_OK;
 	status->msg = MSG_NO_ERROR;
 
 	if (argc <= 4 && argc > 1) {
 		if (!strcmp(argv[1], ARG_VERSION1) || !strcmp(argv[1], ARG_VERSION2)) {
+			argsType = ARGS_VERSION;
 			return ARGS_VERSION;
 		}
 		if (!strcmp(argv[1], ARG_HELP1) || !strcmp(argv[1], ARG_HELP2)) {
+			argsType = ARGS_HELP;
 			return ARGS_HELP;
 		}
 		if (argc < 3) {
@@ -615,6 +694,9 @@ int checkArgs(callstatus *status, int argc, char *argv[])
 		}
 
 		global.taskfileName = argv[2];
+#ifndef WINDOWS
+		createErrorTaskfileName(global.taskfileName);
+#endif
 
 		if (argc == 4) {
 			global.boottime = argv[3];
@@ -627,7 +709,7 @@ int checkArgs(callstatus *status, int argc, char *argv[])
 			global.boottime = NULL;
 
 		processTaskfile(status);
-		if (status->severity != STATUS_OK) {
+		if (status->severity == SEVERITY_FATAL) {
 			return ARGS_NOTREAD;
 		}
 
@@ -1016,7 +1098,13 @@ void evaluateTaskfile(callstatus *status)
 
 	while (global.bufpos >= 0 && global.taskfileBuf[global.bufpos] != '\0') {
 		processEntry(status);
-		if (status->severity != STATUS_OK) return;
+		if (status->severity != STATUS_OK) {
+#ifndef WINDOWS
+
+			createTfLink();
+#endif
+			return;
+		}
 	}
 
 	return;
@@ -1518,7 +1606,6 @@ int main(int argc, char *argv[])
 	openLog(&status);
 
 	argsType = checkArgs(&status, argc, argv);
-
 	switch (argsType) {
 		case ARGS_NOTREAD:
 
