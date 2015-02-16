@@ -333,7 +333,8 @@ public class SystemEnvironment implements Cloneable
 			getAuditFile();
 		}
 
-		if ((port == 0) && (service_port == 0)) {
+		if ((port == 0) && (service_port == 0)
+		   ) {
 
 			port = 2506;
 		}
@@ -836,18 +837,48 @@ public class SystemEnvironment implements Cloneable
 		return sysEnv;
 	}
 
-	public void enableConnect()		{ connectState.setValue(connectState.getValue() & 2); }
-	public void disableConnect()		{ connectState.setValue(connectState.getValue() | 1); }
-	public void setConnectShutdown()	{ connectState.setValue(connectState.getValue() | 2); }
-	public int getConnectState()		{ return connectState.getValue(); }
-	public static void setProtectMode()	{ protectMode = true; }
-	public static void resetProtectMode()	{ protectMode = false; }
-	public static boolean getProtectMode()	{ return protectMode; }
+	public void enableConnect()
+	{
+		connectState.setValue(connectState.getValue() & 2);
+	}
+	public void disableConnect()
+	{
+		connectState.setValue(connectState.getValue() | 1);
+	}
+	public void setConnectShutdown()
+	{
+		connectState.setValue(connectState.getValue() | 2);
+	}
+	public int getConnectState()
+	{
+		return connectState.getValue();
+	}
+	public static void setProtectMode()
+	{
+		protectMode = true;
+	}
+	public static void resetProtectMode()
+	{
+		protectMode = false;
+	}
+	public static boolean getProtectMode()
+	{
+		return protectMode;
+	}
 
-	public Long randomLong()		{ return new Long(java.lang.Math.abs(random.nextLong())); }
+	public Long randomLong()
+	{
+		return new Long(java.lang.Math.abs(random.nextLong()));
+	}
 
-	public static synchronized int getTraceLevel()	{ return traceLevel; }
-	public static synchronized void setTraceLevel(int t) { traceLevel = t; }
+	public static synchronized int getTraceLevel()
+	{
+		return traceLevel;
+	}
+	public static synchronized void setTraceLevel(int t)
+	{
+		traceLevel = t;
+	}
 
 	public static void getSharedLock()
 	{
@@ -889,9 +920,18 @@ class MutableInteger
 
 	int value;
 
-	public MutableInteger(int v) { value = v; }
-	public void setValue(int v)  { value = v; }
-	public int  getValue()       { return value; }
+	public MutableInteger(int v)
+	{
+		value = v;
+	}
+	public void setValue(int v)
+	{
+		value = v;
+	}
+	public int  getValue()
+	{
+		return value;
+	}
 }
 
 class ExecuteLock

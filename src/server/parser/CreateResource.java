@@ -109,7 +109,9 @@ public class CreateResource extends ManipResource
 
 		if(replace) {
 			SDMSKey k = new SDMSKey(nrId, sId);
-			if(SDMSResourceTable.idx_nrId_scopeId.containsKey(sysEnv, k)) {
+			if(SDMSResourceTable.idx_nrId_scopeId.containsKey(sysEnv, k)
+			  ) {
+
 				SDMSProxy p = null;
 				try {
 					p = SDMSResourceTable.idx_nrId_scopeId_getUnique(sysEnv, k);

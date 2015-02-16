@@ -99,19 +99,32 @@ public class Grant extends Node
 	private long getManagePriv(int type)
 	{
 		switch (type) {
-			case SDMSGrant.EXIT_STATE_DEFINITION:		return SDMSPrivilege.MANAGE_ESD;
-			case SDMSGrant.EXIT_STATE_PROFILE:		return SDMSPrivilege.MANAGE_ESP;
-			case SDMSGrant.EXIT_STATE_MAPPING:		return SDMSPrivilege.MANAGE_ESM;
-			case SDMSGrant.EXIT_STATE_TRANSLATION:		return SDMSPrivilege.MANAGE_EST;
-			case SDMSGrant.RESOURCE_STATE_DEFINITION:	return SDMSPrivilege.MANAGE_RSD;
-			case SDMSGrant.RESOURCE_STATE_PROFILE:		return SDMSPrivilege.MANAGE_RSP;
-			case SDMSGrant.RESOURCE_STATE_MAPPING:		return SDMSPrivilege.MANAGE_RSM;
-			case SDMSGrant.FOOTPRINT:			return SDMSPrivilege.MANAGE_FP;
-			case SDMSGrant.USER:				return SDMSPrivilege.MANAGE_USER;
-			case SDMSGrant.GROUP:				return SDMSPrivilege.MANAGE_GROUP;
-			case SDMSGrant.ENVIRONMENT:			return SDMSPrivilege.MANAGE_ENV;
-			case SDMSGrant.SYSTEM:				return SDMSPrivilege.MANAGE_SYS;
-			case SDMSGrant.SELECT:				return SDMSPrivilege.MANAGE_SEL;
+			case SDMSGrant.EXIT_STATE_DEFINITION:
+				return SDMSPrivilege.MANAGE_ESD;
+			case SDMSGrant.EXIT_STATE_PROFILE:
+				return SDMSPrivilege.MANAGE_ESP;
+			case SDMSGrant.EXIT_STATE_MAPPING:
+				return SDMSPrivilege.MANAGE_ESM;
+			case SDMSGrant.EXIT_STATE_TRANSLATION:
+				return SDMSPrivilege.MANAGE_EST;
+			case SDMSGrant.RESOURCE_STATE_DEFINITION:
+				return SDMSPrivilege.MANAGE_RSD;
+			case SDMSGrant.RESOURCE_STATE_PROFILE:
+				return SDMSPrivilege.MANAGE_RSP;
+			case SDMSGrant.RESOURCE_STATE_MAPPING:
+				return SDMSPrivilege.MANAGE_RSM;
+			case SDMSGrant.FOOTPRINT:
+				return SDMSPrivilege.MANAGE_FP;
+			case SDMSGrant.USER:
+				return SDMSPrivilege.MANAGE_USER;
+			case SDMSGrant.GROUP:
+				return SDMSPrivilege.MANAGE_GROUP;
+			case SDMSGrant.ENVIRONMENT:
+				return SDMSPrivilege.MANAGE_ENV;
+			case SDMSGrant.SYSTEM:
+				return SDMSPrivilege.MANAGE_SYS;
+			case SDMSGrant.SELECT:
+				return SDMSPrivilege.MANAGE_SEL;
 		}
 		return SDMSPrivilege.NOPRIVS;
 	}
@@ -277,7 +290,10 @@ public class Grant extends Node
 			objectType = url.objType.intValue();
 			checkObjectType (sysEnv, objectType);
 
-			if (objectType != SDMSGrant.ENVIRONMENT) {
+			if (
+
+				objectType != SDMSGrant.ENVIRONMENT
+			) {
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_GRANTS);
 			}
 

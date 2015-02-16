@@ -55,7 +55,10 @@ public class TimerUnit
 	private int mult;
 	private int unit;
 
-	public final boolean isINF() { return isINF; }
+	public final boolean isINF()
+	{
+		return isINF;
+	}
 
 	public final int mult()
 	{

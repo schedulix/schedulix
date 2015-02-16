@@ -1574,23 +1574,57 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		int fixChildSuspended = sme.getChildSuspended(sysEnv).intValue();
 		int fixPending = sme.getCntPending(sysEnv).intValue();
 		switch(sme.getState(sysEnv).intValue()) {
-			case SDMSSubmittedEntity.SUBMITTED:	fixSubmitted ++;	break;
-			case SDMSSubmittedEntity.DEPENDENCY_WAIT: fixDependencyWait ++; break;
-			case SDMSSubmittedEntity.SYNCHRONIZE_WAIT: fixSynchronizeWait ++; break;
-			case SDMSSubmittedEntity.RESOURCE_WAIT:	fixResourceWait ++;	break;
-			case SDMSSubmittedEntity.RUNNABLE:	fixRunnable ++;		break;
-			case SDMSSubmittedEntity.STARTING:	fixStarting ++;		break;
-			case SDMSSubmittedEntity.STARTED:	fixStarted ++;		break;
-			case SDMSSubmittedEntity.RUNNING:	fixRunning ++;		break;
-			case SDMSSubmittedEntity.TO_KILL:	fixToKill ++;		break;
-			case SDMSSubmittedEntity.KILLED:	fixKilled ++;		break;
-			case SDMSSubmittedEntity.CANCELLED:	fixCancelled ++;	break;
-			case SDMSSubmittedEntity.FINISHED:	fixFinished ++;		break;
-			case SDMSSubmittedEntity.FINAL:		fixFinal ++;		break;
-			case SDMSSubmittedEntity.BROKEN_ACTIVE:	fixBrokenActive ++;	break;
-			case SDMSSubmittedEntity.BROKEN_FINISHED: fixBrokenFinished ++;	break;
-			case SDMSSubmittedEntity.ERROR:		fixError ++;		break;
-			case SDMSSubmittedEntity.UNREACHABLE:	fixUnreachable ++;	break;
+			case SDMSSubmittedEntity.SUBMITTED:
+				fixSubmitted ++;
+				break;
+			case SDMSSubmittedEntity.DEPENDENCY_WAIT:
+				fixDependencyWait ++;
+				break;
+			case SDMSSubmittedEntity.SYNCHRONIZE_WAIT:
+				fixSynchronizeWait ++;
+				break;
+			case SDMSSubmittedEntity.RESOURCE_WAIT:
+				fixResourceWait ++;
+				break;
+			case SDMSSubmittedEntity.RUNNABLE:
+				fixRunnable ++;
+				break;
+			case SDMSSubmittedEntity.STARTING:
+				fixStarting ++;
+				break;
+			case SDMSSubmittedEntity.STARTED:
+				fixStarted ++;
+				break;
+			case SDMSSubmittedEntity.RUNNING:
+				fixRunning ++;
+				break;
+			case SDMSSubmittedEntity.TO_KILL:
+				fixToKill ++;
+				break;
+			case SDMSSubmittedEntity.KILLED:
+				fixKilled ++;
+				break;
+			case SDMSSubmittedEntity.CANCELLED:
+				fixCancelled ++;
+				break;
+			case SDMSSubmittedEntity.FINISHED:
+				fixFinished ++;
+				break;
+			case SDMSSubmittedEntity.FINAL:
+				fixFinal ++;
+				break;
+			case SDMSSubmittedEntity.BROKEN_ACTIVE:
+				fixBrokenActive ++;
+				break;
+			case SDMSSubmittedEntity.BROKEN_FINISHED:
+				fixBrokenFinished ++;
+				break;
+			case SDMSSubmittedEntity.ERROR:
+				fixError ++;
+				break;
+			case SDMSSubmittedEntity.UNREACHABLE:
+				fixUnreachable ++;
+				break;
 		}
 		if (sme.getJobIsRestartable(sysEnv).booleanValue() == true) fixRestartable ++;
 		if (sme.getIsSuspended(sysEnv).intValue() != NOSUSPEND) fixChildSuspended ++;
@@ -2113,42 +2147,110 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			return;
 
 		switch (oldState) {
-			case SUBMITTED:		fixSubmitted		-= 1; break;
-			case DEPENDENCY_WAIT:	fixDependencyWait	-= 1; break;
-			case SYNCHRONIZE_WAIT:	fixSynchronizeWait	-= 1; break;
-			case RESOURCE_WAIT:	fixResourceWait		-= 1; break;
-			case RUNNABLE:		fixRunnable		-= 1; break;
-			case STARTING:		fixStarting		-= 1; break;
-			case STARTED:		fixStarted		-= 1; break;
-			case RUNNING:		fixRunning		-= 1; break;
-			case TO_KILL:		fixToKill		-= 1; break;
-			case KILLED:		fixKilled		-= 1; break;
-			case CANCELLED:		fixCancelled		-= 1; break;
-			case FINISHED:		fixFinished		-= 1; break;
-			case FINAL:		fixFinal		-= 1; break;
-			case BROKEN_ACTIVE:	fixBrokenActive		-= 1; break;
-			case BROKEN_FINISHED:	fixBrokenFinished	-= 1; break;
-			case ERROR:		fixError		-= 1; break;
-			case UNREACHABLE:	fixUnreachable		-= 1; break;
+			case SUBMITTED:
+				fixSubmitted		-= 1;
+				break;
+			case DEPENDENCY_WAIT:
+				fixDependencyWait	-= 1;
+				break;
+			case SYNCHRONIZE_WAIT:
+				fixSynchronizeWait	-= 1;
+				break;
+			case RESOURCE_WAIT:
+				fixResourceWait		-= 1;
+				break;
+			case RUNNABLE:
+				fixRunnable		-= 1;
+				break;
+			case STARTING:
+				fixStarting		-= 1;
+				break;
+			case STARTED:
+				fixStarted		-= 1;
+				break;
+			case RUNNING:
+				fixRunning		-= 1;
+				break;
+			case TO_KILL:
+				fixToKill		-= 1;
+				break;
+			case KILLED:
+				fixKilled		-= 1;
+				break;
+			case CANCELLED:
+				fixCancelled		-= 1;
+				break;
+			case FINISHED:
+				fixFinished		-= 1;
+				break;
+			case FINAL:
+				fixFinal		-= 1;
+				break;
+			case BROKEN_ACTIVE:
+				fixBrokenActive		-= 1;
+				break;
+			case BROKEN_FINISHED:
+				fixBrokenFinished	-= 1;
+				break;
+			case ERROR:
+				fixError		-= 1;
+				break;
+			case UNREACHABLE:
+				fixUnreachable		-= 1;
+				break;
 		}
 		switch (newState) {
-			case SUBMITTED:		fixSubmitted		+= 1; break;
-			case DEPENDENCY_WAIT:	fixDependencyWait	+= 1; break;
-			case SYNCHRONIZE_WAIT:	fixSynchronizeWait	+= 1; break;
-			case RESOURCE_WAIT:	fixResourceWait		+= 1; break;
-			case RUNNABLE:		fixRunnable		+= 1; break;
-			case STARTING:		fixStarting		+= 1; break;
-			case STARTED:		fixStarted		+= 1; break;
-			case RUNNING:		fixRunning		+= 1; break;
-			case TO_KILL:		fixToKill		+= 1; break;
-			case KILLED:		fixKilled		+= 1; break;
-			case CANCELLED:		fixCancelled		+= 1; break;
-			case FINISHED:		fixFinished		+= 1; break;
-			case FINAL:		fixFinal		+= 1; break;
-			case BROKEN_ACTIVE:	fixBrokenActive		+= 1; break;
-			case BROKEN_FINISHED:	fixBrokenFinished	+= 1; break;
-			case ERROR:		fixError		+= 1; break;
-			case UNREACHABLE:	fixUnreachable		+= 1; break;
+			case SUBMITTED:
+				fixSubmitted		+= 1;
+				break;
+			case DEPENDENCY_WAIT:
+				fixDependencyWait	+= 1;
+				break;
+			case SYNCHRONIZE_WAIT:
+				fixSynchronizeWait	+= 1;
+				break;
+			case RESOURCE_WAIT:
+				fixResourceWait		+= 1;
+				break;
+			case RUNNABLE:
+				fixRunnable		+= 1;
+				break;
+			case STARTING:
+				fixStarting		+= 1;
+				break;
+			case STARTED:
+				fixStarted		+= 1;
+				break;
+			case RUNNING:
+				fixRunning		+= 1;
+				break;
+			case TO_KILL:
+				fixToKill		+= 1;
+				break;
+			case KILLED:
+				fixKilled		+= 1;
+				break;
+			case CANCELLED:
+				fixCancelled		+= 1;
+				break;
+			case FINISHED:
+				fixFinished		+= 1;
+				break;
+			case FINAL:
+				fixFinal		+= 1;
+				break;
+			case BROKEN_ACTIVE:
+				fixBrokenActive		+= 1;
+				break;
+			case BROKEN_FINISHED:
+				fixBrokenFinished	+= 1;
+				break;
+			case ERROR:
+				fixError		+= 1;
+				break;
+			case UNREACHABLE:
+				fixUnreachable		+= 1;
+				break;
 		}
 
 		super.setState(sysEnv, state);

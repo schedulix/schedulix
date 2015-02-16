@@ -277,7 +277,11 @@ public abstract class ManipJobDefinition extends Node
 		if(dependencyOperation == null) dependencyOperation = new Integer (SDMSSchedulingEntity.AND);
 
 		if(esp == null) {
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "02112140955", "Missing Exit State Profile"));
+			throw new CommonErrorException(
+				new SDMSMessage(sysEnv, "02112140955",
+						 "Missing Exit State Profile"
+				)
+			);
 		}
 
 		if(esmpId == null) {

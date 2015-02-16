@@ -937,11 +937,16 @@ public class SmeVariableResolver extends VariableResolver
 				sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, Boolean.FALSE);
 				int f = pd.getAggFunction(sysEnv).intValue();
 				switch(f) {
-					case SDMSParameterDefinition.AVG:	return (tmpcnt == 0 ? emptyString : new Double(tmpsum/tmpcnt).toString());
-					case SDMSParameterDefinition.COUNT:	return new Integer(tmpcnt).toString();
-					case SDMSParameterDefinition.MIN:	return new Double(tmpmin).toString();
-					case SDMSParameterDefinition.MAX:	return new Double(tmpmax).toString();
-					case SDMSParameterDefinition.SUM:	return new Double(tmpsum).toString();
+					case SDMSParameterDefinition.AVG:
+						return (tmpcnt == 0 ? emptyString : new Double(tmpsum/tmpcnt).toString());
+					case SDMSParameterDefinition.COUNT:
+						return new Integer(tmpcnt).toString();
+					case SDMSParameterDefinition.MIN:
+						return new Double(tmpmin).toString();
+					case SDMSParameterDefinition.MAX:
+						return new Double(tmpmax).toString();
+					case SDMSParameterDefinition.SUM:
+						return new Double(tmpsum).toString();
 				}
 				break;
 		}

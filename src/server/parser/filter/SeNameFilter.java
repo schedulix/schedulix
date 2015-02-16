@@ -57,8 +57,14 @@ public class SeNameFilter extends Filter
 		sbt = new StringBuffer();
 		for(i = 0; i < sbf.length(); i++) {
 			c = sbf.charAt(i);
-			if(c == '_') { sbt.append('.'); continue; }
-			if(c == '%') { sbt.append(".*"); continue; }
+			if(c == '_') {
+				sbt.append('.');
+				continue;
+			}
+			if(c == '%') {
+				sbt.append(".*");
+				continue;
+			}
 			if(c == '\\') {
 				j = i+1;
 				if(j < sbf.length()) {

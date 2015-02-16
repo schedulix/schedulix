@@ -306,7 +306,9 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			return true;
 		}
 		int irAmount = rAmount.intValue();
-		if (amount > irAmount - waitAmount)
+		if (
+			(amount > irAmount - waitAmount)
+		)
 			return false;
 		return true;
 	}
@@ -407,12 +409,24 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 				long rsdTime = getRsdTime(sysEnv).longValue();
 				long expTime = rr.getExpiredAmount(sysEnv).longValue();
 				switch(expBase.intValue()) {
-					case SDMSInterval.MINUTE: expTime *= SDMSInterval.MINUTE_DUR; break;
-					case SDMSInterval.HOUR:   expTime *= SDMSInterval.HOUR_DUR;   break;
-					case SDMSInterval.DAY:    expTime *= SDMSInterval.DAY_DUR;    break;
-					case SDMSInterval.WEEK:   expTime *= SDMSInterval.WEEK_DUR;   break;
-					case SDMSInterval.MONTH:  expTime *= SDMSInterval.MONTH_DUR;  break;
-					case SDMSInterval.YEAR:   expTime *= SDMSInterval.YEAR_DUR;   break;
+					case SDMSInterval.MINUTE:
+						expTime *= SDMSInterval.MINUTE_DUR;
+						break;
+					case SDMSInterval.HOUR:
+						expTime *= SDMSInterval.HOUR_DUR;
+						break;
+					case SDMSInterval.DAY:
+						expTime *= SDMSInterval.DAY_DUR;
+						break;
+					case SDMSInterval.WEEK:
+						expTime *= SDMSInterval.WEEK_DUR;
+						break;
+					case SDMSInterval.MONTH:
+						expTime *= SDMSInterval.MONTH_DUR;
+						break;
+					case SDMSInterval.YEAR:
+						expTime *= SDMSInterval.YEAR_DUR;
+						break;
 				}
 				long ts;
 				long dts = (new java.util.Date()).getTime();

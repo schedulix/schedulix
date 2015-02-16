@@ -556,10 +556,18 @@ public class ShowResource extends ShowCommented
 			} else {
 				v.add(ra.getAllocationTypeAsString(sysEnv));
 				switch(allocType) {
-					case SDMSResourceAllocation.ALLOCATION:		v.add(ALLOCATION);		break;
-					case SDMSResourceAllocation.MASTER_RESERVATION: v.add(MASTER_RESERVATION);	break;
-					case SDMSResourceAllocation.RESERVATION:	v.add(RESERVATION);		break;
-					case SDMSResourceAllocation.IGNORE:		v.add(IGNORED);			break;
+					case SDMSResourceAllocation.ALLOCATION:
+						v.add(ALLOCATION);
+						break;
+					case SDMSResourceAllocation.MASTER_RESERVATION:
+						v.add(MASTER_RESERVATION);
+						break;
+					case SDMSResourceAllocation.RESERVATION:
+						v.add(RESERVATION);
+						break;
+					case SDMSResourceAllocation.IGNORE:
+						v.add(IGNORED);
+						break;
 				}
 			}
 		}

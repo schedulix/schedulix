@@ -49,7 +49,10 @@ public class Lockmode
 	public static final int SC  = 0x06;
 	public static final int N   = 0xFF;
 
-	public Lockmode() { mode = N; }
+	public Lockmode()
+	{
+		mode = N;
+	}
 	public Lockmode(SystemEnvironment env, int m) throws CommonErrorException
 	{
 		if (m != X    &&
@@ -66,7 +69,10 @@ public class Lockmode
 		mode = N;
 		if(m == X || m == SX || m == S || m == SC || m == N) mode = m;
 	}
-	public int getLockmode() { return mode; }
+	public int getLockmode()
+	{
+		return mode;
+	}
 	public int setLockmode(int m)
 	{
 		int rc = mode;
@@ -91,12 +97,18 @@ public class Lockmode
 	public String str(SystemEnvironment env) throws FatalException
 	{
 		switch(mode) {
-			case X:		return Exclusive;
-			case SX:	return SharedExcl;
-			case S:		return Shared;
-			case SC:	return SharedComp;
-			case N:		return Nolock;
-			default:	throw new FatalException(
+			case X:
+				return Exclusive;
+			case SX:
+				return SharedExcl;
+			case S:
+				return Shared;
+			case SC:
+				return SharedComp;
+			case N:
+				return Nolock;
+			default:
+				throw new FatalException(
 						new SDMSMessage(env, "03110181508", "Invalid internal State $1", new Integer(mode)));
 		}
 	}
