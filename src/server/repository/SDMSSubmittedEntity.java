@@ -2212,7 +2212,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			final Long brokenEsdId = esp.getBrokenState(sysEnv, actVersion);
 			if(brokenEsdId != null) {
 				final SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, brokenEsdId));
-				changeState(sysEnv, brokenEsdId, es, null, null, null, false );
+				changeState(sysEnv, brokenEsdId, es, null, null, null, (newState == BROKEN_FINISHED) );
 
 				int curState = getState(sysEnv).intValue();
 				if (curState == FINISHED) {
