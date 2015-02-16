@@ -127,12 +127,24 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		int gcUnit = Calendar.YEAR;
 		switch (SystemEnvironment.timerHorizon.unit()) {
-			case YEAR:	gcUnit = Calendar.YEAR;		break;
-			case MONTH:	gcUnit = Calendar.MONTH;	break;
-			case WEEK:	gcUnit = Calendar.WEEK_OF_YEAR;	break;
-			case DAY:	gcUnit = Calendar.DAY_OF_MONTH;	break;
-			case HOUR:	gcUnit = Calendar.HOUR_OF_DAY;	break;
-			case MINUTE:	gcUnit = Calendar.MINUTE;	break;
+			case YEAR:
+				gcUnit = Calendar.YEAR;
+				break;
+			case MONTH:
+				gcUnit = Calendar.MONTH;
+				break;
+			case WEEK:
+				gcUnit = Calendar.WEEK_OF_YEAR;
+				break;
+			case DAY:
+				gcUnit = Calendar.DAY_OF_MONTH;
+				break;
+			case HOUR:
+				gcUnit = Calendar.HOUR_OF_DAY;
+				break;
+			case MINUTE:
+				gcUnit = Calendar.MINUTE;
+				break;
 		}
 
 		GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
@@ -823,12 +835,24 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			baseMultiplier = baseMult.intValue();
 
 			switch (bi) {
-				case YEAR:	gcBaseInterval = Calendar.YEAR;		break;
-				case MONTH:	gcBaseInterval = Calendar.MONTH;	break;
-				case WEEK:	gcBaseInterval = Calendar.WEEK_OF_YEAR;	break;
-				case DAY:	gcBaseInterval = Calendar.DAY_OF_MONTH;	break;
-				case HOUR:	gcBaseInterval = Calendar.HOUR_OF_DAY;	break;
-				case MINUTE:	gcBaseInterval = Calendar.MINUTE;	break;
+				case YEAR:
+					gcBaseInterval = Calendar.YEAR;
+					break;
+				case MONTH:
+					gcBaseInterval = Calendar.MONTH;
+					break;
+				case WEEK:
+					gcBaseInterval = Calendar.WEEK_OF_YEAR;
+					break;
+				case DAY:
+					gcBaseInterval = Calendar.DAY_OF_MONTH;
+					break;
+				case HOUR:
+					gcBaseInterval = Calendar.HOUR_OF_DAY;
+					break;
+				case MINUTE:
+					gcBaseInterval = Calendar.MINUTE;
+					break;
 			}
 		} else {
 			baseMultiplier = 0;
@@ -841,12 +865,24 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			durationMultiplier = durationMult.intValue();
 
 			switch (di) {
-				case YEAR:	gcDurationInterval = Calendar.YEAR;	break;
-				case MONTH:	gcDurationInterval = Calendar.MONTH;	break;
-				case WEEK:	gcDurationInterval = Calendar.WEEK_OF_YEAR;	break;
-				case DAY:	gcDurationInterval = Calendar.DAY_OF_MONTH;	break;
-				case HOUR:	gcDurationInterval = Calendar.HOUR_OF_DAY;	break;
-				case MINUTE:	gcDurationInterval = Calendar.MINUTE;	break;
+				case YEAR:
+					gcDurationInterval = Calendar.YEAR;
+					break;
+				case MONTH:
+					gcDurationInterval = Calendar.MONTH;
+					break;
+				case WEEK:
+					gcDurationInterval = Calendar.WEEK_OF_YEAR;
+					break;
+				case DAY:
+					gcDurationInterval = Calendar.DAY_OF_MONTH;
+					break;
+				case HOUR:
+					gcDurationInterval = Calendar.HOUR_OF_DAY;
+					break;
+				case MINUTE:
+					gcDurationInterval = Calendar.MINUTE;
+					break;
 			}
 		} else {
 			durationMultiplier = 0;
@@ -866,12 +902,24 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				gcBaseInterval = gcDurationInterval;
 			}
 			switch (gcBaseInterval) {
-				case Calendar.YEAR:		maxBaseLength = YEAR_MAX;	break;
-				case Calendar.MONTH:		maxBaseLength = MONTH_MAX;	break;
-				case Calendar.WEEK_OF_YEAR:	maxBaseLength = WEEK_MAX;	break;
-				case Calendar.DAY_OF_MONTH:	maxBaseLength = DAY_MAX;	break;
-				case Calendar.HOUR_OF_DAY:	maxBaseLength = HOUR_MAX;	break;
-				case Calendar.MINUTE:		maxBaseLength = MINUTE_MAX;	break;
+				case Calendar.YEAR:
+					maxBaseLength = YEAR_MAX;
+					break;
+				case Calendar.MONTH:
+					maxBaseLength = MONTH_MAX;
+					break;
+				case Calendar.WEEK_OF_YEAR:
+					maxBaseLength = WEEK_MAX;
+					break;
+				case Calendar.DAY_OF_MONTH:
+					maxBaseLength = DAY_MAX;
+					break;
+				case Calendar.HOUR_OF_DAY:
+					maxBaseLength = HOUR_MAX;
+					break;
+				case Calendar.MINUTE:
+					maxBaseLength = MINUTE_MAX;
+					break;
 			}
 		}
 	}
