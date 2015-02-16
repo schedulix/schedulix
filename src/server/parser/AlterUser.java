@@ -110,6 +110,7 @@ public class AlterUser extends ManipUser
 					if(passwd != null) {
 						u.setPasswd(sysEnv, passwd);
 						u.setSalt(sysEnv, salt);
+						u.setMethod(sysEnv, method);
 					}
 					if(with.containsKey(ParseStr.S_DEFAULTGROUP))
 						u.setDefaultGId(sysEnv, defaultGId);
@@ -123,12 +124,34 @@ public class AlterUser extends ManipUser
 			if(passwd != null && uId != 0) {
 				u.setPasswd(sysEnv, passwd);
 				u.setSalt(sysEnv, salt);
+				u.setMethod(sysEnv, method);
 			} else {
 				if (passwd != null) {
 
 					if (sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+						Properties props = new Properties();
+						InputStream ini;
+						String iniFile = sysEnv.server.getIniFile();
+						ini = Server.class.getResourceAsStream(iniFile);
+						try {
+							if(ini == null)
+								ini = new FileInputStream(iniFile);
+							props.load(ini);
+						} catch(FileNotFoundException fnf) {
+							SDMSThread.doTrace(null, "Properties File not found : " + fnf, SDMSThread.SEVERITY_ERROR);
+							throw new CommonErrorException (new SDMSMessage(sysEnv, "03501211409",
+							                                "Change of SYSTEM password failed: Properties File not found"));
+						} catch(IOException ioe) {
+							SDMSThread.doTrace(null, "Error loading Properties file: " + ioe, SDMSThread.SEVERITY_ERROR);
+							throw new CommonErrorException (new SDMSMessage(sysEnv, "03501211410",
+							                                "Change of SYSTEM password failed: Error loading Properties file"));
+						}
+						String confPwd = props.getProperty(SystemEnvironment.S_SYSPASSWD);
+						if (!txtPasswd.equals(confPwd))
+							throw new CommonErrorException (new SDMSMessage(sysEnv, "03501211411",
+							                                "Change of SYSTEM password failed: Password in configuration file " + iniFile + " must be changed first"));
 						SystemEnvironment.sysPasswd = txtPasswd;
-						feedbackMsg = new SDMSMessage(sysEnv, "03102151013", "SYSTEM Password changed. Don't forget to update server.conf");
+						feedbackMsg = new SDMSMessage(sysEnv, "03102151013", "SYSTEM Password changed");
 					} else {
 						throw new AccessViolationException (new SDMSMessage(sysEnv, "03102151020", "Insufficient privileges accessing User SYSTEM"));
 					}
