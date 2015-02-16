@@ -57,11 +57,13 @@ public class Server
 	private ShutdownThread shutt;
 	private RenewTicketThread rtt;
 	private DBCleanupThread dbct;
+	private String iniFile;
 
 	private SystemEnvironment env;
 
 	public Server(String inifile, boolean adminMode, boolean protectMode, String programLevel)
 	{
+		iniFile = inifile;
 		Properties props = new Properties();
 		InputStream ini;
 
@@ -87,6 +89,11 @@ public class Server
 		if(adminMode) env.disableConnect();
 		if(protectMode) SystemEnvironment.setProtectMode();
 		SystemEnvironment.server = this;
+	}
+
+	public String getIniFile()
+	{
+		return iniFile;
 	}
 
 	private void initShutdownThread()
@@ -357,11 +364,11 @@ public class Server
 		}
 		try {
 			c.setAutoCommit(false);
-			return c;
 		} catch(SQLException sqle) {
 			throw new FatalException(new SDMSMessage(env,
-							"03202071128", "Cannot set autocommit off", dbUrl));
+			                         "03202071128", "Cannot set autocommit off ($1)", sqle.toString()));
 		}
+		return c;
 	}
 
 	public void serverMain()
