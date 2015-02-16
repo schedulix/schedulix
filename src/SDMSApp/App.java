@@ -137,9 +137,9 @@ public class App
 		}
 		if (options.isSet(JID)) {
 			try {
-				int dummy = Integer.parseInt (options.getValue(JID));
+				long dummy = Long.parseLong (options.getValue(JID));
 			} catch (Exception e) {
-				if (!silent) System.err.println("jid must be an integer !");
+				if (!silent) System.err.println("jid must be a (long)integer !");
 				return false;
 			}
 		}
