@@ -65,7 +65,7 @@ public class AlterUser extends ManipUser
 		String salt = generateSalt();
 		SDMSMessage feedbackMsg = new SDMSMessage(sysEnv, "03202062029", "User altered");
 
-		evaluate_with(sysEnv, salt, SDMSUser.SHA256);
+		evaluate_with(sysEnv, salt);
 
 		try {
 			if (url == null)
