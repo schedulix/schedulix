@@ -24,7 +24,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
--- Copyright (C) 2003-2013 independIT Integrative Technologies GmbH
+-- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE AUDIT_TRAIL (
     ID                             DECIMAL(20) NOT NULL
@@ -45,6 +45,23 @@ CREATE TABLE AUDIT_TRAIL (
 );\g
 CREATE UNIQUE INDEX PK_AUDIT_TRAIL
 ON AUDIT_TRAIL(ID) WITH STRUCTURE = BTREE;\g
+CREATE TABLE ARC_AUDIT_TRAIL (
+    ID                             DECIMAL (20) NOT NULL
+    , USER_ID                        decimal(20)      NULL
+    , TS                             decimal(20)      NULL
+    , TXID                           decimal(20)      NULL
+    , ACTION                         integer          NULL
+    , OBJECT_TYPE                    integer          NULL
+    , OBJECT_ID                      decimal(20)      NULL
+    , ORIGIN_ID                      decimal(20)      NULL
+    , IS_SET_WARNING                 integer          NULL
+    , ACTION_INFO                    varchar(1024)    NULL
+    , ACTION_COMMENT                 varchar(1024)    NULL
+    , CREATOR_U_ID                   decimal(20)      NULL
+    , CREATE_TS                      decimal(20)      NULL
+    , CHANGER_U_ID                   decimal(20)      NULL
+    , CHANGE_TS                      decimal(20)      NULL
+);\g
 CREATE VIEW SCI_AUDIT_TRAIL AS
 SELECT
     ID

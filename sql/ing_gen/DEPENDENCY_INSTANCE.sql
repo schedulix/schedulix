@@ -24,7 +24,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
--- Copyright (C) 2003-2013 independIT Integrative Technologies GmbH
+-- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE DEPENDENCY_INSTANCE (
     ID                             DECIMAL(20) NOT NULL
@@ -44,6 +44,22 @@ CREATE TABLE DEPENDENCY_INSTANCE (
 );\g
 CREATE UNIQUE INDEX PK_DEPENDENCY_INSTANCE
 ON DEPENDENCY_INSTANCE(ID) WITH STRUCTURE = BTREE;\g
+CREATE TABLE ARC_DEPENDENCY_INSTANCE (
+    ID                             DECIMAL (20) NOT NULL
+    , DD_ID                          decimal(20)      NULL
+    , DEPENDENT_ID                   decimal(20)      NULL
+    , DEPENDENT_ID_ORIG              decimal(20)      NULL
+    , DEPENDENCY_OPERATION           integer          NULL
+    , REQUIRED_ID                    decimal(20)      NULL
+    , STATE                          integer          NULL
+    , IGNORE                         integer          NULL
+    , DI_ID_ORIG                     decimal(20)      NULL
+    , SE_VERSION                     decimal(20)      NULL
+    , CREATOR_U_ID                   decimal(20)      NULL
+    , CREATE_TS                      decimal(20)      NULL
+    , CHANGER_U_ID                   decimal(20)      NULL
+    , CHANGE_TS                      decimal(20)      NULL
+);\g
 CREATE VIEW SCI_DEPENDENCY_INSTANCE AS
 SELECT
     ID

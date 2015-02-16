@@ -24,7 +24,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
--- Copyright (C) 2003-2013 independIT Integrative Technologies GmbH
+-- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE KILL_JOB (
     ID                             DECIMAL(20) NOT NULL
@@ -50,6 +50,28 @@ CREATE TABLE KILL_JOB (
 );
 CREATE UNIQUE INDEX PK_KILL_JOB
 ON KILL_JOB(ID);
+CREATE TABLE ARC_KILL_JOB (
+    ID                             DECIMAL (20) NOT NULL
+    , SE_ID                          decimal(20)      NULL
+    , SE_VERSION                     decimal(20)      NULL
+    , SME_ID                         decimal(20)      NULL
+    , SCOPE_ID                       decimal(20)      NULL
+    , STATE                          integer          NULL
+    , EXIT_CODE                      integer          NULL
+    , COMMANDLINE                    varchar(512)     NULL
+    , LOGFILE                        varchar(512)     NULL
+    , ERRLOGFILE                     varchar(512)     NULL
+    , PID                            varchar(32)      NULL
+    , EXTPID                         varchar(32)      NULL
+    , ERROR_MSG                      varchar(256)     NULL
+    , RUNNABLE_TS                    decimal(20)      NULL
+    , START_TS                       decimal(20)      NULL
+    , FINSH_TS                       decimal(20)      NULL
+    , CREATOR_U_ID                   decimal(20)      NULL
+    , CREATE_TS                      decimal(20)      NULL
+    , CHANGER_U_ID                   decimal(20)      NULL
+    , CHANGE_TS                      decimal(20)      NULL
+);
 CREATE VIEW SCI_KILL_JOB AS
 SELECT
     ID

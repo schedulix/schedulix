@@ -40,6 +40,18 @@ CREATE TABLE ENTITY_VARIABLE (
 ) engine = innodb;
 CREATE UNIQUE INDEX PK_ENTITY_VARIABLE
 ON ENTITY_VARIABLE(id);
+CREATE TABLE ARC_ENTITY_VARIABLE (
+    ID                             DECIMAL (20) NOT NULL
+    , `SME_ID`                       decimal(20)      NULL
+    , `NAME`                         varchar(64)      NULL
+    , `VALUE`                        varchar(256)     NULL
+    , `IS_LOCAL`                     integer          NULL
+    , `EV_LINK`                      decimal(20)      NULL
+    , `CREATOR_U_ID`                 decimal(20)      NULL
+    , `CREATE_TS`                    decimal(20)      NULL
+    , `CHANGER_U_ID`                 decimal(20)      NULL
+    , `CHANGE_TS`                    decimal(20)      NULL
+);
 CREATE VIEW SCI_ENTITY_VARIABLE AS
 SELECT
     ID

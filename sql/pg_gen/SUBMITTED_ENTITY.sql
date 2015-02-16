@@ -24,7 +24,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
--- Copyright (C) 2003-2013 independIT Integrative Technologies GmbH
+-- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE SUBMITTED_ENTITY (
     ID                             DECIMAL(20) NOT NULL
@@ -108,10 +108,10 @@ CREATE TABLE SUBMITTED_ENTITY (
     , CNT_RESTARTABLE                integer         NOT NULL
     , CNT_WARN                       integer         NOT NULL
     , CNT_PENDING                    integer         NOT NULL
-    , DW_END_TS                      integer             NULL
     , IDLE_TS                        integer             NULL
     , IDLE_TIME                      integer             NULL
-    , SUSRES_TS                      integer             NULL
+    , STATISTIC_TS                   integer             NULL
+    , DEPENDENCY_WAIT_TIME           integer             NULL
     , SUSPEND_TIME                   integer             NULL
     , SYNC_TIME                      integer             NULL
     , RESOURCE_TIME                  integer             NULL
@@ -127,6 +127,105 @@ CREATE TABLE SUBMITTED_ENTITY (
 );
 CREATE UNIQUE INDEX PK_SUBMITTED_ENTITY
 ON SUBMITTED_ENTITY(ID);
+CREATE TABLE ARC_SUBMITTED_ENTITY (
+    ID                             DECIMAL (20) NOT NULL
+    , ACCESS_KEY                     decimal(20)      NULL
+    , MASTER_ID                      decimal(20)      NULL
+    , SUBMIT_TAG                     varchar(32)      NULL
+    , UNRESOLVED_HANDLING            integer          NULL
+    , SE_ID                          decimal(20)      NULL
+    , CHILD_TAG                      varchar(70)      NULL
+    , SE_VERSION                     decimal(20)      NULL
+    , OWNER_ID                       decimal(20)      NULL
+    , PARENT_ID                      decimal(20)      NULL
+    , SCOPE_ID                       decimal(20)      NULL
+    , IS_STATIC                      integer          NULL
+    , MERGE_MODE                     integer          NULL
+    , STATE                          integer          NULL
+    , JOB_ESD_ID                     decimal(20)      NULL
+    , JOB_ESD_PREF                   integer          NULL
+    , JOB_IS_FINAL                   integer          NULL
+    , JOB_IS_RESTARTABLE             integer          NULL
+    , FINAL_ESD_ID                   decimal(20)      NULL
+    , EXIT_CODE                      integer          NULL
+    , COMMANDLINE                    varchar(512)     NULL
+    , RR_COMMANDLINE                 varchar(512)     NULL
+    , RERUN_SEQ                      integer          NULL
+    , IS_REPLACED                    integer          NULL
+    , IS_CANCELLED                   integer          NULL
+    , BASE_SME_ID                    decimal(20)      NULL
+    , REASON_SME_ID                  decimal(20)      NULL
+    , FIRE_SME_ID                    decimal(20)      NULL
+    , FIRE_SE_ID                     decimal(20)      NULL
+    , TR_ID                          decimal(20)      NULL
+    , TR_SD_ID_OLD                   decimal(20)      NULL
+    , TR_SD_ID_NEW                   decimal(20)      NULL
+    , TR_SEQ                         integer          NULL
+    , WORKDIR                        varchar(512)     NULL
+    , LOGFILE                        varchar(512)     NULL
+    , ERRLOGFILE                     varchar(512)     NULL
+    , PID                            varchar(32)      NULL
+    , EXTPID                         varchar(32)      NULL
+    , ERROR_MSG                      varchar(256)     NULL
+    , KILL_ID                        decimal(20)      NULL
+    , KILL_EXIT_CODE                 integer          NULL
+    , IS_SUSPENDED                   integer          NULL
+    , IS_SUSPENDED_LOCAL             integer          NULL
+    , PRIORITY                       integer          NULL
+    , RAW_PRIORITY                   integer          NULL
+    , NICE                           integer          NULL
+    , NP_NICE                        integer          NULL
+    , MIN_PRIORITY                   integer          NULL
+    , AGING_AMOUNT                   integer          NULL
+    , PARENT_SUSPENDED               integer          NULL
+    , CHILD_SUSPENDED                integer          NULL
+    , WARN_COUNT                     integer          NULL
+    , WARN_LINK                      decimal(20)      NULL
+    , SUBMIT_TS                      decimal(20)      NULL
+    , RESUME_TS                      decimal(20)      NULL
+    , SYNC_TS                        decimal(20)      NULL
+    , RESOURCE_TS                    decimal(20)      NULL
+    , RUNNABLE_TS                    decimal(20)      NULL
+    , START_TS                       decimal(20)      NULL
+    , FINSH_TS                       decimal(20)      NULL
+    , FINAL_TS                       decimal(20)      NULL
+    , CNT_SUBMITTED                  integer          NULL
+    , CNT_DEPENDENCY_WAIT            integer          NULL
+    , CNT_SYNCHRONIZE_WAIT           integer          NULL
+    , CNT_RESOURCE_WAIT              integer          NULL
+    , CNT_RUNNABLE                   integer          NULL
+    , CNT_STARTING                   integer          NULL
+    , CNT_STARTED                    integer          NULL
+    , CNT_RUNNING                    integer          NULL
+    , CNT_TO_KILL                    integer          NULL
+    , CNT_KILLED                     integer          NULL
+    , CNT_CANCELLED                  integer          NULL
+    , CNT_FINISHED                   integer          NULL
+    , CNT_FINAL                      integer          NULL
+    , CNT_BROKEN_ACTIVE              integer          NULL
+    , CNT_BROKEN_FINISHED            integer          NULL
+    , CNT_ERROR                      integer          NULL
+    , CNT_UNREACHABLE                integer          NULL
+    , CNT_RESTARTABLE                integer          NULL
+    , CNT_WARN                       integer          NULL
+    , CNT_PENDING                    integer          NULL
+    , IDLE_TS                        integer          NULL
+    , IDLE_TIME                      integer          NULL
+    , STATISTIC_TS                   integer          NULL
+    , DEPENDENCY_WAIT_TIME           integer          NULL
+    , SUSPEND_TIME                   integer          NULL
+    , SYNC_TIME                      integer          NULL
+    , RESOURCE_TIME                  integer          NULL
+    , JOBSERVER_TIME                 integer          NULL
+    , RESTARTABLE_TIME               integer          NULL
+    , CHILD_WAIT_TIME                integer          NULL
+    , OP_SUSRES_TS                   decimal(20)      NULL
+    , NPE_ID                         decimal(20)      NULL
+    , CREATOR_U_ID                   decimal(20)      NULL
+    , CREATE_TS                      decimal(20)      NULL
+    , CHANGER_U_ID                   decimal(20)      NULL
+    , CHANGE_TS                      decimal(20)      NULL
+);
 CREATE VIEW SCI_SUBMITTED_ENTITY AS
 SELECT
     ID
@@ -189,8 +288,8 @@ SELECT
     , timestamp 'epoch' + cast(to_char(mod(START_TS, 1125899906842624)/1000, '999999999999') as interval) AS START_TS
     , timestamp 'epoch' + cast(to_char(mod(FINSH_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINSH_TS
     , timestamp 'epoch' + cast(to_char(mod(FINAL_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINAL_TS
-    , DW_END_TS                      AS DEPENDENCY_WAIT_TIME
     , IDLE_TIME                      AS IDLE_TIME
+    , DEPENDENCY_WAIT_TIME           AS DEPENDENCY_WAIT_TIME
     , SUSPEND_TIME                   AS SUSPEND_TIME
     , SYNC_TIME                      AS SYNC_TIME
     , RESOURCE_TIME                  AS RESOURCE_TIME
@@ -203,6 +302,5 @@ SELECT
     , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
     , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-    , ((FINAL_TS - SUBMIT_TS) / 1000) - DW_END_TS AS PROCESS_TIME
-    , (IDLE_TIME / (((FINAL_TS - SUBMIT_TS) / 1000) - DW_END_TS)) * 100 AS IDLE_PCT
+    , ((COALESCE(FINAL_TS, EXTRACT(EPOCH FROM CURRENT_TIMESTAMP AT TIME ZONE 'GMT') * 1000) - SUBMIT_TS) / 1000) - DEPENDENCY_WAIT_TIME AS PROCESS_TIME
   FROM SUBMITTED_ENTITY;

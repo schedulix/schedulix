@@ -100,5 +100,6 @@ source mysql/VERSIONCOUNTER.sql
 source REPOSITORY_LOCK.sql
 source MASTER_STATE.sql
 source mysql/SME2LOAD.sql
+source mysql/index.sql
 source mysql/init.sql
 source mysql/sci_sme_quarter.sql

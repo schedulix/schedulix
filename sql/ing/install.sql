@@ -105,6 +105,8 @@ set autocommit on;
 \g
 \i ing/SME2LOAD.sql
 \g
+\i ing/index.sql
+\g
 \i init.sql
 \g
 \i ing/sci_sme_quarter.sql

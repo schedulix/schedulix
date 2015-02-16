@@ -100,5 +100,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 \i REPOSITORY_LOCK.sql
 \i MASTER_STATE.sql
 \i pg/SME2LOAD.sql
+\i pg/index.sql
 \i init.sql
 \i pg/sci_sme_quarter.sql

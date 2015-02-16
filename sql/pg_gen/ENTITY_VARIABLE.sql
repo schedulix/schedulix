@@ -24,7 +24,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
--- Copyright (C) 2003-2013 independIT Integrative Technologies GmbH
+-- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE ENTITY_VARIABLE (
     ID                             DECIMAL(20) NOT NULL
@@ -40,6 +40,18 @@ CREATE TABLE ENTITY_VARIABLE (
 );
 CREATE UNIQUE INDEX PK_ENTITY_VARIABLE
 ON ENTITY_VARIABLE(ID);
+CREATE TABLE ARC_ENTITY_VARIABLE (
+    ID                             DECIMAL (20) NOT NULL
+    , SME_ID                         decimal(20)      NULL
+    , NAME                           varchar(64)      NULL
+    , VALUE                          varchar(256)     NULL
+    , IS_LOCAL                       integer          NULL
+    , EV_LINK                        decimal(20)      NULL
+    , CREATOR_U_ID                   decimal(20)      NULL
+    , CREATE_TS                      decimal(20)      NULL
+    , CHANGER_U_ID                   decimal(20)      NULL
+    , CHANGE_TS                      decimal(20)      NULL
+);
 CREATE VIEW SCI_ENTITY_VARIABLE AS
 SELECT
     ID
