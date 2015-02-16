@@ -153,30 +153,96 @@ public class Feil
 		return result;
 	}
 
-	public final boolean getIncomplete() { return !complete; }
-	public final boolean getComplete()   { return complete;  }
+	public final boolean getIncomplete()
+	{
+		return !complete;
+	}
+	public final boolean getComplete()
+	{
+		return complete; 
+	}
 
-	public final String getId()               { return id; }
-	public final String getStatus()           { return status; }
-	public final String getStatusTimestamp()  { return timestamp; }
-	public final String getExecPid()          { return exec_pid; }
-	public final String getExtPid()           { return ext_pid; }
-	public final String getStatus_Tx()        { return status_tx; }
-	public final String getReturnCode()       { return return_code; }
-	public final String getError()            { return error.toString(); }
-	public final String getRunningTimestamp() { return runningTS; }
-	public final String getRun()              { return run; }
+	public final String getId()
+	{
+		return id;
+	}
+	public final String getStatus()
+	{
+		return status;
+	}
+	public final String getStatusTimestamp()
+	{
+		return timestamp;
+	}
+	public final String getExecPid()
+	{
+		return exec_pid;
+	}
+	public final String getExtPid()
+	{
+		return ext_pid;
+	}
+	public final String getStatus_Tx()
+	{
+		return status_tx;
+	}
+	public final String getReturnCode()
+	{
+		return return_code;
+	}
+	public final String getError()
+	{
+		return error.toString();
+	}
+	public final String getRunningTimestamp()
+	{
+		return runningTS;
+	}
+	public final String getRun()
+	{
+		return run;
+	}
 
-	public final String getCommand()          { return command; }
-	public final Vector getArgs()             { return args; }
-	public final String getWorkdir()          { return workdir; }
-	public final boolean getUsepath()         { return usepath; }
-	public final boolean getVerboseLogs()     { return verboseLogs; }
-	public final String getLogfile()          { return logfile; }
-	public final boolean getLogappend()       { return logappend; }
-	public final String getErrlog()           { return errlog; }
-	public final boolean getErrappend()       { return errappend; }
-	public final boolean getSamelogs()        { return samelogs; }
+	public final String getCommand()
+	{
+		return command;
+	}
+	public final Vector getArgs()
+	{
+		return args;
+	}
+	public final String getWorkdir()
+	{
+		return workdir;
+	}
+	public final boolean getUsepath()
+	{
+		return usepath;
+	}
+	public final boolean getVerboseLogs()
+	{
+		return verboseLogs;
+	}
+	public final String getLogfile()
+	{
+		return logfile;
+	}
+	public final boolean getLogappend()
+	{
+		return logappend;
+	}
+	public final String getErrlog()
+	{
+		return errlog;
+	}
+	public final boolean getErrappend()
+	{
+		return errappend;
+	}
+	public final boolean getSamelogs()
+	{
+		return samelogs;
+	}
 
 	private final byte[] read()
 	{

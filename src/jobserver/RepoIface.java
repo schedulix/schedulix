@@ -253,7 +253,7 @@ public class RepoIface
 			Trace.error ("(03407161423) Cannot set Timeout on socket: " + se.getMessage() + " (" + se.getClass().getName() + ")");
 			try {
 				repoSock.close();
-			} catch (IOException _ ) {
+			} catch (IOException ioe ) {
 				// ignore
 			}
 			isConnected = false;
@@ -379,7 +379,7 @@ public class RepoIface
 			return file1.getCanonicalFile().equals (file2.getCanonicalFile());
 		}
 
-		catch (final IOException _) {
+		catch (final IOException ioe) {
 			return file1.getAbsoluteFile().equals (file2.getAbsoluteFile());
 		}
 	}

@@ -34,8 +34,6 @@ import java.util.*;
 public class EiThread
 	extends Thread
 {
-	public static final String __version = "@(#) $Id: EiThread.java,v 2.14.2.1 2013/03/14 10:24:06 ronald Exp $";
-
 	private static final long DEFAULT_NOP_DELAY = 30000;
 
 	private final RepoIface ri;
@@ -138,7 +136,7 @@ public class EiThread
 				try {
 					rc = p.waitFor();
 					break;
-				} catch (final InterruptedException _) {
+				} catch (final InterruptedException ie) {
 
 				}
 			}
@@ -179,7 +177,7 @@ public class EiThread
 							}
 						}
 					}
-				} catch (final OverlappingFileLockException _) {
+				} catch (final OverlappingFileLockException ofle) {
 
 				} catch (final IOException e) {
 					ioe = e;

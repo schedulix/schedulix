@@ -115,7 +115,7 @@ public class Environment
 					running = false;
 				}
 
-				catch (final IllegalThreadStateException _) {
+				catch (final IllegalThreadStateException itse) {
 					running = true;
 				}
 
