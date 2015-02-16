@@ -61,6 +61,7 @@ public class ObjectFilter
 		throws SDMSException
 	{
 		Vector subFilter = new Vector();
+		Vector restartableVector = new Vector();
 
 		if(fi == null) return subFilter;
 		if(positive)	subFilter.addElement(Boolean.TRUE);
@@ -87,14 +88,22 @@ public class ObjectFilter
 				} else if(((String) w.key).equals(ParseStr.S_OWNER)) {
 					item.addElement(new OwnerFilter(sysEnv, (Vector) w.value));
 				} else if(((String) w.key).equals(ParseStr.S_RESTARTABLE)) {
-					item.addElement(new RestartableFilter(sysEnv, (Integer) w.value));
+					RestartableFilter r = new RestartableFilter(sysEnv, (Integer) w.value, mastersFirst);
+					item.addElement(r);
+					restartableVector.add(r);
 				} else if(((String) w.key).equals(ParseStr.S_WARNING)) {
 					item.addElement(new WarningFilter(sysEnv, (Boolean) w.value));
 				} else if(((String) w.key).equals(ParseStr.S_MASTER)) {
 					item.addElement(new MasterFilter(sysEnv, (Boolean) w.value));
 
-					if(level == 0 && fi.size() == 1)
+					if(level == 0 && fi.size() == 1) {
 						mastersFirst = true;
+
+						for (int k = 0; k < restartableVector.size(); ++k) {
+							RestartableFilter r = (RestartableFilter) restartableVector.get(k);
+							r.mastersFirst = true;
+						}
+					}
 				} else if(((String) w.key).equals(ParseStr.S_MASTER_ID)) {
 					item.addElement(new MasterIdFilter(sysEnv, (Vector) w.value));
 

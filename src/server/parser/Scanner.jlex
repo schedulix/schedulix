@@ -163,6 +163,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("IX",		new Integer(Parser.IX));
 	tokens.put("JOB",		new Integer(Parser.JOB));
 	tokens.put("JOBS",		new Integer(Parser.JOB));
+	tokens.put("JSON",		new Integer(Parser.JSON));
 	tokens.put("KEEP",		new Integer(Parser.KEEP));
 	tokens.put("KILL",		new Integer(Parser.KILL));
 	tokens.put("KILLED",		new Integer(Parser.KILLED));

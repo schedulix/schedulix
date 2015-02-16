@@ -41,11 +41,13 @@ public class RestartableFilter extends Filter
 	public final static String __version = "@(#) $Id: RestartableFilter.java,v 2.3.18.1 2013/03/14 10:25:15 ronald Exp $";
 
 	Integer stateType;
+	public boolean mastersFirst;
 
-	public RestartableFilter(SystemEnvironment sysEnv, Integer type)
+	public RestartableFilter(SystemEnvironment sysEnv, Integer type, boolean mastersFirst)
 	{
 		super();
 		stateType = type;
+		this.mastersFirst = mastersFirst;
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
@@ -53,6 +55,7 @@ public class RestartableFilter extends Filter
 	{
 		try {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
+			if (mastersFirst && sme.getCntRestartable(sysEnv).intValue() > 0) return true;
 			int s = sme.getState(sysEnv).intValue();
 			if(stateType.intValue() == SDMSExitState.RESTARTABLE) {
 				if(sme.getJobIsRestartable(sysEnv).booleanValue()) return true;
