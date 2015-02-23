@@ -219,7 +219,7 @@ public class DBCleanupThread extends SDMSThread
 
 			try {
 				sysEnv.dbConnection.close();
-			} catch (SQLException _) {  }
+			} catch (SQLException sqle1) {  }
 			prepareConnection();
 		}
 
@@ -285,8 +285,8 @@ public class DBCleanupThread extends SDMSThread
 		} catch (SQLException sqle) {
 			try {
 				sysEnv.dbConnection.rollback();
-			} catch (SQLException _) {
-
+			} catch (SQLException sqle1) {
+				// do nothing; at least we tried
 			}
 			doTrace(null, "Error loading master:" + sqle.getMessage(), SEVERITY_ERROR);
 			return null;
@@ -342,7 +342,7 @@ public class DBCleanupThread extends SDMSThread
 				doTrace(null, "Error processing Smes for Master" + sqle.getMessage(), SEVERITY_ERROR);
 				try {
 					sysEnv.dbConnection.rollback();
-				} catch (SQLException _) {  }
+				} catch (SQLException sqle1) {  }
 				return false;
 			}
 		}
@@ -360,7 +360,7 @@ public class DBCleanupThread extends SDMSThread
 			doTrace(null, "Error Deleting Children of Master" + id + ": " + sqle.getMessage(), SEVERITY_ERROR);
 			try {
 				sysEnv.dbConnection.rollback();
-			} catch (SQLException _) {  }
+			} catch (SQLException sqle1) {  }
 			return false;
 
 		}
@@ -387,7 +387,7 @@ public class DBCleanupThread extends SDMSThread
 			} catch (SQLException sqle) {
 				try {
 					sysEnv.dbConnection.close();
-				} catch (SQLException _) {  }
+				} catch (SQLException sqle1) {  }
 				prepareConnection();
 			}
 
