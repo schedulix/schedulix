@@ -25,7 +25,8 @@
 JAY = $(SDMSHOME)/tools/bin/jay
 SKELETON = $(SDMSHOME)/tools/lib/skeleton
 JLEX = $(SDMSHOME)/tools/bin/jflex
-AWK = /usr/bin/gawk
+
+AWK := $(shell for fff in /usr/bin/gawk /usr/bin/nawk /usr/bin/awk; do if [ -f $$fff ]; then echo $$fff; break; fi; done;)
 SED = sed
 
 JAVAC = javac -cp $(SDMSHOME)/src:$(SWTJAR):$(JNAJAR)
