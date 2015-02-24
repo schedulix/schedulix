@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -x
 
 # format : %A+ %C+ %D %f %G %h %i %M %s %T+ %U
