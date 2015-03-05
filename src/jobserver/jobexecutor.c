@@ -1489,7 +1489,7 @@ void run(callstatus *status)
 	status->msg = EXEC_FAILED;
 	status->syserror = errno;
 #else
-	if (verboselogs) {
+	if (global.verboselogs) {
 		fprintf(stdout, "------- %s Start --------\n", getTimestamp(time(NULL), 1));
 		fflush(stdout);		/* seems to be necessary */
 	}
@@ -1516,7 +1516,7 @@ void run(callstatus *status)
 	for (i = 1; argv[i]; ++i)
 		ofs += sprintf (cmdline + ofs, " %s", argv[i]);
 
-	char *module = usepath ? NULL : command;
+	char *module = global.usepath ? NULL : global.command;
 	if (module && (*module == '"')) {
 		char *unquoted = Strdup(status, module + 1);
 		if (status->severity != STATUS_OK) {
@@ -1549,14 +1549,14 @@ void run(callstatus *status)
 		return;
 	}
 
-	extpid = getUniquePid(status, pi.dwProcessId);
+	global.extpid = getUniquePid(status, pi.dwProcessId);
 	if (status->severity != STATUS_OK) return;
 
-	appendTaskfile(status, EXTPID, extpid, 1);
+	appendTaskfile(status, EXTPID, global.extpid, 1);
 	if (status->severity != STATUS_OK) return;
-	appendTaskfile(status, STATUS, STATUS_RUNNING, 1);
+	appendTaskfile(status, STATUS, (char *) STATUS_RUNNING, 1);
 	if (status->severity != STATUS_OK) return;
-	closeTaskfile(status, taskfile);
+	closeTaskfile(status, global.taskfile);
 
 	CloseHandle (pi.hThread);
 
@@ -1573,17 +1573,17 @@ void run(callstatus *status)
 	}
 
 	snprintf(buf, 20, "%d", exitcode);
-	taskfile = openTaskfile(status);
+	global.taskfile = openTaskfile(status);
 	if (status->severity != STATUS_OK) return;
 	appendTaskfile(status, RETURNCODE, buf, 1);
 	if (status->severity != STATUS_OK) return;
-	appendTaskfile(status, STATUS, STATUS_FINISHED, 1);
+	appendTaskfile(status, STATUS, (char *) STATUS_FINISHED, 1);
 	if (status->severity != STATUS_OK) return;
-	closeTaskfile(status, taskfile);
+	closeTaskfile(status, global.taskfile);
 
 	CloseHandle (pi.hProcess);
 
-	if (verboselogs) {
+	if (global.verboselogs) {
 		fprintf(stdout, "------- %s End (%d) --------\n", getTimestamp(time(NULL), 1), exitcode);
 		fflush(stdout);
 	}
