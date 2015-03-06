@@ -642,29 +642,41 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		throws SDMSException
 	{
 
-		if (!suspend) {
-			Boolean booleanLocal = getIsSuspendedLocal(sysEnv);
-			local = false;
-			if (booleanLocal != null)
-				local = booleanLocal.booleanValue();
-		} else {
-			setIsSuspendedLocal(sysEnv, new Boolean(local));
-
-			setResumeTs(sysEnv, null);
-		}
-
 		int oldSuspended = getIsSuspended(sysEnv).intValue();
-		if (oldSuspended == SUSPEND && (suspend & !admin))
-			return;
-		if (oldSuspended == ADMINSUSPEND && (suspend && admin))
-			return;
+		Boolean booleanLocal = getIsSuspendedLocal(sysEnv);
+
 		if (oldSuspended == NOSUSPEND && !suspend)
 			return;
+
+		if (oldSuspended == SUSPEND && (suspend & !admin))
+			return;
+
+		if (oldSuspended == ADMINSUSPEND && (suspend && admin))
+			return;
+
+		if (suspend && local && (booleanLocal == null || !booleanLocal.booleanValue()))
+			return;
+
+		if (admin && (!sysEnv.cEnv.isUser() || !sysEnv.cEnv.gid().contains(SDMSObject.adminGId))) {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03503051428", "Insufficient privileges for admin suspend/resume"));
+		}
+
 		if (oldSuspended == ADMINSUSPEND && !admin) {
 
 			if (!sysEnv.cEnv.isUser() || !sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03408111621", "Insufficient privileges for admin suspend/resume"));
 			}
+		}
+
+		if (!suspend) {
+			if (booleanLocal != null)
+				local = booleanLocal.booleanValue();
+			else
+				local = false;
+		} else {
+			setIsSuspendedLocal(sysEnv, new Boolean(local));
+
+			setResumeTs(sysEnv, null);
 		}
 
 		int newSuspended;
@@ -681,8 +693,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 		if (!((oldSuspended == SUSPEND && newSuspended == ADMINSUSPEND) ||
 		      (oldSuspended == ADMINSUSPEND && newSuspended == SUSPEND))) {
-		if (!local)
-			addParentSuspendedToChildren (sysEnv, suspend ? 1 : - 1);
+			if (!local)
+				addParentSuspendedToChildren (sysEnv, suspend ? 1 : - 1);
 		fixCntInParents(sysEnv,
 				0 ,
 				0 ,
@@ -925,7 +937,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 							));
 
 					case SDMSDependencyDefinition.SUSPEND:
-						suspend(sysEnv, true, false);
+						suspend(sysEnv, false, false);
 						Date dts = new Date();
 						Long ts = new Long (dts.getTime());
 						if(internalId == null)
@@ -1717,7 +1729,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				int state = sme.getState(sysEnv).intValue();
 				if (suspended.booleanValue() && (sme.getIsSuspended(sysEnv).intValue() != NOSUSPEND) &&
 				    state != FINAL && state != CANCELLED) {
-					sme.suspend(sysEnv, true, false);
+					sme.suspend(sysEnv, false, false);
 				}
 				merged = true;
 
