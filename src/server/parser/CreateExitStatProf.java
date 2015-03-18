@@ -124,10 +124,6 @@ public class CreateExitStatProf extends Node
 						"Only one state can be marked as broken state"));
 				}
 				had_broken = true;
-				if (isRestartable.booleanValue() == false) {
-					throw new CommonErrorException (new SDMSMessage(sysEnv, "03505041129",
-						"The broken state must be defined RESTARTABLE"));
-				}
 			}
 			if (isBatchDefault.booleanValue()) {
 				if (had_batchDefault) {
