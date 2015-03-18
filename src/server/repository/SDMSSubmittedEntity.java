@@ -2326,7 +2326,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			final Long brokenEsdId = esp.getBrokenState(sysEnv, actVersion);
 			if(brokenEsdId != null) {
 				final SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, brokenEsdId));
-				changeState(sysEnv, brokenEsdId, es, null, null, null, (newState == BROKEN_FINISHED) );
+				changeState(sysEnv, brokenEsdId, es, null, null, null, true);
 
 				int curState = getState(sysEnv).intValue();
 				if (curState == FINISHED) {
@@ -2336,8 +2336,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 							newState == BROKEN_FINISHED ? 1 : 0, newState == ERROR ? 1 : 0, 0, 0, 0, 0, 0 );
 
 				}
-			}
-			setJobIsRestartable(sysEnv, Boolean.TRUE);
+			} else
+				setJobIsRestartable(sysEnv, Boolean.TRUE);
 
 		}
 
