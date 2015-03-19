@@ -31,6 +31,7 @@ import time
 import re
 import threading
 import os
+import locale
 
 try:
 	import json
@@ -507,6 +508,7 @@ def sendCommand(soc, command):
 	command = command.rstrip()
 	if command[-1] != ';':
 		command = command + ';'
+	command = command + '\0'
 	try:
 		soc.send(command)
 	except:
@@ -770,6 +772,9 @@ def json_dumps(o):
 		return json.dumps(o)
 	else:
 		return '{ "ERROR" : { "ERRORCODE" : "WSI-0001", "ERRORMESSAGE" : "Web Service not available" }}'
+
+def StringCompare(string1, string2):
+	return locale.strcoll(string1, string2)
 
 # print SDMSCommand('localhost', 2506, 'DONALD', 'duck', 'create exit state definition xxx')
 # print SDMSCommand('localhost', 2506, 'DONALD', 'duck', 'rename exit state definition xxx to \'\'')
