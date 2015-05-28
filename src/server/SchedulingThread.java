@@ -1269,6 +1269,30 @@ public class SchedulingThread extends InternalSession
 				e = (SDMSEnvironment) p;
 				rr = null;
 			}
+			// we check the condition first. we'll have a fast way out afterwards
+			if(checkCondition) {
+				String condition = (rr == null ? e.getCondition(sysEnv) : rr.getCondition(sysEnv));
+				if (condition != null) {
+					final BoolExpr be = new BoolExpr(condition);
+					try {
+						if (! be.checkCondition(sysEnv, r, sme, null, null, evalScope)) {
+							return false;
+						}
+					} catch (CommonErrorException cee) {
+						// we issue a warning here, if we're in a writing transaction
+						if (sysEnv.tx.mode == SDMSTransaction.READWRITE) {
+							SDMSNamedResource nr;
+							if (rr != null) {
+								nr = SDMSNamedResourceTable.getObject(sysEnv, rr.getNrId(sysEnv));
+							} else {
+								nr = SDMSNamedResourceTable.getObject(sysEnv, e.getNrId(sysEnv));
+							}
+							String msg = cee.toString() + " evaluating the condition for resource " + nr.pathString(sysEnv);
+						}
+						return false;
+					}
+				}
+			}
 
 			Integer jAmount;
 			if(rr == null)	jAmount = new Integer(0);
@@ -1301,6 +1325,26 @@ public class SchedulingThread extends InternalSession
 			} else {
 				e = (SDMSEnvironment) p;
 				rr = null;
+			}
+			// we check the condition first. we'll have a fast way out afterwards
+			if(checkCondition) {
+				String condition = (rr == null ? e.getCondition(sysEnv) : rr.getCondition(sysEnv));
+				if (condition != null) {
+					final BoolExpr be = new BoolExpr(condition);
+					try {
+						if (! be.checkCondition(sysEnv, r, sme, null, null, evalScope)) return false;
+					} catch (CommonErrorException cee) {
+						// we issue a warning here
+						SDMSNamedResource nr;
+						if (rr != null) {
+							nr = SDMSNamedResourceTable.getObject(sysEnv, rr.getNrId(sysEnv));
+						} else {
+							nr = SDMSNamedResourceTable.getObject(sysEnv, e.getNrId(sysEnv));
+						}
+						String msg = cee.toString() + " evaluating the condition for resource " + nr.pathString(sysEnv);
+						return false;
+					}
+				}
 			}
 
 			Integer jAmount;
