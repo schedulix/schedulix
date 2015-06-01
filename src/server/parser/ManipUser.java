@@ -44,6 +44,7 @@ public abstract class ManipUser extends Node
 	protected String user;
 	protected ObjectURL url;
 	protected String passwd;
+	protected Integer method;
 	protected String txtPasswd;
 	protected Boolean enable;
 	protected Long defaultGId;
@@ -66,6 +67,7 @@ public abstract class ManipUser extends Node
 		grouplist = new Vector();
 		addlist = new Vector();
 		dellist = new Vector();
+		method = new Integer(SDMSUser.SHA256);
 	}
 
 	public ManipUser(String u, WithHash w)
@@ -77,6 +79,7 @@ public abstract class ManipUser extends Node
 		grouplist = new Vector();
 		addlist = new Vector();
 		dellist = new Vector();
+		method = new Integer(SDMSUser.SHA256);
 	}
 
 	public abstract void go(SystemEnvironment sysEnv)
@@ -95,7 +98,7 @@ public abstract class ManipUser extends Node
 		return salt.toString();
 	}
 
-	protected void evaluate_with(SystemEnvironment sysEnv, String salt, int method)
+	protected void evaluate_with(SystemEnvironment sysEnv, String salt)
 		throws SDMSException
 	{
 		SDMSGroup g;
@@ -108,7 +111,7 @@ public abstract class ManipUser extends Node
 		passwd = null;
 		if (with.containsKey (ParseStr.S_PASSWORD)) {
 			txtPasswd = (String) with.get(ParseStr.S_PASSWORD);
-			if (method == SDMSUser.MD5)
+			if (method.intValue() == SDMSUser.MD5)
 				passwd = CheckSum.mkstr(CheckSum.md5((txtPasswd + salt).getBytes()), true);
 			else
 				passwd = CheckSum.mkstr(CheckSum.sha256((txtPasswd + salt).getBytes()), false);
@@ -120,7 +123,7 @@ public abstract class ManipUser extends Node
 				salt = (String) v.get(1);
 
 				if (passwd.length() == MD5LENGTH)
-					method = new Integer(SDMSScope.MD5);
+					method = new Integer(SDMSUser.MD5);
 			} else
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "04312181625", "Both " + ParseStr.S_PASSWORD + " and " + ParseStr.S_RAWPASSWORD + " are not allowed"));
 
