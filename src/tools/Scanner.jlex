@@ -97,13 +97,13 @@ ident	=	{alpha}{alnum}*
 <YYINITIAL>SDMSMessage{ws}*\(	{ yybegin(SDMSMSG); return MSGSTART; }
 <YYINITIAL>.			{ return yytext().charAt(0); }
 <COMMENT>"*/"			{ yybegin(YYINITIAL); }
-<COMMENT>[^*]*			{ comment(yytext()); }
+<COMMENT>[^*]+			{ comment(yytext()); }
 <COMMENT>\*			{ comment(yytext()); }
 <SDMSMSG>\"			{ yybegin(STRING); value = new String(""); }
 <SDMSMSG>;			{ yybegin(YYINITIAL); }
 <SDMSMSG>{ident}		{ value = new String(yytext()); return IDENTIFIER; }
 <SDMSMSG>.			{ /* do nothing */ }
 <SDMSMSG>{ws}			{ /* do nothing */ }
-<STRING>[^\"]*			{ value = value.toString() + yytext(); }
+<STRING>[^\"]+			{ value = value.toString() + yytext(); }
 <STRING>\"			{ yybegin(SDMSMSG); return STRINGTOK; }
 

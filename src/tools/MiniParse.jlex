@@ -94,10 +94,10 @@ public static void main(String argv[])
 <YYINITIAL>"/*"			{ yybegin(COMMENT); pos += yytext().length(); }
 <YYINITIAL>;			{ value = value.toString() + ';'; pos += yytext().length(); return STATEMENT; }
 <YYINITIAL>\"			{ pos += yytext().length(); yybegin(STRING); }
-<YYINITIAL>[^/-;\"]*		{ value = value.toString() + yytext(); pos += yytext().length(); }
+<YYINITIAL>[^/-;\"]+		{ value = value.toString() + yytext(); pos += yytext().length(); }
 <COMMENT>"*/"			{ pos += yytext().length(); yybegin(YYINITIAL); }
-<COMMENT>[^*]*			{ comment(yytext()); pos += yytext().length(); }
+<COMMENT>[^*]+			{ comment(yytext()); pos += yytext().length(); }
 <COMMENT>\*			{ comment(yytext()); pos += yytext().length(); }
-<STRING>[^\"]*			{ value = value.toString() + '"' + yytext() + '"'; pos += yytext().length(); }
+<STRING>[^\"]+			{ value = value.toString() + '"' + yytext() + '"'; pos += yytext().length(); }
 <STRING>\"			{ pos += yytext().length(); yybegin(YYINITIAL); }
 

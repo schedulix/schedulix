@@ -108,7 +108,7 @@ eidentifier =   [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z
 //
 
 <SQSTRING>\'			{ proto("SQSTRING ");		yybegin(YYINITIAL); eofProhibited = false; return CmdLineParser.SQSTRING; }
-<SQSTRING>[^\'\\]*		{				value = ((String) value) + new String(yytext()); break; }
+<SQSTRING>[^\'\\]+		{				value = ((String) value) + new String(yytext()); break; }
 <SQSTRING>\\			{				value = ((String) value) + new String(yytext()); break; }
 <SQSTRING>\\\\			{				value = ((String) value) + "\\"; break; }
 <SQSTRING>\\\'			{				value = ((String) value) + "'"; break; }
@@ -123,7 +123,7 @@ eidentifier =   [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z
 								eofProhibited = false; 
 								return CmdLineParser.SQSTRING; 
 				}
-<BTSTRING>[^`\\]*		{				value = ((String) value) + new String(yytext()); break; }
+<BTSTRING>[^`\\]+		{				value = ((String) value) + new String(yytext()); break; }
 <BTSTRING>\\			{				value = ((String) value) + new String(yytext()); break; }
 <BTSTRING>\\\\			{				value = ((String) value) + "\\"; break; }
 <BTSTRING>\\`			{				value = ((String) value) + "\\`"; break; }
