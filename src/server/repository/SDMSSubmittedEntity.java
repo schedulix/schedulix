@@ -654,7 +654,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (oldSuspended == ADMINSUSPEND && (suspend && admin))
 			return;
 
-		if (suspend && local && (booleanLocal == null || !booleanLocal.booleanValue()))
+		if (suspend && local && (oldSuspended != NOSUSPEND) && (booleanLocal == null || !booleanLocal.booleanValue()))
 			return;
 
 		if (admin && (!sysEnv.cEnv.isUser() || !sysEnv.cEnv.gid().contains(SDMSObject.adminGId))) {
