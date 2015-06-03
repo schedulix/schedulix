@@ -1347,13 +1347,15 @@ public class SchedulingThread extends InternalSession
 						if (! be.checkCondition(sysEnv, r, sme, null, null, evalScope)) return false;
 					} catch (CommonErrorException cee) {
 						// we issue a warning here
-						SDMSNamedResource nr;
-						if (rr != null) {
-							nr = SDMSNamedResourceTable.getObject(sysEnv, rr.getNrId(sysEnv));
-						} else {
-							nr = SDMSNamedResourceTable.getObject(sysEnv, e.getNrId(sysEnv));
+						if (sysEnv.tx.mode == SDMSTransaction.READWRITE) {
+							SDMSNamedResource nr;
+							if (rr != null) {
+								nr = SDMSNamedResourceTable.getObject(sysEnv, rr.getNrId(sysEnv));
+							} else {
+								nr = SDMSNamedResourceTable.getObject(sysEnv, e.getNrId(sysEnv));
+							}
+							String msg = cee.toString() + " evaluating the condition for resource " + nr.pathString(sysEnv);
 						}
-						String msg = cee.toString() + " evaluating the condition for resource " + nr.pathString(sysEnv);
 						return false;
 					}
 				}
