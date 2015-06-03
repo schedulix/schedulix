@@ -236,7 +236,10 @@ public class RepoIface
 		request_reconnect = false;
 
 		try {
-			repoSock = new Socket(InetAddress.getByName(currentHost), currentPort);
+			repoSock = new Socket();
+			repoSock.setPerformancePreferences(0, 1, 0);
+			repoSock.setTcpNoDelay(true);
+			repoSock.connect(new InetSocketAddress(InetAddress.getByName(currentHost), currentPort));
 		} catch (final UnknownHostException uhe) {
 			Trace.error ("(04301271454) " + currentHost + ": Host unknown");
 			isConnected = false;

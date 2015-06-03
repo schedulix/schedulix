@@ -130,7 +130,10 @@ public class SDMSServerConnection
 			SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(InetAddress.getByName(host), port);
 			svrConnection = sslsocket;
 		} else {
-			svrConnection = new Socket(InetAddress.getByName(host), port);
+			svrConnection = new Socket();
+			svrConnection.setPerformancePreferences(0, 1, 0);
+			svrConnection.setTcpNoDelay(true);
+			svrConnection.connect(new InetSocketAddress(InetAddress.getByName(host), port));
 		}
 
 		InputStream is = new DataInputStream(svrConnection.getInputStream());

@@ -141,7 +141,9 @@ public abstract class ListenThread extends SDMSThread
 	protected Socket accept()
 		throws InterruptedIOException, IOException
 	{
-		return serv.accept();
+		Socket soc = serv.accept();
+		soc.setTcpNoDelay(true);
+		return soc;
 	}
 
 	public void SDMSrun()
