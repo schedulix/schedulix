@@ -313,6 +313,7 @@ public class Server
 		boolean active = doRestart ();
 		long ts = 0;
 		while (active) {
+			Thread.interrupted(); // clear interrupted state of current thread
 			breed();
 			long now = new Date().getTime();
 			if (now - ts > ((Long) cfg.get (Config.NOP_DELAY)).longValue()) {
@@ -336,10 +337,10 @@ public class Server
 				try {
 					Notifier.register(id, currentThread);
 					Thread.sleep (loop_delay);
-					Notifier.unregister(id);
 				} catch (Exception e) {
 					ts = 0;
 				}
+				Notifier.unregister(id);
 			}
 		}
 	}
