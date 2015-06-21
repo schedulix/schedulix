@@ -194,6 +194,16 @@ stridentifier = [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z
 					value = yytext().substring(2+4+1, yytext().length() - 2); 
 					return ExprParser.JPARAMETER;
 				}
+<YYINITIAL>{job}\.{identifier}	{ 
+					proto("PARAM ");
+					value = (yytext().substring(4)).toUpperCase(); /* the name is after "job.", which has length 4 */
+					return ExprParser.JPARAMETER;
+				}
+<YYINITIAL>{job}\.'{stridentifier}'	{ 
+					proto("PARAM ");
+					value = yytext().substring(4+1, yytext().length() - 1); 
+					return ExprParser.JPARAMETER;
+				}
 <YYINITIAL>\${resource}\.{identifier}	{ 
 					proto("PARAM ");
 					value = (yytext().substring(10)).toUpperCase(); 

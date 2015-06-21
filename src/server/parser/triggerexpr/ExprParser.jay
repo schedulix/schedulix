@@ -60,6 +60,7 @@ public class ExprParser
 	private SystemEnvironment sysEnv = null;
 	private SDMSScope evalScope = null;
 	public boolean checkOnly = false;
+	private boolean debug = false;
 
 	// Names of Trigger Variables
 	public static final String S_TIMES_CHECKED = "TIMES_CHECKED";
@@ -84,71 +85,78 @@ public class ExprParser
 %start triggerexp
 
 %%
-triggerexp:						{ if(stop == 0) return new Boolean(true); }
-	|	boolexp					{ if(stop == 0) return($1); }
+triggerexp:						{ debuginfo("triggerexp --> true"); if(stop == 0) return new Boolean(true); }
+	|	boolexp					{ debuginfo("triggerexp/boolexp --> " + $1); if(stop == 0) return($1); }
+	|	expression				{ debuginfo("triggerexp/expression --> " + $1.getValue()); if(stop == 0) return($1.getValue()); }
 
-boolexp:	boolterm				{ $$ = $1; }
-	|	boolexp OR boolterm			{ $$ = new Boolean($1.booleanValue() || $3.booleanValue()); }
+boolexp:	boolterm				{ debuginfo("boolexp/boolterm"); $$ = $1; }
+	|	boolexp OR boolterm			{ debuginfo("boolexp/boolexp OR boolterm"); $$ = new Boolean($1.booleanValue() || $3.booleanValue()); }
 
-boolterm:	booloperand				{ $$ = $1; }
-	|	boolterm AND booloperand		{ $$ = new Boolean($1.booleanValue() && $3.booleanValue()); }
+boolterm:	booloperand				{ debuginfo("boolterm/booloperand"); $$ = $1; }
+	|	boolterm AND booloperand		{ debuginfo("boolterm/boolterm AND booloperand"); $$ = new Boolean($1.booleanValue() && $3.booleanValue()); }
 
-booloperand:	'(' boolexp ')'				{ $$ = $2; }
-	|	NOT booloperand				{ $$ = new Boolean(! $2.booleanValue()); }
-	|	expression comparison expression	{ $$ = $1.compare($3, $2, checkOnly); }
-	|	BOOLEAN					{ $$ = $1; }
+booloperand:	'(' boolexp ')'				{ debuginfo("booloperand/(boolexp)"); $$ = $2; }
+	|	NOT booloperand				{ debuginfo("booloperand/NOT booloperand"); $$ = new Boolean(! $2.booleanValue()); }
+	|	expression comparison expression	{ debuginfo("booloperand/expression comparison expression"); $$ = $1.compare($3, $2, checkOnly); }
+	|	BOOLEAN					{ debuginfo("booloperand/BOOLEAN"); $$ = $1; }
 
-expression:	term					{ $$ = $1; }
-	|	expression addop term			{ $$ = $1.add($3, $2, checkOnly); }
+expression:	term					{ debuginfo("expression/term"); $$ = $1; }
+	|	expression addop term			{ debuginfo("expression/expression addop term"); $$ = $1.add($3, $2, checkOnly); }
 
-term:		operand					{ $$ = $1; }
-	|	term multop operand			{ $$ = $1.mult($3, $2, checkOnly); }
+term:		operand					{ debuginfo("term/operand"); $$ = $1; }
+	|	term multop operand			{ debuginfo("term/term multop operand"); $$ = $1.mult($3, $2, checkOnly); }
 
-addop:		PLUS					{ $$ = new Integer(PLUS); }
-	|	MINUS					{ $$ = new Integer(MINUS); }
+addop:		PLUS					{ debuginfo("addop/PLUS"); $$ = new Integer(PLUS); }
+	|	MINUS					{ debuginfo("addop/MINUS"); $$ = new Integer(MINUS); }
 
-multop:		TIMES					{ $$ = new Integer(TIMES); }
-	|	DIV					{ $$ = new Integer(DIV); }
-	|	MOD					{ $$ = new Integer(MOD); }
+multop:		TIMES					{ debuginfo("multop/TIMES"); $$ = new Integer(TIMES); }
+	|	DIV					{ debuginfo("multop/DIV"); $$ = new Integer(DIV); }
+	|	MOD					{ debuginfo("multop/MOD"); $$ = new Integer(MOD); }
 
-comparison:	GT					{ $$ = new Integer(GT); }
-	|	GE					{ $$ = new Integer(GE); }
-	|	LT					{ $$ = new Integer(LT); }
-	|	LE					{ $$ = new Integer(LE); }
-	|	EQ					{ $$ = new Integer(EQ); }
-	|	NE					{ $$ = new Integer(NE); }
-	|	MATCHES					{ $$ = new Integer(MATCHES); }
-	|	NOMATCH					{ $$ = new Integer(NOMATCH); }
+comparison:	GT					{ debuginfo("comparison/GT"); $$ = new Integer(GT); }
+	|	GE					{ debuginfo("comparison/GE"); $$ = new Integer(GE); }
+	|	LT					{ debuginfo("comparison/LT"); $$ = new Integer(LT); }
+	|	LE					{ debuginfo("comparison/LE"); $$ = new Integer(LE); }
+	|	EQ					{ debuginfo("comparison/EQ"); $$ = new Integer(EQ); }
+	|	NE					{ debuginfo("comparison/NE"); $$ = new Integer(NE); }
+	|	MATCHES					{ debuginfo("comparison/MATCHES"); $$ = new Integer(MATCHES); }
+	|	NOMATCH					{ debuginfo("comparison/NOMATCH"); $$ = new Integer(NOMATCH); }
 
-operand:	'(' expression ')'			{ $$ = $2; }
-	|	addop operand				{ $$ = $2.changeSign($1, checkOnly); }
-	|	PARAMETER				{ $$ = resolve($1, PARAMETER); }
-	|	JPARAMETER				{ $$ = resolve($1, JPARAMETER); }
-	|	RPARAMETER				{ $$ = resolve($1, RPARAMETER); }
-	|	TPARAMETER				{ $$ = resolve($1, TPARAMETER); }
-	|	literal					{ $$ = $1; }
-	|	function				{ $$ = $1; }
+operand:	'(' expression ')'			{ debuginfo("operand/(expression)"); $$ = $2; }
+	|	addop operand				{ debuginfo("operand/addop operand)"); $$ = $2.changeSign($1, checkOnly); }
+	|	PARAMETER				{ debuginfo("operand/PARAMETER"); $$ = resolve($1, PARAMETER); }
+	|	JPARAMETER				{ debuginfo("operand/JPARAMETER"); $$ = resolve($1, JPARAMETER); }
+	|	RPARAMETER				{ debuginfo("operand/RPARAMETER"); $$ = resolve($1, RPARAMETER); }
+	|	TPARAMETER				{ debuginfo("operand/TPARAMETER"); $$ = resolve($1, TPARAMETER); }
+	|	literal					{ debuginfo("operand/literal"); $$ = $1; }
+	|	function				{ debuginfo("operand/function"); $$ = $1; }
 
-function:	ABS '(' expression ')'							{ $$ = $3.abs(checkOnly); }
-	|	INT '(' expression ')'							{ $$ = $3.to_int(checkOnly); }
-	|	DATE '(' expression ',' expression ')'					{ $$ = $3.to_date($5, checkOnly); }
-	|	FIELD '(' IDENTIFIER ')'						{ $$ = field(new ParseObject($3)); }
-	|	LOWERCASE '(' expression ')'						{ $$ = $3.lowercase(checkOnly); }
-	|	ROUND '(' expression ')'						{ $$ = $3.round(checkOnly); }
-	|	STR '(' expression ')'							{ $$ = $3.adjust(ParseObject.STRING, checkOnly); }
-	|	SUBSTR '(' expression ',' expression ',' expression ')'			{ $$ = $3.substr($5, $7, checkOnly); }
-	|	SUBSTR '(' expression ',' expression ')'				{ $$ = $3.substr($5, null, checkOnly); }
-	|	TRIM '(' expression ')'							{ $$ = $3.trim(checkOnly); }
-	|	UPPERCASE '(' expression ')'						{ $$ = $3.uppercase(checkOnly); }
+function:	ABS '(' expression ')'						{ debuginfo("function/ABS(expression)"); $$ = $3.abs(checkOnly); }
+	|	INT '(' expression ')'						{ debuginfo("function/INT(expression)"); $$ = $3.to_int(checkOnly); }
+	|	DATE '(' expression ',' expression ')'				{ debuginfo("function/DATE(expression, expression)"); $$ = $3.to_date($5, checkOnly); }
+	|	FIELD '(' IDENTIFIER ')'					{ debuginfo("function/FIELD(expression)"); $$ = field(new ParseObject($3)); }
+	|	LOWERCASE '(' expression ')'					{ debuginfo("function/LOWERCASE(expression)"); $$ = $3.lowercase(checkOnly); }
+	|	ROUND '(' expression ')'					{ debuginfo("function/ROUND(expression)"); $$ = $3.round(checkOnly); }
+	|	STR '(' expression ')'						{ debuginfo("function/STR(expression)"); $$ = $3.adjust(ParseObject.STRING, checkOnly); }
+	|	SUBSTR '(' expression ',' expression ',' expression ')'		{ debuginfo("function/SUBSTR(expression, expression, expression)"); $$ = $3.substr($5, $7, checkOnly); }
+	|	SUBSTR '(' expression ',' expression ')'			{ debuginfo("function/SUBSTR(expression, expression)"); $$ = $3.substr($5, null, checkOnly); }
+	|	TRIM '(' expression ')'						{ debuginfo("function/TRIM(expression)"); $$ = $3.trim(checkOnly); }
+	|	UPPERCASE '(' expression ')'					{ debuginfo("function/UPPERCASE(expression)"); $$ = $3.uppercase(checkOnly); }
 
-literal:	NUMBER									{ $$ = new ParseObject($1); }
-	|	STRING									{ $$ = new ParseObject($1); }
+literal:	NUMBER					{ debuginfo("literal/NUMBER"); $$ = new ParseObject($1); }
+	|	STRING					{ debuginfo("literal/STRING"); $$ = new ParseObject($1); }
 %%
 
 private ParseObject field(ParseObject o)
 {
 	if(checkOnly) return new ParseObject(o);
 	return o;
+}
+
+private void debuginfo(String s)
+{
+	if (debug)
+		System.out.println(s);
 }
 
 private ParseObject resolve(String o, int type)
@@ -275,6 +283,24 @@ class ParseObject {
 		string = p.string;
 	}
 
+	public Object getValue()
+	{
+		if (type == STRING) return string;
+		if (type == NUMBER) {
+			if (number == null) return null;
+			long v;
+			try {
+				v = number.longValueExact();
+				return new Long(v);
+			} catch (ArithmeticException ae) {
+				double d;
+				d = number.doubleValue();
+				return new Double(d);
+			}
+		}
+		return null;
+	}
+
 	public ParseObject adjust(ParseObject po, boolean checkOnly)
 	{
 		return adjust(po.type, checkOnly);
@@ -314,7 +340,7 @@ class ParseObject {
 			case ExprParser.MOD:
 				BigInteger n1 = op1.number.toBigInteger();
 				BigInteger n2 = op2.number.toBigInteger();
-				op1.number= new BigDecimal(n1.mod(n2));
+				op1.number = new BigDecimal(n1.mod(n2));
 				break;
 		}
 		return op1;

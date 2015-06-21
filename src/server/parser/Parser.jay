@@ -40,7 +40,7 @@ public class Parser
 %token <Token>	DEPENDENCY_HIERARCHY DEPENDENCY_MODE DEPENDENCY_WAIT DEPLOY DEREGISTER DIR DISABLE DISCONNECT DISTRIBUTION DROP DUMP DURATION DYNAMIC
 %token <Token>	EDIT EMBEDDED EMULTICMD ENABLE ENDTIME ENVIRONMENT ERRLOG ERROR_TEXT ERROR_TOKEN EVENT EXECUTE EXEC_PID
 %token <Token>	EXISTING EXIT_CODE EXIT_STATUS EXIT_STATUS_DEFINITION EXIT_STATUS_MAPPING EXIT_STATUS_PROFILE
-%token <Token>	EXIT_STATUS_TRANSLATION EXPAND EXPIRED EXT_PID
+%token <Token>	EXIT_STATUS_TRANSLATION EXPAND EXPIRED EXPORT EXPR EXT_PID
 %token <Token>	FACTOR FAILURE FATAL FILTER FINAL FINISH FINISH_CHILD FINISHED FOLDER FOOTPRINT FOR FORCE FORCED_EOC FREE_AMOUNT FREEPCT FROM FUTURE
 %token <Token>	GET GET_NEXT_JOB GLOBAL GRANT GROUP
 %token <Token>	HEADER HISTORY HORIZON HOUR
@@ -48,7 +48,7 @@ public class Parser
 %token <Token>	INFINITE INFO INHERIT INITIAL_STATUS INSTANCE INTERVAL INVERSE IS ISX IX
 %token <Token>	JOB JOB_DEFINITION JOB_DEFINITION_HIERARCHY JOB_FINAL JOB_SERVER JOB_STATUS JSON
 %token <Token>	KEEP KEEP_FINAL KILL KILLED KILL_PROGRAM
-%token <Token>	LAST LEVEL LIBERAL LIKE LIMITS LINE LINK LIST LOCAL LOCAL_CONSTANT LOCKMODE LOGFILE LOOPS
+%token <Token>	LAST LEVEL LIBERAL LIKE LIMITS LINE LINK LIST LOCAL LOCAL_CONSTANT LOCK LOCKMODE LOGFILE LOOPS
 %token <Token>	MAIN MANAGE MANAGED MANAGE_SELECT MAP MAPPING MAPS MASTER MASTER_ID MAX MAXPCT MERGE MERGED MERGE_GLOBAL MERGE_LOCAL MERGE_MODE MILESTONE
 %token <Token>	MIN MINPCT MINUTE MODE MONITOR MONTH MOVE MULTICOMMAND MULTIPLIER
 %token <Token>	N NAME NAMED_RESOURCE NICE_PROFILE NICEVALUE NODE NOINVERSE NOKEEP NOMASTER NOMERGE NOMINALPCT NONE NONFATAL
@@ -135,7 +135,7 @@ public class Parser
 %type <String>	gpmode, groupname
 %type <String>	history
 %type <String>	identified_by, identifier, intervalname, instancename
-%type <String>	jobname, jp_optdefault, jw_footprintname, jw_mappingname, jw_rsmname, jw_transname
+%type <String>	jobname, jp_optdefault, jp_optexport, jw_footprintname, jw_mappingname, jw_rsmname, jw_transname
 %type <String>	keywords
 %type <String>	mappingname
 %type <String>	nodename
@@ -214,7 +214,7 @@ public class Parser
 %type <WithHash>	selwithlist, show_with_item, signed_period, sj_withlist, stickyspec, submit_with, submit_withlist
 %type <WithHash>	us_add_dellist, us_with, us_withlist, wt_with_clause, wt_withitemlist
 
-%type <WithItem>	aj_withitem, ajd_add_del_item, anr_with_item, aom_withitem, ar_parm, ar_with_item
+%type <WithItem>	aj_suspend, aj_withitem, ajd_add_del_item, anr_with_item, aom_withitem, ar_parm, ar_with_item
 %type <WithItem>	cc_withitem, cev_withitem, cf_withitem, cf_parm, clf_withitem, cnr_parm, cnr_with_item, connect_withitem
 %type <WithItem>	cpl_managed, cpl_res_item, cpl_withitem, ct_object, ct_rscstatusitem, ct_warn_nowarn, ct_withitem
 %type <WithItem>	dump_mapitem, dump_withitem
@@ -639,6 +639,7 @@ protocol:	XML								{ $$ = $1; }
 run_test_cmd:	RUN TEST testid							{ $$ = new RunTest($3); }
 	|	RUN TEST testid STRING						{ $$ = new RunTest($3, $4.textValue); }
 	|	RUN TEST testid STRING READ					{ $$ = new RunTest($3, $4.textValue, true); }
+	|	RUN TEST testid STRING id					{ $$ = new RunTest($3, $4.textValue, $5); }
 
 
 
@@ -665,7 +666,8 @@ alter_server:	ALTER SERVER WITH enable CONNECT				{ $$ = new ConnectCtrl($4.bool
 //D:NT-ALIAS = show system
 //D:DESCRIPTION show_system.tex
 //D:PURPOSE P007
-show_system:	SHOW SYSTEM							{ $$ = new ShowSystem(); }
+show_system:	SHOW SYSTEM							{ $$ = new ShowSystem(false); }
+	|	SHOW SYSTEM WITH LOCK						{ $$ = new ShowSystem(true); }
 
 //D:MASTER
 //D:NT-ALIAS = list session
@@ -2439,16 +2441,18 @@ jrd_statelist:		statusname						{ $$ = new Vector(); $<Vector>$.addElement($1); 
 job_parameterslist:	job_parameter						{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
 	|		job_parameterslist ',' job_parameter			{ $1.addItem($3); }
 
-job_parameter:		parametername opt_jp_withitem jp_optdefault jp_optlocal	{ final Vector v = new Vector();
+job_parameter:		parametername opt_jp_withitem jp_optdefault jp_optlocal	jp_optexport { final Vector v = new Vector();
 										  v.addElement($2);
 										  v.addElement($3);
 										  v.addElement($4);
+										  v.addElement($5);
 										  $$ = new WithItem($1, v);
 										}
-	|		parametername jp_nondefwith jp_optlocal			{ final Vector v = new Vector();
+	|		parametername jp_nondefwith jp_optlocal	jp_optexport	{ final Vector v = new Vector();
 										  v.addElement($2);
 										  v.addElement(null);
 										  v.addElement($3);
+										  v.addElement($4);
 										  $$ = new WithItem($1, v);
 										}
 
@@ -2467,6 +2471,10 @@ jp_withitem:		PARAMETERS						{ $$ = new WithItem(new Integer(SDMSParameterDefin
 										}
 	|		RESULT							{ $$ = new WithItem(new Integer(SDMSParameterDefinition.RESULT), null); }
 	|		IMPORT							{ $$ = new WithItem(new Integer(SDMSParameterDefinition.IMPORT), null); }
+
+jp_optexport:									{ $$ = null; }
+	|		EXPORT '=' parametername				{ $$ = $3; }
+	|		EXPORT '=' NONE						{ $$ = null; }
 
 jp_nondefwith:		CONSTANT '=' STRING					{ $$ = new WithItem(new Integer(SDMSParameterDefinition.CONSTANT), $3.textValue); }
 	|		jp_aggfunction '(' parametername ')'			{ final Vector v = new Vector();
@@ -2682,10 +2690,14 @@ aj_withitem:	CANCEL								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.T
 		//D:SUPPRESS
 	|	RUN_PROGRAM '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 	|	STATUS '=' jobstate						{ $$ = new WithItem(ParseStr.map($1.token), $3); }
-	|	SUSPEND								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
-	|	SUSPEND	RESTRICT						{ $$ = new WithItem(ParseStr.map($1.token), new Integer(SDMSSubmittedEntity.ADMINSUSPEND)); }
+	|	aj_suspend							{ $$ = $1; }
 	|	TIMESTAMP '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 	|	WARNING '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
+
+aj_suspend:	SUSPEND								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
+	|	SUSPEND RESTRICT						{ $$ = new WithItem(ParseStr.map($1.token), new Integer(SDMSSubmittedEntity.ADMINSUSPEND)); }
+	|	SUSPEND LOCAL							{ $$ = new WithItem(ParseStr.map($1.token), new Integer(AlterJob.LOCALSUSPEND)); }
+	|	SUSPEND LOCAL RESTRICT						{ $$ = new WithItem(ParseStr.map($1.token), new Integer(AlterJob.LOCALADMINSUSPEND)); }
 
 jobstate:	STARTING							{ $$ = SDMSSubmittedEntity.map($1.token); }
 	|	STARTED								{ $$ = SDMSSubmittedEntity.map($1.token); }
@@ -3932,6 +3944,7 @@ sys_object:	ENVIRONMENT							{ $$ = $1; }
 	|	EXIT_STATUS_TRANSLATION						{ $$ = $1; }
 	|	FOOTPRINT							{ $$ = $1; }
 	|	GROUP								{ $$ = $1; }
+	|	NICE_PROFILE							{ $$ = $1; }
 	|	RESOURCE_STATUS_DEFINITION					{ $$ = $1; }
 	|	RESOURCE_STATUS_MAPPING						{ $$ = $1; }
 	|	RESOURCE_STATUS_PROFILE						{ $$ = $1; }
@@ -4390,6 +4403,7 @@ number:		signed_float							{ $$ = $1; }
 
 rvalue:		number								{ $$ = $1; }
 	|	STRING								{ $$ = $1.textValue; }
+	|	EXPR '(' STRING ')'						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 
 //D:NT=PARM
 testid:		integer								{ $$ = $1; }
@@ -4531,6 +4545,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	EXECUTE								{ $$ = (String) $1.value; }
 	|	EXPAND								{ $$ = (String) $1.value; }
 	|	EXPIRED								{ $$ = (String) $1.value; }
+	|	EXPR								{ $$ = (String) $1.value; }
 	|	FACTOR								{ $$ = (String) $1.value; }
 	|	FAILURE								{ $$ = (String) $1.value; }
 	|	FATAL								{ $$ = (String) $1.value; }
@@ -4579,6 +4594,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	LINK								{ $$ = (String) $1.value; }
 	|	LIST								{ $$ = (String) $1.value; }
 	|	LOCAL								{ $$ = (String) $1.value; }
+	|	LOCK								{ $$ = (String) $1.value; }
 	|	LOCKMODE							{ $$ = (String) $1.value; }
 	|	LOGFILE								{ $$ = (String) $1.value; }
 	|	LOOPS								{ $$ = (String) $1.value; }
