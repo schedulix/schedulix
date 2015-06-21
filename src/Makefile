@@ -103,6 +103,7 @@ $(JAR_FILE): BICServer.class sdmsh.class \
 		`find $(JARDIRS) -follow \( -type d -name test \) -prune -o -name parser.tables -print`; \
 	$(JAR) -i $(JAR_FILE); \
 	touch $(JAR_FILE); \
+	chmod 644 $(JAR_FILE); \
 	rm -f $(MANIFEST)
 
 include $(SDMSHOME)/src/Makefile.CommonRules
