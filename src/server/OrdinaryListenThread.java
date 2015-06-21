@@ -50,7 +50,10 @@ public class OrdinaryListenThread extends ListenThread
 	ServerSocket getServerSocket(int port)
 		throws IOException
 	{
-		return new ServerSocket(port);
+		ServerSocket soc = new ServerSocket();
+		soc.setPerformancePreferences(0, 1, 0);
+		soc.bind(new InetSocketAddress(port));
+		return soc;
 	}
 
 }
