@@ -63,6 +63,7 @@ public class RepoIface
 	public static final String     STARTJOB_ERR    = "ERR";
 	public static final String     STARTJOB_ERRAPP = "ERRAPP";
 	public static final String     STARTJOB_ENV    = "ENV";
+	public static final String     STARTJOB_JOBENV = "JOBENV";
 	public static final String CMD_ALTER           = "ALTER";
 	public static final String     ALTER_CONFIG    = "CONFIG";
 	public static final String CMD_DISPOSE         = "DISPOSE";
@@ -236,7 +237,10 @@ public class RepoIface
 		request_reconnect = false;
 
 		try {
-			repoSock = new Socket(InetAddress.getByName(currentHost), currentPort);
+			repoSock = new Socket();
+			repoSock.setPerformancePreferences(0, 1, 0);
+			repoSock.setTcpNoDelay(true);
+			repoSock.connect(new InetSocketAddress(InetAddress.getByName(currentHost), currentPort));
 		} catch (final UnknownHostException uhe) {
 			Trace.error ("(04301271454) " + currentHost + ": Host unknown");
 			isConnected = false;
@@ -439,7 +443,15 @@ public class RepoIface
 			job_env = new Environment (v);
 		}
 
-		return new Descr (job_id, job_run, job_cmd, job_args, job_dir, job_log, job_logapp, job_elog, job_elogapp, job_same, job_env);
+		Environment job_jobenv = null;
+		v = (Vector) getByName (res.container, STARTJOB_JOBENV);
+		if (v != null) {
+			if ((v.size() % 2) != 0)
+				Utils.abortProgram (this, "(04301271502) Invalid job environment received: " + v);
+			job_jobenv = new Environment (v);
+		}
+
+		return new Descr (job_id, job_run, job_cmd, job_args, job_dir, job_log, job_logapp, job_elog, job_elogapp, job_same, job_env, job_jobenv);
 	}
 
 	private static final File getFile (final SDMSOutput res, final String which)

@@ -45,10 +45,10 @@ public class EiThread
 
 	public EiThread (final RepoIface ri, final Config cfg, final String jid)
 	{
-		this (ri, cfg, jid, ri.getJobData().env, null);
+		this (ri, cfg, jid, ri.getJobData().env, null, ri.getJobData().jobenv);
 	}
 
-	public EiThread (final RepoIface ri, final Config cfg, final String jid, final Environment env, File workdir)
+	public EiThread (final RepoIface ri, final Config cfg, final String jid, final Environment env, File workdir, final Environment jobenv)
 	{
 		this.ri  = ri;
 		this.cfg = cfg;
@@ -56,6 +56,7 @@ public class EiThread
 		this.workdir = workdir;
 
 		final Environment e = Environment.getSystemEnvironment().merge (env, ri, cfg);
+		if (jobenv != null) e.putAll(jobenv);
 		this.env = e.toArray();
 
 		setPriority (Thread.MIN_PRIORITY);
@@ -187,6 +188,7 @@ public class EiThread
 			}
 		}
 
+		JobServer.server.addJidToBreed(jid);
 		Notifier.interrupt(new Long(0));
 
 		if (ioe != null)

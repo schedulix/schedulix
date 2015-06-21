@@ -1400,6 +1400,8 @@ void run(callstatus *status)
 	if (status->severity != STATUS_OK) return;
 #ifndef WINDOWS
 
+	fflush(global.taskfile);
+
 	cpid = fork();
 
 	if (cpid < 0) {
@@ -1446,6 +1448,7 @@ void run(callstatus *status)
 		closeTaskfile(status, global.taskfile);
 		return;
 	}
+	global.taskfile = openTaskfile(status);
 
 	default_all_signals (status);
 	if (status->severity != STATUS_OK) {
