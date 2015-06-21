@@ -37,9 +37,6 @@ import de.independit.scheduler.server.exception.*;
 
 public class MasterIdFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: MasterIdFilter.java,v 2.0.20.1 2013/03/14 10:25:14 ronald Exp $";
-
 	HashSet mids;
 
 	public MasterIdFilter(SystemEnvironment sysEnv, Vector ids)
@@ -59,6 +56,20 @@ public class MasterIdFilter extends Filter
 			if(mids.contains(sme.getMasterId(sysEnv))) return true;
 		} catch (Exception e) { }
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof MasterIdFilter)) return false;
+		MasterIdFilter f;
+		f = (MasterIdFilter) o;
+
+		if (mids.size() != f.mids.size()) return false;
+		Iterator i = mids.iterator();
+		while (i.hasNext())
+			if (!f.mids.contains(i.next())) return false;
+		return true;
 	}
 }
 

@@ -38,9 +38,6 @@ import de.independit.scheduler.server.exception.*;
 
 public class HistoryFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: HistoryFilter.java,v 2.1.6.1 2013/03/14 10:25:14 ronald Exp $";
-
 	long numMillisFrom = 0;
 	long numMillisTo = 0;
 
@@ -114,5 +111,16 @@ public class HistoryFilter extends Filter
 			}
 		} catch (Exception e) { }
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof HistoryFilter)) return false;
+		HistoryFilter f;
+		f = (HistoryFilter) o;
+		if (numMillisFrom != f.numMillisFrom) return false;
+		if (numMillisTo != f.numMillisTo) return false;
+		return true;
 	}
 }

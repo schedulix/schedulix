@@ -31,22 +31,22 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
+import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 
 public class SubmitUserFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: SubmitUserFilter.java,v 2.1.6.1 2013/03/14 10:25:16 ronald Exp $";
-
 	Vector names;
 	HashSet owners;
+	SystemEnvironment env;
 
 	public SubmitUserFilter(SystemEnvironment sysEnv, Vector v)
 	{
 		super();
 		names = v;
+		env = sysEnv;
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
@@ -54,16 +54,7 @@ public class SubmitUserFilter extends Filter
 	{
 		try {
 			if(owners == null) {
-				owners = new HashSet();
-				for(int i = 0; i < names.size(); i++) {
-					try {
-						Long gid = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-								sysEnv, new SDMSKey ((String)(names.get(i)), new Long(0))).getId(sysEnv);
-						owners.add(gid);
-					} catch (NotFoundException nfe) {
-
-					}
-				}
+				fillOwners(sysEnv);
 			}
 			if (p instanceof SDMSSubmittedEntity) {
 				SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
@@ -75,8 +66,43 @@ public class SubmitUserFilter extends Filter
 				SDMSScheduledEvent scev = SDMSScheduledEventTable.getObject(sysEnv, ((SDMSCalendar)p).getScevId(sysEnv));
 				if(owners.contains(scev.getOwnerId(sysEnv))) return true;
 			}
-		} catch (Exception e) { }
+		} catch (SerializationException e) {
+			throw new RuntimeException();
+		} catch (SDMSException e) { }
 		return false;
+	}
+
+	private void fillOwners(SystemEnvironment sysEnv)
+	{
+		if(owners == null) {
+			owners = new HashSet();
+			for(int i = 0; i < names.size(); i++) {
+				try {
+					Long gid = SDMSGroupTable.idx_name_deleteVersion_getUnique(
+					                   sysEnv, new SDMSKey ((String)(names.get(i)), new Long(0))).getId(sysEnv);
+					owners.add(gid);
+				} catch (SerializationException e) {
+					throw new RuntimeException();
+				} catch (SDMSException nfe) {
+
+				}
+			}
+		}
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof SubmitUserFilter)) return false;
+		SubmitUserFilter f;
+		f = (SubmitUserFilter) o;
+		if (owners == null) fillOwners(env);
+		if (f.owners == null) f.fillOwners(env);
+		if (owners.size() != f.owners.size()) return false;
+		Iterator i = owners.iterator();
+		while (i.hasNext())
+			if (!f.owners.contains(i.next())) return false;
+		return true;
 	}
 }
 

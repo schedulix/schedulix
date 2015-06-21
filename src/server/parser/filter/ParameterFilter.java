@@ -40,21 +40,37 @@ import de.independit.scheduler.server.parser.*;
 
 public class ParameterFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: ParameterFilter.java,v 2.6.2.1 2013/03/14 10:25:15 ronald Exp $";
-
-	String name;
-	Comparable value;
-	String cmpop;
+	final String name;
+	final Comparable value;
+	final String expression;
+	final BoolExpr be;
+	final String cmpop;
 	Comparer c;
 	Caster cst;
+	final static Caster strCaster = new StringCaster();
+	final static Caster intCaster = new IntegerCaster();
+	final static Caster dblCaster = new DoubleCaster();
 
 	public ParameterFilter(SystemEnvironment sysEnv, WithHash w)
 		throws SDMSException
 	{
 		super();
 		name = (String) w.get(ParseStr.S_NAME);
-		value = (Comparable) w.get(ParseStr.S_VALUE);
+		Object o = w.get(ParseStr.S_VALUE);
+		if (o instanceof WithItem) {
+			o = ((WithItem) o).value;
+			if (o instanceof String)
+				expression = (String) o;
+			else
+				expression = o.toString();
+			value = null;
+			be = new BoolExpr(expression);
+			be.checkConditionSyntax(sysEnv);
+		} else {
+			value = (Comparable) o;
+			expression = null;
+			be = null;
+		}
 		cmpop = (String) w.get(ParseStr.S_CMPOP);
 
 		cst = null;
@@ -74,28 +90,28 @@ public class ParameterFilter extends Filter
 		} else if(cmpop.equals("<="))			{
 			c = new LEComparer(sysEnv, value);
 		} else if(cmpop.equals("=~"))			{
-			c = new LikeComparer(sysEnv, value.toString());
+			c = new LikeComparer(sysEnv, value != null ? value.toString() : null);
 			cst = new StringCaster();
 		} else if(cmpop.equals(ParseStr.S_LIKE))		{
-			c = new LikeComparer(sysEnv, value.toString());
+			c = new LikeComparer(sysEnv, value != null ? value.toString() : null);
 			cst = new StringCaster();
 		} else if(cmpop.equals("!~"))			{
-			c = new NotLikeComparer(sysEnv, value.toString());
+			c = new NotLikeComparer(sysEnv, value != null ? value.toString() : null);
 			cst = new StringCaster();
 		} else if(cmpop.equals(ParseStr.S_NOTLIKE))	{
-			c = new NotLikeComparer(sysEnv, value.toString());
+			c = new NotLikeComparer(sysEnv, value != null ? value.toString() : null);
 			cst = new StringCaster();
 		} else throw new CommonErrorException(new SDMSMessage(sysEnv, "03511031050", "Unknown comparison operator: " + cmpop));
 
 		if(cst == null) {
 			if(value instanceof String)	{
-				cst = new StringCaster();
+				cst = strCaster;
 			}
 			if(value instanceof Integer)	{
-				cst = new IntegerCaster();
+				cst = intCaster;
 			}
 			if(value instanceof Double)	{
-				cst = new DoubleCaster();
+				cst = dblCaster;
 			}
 		}
 	}
@@ -104,18 +120,20 @@ public class ParameterFilter extends Filter
 		throws SDMSException
 	{
 		String parmVal = null;
+		Long pId = p.getId(sysEnv);
+
 		ParameterFilterCache parameterFilterCache;
 		if (sysEnv.tx.txData.containsKey(SystemEnvironment.S_PARAMETERFILTER_CACHE)) {
 			parameterFilterCache = (ParameterFilterCache)(sysEnv.tx.txData.get(SystemEnvironment.S_PARAMETERFILTER_CACHE));
 
-			if (! parameterFilterCache.id.equals(p.getId(sysEnv))) {
-				parameterFilterCache.id = p.getId(sysEnv);
+			if (! parameterFilterCache.id.equals(pId)) {
+				parameterFilterCache.id = pId;
 				parameterFilterCache.parameters.clear();
 			} else
 				parmVal = (String)(parameterFilterCache.parameters.get(name));
 		} else {
 			parameterFilterCache = new ParameterFilterCache();
-			parameterFilterCache.id = p.getId(sysEnv);
+			parameterFilterCache.id = pId;
 			sysEnv.tx.txData.put(SystemEnvironment.S_PARAMETERFILTER_CACHE, parameterFilterCache);
 		}
 		try {
@@ -123,7 +141,8 @@ public class ParameterFilter extends Filter
 				if (p instanceof SDMSSubmittedEntity) {
 					SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
 					try {
-						parmVal = sme.getVariableValue(sysEnv, name, true, ParseStr.S_DEFAULT);
+						parmVal = sme.getVariableValue(sysEnv, name, true, ParseStr.S_DEFAULT, (be != null));
+
 					} catch(NotFoundException cee) {
 						parmVal = null;
 					}
@@ -155,10 +174,46 @@ public class ParameterFilter extends Filter
 				if (parmVal != null)
 					parameterFilterCache.parameters.put(name, parmVal);
 			}
-			if (parmVal != null)
+			if (parmVal != null) {
+				if (be != null) {
+
+					if (! (p instanceof SDMSSubmittedEntity)) {
+
+						return false;
+					}
+
+					Object o = be.evalExpression(sysEnv, null, (SDMSSubmittedEntity) p, null, null, null);
+
+					if (o instanceof String) {
+						cst = strCaster;
+						c.setValue((String) o);
+					} else if (o instanceof Long) {
+						cst = intCaster;
+						c.setValue((Long) o);
+					} else if (o instanceof Double) {
+						cst = dblCaster;
+						c.setValue((Double) o);
+					}
+				}
 				return c.cmp(cst.cast(parmVal));
+			}
 		} catch (Exception e) { }
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof ParameterFilter)) return false;
+		ParameterFilter f;
+		f = (ParameterFilter) o;
+		if (!name.equals(f.name)) return false;
+		if (value == null && f.value != null) return false;
+		if (value != null && f.value == null) return false;
+		if (value != null && value.compareTo(f.value) != 0) return false;
+		if (expression != null && expression.compareTo(f.expression) != 0) return false;
+		if (!cmpop.equals(f.cmpop)) return false;
+		return true;
 	}
 
 	class ParameterFilterCache
@@ -189,8 +244,8 @@ class IntegerCaster extends Caster
 	Comparable cast(String v)
 	{
 		try {
-			int i = Integer.parseInt(v);
-			return new Integer(i);
+			long i = Long.parseLong(v);
+			return new Long(i);
 		} catch (NumberFormatException nfe) {
 			return null;
 		}
@@ -220,6 +275,11 @@ abstract class Comparer
 		throws SDMSException
 	{
 		wert = w;
+	}
+
+	public void setValue(Comparable c)
+	{
+		wert = c;
 	}
 
 	abstract boolean cmp(Comparable val);

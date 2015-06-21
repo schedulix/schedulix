@@ -97,4 +97,14 @@ public class FutureFilter extends Filter
 		} catch (Exception e) { }
 		return false;
 	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof FutureFilter)) return false;
+		FutureFilter f;
+		f = (FutureFilter) o;
+		if (f.numMillis != numMillis) return false;
+		return true;
+	}
 }

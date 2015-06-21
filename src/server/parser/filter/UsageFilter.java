@@ -37,9 +37,6 @@ import de.independit.scheduler.server.exception.*;
 
 public class UsageFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: UsageFilter.java,v 2.0.20.1 2013/03/14 10:25:16 ronald Exp $";
-
 	Vector usages;
 
 	public UsageFilter(SystemEnvironment sysEnv, Vector v)
@@ -59,6 +56,18 @@ public class UsageFilter extends Filter
 			}
 		} catch (Exception e) { }
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof UsageFilter)) return false;
+		UsageFilter f;
+		f = (UsageFilter) o;
+		if (usages.size() != f.usages.size()) return false;
+		for (int i = 0; i < usages.size(); ++i)
+			if (!f.usages.contains(usages.get(i))) return false;
+		return true;
 	}
 }
 

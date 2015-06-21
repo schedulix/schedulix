@@ -37,9 +37,6 @@ import de.independit.scheduler.server.exception.*;
 
 public class NodeFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: NodeFilter.java,v 2.0.20.1 2013/03/14 10:25:15 ronald Exp $";
-
 	Vector nodenames;
 	HashSet nodes = null;
 
@@ -66,6 +63,19 @@ public class NodeFilter extends Filter
 			if(nodes.contains(sme.getScopeId(sysEnv))) return true;
 		} catch (Exception e) { }
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof NodeFilter)) return false;
+		NodeFilter f;
+		f = (NodeFilter) o;
+
+		if (nodenames.size() != f.nodenames.size()) return false;
+		for (int i = 0; i < nodenames.size(); ++i)
+			if (!f.nodenames.contains(nodenames.get(i))) return false;
+		return true;
 	}
 }
 

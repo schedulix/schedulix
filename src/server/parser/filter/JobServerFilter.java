@@ -31,22 +31,22 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
+import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 
 public class JobServerFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: JobServerFilter.java,v 2.0.20.1 2013/03/14 10:25:14 ronald Exp $";
-
 	Vector jobsrvrList;
 	HashSet scopeIds = null;
+	SystemEnvironment env;
 
 	public JobServerFilter(SystemEnvironment sysEnv, Vector v)
 	{
 		super();
 		jobsrvrList = v;
+		env = sysEnv;
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
@@ -55,15 +55,44 @@ public class JobServerFilter extends Filter
 		try {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
 			if(scopeIds == null) {
-				scopeIds = new HashSet();
-				for(int i = 0; i < jobsrvrList.size(); i++) {
-					Vector v = (Vector) jobsrvrList.get(i);
-					scopeIds.add(SDMSScopeTable.pathToId(sysEnv, v));
-				}
+				fillScopeIds(sysEnv);
 			}
 			if(scopeIds.contains(sme.getScopeId(sysEnv))) return true;
-		} catch (Exception e) { }
+		} catch (SDMSException e) {
+		}
 		return false;
+	}
+
+	private void fillScopeIds(SystemEnvironment sysEnv)
+	{
+		if(scopeIds == null) {
+			scopeIds = new HashSet();
+			for(int i = 0; i < jobsrvrList.size(); i++) {
+				Vector v = (Vector) jobsrvrList.get(i);
+				try {
+					scopeIds.add(SDMSScopeTable.pathToId(sysEnv, v));
+				} catch (SDMSException sdmse) {
+					if (sysEnv.tx.mode != SDMSTransaction.READONLY)
+						throw new RuntimeException();
+				}
+			}
+		}
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof JobServerFilter)) return false;
+		JobServerFilter f;
+		f = (JobServerFilter) o;
+		if (scopeIds == null)	fillScopeIds(env);
+		if (f.scopeIds == null)	f.fillScopeIds(env);
+		if (scopeIds.size() != f.scopeIds.size()) return false;
+		Iterator i = scopeIds.iterator();
+		while (i.hasNext())
+			if (!f.scopeIds.contains(i.next())) return false;
+
+		return true;
 	}
 }
 
