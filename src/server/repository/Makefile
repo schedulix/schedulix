@@ -23,6 +23,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 CLASSES = SDMSChangeListElement.class SDMSObject.class SDMSTable.class \
+	  SDMSIndexBucket.class SDMSIndexMap.class \
 	  SDMSVersions.class SDMSTransaction.class SDMSLock.class \
 	  SDMSRepository.class SDMSIndex.class SDMSProxy.class \
 	  SDMSKey.class SDMSROTxList.class SDMSVersionList.class SDMSPurgeSet.class \
