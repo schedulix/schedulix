@@ -334,11 +334,10 @@ public class SDMSUserProxyGeneric extends SDMSProxy
 				else {
 				}
 			} else p = checkPrivs;
-		} catch(Throwable t) {
+		} finally {
 			if (env.cEnv.isJob()) {
 				env.cEnv.popGid(env);
 			}
-			throw t;
 		}
 		return p;
 	}

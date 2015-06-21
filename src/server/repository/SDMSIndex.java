@@ -34,6 +34,7 @@ import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
 import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.locking.*;
 
 public class SDMSIndex
 {
@@ -46,14 +47,15 @@ public class SDMSIndex
 
 	public static final int IDUNIQUE = 3;
 
-	protected static SDMSLock shared = new SDMSLock(SDMSLock.S);
-	protected static SDMSLock exclusive = new SDMSLock(SDMSLock.X);
-
-	private HashMap hashMap;
+	private SDMSIndexMap hashMap;
 	private int type;
 	private boolean isVersioned;
 
-	public SDMSIndex (SystemEnvironment env, int t, boolean versioned) throws SDMSException
+	public SDMSTable table;
+	public String indexName;
+
+	public SDMSIndex (SystemEnvironment env, int t, boolean versioned, SDMSTable table, String indexName)
+		throws SDMSException
 	{
 		if(t != ORDINARY &&
 		   t != UNIQUE   &&
@@ -62,89 +64,192 @@ public class SDMSIndex
 						"03110181526", "Invalid Indextype $1", new Integer(t)));
 
 		}
-		hashMap = new HashMap();
+		this.table = table;
+		this.indexName = indexName;
+		hashMap = new SDMSIndexMap(this);
 		type = t;
 		isVersioned = versioned;
 	}
 
-	public synchronized void put (SystemEnvironment env, Object key, SDMSObject o)
+	public void put (SystemEnvironment env, Object key, SDMSObject o)
 		throws SDMSException
 	{
-		lockExclusive(env, key);
+		put (env, key, o, true);
+	}
 
-		HashSet v = (HashSet) hashMap.get(key);
-		if(v == null) {
-			v = new HashSet();
-			v.add(o);
-			hashMap.put(key, v);
+	public void put (SystemEnvironment env, Object key, SDMSObject o, boolean doLockBucket)
+		throws SDMSException
+	{
+		SDMSIndexBucket v = null;
+
+		ObjectLock bucketLock = null;
+		synchronized(hashMap) {
+			v = (SDMSIndexBucket) hashMap.get(key);
+			if(v == null) {
+				v = new SDMSIndexBucket(this, key);
+				v.modCnt ++;
+				hashMap.put(key, v);
+			} else
+				v.modCnt ++;
+		}
+
+		if (env.maxWriter > 1) {
+			if (!doLockBucket) {
+
+				SDMSThread t = (SDMSThread)Thread.currentThread();
+				SDMSThread lt = t;
+				if (t.lockThread != null) lt = t.lockThread;
+				bucketLock = LockingSystemSynchronized.getLockForThread(lt, v);
+			}
+			try {
+				LockingSystem.lock(v, ObjectLock.EXCLUSIVE);
+			} catch (Exception e) {
+				v.modCnt --;
+				throw e;
+			}
+		}
+
+		boolean newBucket = false;
+		synchronized (v) {
+			if (v.size() == 0) {
+				v.add(o);
+				v.modCnt --;
+				newBucket = true;
+			}
+		}
+		if (newBucket) {
+			if (env.maxWriter > 1 && !doLockBucket && bucketLock == null)
+				LockingSystem.release(v);
 			return;
 		}
 
 		if((type&UNIQUE) > 0) {
 
 			SDMSObject old;
-			Iterator i = v.iterator();
-			while(i.hasNext()) {
-				old = (SDMSObject) i.next();
+			synchronized(v) {
+				Iterator i = v.iterator();
+				while(i.hasNext()) {
+					old = (SDMSObject) i.next();
 
-				if(!old.id.equals(o.id) && o.validFrom == -1 && o.validTo == -1 &&
-				   ((old.validTo == Long.MAX_VALUE && old.versions.tx == null) ||
-				    (old.validTo == -1 && old == old.versions.o_v.getLast())
-				   )
-				  ) {
-					throw new DuplicateKeyException(new SDMSMessage(env, "03110181528",
-						"Duplicate Key $1: Second object exists", key));
+					if(!old.id.equals(o.id) && o.validFrom == -1 && o.validTo == -1 &&
+					    ((old.validTo == Long.MAX_VALUE && old.versions.tx == null) ||
+					     (old.validTo == -1 && old == old.versions.o_v.getLast())
+					    )
+					  ) {
+
+						v.modCnt --;
+						throw new DuplicateKeyException(new SDMSMessage(env, "03110181528",
+						                                "Duplicate Key $1: Second object exists", key));
+					}
+
+					if (o.validFrom < old.validTo && old.validFrom < o.validTo) {
+						Object[] p = new Object[7];
+						p[0] = key;
+						p[1] = old.id;
+						p[2] = new Long(old.validFrom);
+						p[3] = new Long(old.validTo);
+						p[4] = o.id;
+						p[5] = new Long(o.validFrom);
+						p[6] = new Long(o.validTo);
+						v.modCnt --;
+						throw new FatalException(new SDMSMessage(env, "03110181529",
+						                         "Duplicate Key $1: Overlapping versionrange with same id: o[$2:$3,$4], old[$5:$6,$7]", p));
+					}
 				}
+			}
+		}
+		synchronized(v) {
+			v.add(o);
+			v.modCnt --;
+		}
+		if (env.maxWriter > 1 && !doLockBucket && bucketLock == null)
+			LockingSystem.release(v);
+	}
 
-				if (o.validFrom < old.validTo && old.validFrom < o.validTo) {
-					Object[] p = new Object[7];
-					p[0] = key;
-					p[1] = old.id;
-					p[2] = new Long(old.validFrom);
-					p[3] = new Long(old.validTo);
-					p[4] = o.id;
-					p[5] = new Long(o.validFrom);
-					p[6] = new Long(o.validTo);
-					throw new FatalException(new SDMSMessage(env, "03110181529",
-						"Duplicate Key $1: Overlapping versionrange with same id: o[$2:$3,$4], old[$5:$6,$7]", p));
+	public boolean remove(SystemEnvironment env, Object key, SDMSObject o)
+		throws SDMSException
+	{
+		boolean rc = false;
+		synchronized(hashMap) {
+			SDMSIndexBucket v = (SDMSIndexBucket) hashMap.get(key);
+			if(v == null) return false;
+
+			synchronized(v) {
+				rc = v.remove(o);
+				if(v.size() == 0 && v.modCnt == 0) {
+					hashMap.remove(key);
 				}
 			}
 		}
 
-		synchronized(v) {
-			v.add(o);
-
-		}
+		return rc;
 	}
 
-	public synchronized boolean remove(SystemEnvironment env, Object key, SDMSObject o)
+	public boolean check(Object key, SDMSObject o)
 	{
-
-		HashSet v = (HashSet) hashMap.get(key);
+		SDMSIndexBucket v = (SDMSIndexBucket) hashMap.get(key);
 		if(v == null) return false;
 
 		boolean rc;
 		synchronized(v) {
-			rc = v.remove(o);
+			return v.contains(o);
 		}
-		if(v.size() == 0) {
-			hashMap.remove(key);
-		}
-		return rc;
 	}
 
-	public synchronized boolean containsKey(SystemEnvironment env, Object key)
+	private SDMSIndexBucket getOrCreateBucket(SystemEnvironment env, Object key)
+		throws SerializationException
 	{
-		HashSet v = (HashSet) hashMap.get(key);
-		if(v == null) return false;
+		SDMSIndexBucket v;
+		synchronized(hashMap) {
+			v = (SDMSIndexBucket) hashMap.get(key);
+			if (env.maxWriter > 1 && env.tx.mode == SDMSTransaction.READWRITE) {
+				if(v == null) {
+					v = new SDMSIndexBucket(this, key);
+					hashMap.put(key, v);
+				}
+			}
+		}
+		if (v != null)
+			LockingSystem.lock(v, ObjectLock.SHARED);
+		return v;
+	}
+
+	public boolean containsKey(SystemEnvironment env, Object key)
+		throws SerializationException, SDMSException
+	{
+		SDMSIndexBucket v;
+
+		v = getOrCreateBucket(env, key);
+		if (v == null || v.size() == 0) return false;
 
 		if(env.tx.mode == SDMSTransaction.READWRITE) {
-			lockShared(env, key);
-			Iterator i = v.iterator();
+
 			SDMSObject o;
-			while (i.hasNext()) {
-				o = (SDMSObject) i.next();
-				if(o.isCurrent) {
+			Object va[];
+			synchronized(v) {
+				va = v.toArray();
+			}
+			for (int i = 0; i < va.length; ++i) {
+				o = (SDMSObject) va[i];
+				if (o.validTo == -1 || o.validTo == Long.MAX_VALUE) {
+					if (env.maxWriter > 1) {
+						LockingSystem.lock(o.versions, ObjectLock.SHARED);
+
+						if (! o.isCurrent) {
+
+							if (o.versions.tx == env.tx)
+								continue;
+
+							o = o.versions.getRaw(env, Long.MAX_VALUE);
+							if (o == null || !v.contains(o)) {
+								LockingSystem.release(o.versions);
+								continue;
+							}
+						}
+					} else {
+						if (!o.isCurrent)
+							continue;
+					}
 					return true;
 				}
 			}
@@ -154,43 +259,24 @@ public class SDMSIndex
 		}
 	}
 
-	public synchronized boolean containsKey(SystemEnvironment env, Object key, long version)
+	public boolean containsKey(SystemEnvironment env, Object key, long version)
 	{
-		if(!isVersioned) {
-			lockShared(env, key);
+		SDMSIndexBucket v;
+		synchronized(hashMap) {
+			v = (SDMSIndexBucket) hashMap.get(key);
 		}
-
-		HashSet v = (HashSet) hashMap.get(key);
-		if(v == null) return false;
-
-		Iterator i = v.iterator();
-		SDMSObject o;
-		while (i.hasNext()) {
-			o = (SDMSObject) i.next();
-			if(o.validTo >= version && o.validFrom < version) {
-				return true;
+		if(v == null)
+			return false;
+		synchronized(v) {
+			Iterator i = v.iterator();
+			SDMSObject o;
+			while (i.hasNext()) {
+				o = (SDMSObject) i.next();
+				if(o.validFrom <= version && version < o.validTo)
+					return true;
 			}
 		}
-
 		return false;
-	}
-
-	public synchronized Vector keySet(SystemEnvironment env)
-	{
-		if(env.tx.mode == SDMSTransaction.READWRITE) {
-			lockSharedIdx(env);
-		}
-
-		Set s = hashMap.keySet();
-		Vector v = new Vector();
-		Iterator i = s.iterator();
-		Object tmp;
-
-		while(i.hasNext()) {
-			tmp = i.next();
-			if(containsKey(env, tmp)) v.add(tmp);
-		}
-		return v;
 	}
 
 	public Vector getVector(SystemEnvironment env, Object key)
@@ -218,27 +304,47 @@ public class SDMSIndex
 		int count = 0;
 
 		if(env.tx.mode == SDMSTransaction.READWRITE) {
-			lockShared(env, key);
 
 			Object va[];
-			HashSet v;
+			SDMSIndexBucket v;
 
-			synchronized(hashMap) {
-				v = (HashSet) hashMap.get(key);
-				if (v != null)
-					synchronized(v) {
-						va = v.toArray();
-					}
-				else
-					return r;
+			v = getOrCreateBucket(env, key);
+			if (v == null || v.size() == 0) return r;
+			synchronized(v) {
+				va = v.toArray();
 			}
-
 			SDMSProxy p = null;
 			SDMSObject o;
+			HashSet found = new HashSet();
 			for (int i = 0; i < va.length; ++i) {
 				o = (SDMSObject) va[i];
-				if(o.isCurrent) {
-					o.versions.lockShared(env);
+				boolean isCurrent = o.isCurrent;
+				long    validTo = o.validTo;
+				if (validTo == -1 || validTo == Long.MAX_VALUE) {
+					if (env.maxWriter > 1) {
+						LockingSystem.lock(o.versions, ObjectLock.SHARED);
+
+						if (! o.isCurrent) {
+
+							if (o.versions.tx == env.tx)
+								continue;
+
+							o = o.versions.getRaw(env, Long.MAX_VALUE);
+							if (o == null || !v.contains(o)) {
+								LockingSystem.release(o.versions);
+								continue;
+							}
+						}
+
+						if (!(isCurrent && validTo == Long.MAX_VALUE)) {
+							if (found.contains(o.versions))
+								continue;
+							found.add(o.versions);
+						}
+					} else {
+						if (! o.isCurrent)
+							continue;
+					}
 					if (p == null) {
 						p = o.toProxy();
 						p.current = true;
@@ -279,28 +385,24 @@ public class SDMSIndex
 	{
 		Vector r = new Vector();
 
-		if(!isVersioned) {
-			lockShared(env, key);
-		}
-
 		Object va[];
-		HashSet v;
-
+		SDMSIndexBucket v;
 		synchronized(hashMap) {
-			v = (HashSet) hashMap.get(key);
-			if (v != null)
-				synchronized(v) {
-					va = v.toArray();
-				}
-			else
-				return r;
+			v = (SDMSIndexBucket) hashMap.get(key);
+		}
+		if (v != null) {
+			synchronized(v) {
+				va = v.toArray();
+			}
+		} else {
+			return r;
 		}
 
 		SDMSObject o;
 		SDMSProxy p = null;
 		for (int i = 0; i < va.length; ++i) {
 			o = (SDMSObject) va[i];
-			if(o.validTo >= version && o.validFrom < version) {
+			if(o.validFrom <= version && version < o.validTo) {
 				if (p == null) {
 					p = o.toProxy();
 				} else
@@ -322,7 +424,7 @@ public class SDMSIndex
 		return v;
 	}
 
-	public synchronized SDMSProxy getUnique(SystemEnvironment env, Object key)
+	public SDMSProxy getUnique(SystemEnvironment env, Object key)
 		throws SDMSException
 	{
 		if((type&UNIQUE) == 0)
@@ -330,22 +432,38 @@ public class SDMSIndex
 				"Attempt to retrieve unique value from nonunique index"));
 
 		if(env.tx.mode == SDMSTransaction.READWRITE) {
-			lockShared(env, key);
+			SDMSIndexBucket v;
+
+			v = getOrCreateBucket(env, key);
+			if (v == null || v.size() == 0) throw new NotFoundException(new SDMSMessage(env, "03110181532", "$1 not found", key));
+
 			SDMSProxy p;
 			SDMSObject o;
-
-			HashSet v = (HashSet) hashMap.get(key);
-			if(v == null) {
-				throw new NotFoundException(new SDMSMessage(env, "03110181532", "$1 not found", key));
+			Object va[];
+			synchronized(v) {
+				va = v.toArray();
 			}
+			for (int i = 0; i < va.length; ++i) {
+				o = (SDMSObject) va[i];
+				if (o.validTo == -1 || o.validTo == Long.MAX_VALUE) {
+					if (env.maxWriter > 1) {
+						LockingSystem.lock(o.versions, ObjectLock.SHARED);
 
-			Iterator i = v.iterator();
+						if (! o.isCurrent) {
 
-			while (i.hasNext()) {
-				o = (SDMSObject) i.next();
-				if(o.isCurrent) {
+							if (o.versions.tx == env.tx)
+								continue;
 
-					o.versions.lockShared(env);
+							o = o.versions.getRaw(env, Long.MAX_VALUE);
+							if (o == null || !v.contains(o)) {
+								LockingSystem.release(o.versions);
+								continue;
+							}
+						}
+					} else {
+						if (!o.isCurrent)
+							continue;
+					}
 					p = o.toProxy();
 					p.current = true;
 					return p;
@@ -356,76 +474,65 @@ public class SDMSIndex
 		return getUnique(env, key, env.tx.versionId);
 	}
 
-	public synchronized SDMSProxy getUnique(SystemEnvironment env, Object key, long version)
+	public SDMSProxy getUnique(SystemEnvironment env, Object key, long version)
 		throws SDMSException
 	{
 		if((type&UNIQUE) == 0)
 			throw new FatalException(new SDMSMessage(env, "03110181531",
 				"Attempt to retrieve unique value from nonunique index"));
 
-		if(!isVersioned) {
-			lockShared(env, key);
+		SDMSIndexBucket v;
+		synchronized(hashMap) {
+			v = (SDMSIndexBucket) hashMap.get(key);
 		}
-
-		HashSet v = (HashSet) hashMap.get(key);
-		if(v == null) {
+		if (v == null) {
 			throw new NotFoundException(new SDMSMessage(env, "03201292040", "$1 not found", key));
 		}
 
-		Iterator i = v.iterator();
-		SDMSObject o;
-		while (i.hasNext()) {
-			o = (SDMSObject) i.next();
-			if(o.validTo >= version && o.validFrom < version) {
-				return o.toProxy();
+		synchronized(v) {
+			Iterator i = v.iterator();
+			SDMSObject o;
+			while (i.hasNext()) {
+				o = (SDMSObject) i.next();
+				if(o.validFrom <= version && version < o.validTo)
+					return o.toProxy();
 			}
 		}
 		throw new NotFoundException(new SDMSMessage(env, "03201292041", "$1 not found", key));
 	}
 
-	protected synchronized void lockShared(SystemEnvironment env, Object key)
+	public void dumpIndex(SystemEnvironment env)
 	{
-		lock(env, key, shared);
-	}
-
-	protected synchronized void lockSharedIdx(SystemEnvironment env)
-	{
-		lock(env, null, shared);
-	}
-
-	protected synchronized void lockExclusive(SystemEnvironment env, Object key)
-	{
-		lock(env, key, exclusive);
-	}
-
-	private synchronized void lock(SystemEnvironment env, Object key, SDMSLock m)
-	{
-
-	}
-
-	public synchronized void dumpIndex(SystemEnvironment env)
-	{
-		Set keys = hashMap.keySet();
+		Set keys;
+		synchronized(hashMap) {
+			keys = hashMap.keySet();
+		}
 		String[] s;
 		SDMSObject o;
 		int k;
 		Iterator i,j;
 		String msg = "";
-
-		i = keys.iterator();
-		s = new String[keys.size()];
-		k = 0;
-		while(i.hasNext()) {
-			Object key = i.next();
-			HashSet v = (HashSet) hashMap.get(key);
-			s[k] = key.toString() + ": ";
-			msg = msg + "$" + (k+1) + "\n";
-			j = v.iterator();
-			while(j.hasNext()) {
-				o = (SDMSObject) j.next();
-				s[k] = s[k] + o.id.toString() + "[" + o.validFrom + "," + o.validTo + "] ";
+		synchronized(keys) {
+			i = keys.iterator();
+			s = new String[keys.size()];
+			k = 0;
+			while(i.hasNext()) {
+				Object key = i.next();
+				SDMSIndexBucket v;
+				synchronized(hashMap) {
+					v = (SDMSIndexBucket) hashMap.get(key);
+				}
+				s[k] = key.toString() + ": ";
+				msg = msg + "$" + (k+1) + "\n";
+				synchronized(v) {
+					j = v.iterator();
+					while(j.hasNext()) {
+						o = (SDMSObject) j.next();
+						s[k] = s[k] + o.id.toString() + "[" + o.validFrom + "," + o.validTo + "] ";
+					}
+				}
+				k++;
 			}
-			k++;
 		}
 		SDMSThread.doTrace(env.cEnv, "----------- Index Dump ------------", s, SDMSThread.SEVERITY_DEBUG);
 	}

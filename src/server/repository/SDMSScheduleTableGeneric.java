@@ -74,11 +74,11 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 		table = (SDMSScheduleTable) this;
 		SDMSScheduleTableGeneric.table = (SDMSScheduleTable) this;
 		isVersioned = false;
-		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_intId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentId_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "ownerId");
+		idx_intId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "intId");
+		idx_parentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "parentId");
+		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seId");
+		idx_parentId_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "parentId_name");
 	}
 	public SDMSSchedule create(SystemEnvironment env
 	                           ,String p_name
@@ -252,18 +252,9 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -290,18 +281,46 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_ownerId.put(env, ((SDMSScheduleGeneric) o).ownerId, o);
-		idx_intId.put(env, ((SDMSScheduleGeneric) o).intId, o);
-		idx_parentId.put(env, ((SDMSScheduleGeneric) o).parentId, o);
-		idx_seId.put(env, ((SDMSScheduleGeneric) o).seId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_ownerId.check(((SDMSScheduleGeneric) o).ownerId, o);
+		out = out + "idx_ownerId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_intId.check(((SDMSScheduleGeneric) o).intId, o);
+		out = out + "idx_intId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_parentId.check(((SDMSScheduleGeneric) o).parentId, o);
+		out = out + "idx_parentId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_seId.check(((SDMSScheduleGeneric) o).seId, o);
+		out = out + "idx_seId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSScheduleGeneric) o).parentId);
 		k.add(((SDMSScheduleGeneric) o).name);
-		idx_parentId_name.put(env, k, o);
+		ok =  idx_parentId_name.check(k, o);
+		out = out + "idx_parentId_name: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_ownerId.put(env, ((SDMSScheduleGeneric) o).ownerId, o, ((1 & indexMember) != 0));
+		idx_intId.put(env, ((SDMSScheduleGeneric) o).intId, o, ((2 & indexMember) != 0));
+		idx_parentId.put(env, ((SDMSScheduleGeneric) o).parentId, o, ((4 & indexMember) != 0));
+		idx_seId.put(env, ((SDMSScheduleGeneric) o).seId, o, ((8 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSScheduleGeneric) o).parentId);
+		k.add(((SDMSScheduleGeneric) o).name);
+		idx_parentId_name.put(env, k, o, ((16 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

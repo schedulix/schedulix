@@ -241,11 +241,10 @@ public class SDMSNiceProfileProxyGeneric extends SDMSProxy
 					p = p | SDMSPrivilege.VIEW & checkPrivs;
 				}
 			} else p = checkPrivs;
-		} catch(Throwable t) {
+		} finally {
 			if (env.cEnv.isJob()) {
 				env.cEnv.popGid(env);
 			}
-			throw t;
 		}
 		return p;
 	}

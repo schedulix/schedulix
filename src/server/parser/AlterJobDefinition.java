@@ -416,6 +416,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 				WithItem pt = (WithItem) pv.get(0);
 				String pdef = (String) pv.get(1);
 				Boolean isLocal = (Boolean) pv.get(2);
+				String exportName = (String) pv.get(3);
 				Integer type = (pt == null ? new Integer(SDMSParameterDefinition.PARAMETER) : (Integer) pt.key);
 				Integer aggFunction = new Integer(SDMSParameterDefinition.NONE);
 				Long linkPdId = null;
@@ -475,12 +476,13 @@ public class AlterJobDefinition extends ManipJobDefinition
 						pd.setDefaultValue(sysEnv, pdef);
 						pd.setIsLocal(sysEnv, isLocal);
 						pd.setLinkPdId(sysEnv, linkPdId);
+						pd.setExportName(sysEnv, exportName);
 						break;
 					}
 				}
 				if(idx >= act_parms.size()) {
 
-					SDMSParameterDefinitionTable.table.create(sysEnv, seId, pn, type, aggFunction, pdef, isLocal, linkPdId);
+					SDMSParameterDefinitionTable.table.create(sysEnv, seId, pn, type, aggFunction, pdef, isLocal, linkPdId, exportName);
 				}
 			}
 		}

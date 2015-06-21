@@ -61,9 +61,9 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSResourceStateMappingGeneric(
 	        SystemEnvironment env,
@@ -95,10 +95,10 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 		return (rsmpId);
 	}
 
-	public	SDMSResourceStateMappingGeneric setRsmpId (SystemEnvironment env, Long p_rsmpId)
+	public	void setRsmpId (SystemEnvironment env, Long p_rsmpId)
 	throws SDMSException
 	{
-		if(rsmpId.equals(p_rsmpId)) return this;
+		if(rsmpId.equals(p_rsmpId)) return;
 		SDMSResourceStateMappingGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -111,13 +111,13 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 			o.rsmpId = p_rsmpId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 17);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getEsdId (SystemEnvironment env)
@@ -126,10 +126,10 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 		return (esdId);
 	}
 
-	public	SDMSResourceStateMappingGeneric setEsdId (SystemEnvironment env, Long p_esdId)
+	public	void setEsdId (SystemEnvironment env, Long p_esdId)
 	throws SDMSException
 	{
-		if(esdId.equals(p_esdId)) return this;
+		if(esdId.equals(p_esdId)) return;
 		SDMSResourceStateMappingGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -142,13 +142,13 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 			o.esdId = p_esdId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 18);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getFromRsdId (SystemEnvironment env)
@@ -157,11 +157,11 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 		return (fromRsdId);
 	}
 
-	public	SDMSResourceStateMappingGeneric setFromRsdId (SystemEnvironment env, Long p_fromRsdId)
+	public	void setFromRsdId (SystemEnvironment env, Long p_fromRsdId)
 	throws SDMSException
 	{
-		if(p_fromRsdId != null && p_fromRsdId.equals(fromRsdId)) return this;
-		if(p_fromRsdId == null && fromRsdId == null) return this;
+		if(p_fromRsdId != null && p_fromRsdId.equals(fromRsdId)) return;
+		if(p_fromRsdId == null && fromRsdId == null) return;
 		SDMSResourceStateMappingGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -174,13 +174,13 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 			o.fromRsdId = p_fromRsdId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 20);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getToRsdId (SystemEnvironment env)
@@ -189,10 +189,10 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 		return (toRsdId);
 	}
 
-	public	SDMSResourceStateMappingGeneric setToRsdId (SystemEnvironment env, Long p_toRsdId)
+	public	void setToRsdId (SystemEnvironment env, Long p_toRsdId)
 	throws SDMSException
 	{
-		if(toRsdId.equals(p_toRsdId)) return this;
+		if(toRsdId.equals(p_toRsdId)) return;
 		SDMSResourceStateMappingGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -205,13 +205,13 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 			o.toRsdId = p_toRsdId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -220,29 +220,22 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSResourceStateMappingGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSResourceStateMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ResourceStateMapping) Change of system object not allowed")
-				);
-			}
-			o = (SDMSResourceStateMappingGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSResourceStateMappingGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ResourceStateMapping) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSResourceStateMappingGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -251,29 +244,22 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSResourceStateMappingGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSResourceStateMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ResourceStateMapping) Change of system object not allowed")
-				);
-			}
-			o = (SDMSResourceStateMappingGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSResourceStateMappingGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ResourceStateMapping) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSResourceStateMappingGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -282,22 +268,15 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSResourceStateMappingGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSResourceStateMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSResourceStateMappingGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSResourceStateMappingGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSResourceStateMappingGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -306,23 +285,16 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSResourceStateMappingGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSResourceStateMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSResourceStateMappingGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSResourceStateMappingGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSResourceStateMappingGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSResourceStateMappingGeneric set_RsmpIdEsdIdFromRsdId (SystemEnvironment env, Long p_rsmpId, Long p_esdId, Long p_fromRsdId)
@@ -390,19 +362,11 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO RESOURCE_STATE_MAPPING (" +
 				        "ID" +
@@ -426,33 +390,34 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?, ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ResourceStateMapping: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, rsmpId.longValue());
-			pInsert.setLong (3, esdId.longValue());
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, rsmpId.longValue());
+			myInsert.setLong (3, esdId.longValue());
 			if (fromRsdId == null)
-				pInsert.setNull(4, Types.INTEGER);
+				myInsert.setNull(4, Types.INTEGER);
 			else
-				pInsert.setLong (4, fromRsdId.longValue());
-			pInsert.setLong (5, toRsdId.longValue());
-			pInsert.setLong (6, creatorUId.longValue());
-			pInsert.setLong (7, createTs.longValue());
-			pInsert.setLong (8, changerUId.longValue());
-			pInsert.setLong (9, changeTs.longValue());
-			pInsert.setLong(10, env.tx.versionId);
-			pInsert.setLong(11, Long.MAX_VALUE);
-			pInsert.executeUpdate();
+				myInsert.setLong (4, fromRsdId.longValue());
+			myInsert.setLong (5, toRsdId.longValue());
+			myInsert.setLong (6, creatorUId.longValue());
+			myInsert.setLong (7, createTs.longValue());
+			myInsert.setLong (8, changerUId.longValue());
+			myInsert.setLong (9, changeTs.longValue());
+			myInsert.setLong(10, env.tx.versionId);
+			myInsert.setLong(11, Long.MAX_VALUE);
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "ResourceStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ResourceStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -473,7 +438,8 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
@@ -486,22 +452,23 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 				        "  AND VALID_TO = " + (postgres ?
 				                               "CAST (\'" +  Long.MAX_VALUE + "\' AS DECIMAL)" :
 				                               "" + Long.MAX_VALUE);
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				// Can't prepare statement
 				throw new FatalException(new SDMSMessage(env, "01110181955", "ResourceStateMapping : $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong(1, env.tx.versionId);
-			pUpdate.setLong(2, changeTs.longValue());
-			pUpdate.setLong(3, changerUId.longValue());
-			pUpdate.setLong(4, id.longValue());
-			pUpdate.executeUpdate();
+			myUpdate.clearParameters();
+			myUpdate.setLong(1, env.tx.versionId);
+			myUpdate.setLong(2, changeTs.longValue());
+			myUpdate.setLong(3, changerUId.longValue());
+			myUpdate.setLong(4, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181956", "ResourceStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ResourceStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

@@ -54,6 +54,7 @@ public class ShowGroup extends ShowCommented
 	private final static String FPR = "footprint";
 	private final static String ENV = "environment";
 	private final static String SYS = "system";
+	private final static String NP  = "nice profile";
 	private final static String SEL = "select";
 
 	private ObjectURL url;
@@ -245,6 +246,11 @@ public class ShowGroup extends ShowCommented
 			}
 			if ((SDMSPrivilege.MANAGE_SYS & pr) ==  SDMSPrivilege.MANAGE_SYS) {
 				v.add(SYS);
+				dc.addData(sysEnv, v);
+				v = new Vector();
+			}
+			if ((SDMSPrivilege.MANAGE_NP & pr) ==  SDMSPrivilege.MANAGE_NP) {
+				v.add(NP);
 				dc.addData(sysEnv, v);
 				v = new Vector();
 			}

@@ -67,9 +67,9 @@ public class SDMSEventTableGeneric extends SDMSTable
 		table = (SDMSEventTable) this;
 		SDMSEventTableGeneric.table = (SDMSEventTable) this;
 		isVersioned = false;
-		idx_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
-		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "name");
+		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "ownerId");
+		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seId");
 	}
 	public SDMSEvent create(SystemEnvironment env
 	                        ,String p_name
@@ -198,18 +198,9 @@ public class SDMSEventTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -231,12 +222,32 @@ public class SDMSEventTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
+	public String checkIndex(SDMSObject o)
+	throws SDMSException
+	{
+		String out = "";
+		boolean ok;
+		ok =  idx_name.check(((SDMSEventGeneric) o).name, o);
+		out = out + "idx_name: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_ownerId.check(((SDMSEventGeneric) o).ownerId, o);
+		out = out + "idx_ownerId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_seId.check(((SDMSEventGeneric) o).seId, o);
+		out = out + "idx_seId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
 	protected void index(SystemEnvironment env, SDMSObject o)
 	throws SDMSException
 	{
-		idx_name.put(env, ((SDMSEventGeneric) o).name, o);
-		idx_ownerId.put(env, ((SDMSEventGeneric) o).ownerId, o);
-		idx_seId.put(env, ((SDMSEventGeneric) o).seId, o);
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_name.put(env, ((SDMSEventGeneric) o).name, o, ((1 & indexMember) != 0));
+		idx_ownerId.put(env, ((SDMSEventGeneric) o).ownerId, o, ((2 & indexMember) != 0));
+		idx_seId.put(env, ((SDMSEventGeneric) o).seId, o, ((4 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

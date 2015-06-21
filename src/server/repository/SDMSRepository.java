@@ -85,16 +85,8 @@ public class SDMSRepository
 		try {
 			final String driverName = env.dbConnection.getMetaData().getDriverName();
 			final boolean postgres = driverName.startsWith("PostgreSQL");
-			String squote = "";
-			String equote = "";
-			if (driverName.startsWith("MySQL")) {
-				squote = "`";
-				equote = "`";
-			}
-			if (driverName.startsWith("Microsoft")) {
-				squote = "[";
-				equote = "]";
-			}
+			String squote = SystemEnvironment.SQUOTE;
+			String equote = SystemEnvironment.EQUOTE;
 
 			Statement cleanup = env.dbConnection.createStatement();
 			cleanup.executeUpdate("DELETE FROM SME2LOAD");
@@ -186,6 +178,12 @@ public class SDMSRepository
 		return d.getTime() - SystemEnvironment.preserveTime;
 	}
 
+	public SDMSTable getTableByName(String tableName)
+	throws SDMSException
+	{
+		return (SDMSTable)tables.get(tableName);
+	}
+
 	private void initMap(SystemEnvironment env)  throws SDMSException
 	{
 		tables = new HashMap();
@@ -270,6 +268,11 @@ public class SDMSRepository
 
 	private void loadTables(SystemEnvironment env) throws SDMSException
 	{
+		// save number of rw threads
+		int saveMaxWriter = env.maxWriter;
+		// set to 1 during load Tables because we do not need locking while loading
+		env.maxWriter = 1;
+
 		// Initialize Iterator
 		tableIterator = tables.values().iterator();
 
@@ -293,6 +296,7 @@ public class SDMSRepository
 			}
 			tl[i] = null;	// explicitly discard Thread
 		}
+		env.maxWriter = saveMaxWriter; // restore number of rw threads
 		if(loaderException != null) throw loaderException;
 	}
 

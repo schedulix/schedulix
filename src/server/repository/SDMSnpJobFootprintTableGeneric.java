@@ -66,7 +66,7 @@ public class SDMSnpJobFootprintTableGeneric extends SDMSTable
 		table = (SDMSnpJobFootprintTable) this;
 		SDMSnpJobFootprintTableGeneric.table = (SDMSnpJobFootprintTable) this;
 		isVersioned = false;
-		idx_smeId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_smeId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "smeId");
 	}
 	public SDMSnpJobFootprint create(SystemEnvironment env
 	                                 ,Long p_smeId
@@ -162,10 +162,26 @@ public class SDMSnpJobFootprintTableGeneric extends SDMSTable
 
 	}
 
+	public String checkIndex(SDMSObject o)
+	throws SDMSException
+	{
+		String out = "";
+		boolean ok;
+		ok =  idx_smeId.check(((SDMSnpJobFootprintGeneric) o).smeId, o);
+		out = out + "idx_smeId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
 	protected void index(SystemEnvironment env, SDMSObject o)
 	throws SDMSException
 	{
-		idx_smeId.put(env, ((SDMSnpJobFootprintGeneric) o).smeId, o);
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_smeId.put(env, ((SDMSnpJobFootprintGeneric) o).smeId, o, ((1 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

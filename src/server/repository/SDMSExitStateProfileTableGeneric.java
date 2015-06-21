@@ -66,8 +66,8 @@ public class SDMSExitStateProfileTableGeneric extends SDMSTable
 		table = (SDMSExitStateProfileTable) this;
 		SDMSExitStateProfileTableGeneric.table = (SDMSExitStateProfileTable) this;
 		isVersioned = true;
-		idx_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
-		idx_defaultEsmpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "name");
+		idx_defaultEsmpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "defaultEsmpId");
 	}
 	public SDMSExitStateProfile create(SystemEnvironment env
 	                                   ,String p_name
@@ -199,18 +199,9 @@ public class SDMSExitStateProfileTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -236,11 +227,29 @@ public class SDMSExitStateProfileTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
+	public String checkIndex(SDMSObject o)
+	throws SDMSException
+	{
+		String out = "";
+		boolean ok;
+		ok =  idx_name.check(((SDMSExitStateProfileGeneric) o).name, o);
+		out = out + "idx_name: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_defaultEsmpId.check(((SDMSExitStateProfileGeneric) o).defaultEsmpId, o);
+		out = out + "idx_defaultEsmpId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
 	protected void index(SystemEnvironment env, SDMSObject o)
 	throws SDMSException
 	{
-		idx_name.put(env, ((SDMSExitStateProfileGeneric) o).name, o);
-		idx_defaultEsmpId.put(env, ((SDMSExitStateProfileGeneric) o).defaultEsmpId, o);
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_name.put(env, ((SDMSExitStateProfileGeneric) o).name, o, ((1 & indexMember) != 0));
+		idx_defaultEsmpId.put(env, ((SDMSExitStateProfileGeneric) o).defaultEsmpId, o, ((2 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

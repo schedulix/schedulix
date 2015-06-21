@@ -645,6 +645,7 @@ public abstract class ManipJobDefinition extends Node
 			WithItem pt = (WithItem) pv.get(0);
 			String pdef = (String) pv.get(1);
 			Boolean isLocal = (Boolean) pv.get(2);
+			String exportName = (String) pv.get(3);
 			Integer type = (pt == null ? new Integer(SDMSParameterDefinition.PARAMETER) : (Integer) pt.key);
 			Integer aggFunction = new Integer(SDMSParameterDefinition.NONE);
 			Long linkPdId = null;
@@ -692,7 +693,7 @@ public abstract class ManipJobDefinition extends Node
 			}
 			if(isAdd) {
 				try {
-					SDMSParameterDefinitionTable.table.create(sysEnv, se.getId(sysEnv), pn, type, aggFunction, pdef, isLocal, linkPdId);
+					SDMSParameterDefinitionTable.table.create(sysEnv, se.getId(sysEnv), pn, type, aggFunction, pdef, isLocal, linkPdId, exportName);
 				} catch(DuplicateKeyException dke) {
 					if(processError) {
 						SDMSParameterDefinition pd =
@@ -702,6 +703,7 @@ public abstract class ManipJobDefinition extends Node
 						pd.setDefaultValue(sysEnv, pdef);
 						pd.setIsLocal(sysEnv, isLocal);
 						pd.setLinkPdId(sysEnv, linkPdId);
+						pd.setExportName(sysEnv, exportName);
 					} else {
 						throw dke;
 					}
@@ -716,6 +718,7 @@ public abstract class ManipJobDefinition extends Node
 					pd.setDefaultValue(sysEnv, pdef);
 					pd.setIsLocal(sysEnv, isLocal);
 					pd.setLinkPdId(sysEnv, linkPdId);
+					pd.setExportName(sysEnv, exportName);
 				} catch (NotFoundException nfe) {
 					if(processError) return;
 					throw nfe;

@@ -61,9 +61,9 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSExitStateMappingGeneric(
 	        SystemEnvironment env,
@@ -95,10 +95,10 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 		return (esmpId);
 	}
 
-	public	SDMSExitStateMappingGeneric setEsmpId (SystemEnvironment env, Long p_esmpId)
+	public	void setEsmpId (SystemEnvironment env, Long p_esmpId)
 	throws SDMSException
 	{
-		if(esmpId.equals(p_esmpId)) return this;
+		if(esmpId.equals(p_esmpId)) return;
 		SDMSExitStateMappingGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -111,13 +111,13 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			o.esmpId = p_esmpId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 5);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getEsdId (SystemEnvironment env)
@@ -126,10 +126,10 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 		return (esdId);
 	}
 
-	public	SDMSExitStateMappingGeneric setEsdId (SystemEnvironment env, Long p_esdId)
+	public	void setEsdId (SystemEnvironment env, Long p_esdId)
 	throws SDMSException
 	{
-		if(esdId.equals(p_esdId)) return this;
+		if(esdId.equals(p_esdId)) return;
 		SDMSExitStateMappingGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -142,13 +142,13 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			o.esdId = p_esdId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 6);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getEcrStart (SystemEnvironment env)
@@ -157,30 +157,23 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 		return (ecrStart);
 	}
 
-	public	SDMSExitStateMappingGeneric setEcrStart (SystemEnvironment env, Integer p_ecrStart)
+	public	void setEcrStart (SystemEnvironment env, Integer p_ecrStart)
 	throws SDMSException
 	{
-		if(p_ecrStart != null && p_ecrStart.equals(ecrStart)) return this;
-		if(p_ecrStart == null && ecrStart == null) return this;
-		SDMSExitStateMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
-				);
-			}
-			o = (SDMSExitStateMappingGeneric) change(env);
-			o.ecrStart = p_ecrStart;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_ecrStart != null && p_ecrStart.equals(ecrStart)) return;
+		if(p_ecrStart == null && ecrStart == null) return;
+		SDMSExitStateMappingGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSExitStateMappingGeneric) change(env);
+		o.ecrStart = p_ecrStart;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getEcrEnd (SystemEnvironment env)
@@ -189,30 +182,23 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 		return (ecrEnd);
 	}
 
-	public	SDMSExitStateMappingGeneric setEcrEnd (SystemEnvironment env, Integer p_ecrEnd)
+	public	void setEcrEnd (SystemEnvironment env, Integer p_ecrEnd)
 	throws SDMSException
 	{
-		if(p_ecrEnd != null && p_ecrEnd.equals(ecrEnd)) return this;
-		if(p_ecrEnd == null && ecrEnd == null) return this;
-		SDMSExitStateMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
-				);
-			}
-			o = (SDMSExitStateMappingGeneric) change(env);
-			o.ecrEnd = p_ecrEnd;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_ecrEnd != null && p_ecrEnd.equals(ecrEnd)) return;
+		if(p_ecrEnd == null && ecrEnd == null) return;
+		SDMSExitStateMappingGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSExitStateMappingGeneric) change(env);
+		o.ecrEnd = p_ecrEnd;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -221,29 +207,22 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSExitStateMappingGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSExitStateMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
-				);
-			}
-			o = (SDMSExitStateMappingGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSExitStateMappingGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSExitStateMappingGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -252,29 +231,22 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSExitStateMappingGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSExitStateMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
-				);
-			}
-			o = (SDMSExitStateMappingGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSExitStateMappingGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSExitStateMappingGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -283,22 +255,15 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSExitStateMappingGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSExitStateMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSExitStateMappingGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSExitStateMappingGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSExitStateMappingGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -307,23 +272,16 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSExitStateMappingGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSExitStateMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSExitStateMappingGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSExitStateMappingGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSExitStateMappingGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSExitStateMappingGeneric set_EsmpIdEsdId (SystemEnvironment env, Long p_esmpId, Long p_esdId)
@@ -390,19 +348,11 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO EXIT_STATE_MAPPING (" +
 				        "ID" +
@@ -426,36 +376,37 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?, ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ExitStateMapping: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, esmpId.longValue());
-			pInsert.setLong (3, esdId.longValue());
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, esmpId.longValue());
+			myInsert.setLong (3, esdId.longValue());
 			if (ecrStart == null)
-				pInsert.setNull(4, Types.INTEGER);
+				myInsert.setNull(4, Types.INTEGER);
 			else
-				pInsert.setInt(4, ecrStart.intValue());
+				myInsert.setInt(4, ecrStart.intValue());
 			if (ecrEnd == null)
-				pInsert.setNull(5, Types.INTEGER);
+				myInsert.setNull(5, Types.INTEGER);
 			else
-				pInsert.setInt(5, ecrEnd.intValue());
-			pInsert.setLong (6, creatorUId.longValue());
-			pInsert.setLong (7, createTs.longValue());
-			pInsert.setLong (8, changerUId.longValue());
-			pInsert.setLong (9, changeTs.longValue());
-			pInsert.setLong(10, env.tx.versionId);
-			pInsert.setLong(11, Long.MAX_VALUE);
-			pInsert.executeUpdate();
+				myInsert.setInt(5, ecrEnd.intValue());
+			myInsert.setLong (6, creatorUId.longValue());
+			myInsert.setLong (7, createTs.longValue());
+			myInsert.setLong (8, changerUId.longValue());
+			myInsert.setLong (9, changeTs.longValue());
+			myInsert.setLong(10, env.tx.versionId);
+			myInsert.setLong(11, Long.MAX_VALUE);
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "ExitStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ExitStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -476,7 +427,8 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
@@ -489,22 +441,23 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 				        "  AND VALID_TO = " + (postgres ?
 				                               "CAST (\'" +  Long.MAX_VALUE + "\' AS DECIMAL)" :
 				                               "" + Long.MAX_VALUE);
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				// Can't prepare statement
 				throw new FatalException(new SDMSMessage(env, "01110181955", "ExitStateMapping : $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong(1, env.tx.versionId);
-			pUpdate.setLong(2, changeTs.longValue());
-			pUpdate.setLong(3, changerUId.longValue());
-			pUpdate.setLong(4, id.longValue());
-			pUpdate.executeUpdate();
+			myUpdate.clearParameters();
+			myUpdate.setLong(1, env.tx.versionId);
+			myUpdate.setLong(2, changeTs.longValue());
+			myUpdate.setLong(3, changerUId.longValue());
+			myUpdate.setLong(4, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181956", "ExitStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ExitStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

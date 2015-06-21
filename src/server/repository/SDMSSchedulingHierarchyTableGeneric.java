@@ -77,11 +77,11 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		table = (SDMSSchedulingHierarchyTable) this;
 		SDMSSchedulingHierarchyTableGeneric.table = (SDMSSchedulingHierarchyTable) this;
 		isVersioned = true;
-		idx_seParentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_seChildId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_estpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentId_childId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
-		idx_parentId_aliasName = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_seParentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seParentId");
+		idx_seChildId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seChildId");
+		idx_estpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "estpId");
+		idx_parentId_childId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "parentId_childId");
+		idx_parentId_aliasName = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "parentId_aliasName");
 	}
 	public SDMSSchedulingHierarchy create(SystemEnvironment env
 	                                      ,Long p_seParentId
@@ -288,18 +288,9 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -333,21 +324,52 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_seParentId.put(env, ((SDMSSchedulingHierarchyGeneric) o).seParentId, o);
-		idx_seChildId.put(env, ((SDMSSchedulingHierarchyGeneric) o).seChildId, o);
-		idx_estpId.put(env, ((SDMSSchedulingHierarchyGeneric) o).estpId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_seParentId.check(((SDMSSchedulingHierarchyGeneric) o).seParentId, o);
+		out = out + "idx_seParentId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_seChildId.check(((SDMSSchedulingHierarchyGeneric) o).seChildId, o);
+		out = out + "idx_seChildId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_estpId.check(((SDMSSchedulingHierarchyGeneric) o).estpId, o);
+		out = out + "idx_estpId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSSchedulingHierarchyGeneric) o).seParentId);
 		k.add(((SDMSSchedulingHierarchyGeneric) o).seChildId);
-		idx_parentId_childId.put(env, k, o);
+		ok =  idx_parentId_childId.check(k, o);
+		out = out + "idx_parentId_childId: " + (ok ? "ok" : "missing") + "\n";
 		k = new SDMSKey();
 		k.add(((SDMSSchedulingHierarchyGeneric) o).seParentId);
 		k.add(((SDMSSchedulingHierarchyGeneric) o).aliasName);
-		idx_parentId_aliasName.put(env, k, o);
+		ok =  idx_parentId_aliasName.check(k, o);
+		out = out + "idx_parentId_aliasName: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_seParentId.put(env, ((SDMSSchedulingHierarchyGeneric) o).seParentId, o, ((1 & indexMember) != 0));
+		idx_seChildId.put(env, ((SDMSSchedulingHierarchyGeneric) o).seChildId, o, ((2 & indexMember) != 0));
+		idx_estpId.put(env, ((SDMSSchedulingHierarchyGeneric) o).estpId, o, ((4 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSSchedulingHierarchyGeneric) o).seParentId);
+		k.add(((SDMSSchedulingHierarchyGeneric) o).seChildId);
+		idx_parentId_childId.put(env, k, o, ((8 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSSchedulingHierarchyGeneric) o).seParentId);
+		k.add(((SDMSSchedulingHierarchyGeneric) o).aliasName);
+		idx_parentId_aliasName.put(env, k, o, ((16 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

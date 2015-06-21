@@ -59,9 +59,9 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSExitStateProfileGeneric(
 	        SystemEnvironment env,
@@ -97,10 +97,10 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 		return (name);
 	}
 
-	public	SDMSExitStateProfileGeneric setName (SystemEnvironment env, String p_name)
+	public	void setName (SystemEnvironment env, String p_name)
 	throws SDMSException
 	{
-		if(name.equals(p_name)) return this;
+		if(name.equals(p_name)) return;
 		SDMSExitStateProfileGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -119,13 +119,13 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 			o.name = p_name;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getDefaultEsmpId (SystemEnvironment env)
@@ -134,11 +134,11 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 		return (defaultEsmpId);
 	}
 
-	public	SDMSExitStateProfileGeneric setDefaultEsmpId (SystemEnvironment env, Long p_defaultEsmpId)
+	public	void setDefaultEsmpId (SystemEnvironment env, Long p_defaultEsmpId)
 	throws SDMSException
 	{
-		if(p_defaultEsmpId != null && p_defaultEsmpId.equals(defaultEsmpId)) return this;
-		if(p_defaultEsmpId == null && defaultEsmpId == null) return this;
+		if(p_defaultEsmpId != null && p_defaultEsmpId.equals(defaultEsmpId)) return;
+		if(p_defaultEsmpId == null && defaultEsmpId == null) return;
 		SDMSExitStateProfileGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -151,13 +151,13 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 			o.defaultEsmpId = p_defaultEsmpId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Boolean getIsValid (SystemEnvironment env)
@@ -166,29 +166,22 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 		return (isValid);
 	}
 
-	public	SDMSExitStateProfileGeneric setIsValid (SystemEnvironment env, Boolean p_isValid)
+	public	void setIsValid (SystemEnvironment env, Boolean p_isValid)
 	throws SDMSException
 	{
-		if(isValid.equals(p_isValid)) return this;
-		SDMSExitStateProfileGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ExitStateProfile) Change of system object not allowed")
-				);
-			}
-			o = (SDMSExitStateProfileGeneric) change(env);
-			o.isValid = p_isValid;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(isValid.equals(p_isValid)) return;
+		SDMSExitStateProfileGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ExitStateProfile) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSExitStateProfileGeneric) change(env);
+		o.isValid = p_isValid;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -197,29 +190,22 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSExitStateProfileGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSExitStateProfileGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ExitStateProfile) Change of system object not allowed")
-				);
-			}
-			o = (SDMSExitStateProfileGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSExitStateProfileGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ExitStateProfile) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSExitStateProfileGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -228,29 +214,22 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSExitStateProfileGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSExitStateProfileGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ExitStateProfile) Change of system object not allowed")
-				);
-			}
-			o = (SDMSExitStateProfileGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSExitStateProfileGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ExitStateProfile) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSExitStateProfileGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -259,22 +238,15 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSExitStateProfileGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSExitStateProfileGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSExitStateProfileGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSExitStateProfileGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSExitStateProfileGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -283,23 +255,16 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSExitStateProfileGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSExitStateProfileGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSExitStateProfileGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSExitStateProfileGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSExitStateProfileGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	protected SDMSProxy toProxy()
@@ -338,19 +303,11 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO EXIT_STATE_PROFILE (" +
 				        "ID" +
@@ -372,32 +329,33 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?, ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ExitStateProfile: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setString(2, name);
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setString(2, name);
 			if (defaultEsmpId == null)
-				pInsert.setNull(3, Types.INTEGER);
+				myInsert.setNull(3, Types.INTEGER);
 			else
-				pInsert.setLong (3, defaultEsmpId.longValue());
-			pInsert.setInt (4, isValid.booleanValue() ? 1 : 0);
-			pInsert.setLong (5, creatorUId.longValue());
-			pInsert.setLong (6, createTs.longValue());
-			pInsert.setLong (7, changerUId.longValue());
-			pInsert.setLong (8, changeTs.longValue());
-			pInsert.setLong(9, env.tx.versionId);
-			pInsert.setLong(10, Long.MAX_VALUE);
-			pInsert.executeUpdate();
+				myInsert.setLong (3, defaultEsmpId.longValue());
+			myInsert.setInt (4, isValid.booleanValue() ? 1 : 0);
+			myInsert.setLong (5, creatorUId.longValue());
+			myInsert.setLong (6, createTs.longValue());
+			myInsert.setLong (7, changerUId.longValue());
+			myInsert.setLong (8, changeTs.longValue());
+			myInsert.setLong(9, env.tx.versionId);
+			myInsert.setLong(10, Long.MAX_VALUE);
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "ExitStateProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ExitStateProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -418,7 +376,8 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
@@ -431,22 +390,23 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 				        "  AND VALID_TO = " + (postgres ?
 				                               "CAST (\'" +  Long.MAX_VALUE + "\' AS DECIMAL)" :
 				                               "" + Long.MAX_VALUE);
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				// Can't prepare statement
 				throw new FatalException(new SDMSMessage(env, "01110181955", "ExitStateProfile : $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong(1, env.tx.versionId);
-			pUpdate.setLong(2, changeTs.longValue());
-			pUpdate.setLong(3, changerUId.longValue());
-			pUpdate.setLong(4, id.longValue());
-			pUpdate.executeUpdate();
+			myUpdate.clearParameters();
+			myUpdate.setLong(1, env.tx.versionId);
+			myUpdate.setLong(2, changeTs.longValue());
+			myUpdate.setLong(3, changerUId.longValue());
+			myUpdate.setLong(4, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181956", "ExitStateProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ExitStateProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

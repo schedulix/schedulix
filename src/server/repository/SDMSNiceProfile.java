@@ -218,7 +218,8 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 				if (! ((SDMSNiceProfile)obj).getIsActive(sysEnv).booleanValue()) return false;
 				return true;
 			}
-		}
+		},
+		false
 		                                                   );
 		Vector v = new Vector();
 		while (np_i.hasNext()) {
@@ -249,7 +250,8 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 				if (ats >= ts) return false;
 				return true;
 			}
-		}
+		},
+		false
 		                                                   );
 		Vector v = new Vector();
 		while (np_i.hasNext()) {

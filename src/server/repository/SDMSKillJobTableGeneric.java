@@ -80,10 +80,10 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 		table = (SDMSKillJobTable) this;
 		SDMSKillJobTableGeneric.table = (SDMSKillJobTable) this;
 		isVersioned = false;
-		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_smeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_scopeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_state = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seId");
+		idx_smeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "smeId");
+		idx_scopeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "scopeId");
+		idx_state = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "state");
 	}
 	public SDMSKillJob create(SystemEnvironment env
 	                          ,Long p_seId
@@ -312,18 +312,9 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
 		                                   tableName() + ".ID" +
@@ -359,13 +350,35 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
+	public String checkIndex(SDMSObject o)
+	throws SDMSException
+	{
+		String out = "";
+		boolean ok;
+		ok =  idx_seId.check(((SDMSKillJobGeneric) o).seId, o);
+		out = out + "idx_seId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_smeId.check(((SDMSKillJobGeneric) o).smeId, o);
+		out = out + "idx_smeId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_scopeId.check(((SDMSKillJobGeneric) o).scopeId, o);
+		out = out + "idx_scopeId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_state.check(((SDMSKillJobGeneric) o).state, o);
+		out = out + "idx_state: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
 	protected void index(SystemEnvironment env, SDMSObject o)
 	throws SDMSException
 	{
-		idx_seId.put(env, ((SDMSKillJobGeneric) o).seId, o);
-		idx_smeId.put(env, ((SDMSKillJobGeneric) o).smeId, o);
-		idx_scopeId.put(env, ((SDMSKillJobGeneric) o).scopeId, o);
-		idx_state.put(env, ((SDMSKillJobGeneric) o).state, o);
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_seId.put(env, ((SDMSKillJobGeneric) o).seId, o, ((1 & indexMember) != 0));
+		idx_smeId.put(env, ((SDMSKillJobGeneric) o).smeId, o, ((2 & indexMember) != 0));
+		idx_scopeId.put(env, ((SDMSKillJobGeneric) o).scopeId, o, ((4 & indexMember) != 0));
+		idx_state.put(env, ((SDMSKillJobGeneric) o).state, o, ((8 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

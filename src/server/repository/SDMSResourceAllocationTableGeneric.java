@@ -80,12 +80,12 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		table = (SDMSResourceAllocationTable) this;
 		SDMSResourceAllocationTableGeneric.table = (SDMSResourceAllocationTable) this;
 		isVersioned = false;
-		idx_rId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_smeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_nrId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_smeId_rId_stickyName = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
-		idx_stickyParent_rId_stickyName = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_smeId_nrId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_rId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "rId");
+		idx_smeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "smeId");
+		idx_nrId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "nrId");
+		idx_smeId_rId_stickyName = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "smeId_rId_stickyName");
+		idx_stickyParent_rId_stickyName = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "stickyParent_rId_stickyName");
+		idx_smeId_nrId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "smeId_nrId");
 	}
 	public SDMSResourceAllocation create(SystemEnvironment env
 	                                     ,Long p_rId
@@ -302,18 +302,9 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -345,27 +336,65 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_rId.put(env, ((SDMSResourceAllocationGeneric) o).rId, o);
-		idx_smeId.put(env, ((SDMSResourceAllocationGeneric) o).smeId, o);
-		idx_nrId.put(env, ((SDMSResourceAllocationGeneric) o).nrId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_rId.check(((SDMSResourceAllocationGeneric) o).rId, o);
+		out = out + "idx_rId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_smeId.check(((SDMSResourceAllocationGeneric) o).smeId, o);
+		out = out + "idx_smeId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_nrId.check(((SDMSResourceAllocationGeneric) o).nrId, o);
+		out = out + "idx_nrId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSResourceAllocationGeneric) o).smeId);
 		k.add(((SDMSResourceAllocationGeneric) o).rId);
 		k.add(((SDMSResourceAllocationGeneric) o).stickyName);
-		idx_smeId_rId_stickyName.put(env, k, o);
+		ok =  idx_smeId_rId_stickyName.check(k, o);
+		out = out + "idx_smeId_rId_stickyName: " + (ok ? "ok" : "missing") + "\n";
 		k = new SDMSKey();
 		k.add(((SDMSResourceAllocationGeneric) o).stickyParent);
 		k.add(((SDMSResourceAllocationGeneric) o).rId);
 		k.add(((SDMSResourceAllocationGeneric) o).stickyName);
-		idx_stickyParent_rId_stickyName.put(env, k, o);
+		ok =  idx_stickyParent_rId_stickyName.check(k, o);
+		out = out + "idx_stickyParent_rId_stickyName: " + (ok ? "ok" : "missing") + "\n";
 		k = new SDMSKey();
 		k.add(((SDMSResourceAllocationGeneric) o).smeId);
 		k.add(((SDMSResourceAllocationGeneric) o).nrId);
-		idx_smeId_nrId.put(env, k, o);
+		ok =  idx_smeId_nrId.check(k, o);
+		out = out + "idx_smeId_nrId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_rId.put(env, ((SDMSResourceAllocationGeneric) o).rId, o, ((1 & indexMember) != 0));
+		idx_smeId.put(env, ((SDMSResourceAllocationGeneric) o).smeId, o, ((2 & indexMember) != 0));
+		idx_nrId.put(env, ((SDMSResourceAllocationGeneric) o).nrId, o, ((4 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSResourceAllocationGeneric) o).smeId);
+		k.add(((SDMSResourceAllocationGeneric) o).rId);
+		k.add(((SDMSResourceAllocationGeneric) o).stickyName);
+		idx_smeId_rId_stickyName.put(env, k, o, ((8 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSResourceAllocationGeneric) o).stickyParent);
+		k.add(((SDMSResourceAllocationGeneric) o).rId);
+		k.add(((SDMSResourceAllocationGeneric) o).stickyName);
+		idx_stickyParent_rId_stickyName.put(env, k, o, ((16 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSResourceAllocationGeneric) o).smeId);
+		k.add(((SDMSResourceAllocationGeneric) o).nrId);
+		idx_smeId_nrId.put(env, k, o, ((32 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

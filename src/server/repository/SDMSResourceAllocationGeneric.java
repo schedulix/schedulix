@@ -94,9 +94,9 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSResourceAllocationGeneric(
 	        SystemEnvironment env,
@@ -152,10 +152,10 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (rId);
 	}
 
-	public	SDMSResourceAllocationGeneric setRId (SystemEnvironment env, Long p_rId)
+	public	void setRId (SystemEnvironment env, Long p_rId)
 	throws SDMSException
 	{
-		if(rId.equals(p_rId)) return this;
+		if(rId.equals(p_rId)) return;
 		SDMSResourceAllocationGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -168,13 +168,13 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 			o.rId = p_rId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 25);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getSmeId (SystemEnvironment env)
@@ -183,10 +183,10 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (smeId);
 	}
 
-	public	SDMSResourceAllocationGeneric setSmeId (SystemEnvironment env, Long p_smeId)
+	public	void setSmeId (SystemEnvironment env, Long p_smeId)
 	throws SDMSException
 	{
-		if(smeId.equals(p_smeId)) return this;
+		if(smeId.equals(p_smeId)) return;
 		SDMSResourceAllocationGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -199,13 +199,13 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 			o.smeId = p_smeId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 42);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getNrId (SystemEnvironment env)
@@ -214,10 +214,10 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (nrId);
 	}
 
-	public	SDMSResourceAllocationGeneric setNrId (SystemEnvironment env, Long p_nrId)
+	public	void setNrId (SystemEnvironment env, Long p_nrId)
 	throws SDMSException
 	{
-		if(nrId.equals(p_nrId)) return this;
+		if(nrId.equals(p_nrId)) return;
 		SDMSResourceAllocationGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -230,13 +230,13 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 			o.nrId = p_nrId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 36);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getAmount (SystemEnvironment env)
@@ -245,30 +245,23 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (amount);
 	}
 
-	public	SDMSResourceAllocationGeneric setAmount (SystemEnvironment env, Integer p_amount)
+	public	void setAmount (SystemEnvironment env, Integer p_amount)
 	throws SDMSException
 	{
-		if(p_amount != null && p_amount.equals(amount)) return this;
-		if(p_amount == null && amount == null) return this;
-		SDMSResourceAllocationGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
-				);
-			}
-			o = (SDMSResourceAllocationGeneric) change(env);
-			o.amount = p_amount;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_amount != null && p_amount.equals(amount)) return;
+		if(p_amount == null && amount == null) return;
+		SDMSResourceAllocationGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSResourceAllocationGeneric) change(env);
+		o.amount = p_amount;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getOrigAmount (SystemEnvironment env)
@@ -277,30 +270,23 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (origAmount);
 	}
 
-	public	SDMSResourceAllocationGeneric setOrigAmount (SystemEnvironment env, Integer p_origAmount)
+	public	void setOrigAmount (SystemEnvironment env, Integer p_origAmount)
 	throws SDMSException
 	{
-		if(p_origAmount != null && p_origAmount.equals(origAmount)) return this;
-		if(p_origAmount == null && origAmount == null) return this;
-		SDMSResourceAllocationGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
-				);
-			}
-			o = (SDMSResourceAllocationGeneric) change(env);
-			o.origAmount = p_origAmount;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_origAmount != null && p_origAmount.equals(origAmount)) return;
+		if(p_origAmount == null && origAmount == null) return;
+		SDMSResourceAllocationGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSResourceAllocationGeneric) change(env);
+		o.origAmount = p_origAmount;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getKeepMode (SystemEnvironment env)
@@ -327,29 +313,22 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		                          getKeepMode (env)));
 	}
 
-	public	SDMSResourceAllocationGeneric setKeepMode (SystemEnvironment env, Integer p_keepMode)
+	public	void setKeepMode (SystemEnvironment env, Integer p_keepMode)
 	throws SDMSException
 	{
-		if(keepMode.equals(p_keepMode)) return this;
-		SDMSResourceAllocationGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
-				);
-			}
-			o = (SDMSResourceAllocationGeneric) change(env);
-			o.keepMode = p_keepMode;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(keepMode.equals(p_keepMode)) return;
+		SDMSResourceAllocationGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSResourceAllocationGeneric) change(env);
+		o.keepMode = p_keepMode;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Boolean getIsSticky (SystemEnvironment env)
@@ -358,29 +337,22 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (isSticky);
 	}
 
-	public	SDMSResourceAllocationGeneric setIsSticky (SystemEnvironment env, Boolean p_isSticky)
+	public	void setIsSticky (SystemEnvironment env, Boolean p_isSticky)
 	throws SDMSException
 	{
-		if(isSticky.equals(p_isSticky)) return this;
-		SDMSResourceAllocationGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
-				);
-			}
-			o = (SDMSResourceAllocationGeneric) change(env);
-			o.isSticky = p_isSticky;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(isSticky.equals(p_isSticky)) return;
+		SDMSResourceAllocationGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSResourceAllocationGeneric) change(env);
+		o.isSticky = p_isSticky;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getStickyName (SystemEnvironment env)
@@ -389,11 +361,11 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (stickyName);
 	}
 
-	public	SDMSResourceAllocationGeneric setStickyName (SystemEnvironment env, String p_stickyName)
+	public	void setStickyName (SystemEnvironment env, String p_stickyName)
 	throws SDMSException
 	{
-		if(p_stickyName != null && p_stickyName.equals(stickyName)) return this;
-		if(p_stickyName == null && stickyName == null) return this;
+		if(p_stickyName != null && p_stickyName.equals(stickyName)) return;
+		if(p_stickyName == null && stickyName == null) return;
 		SDMSResourceAllocationGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -412,13 +384,13 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 			o.stickyName = p_stickyName;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 24);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getStickyParent (SystemEnvironment env)
@@ -427,11 +399,11 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (stickyParent);
 	}
 
-	public	SDMSResourceAllocationGeneric setStickyParent (SystemEnvironment env, Long p_stickyParent)
+	public	void setStickyParent (SystemEnvironment env, Long p_stickyParent)
 	throws SDMSException
 	{
-		if(p_stickyParent != null && p_stickyParent.equals(stickyParent)) return this;
-		if(p_stickyParent == null && stickyParent == null) return this;
+		if(p_stickyParent != null && p_stickyParent.equals(stickyParent)) return;
+		if(p_stickyParent == null && stickyParent == null) return;
 		SDMSResourceAllocationGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -444,13 +416,13 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 			o.stickyParent = p_stickyParent;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 16);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getAllocationType (SystemEnvironment env)
@@ -483,29 +455,22 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		                          getAllocationType (env)));
 	}
 
-	public	SDMSResourceAllocationGeneric setAllocationType (SystemEnvironment env, Integer p_allocationType)
+	public	void setAllocationType (SystemEnvironment env, Integer p_allocationType)
 	throws SDMSException
 	{
-		if(allocationType.equals(p_allocationType)) return this;
-		SDMSResourceAllocationGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
-				);
-			}
-			o = (SDMSResourceAllocationGeneric) change(env);
-			o.allocationType = p_allocationType;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(allocationType.equals(p_allocationType)) return;
+		SDMSResourceAllocationGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSResourceAllocationGeneric) change(env);
+		o.allocationType = p_allocationType;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getRsmpId (SystemEnvironment env)
@@ -514,30 +479,23 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (rsmpId);
 	}
 
-	public	SDMSResourceAllocationGeneric setRsmpId (SystemEnvironment env, Long p_rsmpId)
+	public	void setRsmpId (SystemEnvironment env, Long p_rsmpId)
 	throws SDMSException
 	{
-		if(p_rsmpId != null && p_rsmpId.equals(rsmpId)) return this;
-		if(p_rsmpId == null && rsmpId == null) return this;
-		SDMSResourceAllocationGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
-				);
-			}
-			o = (SDMSResourceAllocationGeneric) change(env);
-			o.rsmpId = p_rsmpId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_rsmpId != null && p_rsmpId.equals(rsmpId)) return;
+		if(p_rsmpId == null && rsmpId == null) return;
+		SDMSResourceAllocationGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSResourceAllocationGeneric) change(env);
+		o.rsmpId = p_rsmpId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getLockmode (SystemEnvironment env)
@@ -570,30 +528,23 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		                          getLockmode (env)));
 	}
 
-	public	SDMSResourceAllocationGeneric setLockmode (SystemEnvironment env, Integer p_lockmode)
+	public	void setLockmode (SystemEnvironment env, Integer p_lockmode)
 	throws SDMSException
 	{
-		if(p_lockmode != null && p_lockmode.equals(lockmode)) return this;
-		if(p_lockmode == null && lockmode == null) return this;
-		SDMSResourceAllocationGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
-				);
-			}
-			o = (SDMSResourceAllocationGeneric) change(env);
-			o.lockmode = p_lockmode;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_lockmode != null && p_lockmode.equals(lockmode)) return;
+		if(p_lockmode == null && lockmode == null) return;
+		SDMSResourceAllocationGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSResourceAllocationGeneric) change(env);
+		o.lockmode = p_lockmode;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getRefcount (SystemEnvironment env)
@@ -602,29 +553,22 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (refcount);
 	}
 
-	public	SDMSResourceAllocationGeneric setRefcount (SystemEnvironment env, Integer p_refcount)
+	public	void setRefcount (SystemEnvironment env, Integer p_refcount)
 	throws SDMSException
 	{
-		if(refcount.equals(p_refcount)) return this;
-		SDMSResourceAllocationGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
-				);
-			}
-			o = (SDMSResourceAllocationGeneric) change(env);
-			o.refcount = p_refcount;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(refcount.equals(p_refcount)) return;
+		SDMSResourceAllocationGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSResourceAllocationGeneric) change(env);
+		o.refcount = p_refcount;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -633,29 +577,22 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSResourceAllocationGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSResourceAllocationGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
-				);
-			}
-			o = (SDMSResourceAllocationGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSResourceAllocationGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSResourceAllocationGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -664,29 +601,22 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSResourceAllocationGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSResourceAllocationGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
-				);
-			}
-			o = (SDMSResourceAllocationGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSResourceAllocationGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ResourceAllocation) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSResourceAllocationGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -695,22 +625,15 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSResourceAllocationGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSResourceAllocationGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSResourceAllocationGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSResourceAllocationGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSResourceAllocationGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -719,23 +642,16 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSResourceAllocationGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSResourceAllocationGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSResourceAllocationGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSResourceAllocationGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSResourceAllocationGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSResourceAllocationGeneric set_SmeIdRIdStickyName (SystemEnvironment env, Long p_smeId, Long p_rId, String p_stickyName)
@@ -886,19 +802,11 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO RESOURCE_ALLOCATION (" +
 				        "ID" +
@@ -938,55 +846,56 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ResourceAllocation: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, rId.longValue());
-			pInsert.setLong (3, smeId.longValue());
-			pInsert.setLong (4, nrId.longValue());
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, rId.longValue());
+			myInsert.setLong (3, smeId.longValue());
+			myInsert.setLong (4, nrId.longValue());
 			if (amount == null)
-				pInsert.setNull(5, Types.INTEGER);
+				myInsert.setNull(5, Types.INTEGER);
 			else
-				pInsert.setInt(5, amount.intValue());
+				myInsert.setInt(5, amount.intValue());
 			if (origAmount == null)
-				pInsert.setNull(6, Types.INTEGER);
+				myInsert.setNull(6, Types.INTEGER);
 			else
-				pInsert.setInt(6, origAmount.intValue());
-			pInsert.setInt(7, keepMode.intValue());
-			pInsert.setInt (8, isSticky.booleanValue() ? 1 : 0);
+				myInsert.setInt(6, origAmount.intValue());
+			myInsert.setInt(7, keepMode.intValue());
+			myInsert.setInt (8, isSticky.booleanValue() ? 1 : 0);
 			if (stickyName == null)
-				pInsert.setNull(9, Types.VARCHAR);
+				myInsert.setNull(9, Types.VARCHAR);
 			else
-				pInsert.setString(9, stickyName);
+				myInsert.setString(9, stickyName);
 			if (stickyParent == null)
-				pInsert.setNull(10, Types.INTEGER);
+				myInsert.setNull(10, Types.INTEGER);
 			else
-				pInsert.setLong (10, stickyParent.longValue());
-			pInsert.setInt(11, allocationType.intValue());
+				myInsert.setLong (10, stickyParent.longValue());
+			myInsert.setInt(11, allocationType.intValue());
 			if (rsmpId == null)
-				pInsert.setNull(12, Types.INTEGER);
+				myInsert.setNull(12, Types.INTEGER);
 			else
-				pInsert.setLong (12, rsmpId.longValue());
+				myInsert.setLong (12, rsmpId.longValue());
 			if (lockmode == null)
-				pInsert.setNull(13, Types.INTEGER);
+				myInsert.setNull(13, Types.INTEGER);
 			else
-				pInsert.setInt(13, lockmode.intValue());
-			pInsert.setInt(14, refcount.intValue());
-			pInsert.setLong (15, creatorUId.longValue());
-			pInsert.setLong (16, createTs.longValue());
-			pInsert.setLong (17, changerUId.longValue());
-			pInsert.setLong (18, changeTs.longValue());
-			pInsert.executeUpdate();
+				myInsert.setInt(13, lockmode.intValue());
+			myInsert.setInt(14, refcount.intValue());
+			myInsert.setLong (15, creatorUId.longValue());
+			myInsert.setLong (16, createTs.longValue());
+			myInsert.setLong (17, changerUId.longValue());
+			myInsert.setLong (18, changeTs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "ResourceAllocation: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ResourceAllocation: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -994,23 +903,25 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM RESOURCE_ALLOCATION WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "ResourceAllocation: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "ResourceAllocation: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "ResourceAllocation: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -1018,19 +929,11 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE RESOURCE_ALLOCATION SET " +
 				        "" + squote + "R_ID" + equote + " = ? " +
@@ -1051,54 +954,55 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "ResourceAllocation: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong (1, rId.longValue());
-			pUpdate.setLong (2, smeId.longValue());
-			pUpdate.setLong (3, nrId.longValue());
+			myUpdate.clearParameters();
+			myUpdate.setLong (1, rId.longValue());
+			myUpdate.setLong (2, smeId.longValue());
+			myUpdate.setLong (3, nrId.longValue());
 			if (amount == null)
-				pUpdate.setNull(4, Types.INTEGER);
+				myUpdate.setNull(4, Types.INTEGER);
 			else
-				pUpdate.setInt(4, amount.intValue());
+				myUpdate.setInt(4, amount.intValue());
 			if (origAmount == null)
-				pUpdate.setNull(5, Types.INTEGER);
+				myUpdate.setNull(5, Types.INTEGER);
 			else
-				pUpdate.setInt(5, origAmount.intValue());
-			pUpdate.setInt(6, keepMode.intValue());
-			pUpdate.setInt (7, isSticky.booleanValue() ? 1 : 0);
+				myUpdate.setInt(5, origAmount.intValue());
+			myUpdate.setInt(6, keepMode.intValue());
+			myUpdate.setInt (7, isSticky.booleanValue() ? 1 : 0);
 			if (stickyName == null)
-				pUpdate.setNull(8, Types.VARCHAR);
+				myUpdate.setNull(8, Types.VARCHAR);
 			else
-				pUpdate.setString(8, stickyName);
+				myUpdate.setString(8, stickyName);
 			if (stickyParent == null)
-				pUpdate.setNull(9, Types.INTEGER);
+				myUpdate.setNull(9, Types.INTEGER);
 			else
-				pUpdate.setLong (9, stickyParent.longValue());
-			pUpdate.setInt(10, allocationType.intValue());
+				myUpdate.setLong (9, stickyParent.longValue());
+			myUpdate.setInt(10, allocationType.intValue());
 			if (rsmpId == null)
-				pUpdate.setNull(11, Types.INTEGER);
+				myUpdate.setNull(11, Types.INTEGER);
 			else
-				pUpdate.setLong (11, rsmpId.longValue());
+				myUpdate.setLong (11, rsmpId.longValue());
 			if (lockmode == null)
-				pUpdate.setNull(12, Types.INTEGER);
+				myUpdate.setNull(12, Types.INTEGER);
 			else
-				pUpdate.setInt(12, lockmode.intValue());
-			pUpdate.setInt(13, refcount.intValue());
-			pUpdate.setLong (14, creatorUId.longValue());
-			pUpdate.setLong (15, createTs.longValue());
-			pUpdate.setLong (16, changerUId.longValue());
-			pUpdate.setLong (17, changeTs.longValue());
-			pUpdate.setLong(18, id.longValue());
-			pUpdate.executeUpdate();
+				myUpdate.setInt(12, lockmode.intValue());
+			myUpdate.setInt(13, refcount.intValue());
+			myUpdate.setLong (14, creatorUId.longValue());
+			myUpdate.setLong (15, createTs.longValue());
+			myUpdate.setLong (16, changerUId.longValue());
+			myUpdate.setLong (17, changeTs.longValue());
+			myUpdate.setLong(18, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "ResourceAllocation: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "ResourceAllocation: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

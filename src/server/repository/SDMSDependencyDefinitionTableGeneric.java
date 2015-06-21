@@ -72,10 +72,10 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 		table = (SDMSDependencyDefinitionTable) this;
 		SDMSDependencyDefinitionTableGeneric.table = (SDMSDependencyDefinitionTable) this;
 		isVersioned = true;
-		idx_seDependentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_seRequiredId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_name = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_DependentId_RequiredId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_seDependentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seDependentId");
+		idx_seRequiredId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seRequiredId");
+		idx_name = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "name");
+		idx_DependentId_RequiredId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "DependentId_RequiredId");
 	}
 	public SDMSDependencyDefinition create(SystemEnvironment env
 	                                       ,Long p_seDependentId
@@ -246,18 +246,9 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -287,17 +278,43 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_seDependentId.put(env, ((SDMSDependencyDefinitionGeneric) o).seDependentId, o);
-		idx_seRequiredId.put(env, ((SDMSDependencyDefinitionGeneric) o).seRequiredId, o);
-		idx_name.put(env, ((SDMSDependencyDefinitionGeneric) o).name, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_seDependentId.check(((SDMSDependencyDefinitionGeneric) o).seDependentId, o);
+		out = out + "idx_seDependentId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_seRequiredId.check(((SDMSDependencyDefinitionGeneric) o).seRequiredId, o);
+		out = out + "idx_seRequiredId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_name.check(((SDMSDependencyDefinitionGeneric) o).name, o);
+		out = out + "idx_name: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSDependencyDefinitionGeneric) o).seDependentId);
 		k.add(((SDMSDependencyDefinitionGeneric) o).seRequiredId);
-		idx_DependentId_RequiredId.put(env, k, o);
+		ok =  idx_DependentId_RequiredId.check(k, o);
+		out = out + "idx_DependentId_RequiredId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_seDependentId.put(env, ((SDMSDependencyDefinitionGeneric) o).seDependentId, o, ((1 & indexMember) != 0));
+		idx_seRequiredId.put(env, ((SDMSDependencyDefinitionGeneric) o).seRequiredId, o, ((2 & indexMember) != 0));
+		idx_name.put(env, ((SDMSDependencyDefinitionGeneric) o).name, o, ((4 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSDependencyDefinitionGeneric) o).seDependentId);
+		k.add(((SDMSDependencyDefinitionGeneric) o).seRequiredId);
+		idx_DependentId_RequiredId.put(env, k, o, ((8 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

@@ -166,19 +166,19 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		table = (SDMSSubmittedEntityTable) this;
 		SDMSSubmittedEntityTableGeneric.table = (SDMSSubmittedEntityTable) this;
 		isVersioned = false;
-		idx_masterId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_submitTag = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_scopeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_state = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_masterId_seId_mergeMode = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_masterId_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_fireSmeId_trId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_masterId_parentId_seId_childTag = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
-		idx_parentId_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentId_trId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_masterId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "masterId");
+		idx_submitTag = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "submitTag");
+		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seId");
+		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "ownerId");
+		idx_parentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "parentId");
+		idx_scopeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "scopeId");
+		idx_state = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "state");
+		idx_masterId_seId_mergeMode = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "masterId_seId_mergeMode");
+		idx_masterId_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "masterId_seId");
+		idx_fireSmeId_trId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "fireSmeId_trId");
+		idx_masterId_parentId_seId_childTag = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "masterId_parentId_seId_childTag");
+		idx_parentId_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "parentId_seId");
+		idx_parentId_trId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "parentId_trId");
 	}
 	public SDMSSubmittedEntity create(SystemEnvironment env
 	                                  ,Long p_accessKey
@@ -989,18 +989,9 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
 		                                   tableName() + ".ID" +
@@ -1112,44 +1103,106 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_masterId.put(env, ((SDMSSubmittedEntityGeneric) o).masterId, o);
-		idx_submitTag.put(env, ((SDMSSubmittedEntityGeneric) o).submitTag, o);
-		idx_seId.put(env, ((SDMSSubmittedEntityGeneric) o).seId, o);
-		idx_ownerId.put(env, ((SDMSSubmittedEntityGeneric) o).ownerId, o);
-		idx_parentId.put(env, ((SDMSSubmittedEntityGeneric) o).parentId, o);
-		idx_scopeId.put(env, ((SDMSSubmittedEntityGeneric) o).scopeId, o);
-		idx_state.put(env, ((SDMSSubmittedEntityGeneric) o).state, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_masterId.check(((SDMSSubmittedEntityGeneric) o).masterId, o);
+		out = out + "idx_masterId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_submitTag.check(((SDMSSubmittedEntityGeneric) o).submitTag, o);
+		out = out + "idx_submitTag: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_seId.check(((SDMSSubmittedEntityGeneric) o).seId, o);
+		out = out + "idx_seId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_ownerId.check(((SDMSSubmittedEntityGeneric) o).ownerId, o);
+		out = out + "idx_ownerId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_parentId.check(((SDMSSubmittedEntityGeneric) o).parentId, o);
+		out = out + "idx_parentId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_scopeId.check(((SDMSSubmittedEntityGeneric) o).scopeId, o);
+		out = out + "idx_scopeId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_state.check(((SDMSSubmittedEntityGeneric) o).state, o);
+		out = out + "idx_state: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSSubmittedEntityGeneric) o).masterId);
 		k.add(((SDMSSubmittedEntityGeneric) o).seId);
 		k.add(((SDMSSubmittedEntityGeneric) o).mergeMode);
-		idx_masterId_seId_mergeMode.put(env, k, o);
+		ok =  idx_masterId_seId_mergeMode.check(k, o);
+		out = out + "idx_masterId_seId_mergeMode: " + (ok ? "ok" : "missing") + "\n";
 		k = new SDMSKey();
 		k.add(((SDMSSubmittedEntityGeneric) o).masterId);
 		k.add(((SDMSSubmittedEntityGeneric) o).seId);
-		idx_masterId_seId.put(env, k, o);
+		ok =  idx_masterId_seId.check(k, o);
+		out = out + "idx_masterId_seId: " + (ok ? "ok" : "missing") + "\n";
 		k = new SDMSKey();
 		k.add(((SDMSSubmittedEntityGeneric) o).fireSmeId);
 		k.add(((SDMSSubmittedEntityGeneric) o).trId);
-		idx_fireSmeId_trId.put(env, k, o);
+		ok =  idx_fireSmeId_trId.check(k, o);
+		out = out + "idx_fireSmeId_trId: " + (ok ? "ok" : "missing") + "\n";
 		k = new SDMSKey();
 		k.add(((SDMSSubmittedEntityGeneric) o).masterId);
 		k.add(((SDMSSubmittedEntityGeneric) o).parentId);
 		k.add(((SDMSSubmittedEntityGeneric) o).seId);
 		k.add(((SDMSSubmittedEntityGeneric) o).childTag);
-		idx_masterId_parentId_seId_childTag.put(env, k, o);
+		ok =  idx_masterId_parentId_seId_childTag.check(k, o);
+		out = out + "idx_masterId_parentId_seId_childTag: " + (ok ? "ok" : "missing") + "\n";
 		k = new SDMSKey();
 		k.add(((SDMSSubmittedEntityGeneric) o).parentId);
 		k.add(((SDMSSubmittedEntityGeneric) o).seId);
-		idx_parentId_seId.put(env, k, o);
+		ok =  idx_parentId_seId.check(k, o);
+		out = out + "idx_parentId_seId: " + (ok ? "ok" : "missing") + "\n";
 		k = new SDMSKey();
 		k.add(((SDMSSubmittedEntityGeneric) o).parentId);
 		k.add(((SDMSSubmittedEntityGeneric) o).trId);
-		idx_parentId_trId.put(env, k, o);
+		ok =  idx_parentId_trId.check(k, o);
+		out = out + "idx_parentId_trId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_masterId.put(env, ((SDMSSubmittedEntityGeneric) o).masterId, o, ((1 & indexMember) != 0));
+		idx_submitTag.put(env, ((SDMSSubmittedEntityGeneric) o).submitTag, o, ((2 & indexMember) != 0));
+		idx_seId.put(env, ((SDMSSubmittedEntityGeneric) o).seId, o, ((4 & indexMember) != 0));
+		idx_ownerId.put(env, ((SDMSSubmittedEntityGeneric) o).ownerId, o, ((8 & indexMember) != 0));
+		idx_parentId.put(env, ((SDMSSubmittedEntityGeneric) o).parentId, o, ((16 & indexMember) != 0));
+		idx_scopeId.put(env, ((SDMSSubmittedEntityGeneric) o).scopeId, o, ((32 & indexMember) != 0));
+		idx_state.put(env, ((SDMSSubmittedEntityGeneric) o).state, o, ((64 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSSubmittedEntityGeneric) o).masterId);
+		k.add(((SDMSSubmittedEntityGeneric) o).seId);
+		k.add(((SDMSSubmittedEntityGeneric) o).mergeMode);
+		idx_masterId_seId_mergeMode.put(env, k, o, ((128 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSSubmittedEntityGeneric) o).masterId);
+		k.add(((SDMSSubmittedEntityGeneric) o).seId);
+		idx_masterId_seId.put(env, k, o, ((256 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSSubmittedEntityGeneric) o).fireSmeId);
+		k.add(((SDMSSubmittedEntityGeneric) o).trId);
+		idx_fireSmeId_trId.put(env, k, o, ((512 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSSubmittedEntityGeneric) o).masterId);
+		k.add(((SDMSSubmittedEntityGeneric) o).parentId);
+		k.add(((SDMSSubmittedEntityGeneric) o).seId);
+		k.add(((SDMSSubmittedEntityGeneric) o).childTag);
+		idx_masterId_parentId_seId_childTag.put(env, k, o, ((1024 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSSubmittedEntityGeneric) o).parentId);
+		k.add(((SDMSSubmittedEntityGeneric) o).seId);
+		idx_parentId_seId.put(env, k, o, ((2048 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSSubmittedEntityGeneric) o).parentId);
+		k.add(((SDMSSubmittedEntityGeneric) o).trId);
+		idx_parentId_trId.put(env, k, o, ((4096 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

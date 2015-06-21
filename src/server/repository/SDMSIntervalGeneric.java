@@ -106,9 +106,9 @@ public class SDMSIntervalGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSIntervalGeneric(
 	        SystemEnvironment env,
@@ -166,10 +166,10 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (name);
 	}
 
-	public	SDMSIntervalGeneric setName (SystemEnvironment env, String p_name)
+	public	void setName (SystemEnvironment env, String p_name)
 	throws SDMSException
 	{
-		if(name.equals(p_name)) return this;
+		if(name.equals(p_name)) return;
 		SDMSIntervalGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -188,13 +188,13 @@ public class SDMSIntervalGeneric extends SDMSObject
 			o.name = p_name;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getOwnerId (SystemEnvironment env)
@@ -203,10 +203,10 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (ownerId);
 	}
 
-	public	SDMSIntervalGeneric setOwnerId (SystemEnvironment env, Long p_ownerId)
+	public	void setOwnerId (SystemEnvironment env, Long p_ownerId)
 	throws SDMSException
 	{
-		if(ownerId.equals(p_ownerId)) return this;
+		if(ownerId.equals(p_ownerId)) return;
 		SDMSIntervalGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -219,13 +219,13 @@ public class SDMSIntervalGeneric extends SDMSObject
 			o.ownerId = p_ownerId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getStartTime (SystemEnvironment env)
@@ -234,30 +234,23 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (startTime);
 	}
 
-	public	SDMSIntervalGeneric setStartTime (SystemEnvironment env, Long p_startTime)
+	public	void setStartTime (SystemEnvironment env, Long p_startTime)
 	throws SDMSException
 	{
-		if(p_startTime != null && p_startTime.equals(startTime)) return this;
-		if(p_startTime == null && startTime == null) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalGeneric) change(env);
-			o.startTime = p_startTime;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_startTime != null && p_startTime.equals(startTime)) return;
+		if(p_startTime == null && startTime == null) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.startTime = p_startTime;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getEndTime (SystemEnvironment env)
@@ -266,30 +259,23 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (endTime);
 	}
 
-	public	SDMSIntervalGeneric setEndTime (SystemEnvironment env, Long p_endTime)
+	public	void setEndTime (SystemEnvironment env, Long p_endTime)
 	throws SDMSException
 	{
-		if(p_endTime != null && p_endTime.equals(endTime)) return this;
-		if(p_endTime == null && endTime == null) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalGeneric) change(env);
-			o.endTime = p_endTime;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_endTime != null && p_endTime.equals(endTime)) return;
+		if(p_endTime == null && endTime == null) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.endTime = p_endTime;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getDelay (SystemEnvironment env)
@@ -298,30 +284,23 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (delay);
 	}
 
-	public	SDMSIntervalGeneric setDelay (SystemEnvironment env, Long p_delay)
+	public	void setDelay (SystemEnvironment env, Long p_delay)
 	throws SDMSException
 	{
-		if(p_delay != null && p_delay.equals(delay)) return this;
-		if(p_delay == null && delay == null) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalGeneric) change(env);
-			o.delay = p_delay;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_delay != null && p_delay.equals(delay)) return;
+		if(p_delay == null && delay == null) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.delay = p_delay;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getBaseInterval (SystemEnvironment env)
@@ -356,30 +335,23 @@ public class SDMSIntervalGeneric extends SDMSObject
 		                          getBaseInterval (env)));
 	}
 
-	public	SDMSIntervalGeneric setBaseInterval (SystemEnvironment env, Integer p_baseInterval)
+	public	void setBaseInterval (SystemEnvironment env, Integer p_baseInterval)
 	throws SDMSException
 	{
-		if(p_baseInterval != null && p_baseInterval.equals(baseInterval)) return this;
-		if(p_baseInterval == null && baseInterval == null) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalGeneric) change(env);
-			o.baseInterval = p_baseInterval;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_baseInterval != null && p_baseInterval.equals(baseInterval)) return;
+		if(p_baseInterval == null && baseInterval == null) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.baseInterval = p_baseInterval;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getBaseIntervalMultiplier (SystemEnvironment env)
@@ -388,30 +360,23 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (baseIntervalMultiplier);
 	}
 
-	public	SDMSIntervalGeneric setBaseIntervalMultiplier (SystemEnvironment env, Integer p_baseIntervalMultiplier)
+	public	void setBaseIntervalMultiplier (SystemEnvironment env, Integer p_baseIntervalMultiplier)
 	throws SDMSException
 	{
-		if(p_baseIntervalMultiplier != null && p_baseIntervalMultiplier.equals(baseIntervalMultiplier)) return this;
-		if(p_baseIntervalMultiplier == null && baseIntervalMultiplier == null) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalGeneric) change(env);
-			o.baseIntervalMultiplier = p_baseIntervalMultiplier;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_baseIntervalMultiplier != null && p_baseIntervalMultiplier.equals(baseIntervalMultiplier)) return;
+		if(p_baseIntervalMultiplier == null && baseIntervalMultiplier == null) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.baseIntervalMultiplier = p_baseIntervalMultiplier;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getDuration (SystemEnvironment env)
@@ -446,30 +411,23 @@ public class SDMSIntervalGeneric extends SDMSObject
 		                          getDuration (env)));
 	}
 
-	public	SDMSIntervalGeneric setDuration (SystemEnvironment env, Integer p_duration)
+	public	void setDuration (SystemEnvironment env, Integer p_duration)
 	throws SDMSException
 	{
-		if(p_duration != null && p_duration.equals(duration)) return this;
-		if(p_duration == null && duration == null) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalGeneric) change(env);
-			o.duration = p_duration;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_duration != null && p_duration.equals(duration)) return;
+		if(p_duration == null && duration == null) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.duration = p_duration;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getDurationMultiplier (SystemEnvironment env)
@@ -478,30 +436,23 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (durationMultiplier);
 	}
 
-	public	SDMSIntervalGeneric setDurationMultiplier (SystemEnvironment env, Integer p_durationMultiplier)
+	public	void setDurationMultiplier (SystemEnvironment env, Integer p_durationMultiplier)
 	throws SDMSException
 	{
-		if(p_durationMultiplier != null && p_durationMultiplier.equals(durationMultiplier)) return this;
-		if(p_durationMultiplier == null && durationMultiplier == null) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalGeneric) change(env);
-			o.durationMultiplier = p_durationMultiplier;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_durationMultiplier != null && p_durationMultiplier.equals(durationMultiplier)) return;
+		if(p_durationMultiplier == null && durationMultiplier == null) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.durationMultiplier = p_durationMultiplier;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getSyncTime (SystemEnvironment env)
@@ -510,29 +461,22 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (syncTime);
 	}
 
-	public	SDMSIntervalGeneric setSyncTime (SystemEnvironment env, Long p_syncTime)
+	public	void setSyncTime (SystemEnvironment env, Long p_syncTime)
 	throws SDMSException
 	{
-		if(syncTime.equals(p_syncTime)) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalGeneric) change(env);
-			o.syncTime = p_syncTime;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(syncTime.equals(p_syncTime)) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.syncTime = p_syncTime;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Boolean getIsInverse (SystemEnvironment env)
@@ -541,29 +485,22 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (isInverse);
 	}
 
-	public	SDMSIntervalGeneric setIsInverse (SystemEnvironment env, Boolean p_isInverse)
+	public	void setIsInverse (SystemEnvironment env, Boolean p_isInverse)
 	throws SDMSException
 	{
-		if(isInverse.equals(p_isInverse)) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalGeneric) change(env);
-			o.isInverse = p_isInverse;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(isInverse.equals(p_isInverse)) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.isInverse = p_isInverse;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Boolean getIsMerge (SystemEnvironment env)
@@ -572,29 +509,22 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (isMerge);
 	}
 
-	public	SDMSIntervalGeneric setIsMerge (SystemEnvironment env, Boolean p_isMerge)
+	public	void setIsMerge (SystemEnvironment env, Boolean p_isMerge)
 	throws SDMSException
 	{
-		if(isMerge.equals(p_isMerge)) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalGeneric) change(env);
-			o.isMerge = p_isMerge;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(isMerge.equals(p_isMerge)) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.isMerge = p_isMerge;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getEmbeddedIntervalId (SystemEnvironment env)
@@ -603,11 +533,11 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (embeddedIntervalId);
 	}
 
-	public	SDMSIntervalGeneric setEmbeddedIntervalId (SystemEnvironment env, Long p_embeddedIntervalId)
+	public	void setEmbeddedIntervalId (SystemEnvironment env, Long p_embeddedIntervalId)
 	throws SDMSException
 	{
-		if(p_embeddedIntervalId != null && p_embeddedIntervalId.equals(embeddedIntervalId)) return this;
-		if(p_embeddedIntervalId == null && embeddedIntervalId == null) return this;
+		if(p_embeddedIntervalId != null && p_embeddedIntervalId.equals(embeddedIntervalId)) return;
+		if(p_embeddedIntervalId == null && embeddedIntervalId == null) return;
 		SDMSIntervalGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -620,13 +550,13 @@ public class SDMSIntervalGeneric extends SDMSObject
 			o.embeddedIntervalId = p_embeddedIntervalId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 4);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getSeId (SystemEnvironment env)
@@ -635,11 +565,11 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (seId);
 	}
 
-	public	SDMSIntervalGeneric setSeId (SystemEnvironment env, Long p_seId)
+	public	void setSeId (SystemEnvironment env, Long p_seId)
 	throws SDMSException
 	{
-		if(p_seId != null && p_seId.equals(seId)) return this;
-		if(p_seId == null && seId == null) return this;
+		if(p_seId != null && p_seId.equals(seId)) return;
+		if(p_seId == null && seId == null) return;
 		SDMSIntervalGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -652,13 +582,13 @@ public class SDMSIntervalGeneric extends SDMSObject
 			o.seId = p_seId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -667,29 +597,22 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSIntervalGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -698,29 +621,22 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSIntervalGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -729,22 +645,15 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSIntervalGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSIntervalGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSIntervalGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -753,23 +662,16 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSIntervalGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSIntervalGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSIntervalGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSIntervalGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSIntervalGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	protected SDMSProxy toProxy()
@@ -830,19 +732,11 @@ public class SDMSIntervalGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO INTERVALL (" +
 				        "ID" +
@@ -884,65 +778,66 @@ public class SDMSIntervalGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "Interval: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setString(2, name);
-			pInsert.setLong (3, ownerId.longValue());
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setString(2, name);
+			myInsert.setLong (3, ownerId.longValue());
 			if (startTime == null)
-				pInsert.setNull(4, Types.INTEGER);
+				myInsert.setNull(4, Types.INTEGER);
 			else
-				pInsert.setLong (4, startTime.longValue());
+				myInsert.setLong (4, startTime.longValue());
 			if (endTime == null)
-				pInsert.setNull(5, Types.INTEGER);
+				myInsert.setNull(5, Types.INTEGER);
 			else
-				pInsert.setLong (5, endTime.longValue());
+				myInsert.setLong (5, endTime.longValue());
 			if (delay == null)
-				pInsert.setNull(6, Types.INTEGER);
+				myInsert.setNull(6, Types.INTEGER);
 			else
-				pInsert.setLong (6, delay.longValue());
+				myInsert.setLong (6, delay.longValue());
 			if (baseInterval == null)
-				pInsert.setNull(7, Types.INTEGER);
+				myInsert.setNull(7, Types.INTEGER);
 			else
-				pInsert.setInt(7, baseInterval.intValue());
+				myInsert.setInt(7, baseInterval.intValue());
 			if (baseIntervalMultiplier == null)
-				pInsert.setNull(8, Types.INTEGER);
+				myInsert.setNull(8, Types.INTEGER);
 			else
-				pInsert.setInt(8, baseIntervalMultiplier.intValue());
+				myInsert.setInt(8, baseIntervalMultiplier.intValue());
 			if (duration == null)
-				pInsert.setNull(9, Types.INTEGER);
+				myInsert.setNull(9, Types.INTEGER);
 			else
-				pInsert.setInt(9, duration.intValue());
+				myInsert.setInt(9, duration.intValue());
 			if (durationMultiplier == null)
-				pInsert.setNull(10, Types.INTEGER);
+				myInsert.setNull(10, Types.INTEGER);
 			else
-				pInsert.setInt(10, durationMultiplier.intValue());
-			pInsert.setLong (11, syncTime.longValue());
-			pInsert.setInt (12, isInverse.booleanValue() ? 1 : 0);
-			pInsert.setInt (13, isMerge.booleanValue() ? 1 : 0);
+				myInsert.setInt(10, durationMultiplier.intValue());
+			myInsert.setLong (11, syncTime.longValue());
+			myInsert.setInt (12, isInverse.booleanValue() ? 1 : 0);
+			myInsert.setInt (13, isMerge.booleanValue() ? 1 : 0);
 			if (embeddedIntervalId == null)
-				pInsert.setNull(14, Types.INTEGER);
+				myInsert.setNull(14, Types.INTEGER);
 			else
-				pInsert.setLong (14, embeddedIntervalId.longValue());
+				myInsert.setLong (14, embeddedIntervalId.longValue());
 			if (seId == null)
-				pInsert.setNull(15, Types.INTEGER);
+				myInsert.setNull(15, Types.INTEGER);
 			else
-				pInsert.setLong (15, seId.longValue());
-			pInsert.setLong (16, creatorUId.longValue());
-			pInsert.setLong (17, createTs.longValue());
-			pInsert.setLong (18, changerUId.longValue());
-			pInsert.setLong (19, changeTs.longValue());
-			pInsert.executeUpdate();
+				myInsert.setLong (15, seId.longValue());
+			myInsert.setLong (16, creatorUId.longValue());
+			myInsert.setLong (17, createTs.longValue());
+			myInsert.setLong (18, changerUId.longValue());
+			myInsert.setLong (19, changeTs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "Interval: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "Interval: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -950,23 +845,25 @@ public class SDMSIntervalGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM INTERVALL WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Interval: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "Interval: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "Interval: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -974,19 +871,11 @@ public class SDMSIntervalGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE INTERVALL SET " +
 				        "" + squote + "NAME" + equote + " = ? " +
@@ -1008,64 +897,65 @@ public class SDMSIntervalGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "Interval: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setString(1, name);
-			pUpdate.setLong (2, ownerId.longValue());
+			myUpdate.clearParameters();
+			myUpdate.setString(1, name);
+			myUpdate.setLong (2, ownerId.longValue());
 			if (startTime == null)
-				pUpdate.setNull(3, Types.INTEGER);
+				myUpdate.setNull(3, Types.INTEGER);
 			else
-				pUpdate.setLong (3, startTime.longValue());
+				myUpdate.setLong (3, startTime.longValue());
 			if (endTime == null)
-				pUpdate.setNull(4, Types.INTEGER);
+				myUpdate.setNull(4, Types.INTEGER);
 			else
-				pUpdate.setLong (4, endTime.longValue());
+				myUpdate.setLong (4, endTime.longValue());
 			if (delay == null)
-				pUpdate.setNull(5, Types.INTEGER);
+				myUpdate.setNull(5, Types.INTEGER);
 			else
-				pUpdate.setLong (5, delay.longValue());
+				myUpdate.setLong (5, delay.longValue());
 			if (baseInterval == null)
-				pUpdate.setNull(6, Types.INTEGER);
+				myUpdate.setNull(6, Types.INTEGER);
 			else
-				pUpdate.setInt(6, baseInterval.intValue());
+				myUpdate.setInt(6, baseInterval.intValue());
 			if (baseIntervalMultiplier == null)
-				pUpdate.setNull(7, Types.INTEGER);
+				myUpdate.setNull(7, Types.INTEGER);
 			else
-				pUpdate.setInt(7, baseIntervalMultiplier.intValue());
+				myUpdate.setInt(7, baseIntervalMultiplier.intValue());
 			if (duration == null)
-				pUpdate.setNull(8, Types.INTEGER);
+				myUpdate.setNull(8, Types.INTEGER);
 			else
-				pUpdate.setInt(8, duration.intValue());
+				myUpdate.setInt(8, duration.intValue());
 			if (durationMultiplier == null)
-				pUpdate.setNull(9, Types.INTEGER);
+				myUpdate.setNull(9, Types.INTEGER);
 			else
-				pUpdate.setInt(9, durationMultiplier.intValue());
-			pUpdate.setLong (10, syncTime.longValue());
-			pUpdate.setInt (11, isInverse.booleanValue() ? 1 : 0);
-			pUpdate.setInt (12, isMerge.booleanValue() ? 1 : 0);
+				myUpdate.setInt(9, durationMultiplier.intValue());
+			myUpdate.setLong (10, syncTime.longValue());
+			myUpdate.setInt (11, isInverse.booleanValue() ? 1 : 0);
+			myUpdate.setInt (12, isMerge.booleanValue() ? 1 : 0);
 			if (embeddedIntervalId == null)
-				pUpdate.setNull(13, Types.INTEGER);
+				myUpdate.setNull(13, Types.INTEGER);
 			else
-				pUpdate.setLong (13, embeddedIntervalId.longValue());
+				myUpdate.setLong (13, embeddedIntervalId.longValue());
 			if (seId == null)
-				pUpdate.setNull(14, Types.INTEGER);
+				myUpdate.setNull(14, Types.INTEGER);
 			else
-				pUpdate.setLong (14, seId.longValue());
-			pUpdate.setLong (15, creatorUId.longValue());
-			pUpdate.setLong (16, createTs.longValue());
-			pUpdate.setLong (17, changerUId.longValue());
-			pUpdate.setLong (18, changeTs.longValue());
-			pUpdate.setLong(19, id.longValue());
-			pUpdate.executeUpdate();
+				myUpdate.setLong (14, seId.longValue());
+			myUpdate.setLong (15, creatorUId.longValue());
+			myUpdate.setLong (16, createTs.longValue());
+			myUpdate.setLong (17, changerUId.longValue());
+			myUpdate.setLong (18, changeTs.longValue());
+			myUpdate.setLong(19, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "Interval: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "Interval: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

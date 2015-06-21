@@ -73,11 +73,11 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 		table = (SDMSNamedResourceTable) this;
 		SDMSNamedResourceTableGeneric.table = (SDMSNamedResourceTable) this;
 		isVersioned = false;
-		idx_name = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_rspId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentId_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_name = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "name");
+		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "ownerId");
+		idx_parentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "parentId");
+		idx_rspId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "rspId");
+		idx_parentId_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "parentId_name");
 	}
 	public SDMSNamedResource create(SystemEnvironment env
 	                                ,String p_name
@@ -244,18 +244,9 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -281,18 +272,46 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_name.put(env, ((SDMSNamedResourceGeneric) o).name, o);
-		idx_ownerId.put(env, ((SDMSNamedResourceGeneric) o).ownerId, o);
-		idx_parentId.put(env, ((SDMSNamedResourceGeneric) o).parentId, o);
-		idx_rspId.put(env, ((SDMSNamedResourceGeneric) o).rspId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_name.check(((SDMSNamedResourceGeneric) o).name, o);
+		out = out + "idx_name: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_ownerId.check(((SDMSNamedResourceGeneric) o).ownerId, o);
+		out = out + "idx_ownerId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_parentId.check(((SDMSNamedResourceGeneric) o).parentId, o);
+		out = out + "idx_parentId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_rspId.check(((SDMSNamedResourceGeneric) o).rspId, o);
+		out = out + "idx_rspId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSNamedResourceGeneric) o).parentId);
 		k.add(((SDMSNamedResourceGeneric) o).name);
-		idx_parentId_name.put(env, k, o);
+		ok =  idx_parentId_name.check(k, o);
+		out = out + "idx_parentId_name: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_name.put(env, ((SDMSNamedResourceGeneric) o).name, o, ((1 & indexMember) != 0));
+		idx_ownerId.put(env, ((SDMSNamedResourceGeneric) o).ownerId, o, ((2 & indexMember) != 0));
+		idx_parentId.put(env, ((SDMSNamedResourceGeneric) o).parentId, o, ((4 & indexMember) != 0));
+		idx_rspId.put(env, ((SDMSNamedResourceGeneric) o).rspId, o, ((8 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSNamedResourceGeneric) o).parentId);
+		k.add(((SDMSNamedResourceGeneric) o).name);
+		idx_parentId_name.put(env, k, o, ((16 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

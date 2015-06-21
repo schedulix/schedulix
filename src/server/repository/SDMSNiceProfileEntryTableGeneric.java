@@ -69,8 +69,8 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 		table = (SDMSNiceProfileEntryTable) this;
 		SDMSNiceProfileEntryTableGeneric.table = (SDMSNiceProfileEntryTable) this;
 		isVersioned = false;
-		idx_npId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_folderId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_npId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "npId");
+		idx_folderId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "folderId");
 	}
 	public SDMSNiceProfileEntry create(SystemEnvironment env
 	                                   ,Long p_npId
@@ -227,18 +227,9 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -263,11 +254,31 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
+	public String checkIndex(SDMSObject o)
+	throws SDMSException
+	{
+		String out = "";
+		boolean ok;
+		ok =  idx_npId.check(((SDMSNiceProfileEntryGeneric) o).npId, o);
+		out = out + "idx_npId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_folderId.check(((SDMSNiceProfileEntryGeneric) o).folderId, o);
+		out = out + "idx_folderId: " + (ok ? "ok" : "missing") + "\n";
+		SDMSKey k;
+		return out;
+	}
+
 	protected void index(SystemEnvironment env, SDMSObject o)
 	throws SDMSException
 	{
-		idx_npId.put(env, ((SDMSNiceProfileEntryGeneric) o).npId, o);
-		idx_folderId.put(env, ((SDMSNiceProfileEntryGeneric) o).folderId, o);
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_npId.put(env, ((SDMSNiceProfileEntryGeneric) o).npId, o, ((1 & indexMember) != 0));
+		idx_folderId.put(env, ((SDMSNiceProfileEntryGeneric) o).folderId, o, ((2 & indexMember) != 0));
+		SDMSKey k;
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)
@@ -275,6 +286,7 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 	{
 		idx_npId.remove(env, ((SDMSNiceProfileEntryGeneric) o).npId, o);
 		idx_folderId.remove(env, ((SDMSNiceProfileEntryGeneric) o).folderId, o);
+		SDMSKey k;
 	}
 
 	public static SDMSNiceProfileEntry getObject(SystemEnvironment env, Long id)

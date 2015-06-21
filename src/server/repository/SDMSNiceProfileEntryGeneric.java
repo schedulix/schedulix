@@ -69,9 +69,9 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSNiceProfileEntryGeneric(
 	        SystemEnvironment env,
@@ -107,10 +107,10 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		return (npId);
 	}
 
-	public	SDMSNiceProfileEntryGeneric setNpId (SystemEnvironment env, Long p_npId)
+	public	void setNpId (SystemEnvironment env, Long p_npId)
 	throws SDMSException
 	{
-		if(npId.equals(p_npId)) return this;
+		if(npId.equals(p_npId)) return;
 		SDMSNiceProfileEntryGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -123,13 +123,13 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			o.npId = p_npId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getPreference (SystemEnvironment env)
@@ -138,29 +138,22 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		return (preference);
 	}
 
-	public	SDMSNiceProfileEntryGeneric setPreference (SystemEnvironment env, Integer p_preference)
+	public	void setPreference (SystemEnvironment env, Integer p_preference)
 	throws SDMSException
 	{
-		if(preference.equals(p_preference)) return this;
-		SDMSNiceProfileEntryGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
-				);
-			}
-			o = (SDMSNiceProfileEntryGeneric) change(env);
-			o.preference = p_preference;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(preference.equals(p_preference)) return;
+		SDMSNiceProfileEntryGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSNiceProfileEntryGeneric) change(env);
+		o.preference = p_preference;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getFolderId (SystemEnvironment env)
@@ -169,11 +162,11 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		return (folderId);
 	}
 
-	public	SDMSNiceProfileEntryGeneric setFolderId (SystemEnvironment env, Long p_folderId)
+	public	void setFolderId (SystemEnvironment env, Long p_folderId)
 	throws SDMSException
 	{
-		if(p_folderId != null && p_folderId.equals(folderId)) return this;
-		if(p_folderId == null && folderId == null) return this;
+		if(p_folderId != null && p_folderId.equals(folderId)) return;
+		if(p_folderId == null && folderId == null) return;
 		SDMSNiceProfileEntryGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -186,13 +179,13 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			o.folderId = p_folderId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getIsSuspended (SystemEnvironment env)
@@ -219,29 +212,22 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		                          getIsSuspended (env)));
 	}
 
-	public	SDMSNiceProfileEntryGeneric setIsSuspended (SystemEnvironment env, Integer p_isSuspended)
+	public	void setIsSuspended (SystemEnvironment env, Integer p_isSuspended)
 	throws SDMSException
 	{
-		if(isSuspended.equals(p_isSuspended)) return this;
-		SDMSNiceProfileEntryGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
-				);
-			}
-			o = (SDMSNiceProfileEntryGeneric) change(env);
-			o.isSuspended = p_isSuspended;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(isSuspended.equals(p_isSuspended)) return;
+		SDMSNiceProfileEntryGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSNiceProfileEntryGeneric) change(env);
+		o.isSuspended = p_isSuspended;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getRenice (SystemEnvironment env)
@@ -250,29 +236,22 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		return (renice);
 	}
 
-	public	SDMSNiceProfileEntryGeneric setRenice (SystemEnvironment env, Integer p_renice)
+	public	void setRenice (SystemEnvironment env, Integer p_renice)
 	throws SDMSException
 	{
-		if(renice.equals(p_renice)) return this;
-		SDMSNiceProfileEntryGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
-				);
-			}
-			o = (SDMSNiceProfileEntryGeneric) change(env);
-			o.renice = p_renice;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(renice.equals(p_renice)) return;
+		SDMSNiceProfileEntryGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSNiceProfileEntryGeneric) change(env);
+		o.renice = p_renice;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Boolean getIsActive (SystemEnvironment env)
@@ -281,29 +260,22 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		return (isActive);
 	}
 
-	public	SDMSNiceProfileEntryGeneric setIsActive (SystemEnvironment env, Boolean p_isActive)
+	public	void setIsActive (SystemEnvironment env, Boolean p_isActive)
 	throws SDMSException
 	{
-		if(isActive.equals(p_isActive)) return this;
-		SDMSNiceProfileEntryGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
-				);
-			}
-			o = (SDMSNiceProfileEntryGeneric) change(env);
-			o.isActive = p_isActive;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(isActive.equals(p_isActive)) return;
+		SDMSNiceProfileEntryGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSNiceProfileEntryGeneric) change(env);
+		o.isActive = p_isActive;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -312,29 +284,22 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSNiceProfileEntryGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSNiceProfileEntryGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
-				);
-			}
-			o = (SDMSNiceProfileEntryGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSNiceProfileEntryGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSNiceProfileEntryGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -343,29 +308,22 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSNiceProfileEntryGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSNiceProfileEntryGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
-				);
-			}
-			o = (SDMSNiceProfileEntryGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSNiceProfileEntryGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSNiceProfileEntryGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -374,22 +332,15 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSNiceProfileEntryGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSNiceProfileEntryGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSNiceProfileEntryGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSNiceProfileEntryGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSNiceProfileEntryGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -398,23 +349,16 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSNiceProfileEntryGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSNiceProfileEntryGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSNiceProfileEntryGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSNiceProfileEntryGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSNiceProfileEntryGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	protected SDMSProxy toProxy()
@@ -459,19 +403,11 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO NICE_PROFILE_ENTRY (" +
 				        "ID" +
@@ -497,33 +433,34 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "NiceProfileEntry: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, npId.longValue());
-			pInsert.setInt(3, preference.intValue());
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, npId.longValue());
+			myInsert.setInt(3, preference.intValue());
 			if (folderId == null)
-				pInsert.setNull(4, Types.INTEGER);
+				myInsert.setNull(4, Types.INTEGER);
 			else
-				pInsert.setLong (4, folderId.longValue());
-			pInsert.setInt(5, isSuspended.intValue());
-			pInsert.setInt(6, renice.intValue());
-			pInsert.setInt (7, isActive.booleanValue() ? 1 : 0);
-			pInsert.setLong (8, creatorUId.longValue());
-			pInsert.setLong (9, createTs.longValue());
-			pInsert.setLong (10, changerUId.longValue());
-			pInsert.setLong (11, changeTs.longValue());
-			pInsert.executeUpdate();
+				myInsert.setLong (4, folderId.longValue());
+			myInsert.setInt(5, isSuspended.intValue());
+			myInsert.setInt(6, renice.intValue());
+			myInsert.setInt (7, isActive.booleanValue() ? 1 : 0);
+			myInsert.setLong (8, creatorUId.longValue());
+			myInsert.setLong (9, createTs.longValue());
+			myInsert.setLong (10, changerUId.longValue());
+			myInsert.setLong (11, changeTs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "NiceProfileEntry: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "NiceProfileEntry: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -531,23 +468,25 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM NICE_PROFILE_ENTRY WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "NiceProfileEntry: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "NiceProfileEntry: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "NiceProfileEntry: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -555,19 +494,11 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE NICE_PROFILE_ENTRY SET " +
 				        "" + squote + "NP_ID" + equote + " = ? " +
@@ -581,32 +512,33 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "NiceProfileEntry: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong (1, npId.longValue());
-			pUpdate.setInt(2, preference.intValue());
+			myUpdate.clearParameters();
+			myUpdate.setLong (1, npId.longValue());
+			myUpdate.setInt(2, preference.intValue());
 			if (folderId == null)
-				pUpdate.setNull(3, Types.INTEGER);
+				myUpdate.setNull(3, Types.INTEGER);
 			else
-				pUpdate.setLong (3, folderId.longValue());
-			pUpdate.setInt(4, isSuspended.intValue());
-			pUpdate.setInt(5, renice.intValue());
-			pUpdate.setInt (6, isActive.booleanValue() ? 1 : 0);
-			pUpdate.setLong (7, creatorUId.longValue());
-			pUpdate.setLong (8, createTs.longValue());
-			pUpdate.setLong (9, changerUId.longValue());
-			pUpdate.setLong (10, changeTs.longValue());
-			pUpdate.setLong(11, id.longValue());
-			pUpdate.executeUpdate();
+				myUpdate.setLong (3, folderId.longValue());
+			myUpdate.setInt(4, isSuspended.intValue());
+			myUpdate.setInt(5, renice.intValue());
+			myUpdate.setInt (6, isActive.booleanValue() ? 1 : 0);
+			myUpdate.setLong (7, creatorUId.longValue());
+			myUpdate.setLong (8, createTs.longValue());
+			myUpdate.setLong (9, changerUId.longValue());
+			myUpdate.setLong (10, changeTs.longValue());
+			myUpdate.setLong(11, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "NiceProfileEntry: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "NiceProfileEntry: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

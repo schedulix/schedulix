@@ -33,6 +33,7 @@ import java.net.*;
 import java.sql.*;
 import java.math.*;
 
+import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.parser.*;
 import de.independit.scheduler.server.repository.*;
@@ -48,6 +49,8 @@ public class TriggerThread extends InternalSession
 
 	private long nextTime;
 	private int maxWakeupInterval;
+	private LockableHashSet jobsToResume;
+	private boolean firstTime;
 
 	public TriggerThread(SystemEnvironment env, SyncFifo f)
 		throws SDMSException
@@ -56,6 +59,8 @@ public class TriggerThread extends InternalSession
 		NR = 1234323;
 		maxWakeupInterval = SystemEnvironment.ttWakeupInterval*1000;
 		initThread(env, f, NR, name, maxWakeupInterval);
+		jobsToResume = new LockableHashSet();
+		firstTime = true;
 	}
 
 	protected Node getNode(int m)
@@ -73,31 +78,56 @@ public class TriggerThread extends InternalSession
 		int ctr = 0;
 		doTrace(cEnv, "Start Resuming Jobs", SEVERITY_MESSAGE);
 
-		i = SDMSSubmittedEntityTable.table.iterator(sysEnv,
+		LockingSystem.lock(jobsToResume, ObjectLock.EXCLUSIVE);
+		if (firstTime) {
+
+			i = SDMSSubmittedEntityTable.table.iterator(sysEnv,
 			new SDMSFilter() {
 				public boolean isValid(SystemEnvironment sysEnv, SDMSProxy p)
-					throws SDMSException {
+				throws SDMSException {
 					SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
 					if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) return false;
 					if (sme.getResumeTs(sysEnv) == null) return false;
 					return true;
 				}
 			}
-		);
-		while (i.hasNext()) {
-			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) i.next();
-			if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) continue;
-			Long resumeTs = sme.getResumeTs(sysEnv);
-			if (resumeTs != null) {
-
-				long rts = resumeTs.longValue();
-				if (rts <= now) {
-					sme.resume(sysEnv, false);
-				} else {
-					if (rts < nextTime) nextTime = rts;
+			                                           );
+			while (i.hasNext()) {
+				SDMSSubmittedEntity sme = (SDMSSubmittedEntity) i.next();
+				if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) continue;
+				Long resumeTs = sme.getResumeTs(sysEnv);
+				if (resumeTs != null) {
+					jobsToResume.add(sme.getId(sysEnv));
 				}
 			}
+			firstTime = false;
 		}
+		Vector<Long> jobsResumed = new Vector<Long>();
+		try {
+			i = jobsToResume.iterator();
+			while (i.hasNext()) {
+				Long smeId = (Long) i.next();
+				SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
+				if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) continue;
+				Long resumeTs = sme.getResumeTs(sysEnv);
+				if (resumeTs != null) {
+
+					long rts = resumeTs.longValue();
+					if (rts <= now) {
+						i.remove();
+						jobsResumed.add(smeId);
+						sme.resume(sysEnv, false);
+						ctr++;
+					} else {
+						if (rts < nextTime) nextTime = rts;
+					}
+				}
+			}
+		} catch (SerializationException s) {
+			jobsToResume.addAll(jobsResumed);
+			throw s;
+		}
+		LockingSystem.release(jobsToResume);
 		doTrace(cEnv, "End Resuming Jobs (" + ctr + " jobs resumed)", SEVERITY_MESSAGE);
 		now = System.currentTimeMillis();
 		if (now + maxWakeupInterval > nextTime) {
@@ -105,6 +135,22 @@ public class TriggerThread extends InternalSession
 		} else {
 			super.wakeupInterval = maxWakeupInterval;
 		}
+	}
+
+	public void removeFromJobsToResume(SystemEnvironment sysEnv, Long id)
+	throws SDMSException
+	{
+		LockingSystem.lock(jobsToResume, ObjectLock.EXCLUSIVE);
+		jobsToResume.remove(id);
+		LockingSystem.release(jobsToResume);
+	}
+
+	public void addToJobsToResume(SystemEnvironment sysEnv, Long id)
+	throws SDMSException
+	{
+		LockingSystem.lock(jobsToResume, ObjectLock.EXCLUSIVE);
+		jobsToResume.add(id);
+		LockingSystem.release(jobsToResume);
 	}
 
 }

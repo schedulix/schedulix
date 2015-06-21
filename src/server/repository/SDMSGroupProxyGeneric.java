@@ -230,17 +230,16 @@ public class SDMSGroupProxyGeneric extends SDMSProxy
 					hg.add(SDMSObject.publicGId);
 					env.cEnv.pushGid(env, hg);
 				}
-			if(checkGroups == null)
-				groups.addAll(env.cEnv.gid());
-			if(groups.contains(SDMSObject.adminGId)) p = checkPrivs;
-			else {
-			}
-		} else p = checkPrivs;
-		} catch(Throwable t) {
+				if(checkGroups == null)
+					groups.addAll(env.cEnv.gid());
+				if(groups.contains(SDMSObject.adminGId)) p = checkPrivs;
+				else {
+				}
+			} else p = checkPrivs;
+		} finally {
 			if (env.cEnv.isJob()) {
 				env.cEnv.popGid(env);
 			}
-			throw t;
 		}
 		return p;
 	}

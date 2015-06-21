@@ -68,8 +68,8 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		table = (SDMSObjectCommentTable) this;
 		SDMSObjectCommentTableGeneric.table = (SDMSObjectCommentTable) this;
 		isVersioned = true;
-		idx_objectId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
-		idx_objectType = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_objectId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "objectId");
+		idx_objectType = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "objectType");
 	}
 	public SDMSObjectComment create(SystemEnvironment env
 	                                ,Long p_objectId
@@ -221,18 +221,9 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -260,11 +251,29 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
+	public String checkIndex(SDMSObject o)
+	throws SDMSException
+	{
+		String out = "";
+		boolean ok;
+		ok =  idx_objectId.check(((SDMSObjectCommentGeneric) o).objectId, o);
+		out = out + "idx_objectId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_objectType.check(((SDMSObjectCommentGeneric) o).objectType, o);
+		out = out + "idx_objectType: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
 	protected void index(SystemEnvironment env, SDMSObject o)
 	throws SDMSException
 	{
-		idx_objectId.put(env, ((SDMSObjectCommentGeneric) o).objectId, o);
-		idx_objectType.put(env, ((SDMSObjectCommentGeneric) o).objectType, o);
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_objectId.put(env, ((SDMSObjectCommentGeneric) o).objectId, o, ((1 & indexMember) != 0));
+		idx_objectType.put(env, ((SDMSObjectCommentGeneric) o).objectType, o, ((2 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

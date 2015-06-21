@@ -654,7 +654,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (oldSuspended == ADMINSUSPEND && (suspend && admin))
 			return;
 
-		if (suspend && local && (booleanLocal == null || !booleanLocal.booleanValue()))
+		if (suspend && local && (oldSuspended != NOSUSPEND) && (booleanLocal == null || !booleanLocal.booleanValue()))
 			return;
 
 		if (admin && (!sysEnv.cEnv.isUser() || !sysEnv.cEnv.gid().contains(SDMSObject.adminGId))) {
@@ -2559,6 +2559,16 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		} else {
 			return;
 		}
+	}
+
+	public void setResumeTs (SystemEnvironment sysEnv, Long resumeTs)
+	throws SDMSException
+	{
+		super.setResumeTs(sysEnv, resumeTs);
+		if (resumeTs == null)
+			sysEnv.tt.removeFromJobsToResume(sysEnv, getId(sysEnv));
+		else
+			sysEnv.tt.addToJobsToResume(sysEnv, getId(sysEnv));
 	}
 
 	public void setJobIsRestartable(SystemEnvironment sysEnv, Boolean flag)

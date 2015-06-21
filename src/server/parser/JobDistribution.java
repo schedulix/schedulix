@@ -77,6 +77,7 @@ public abstract class JobDistribution extends Node
 		desc.add(RepoIface.STARTJOB_ARGS);
 		desc.add(RepoIface.STARTJOB_ENV);
 		desc.add(RepoIface.STARTJOB_RUN);
+		desc.add(RepoIface.STARTJOB_JOBENV);
 
 		actVersion = sme.getSeVersion(sysEnv).longValue();
 
@@ -209,6 +210,20 @@ public abstract class JobDistribution extends Node
 		}
 
 		data.add(sme.getRerunSeq(sysEnv));
+
+		Vector jobenv = new Vector();
+		Vector jpv = SDMSParameterDefinitionTable.idx_seId.getVector(sysEnv, se.getId(sysEnv));
+		Iterator jpi = jpv.iterator();
+		while(jpi.hasNext()) {
+			SDMSParameterDefinition pd = (SDMSParameterDefinition)jpi.next();
+
+			String exportName = pd.getExportName(sysEnv);
+			if (exportName != null) {
+				jobenv.add(exportName);
+				jobenv.add(sme.getVariableValue(sysEnv, pd.getName(sysEnv), false, ParseStr.S_DEFAULT));
+			}
+		}
+		data.add(jobenv);
 
 		try {
 			int exitcode = Integer.parseInt(cmd);

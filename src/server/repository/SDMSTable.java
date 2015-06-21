@@ -33,12 +33,21 @@ import java.sql.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.locking.*;
 
 public abstract class SDMSTable
 {
 	public static final String __version = "@(#) $Id: SDMSTable.java,v 2.15.2.1 2013/03/14 10:25:26 ronald Exp $";
 
-	protected Map hashMap = null;
+	private HashMap hashMap = null;
+	protected boolean hashMapTrace = false;
+
+	protected void hashMapRemove(Object id)
+	{
+		if (hashMapTrace)
+			System.out.println (tableName() + ":hashMapRemove(" + id + ")");
+		hashMap.remove(id);
+	}
 
 	protected boolean isVersioned;
 
@@ -54,22 +63,32 @@ public abstract class SDMSTable
 			throw new FatalException (new SDMSMessage(env,
 					"03110251129", "Tried to initialize table twice"));
 		}
-
-		hashMap = Collections.synchronizedMap(new HashMap());
+		hashMap = new HashMap();
 		isVersioned = true;
 	}
 
-	public Iterator iterator(SystemEnvironment env)
+	public Iterator iterator (SystemEnvironment env)
 		throws SDMSException
 	{
 
-		return iterator(env, null);
+		return iterator (env, null, false );
+	}
+	public Iterator iterator (SystemEnvironment env, boolean unlocked)
+	throws SDMSException
+	{
+
+		return iterator (env, null, unlocked);
 	}
 
-	public Iterator iterator(SystemEnvironment env, SDMSFilter f)
+	public Iterator iterator (SystemEnvironment env, SDMSFilter f)
 		throws SDMSException
 	{
 
+		return iterator (env, f, false);
+	}
+	public Iterator iterator (SystemEnvironment env, SDMSFilter f, boolean unlocked)
+	throws SDMSException
+	{
 		Vector r = new Vector();
 		SDMSVersions v;
 		SDMSProxy p = null;
@@ -79,7 +98,9 @@ public abstract class SDMSTable
 		}
 		for (int i = 0; i < va.length; ++i) {
 			v = (SDMSVersions) va[i];
-			SDMSObject o = v.getRaw(env);
+			if (env.tx.mode == SDMSTransaction.READWRITE && env.maxWriter > 1 && !unlocked)
+				LockingSystem.lock(v, ObjectLock.SHARED);
+			SDMSObject o = v.getRaw(env, unlocked);
 			if (o == null) continue;
 			if (p == null) {
 				p = o.toProxy();
@@ -96,25 +117,19 @@ public abstract class SDMSTable
 
 	public int rawSize()
 	{
-		return hashMap.size();
+		synchronized(hashMap) {
+			return hashMap.size();
+		}
 	}
 
-	public void clearTable(SystemEnvironment env)
-		throws SDMSException
+	public void clearTableUnlocked(SystemEnvironment env)
+	throws SDMSException
 	{
-
 		SDMSVersions v;
-		SDMSProxy p;
-		Iterator i = hashMap.values().iterator();
+		Iterator i = iterator(env, true );
 
 		while(i.hasNext()) {
-			v = (SDMSVersions) i.next();
-			try {
-				p = (v.get(env)).toProxy();
-			} catch (NotFoundException nfe) {
-
-				continue;
-			}
+			SDMSProxy p = (SDMSProxy) i.next();
 			p.delete(env);
 		}
 	}
@@ -169,60 +184,95 @@ public abstract class SDMSTable
 
 	public abstract String[] columnNames();
 
+	public abstract String checkIndex(SDMSObject o)
+	throws SDMSException;
 	protected abstract void index(SystemEnvironment env, SDMSObject o)
 		throws SDMSException;
+	protected abstract void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException;
 
 	protected abstract void unIndex(SystemEnvironment env, SDMSObject o)
 		throws SDMSException;
 
-	public synchronized SDMSProxy get (SystemEnvironment env, Long id)
+	public SDMSProxy get (SystemEnvironment env, Long id)
 		throws SDMSException
 	{
 		SDMSProxy p;
 		SDMSVersions versions;
 
-		versions = (SDMSVersions)hashMap.get (id);
+		synchronized (hashMap) {
+			versions = (SDMSVersions)hashMap.get (id);
+		}
 		if(versions == null) {
 			throw new NotFoundException (new SDMSMessage(env, "03110251037", "Key $1 not found (" + this.getClass().getName() + ")", id));
 		}
+		if (env.tx.mode == SDMSTransaction.READWRITE && env.maxWriter > 1)
+			LockingSystem.lock(versions, ObjectLock.SHARED);
 		p = (versions.get(env)).toProxy();
 		p.current = true;
 		return p;
 
 	}
 
-	public synchronized SDMSProxy get (SystemEnvironment env, Long id, long version)
+	public SDMSVersions getVersions(Long id)
+	{
+		synchronized (hashMap) {
+			return (SDMSVersions)hashMap.get (id);
+		}
+	}
+
+	public boolean contains(Long id)
+	{
+		synchronized (hashMap) {
+			return hashMap.containsKey (id);
+		}
+	}
+
+	public SDMSProxy get (SystemEnvironment env, Long id, long version)
 		throws SDMSException
 	{
 		SDMSVersions versions;
-		versions = (SDMSVersions)(hashMap.get (id));
+		synchronized (hashMap) {
+			versions = (SDMSVersions)(hashMap.get (id));
+		}
 		if(versions == null) {
 			throw new NotFoundException (new SDMSMessage(env, "03110251039", "Key $1 not found", id));
 		}
 		return (versions.get(env, version)).toProxy();
 	}
 
-	public synchronized boolean exists (SystemEnvironment env, Long id)
+	public boolean exists (SystemEnvironment env, Long id)
 		throws SDMSException
 	{
 		SDMSVersions versions;
 
-		versions = (SDMSVersions)hashMap.get (id);
+		synchronized (hashMap) {
+			versions = (SDMSVersions)hashMap.get (id);
+		}
 		if(versions == null) {
 			return false;
 		}
+		if (env.tx.mode == SDMSTransaction.READWRITE && env.maxWriter > 1)
+			LockingSystem.lock(versions, ObjectLock.SHARED);
+		if (versions.getRaw(env, false) == null) return false;
 		return true;
 
 	}
 
-	protected synchronized void put(SystemEnvironment env, Long id, SDMSVersions versions)
+	protected void put(SystemEnvironment env, Long id, SDMSVersions versions)
 		throws SDMSException
 	{
-		hashMap.put(id, versions);
+		synchronized (hashMap) {
+			if (hashMapTrace)
+				System.out.println (tableName() + ":hashMap.put(" + id + ")");
+			hashMap.put(id, versions);
+		}
 		try {
 			index(env, (SDMSObject)(versions.o_v.getLast()));
 		} catch(SDMSException e) {
-			hashMap.remove(id);
+			synchronized (hashMap) {
+				hashMapRemove(id);
+			}
 			throw e;
 		}
 	}
@@ -239,12 +289,6 @@ public abstract class SDMSTable
 				v.dump();
 			}
 		}
-	}
-
-	synchronized void release(SystemEnvironment env, SDMSVersions v)
-		throws SDMSException
-	{
-		hashMap.remove(v.id);
 	}
 
 	public boolean getIsVersioned()

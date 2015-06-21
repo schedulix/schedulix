@@ -63,9 +63,9 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSSmeCounterGeneric(
 	        SystemEnvironment env,
@@ -99,10 +99,10 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		return (jahr);
 	}
 
-	public	SDMSSmeCounterGeneric setJahr (SystemEnvironment env, Integer p_jahr)
+	public	void setJahr (SystemEnvironment env, Integer p_jahr)
 	throws SDMSException
 	{
-		if(jahr.equals(p_jahr)) return this;
+		if(jahr.equals(p_jahr)) return;
 		SDMSSmeCounterGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -115,13 +115,13 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 			o.jahr = p_jahr;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getMonat (SystemEnvironment env)
@@ -130,10 +130,10 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		return (monat);
 	}
 
-	public	SDMSSmeCounterGeneric setMonat (SystemEnvironment env, Integer p_monat)
+	public	void setMonat (SystemEnvironment env, Integer p_monat)
 	throws SDMSException
 	{
-		if(monat.equals(p_monat)) return this;
+		if(monat.equals(p_monat)) return;
 		SDMSSmeCounterGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -146,13 +146,13 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 			o.monat = p_monat;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getTag (SystemEnvironment env)
@@ -161,10 +161,10 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		return (tag);
 	}
 
-	public	SDMSSmeCounterGeneric setTag (SystemEnvironment env, Integer p_tag)
+	public	void setTag (SystemEnvironment env, Integer p_tag)
 	throws SDMSException
 	{
-		if(tag.equals(p_tag)) return this;
+		if(tag.equals(p_tag)) return;
 		SDMSSmeCounterGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -177,13 +177,13 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 			o.tag = p_tag;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getAnzahl (SystemEnvironment env)
@@ -192,29 +192,22 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		return (anzahl);
 	}
 
-	public	SDMSSmeCounterGeneric setAnzahl (SystemEnvironment env, Integer p_anzahl)
+	public	void setAnzahl (SystemEnvironment env, Integer p_anzahl)
 	throws SDMSException
 	{
-		if(anzahl.equals(p_anzahl)) return this;
-		SDMSSmeCounterGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(SmeCounter) Change of system object not allowed")
-				);
-			}
-			o = (SDMSSmeCounterGeneric) change(env);
-			o.anzahl = p_anzahl;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(anzahl.equals(p_anzahl)) return;
+		SDMSSmeCounterGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(SmeCounter) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSSmeCounterGeneric) change(env);
+		o.anzahl = p_anzahl;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChecksum (SystemEnvironment env)
@@ -223,29 +216,22 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		return (checksum);
 	}
 
-	public	SDMSSmeCounterGeneric setChecksum (SystemEnvironment env, Long p_checksum)
+	public	void setChecksum (SystemEnvironment env, Long p_checksum)
 	throws SDMSException
 	{
-		if(checksum.equals(p_checksum)) return this;
-		SDMSSmeCounterGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(SmeCounter) Change of system object not allowed")
-				);
-			}
-			o = (SDMSSmeCounterGeneric) change(env);
-			o.checksum = p_checksum;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(checksum.equals(p_checksum)) return;
+		SDMSSmeCounterGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(SmeCounter) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSSmeCounterGeneric) change(env);
+		o.checksum = p_checksum;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -254,29 +240,22 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSSmeCounterGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSSmeCounterGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(SmeCounter) Change of system object not allowed")
-				);
-			}
-			o = (SDMSSmeCounterGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSSmeCounterGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(SmeCounter) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSSmeCounterGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -285,29 +264,22 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSSmeCounterGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSSmeCounterGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(SmeCounter) Change of system object not allowed")
-				);
-			}
-			o = (SDMSSmeCounterGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSSmeCounterGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(SmeCounter) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSSmeCounterGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -316,22 +288,15 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSSmeCounterGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSSmeCounterGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSSmeCounterGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSSmeCounterGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSSmeCounterGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -340,23 +305,16 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSSmeCounterGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSSmeCounterGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSSmeCounterGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSSmeCounterGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSSmeCounterGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSSmeCounterGeneric set_JahrMonatTag (SystemEnvironment env, Integer p_jahr, Integer p_monat, Integer p_tag)
@@ -426,19 +384,11 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO SME_COUNTER (" +
 				        "ID" +
@@ -462,29 +412,30 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "SmeCounter: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setInt(2, jahr.intValue());
-			pInsert.setInt(3, monat.intValue());
-			pInsert.setInt(4, tag.intValue());
-			pInsert.setInt(5, anzahl.intValue());
-			pInsert.setLong (6, checksum.longValue());
-			pInsert.setLong (7, creatorUId.longValue());
-			pInsert.setLong (8, createTs.longValue());
-			pInsert.setLong (9, changerUId.longValue());
-			pInsert.setLong (10, changeTs.longValue());
-			pInsert.executeUpdate();
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setInt(2, jahr.intValue());
+			myInsert.setInt(3, monat.intValue());
+			myInsert.setInt(4, tag.intValue());
+			myInsert.setInt(5, anzahl.intValue());
+			myInsert.setLong (6, checksum.longValue());
+			myInsert.setLong (7, creatorUId.longValue());
+			myInsert.setLong (8, createTs.longValue());
+			myInsert.setLong (9, changerUId.longValue());
+			myInsert.setLong (10, changeTs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "SmeCounter: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "SmeCounter: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -492,23 +443,25 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM SME_COUNTER WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "SmeCounter: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "SmeCounter: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "SmeCounter: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -516,19 +469,11 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE SME_COUNTER SET " +
 				        "" + squote + "JAHR" + equote + " = ? " +
@@ -541,28 +486,29 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "SmeCounter: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setInt(1, jahr.intValue());
-			pUpdate.setInt(2, monat.intValue());
-			pUpdate.setInt(3, tag.intValue());
-			pUpdate.setInt(4, anzahl.intValue());
-			pUpdate.setLong (5, checksum.longValue());
-			pUpdate.setLong (6, creatorUId.longValue());
-			pUpdate.setLong (7, createTs.longValue());
-			pUpdate.setLong (8, changerUId.longValue());
-			pUpdate.setLong (9, changeTs.longValue());
-			pUpdate.setLong(10, id.longValue());
-			pUpdate.executeUpdate();
+			myUpdate.clearParameters();
+			myUpdate.setInt(1, jahr.intValue());
+			myUpdate.setInt(2, monat.intValue());
+			myUpdate.setInt(3, tag.intValue());
+			myUpdate.setInt(4, anzahl.intValue());
+			myUpdate.setLong (5, checksum.longValue());
+			myUpdate.setLong (6, creatorUId.longValue());
+			myUpdate.setLong (7, createTs.longValue());
+			myUpdate.setLong (8, changerUId.longValue());
+			myUpdate.setLong (9, changeTs.longValue());
+			myUpdate.setLong(10, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "SmeCounter: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "SmeCounter: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

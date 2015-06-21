@@ -74,9 +74,9 @@ public class SDMSUserGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSUserGeneric(
 	        SystemEnvironment env,
@@ -132,10 +132,10 @@ public class SDMSUserGeneric extends SDMSObject
 		return (name);
 	}
 
-	public	SDMSUserGeneric setName (SystemEnvironment env, String p_name)
+	public	void setName (SystemEnvironment env, String p_name)
 	throws SDMSException
 	{
-		if(name.equals(p_name)) return this;
+		if(name.equals(p_name)) return;
 		SDMSUserGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -154,13 +154,13 @@ public class SDMSUserGeneric extends SDMSObject
 			o.name = p_name;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 3);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public String getPasswd (SystemEnvironment env)
@@ -169,30 +169,23 @@ public class SDMSUserGeneric extends SDMSObject
 		return (passwd);
 	}
 
-	public	SDMSUserGeneric setPasswd (SystemEnvironment env, String p_passwd)
+	public	void setPasswd (SystemEnvironment env, String p_passwd)
 	throws SDMSException
 	{
-		if(passwd.equals(p_passwd)) return this;
-		SDMSUserGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSUserGeneric) change(env);
-			if (p_passwd != null && p_passwd.length() > 64) {
-				throw new CommonErrorException (
-				        new SDMSMessage(env, "01112141510",
-				                        "(User) Length of $1 exceeds maximum length $2", "passwd", "64")
-				);
-			}
-			o.passwd = p_passwd;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(passwd.equals(p_passwd)) return;
+		SDMSUserGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSUserGeneric) change(env);
+		if (p_passwd != null && p_passwd.length() > 64) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(User) Length of $1 exceeds maximum length $2", "passwd", "64")
+			);
 		}
-		return o;
+		o.passwd = p_passwd;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getSalt (SystemEnvironment env)
@@ -201,31 +194,24 @@ public class SDMSUserGeneric extends SDMSObject
 		return (salt);
 	}
 
-	public	SDMSUserGeneric setSalt (SystemEnvironment env, String p_salt)
+	public	void setSalt (SystemEnvironment env, String p_salt)
 	throws SDMSException
 	{
-		if(p_salt != null && p_salt.equals(salt)) return this;
-		if(p_salt == null && salt == null) return this;
-		SDMSUserGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSUserGeneric) change(env);
-			if (p_salt != null && p_salt.length() > 64) {
-				throw new CommonErrorException (
-				        new SDMSMessage(env, "01112141510",
-				                        "(User) Length of $1 exceeds maximum length $2", "salt", "64")
-				);
-			}
-			o.salt = p_salt;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_salt != null && p_salt.equals(salt)) return;
+		if(p_salt == null && salt == null) return;
+		SDMSUserGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSUserGeneric) change(env);
+		if (p_salt != null && p_salt.length() > 64) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(User) Length of $1 exceeds maximum length $2", "salt", "64")
+			);
 		}
-		return o;
+		o.salt = p_salt;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getMethod (SystemEnvironment env)
@@ -250,24 +236,17 @@ public class SDMSUserGeneric extends SDMSObject
 		                          getMethod (env)));
 	}
 
-	public	SDMSUserGeneric setMethod (SystemEnvironment env, Integer p_method)
+	public	void setMethod (SystemEnvironment env, Integer p_method)
 	throws SDMSException
 	{
-		if(method.equals(p_method)) return this;
-		SDMSUserGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSUserGeneric) change(env);
-			o.method = p_method;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(method.equals(p_method)) return;
+		SDMSUserGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSUserGeneric) change(env);
+		o.method = p_method;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Boolean getIsEnabled (SystemEnvironment env)
@@ -276,29 +255,22 @@ public class SDMSUserGeneric extends SDMSObject
 		return (isEnabled);
 	}
 
-	public	SDMSUserGeneric setIsEnabled (SystemEnvironment env, Boolean p_isEnabled)
+	public	void setIsEnabled (SystemEnvironment env, Boolean p_isEnabled)
 	throws SDMSException
 	{
-		if(isEnabled.equals(p_isEnabled)) return this;
-		SDMSUserGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(User) Change of system object not allowed")
-				);
-			}
-			o = (SDMSUserGeneric) change(env);
-			o.isEnabled = p_isEnabled;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(isEnabled.equals(p_isEnabled)) return;
+		SDMSUserGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(User) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSUserGeneric) change(env);
+		o.isEnabled = p_isEnabled;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getDefaultGId (SystemEnvironment env)
@@ -307,24 +279,17 @@ public class SDMSUserGeneric extends SDMSObject
 		return (defaultGId);
 	}
 
-	public	SDMSUserGeneric setDefaultGId (SystemEnvironment env, Long p_defaultGId)
+	public	void setDefaultGId (SystemEnvironment env, Long p_defaultGId)
 	throws SDMSException
 	{
-		if(defaultGId.equals(p_defaultGId)) return this;
-		SDMSUserGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSUserGeneric) change(env);
-			o.defaultGId = p_defaultGId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(defaultGId.equals(p_defaultGId)) return;
+		SDMSUserGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSUserGeneric) change(env);
+		o.defaultGId = p_defaultGId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getDeleteVersion (SystemEnvironment env)
@@ -333,10 +298,10 @@ public class SDMSUserGeneric extends SDMSObject
 		return (deleteVersion);
 	}
 
-	public	SDMSUserGeneric setDeleteVersion (SystemEnvironment env, Long p_deleteVersion)
+	public	void setDeleteVersion (SystemEnvironment env, Long p_deleteVersion)
 	throws SDMSException
 	{
-		if(deleteVersion.equals(p_deleteVersion)) return this;
+		if(deleteVersion.equals(p_deleteVersion)) return;
 		SDMSUserGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -349,13 +314,13 @@ public class SDMSUserGeneric extends SDMSObject
 			o.deleteVersion = p_deleteVersion;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -364,29 +329,22 @@ public class SDMSUserGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSUserGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSUserGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(User) Change of system object not allowed")
-				);
-			}
-			o = (SDMSUserGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSUserGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(User) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSUserGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -395,29 +353,22 @@ public class SDMSUserGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSUserGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSUserGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(User) Change of system object not allowed")
-				);
-			}
-			o = (SDMSUserGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSUserGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(User) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSUserGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -426,22 +377,15 @@ public class SDMSUserGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSUserGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSUserGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSUserGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSUserGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSUserGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -450,23 +394,16 @@ public class SDMSUserGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSUserGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSUserGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSUserGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSUserGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSUserGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSUserGeneric set_NameDeleteVersion (SystemEnvironment env, String p_name, Long p_deleteVersion)
@@ -545,19 +482,11 @@ public class SDMSUserGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO USERS (" +
 				        "ID" +
@@ -585,34 +514,35 @@ public class SDMSUserGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "User: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setString(2, name);
-			pInsert.setString(3, passwd);
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setString(2, name);
+			myInsert.setString(3, passwd);
 			if (salt == null)
-				pInsert.setNull(4, Types.VARCHAR);
+				myInsert.setNull(4, Types.VARCHAR);
 			else
-				pInsert.setString(4, salt);
-			pInsert.setInt(5, method.intValue());
-			pInsert.setInt (6, isEnabled.booleanValue() ? 1 : 0);
-			pInsert.setLong (7, defaultGId.longValue());
-			pInsert.setLong (8, deleteVersion.longValue());
-			pInsert.setLong (9, creatorUId.longValue());
-			pInsert.setLong (10, createTs.longValue());
-			pInsert.setLong (11, changerUId.longValue());
-			pInsert.setLong (12, changeTs.longValue());
-			pInsert.executeUpdate();
+				myInsert.setString(4, salt);
+			myInsert.setInt(5, method.intValue());
+			myInsert.setInt (6, isEnabled.booleanValue() ? 1 : 0);
+			myInsert.setLong (7, defaultGId.longValue());
+			myInsert.setLong (8, deleteVersion.longValue());
+			myInsert.setLong (9, creatorUId.longValue());
+			myInsert.setLong (10, createTs.longValue());
+			myInsert.setLong (11, changerUId.longValue());
+			myInsert.setLong (12, changeTs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -620,23 +550,25 @@ public class SDMSUserGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM USERS WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "User: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -644,19 +576,11 @@ public class SDMSUserGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE USERS SET " +
 				        "" + squote + "NAME" + equote + " = ? " +
@@ -671,33 +595,34 @@ public class SDMSUserGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "User: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setString(1, name);
-			pUpdate.setString(2, passwd);
+			myUpdate.clearParameters();
+			myUpdate.setString(1, name);
+			myUpdate.setString(2, passwd);
 			if (salt == null)
-				pUpdate.setNull(3, Types.VARCHAR);
+				myUpdate.setNull(3, Types.VARCHAR);
 			else
-				pUpdate.setString(3, salt);
-			pUpdate.setInt(4, method.intValue());
-			pUpdate.setInt (5, isEnabled.booleanValue() ? 1 : 0);
-			pUpdate.setLong (6, defaultGId.longValue());
-			pUpdate.setLong (7, deleteVersion.longValue());
-			pUpdate.setLong (8, creatorUId.longValue());
-			pUpdate.setLong (9, createTs.longValue());
-			pUpdate.setLong (10, changerUId.longValue());
-			pUpdate.setLong (11, changeTs.longValue());
-			pUpdate.setLong(12, id.longValue());
-			pUpdate.executeUpdate();
+				myUpdate.setString(3, salt);
+			myUpdate.setInt(4, method.intValue());
+			myUpdate.setInt (5, isEnabled.booleanValue() ? 1 : 0);
+			myUpdate.setLong (6, defaultGId.longValue());
+			myUpdate.setLong (7, deleteVersion.longValue());
+			myUpdate.setLong (8, creatorUId.longValue());
+			myUpdate.setLong (9, createTs.longValue());
+			myUpdate.setLong (10, changerUId.longValue());
+			myUpdate.setLong (11, changeTs.longValue());
+			myUpdate.setLong(12, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

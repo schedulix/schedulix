@@ -73,11 +73,11 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 		table = (SDMSResourceTemplateTable) this;
 		SDMSResourceTemplateTableGeneric.table = (SDMSResourceTemplateTable) this;
 		isVersioned = true;
-		idx_nrId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_rsdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_nrId_seId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_nrId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "nrId");
+		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seId");
+		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "ownerId");
+		idx_rsdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "rsdId");
+		idx_nrId_seId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "nrId_seId");
 	}
 	public SDMSResourceTemplate create(SystemEnvironment env
 	                                   ,Long p_nrId
@@ -236,18 +236,9 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -277,18 +268,46 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_nrId.put(env, ((SDMSResourceTemplateGeneric) o).nrId, o);
-		idx_seId.put(env, ((SDMSResourceTemplateGeneric) o).seId, o);
-		idx_ownerId.put(env, ((SDMSResourceTemplateGeneric) o).ownerId, o);
-		idx_rsdId.put(env, ((SDMSResourceTemplateGeneric) o).rsdId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_nrId.check(((SDMSResourceTemplateGeneric) o).nrId, o);
+		out = out + "idx_nrId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_seId.check(((SDMSResourceTemplateGeneric) o).seId, o);
+		out = out + "idx_seId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_ownerId.check(((SDMSResourceTemplateGeneric) o).ownerId, o);
+		out = out + "idx_ownerId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_rsdId.check(((SDMSResourceTemplateGeneric) o).rsdId, o);
+		out = out + "idx_rsdId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSResourceTemplateGeneric) o).nrId);
 		k.add(((SDMSResourceTemplateGeneric) o).seId);
-		idx_nrId_seId.put(env, k, o);
+		ok =  idx_nrId_seId.check(k, o);
+		out = out + "idx_nrId_seId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_nrId.put(env, ((SDMSResourceTemplateGeneric) o).nrId, o, ((1 & indexMember) != 0));
+		idx_seId.put(env, ((SDMSResourceTemplateGeneric) o).seId, o, ((2 & indexMember) != 0));
+		idx_ownerId.put(env, ((SDMSResourceTemplateGeneric) o).ownerId, o, ((4 & indexMember) != 0));
+		idx_rsdId.put(env, ((SDMSResourceTemplateGeneric) o).rsdId, o, ((8 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSResourceTemplateGeneric) o).nrId);
+		k.add(((SDMSResourceTemplateGeneric) o).seId);
+		idx_nrId_seId.put(env, k, o, ((16 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

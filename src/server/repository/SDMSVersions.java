@@ -34,6 +34,7 @@ import java.io.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.locking.*;
 
 public class SDMSVersions
 {
@@ -97,8 +98,7 @@ public class SDMSVersions
 		}
 	}
 
-	protected synchronized void commitOrRollback(SystemEnvironment env, long versionId,
-					boolean isNew, boolean isCommit)
+	protected synchronized void commitOrRollback(SystemEnvironment env, long versionId, boolean isNew, boolean isCommit)
 		throws SDMSException
 	{
 		int s;
@@ -196,12 +196,10 @@ public class SDMSVersions
 
 	}
 
-	public synchronized void purge (SystemEnvironment env, long versionId, Iterator i)
+	public synchronized boolean purge (SystemEnvironment env, long versionId)
 		throws SDMSException
 	{
-		if (i == null) {
-			throw new FatalException(new SDMSMessage (env, "02225041315", "purge with null iterator !"));
-		}
+		boolean remove = false;
 		int s = versions.size();
 
 		long startVersion = 1;
@@ -217,21 +215,22 @@ public class SDMSVersions
 		if ( s == 0 ||
 		    (s == 1 && ((SDMSObject)(versions.elementAt(0))).validTo == Long.MAX_VALUE)
 		   )
-			i.remove();
+			remove = true;
 
 		if (s == 0)
-			table.hashMap.remove(id);
+			table.hashMapRemove(id);
 		else
 
 			if (!table.isVersioned) {
 				((SDMSObject)(versions.elementAt(0))).validFrom = startVersion;
 			}
+		return remove;
 	}
 
 	protected SDMSObject get (SystemEnvironment env)
 		throws SDMSException
 	{
-		SDMSObject obj = getRaw (env);
+		SDMSObject obj = getRaw (env, false);
 
 		if(obj == null) {
 			raiseNotFoundException(env, 0);
@@ -239,7 +238,7 @@ public class SDMSVersions
 		return obj;
 	}
 
-	protected SDMSObject getRaw (SystemEnvironment env)
+	protected SDMSObject getRaw (SystemEnvironment env, boolean unlocked)
 		throws SDMSException
 	{
 		SDMSObject o;
@@ -268,10 +267,12 @@ public class SDMSVersions
 			if (env.tx.mode == SDMSTransaction.READONLY) {
 				return getRaw(env, env.tx.versionId);
 			} else {
-				lockShared(env);
 				o = (SDMSObject)getRaw(env, Long.MAX_VALUE);
 				if (o != null && !o.isCurrent) {
-					throw new FatalException( new SDMSMessage (env, "02110301835", "get returned non current version"));
+					if (!unlocked)
+						throw new FatalException( new SDMSMessage (env, "02110301835", "get returned non current version"));
+					else
+						o = null;
 				}
 				return o;
 			}
@@ -303,15 +304,12 @@ public class SDMSVersions
 					    new Long(versionId), id));
 	}
 
-	private synchronized SDMSObject getRaw (SystemEnvironment env, long versionId)
+	protected synchronized SDMSObject getRaw (SystemEnvironment env, long versionId)
 		throws SDMSException
 	{
 		int s = versions.size();
 		SDMSObject obj;
 		obj = null;
-
-		if(!table.isVersioned)
-			lockShared(env);
 
 		for (; s > 0; --s) {
 			obj = (SDMSObject)(versions.elementAt(s - 1));
@@ -332,10 +330,15 @@ public class SDMSVersions
 		SDMSThread.doTrace(null, toString(), severity);
 	}
 
+	public String toShortString()
+	{
+		return "SDMSVersions of " + table.tableName() + "(" + id.toString() + ")";
+	}
+
 	public String toString(int indent)
 	{
 		try {
-			StringBuffer result = new StringBuffer(
+			StringBuilder result = new StringBuilder(
 				"-- Start SDMSVersions dump --\n" +
 				"Dump of SDMSVersions object for Object : " + id.toString() + "\n" +
 				"Object is a " + table.tableName() + "\n" +
@@ -354,7 +357,9 @@ public class SDMSVersions
 					"isDeleted : " + o.isDeleted + "\n" +
 					"memOnly : " + o.memOnly + "\n" +
 					"--------------------------\n" +
-					o.toString(indent));
+					o.toString(indent) +
+				        "- - - - - - - - - - - - - \n" +
+				        table.checkIndex(o));
 			}
 			result.append("-- End Committed Versions --\n");
 
@@ -363,7 +368,9 @@ public class SDMSVersions
 				i = o_v.listIterator(0);
 				while (i.hasNext()) {
 					o = (SDMSObject)(i.next());
-					result.append(o.toString(indent) + "\n" +
+					result.append(o.toString(indent) +
+					              "- - - - - - - - - - - - - \n" +
+					              table.checkIndex(o) +
 						"----------------------------\n" +
 						"subTxId : " + o.subTxId + "\n" +
 						"isDeleted : " + o.isDeleted + "\n" +
@@ -385,26 +392,6 @@ public class SDMSVersions
 	public String toString()
 	{
 		return toString(0);
-	}
-
-	private void lock(SystemEnvironment env, int mode)
-		throws SDMSException
-	{
-
-	}
-	protected void lockExclusive(SystemEnvironment env)
-		throws SDMSException
-	{
-		lock(env, SDMSLock.X);
-	}
-	protected void lockShared(SystemEnvironment env)
-		throws SDMSException
-	{
-		lock(env, SDMSLock.S);
-	}
-	protected void unLock(SystemEnvironment env)
-	{
-
 	}
 
 	public synchronized HashMap stat(SystemEnvironment sysEnv)

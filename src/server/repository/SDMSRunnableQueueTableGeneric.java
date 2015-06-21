@@ -69,11 +69,11 @@ public class SDMSRunnableQueueTableGeneric extends SDMSTable
 		table = (SDMSRunnableQueueTable) this;
 		SDMSRunnableQueueTableGeneric.table = (SDMSRunnableQueueTable) this;
 		isVersioned = false;
-		idx_smeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_scopeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_state = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_smeId_scopeId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
-		idx_scopeId_state = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_smeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "smeId");
+		idx_scopeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "scopeId");
+		idx_state = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "state");
+		idx_smeId_scopeId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "smeId_scopeId");
+		idx_scopeId_state = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "scopeId_state");
 	}
 	public SDMSRunnableQueue create(SystemEnvironment env
 	                                ,Long p_smeId
@@ -205,18 +205,9 @@ public class SDMSRunnableQueueTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -238,21 +229,52 @@ public class SDMSRunnableQueueTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_smeId.put(env, ((SDMSRunnableQueueGeneric) o).smeId, o);
-		idx_scopeId.put(env, ((SDMSRunnableQueueGeneric) o).scopeId, o);
-		idx_state.put(env, ((SDMSRunnableQueueGeneric) o).state, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_smeId.check(((SDMSRunnableQueueGeneric) o).smeId, o);
+		out = out + "idx_smeId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_scopeId.check(((SDMSRunnableQueueGeneric) o).scopeId, o);
+		out = out + "idx_scopeId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_state.check(((SDMSRunnableQueueGeneric) o).state, o);
+		out = out + "idx_state: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSRunnableQueueGeneric) o).smeId);
 		k.add(((SDMSRunnableQueueGeneric) o).scopeId);
-		idx_smeId_scopeId.put(env, k, o);
+		ok =  idx_smeId_scopeId.check(k, o);
+		out = out + "idx_smeId_scopeId: " + (ok ? "ok" : "missing") + "\n";
 		k = new SDMSKey();
 		k.add(((SDMSRunnableQueueGeneric) o).scopeId);
 		k.add(((SDMSRunnableQueueGeneric) o).state);
-		idx_scopeId_state.put(env, k, o);
+		ok =  idx_scopeId_state.check(k, o);
+		out = out + "idx_scopeId_state: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_smeId.put(env, ((SDMSRunnableQueueGeneric) o).smeId, o, ((1 & indexMember) != 0));
+		idx_scopeId.put(env, ((SDMSRunnableQueueGeneric) o).scopeId, o, ((2 & indexMember) != 0));
+		idx_state.put(env, ((SDMSRunnableQueueGeneric) o).state, o, ((4 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSRunnableQueueGeneric) o).smeId);
+		k.add(((SDMSRunnableQueueGeneric) o).scopeId);
+		idx_smeId_scopeId.put(env, k, o, ((8 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSRunnableQueueGeneric) o).scopeId);
+		k.add(((SDMSRunnableQueueGeneric) o).state);
+		idx_scopeId_state.put(env, k, o, ((16 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

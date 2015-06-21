@@ -89,7 +89,7 @@ public class GarbageThread extends InternalSession
 				return false;
 			}
 		};
-		Iterator i = SDMSSubmittedEntityTable.table.iterator(sysEnv, filter);
+		Iterator i = SDMSSubmittedEntityTable.table.iterator(sysEnv, filter, true );
 		while(i.hasNext()) {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) i.next();
 			v_masters.add(sme);

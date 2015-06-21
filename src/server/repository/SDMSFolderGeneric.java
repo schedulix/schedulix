@@ -63,9 +63,9 @@ public class SDMSFolderGeneric extends SDMSObject
 	protected Long changeTs;
 	protected Long inheritPrivs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSFolderGeneric(
 	        SystemEnvironment env,
@@ -105,10 +105,10 @@ public class SDMSFolderGeneric extends SDMSObject
 		return (name);
 	}
 
-	public	SDMSFolderGeneric setName (SystemEnvironment env, String p_name)
+	public	void setName (SystemEnvironment env, String p_name)
 	throws SDMSException
 	{
-		if(name.equals(p_name)) return this;
+		if(name.equals(p_name)) return;
 		SDMSFolderGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -127,13 +127,13 @@ public class SDMSFolderGeneric extends SDMSObject
 			o.name = p_name;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getOwnerId (SystemEnvironment env)
@@ -142,10 +142,10 @@ public class SDMSFolderGeneric extends SDMSObject
 		return (ownerId);
 	}
 
-	public	SDMSFolderGeneric setOwnerId (SystemEnvironment env, Long p_ownerId)
+	public	void setOwnerId (SystemEnvironment env, Long p_ownerId)
 	throws SDMSException
 	{
-		if(ownerId.equals(p_ownerId)) return this;
+		if(ownerId.equals(p_ownerId)) return;
 		SDMSFolderGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -153,13 +153,13 @@ public class SDMSFolderGeneric extends SDMSObject
 			o.ownerId = p_ownerId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getEnvId (SystemEnvironment env)
@@ -168,11 +168,11 @@ public class SDMSFolderGeneric extends SDMSObject
 		return (envId);
 	}
 
-	public	SDMSFolderGeneric setEnvId (SystemEnvironment env, Long p_envId)
+	public	void setEnvId (SystemEnvironment env, Long p_envId)
 	throws SDMSException
 	{
-		if(p_envId != null && p_envId.equals(envId)) return this;
-		if(p_envId == null && envId == null) return this;
+		if(p_envId != null && p_envId.equals(envId)) return;
+		if(p_envId == null && envId == null) return;
 		SDMSFolderGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -185,13 +185,13 @@ public class SDMSFolderGeneric extends SDMSObject
 			o.envId = p_envId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getParentId (SystemEnvironment env)
@@ -200,11 +200,11 @@ public class SDMSFolderGeneric extends SDMSObject
 		return (parentId);
 	}
 
-	public	SDMSFolderGeneric setParentId (SystemEnvironment env, Long p_parentId)
+	public	void setParentId (SystemEnvironment env, Long p_parentId)
 	throws SDMSException
 	{
-		if(p_parentId != null && p_parentId.equals(parentId)) return this;
-		if(p_parentId == null && parentId == null) return this;
+		if(p_parentId != null && p_parentId.equals(parentId)) return;
+		if(p_parentId == null && parentId == null) return;
 		SDMSFolderGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -217,13 +217,13 @@ public class SDMSFolderGeneric extends SDMSObject
 			o.parentId = p_parentId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 12);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -232,29 +232,22 @@ public class SDMSFolderGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSFolderGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSFolderGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Folder) Change of system object not allowed")
-				);
-			}
-			o = (SDMSFolderGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSFolderGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Folder) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSFolderGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -263,29 +256,22 @@ public class SDMSFolderGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSFolderGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSFolderGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Folder) Change of system object not allowed")
-				);
-			}
-			o = (SDMSFolderGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSFolderGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Folder) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSFolderGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -294,22 +280,15 @@ public class SDMSFolderGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSFolderGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSFolderGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSFolderGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSFolderGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSFolderGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -318,23 +297,16 @@ public class SDMSFolderGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSFolderGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSFolderGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSFolderGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSFolderGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSFolderGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getInheritPrivs (SystemEnvironment env)
@@ -343,29 +315,22 @@ public class SDMSFolderGeneric extends SDMSObject
 		return (inheritPrivs);
 	}
 
-	public	SDMSFolderGeneric setInheritPrivs (SystemEnvironment env, Long p_inheritPrivs)
+	public	void setInheritPrivs (SystemEnvironment env, Long p_inheritPrivs)
 	throws SDMSException
 	{
-		if(inheritPrivs.equals(p_inheritPrivs)) return this;
-		SDMSFolderGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Folder) Change of system object not allowed")
-				);
-			}
-			o = (SDMSFolderGeneric) change(env);
-			o.inheritPrivs = p_inheritPrivs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(inheritPrivs.equals(p_inheritPrivs)) return;
+		SDMSFolderGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Folder) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSFolderGeneric) change(env);
+		o.inheritPrivs = p_inheritPrivs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSFolderGeneric set_ParentIdName (SystemEnvironment env, Long p_parentId, String p_name)
@@ -440,19 +405,11 @@ public class SDMSFolderGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO FOLDER (" +
 				        "ID" +
@@ -478,37 +435,38 @@ public class SDMSFolderGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?, ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "Folder: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setString(2, name);
-			pInsert.setLong (3, ownerId.longValue());
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setString(2, name);
+			myInsert.setLong (3, ownerId.longValue());
 			if (envId == null)
-				pInsert.setNull(4, Types.INTEGER);
+				myInsert.setNull(4, Types.INTEGER);
 			else
-				pInsert.setLong (4, envId.longValue());
+				myInsert.setLong (4, envId.longValue());
 			if (parentId == null)
-				pInsert.setNull(5, Types.INTEGER);
+				myInsert.setNull(5, Types.INTEGER);
 			else
-				pInsert.setLong (5, parentId.longValue());
-			pInsert.setLong (6, creatorUId.longValue());
-			pInsert.setLong (7, createTs.longValue());
-			pInsert.setLong (8, changerUId.longValue());
-			pInsert.setLong (9, changeTs.longValue());
-			pInsert.setLong (10, inheritPrivs.longValue());
-			pInsert.setLong(11, env.tx.versionId);
-			pInsert.setLong(12, Long.MAX_VALUE);
-			pInsert.executeUpdate();
+				myInsert.setLong (5, parentId.longValue());
+			myInsert.setLong (6, creatorUId.longValue());
+			myInsert.setLong (7, createTs.longValue());
+			myInsert.setLong (8, changerUId.longValue());
+			myInsert.setLong (9, changeTs.longValue());
+			myInsert.setLong (10, inheritPrivs.longValue());
+			myInsert.setLong(11, env.tx.versionId);
+			myInsert.setLong(12, Long.MAX_VALUE);
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "Folder: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "Folder: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -529,7 +487,8 @@ public class SDMSFolderGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
@@ -542,22 +501,23 @@ public class SDMSFolderGeneric extends SDMSObject
 				        "  AND VALID_TO = " + (postgres ?
 				                               "CAST (\'" +  Long.MAX_VALUE + "\' AS DECIMAL)" :
 				                               "" + Long.MAX_VALUE);
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				// Can't prepare statement
 				throw new FatalException(new SDMSMessage(env, "01110181955", "Folder : $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong(1, env.tx.versionId);
-			pUpdate.setLong(2, changeTs.longValue());
-			pUpdate.setLong(3, changerUId.longValue());
-			pUpdate.setLong(4, id.longValue());
-			pUpdate.executeUpdate();
+			myUpdate.clearParameters();
+			myUpdate.setLong(1, env.tx.versionId);
+			myUpdate.setLong(2, changeTs.longValue());
+			myUpdate.setLong(3, changerUId.longValue());
+			myUpdate.setLong(4, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181956", "Folder: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "Folder: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

@@ -92,13 +92,13 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		table = (SDMSTriggerTable) this;
 		SDMSTriggerTableGeneric.table = (SDMSTriggerTable) this;
 		isVersioned = true;
-		idx_fireId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_mainSeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentSeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_submitOwnerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_fireId_type = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_fireId_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_fireId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "fireId");
+		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seId");
+		idx_mainSeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "mainSeId");
+		idx_parentSeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "parentSeId");
+		idx_submitOwnerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "submitOwnerId");
+		idx_fireId_type = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "fireId_type");
+		idx_fireId_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "fireId_name");
 	}
 	public SDMSTrigger create(SystemEnvironment env
 	                          ,String p_name
@@ -411,18 +411,9 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -469,23 +460,58 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_fireId.put(env, ((SDMSTriggerGeneric) o).fireId, o);
-		idx_seId.put(env, ((SDMSTriggerGeneric) o).seId, o);
-		idx_mainSeId.put(env, ((SDMSTriggerGeneric) o).mainSeId, o);
-		idx_parentSeId.put(env, ((SDMSTriggerGeneric) o).parentSeId, o);
-		idx_submitOwnerId.put(env, ((SDMSTriggerGeneric) o).submitOwnerId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_fireId.check(((SDMSTriggerGeneric) o).fireId, o);
+		out = out + "idx_fireId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_seId.check(((SDMSTriggerGeneric) o).seId, o);
+		out = out + "idx_seId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_mainSeId.check(((SDMSTriggerGeneric) o).mainSeId, o);
+		out = out + "idx_mainSeId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_parentSeId.check(((SDMSTriggerGeneric) o).parentSeId, o);
+		out = out + "idx_parentSeId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_submitOwnerId.check(((SDMSTriggerGeneric) o).submitOwnerId, o);
+		out = out + "idx_submitOwnerId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSTriggerGeneric) o).fireId);
 		k.add(((SDMSTriggerGeneric) o).type);
-		idx_fireId_type.put(env, k, o);
+		ok =  idx_fireId_type.check(k, o);
+		out = out + "idx_fireId_type: " + (ok ? "ok" : "missing") + "\n";
 		k = new SDMSKey();
 		k.add(((SDMSTriggerGeneric) o).fireId);
 		k.add(((SDMSTriggerGeneric) o).name);
-		idx_fireId_name.put(env, k, o);
+		ok =  idx_fireId_name.check(k, o);
+		out = out + "idx_fireId_name: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_fireId.put(env, ((SDMSTriggerGeneric) o).fireId, o, ((1 & indexMember) != 0));
+		idx_seId.put(env, ((SDMSTriggerGeneric) o).seId, o, ((2 & indexMember) != 0));
+		idx_mainSeId.put(env, ((SDMSTriggerGeneric) o).mainSeId, o, ((4 & indexMember) != 0));
+		idx_parentSeId.put(env, ((SDMSTriggerGeneric) o).parentSeId, o, ((8 & indexMember) != 0));
+		idx_submitOwnerId.put(env, ((SDMSTriggerGeneric) o).submitOwnerId, o, ((16 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSTriggerGeneric) o).fireId);
+		k.add(((SDMSTriggerGeneric) o).type);
+		idx_fireId_type.put(env, k, o, ((32 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSTriggerGeneric) o).fireId);
+		k.add(((SDMSTriggerGeneric) o).name);
+		idx_fireId_name.put(env, k, o, ((64 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

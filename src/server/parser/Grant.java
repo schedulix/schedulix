@@ -125,6 +125,8 @@ public class Grant extends Node
 				return SDMSPrivilege.MANAGE_SYS;
 			case SDMSGrant.SELECT:
 				return SDMSPrivilege.MANAGE_SEL;
+		case SDMSGrant.NICE_PROFILE:
+			return SDMSPrivilege.MANAGE_NP;
 		}
 		return SDMSPrivilege.NOPRIVS;
 	}
@@ -144,6 +146,7 @@ public class Grant extends Node
 		if(type == SDMSGrant.GROUP)		return;
 		if(type == SDMSGrant.RESOURCE)		return;
 		if(type == SDMSGrant.OBJECT_MONITOR)	return;
+		if(type == SDMSGrant.NICE_PROFILE)	return;
 		throw new CommonErrorException(new SDMSMessage(sysEnv, "03601231458", "Objecttype not supported"));
 	}
 

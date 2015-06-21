@@ -170,7 +170,7 @@ public class SDMSNamedResource extends SDMSNamedResourceProxyGeneric
 
 			final String sic = (value == null ? value : '=' + value);
 
-			SDMSParameterDefinitionTable.table.create (sysEnv, id, name, t, new Integer(SDMSParameterDefinition.NONE), sic, Boolean.FALSE, null);
+			SDMSParameterDefinitionTable.table.create (sysEnv, id, name, t, new Integer(SDMSParameterDefinition.NONE), sic, Boolean.FALSE, null, null);
 		}
 	}
 
@@ -226,7 +226,7 @@ public class SDMSNamedResource extends SDMSNamedResourceProxyGeneric
 				}
 				if(idx >= act_parms.size()) {
 
-					SDMSParameterDefinitionTable.table.create(sysEnv, id, pn, t, aggFunction, pdef, Boolean.FALSE, linkPdId);
+					SDMSParameterDefinitionTable.table.create(sysEnv, id, pn, t, aggFunction, pdef, Boolean.FALSE, linkPdId, null);
 				}
 			}
 		}

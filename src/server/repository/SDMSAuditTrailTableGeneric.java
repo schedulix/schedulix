@@ -74,9 +74,9 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 		table = (SDMSAuditTrailTable) this;
 		SDMSAuditTrailTableGeneric.table = (SDMSAuditTrailTable) this;
 		isVersioned = false;
-		idx_userId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_objectId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_originId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_userId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "userId");
+		idx_objectId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "objectId");
+		idx_originId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "originId");
 	}
 	public SDMSAuditTrail create(SystemEnvironment env
 	                             ,Long p_userId
@@ -265,18 +265,9 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -307,12 +298,32 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
+	public String checkIndex(SDMSObject o)
+	throws SDMSException
+	{
+		String out = "";
+		boolean ok;
+		ok =  idx_userId.check(((SDMSAuditTrailGeneric) o).userId, o);
+		out = out + "idx_userId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_objectId.check(((SDMSAuditTrailGeneric) o).objectId, o);
+		out = out + "idx_objectId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_originId.check(((SDMSAuditTrailGeneric) o).originId, o);
+		out = out + "idx_originId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
 	protected void index(SystemEnvironment env, SDMSObject o)
 	throws SDMSException
 	{
-		idx_userId.put(env, ((SDMSAuditTrailGeneric) o).userId, o);
-		idx_objectId.put(env, ((SDMSAuditTrailGeneric) o).objectId, o);
-		idx_originId.put(env, ((SDMSAuditTrailGeneric) o).originId, o);
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_userId.put(env, ((SDMSAuditTrailGeneric) o).userId, o, ((1 & indexMember) != 0));
+		idx_objectId.put(env, ((SDMSAuditTrailGeneric) o).objectId, o, ((2 & indexMember) != 0));
+		idx_originId.put(env, ((SDMSAuditTrailGeneric) o).originId, o, ((4 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

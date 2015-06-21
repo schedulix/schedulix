@@ -617,11 +617,10 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 				if((env.cEnv.isJobServer()))
 					p = checkPrivs;
 			}
-		} catch(Throwable t) {
+		} finally {
 			if (env.cEnv.isJob()) {
 				env.cEnv.popGid(env);
 			}
-			throw t;
 		}
 		return p;
 	}

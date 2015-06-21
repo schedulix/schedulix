@@ -546,7 +546,8 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                              pd.getAggFunction(sysEnv),
 			                              pd.getDefaultValue(sysEnv),
 			                              pd.getIsLocal(sysEnv),
-			                              pd.getLinkPdId(sysEnv)
+			                              pd.getLinkPdId(sysEnv),
+			                              pd.getExportName(sysEnv)
 			                                                                       );
 			if(relocationTable != null) {
 				relocationTable.put(pd.getId(sysEnv), npd.getId(sysEnv));

@@ -97,9 +97,9 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSScheduledEventGeneric(
 	        SystemEnvironment env,
@@ -162,10 +162,10 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (ownerId);
 	}
 
-	public	SDMSScheduledEventGeneric setOwnerId (SystemEnvironment env, Long p_ownerId)
+	public	void setOwnerId (SystemEnvironment env, Long p_ownerId)
 	throws SDMSException
 	{
-		if(ownerId.equals(p_ownerId)) return this;
+		if(ownerId.equals(p_ownerId)) return;
 		SDMSScheduledEventGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -178,13 +178,13 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 			o.ownerId = p_ownerId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getSceId (SystemEnvironment env)
@@ -193,10 +193,10 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (sceId);
 	}
 
-	public	SDMSScheduledEventGeneric setSceId (SystemEnvironment env, Long p_sceId)
+	public	void setSceId (SystemEnvironment env, Long p_sceId)
 	throws SDMSException
 	{
-		if(sceId.equals(p_sceId)) return this;
+		if(sceId.equals(p_sceId)) return;
 		SDMSScheduledEventGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -209,13 +209,13 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 			o.sceId = p_sceId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 10);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getEvtId (SystemEnvironment env)
@@ -224,10 +224,10 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (evtId);
 	}
 
-	public	SDMSScheduledEventGeneric setEvtId (SystemEnvironment env, Long p_evtId)
+	public	void setEvtId (SystemEnvironment env, Long p_evtId)
 	throws SDMSException
 	{
-		if(evtId.equals(p_evtId)) return this;
+		if(evtId.equals(p_evtId)) return;
 		SDMSScheduledEventGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -240,13 +240,13 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 			o.evtId = p_evtId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 12);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Boolean getIsActive (SystemEnvironment env)
@@ -270,29 +270,22 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		                          getIsActive (env)));
 	}
 
-	public	SDMSScheduledEventGeneric setIsActive (SystemEnvironment env, Boolean p_isActive)
+	public	void setIsActive (SystemEnvironment env, Boolean p_isActive)
 	throws SDMSException
 	{
-		if(isActive.equals(p_isActive)) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.isActive = p_isActive;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(isActive.equals(p_isActive)) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.isActive = p_isActive;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Boolean getIsBroken (SystemEnvironment env)
@@ -316,29 +309,22 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		                          getIsBroken (env)));
 	}
 
-	public	SDMSScheduledEventGeneric setIsBroken (SystemEnvironment env, Boolean p_isBroken)
+	public	void setIsBroken (SystemEnvironment env, Boolean p_isBroken)
 	throws SDMSException
 	{
-		if(isBroken.equals(p_isBroken)) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.isBroken = p_isBroken;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(isBroken.equals(p_isBroken)) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.isBroken = p_isBroken;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getErrorCode (SystemEnvironment env)
@@ -347,36 +333,29 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (errorCode);
 	}
 
-	public	SDMSScheduledEventGeneric setErrorCode (SystemEnvironment env, String p_errorCode)
+	public	void setErrorCode (SystemEnvironment env, String p_errorCode)
 	throws SDMSException
 	{
-		if(p_errorCode != null && p_errorCode.equals(errorCode)) return this;
-		if(p_errorCode == null && errorCode == null) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			if (p_errorCode != null && p_errorCode.length() > 32) {
-				throw new CommonErrorException (
-				        new SDMSMessage(env, "01112141510",
-				                        "(ScheduledEvent) Length of $1 exceeds maximum length $2", "errorCode", "32")
-				);
-			}
-			o.errorCode = p_errorCode;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_errorCode != null && p_errorCode.equals(errorCode)) return;
+		if(p_errorCode == null && errorCode == null) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		if (p_errorCode != null && p_errorCode.length() > 32) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(ScheduledEvent) Length of $1 exceeds maximum length $2", "errorCode", "32")
+			);
+		}
+		o.errorCode = p_errorCode;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getErrorMsg (SystemEnvironment env)
@@ -385,33 +364,26 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (errorMsg);
 	}
 
-	public	SDMSScheduledEventGeneric setErrorMsg (SystemEnvironment env, String p_errorMsg)
+	public	void setErrorMsg (SystemEnvironment env, String p_errorMsg)
 	throws SDMSException
 	{
-		if(p_errorMsg != null && p_errorMsg.equals(errorMsg)) return this;
-		if(p_errorMsg == null && errorMsg == null) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			if (p_errorMsg != null && p_errorMsg.length() > 256) {
-				p_errorMsg = p_errorMsg.substring(0,256);
-			}
-			o.errorMsg = p_errorMsg;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_errorMsg != null && p_errorMsg.equals(errorMsg)) return;
+		if(p_errorMsg == null && errorMsg == null) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		if (p_errorMsg != null && p_errorMsg.length() > 256) {
+			p_errorMsg = p_errorMsg.substring(0,256);
+		}
+		o.errorMsg = p_errorMsg;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getLastStartTime (SystemEnvironment env)
@@ -420,30 +392,23 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (lastStartTime);
 	}
 
-	public	SDMSScheduledEventGeneric setLastStartTime (SystemEnvironment env, Long p_lastStartTime)
+	public	void setLastStartTime (SystemEnvironment env, Long p_lastStartTime)
 	throws SDMSException
 	{
-		if(p_lastStartTime != null && p_lastStartTime.equals(lastStartTime)) return this;
-		if(p_lastStartTime == null && lastStartTime == null) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.lastStartTime = p_lastStartTime;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_lastStartTime != null && p_lastStartTime.equals(lastStartTime)) return;
+		if(p_lastStartTime == null && lastStartTime == null) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.lastStartTime = p_lastStartTime;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getNextActivityTime (SystemEnvironment env)
@@ -452,30 +417,23 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (nextActivityTime);
 	}
 
-	public	SDMSScheduledEventGeneric setNextActivityTime (SystemEnvironment env, Long p_nextActivityTime)
+	public	void setNextActivityTime (SystemEnvironment env, Long p_nextActivityTime)
 	throws SDMSException
 	{
-		if(p_nextActivityTime != null && p_nextActivityTime.equals(nextActivityTime)) return this;
-		if(p_nextActivityTime == null && nextActivityTime == null) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.nextActivityTime = p_nextActivityTime;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_nextActivityTime != null && p_nextActivityTime.equals(nextActivityTime)) return;
+		if(p_nextActivityTime == null && nextActivityTime == null) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.nextActivityTime = p_nextActivityTime;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Boolean getNextActivityIsTrigger (SystemEnvironment env)
@@ -484,30 +442,23 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (nextActivityIsTrigger);
 	}
 
-	public	SDMSScheduledEventGeneric setNextActivityIsTrigger (SystemEnvironment env, Boolean p_nextActivityIsTrigger)
+	public	void setNextActivityIsTrigger (SystemEnvironment env, Boolean p_nextActivityIsTrigger)
 	throws SDMSException
 	{
-		if(p_nextActivityIsTrigger != null && p_nextActivityIsTrigger.equals(nextActivityIsTrigger)) return this;
-		if(p_nextActivityIsTrigger == null && nextActivityIsTrigger == null) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.nextActivityIsTrigger = p_nextActivityIsTrigger;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_nextActivityIsTrigger != null && p_nextActivityIsTrigger.equals(nextActivityIsTrigger)) return;
+		if(p_nextActivityIsTrigger == null && nextActivityIsTrigger == null) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.nextActivityIsTrigger = p_nextActivityIsTrigger;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getBacklogHandling (SystemEnvironment env)
@@ -534,29 +485,22 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		                          getBacklogHandling (env)));
 	}
 
-	public	SDMSScheduledEventGeneric setBacklogHandling (SystemEnvironment env, Integer p_backlogHandling)
+	public	void setBacklogHandling (SystemEnvironment env, Integer p_backlogHandling)
 	throws SDMSException
 	{
-		if(backlogHandling.equals(p_backlogHandling)) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.backlogHandling = p_backlogHandling;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(backlogHandling.equals(p_backlogHandling)) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.backlogHandling = p_backlogHandling;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getSuspendLimit (SystemEnvironment env)
@@ -591,30 +535,23 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		                          getSuspendLimit (env)));
 	}
 
-	public	SDMSScheduledEventGeneric setSuspendLimit (SystemEnvironment env, Integer p_suspendLimit)
+	public	void setSuspendLimit (SystemEnvironment env, Integer p_suspendLimit)
 	throws SDMSException
 	{
-		if(p_suspendLimit != null && p_suspendLimit.equals(suspendLimit)) return this;
-		if(p_suspendLimit == null && suspendLimit == null) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.suspendLimit = p_suspendLimit;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_suspendLimit != null && p_suspendLimit.equals(suspendLimit)) return;
+		if(p_suspendLimit == null && suspendLimit == null) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.suspendLimit = p_suspendLimit;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getSuspendLimitMultiplier (SystemEnvironment env)
@@ -623,30 +560,23 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (suspendLimitMultiplier);
 	}
 
-	public	SDMSScheduledEventGeneric setSuspendLimitMultiplier (SystemEnvironment env, Integer p_suspendLimitMultiplier)
+	public	void setSuspendLimitMultiplier (SystemEnvironment env, Integer p_suspendLimitMultiplier)
 	throws SDMSException
 	{
-		if(p_suspendLimitMultiplier != null && p_suspendLimitMultiplier.equals(suspendLimitMultiplier)) return this;
-		if(p_suspendLimitMultiplier == null && suspendLimitMultiplier == null) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.suspendLimitMultiplier = p_suspendLimitMultiplier;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_suspendLimitMultiplier != null && p_suspendLimitMultiplier.equals(suspendLimitMultiplier)) return;
+		if(p_suspendLimitMultiplier == null && suspendLimitMultiplier == null) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.suspendLimitMultiplier = p_suspendLimitMultiplier;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Boolean getIsCalendar (SystemEnvironment env)
@@ -670,29 +600,22 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		                          getIsCalendar (env)));
 	}
 
-	public	SDMSScheduledEventGeneric setIsCalendar (SystemEnvironment env, Boolean p_isCalendar)
+	public	void setIsCalendar (SystemEnvironment env, Boolean p_isCalendar)
 	throws SDMSException
 	{
-		if(isCalendar.equals(p_isCalendar)) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.isCalendar = p_isCalendar;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(isCalendar.equals(p_isCalendar)) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.isCalendar = p_isCalendar;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getCalendarHorizon (SystemEnvironment env)
@@ -701,30 +624,23 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (calendarHorizon);
 	}
 
-	public	SDMSScheduledEventGeneric setCalendarHorizon (SystemEnvironment env, Integer p_calendarHorizon)
+	public	void setCalendarHorizon (SystemEnvironment env, Integer p_calendarHorizon)
 	throws SDMSException
 	{
-		if(p_calendarHorizon != null && p_calendarHorizon.equals(calendarHorizon)) return this;
-		if(p_calendarHorizon == null && calendarHorizon == null) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.calendarHorizon = p_calendarHorizon;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_calendarHorizon != null && p_calendarHorizon.equals(calendarHorizon)) return;
+		if(p_calendarHorizon == null && calendarHorizon == null) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.calendarHorizon = p_calendarHorizon;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -733,29 +649,22 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSScheduledEventGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -764,29 +673,22 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSScheduledEventGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSScheduledEventGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScheduledEvent) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -795,22 +697,15 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSScheduledEventGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSScheduledEventGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -819,23 +714,16 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSScheduledEventGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSScheduledEventGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSScheduledEventGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSScheduledEventGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSScheduledEventGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSScheduledEventGeneric set_SceIdEvtId (SystemEnvironment env, Long p_sceId, Long p_evtId)
@@ -924,19 +812,11 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO SCHEDULED_EVENT (" +
 				        "ID" +
@@ -980,63 +860,64 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ScheduledEvent: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, ownerId.longValue());
-			pInsert.setLong (3, sceId.longValue());
-			pInsert.setLong (4, evtId.longValue());
-			pInsert.setInt (5, isActive.booleanValue() ? 1 : 0);
-			pInsert.setInt (6, isBroken.booleanValue() ? 1 : 0);
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, ownerId.longValue());
+			myInsert.setLong (3, sceId.longValue());
+			myInsert.setLong (4, evtId.longValue());
+			myInsert.setInt (5, isActive.booleanValue() ? 1 : 0);
+			myInsert.setInt (6, isBroken.booleanValue() ? 1 : 0);
 			if (errorCode == null)
-				pInsert.setNull(7, Types.VARCHAR);
+				myInsert.setNull(7, Types.VARCHAR);
 			else
-				pInsert.setString(7, errorCode);
+				myInsert.setString(7, errorCode);
 			if (errorMsg == null)
-				pInsert.setNull(8, Types.VARCHAR);
+				myInsert.setNull(8, Types.VARCHAR);
 			else
-				pInsert.setString(8, errorMsg);
+				myInsert.setString(8, errorMsg);
 			if (lastStartTime == null)
-				pInsert.setNull(9, Types.INTEGER);
+				myInsert.setNull(9, Types.INTEGER);
 			else
-				pInsert.setLong (9, lastStartTime.longValue());
+				myInsert.setLong (9, lastStartTime.longValue());
 			if (nextActivityTime == null)
-				pInsert.setNull(10, Types.INTEGER);
+				myInsert.setNull(10, Types.INTEGER);
 			else
-				pInsert.setLong (10, nextActivityTime.longValue());
+				myInsert.setLong (10, nextActivityTime.longValue());
 			if (nextActivityIsTrigger == null)
-				pInsert.setNull(11, Types.INTEGER);
+				myInsert.setNull(11, Types.INTEGER);
 			else
-				pInsert.setInt (11, nextActivityIsTrigger.booleanValue() ? 1 : 0);
-			pInsert.setInt(12, backlogHandling.intValue());
+				myInsert.setInt (11, nextActivityIsTrigger.booleanValue() ? 1 : 0);
+			myInsert.setInt(12, backlogHandling.intValue());
 			if (suspendLimit == null)
-				pInsert.setNull(13, Types.INTEGER);
+				myInsert.setNull(13, Types.INTEGER);
 			else
-				pInsert.setInt(13, suspendLimit.intValue());
+				myInsert.setInt(13, suspendLimit.intValue());
 			if (suspendLimitMultiplier == null)
-				pInsert.setNull(14, Types.INTEGER);
+				myInsert.setNull(14, Types.INTEGER);
 			else
-				pInsert.setInt(14, suspendLimitMultiplier.intValue());
-			pInsert.setInt (15, isCalendar.booleanValue() ? 1 : 0);
+				myInsert.setInt(14, suspendLimitMultiplier.intValue());
+			myInsert.setInt (15, isCalendar.booleanValue() ? 1 : 0);
 			if (calendarHorizon == null)
-				pInsert.setNull(16, Types.INTEGER);
+				myInsert.setNull(16, Types.INTEGER);
 			else
-				pInsert.setInt(16, calendarHorizon.intValue());
-			pInsert.setLong (17, creatorUId.longValue());
-			pInsert.setLong (18, createTs.longValue());
-			pInsert.setLong (19, changerUId.longValue());
-			pInsert.setLong (20, changeTs.longValue());
-			pInsert.executeUpdate();
+				myInsert.setInt(16, calendarHorizon.intValue());
+			myInsert.setLong (17, creatorUId.longValue());
+			myInsert.setLong (18, createTs.longValue());
+			myInsert.setLong (19, changerUId.longValue());
+			myInsert.setLong (20, changeTs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "ScheduledEvent: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ScheduledEvent: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -1044,23 +925,25 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM SCHEDULED_EVENT WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "ScheduledEvent: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "ScheduledEvent: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "ScheduledEvent: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -1068,19 +951,11 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE SCHEDULED_EVENT SET " +
 				        "" + squote + "OWNER_ID" + equote + " = ? " +
@@ -1103,62 +978,63 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "ScheduledEvent: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong (1, ownerId.longValue());
-			pUpdate.setLong (2, sceId.longValue());
-			pUpdate.setLong (3, evtId.longValue());
-			pUpdate.setInt (4, isActive.booleanValue() ? 1 : 0);
-			pUpdate.setInt (5, isBroken.booleanValue() ? 1 : 0);
+			myUpdate.clearParameters();
+			myUpdate.setLong (1, ownerId.longValue());
+			myUpdate.setLong (2, sceId.longValue());
+			myUpdate.setLong (3, evtId.longValue());
+			myUpdate.setInt (4, isActive.booleanValue() ? 1 : 0);
+			myUpdate.setInt (5, isBroken.booleanValue() ? 1 : 0);
 			if (errorCode == null)
-				pUpdate.setNull(6, Types.VARCHAR);
+				myUpdate.setNull(6, Types.VARCHAR);
 			else
-				pUpdate.setString(6, errorCode);
+				myUpdate.setString(6, errorCode);
 			if (errorMsg == null)
-				pUpdate.setNull(7, Types.VARCHAR);
+				myUpdate.setNull(7, Types.VARCHAR);
 			else
-				pUpdate.setString(7, errorMsg);
+				myUpdate.setString(7, errorMsg);
 			if (lastStartTime == null)
-				pUpdate.setNull(8, Types.INTEGER);
+				myUpdate.setNull(8, Types.INTEGER);
 			else
-				pUpdate.setLong (8, lastStartTime.longValue());
+				myUpdate.setLong (8, lastStartTime.longValue());
 			if (nextActivityTime == null)
-				pUpdate.setNull(9, Types.INTEGER);
+				myUpdate.setNull(9, Types.INTEGER);
 			else
-				pUpdate.setLong (9, nextActivityTime.longValue());
+				myUpdate.setLong (9, nextActivityTime.longValue());
 			if (nextActivityIsTrigger == null)
-				pUpdate.setNull(10, Types.INTEGER);
+				myUpdate.setNull(10, Types.INTEGER);
 			else
-				pUpdate.setInt (10, nextActivityIsTrigger.booleanValue() ? 1 : 0);
-			pUpdate.setInt(11, backlogHandling.intValue());
+				myUpdate.setInt (10, nextActivityIsTrigger.booleanValue() ? 1 : 0);
+			myUpdate.setInt(11, backlogHandling.intValue());
 			if (suspendLimit == null)
-				pUpdate.setNull(12, Types.INTEGER);
+				myUpdate.setNull(12, Types.INTEGER);
 			else
-				pUpdate.setInt(12, suspendLimit.intValue());
+				myUpdate.setInt(12, suspendLimit.intValue());
 			if (suspendLimitMultiplier == null)
-				pUpdate.setNull(13, Types.INTEGER);
+				myUpdate.setNull(13, Types.INTEGER);
 			else
-				pUpdate.setInt(13, suspendLimitMultiplier.intValue());
-			pUpdate.setInt (14, isCalendar.booleanValue() ? 1 : 0);
+				myUpdate.setInt(13, suspendLimitMultiplier.intValue());
+			myUpdate.setInt (14, isCalendar.booleanValue() ? 1 : 0);
 			if (calendarHorizon == null)
-				pUpdate.setNull(15, Types.INTEGER);
+				myUpdate.setNull(15, Types.INTEGER);
 			else
-				pUpdate.setInt(15, calendarHorizon.intValue());
-			pUpdate.setLong (16, creatorUId.longValue());
-			pUpdate.setLong (17, createTs.longValue());
-			pUpdate.setLong (18, changerUId.longValue());
-			pUpdate.setLong (19, changeTs.longValue());
-			pUpdate.setLong(20, id.longValue());
-			pUpdate.executeUpdate();
+				myUpdate.setInt(15, calendarHorizon.intValue());
+			myUpdate.setLong (16, creatorUId.longValue());
+			myUpdate.setLong (17, createTs.longValue());
+			myUpdate.setLong (18, changerUId.longValue());
+			myUpdate.setLong (19, changeTs.longValue());
+			myUpdate.setLong(20, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "ScheduledEvent: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "ScheduledEvent: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

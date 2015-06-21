@@ -31,6 +31,7 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
+import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;
@@ -162,6 +163,10 @@ public class GetNextJob extends JobDistribution
 					try {
 						smeId = rq.getSmeId(sysEnv);
 						SDMSSubmittedEntity tmpsme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
+						if (tmpsme == null || tmpsme.getRunnableTs(sysEnv) == null) {
+							ObjectLock lock = LockingSystemSynchronized.getObjectLocks(tmpsme.object.versions);
+
+						}
 						if (tmpsme.getRunnableTs(sysEnv) > minRunnableTs) continue;
 						if(tmpsme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND && tmpsme.getParentSuspended(sysEnv).intValue( )== 0) {
 							candidates++;
@@ -177,14 +182,15 @@ public class GetNextJob extends JobDistribution
 						minRunnableTs = kj.getRunnableTs(sysEnv);
 					}
 				}
-				if (candidates > 1)
-					SDMSThread.doTrace(env, "Number of waiting jobs for Scope " + sId.toString() + " : " + candidates, SDMSThread.SEVERITY_MESSAGE);
+
 			}
 		}
 		if(sme == null) {
 			if(kj != null) {
 				try {
 					rc = startKillJob(sysEnv, kj, s, desc, data);
+				} catch (SerializationException e) {
+					throw e;
 				} catch (SDMSException e) {
 
 					SDMSThread.doTrace(env, "Exception from startKillJob : " + e.toString(), e.getStackTrace(), SDMSThread.SEVERITY_ERROR);
@@ -199,6 +205,8 @@ public class GetNextJob extends JobDistribution
 		} else {
 			try {
 				rc = startJob(sysEnv, sme, s, desc, data);
+			} catch (SerializationException e) {
+				throw e;
 			} catch (SDMSException e) {
 
 				SDMSThread.doTrace(env, "Exception from startJob : " + e.toString(), e.getStackTrace(), SDMSThread.SEVERITY_ERROR);

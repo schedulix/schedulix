@@ -90,10 +90,10 @@ public class SDMSnpJobFootprintGeneric extends SDMSObject
 		return (smeId);
 	}
 
-	public	SDMSnpJobFootprintGeneric setSmeId (SystemEnvironment env, Long p_smeId)
+	public	void setSmeId (SystemEnvironment env, Long p_smeId)
 	throws SDMSException
 	{
-		if(smeId.equals(p_smeId)) return this;
+		if(smeId.equals(p_smeId)) return;
 		SDMSnpJobFootprintGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -106,13 +106,13 @@ public class SDMSnpJobFootprintGeneric extends SDMSObject
 			o.smeId = p_smeId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public HashMap getFpScope (SystemEnvironment env)
@@ -121,29 +121,22 @@ public class SDMSnpJobFootprintGeneric extends SDMSObject
 		return (fpScope);
 	}
 
-	public	SDMSnpJobFootprintGeneric setFpScope (SystemEnvironment env, HashMap p_fpScope)
+	public	void setFpScope (SystemEnvironment env, HashMap p_fpScope)
 	throws SDMSException
 	{
-		if(fpScope.equals(p_fpScope)) return this;
-		SDMSnpJobFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(npJobFootprint) Change of system object not allowed")
-				);
-			}
-			o = (SDMSnpJobFootprintGeneric) change(env);
-			o.fpScope = p_fpScope;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(fpScope.equals(p_fpScope)) return;
+		SDMSnpJobFootprintGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(npJobFootprint) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSnpJobFootprintGeneric) change(env);
+		o.fpScope = p_fpScope;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public HashMap getFpFolder (SystemEnvironment env)
@@ -152,29 +145,22 @@ public class SDMSnpJobFootprintGeneric extends SDMSObject
 		return (fpFolder);
 	}
 
-	public	SDMSnpJobFootprintGeneric setFpFolder (SystemEnvironment env, HashMap p_fpFolder)
+	public	void setFpFolder (SystemEnvironment env, HashMap p_fpFolder)
 	throws SDMSException
 	{
-		if(fpFolder.equals(p_fpFolder)) return this;
-		SDMSnpJobFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(npJobFootprint) Change of system object not allowed")
-				);
-			}
-			o = (SDMSnpJobFootprintGeneric) change(env);
-			o.fpFolder = p_fpFolder;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(fpFolder.equals(p_fpFolder)) return;
+		SDMSnpJobFootprintGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(npJobFootprint) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSnpJobFootprintGeneric) change(env);
+		o.fpFolder = p_fpFolder;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public HashMap getFpLocal (SystemEnvironment env)
@@ -183,29 +169,22 @@ public class SDMSnpJobFootprintGeneric extends SDMSObject
 		return (fpLocal);
 	}
 
-	public	SDMSnpJobFootprintGeneric setFpLocal (SystemEnvironment env, HashMap p_fpLocal)
+	public	void setFpLocal (SystemEnvironment env, HashMap p_fpLocal)
 	throws SDMSException
 	{
-		if(fpLocal.equals(p_fpLocal)) return this;
-		SDMSnpJobFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(npJobFootprint) Change of system object not allowed")
-				);
-			}
-			o = (SDMSnpJobFootprintGeneric) change(env);
-			o.fpLocal = p_fpLocal;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(fpLocal.equals(p_fpLocal)) return;
+		SDMSnpJobFootprintGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(npJobFootprint) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSnpJobFootprintGeneric) change(env);
+		o.fpLocal = p_fpLocal;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -214,29 +193,22 @@ public class SDMSnpJobFootprintGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSnpJobFootprintGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSnpJobFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(npJobFootprint) Change of system object not allowed")
-				);
-			}
-			o = (SDMSnpJobFootprintGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSnpJobFootprintGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(npJobFootprint) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSnpJobFootprintGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -245,29 +217,22 @@ public class SDMSnpJobFootprintGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSnpJobFootprintGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSnpJobFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(npJobFootprint) Change of system object not allowed")
-				);
-			}
-			o = (SDMSnpJobFootprintGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSnpJobFootprintGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(npJobFootprint) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSnpJobFootprintGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -276,22 +241,15 @@ public class SDMSnpJobFootprintGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSnpJobFootprintGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSnpJobFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSnpJobFootprintGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSnpJobFootprintGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSnpJobFootprintGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -300,23 +258,16 @@ public class SDMSnpJobFootprintGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSnpJobFootprintGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSnpJobFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSnpJobFootprintGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSnpJobFootprintGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSnpJobFootprintGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	protected SDMSProxy toProxy()

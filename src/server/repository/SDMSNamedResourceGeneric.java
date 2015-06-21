@@ -73,9 +73,9 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 	protected Long changeTs;
 	protected Long inheritPrivs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSNamedResourceGeneric(
 	        SystemEnvironment env,
@@ -119,10 +119,10 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		return (name);
 	}
 
-	public	SDMSNamedResourceGeneric setName (SystemEnvironment env, String p_name)
+	public	void setName (SystemEnvironment env, String p_name)
 	throws SDMSException
 	{
-		if(name.equals(p_name)) return this;
+		if(name.equals(p_name)) return;
 		SDMSNamedResourceGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -141,13 +141,13 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 			o.name = p_name;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 17);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getOwnerId (SystemEnvironment env)
@@ -156,10 +156,10 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		return (ownerId);
 	}
 
-	public	SDMSNamedResourceGeneric setOwnerId (SystemEnvironment env, Long p_ownerId)
+	public	void setOwnerId (SystemEnvironment env, Long p_ownerId)
 	throws SDMSException
 	{
-		if(ownerId.equals(p_ownerId)) return this;
+		if(ownerId.equals(p_ownerId)) return;
 		SDMSNamedResourceGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -172,13 +172,13 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 			o.ownerId = p_ownerId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getParentId (SystemEnvironment env)
@@ -187,11 +187,11 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		return (parentId);
 	}
 
-	public	SDMSNamedResourceGeneric setParentId (SystemEnvironment env, Long p_parentId)
+	public	void setParentId (SystemEnvironment env, Long p_parentId)
 	throws SDMSException
 	{
-		if(p_parentId != null && p_parentId.equals(parentId)) return this;
-		if(p_parentId == null && parentId == null) return this;
+		if(p_parentId != null && p_parentId.equals(parentId)) return;
+		if(p_parentId == null && parentId == null) return;
 		SDMSNamedResourceGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -204,13 +204,13 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 			o.parentId = p_parentId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 20);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getUsage (SystemEnvironment env)
@@ -241,29 +241,22 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		                          getUsage (env)));
 	}
 
-	public	SDMSNamedResourceGeneric setUsage (SystemEnvironment env, Integer p_usage)
+	public	void setUsage (SystemEnvironment env, Integer p_usage)
 	throws SDMSException
 	{
-		if(usage.equals(p_usage)) return this;
-		SDMSNamedResourceGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(NamedResource) Change of system object not allowed")
-				);
-			}
-			o = (SDMSNamedResourceGeneric) change(env);
-			o.usage = p_usage;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(usage.equals(p_usage)) return;
+		SDMSNamedResourceGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(NamedResource) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSNamedResourceGeneric) change(env);
+		o.usage = p_usage;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getRspId (SystemEnvironment env)
@@ -272,11 +265,11 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		return (rspId);
 	}
 
-	public	SDMSNamedResourceGeneric setRspId (SystemEnvironment env, Long p_rspId)
+	public	void setRspId (SystemEnvironment env, Long p_rspId)
 	throws SDMSException
 	{
-		if(p_rspId != null && p_rspId.equals(rspId)) return this;
-		if(p_rspId == null && rspId == null) return this;
+		if(p_rspId != null && p_rspId.equals(rspId)) return;
+		if(p_rspId == null && rspId == null) return;
 		SDMSNamedResourceGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -289,13 +282,13 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 			o.rspId = p_rspId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Float getFactor (SystemEnvironment env)
@@ -304,30 +297,23 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		return (factor);
 	}
 
-	public	SDMSNamedResourceGeneric setFactor (SystemEnvironment env, Float p_factor)
+	public	void setFactor (SystemEnvironment env, Float p_factor)
 	throws SDMSException
 	{
-		if(p_factor != null && p_factor.equals(factor)) return this;
-		if(p_factor == null && factor == null) return this;
-		SDMSNamedResourceGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(NamedResource) Change of system object not allowed")
-				);
-			}
-			o = (SDMSNamedResourceGeneric) change(env);
-			o.factor = p_factor;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_factor != null && p_factor.equals(factor)) return;
+		if(p_factor == null && factor == null) return;
+		SDMSNamedResourceGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(NamedResource) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSNamedResourceGeneric) change(env);
+		o.factor = p_factor;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -336,29 +322,22 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSNamedResourceGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSNamedResourceGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(NamedResource) Change of system object not allowed")
-				);
-			}
-			o = (SDMSNamedResourceGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSNamedResourceGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(NamedResource) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSNamedResourceGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -367,29 +346,22 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSNamedResourceGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSNamedResourceGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(NamedResource) Change of system object not allowed")
-				);
-			}
-			o = (SDMSNamedResourceGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSNamedResourceGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(NamedResource) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSNamedResourceGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -398,22 +370,15 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSNamedResourceGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSNamedResourceGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSNamedResourceGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSNamedResourceGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSNamedResourceGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -422,23 +387,16 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSNamedResourceGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSNamedResourceGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSNamedResourceGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSNamedResourceGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSNamedResourceGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getInheritPrivs (SystemEnvironment env)
@@ -447,29 +405,22 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		return (inheritPrivs);
 	}
 
-	public	SDMSNamedResourceGeneric setInheritPrivs (SystemEnvironment env, Long p_inheritPrivs)
+	public	void setInheritPrivs (SystemEnvironment env, Long p_inheritPrivs)
 	throws SDMSException
 	{
-		if(inheritPrivs.equals(p_inheritPrivs)) return this;
-		SDMSNamedResourceGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(NamedResource) Change of system object not allowed")
-				);
-			}
-			o = (SDMSNamedResourceGeneric) change(env);
-			o.inheritPrivs = p_inheritPrivs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(inheritPrivs.equals(p_inheritPrivs)) return;
+		SDMSNamedResourceGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(NamedResource) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSNamedResourceGeneric) change(env);
+		o.inheritPrivs = p_inheritPrivs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSNamedResourceGeneric set_ParentIdName (SystemEnvironment env, Long p_parentId, String p_name)
@@ -548,19 +499,11 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO NAMED_RESOURCE (" +
 				        "ID" +
@@ -588,40 +531,41 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "NamedResource: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setString(2, name);
-			pInsert.setLong (3, ownerId.longValue());
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setString(2, name);
+			myInsert.setLong (3, ownerId.longValue());
 			if (parentId == null)
-				pInsert.setNull(4, Types.INTEGER);
+				myInsert.setNull(4, Types.INTEGER);
 			else
-				pInsert.setLong (4, parentId.longValue());
-			pInsert.setInt(5, usage.intValue());
+				myInsert.setLong (4, parentId.longValue());
+			myInsert.setInt(5, usage.intValue());
 			if (rspId == null)
-				pInsert.setNull(6, Types.INTEGER);
+				myInsert.setNull(6, Types.INTEGER);
 			else
-				pInsert.setLong (6, rspId.longValue());
+				myInsert.setLong (6, rspId.longValue());
 			if (factor == null)
-				pInsert.setNull(7, Types.FLOAT);
+				myInsert.setNull(7, Types.FLOAT);
 			else
-				pInsert.setFloat(7, factor.floatValue());
-			pInsert.setLong (8, creatorUId.longValue());
-			pInsert.setLong (9, createTs.longValue());
-			pInsert.setLong (10, changerUId.longValue());
-			pInsert.setLong (11, changeTs.longValue());
-			pInsert.setLong (12, inheritPrivs.longValue());
-			pInsert.executeUpdate();
+				myInsert.setFloat(7, factor.floatValue());
+			myInsert.setLong (8, creatorUId.longValue());
+			myInsert.setLong (9, createTs.longValue());
+			myInsert.setLong (10, changerUId.longValue());
+			myInsert.setLong (11, changeTs.longValue());
+			myInsert.setLong (12, inheritPrivs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "NamedResource: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "NamedResource: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -629,23 +573,25 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM NAMED_RESOURCE WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "NamedResource: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "NamedResource: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "NamedResource: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -653,19 +599,11 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE NAMED_RESOURCE SET " +
 				        "" + squote + "NAME" + equote + " = ? " +
@@ -680,39 +618,40 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        ", " + squote + "INHERIT_PRIVS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "NamedResource: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setString(1, name);
-			pUpdate.setLong (2, ownerId.longValue());
+			myUpdate.clearParameters();
+			myUpdate.setString(1, name);
+			myUpdate.setLong (2, ownerId.longValue());
 			if (parentId == null)
-				pUpdate.setNull(3, Types.INTEGER);
+				myUpdate.setNull(3, Types.INTEGER);
 			else
-				pUpdate.setLong (3, parentId.longValue());
-			pUpdate.setInt(4, usage.intValue());
+				myUpdate.setLong (3, parentId.longValue());
+			myUpdate.setInt(4, usage.intValue());
 			if (rspId == null)
-				pUpdate.setNull(5, Types.INTEGER);
+				myUpdate.setNull(5, Types.INTEGER);
 			else
-				pUpdate.setLong (5, rspId.longValue());
+				myUpdate.setLong (5, rspId.longValue());
 			if (factor == null)
-				pUpdate.setNull(6, Types.FLOAT);
+				myUpdate.setNull(6, Types.FLOAT);
 			else
-				pUpdate.setFloat(6, factor.floatValue());
-			pUpdate.setLong (7, creatorUId.longValue());
-			pUpdate.setLong (8, createTs.longValue());
-			pUpdate.setLong (9, changerUId.longValue());
-			pUpdate.setLong (10, changeTs.longValue());
-			pUpdate.setLong (11, inheritPrivs.longValue());
-			pUpdate.setLong(12, id.longValue());
-			pUpdate.executeUpdate();
+				myUpdate.setFloat(6, factor.floatValue());
+			myUpdate.setLong (7, creatorUId.longValue());
+			myUpdate.setLong (8, createTs.longValue());
+			myUpdate.setLong (9, changerUId.longValue());
+			myUpdate.setLong (10, changeTs.longValue());
+			myUpdate.setLong (11, inheritPrivs.longValue());
+			myUpdate.setLong(12, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "NamedResource: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "NamedResource: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

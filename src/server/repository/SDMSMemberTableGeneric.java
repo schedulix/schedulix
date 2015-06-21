@@ -66,9 +66,9 @@ public class SDMSMemberTableGeneric extends SDMSTable
 		table = (SDMSMemberTable) this;
 		SDMSMemberTableGeneric.table = (SDMSMemberTable) this;
 		isVersioned = false;
-		idx_gId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_uId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_gId_uId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_gId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "gId");
+		idx_uId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "uId");
+		idx_gId_uId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "gId_uId");
 	}
 	public SDMSMember create(SystemEnvironment env
 	                         ,Long p_gId
@@ -193,18 +193,9 @@ public class SDMSMemberTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -225,16 +216,40 @@ public class SDMSMemberTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_gId.put(env, ((SDMSMemberGeneric) o).gId, o);
-		idx_uId.put(env, ((SDMSMemberGeneric) o).uId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_gId.check(((SDMSMemberGeneric) o).gId, o);
+		out = out + "idx_gId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_uId.check(((SDMSMemberGeneric) o).uId, o);
+		out = out + "idx_uId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSMemberGeneric) o).gId);
 		k.add(((SDMSMemberGeneric) o).uId);
-		idx_gId_uId.put(env, k, o);
+		ok =  idx_gId_uId.check(k, o);
+		out = out + "idx_gId_uId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_gId.put(env, ((SDMSMemberGeneric) o).gId, o, ((1 & indexMember) != 0));
+		idx_uId.put(env, ((SDMSMemberGeneric) o).uId, o, ((2 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSMemberGeneric) o).gId);
+		k.add(((SDMSMemberGeneric) o).uId);
+		idx_gId_uId.put(env, k, o, ((4 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

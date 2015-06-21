@@ -65,8 +65,8 @@ public class SDMSResourceStateProfileTableGeneric extends SDMSTable
 		table = (SDMSResourceStateProfileTable) this;
 		SDMSResourceStateProfileTableGeneric.table = (SDMSResourceStateProfileTable) this;
 		isVersioned = false;
-		idx_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
-		idx_initialRsdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "name");
+		idx_initialRsdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "initialRsdId");
 	}
 	public SDMSResourceStateProfile create(SystemEnvironment env
 	                                       ,String p_name
@@ -191,18 +191,9 @@ public class SDMSResourceStateProfileTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -223,11 +214,29 @@ public class SDMSResourceStateProfileTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
+	public String checkIndex(SDMSObject o)
+	throws SDMSException
+	{
+		String out = "";
+		boolean ok;
+		ok =  idx_name.check(((SDMSResourceStateProfileGeneric) o).name, o);
+		out = out + "idx_name: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_initialRsdId.check(((SDMSResourceStateProfileGeneric) o).initialRsdId, o);
+		out = out + "idx_initialRsdId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
 	protected void index(SystemEnvironment env, SDMSObject o)
 	throws SDMSException
 	{
-		idx_name.put(env, ((SDMSResourceStateProfileGeneric) o).name, o);
-		idx_initialRsdId.put(env, ((SDMSResourceStateProfileGeneric) o).initialRsdId, o);
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_name.put(env, ((SDMSResourceStateProfileGeneric) o).name, o, ((1 & indexMember) != 0));
+		idx_initialRsdId.put(env, ((SDMSResourceStateProfileGeneric) o).initialRsdId, o, ((2 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

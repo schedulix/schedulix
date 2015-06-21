@@ -36,6 +36,7 @@ import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
+import de.independit.scheduler.locking.*;
 
 public class ListSession extends Node
 {
@@ -120,9 +121,10 @@ public class ListSession extends Node
 			if(!list[i].isAlive()) continue;
 			cEnv = ((UserConnection) list[i]).getEnv();
 			Vector data = new Vector();
-			fillVector(sysEnv, cEnv, data);
-			d_container.addData(sysEnv, data);
-			sessionCtr++;
+			if (fillVector(sysEnv, cEnv, data)) {
+				d_container.addData(sysEnv, data);
+				sessionCtr++;
+			}
 		}
 
 		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, 1));
@@ -131,7 +133,7 @@ public class ListSession extends Node
 		result.setOutputContainer(d_container);
 	}
 
-	private void fillVector(SystemEnvironment sysEnv, ConnectionEnvironment cEnv, Vector data)
+	private boolean fillVector(SystemEnvironment sysEnv, ConnectionEnvironment cEnv, Vector data)
 		throws SDMSException
 	{
 		if(cEnv.id() == env.id()) {
@@ -144,22 +146,35 @@ public class ListSession extends Node
 		data.add(cEnv.dStart());
 		try {
 			if(cEnv.isUser()) {
-				data.add("USER");
-				data.add(SDMSUserTable.getObject(sysEnv, cEnv.uid()).getName(sysEnv));
+				try {
+					String userName = SDMSUserTable.getObject(sysEnv, cEnv.uid()).getName(sysEnv);
+					data.add("USER");
+					data.add(userName);
+				} catch (NotFoundException nfe) {
+					String jsName = SDMSScopeTable.getObject(sysEnv, cEnv.uid()).pathString(sysEnv);
+					data.add("JOBSERVER");
+					data.add(jsName);
+				}
 			} else if(cEnv.isJobServer()) {
+				String jsName = SDMSScopeTable.getObject(sysEnv, cEnv.uid()).pathString(sysEnv);
 				data.add("JOBSERVER");
-				data.add(SDMSScopeTable.getObject(sysEnv, cEnv.uid()).pathString(sysEnv));
+				data.add(jsName);
 			} else {
-				data.add("JOB");
 				SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, cEnv.uid());
 				long actVersion = sme.getSeVersion(sysEnv).longValue();
-				data.add(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getName(sysEnv));
+				String seName = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getName(sysEnv);
+				data.add("JOB");
+				data.add(seName);
 			}
 			data.add(cEnv.uid());
 			data.add(cEnv.ip());
 			data.add(new Long(cEnv.txId()));
 			data.add(new Long(cEnv.idle()));
-			data.add(cEnv.getState());
+			String state = (cEnv.getState()).toString();
+
+			if (cEnv.worker != null && LockingSystemSynchronized.isWait(cEnv.worker))
+				state = state + "[W]";
+			data.add(state);
 			data.add(new Integer(cEnv.getMe().getTimeout()));
 			data.add(cEnv.getInfo());
 			try {
@@ -169,9 +184,9 @@ public class ListSession extends Node
 
 				data.add("");
 			}
+			return true;
 		} catch (NotFoundException nfe) {
-			for(int i = data.size(); i < 14; i++)
-				data.add(null);
+			return false;
 		}
 	}
 }

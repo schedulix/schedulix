@@ -68,9 +68,9 @@ public class SDMSExitStateMappingTableGeneric extends SDMSTable
 		table = (SDMSExitStateMappingTable) this;
 		SDMSExitStateMappingTableGeneric.table = (SDMSExitStateMappingTable) this;
 		isVersioned = true;
-		idx_esmpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_esdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_esmpId_esdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_esmpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "esmpId");
+		idx_esdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "esdId");
+		idx_esmpId_esdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "esmpId_esdId");
 	}
 	public SDMSExitStateMapping create(SystemEnvironment env
 	                                   ,Long p_esmpId
@@ -211,18 +211,9 @@ public class SDMSExitStateMappingTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -249,16 +240,40 @@ public class SDMSExitStateMappingTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_esmpId.put(env, ((SDMSExitStateMappingGeneric) o).esmpId, o);
-		idx_esdId.put(env, ((SDMSExitStateMappingGeneric) o).esdId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_esmpId.check(((SDMSExitStateMappingGeneric) o).esmpId, o);
+		out = out + "idx_esmpId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_esdId.check(((SDMSExitStateMappingGeneric) o).esdId, o);
+		out = out + "idx_esdId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSExitStateMappingGeneric) o).esmpId);
 		k.add(((SDMSExitStateMappingGeneric) o).esdId);
-		idx_esmpId_esdId.put(env, k, o);
+		ok =  idx_esmpId_esdId.check(k, o);
+		out = out + "idx_esmpId_esdId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_esmpId.put(env, ((SDMSExitStateMappingGeneric) o).esmpId, o, ((1 & indexMember) != 0));
+		idx_esdId.put(env, ((SDMSExitStateMappingGeneric) o).esdId, o, ((2 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSExitStateMappingGeneric) o).esmpId);
+		k.add(((SDMSExitStateMappingGeneric) o).esdId);
+		idx_esmpId_esdId.put(env, k, o, ((4 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

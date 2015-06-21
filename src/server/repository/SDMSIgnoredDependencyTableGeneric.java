@@ -65,8 +65,8 @@ public class SDMSIgnoredDependencyTableGeneric extends SDMSTable
 		table = (SDMSIgnoredDependencyTable) this;
 		SDMSIgnoredDependencyTableGeneric.table = (SDMSIgnoredDependencyTable) this;
 		isVersioned = true;
-		idx_shId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_shId_ddName = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_shId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "shId");
+		idx_shId_ddName = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "shId_ddName");
 	}
 	public SDMSIgnoredDependency create(SystemEnvironment env
 	                                    ,Long p_shId
@@ -191,18 +191,9 @@ public class SDMSIgnoredDependencyTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -227,15 +218,37 @@ public class SDMSIgnoredDependencyTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_shId.put(env, ((SDMSIgnoredDependencyGeneric) o).shId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_shId.check(((SDMSIgnoredDependencyGeneric) o).shId, o);
+		out = out + "idx_shId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSIgnoredDependencyGeneric) o).shId);
 		k.add(((SDMSIgnoredDependencyGeneric) o).ddName);
-		idx_shId_ddName.put(env, k, o);
+		ok =  idx_shId_ddName.check(k, o);
+		out = out + "idx_shId_ddName: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_shId.put(env, ((SDMSIgnoredDependencyGeneric) o).shId, o, ((1 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSIgnoredDependencyGeneric) o).shId);
+		k.add(((SDMSIgnoredDependencyGeneric) o).ddName);
+		idx_shId_ddName.put(env, k, o, ((2 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

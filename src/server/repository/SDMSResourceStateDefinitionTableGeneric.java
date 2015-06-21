@@ -63,7 +63,7 @@ public class SDMSResourceStateDefinitionTableGeneric extends SDMSTable
 		table = (SDMSResourceStateDefinitionTable) this;
 		SDMSResourceStateDefinitionTableGeneric.table = (SDMSResourceStateDefinitionTable) this;
 		isVersioned = false;
-		idx_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "name");
 	}
 	public SDMSResourceStateDefinition create(SystemEnvironment env
 	                ,String p_name
@@ -180,18 +180,9 @@ public class SDMSResourceStateDefinitionTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -211,10 +202,26 @@ public class SDMSResourceStateDefinitionTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
+	public String checkIndex(SDMSObject o)
+	throws SDMSException
+	{
+		String out = "";
+		boolean ok;
+		ok =  idx_name.check(((SDMSResourceStateDefinitionGeneric) o).name, o);
+		out = out + "idx_name: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
 	protected void index(SystemEnvironment env, SDMSObject o)
 	throws SDMSException
 	{
-		idx_name.put(env, ((SDMSResourceStateDefinitionGeneric) o).name, o);
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_name.put(env, ((SDMSResourceStateDefinitionGeneric) o).name, o, ((1 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

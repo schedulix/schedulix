@@ -80,10 +80,10 @@ public class SDMSScheduledEventTableGeneric extends SDMSTable
 		table = (SDMSScheduledEventTable) this;
 		SDMSScheduledEventTableGeneric.table = (SDMSScheduledEventTable) this;
 		isVersioned = false;
-		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_sceId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_evtId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_sceId_evtId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "ownerId");
+		idx_sceId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "sceId");
+		idx_evtId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "evtId");
+		idx_sceId_evtId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "sceId_evtId");
 	}
 	public SDMSScheduledEvent create(SystemEnvironment env
 	                                 ,Long p_ownerId
@@ -318,18 +318,9 @@ public class SDMSScheduledEventTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -363,17 +354,43 @@ public class SDMSScheduledEventTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_ownerId.put(env, ((SDMSScheduledEventGeneric) o).ownerId, o);
-		idx_sceId.put(env, ((SDMSScheduledEventGeneric) o).sceId, o);
-		idx_evtId.put(env, ((SDMSScheduledEventGeneric) o).evtId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_ownerId.check(((SDMSScheduledEventGeneric) o).ownerId, o);
+		out = out + "idx_ownerId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_sceId.check(((SDMSScheduledEventGeneric) o).sceId, o);
+		out = out + "idx_sceId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_evtId.check(((SDMSScheduledEventGeneric) o).evtId, o);
+		out = out + "idx_evtId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSScheduledEventGeneric) o).sceId);
 		k.add(((SDMSScheduledEventGeneric) o).evtId);
-		idx_sceId_evtId.put(env, k, o);
+		ok =  idx_sceId_evtId.check(k, o);
+		out = out + "idx_sceId_evtId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_ownerId.put(env, ((SDMSScheduledEventGeneric) o).ownerId, o, ((1 & indexMember) != 0));
+		idx_sceId.put(env, ((SDMSScheduledEventGeneric) o).sceId, o, ((2 & indexMember) != 0));
+		idx_evtId.put(env, ((SDMSScheduledEventGeneric) o).evtId, o, ((4 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSScheduledEventGeneric) o).sceId);
+		k.add(((SDMSScheduledEventGeneric) o).evtId);
+		idx_sceId_evtId.put(env, k, o, ((8 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

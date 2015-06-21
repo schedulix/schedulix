@@ -59,9 +59,9 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSEnvironmentGeneric(
 	        SystemEnvironment env,
@@ -97,10 +97,10 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 		return (neId);
 	}
 
-	public	SDMSEnvironmentGeneric setNeId (SystemEnvironment env, Long p_neId)
+	public	void setNeId (SystemEnvironment env, Long p_neId)
 	throws SDMSException
 	{
-		if(neId.equals(p_neId)) return this;
+		if(neId.equals(p_neId)) return;
 		SDMSEnvironmentGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -113,13 +113,13 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 			o.neId = p_neId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 5);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getNrId (SystemEnvironment env)
@@ -128,10 +128,10 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 		return (nrId);
 	}
 
-	public	SDMSEnvironmentGeneric setNrId (SystemEnvironment env, Long p_nrId)
+	public	void setNrId (SystemEnvironment env, Long p_nrId)
 	throws SDMSException
 	{
-		if(nrId.equals(p_nrId)) return this;
+		if(nrId.equals(p_nrId)) return;
 		SDMSEnvironmentGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -144,13 +144,13 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 			o.nrId = p_nrId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 6);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public String getCondition (SystemEnvironment env)
@@ -159,36 +159,29 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 		return (condition);
 	}
 
-	public	SDMSEnvironmentGeneric setCondition (SystemEnvironment env, String p_condition)
+	public	void setCondition (SystemEnvironment env, String p_condition)
 	throws SDMSException
 	{
-		if(p_condition != null && p_condition.equals(condition)) return this;
-		if(p_condition == null && condition == null) return this;
-		SDMSEnvironmentGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Environment) Change of system object not allowed")
-				);
-			}
-			o = (SDMSEnvironmentGeneric) change(env);
-			if (p_condition != null && p_condition.length() > 1024) {
-				throw new CommonErrorException (
-				        new SDMSMessage(env, "01112141510",
-				                        "(Environment) Length of $1 exceeds maximum length $2", "condition", "1024")
-				);
-			}
-			o.condition = p_condition;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_condition != null && p_condition.equals(condition)) return;
+		if(p_condition == null && condition == null) return;
+		SDMSEnvironmentGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Environment) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSEnvironmentGeneric) change(env);
+		if (p_condition != null && p_condition.length() > 1024) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(Environment) Length of $1 exceeds maximum length $2", "condition", "1024")
+			);
+		}
+		o.condition = p_condition;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -197,29 +190,22 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSEnvironmentGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSEnvironmentGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Environment) Change of system object not allowed")
-				);
-			}
-			o = (SDMSEnvironmentGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSEnvironmentGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Environment) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSEnvironmentGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -228,29 +214,22 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSEnvironmentGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSEnvironmentGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(Environment) Change of system object not allowed")
-				);
-			}
-			o = (SDMSEnvironmentGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSEnvironmentGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Environment) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null) o = (SDMSEnvironmentGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -259,22 +238,15 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSEnvironmentGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSEnvironmentGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSEnvironmentGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSEnvironmentGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSEnvironmentGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -283,23 +255,16 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSEnvironmentGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSEnvironmentGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSEnvironmentGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSEnvironmentGeneric o = this;
+		if (o.versions.o_v == null) o = (SDMSEnvironmentGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSEnvironmentGeneric set_NeIdNrId (SystemEnvironment env, Long p_neId, Long p_nrId)
@@ -364,19 +329,11 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO ENVIRONMENT (" +
 				        "ID" +
@@ -398,32 +355,33 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?, ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "Environment: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, neId.longValue());
-			pInsert.setLong (3, nrId.longValue());
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, neId.longValue());
+			myInsert.setLong (3, nrId.longValue());
 			if (condition == null)
-				pInsert.setNull(4, Types.VARCHAR);
+				myInsert.setNull(4, Types.VARCHAR);
 			else
-				pInsert.setString(4, condition);
-			pInsert.setLong (5, creatorUId.longValue());
-			pInsert.setLong (6, createTs.longValue());
-			pInsert.setLong (7, changerUId.longValue());
-			pInsert.setLong (8, changeTs.longValue());
-			pInsert.setLong(9, env.tx.versionId);
-			pInsert.setLong(10, Long.MAX_VALUE);
-			pInsert.executeUpdate();
+				myInsert.setString(4, condition);
+			myInsert.setLong (5, creatorUId.longValue());
+			myInsert.setLong (6, createTs.longValue());
+			myInsert.setLong (7, changerUId.longValue());
+			myInsert.setLong (8, changeTs.longValue());
+			myInsert.setLong(9, env.tx.versionId);
+			myInsert.setLong(10, Long.MAX_VALUE);
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "Environment: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "Environment: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -444,7 +402,8 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
@@ -457,22 +416,23 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 				        "  AND VALID_TO = " + (postgres ?
 				                               "CAST (\'" +  Long.MAX_VALUE + "\' AS DECIMAL)" :
 				                               "" + Long.MAX_VALUE);
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				// Can't prepare statement
 				throw new FatalException(new SDMSMessage(env, "01110181955", "Environment : $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong(1, env.tx.versionId);
-			pUpdate.setLong(2, changeTs.longValue());
-			pUpdate.setLong(3, changerUId.longValue());
-			pUpdate.setLong(4, id.longValue());
-			pUpdate.executeUpdate();
+			myUpdate.clearParameters();
+			myUpdate.setLong(1, env.tx.versionId);
+			myUpdate.setLong(2, changeTs.longValue());
+			myUpdate.setLong(3, changerUId.longValue());
+			myUpdate.setLong(4, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181956", "Environment: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "Environment: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

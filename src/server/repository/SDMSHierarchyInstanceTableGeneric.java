@@ -71,9 +71,9 @@ public class SDMSHierarchyInstanceTableGeneric extends SDMSTable
 		table = (SDMSHierarchyInstanceTable) this;
 		SDMSHierarchyInstanceTableGeneric.table = (SDMSHierarchyInstanceTable) this;
 		isVersioned = false;
-		idx_parentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_childId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentId_childId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_parentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "parentId");
+		idx_childId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "childId");
+		idx_parentId_childId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "parentId_childId");
 	}
 	public SDMSHierarchyInstance create(SystemEnvironment env
 	                                    ,Long p_parentId
@@ -235,18 +235,9 @@ public class SDMSHierarchyInstanceTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
 		                                   tableName() + ".ID" +
@@ -273,16 +264,40 @@ public class SDMSHierarchyInstanceTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_parentId.put(env, ((SDMSHierarchyInstanceGeneric) o).parentId, o);
-		idx_childId.put(env, ((SDMSHierarchyInstanceGeneric) o).childId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_parentId.check(((SDMSHierarchyInstanceGeneric) o).parentId, o);
+		out = out + "idx_parentId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_childId.check(((SDMSHierarchyInstanceGeneric) o).childId, o);
+		out = out + "idx_childId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSHierarchyInstanceGeneric) o).parentId);
 		k.add(((SDMSHierarchyInstanceGeneric) o).childId);
-		idx_parentId_childId.put(env, k, o);
+		ok =  idx_parentId_childId.check(k, o);
+		out = out + "idx_parentId_childId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_parentId.put(env, ((SDMSHierarchyInstanceGeneric) o).parentId, o, ((1 & indexMember) != 0));
+		idx_childId.put(env, ((SDMSHierarchyInstanceGeneric) o).childId, o, ((2 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSHierarchyInstanceGeneric) o).parentId);
+		k.add(((SDMSHierarchyInstanceGeneric) o).childId);
+		idx_parentId_childId.put(env, k, o, ((4 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

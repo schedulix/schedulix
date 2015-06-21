@@ -33,13 +33,14 @@ import java.sql.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.locking.*;
 
 public abstract class SDMSProxy implements Comparable
 {
 	public static final String __version = "@(#) $Id: SDMSProxy.java,v 2.11.2.2 2013/03/16 11:47:20 dieter Exp $";
 	public static final Long ZERO = new Long(0);
 
-	protected SDMSObject  object;
+	public SDMSObject  object;
 
 	protected boolean     lockedExclusive;
 
@@ -81,7 +82,8 @@ public abstract class SDMSProxy implements Comparable
 		}
 
 		if (!lockedExclusive) {
-			object.versions.lockExclusive(env);
+			if (env.maxWriter > 1)
+				LockingSystem.lock(object.versions, ObjectLock.EXCLUSIVE);
 			lockedExclusive = true;
 		}
 
@@ -105,7 +107,8 @@ public abstract class SDMSProxy implements Comparable
 	{
 
 		if (!lockedExclusive) {
-			object.versions.lockExclusive(env);
+			if (env.maxWriter > 1)
+				LockingSystem.lock(object.versions, ObjectLock.EXCLUSIVE);
 			lockedExclusive = true;
 		}
 
