@@ -27,17 +27,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE WATCH_TYPE (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                             decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `CREATOR_U_ID`                 decimal(20)     NOT NULL
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-    , VALID_FROM                   DECIMAL(20) NOT NULL
-    , VALID_TO                     DECIMAL(20) NOT NULL
-) engine = innodb;
+    , `VALID_FROM`                   decimal(20) NOT NULL
+    , `VALID_TO`                     decimal(20) NOT NULL
+) ENGINE = INNODB;
 CREATE INDEX PK_WATCH_TYPE
-ON WATCH_TYPE(id);
+ON WATCH_TYPE(`ID`);
 CREATE VIEW SCI_C_WATCH_TYPE AS
 SELECT
     ID

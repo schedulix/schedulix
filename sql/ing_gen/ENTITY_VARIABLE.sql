@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE ENTITY_VARIABLE (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , SME_ID                         decimal(20)     NOT NULL
     , NAME                           varchar(64)     NOT NULL
     , VALUE                          varchar(256)    WITH NULL
@@ -41,7 +41,7 @@ CREATE TABLE ENTITY_VARIABLE (
 CREATE UNIQUE INDEX PK_ENTITY_VARIABLE
 ON ENTITY_VARIABLE(ID) WITH STRUCTURE = BTREE;\g
 CREATE TABLE ARC_ENTITY_VARIABLE (
-    ID                             DECIMAL (20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , SME_ID                         decimal(20)      NULL
     , NAME                           varchar(64)      NULL
     , VALUE                          varchar(256)     NULL

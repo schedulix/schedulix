@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE DEPENDENCY_INSTANCE (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , DD_ID                          decimal(20)     NOT NULL
     , DEPENDENT_ID                   decimal(20)     NOT NULL
     , DEPENDENT_ID_ORIG              decimal(20)     NOT NULL
@@ -45,7 +45,7 @@ CREATE TABLE DEPENDENCY_INSTANCE (
 CREATE UNIQUE INDEX PK_DEPENDENCY_INSTANCE
 ON DEPENDENCY_INSTANCE(ID) WITH STRUCTURE = BTREE;\g
 CREATE TABLE ARC_DEPENDENCY_INSTANCE (
-    ID                             DECIMAL (20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , DD_ID                          decimal(20)      NULL
     , DEPENDENT_ID                   decimal(20)      NULL
     , DEPENDENT_ID_ORIG              decimal(20)      NULL

@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE GRANTS (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `OBJECT_ID`                    decimal(20)     NOT NULL
     , `G_ID`                         decimal(20)     NOT NULL
     , `OBJECT_TYPE`                  integer         NOT NULL
@@ -37,9 +37,9 @@ CREATE TABLE GRANTS (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_GRANTS
-ON GRANTS(id);
+ON GRANTS(`ID`);
 CREATE VIEW SCI_GRANTS AS
 SELECT
     ID

@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE DEPENDENCY_DEFINITION (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `SE_DEPENDENT_ID`              decimal(20)     NOT NULL
     , `SE_REQUIRED_ID`               decimal(20)     NOT NULL
     , `NAME`                         varchar(64)         NULL
@@ -39,11 +39,11 @@ CREATE TABLE DEPENDENCY_DEFINITION (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-    , VALID_FROM                   DECIMAL(20) NOT NULL
-    , VALID_TO                     DECIMAL(20) NOT NULL
-) engine = innodb;
+    , `VALID_FROM`                 decimal(20) NOT NULL
+    , `VALID_TO`                   decimal(20) NOT NULL
+) ENGINE = INNODB;
 CREATE INDEX PK_DEPENDENCY_DEFINITION
-ON DEPENDENCY_DEFINITION(id);
+ON DEPENDENCY_DEFINITION(`ID`);
 CREATE VIEW SCI_C_DEPENDENCY_DEFINITION AS
 SELECT
     ID

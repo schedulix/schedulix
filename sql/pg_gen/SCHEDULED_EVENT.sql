@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE SCHEDULED_EVENT (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , OWNER_ID                       decimal(20)     NOT NULL
     , SCE_ID                         decimal(20)     NOT NULL
     , EVT_ID                         decimal(20)     NOT NULL

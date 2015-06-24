@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE RESOURCE_VARIABLE (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , PD_ID                          decimal(20)     NOT NULL
     , R_ID                           decimal(20)     NOT NULL
     , VALUE                          varchar(256)    NOT NULL

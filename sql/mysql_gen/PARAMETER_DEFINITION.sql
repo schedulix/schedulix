@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE PARAMETER_DEFINITION (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `SE_ID`                        decimal(20)     NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `TYPE`                         integer         NOT NULL
@@ -35,15 +35,16 @@ CREATE TABLE PARAMETER_DEFINITION (
     , `DEFAULTVALUE`                 varchar(256)        NULL
     , `IS_LOCAL`                     integer         NOT NULL
     , `LINK_PD_ID`                   decimal(20)         NULL
+    , `EXPORT_NAME`                  varchar(64)         NULL
     , `CREATOR_U_ID`                 decimal(20)     NOT NULL
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-    , VALID_FROM                   DECIMAL(20) NOT NULL
-    , VALID_TO                     DECIMAL(20) NOT NULL
-) engine = innodb;
+    , `VALID_FROM`                 decimal(20) NOT NULL
+    , `VALID_TO`                   decimal(20) NOT NULL
+) ENGINE = INNODB;
 CREATE INDEX PK_PARAMETER_DEFINITION
-ON PARAMETER_DEFINITION(id);
+ON PARAMETER_DEFINITION(`ID`);
 CREATE VIEW SCI_C_PARAMETER_DEFINITION AS
 SELECT
     ID
@@ -54,6 +55,7 @@ SELECT
     , `DEFAULTVALUE`                 AS `DEFAULTVALUE`
     , CASE `IS_LOCAL` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_LOCAL`
     , `LINK_PD_ID`                   AS `LINK_PD_ID`
+    , `EXPORT_NAME`                  AS `EXPORT_NAME`
     , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
@@ -70,6 +72,7 @@ SELECT
     , `DEFAULTVALUE`                 AS `DEFAULTVALUE`
     , CASE `IS_LOCAL` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_LOCAL`
     , `LINK_PD_ID`                   AS `LINK_PD_ID`
+    , `EXPORT_NAME`                  AS `EXPORT_NAME`
     , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`

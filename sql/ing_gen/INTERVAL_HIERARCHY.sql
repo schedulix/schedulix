@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE INTERVAL_HIERARCHY (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , CHILD_ID                       decimal(20)     NOT NULL
     , PARENT_ID                      decimal(20)     NOT NULL
     , CREATOR_U_ID                   decimal(20)     NOT NULL

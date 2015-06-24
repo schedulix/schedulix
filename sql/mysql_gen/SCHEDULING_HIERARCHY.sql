@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE SCHEDULING_HIERARCHY (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `SE_PARENT_ID`                 decimal(20)         NULL
     , `SE_CHILD_ID`                  decimal(20)         NULL
     , `ALIAS_NAME`                   varchar(64)         NULL
@@ -43,11 +43,11 @@ CREATE TABLE SCHEDULING_HIERARCHY (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-    , VALID_FROM                   DECIMAL(20) NOT NULL
-    , VALID_TO                     DECIMAL(20) NOT NULL
-) engine = innodb;
+    , `VALID_FROM`                 decimal(20) NOT NULL
+    , `VALID_TO`                   decimal(20) NOT NULL
+) ENGINE = INNODB;
 CREATE INDEX PK_SCHEDULING_HIERARCHY
-ON SCHEDULING_HIERARCHY(id);
+ON SCHEDULING_HIERARCHY(`ID`);
 CREATE VIEW SCI_C_SCHEDULING_HIERARCHY AS
 SELECT
     ID

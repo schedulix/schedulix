@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE POOLED_RESOURCE (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `P_ID`                         decimal(20)     NOT NULL
     , `R_ID`                         decimal(20)     NOT NULL
     , `IS_POOL`                      integer         NOT NULL
@@ -46,9 +46,9 @@ CREATE TABLE POOLED_RESOURCE (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_POOLED_RESOURCE
-ON POOLED_RESOURCE(id);
+ON POOLED_RESOURCE(`ID`);
 CREATE VIEW SCI_POOLED_RESOURCE AS
 SELECT
     ID

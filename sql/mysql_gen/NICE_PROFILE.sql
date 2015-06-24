@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE NICE_PROFILE (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `IS_ACTIVE`                    integer         NOT NULL
     , `ACTIVE_TS`                    decimal(20)         NULL
@@ -35,9 +35,9 @@ CREATE TABLE NICE_PROFILE (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_NICE_PROFILE
-ON NICE_PROFILE(id);
+ON NICE_PROFILE(`ID`);
 CREATE VIEW SCI_NICE_PROFILE AS
 SELECT
     ID

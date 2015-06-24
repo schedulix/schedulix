@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE SUBMITTED_ENTITY (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `ACCESS_KEY`                   decimal(20)     NOT NULL
     , `MASTER_ID`                    decimal(20)     NOT NULL
     , `SUBMIT_TAG`                   varchar(32)         NULL
@@ -124,11 +124,11 @@ CREATE TABLE SUBMITTED_ENTITY (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_SUBMITTED_ENTITY
-ON SUBMITTED_ENTITY(id);
+ON SUBMITTED_ENTITY(`ID`);
 CREATE TABLE ARC_SUBMITTED_ENTITY (
-    ID                             DECIMAL (20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , `ACCESS_KEY`                   decimal(20)      NULL
     , `MASTER_ID`                    decimal(20)      NULL
     , `SUBMIT_TAG`                   varchar(32)      NULL
@@ -225,7 +225,7 @@ CREATE TABLE ARC_SUBMITTED_ENTITY (
     , `CREATE_TS`                    decimal(20)      NULL
     , `CHANGER_U_ID`                 decimal(20)      NULL
     , `CHANGE_TS`                    decimal(20)      NULL
-);
+) ENGINE = INNODB;
 CREATE VIEW SCI_SUBMITTED_ENTITY AS
 SELECT
     ID

@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE SCOPE (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `OWNER_ID`                     decimal(20)     NOT NULL
     , `PARENT_ID`                    decimal(20)         NULL
@@ -50,9 +50,9 @@ CREATE TABLE SCOPE (
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
     , `INHERIT_PRIVS`                decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_SCOPE
-ON SCOPE(id);
+ON SCOPE(`ID`);
 CREATE VIEW SCI_SCOPE AS
 SELECT
     ID

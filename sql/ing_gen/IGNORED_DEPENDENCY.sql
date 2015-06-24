@@ -27,15 +27,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE IGNORED_DEPENDENCY (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , SH_ID                          decimal(20)     NOT NULL
     , DD_NAME                        varchar(64)     NOT NULL
     , CREATOR_U_ID                   decimal(20)     NOT NULL
     , CREATE_TS                      decimal(20)     NOT NULL
     , CHANGER_U_ID                   decimal(20)     NOT NULL
     , CHANGE_TS                      decimal(20)     NOT NULL
-    , VALID_FROM                   DECIMAL(20) NOT NULL
-    , VALID_TO                     DECIMAL(20) NOT NULL
+    , VALID_FROM                   decimal(20) NOT NULL
+    , VALID_TO                     decimal(20) NOT NULL
 );\g
 CREATE INDEX PK_IGNORED_DEPENDENCY
 ON IGNORED_DEPENDENCY(ID) WITH STRUCTURE = BTREE;\g

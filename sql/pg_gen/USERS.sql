@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE USERS (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , NAME                           varchar(64)     NOT NULL
     , PASSWD                         varchar(64)     NOT NULL
     , SALT                           varchar(64)         NULL

@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE SCHEDULED_EVENT (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `OWNER_ID`                     decimal(20)     NOT NULL
     , `SCE_ID`                       decimal(20)     NOT NULL
     , `EVT_ID`                       decimal(20)     NOT NULL
@@ -47,9 +47,9 @@ CREATE TABLE SCHEDULED_EVENT (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_SCHEDULED_EVENT
-ON SCHEDULED_EVENT(id);
+ON SCHEDULED_EVENT(`ID`);
 CREATE VIEW SCI_SCHEDULED_EVENT AS
 SELECT
     ID

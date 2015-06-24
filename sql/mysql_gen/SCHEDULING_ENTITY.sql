@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE SCHEDULING_ENTITY (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `FOLDER_ID`                    decimal(20)     NOT NULL
     , `OWNER_ID`                     decimal(20)     NOT NULL
@@ -68,11 +68,11 @@ CREATE TABLE SCHEDULING_ENTITY (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-    , VALID_FROM                   DECIMAL(20) NOT NULL
-    , VALID_TO                     DECIMAL(20) NOT NULL
-) engine = innodb;
+    , `VALID_FROM`                 decimal(20) NOT NULL
+    , `VALID_TO`                   decimal(20) NOT NULL
+) ENGINE = INNODB;
 CREATE INDEX PK_SCHEDULING_ENTITY
-ON SCHEDULING_ENTITY(id);
+ON SCHEDULING_ENTITY(`ID`);
 CREATE VIEW SCI_C_SCHEDULING_ENTITY AS
 SELECT
     ID

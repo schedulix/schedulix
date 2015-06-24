@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE OBJECT_EVENT (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , TR_ID                          decimal(20)     WITH NULL
     , OI_ID                          decimal(20)     NOT NULL
     , EVENT_TYPE                     integer         NOT NULL

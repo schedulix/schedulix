@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE MEMBER (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , G_ID                           decimal(20)     NOT NULL
     , U_ID                           decimal(20)     NOT NULL
     , CREATOR_U_ID                   decimal(20)     NOT NULL

@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE ENVIRONMENT (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , NE_ID                          decimal(20)     NOT NULL
     , NR_ID                          decimal(20)     NOT NULL
     , CONDITION                      varchar(1024)   WITH NULL
@@ -35,8 +35,8 @@ CREATE TABLE ENVIRONMENT (
     , CREATE_TS                      decimal(20)     NOT NULL
     , CHANGER_U_ID                   decimal(20)     NOT NULL
     , CHANGE_TS                      decimal(20)     NOT NULL
-    , VALID_FROM                   DECIMAL(20) NOT NULL
-    , VALID_TO                     DECIMAL(20) NOT NULL
+    , VALID_FROM                   decimal(20) NOT NULL
+    , VALID_TO                     decimal(20) NOT NULL
 );\g
 CREATE INDEX PK_ENVIRONMENT
 ON ENVIRONMENT(ID) WITH STRUCTURE = BTREE;\g

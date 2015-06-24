@@ -38,7 +38,7 @@ CREATE TABLE RESOURCE_TRACE (
     , `LW_AVG`                       float           NOT NULL
     , `WRITE_TIME`                   decimal(20)     NOT NULL
     , `LAST_WRITE`                   decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE VIEW SCI_RESOURCE_TRACE AS
 SELECT
     `R_ID`                         AS `R_ID`

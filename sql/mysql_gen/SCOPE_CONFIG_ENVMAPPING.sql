@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE SCOPE_CONFIG_ENVMAPPING (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `KEY`                          varchar(64)     NOT NULL
     , `VALUE`                        varchar(256)    NOT NULL
     , `S_ID`                         decimal(20)     NOT NULL
@@ -35,9 +35,9 @@ CREATE TABLE SCOPE_CONFIG_ENVMAPPING (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_SCOPE_CONFIG_ENVMAPPING
-ON SCOPE_CONFIG_ENVMAPPING(id);
+ON SCOPE_CONFIG_ENVMAPPING(`ID`);
 CREATE VIEW SCI_SCOPE_CONFIG_ENVMAPPING AS
 SELECT
     ID
