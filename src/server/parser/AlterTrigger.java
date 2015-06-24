@@ -156,6 +156,19 @@ public class AlterTrigger extends ManipTrigger
 		} else
 			checkIsMaster = t.getIsMaster(sysEnv);
 
+		isInverse = (Boolean) with.get(ParseStr.S_INVERSE);
+		if (isInverse != null && isInverse.booleanValue()) {
+			if (!checkIsMaster.booleanValue()) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "036231301", "Master option mandatory for inverse triggers"));
+			}
+			if (iaction == SDMSTrigger.RERUN) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "036231302", "Inverse option not valid for rerun triggers"));
+			}
+			if (objType != SDMSTrigger.JOB_DEFINITION) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "036231303", "Inverse option only valid for job triggers"));
+			}
+		}
+
 		final String submitOwnerName = (String)with.get(ParseStr.S_GROUP);
 		Long checkSubmitOwnerId;
 		if (submitOwnerName != null) {

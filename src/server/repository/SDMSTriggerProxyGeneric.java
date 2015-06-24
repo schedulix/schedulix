@@ -212,6 +212,24 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 		((SDMSTriggerGeneric)(object)).setIsActive (env, p_isActive);
 		return ;
 	}
+	public Boolean getIsInverse (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSTriggerGeneric)(object)).getIsInverse (env));
+	}
+
+	public void setIsInverse (SystemEnvironment env, Boolean p_isInverse)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSTriggerGeneric)(object)).setIsInverse (env, p_isInverse);
+		return ;
+	}
 	public Integer getAction (SystemEnvironment env)
 	throws SDMSException
 	{

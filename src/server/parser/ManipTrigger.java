@@ -47,6 +47,7 @@ public abstract class ManipTrigger extends Node
 	protected Long parentSeId;
 	protected Boolean active;
 	protected Integer action;
+	protected Boolean isInverse;
 	protected int iaction;
 	protected Integer triggertype;
 	protected Boolean isMaster;

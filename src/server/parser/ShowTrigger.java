@@ -116,6 +116,8 @@ public class ShowTrigger extends ShowCommented
 
 		desc.add("MASTER");
 
+		desc.add("IS_INVERSE");
+
 		desc.add("SUBMIT_OWNER");
 
 		desc.add("IS_CREATE");
@@ -214,6 +216,7 @@ public class ShowTrigger extends ShowCommented
 
 		data.add(t.getTypeAsString(sysEnv));
 		data.add(t.getIsMaster(sysEnv));
+		data.add(t.getIsInverse(sysEnv));
 
 		if (t.getIsMaster(sysEnv).booleanValue()) {
 			final Long submitOwnerId = t.getSubmitOwnerId (sysEnv);

@@ -51,6 +51,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		, "MAIN_SE_ID"
 		, "PARENT_SE_ID"
 		, "IS_ACTIVE"
+		, "IS_INVERSE"
 		, "ACTION"
 		, "TYPE"
 		, "IS_MASTER"
@@ -108,6 +109,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 	                          ,Long p_mainSeId
 	                          ,Long p_parentSeId
 	                          ,Boolean p_isActive
+	                          ,Boolean p_isInverse
 	                          ,Integer p_action
 	                          ,Integer p_type
 	                          ,Boolean p_isMaster
@@ -145,6 +147,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		         , p_mainSeId
 		         , p_parentSeId
 		         , p_isActive
+		         , p_isInverse
 		         , p_action
 		         , p_type
 		         , p_isMaster
@@ -177,6 +180,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		                , p_mainSeId
 		                , p_parentSeId
 		                , p_isActive
+		                , p_isInverse
 		                , p_action
 		                , p_type
 		                , p_isMaster
@@ -239,6 +243,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 	                        ,Long p_mainSeId
 	                        ,Long p_parentSeId
 	                        ,Boolean p_isActive
+	                        ,Boolean p_isInverse
 	                        ,Integer p_action
 	                        ,Integer p_type
 	                        ,Boolean p_isMaster
@@ -298,6 +303,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		Long mainSeId;
 		Long parentSeId;
 		Boolean isActive;
+		Boolean isInverse;
 		Integer action;
 		Integer type;
 		Boolean isMaster;
@@ -333,40 +339,41 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 			parentSeId = new Long (r.getLong(7));
 			if (r.wasNull()) parentSeId = null;
 			isActive = new Boolean ((r.getInt(8) == 0 ? false : true));
-			action = new Integer (r.getInt(9));
-			type = new Integer (r.getInt(10));
-			isMaster = new Boolean ((r.getInt(11) == 0 ? false : true));
-			isSuspend = new Boolean ((r.getInt(12) == 0 ? false : true));
-			isCreate = new Boolean ((r.getInt(13) == 0 ? false : true));
+			isInverse = new Boolean ((r.getInt(9) == 0 ? false : true));
+			action = new Integer (r.getInt(10));
+			type = new Integer (r.getInt(11));
+			isMaster = new Boolean ((r.getInt(12) == 0 ? false : true));
+			isSuspend = new Boolean ((r.getInt(13) == 0 ? false : true));
+			isCreate = new Boolean ((r.getInt(14) == 0 ? false : true));
 			if (r.wasNull()) isCreate = null;
-			isChange = new Boolean ((r.getInt(14) == 0 ? false : true));
+			isChange = new Boolean ((r.getInt(15) == 0 ? false : true));
 			if (r.wasNull()) isChange = null;
-			isDelete = new Boolean ((r.getInt(15) == 0 ? false : true));
+			isDelete = new Boolean ((r.getInt(16) == 0 ? false : true));
 			if (r.wasNull()) isDelete = null;
-			isGroup = new Boolean ((r.getInt(16) == 0 ? false : true));
+			isGroup = new Boolean ((r.getInt(17) == 0 ? false : true));
 			if (r.wasNull()) isGroup = null;
-			resumeAt = r.getString(17);
+			resumeAt = r.getString(18);
 			if (r.wasNull()) resumeAt = null;
-			resumeIn = new Integer (r.getInt(18));
+			resumeIn = new Integer (r.getInt(19));
 			if (r.wasNull()) resumeIn = null;
-			resumeBase = new Integer (r.getInt(19));
+			resumeBase = new Integer (r.getInt(20));
 			if (r.wasNull()) resumeBase = null;
-			isWarnOnLimit = new Boolean ((r.getInt(20) == 0 ? false : true));
-			maxRetry = new Integer (r.getInt(21));
-			submitOwnerId = new Long (r.getLong(22));
+			isWarnOnLimit = new Boolean ((r.getInt(21) == 0 ? false : true));
+			maxRetry = new Integer (r.getInt(22));
+			submitOwnerId = new Long (r.getLong(23));
 			if (r.wasNull()) submitOwnerId = null;
-			condition = r.getString(23);
+			condition = r.getString(24);
 			if (r.wasNull()) condition = null;
-			checkAmount = new Integer (r.getInt(24));
+			checkAmount = new Integer (r.getInt(25));
 			if (r.wasNull()) checkAmount = null;
-			checkBase = new Integer (r.getInt(25));
+			checkBase = new Integer (r.getInt(26));
 			if (r.wasNull()) checkBase = null;
-			creatorUId = new Long (r.getLong(26));
-			createTs = new Long (r.getLong(27));
-			changerUId = new Long (r.getLong(28));
-			changeTs = new Long (r.getLong(29));
-			validFrom = r.getLong(30);
-			validTo = r.getLong(31);
+			creatorUId = new Long (r.getLong(27));
+			createTs = new Long (r.getLong(28));
+			changerUId = new Long (r.getLong(29));
+			changeTs = new Long (r.getLong(30));
+			validFrom = r.getLong(31);
+			validTo = r.getLong(32);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 
@@ -381,6 +388,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		                              mainSeId,
 		                              parentSeId,
 		                              isActive,
+		                              isInverse,
 		                              action,
 		                              type,
 		                              isMaster,
@@ -425,6 +433,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		                                   ", " + squote + "MAIN_SE_ID" + equote +
 		                                   ", " + squote + "PARENT_SE_ID" + equote +
 		                                   ", " + squote + "IS_ACTIVE" + equote +
+		                                   ", " + squote + "IS_INVERSE" + equote +
 		                                   ", " + squote + "ACTION" + equote +
 		                                   ", " + squote + "TYPE" + equote +
 		                                   ", " + squote + "IS_MASTER" + equote +

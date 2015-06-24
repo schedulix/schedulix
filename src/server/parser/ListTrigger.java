@@ -184,6 +184,8 @@ public class ListTrigger extends Node
 
 		desc.add("MASTER");
 
+		desc.add("IS_INVERSE");
+
 		desc.add("SUBMIT_OWNER");
 
 		desc.add("IS_CREATE");
@@ -342,6 +344,7 @@ public class ListTrigger extends Node
 			}
 			data.add(t.getTypeAsString(sysEnv));
 			data.add(t.getIsMaster(sysEnv));
+			data.add(t.getIsInverse(sysEnv));
 			if (t.getIsMaster(sysEnv).booleanValue()) {
 				final Long submitOwnerId = t.getSubmitOwnerId (sysEnv);
 				g = SDMSGroupTable.getObject (sysEnv, submitOwnerId);

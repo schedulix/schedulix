@@ -195,6 +195,15 @@ public class CreateTrigger extends ManipTrigger
 		isSuspend = (Boolean) with.get(ParseStr.S_SUSPEND);
 		if(isSuspend == null) isSuspend = Boolean.FALSE;
 
+		isInverse = (Boolean) with.get(ParseStr.S_INVERSE);
+		if (isInverse == null) isInverse = Boolean.FALSE;
+		if (isInverse.booleanValue()) {
+			if (!isMaster.booleanValue())
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03506231011", "Master option mandatory in case of inverse Triggers"));
+			if (iaction == SDMSTrigger.RERUN)
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03506231304", "Inverse option invalid in case of rerun Triggers"));
+		}
+
 		resumeObj = with.get(ParseStr.S_RESUME);
 		if (!isSuspend.booleanValue() && (resumeObj != null))
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03108091752", "Resume clause without suspend clause doesn't make sense"));
@@ -286,7 +295,7 @@ public class CreateTrigger extends ManipTrigger
 		}
 
 		try {
-			t = SDMSTriggerTable.table.create(sysEnv, name, fireId, objectType, seId, mainSeId, parentSeId, active, action,
+			t = SDMSTriggerTable.table.create(sysEnv, name, fireId, objectType, seId, mainSeId, parentSeId, active, isInverse, action,
 							triggertype, isMaster, isSuspend, isCreate, isChange, isDelete, isGroup,
 							resumeAt, resumeIn, resumeBase, isWarnOnLimit, maxRetry, gId, condition,
 							checkAmount, checkBase);

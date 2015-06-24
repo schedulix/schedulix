@@ -76,27 +76,28 @@ public class SDMSTriggerGeneric extends SDMSObject
 	public final static int nr_mainSeId = 6;
 	public final static int nr_parentSeId = 7;
 	public final static int nr_isActive = 8;
-	public final static int nr_action = 9;
-	public final static int nr_type = 10;
-	public final static int nr_isMaster = 11;
-	public final static int nr_isSuspend = 12;
-	public final static int nr_isCreate = 13;
-	public final static int nr_isChange = 14;
-	public final static int nr_isDelete = 15;
-	public final static int nr_isGroup = 16;
-	public final static int nr_resumeAt = 17;
-	public final static int nr_resumeIn = 18;
-	public final static int nr_resumeBase = 19;
-	public final static int nr_isWarnOnLimit = 20;
-	public final static int nr_maxRetry = 21;
-	public final static int nr_submitOwnerId = 22;
-	public final static int nr_condition = 23;
-	public final static int nr_checkAmount = 24;
-	public final static int nr_checkBase = 25;
-	public final static int nr_creatorUId = 26;
-	public final static int nr_createTs = 27;
-	public final static int nr_changerUId = 28;
-	public final static int nr_changeTs = 29;
+	public final static int nr_isInverse = 9;
+	public final static int nr_action = 10;
+	public final static int nr_type = 11;
+	public final static int nr_isMaster = 12;
+	public final static int nr_isSuspend = 13;
+	public final static int nr_isCreate = 14;
+	public final static int nr_isChange = 15;
+	public final static int nr_isDelete = 16;
+	public final static int nr_isGroup = 17;
+	public final static int nr_resumeAt = 18;
+	public final static int nr_resumeIn = 19;
+	public final static int nr_resumeBase = 20;
+	public final static int nr_isWarnOnLimit = 21;
+	public final static int nr_maxRetry = 22;
+	public final static int nr_submitOwnerId = 23;
+	public final static int nr_condition = 24;
+	public final static int nr_checkAmount = 25;
+	public final static int nr_checkBase = 26;
+	public final static int nr_creatorUId = 27;
+	public final static int nr_createTs = 28;
+	public final static int nr_changerUId = 29;
+	public final static int nr_changeTs = 30;
 
 	public static String tableName = SDMSTriggerTableGeneric.tableName;
 
@@ -107,6 +108,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 	protected Long mainSeId;
 	protected Long parentSeId;
 	protected Boolean isActive;
+	protected Boolean isInverse;
 	protected Integer action;
 	protected Integer type;
 	protected Boolean isMaster;
@@ -142,6 +144,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 	        Long p_mainSeId,
 	        Long p_parentSeId,
 	        Boolean p_isActive,
+	        Boolean p_isInverse,
 	        Integer p_action,
 	        Integer p_type,
 	        Boolean p_isMaster,
@@ -180,6 +183,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		mainSeId = p_mainSeId;
 		parentSeId = p_parentSeId;
 		isActive = p_isActive;
+		isInverse = p_isInverse;
 		action = p_action;
 		type = p_type;
 		isMaster = p_isMaster;
@@ -440,6 +444,30 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null) o = (SDMSTriggerGeneric) change(env);
 		o.isActive = p_isActive;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
+	public Boolean getIsInverse (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (isInverse);
+	}
+
+	public	void setIsInverse (SystemEnvironment env, Boolean p_isInverse)
+	throws SDMSException
+	{
+		if(isInverse.equals(p_isInverse)) return;
+		SDMSTriggerGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null) o = (SDMSTriggerGeneric) change(env);
+		o.isInverse = p_isInverse;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -1171,6 +1199,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 	                             Long p_mainSeId,
 	                             Long p_parentSeId,
 	                             Boolean p_isActive,
+	                             Boolean p_isInverse,
 	                             Integer p_action,
 	                             Integer p_type,
 	                             Boolean p_isMaster,
@@ -1202,6 +1231,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		mainSeId = p_mainSeId;
 		parentSeId = p_parentSeId;
 		isActive = p_isActive;
+		isInverse = p_isInverse;
 		action = p_action;
 		type = p_type;
 		isMaster = p_isMaster;
@@ -1251,6 +1281,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 				        ", " + squote + "MAIN_SE_ID" + equote +
 				        ", " + squote + "PARENT_SE_ID" + equote +
 				        ", " + squote + "IS_ACTIVE" + equote +
+				        ", " + squote + "IS_INVERSE" + equote +
 				        ", " + squote + "ACTION" + equote +
 				        ", " + squote + "TYPE" + equote +
 				        ", " + squote + "IS_MASTER" + equote +
@@ -1274,6 +1305,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ", VALID_FROM, VALID_TO" +
 				        ") VALUES (?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -1328,62 +1360,63 @@ public class SDMSTriggerGeneric extends SDMSObject
 			else
 				myInsert.setLong (7, parentSeId.longValue());
 			myInsert.setInt (8, isActive.booleanValue() ? 1 : 0);
-			myInsert.setInt(9, action.intValue());
-			myInsert.setInt(10, type.intValue());
-			myInsert.setInt (11, isMaster.booleanValue() ? 1 : 0);
-			myInsert.setInt (12, isSuspend.booleanValue() ? 1 : 0);
+			myInsert.setInt (9, isInverse.booleanValue() ? 1 : 0);
+			myInsert.setInt(10, action.intValue());
+			myInsert.setInt(11, type.intValue());
+			myInsert.setInt (12, isMaster.booleanValue() ? 1 : 0);
+			myInsert.setInt (13, isSuspend.booleanValue() ? 1 : 0);
 			if (isCreate == null)
-				myInsert.setNull(13, Types.INTEGER);
-			else
-				myInsert.setInt (13, isCreate.booleanValue() ? 1 : 0);
-			if (isChange == null)
 				myInsert.setNull(14, Types.INTEGER);
 			else
-				myInsert.setInt (14, isChange.booleanValue() ? 1 : 0);
-			if (isDelete == null)
+				myInsert.setInt (14, isCreate.booleanValue() ? 1 : 0);
+			if (isChange == null)
 				myInsert.setNull(15, Types.INTEGER);
 			else
-				myInsert.setInt (15, isDelete.booleanValue() ? 1 : 0);
-			if (isGroup == null)
+				myInsert.setInt (15, isChange.booleanValue() ? 1 : 0);
+			if (isDelete == null)
 				myInsert.setNull(16, Types.INTEGER);
 			else
-				myInsert.setInt (16, isGroup.booleanValue() ? 1 : 0);
+				myInsert.setInt (16, isDelete.booleanValue() ? 1 : 0);
+			if (isGroup == null)
+				myInsert.setNull(17, Types.INTEGER);
+			else
+				myInsert.setInt (17, isGroup.booleanValue() ? 1 : 0);
 			if (resumeAt == null)
-				myInsert.setNull(17, Types.VARCHAR);
+				myInsert.setNull(18, Types.VARCHAR);
 			else
-				myInsert.setString(17, resumeAt);
+				myInsert.setString(18, resumeAt);
 			if (resumeIn == null)
-				myInsert.setNull(18, Types.INTEGER);
-			else
-				myInsert.setInt(18, resumeIn.intValue());
-			if (resumeBase == null)
 				myInsert.setNull(19, Types.INTEGER);
 			else
-				myInsert.setInt(19, resumeBase.intValue());
-			myInsert.setInt (20, isWarnOnLimit.booleanValue() ? 1 : 0);
-			myInsert.setInt(21, maxRetry.intValue());
+				myInsert.setInt(19, resumeIn.intValue());
+			if (resumeBase == null)
+				myInsert.setNull(20, Types.INTEGER);
+			else
+				myInsert.setInt(20, resumeBase.intValue());
+			myInsert.setInt (21, isWarnOnLimit.booleanValue() ? 1 : 0);
+			myInsert.setInt(22, maxRetry.intValue());
 			if (submitOwnerId == null)
-				myInsert.setNull(22, Types.INTEGER);
+				myInsert.setNull(23, Types.INTEGER);
 			else
-				myInsert.setLong (22, submitOwnerId.longValue());
+				myInsert.setLong (23, submitOwnerId.longValue());
 			if (condition == null)
-				myInsert.setNull(23, Types.VARCHAR);
+				myInsert.setNull(24, Types.VARCHAR);
 			else
-				myInsert.setString(23, condition);
+				myInsert.setString(24, condition);
 			if (checkAmount == null)
-				myInsert.setNull(24, Types.INTEGER);
-			else
-				myInsert.setInt(24, checkAmount.intValue());
-			if (checkBase == null)
 				myInsert.setNull(25, Types.INTEGER);
 			else
-				myInsert.setInt(25, checkBase.intValue());
-			myInsert.setLong (26, creatorUId.longValue());
-			myInsert.setLong (27, createTs.longValue());
-			myInsert.setLong (28, changerUId.longValue());
-			myInsert.setLong (29, changeTs.longValue());
-			myInsert.setLong(30, env.tx.versionId);
-			myInsert.setLong(31, Long.MAX_VALUE);
+				myInsert.setInt(25, checkAmount.intValue());
+			if (checkBase == null)
+				myInsert.setNull(26, Types.INTEGER);
+			else
+				myInsert.setInt(26, checkBase.intValue());
+			myInsert.setLong (27, creatorUId.longValue());
+			myInsert.setLong (28, createTs.longValue());
+			myInsert.setLong (29, changerUId.longValue());
+			myInsert.setLong (30, changeTs.longValue());
+			myInsert.setLong(31, env.tx.versionId);
+			myInsert.setLong(32, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
@@ -1529,6 +1562,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "mainSeId : " + mainSeId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "parentSeId : " + parentSeId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isActive : " + isActive, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "isInverse : " + isInverse, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "action : " + action, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "type : " + type, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isMaster : " + isMaster, SDMSThread.SEVERITY_MESSAGE);
@@ -1569,6 +1603,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		        indentString + "mainSeId      : " + mainSeId + "\n" +
 		        indentString + "parentSeId    : " + parentSeId + "\n" +
 		        indentString + "isActive      : " + isActive + "\n" +
+		        indentString + "isInverse     : " + isInverse + "\n" +
 		        indentString + "action        : " + action + "\n" +
 		        indentString + "type          : " + type + "\n" +
 		        indentString + "isMaster      : " + isMaster + "\n" +

@@ -3345,6 +3345,7 @@ ct_withitem:		STATUS '=' '(' ct_jobstatuslist ')'			{ $$ = new WithItem(ParseStr
 	|		EVENT '=' '(' ct_eventlist ')'				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
 			//D:LEVEL professional
 	|		GROUP EVENT						{ $$ = new WithItem(ParseStr.S_ISGROUPED, Boolean.TRUE); }
+	|		ival_inverse						{ $$ = $1; }
 			//D:DEFAULT
 			//D:LEVEL professional
 	|		SINGLE EVENT						{ $$ = new WithItem(ParseStr.S_ISGROUPED, Boolean.FALSE); }

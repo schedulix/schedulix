@@ -603,48 +603,59 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                                         );
 		}
 
-		Vector v_tr = SDMSTriggerTable.idx_fireId.getVector(sysEnv, id);
-		Iterator i_tr = v_tr.iterator();
-		while (i_tr.hasNext()) {
-			SDMSTrigger tr_o = (SDMSTrigger)i_tr.next();
-			SDMSTrigger tr_n = SDMSTriggerTable.table.create(sysEnv,
-			                   tr_o.getName(sysEnv),
-			                   seId,
-			                   tr_o.getObjectType(sysEnv),
-			                   tr_o.getSeId(sysEnv),
-			                   tr_o.getMainSeId(sysEnv),
-			                   tr_o.getParentSeId(sysEnv),
-			                   tr_o.getIsActive(sysEnv),
-			                   tr_o.getAction(sysEnv),
-			                   tr_o.getType(sysEnv),
-			                   tr_o.getIsMaster(sysEnv),
-			                   tr_o.getIsSuspend(sysEnv),
-			                   tr_o.getIsCreate(sysEnv),
-			                   tr_o.getIsChange(sysEnv),
-			                   tr_o.getIsDelete(sysEnv),
-			                   tr_o.getIsGroup(sysEnv),
-			                   tr_o.getResumeAt(sysEnv),
-			                   tr_o.getResumeIn(sysEnv),
-			                   tr_o.getResumeBase(sysEnv),
-			                   tr_o.getIsWarnOnLimit(sysEnv),
-			                   tr_o.getMaxRetry(sysEnv),
-			                   tr_o.getSubmitOwnerId(sysEnv),
-			                   tr_o.getCondition(sysEnv),
-			                   tr_o.getCheckAmount(sysEnv),
-			                   tr_o.getCheckBase(sysEnv)
-			                                                );
+		boolean testInverse = false;
 
-			Vector v_trs = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, tr_o.getId(sysEnv));
-			Iterator i_trs = v_trs.iterator();
-			while (i_trs.hasNext()) {
-				SDMSTriggerState trs = (SDMSTriggerState)i_trs.next();
-				SDMSTriggerStateTable.table.create(sysEnv,
-				                                   tr_n.getId(sysEnv),
-				                                   trs.getFromStateId(sysEnv),
-				                                   trs.getToStateId(sysEnv)
-				                                  );
+		Vector v_tr = SDMSTriggerTable.idx_fireId.getVector(sysEnv, id);
+		do {
+			Iterator i_tr = v_tr.iterator();
+			while (i_tr.hasNext()) {
+				SDMSTrigger tr_o = (SDMSTrigger)i_tr.next();
+				Boolean isInverse = tr_o.getIsInverse(sysEnv);
+				if (isInverse.booleanValue() == testInverse) {
+					SDMSTrigger tr_n = SDMSTriggerTable.table.create(sysEnv,
+					                   tr_o.getName(sysEnv),
+					                   seId,
+					                   tr_o.getObjectType(sysEnv),
+					                   tr_o.getSeId(sysEnv),
+					                   tr_o.getMainSeId(sysEnv),
+					                   tr_o.getParentSeId(sysEnv),
+					                   tr_o.getIsActive(sysEnv),
+					                   tr_o.getIsInverse(sysEnv),
+					                   tr_o.getAction(sysEnv),
+					                   tr_o.getType(sysEnv),
+					                   tr_o.getIsMaster(sysEnv),
+					                   tr_o.getIsSuspend(sysEnv),
+					                   tr_o.getIsCreate(sysEnv),
+					                   tr_o.getIsChange(sysEnv),
+					                   tr_o.getIsDelete(sysEnv),
+					                   tr_o.getIsGroup(sysEnv),
+					                   tr_o.getResumeAt(sysEnv),
+					                   tr_o.getResumeIn(sysEnv),
+					                   tr_o.getResumeBase(sysEnv),
+					                   tr_o.getIsWarnOnLimit(sysEnv),
+					                   tr_o.getMaxRetry(sysEnv),
+					                   tr_o.getSubmitOwnerId(sysEnv),
+					                   tr_o.getCondition(sysEnv),
+					                   tr_o.getCheckAmount(sysEnv),
+					                   tr_o.getCheckBase(sysEnv)
+					                                                );
+
+					Vector v_trs = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, tr_o.getId(sysEnv));
+					Iterator i_trs = v_trs.iterator();
+					while (i_trs.hasNext()) {
+						SDMSTriggerState trs = (SDMSTriggerState)i_trs.next();
+						SDMSTriggerStateTable.table.create(sysEnv,
+						                                   tr_n.getId(sysEnv),
+						                                   trs.getFromStateId(sysEnv),
+						                                   trs.getToStateId(sysEnv)
+						                                  );
+					}
+				}
 			}
-		}
+			if (!testInverse)
+				v_tr = SDMSTriggerTable.idx_seId.getVector(sysEnv, id);
+			testInverse = !testInverse;
+		} while(testInverse);
 
 		try {
 			SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, id);
