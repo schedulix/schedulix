@@ -10,7 +10,7 @@ CLASSES = DeadlockException.class SerializationException.class InterruptedLockEx
 
 SUBDIRS = .
 
-all: generate osstrip subdirs $(CLASSES)
+all: generate subdirs $(CLASSES)
 
 new: clean all
 
