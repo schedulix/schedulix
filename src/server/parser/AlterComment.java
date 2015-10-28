@@ -58,34 +58,85 @@ public class AlterComment extends Node
 		throws SDMSException
 	{
 		Integer infoType;
+		String tag, octag;
+		String text = null, octext;
 
-		String text = (String) with.get(ParseStr.S_TEXT);
-		if(text == null) {
+		Vector texts = (Vector) with.get(ParseStr.S_TEXT);
+		if(texts == null) {
 			text = (String) with.get(ParseStr.S_URL);
 			infoType = new Integer(SDMSObjectComment.URL);
 		} else {
 			infoType = new Integer(SDMSObjectComment.TEXT);
 		}
 
-		if (text == null || text.equals("")) {
+		if (texts == null && (text == null || text.equals(""))) {
 
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03808040831", "Comment cannot be empty. Use the drop command to delete comments"));
 		}
 
 		obj.resolve(sysEnv);
 
+		Vector ocv;
 		SDMSObjectComment oc;
-		try {
-			oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, obj.objId);
-		} catch (NotFoundException nfe) {
+		ocv = SDMSObjectCommentTable.idx_objectId_getSortedVector(sysEnv, obj.objId);
+		if (ocv.size() == 0) {
 			if(noerr) {
 				result.setFeedback(new SDMSMessage(sysEnv,"03311130114", "No Comment altered"));
 				return;
 			}
-			throw nfe;
+			throw new NotFoundException(new SDMSMessage(sysEnv, "03510130956", "Comment not found for object $1", obj.toString()));
 		}
-		oc.setDescription(sysEnv, text);
-		oc.setInfoType(sysEnv, infoType);
+
+		oc = (SDMSObjectComment) ocv.get(0);
+		if (oc.getInfoType(sysEnv).intValue() == SDMSObjectComment.URL) {
+			if (infoType.intValue() == SDMSObjectComment.URL) {
+				oc.setDescription(sysEnv, text);
+			} else {
+				oc.delete(sysEnv);
+				for (int i = 0; i < texts.size(); ++i) {
+					Vector entry = (Vector) texts.get(i);
+					tag = (String) entry.get(0);
+					text = (String) entry.get(1);
+					SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(i+1), tag, text);
+				}
+			}
+		} else {
+			if (infoType.intValue() == SDMSObjectComment.URL) {
+				for (int i = 0; i < ocv.size(); ++i) {
+					oc = (SDMSObjectComment) ocv.get(i);
+					oc.delete(sysEnv);
+				}
+				SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(1), null, text);
+			} else {
+				int i;
+				for (i = 0; i < ocv.size() && i < texts.size(); ++i) {
+					oc = (SDMSObjectComment) ocv.get(i);
+					Vector entry = (Vector) texts.get(i);
+					tag = (String) entry.get(0);
+					text = (String) entry.get(1);
+					octag = oc.getTag(sysEnv);
+					octext = oc.getDescription(sysEnv);
+
+					if ((tag == null && octag != null) || (octag == null && tag != null))
+						oc.setTag(sysEnv, tag);
+					if (tag != null && octag != null && !tag.equals(octag))
+						oc.setTag(sysEnv, tag);
+
+					if (!text.equals(octext))
+						oc.setDescription(sysEnv, text);
+				}
+				for (; i < ocv.size(); ++i) {
+					oc = (SDMSObjectComment) ocv.get(i);
+					oc.delete(sysEnv);
+				}
+				for (; i < texts.size(); ++i) {
+					Vector entry = (Vector) texts.get(i);
+					tag = (String) entry.get(0);
+					text = (String) entry.get(1);
+					SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(i+1), tag, text);
+				}
+			}
+		}
 
 		result.setFeedback(new SDMSMessage(sysEnv,"03209241403", "Comment altered"));
 	}

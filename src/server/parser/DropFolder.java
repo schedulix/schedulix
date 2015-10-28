@@ -41,14 +41,15 @@ public class DropFolder extends Node
 	public final static String __version = "@(#) $Id: DropFolder.java,v 2.7.14.1 2013/03/14 10:24:29 ronald Exp $";
 
 	private ObjectURL url;
+	private Vector urlVector;
 	private boolean cascade;
 	private boolean force;
 	private boolean noerr;
 
-	public DropFolder(ObjectURL u, Boolean c, Boolean f, Boolean ne)
+	public DropFolder(Vector v, Boolean c, Boolean f, Boolean ne)
 	{
 		super();
-		url = u;
+		urlVector = v;
 		cascade = c.booleanValue();
 		force = f.booleanValue();
 		noerr = ne.booleanValue();
@@ -60,38 +61,60 @@ public class DropFolder extends Node
 		Long parentId ;
 		SDMSFolder f;
 
-		try {
-			f = (SDMSFolder) url.resolve(sysEnv);
-			parentId = f.getParentId(sysEnv);
-		} catch(NotFoundException nfe) {
-			if(noerr) {
-				result.setFeedback(new SDMSMessage(sysEnv, "03311121723", "No folder dropped"));
-				return;
+		HashSet<Long> seIds = new HashSet<Long> ();
+
+		for (int i = 0; i < urlVector.size(); ++i) {
+			url = (ObjectURL) urlVector.get(i);
+			if (url.objType.equals(SDMSObjectComment.FOLDER)) {
+
+				if(cascade || force) {
+					try {
+						f = (SDMSFolder) url.resolve(sysEnv);
+						parentId = f.getParentId(sysEnv);
+					} catch(NotFoundException nfe) {
+						if(noerr) {
+
+							continue;
+						}
+						throw nfe;
+					}
+
+					if(parentId == null) {
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03704102211",
+						                               "Folder SYSTEM cannot be dropped"));
+					}
+					f.collectSeIds(sysEnv, seIds, null);
+				}
+			} else {
+
+				SDMSSchedulingEntity se = (SDMSSchedulingEntity)url.resolve(sysEnv);
+				seIds.add(se.getId(sysEnv));
 			}
-			throw nfe;
 		}
 
-		if(parentId == null) {
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03704102211",
-				"Folder SYSTEM cannot be dropped"));
-		}
+		SDMSSchedulingEntity.delete(sysEnv, seIds, force);
 
-		final Long fId = f.getId(sysEnv);
+		for (int i = 0; i < urlVector.size(); ++i) {
+			url = (ObjectURL) urlVector.get(i);
+			if (url.objType.equals(SDMSObjectComment.FOLDER)) {
+				try {
+					f = (SDMSFolder) url.resolve(sysEnv);
+					parentId = f.getParentId(sysEnv);
+				} catch(NotFoundException nfe) {
+					if(noerr) {
 
-		if(cascade || force) {
-			f.deleteCascadeFirstPass(sysEnv, null);
-			HashSet parameterLinks = new HashSet();
-			f.deleteCascadeSecondPass(sysEnv, parameterLinks, force, null);
-			if(!parameterLinks.isEmpty()) {
-				Iterator i = parameterLinks.iterator();
-				SDMSParameterDefinition pd = SDMSParameterDefinitionTable.getObject(sysEnv, (Long) i.next());
-				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, pd.getSeId(sysEnv));
-				throw new CommonErrorException (new SDMSMessage(sysEnv, "03402090156", "Parameter Reference from $1 ($2) still exists",
-							se.pathString(sysEnv),
-							pd.getName(sysEnv)));
+						continue;
+					}
+					throw nfe;
+				}
+
+				final Long fId = f.getId(sysEnv);
+				if(cascade || force)
+					f.deleteCascade(sysEnv, null);
+				else
+					f.delete(sysEnv);
 			}
 		}
-		f.delete(sysEnv);
-		result.setFeedback(new SDMSMessage(sysEnv, "03204112230", "Folder dropped"));
+		result.setFeedback(new SDMSMessage(sysEnv, "03204112230", "Folder(s) dropped"));
 	}
 }

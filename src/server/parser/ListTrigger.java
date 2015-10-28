@@ -184,6 +184,8 @@ public class ListTrigger extends Node
 
 		desc.add("MASTER");
 
+		desc.add("IS_INVERSE");
+
 		desc.add("SUBMIT_OWNER");
 
 		desc.add("IS_CREATE");
@@ -206,12 +208,15 @@ public class ListTrigger extends Node
 
 		desc.add("WARN");
 
+		desc.add("LIMIT_STATE");
+
 		desc.add("CONDITION");
 
 		desc.add("CHECK_AMOUNT");
 
 		desc.add("CHECK_BASE");
 		desc.add("PRIVS");
+		desc.add("TAG");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
 
@@ -342,6 +347,7 @@ public class ListTrigger extends Node
 			}
 			data.add(t.getTypeAsString(sysEnv));
 			data.add(t.getIsMaster(sysEnv));
+			data.add(t.getIsInverse(sysEnv));
 			if (t.getIsMaster(sysEnv).booleanValue()) {
 				final Long submitOwnerId = t.getSubmitOwnerId (sysEnv);
 				g = SDMSGroupTable.getObject (sysEnv, submitOwnerId);
@@ -358,15 +364,24 @@ public class ListTrigger extends Node
 			data.add(t.getResumeIn(sysEnv));
 			data.add(t.getResumeBaseAsString(sysEnv));
 			data.add(t.getIsWarnOnLimit(sysEnv));
+			Long limitState = t.getLimitState(sysEnv);
+			if (limitState == null) {
+				data.add(null);
+			} else {
+				SDMSExitStateDefinition lsEsd = SDMSExitStateDefinitionTable.getObject(sysEnv, limitState);
+				data.add(lsEsd.getName(sysEnv));
+			}
 			data.add(t.getCondition(sysEnv));
 			data.add(t.getCheckAmount(sysEnv));
 			data.add(t.getCheckBaseAsString(sysEnv));
 			data.add(t.getPrivileges(sysEnv).toString());
 			try {
-				SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, t.getId(sysEnv));
+				SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getFirst(sysEnv, t.getId(sysEnv));
+				data.add(oc.getTag(sysEnv));
 				data.add(oc.getDescription(sysEnv));
 				data.add(oc.getInfoTypeAsString(sysEnv));
 			} catch (NotFoundException ne) {
+				data.add(null);
 				data.add(null);
 				data.add(null);
 			}

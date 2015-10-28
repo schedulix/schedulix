@@ -90,7 +90,7 @@ public class ShowRsp extends ShowCommented
 		} else {
 			data.add(null);
 		}
-		data.add(getCommentDescription(sysEnv, rspId));
+		data.add(getCommentContainer(sysEnv, rspId));
 		data.add(getCommentInfoType(sysEnv, rspId));
 
 		final Date d = new Date();

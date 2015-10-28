@@ -81,7 +81,7 @@ public class ShowFootprint extends ShowCommented
 
 		data.add(fpId);
 		data.add(fp.getName(sysEnv));
-		data.add(getCommentDescription(sysEnv, fpId));
+		data.add(getCommentContainer(sysEnv, fpId));
 		data.add(getCommentInfoType(sysEnv, fpId));
 
 		final Date d = new Date();

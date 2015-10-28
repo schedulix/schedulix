@@ -69,9 +69,10 @@ public class CreateTrigger extends ManipTrigger
 	{
 		oType = SDMSTrigger.JOB_DEFINITION;
 		objpath = (Vector) objType.value;
-		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.get(sysEnv, objpath, null);
-		fireId = se.getId(sysEnv);
+
 		objectType = new Integer(oType);
+		SDMSSchedulingEntity fireJob = SDMSSchedulingEntityTable.get(sysEnv, objpath, null);
+		fireId = fireJob.getId(sysEnv);
 		SDMSSchedulingEntity triggerJob;
 		SDMSSchedulingEntity mainJob = null;
 		SDMSSchedulingEntity parentJob = null;
@@ -113,10 +114,23 @@ public class CreateTrigger extends ManipTrigger
 		} else	{
 			if ((folderpath == null) && (iaction == SDMSTrigger.RERUN)) {
 				seId = fireId;
-				triggerJob = se;
+				triggerJob = fireJob;
 			} else {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03206210034", "Either Submit or Rerun is mandatory"));
 			}
+		}
+
+		isInverse = (Boolean) with.get(ParseStr.S_INVERSE);
+		if (isInverse == null) isInverse = Boolean.FALSE;
+		if (isInverse.booleanValue()) {
+
+			SDMSSchedulingEntity tmpSe = fireJob;
+			fireJob = triggerJob;
+			triggerJob = tmpSe;
+
+			Long tmp = fireId;
+			fireId = seId;
+			seId = tmp;
 		}
 
 		if (with.containsKey(ParseStr.S_MAIN)) {
@@ -132,7 +146,7 @@ public class CreateTrigger extends ManipTrigger
 		}
 
 		if (iaction == SDMSTrigger.RERUN) {
-			if (se.getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB)
+			if (fireJob.getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB)
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03108111239", "Rerun triggers are valid for jobs only"));
 		}
 
@@ -145,7 +159,7 @@ public class CreateTrigger extends ManipTrigger
 		if(triggertype != null) {
 			int tt = triggertype.intValue();
 
-			if(se.getType(sysEnv).intValue() == SDMSSchedulingEntity.MILESTONE) {
+			if(fireJob.getType(sysEnv).intValue() == SDMSSchedulingEntity.MILESTONE) {
 				if(tt != SDMSTrigger.AFTER_FINAL) {
 					if(!isMaster.booleanValue())
 						throw new CommonErrorException(
@@ -195,6 +209,13 @@ public class CreateTrigger extends ManipTrigger
 		isSuspend = (Boolean) with.get(ParseStr.S_SUSPEND);
 		if(isSuspend == null) isSuspend = Boolean.FALSE;
 
+		if (isInverse.booleanValue()) {
+			if (!isMaster.booleanValue())
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03506231011", "Master option mandatory in case of inverse Triggers"));
+			if (iaction == SDMSTrigger.RERUN)
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03506231304", "Inverse option invalid in case of rerun Triggers"));
+		}
+
 		resumeObj = with.get(ParseStr.S_RESUME);
 		if (!isSuspend.booleanValue() && (resumeObj != null))
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03108091752", "Resume clause without suspend clause doesn't make sense"));
@@ -202,6 +223,17 @@ public class CreateTrigger extends ManipTrigger
 
 		isWarnOnLimit = (Boolean) with.get(ParseStr.S_WARN);
 		if(isWarnOnLimit == null) isWarnOnLimit = Boolean.FALSE;
+
+		limitState = null;
+		String sLimitState = (String) with.get(ParseStr.S_LIMIT);
+		if (sLimitState != null) {
+			try {
+				SDMSExitStateDefinition lsEsd = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, sLimitState);
+				limitState = lsEsd.getId(sysEnv);
+			} catch (NotFoundException nfe) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03509181230", "Specified exit state " + sLimitState + " not found"));
+			}
+		}
 
 		maxRetry = (Integer) with.get(ParseStr.S_SUBMITCOUNT);
 		if(maxRetry == null) {
@@ -286,9 +318,9 @@ public class CreateTrigger extends ManipTrigger
 		}
 
 		try {
-			t = SDMSTriggerTable.table.create(sysEnv, name, fireId, objectType, seId, mainSeId, parentSeId, active, action,
+			t = SDMSTriggerTable.table.create(sysEnv, name, fireId, objectType, seId, mainSeId, parentSeId, active, isInverse, action,
 							triggertype, isMaster, isSuspend, isCreate, isChange, isDelete, isGroup,
-							resumeAt, resumeIn, resumeBase, isWarnOnLimit, maxRetry, gId, condition,
+							resumeAt, resumeIn, resumeBase, isWarnOnLimit, limitState, maxRetry, gId, condition,
 							checkAmount, checkBase);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
@@ -303,7 +335,10 @@ public class CreateTrigger extends ManipTrigger
 		}
 		t.checkConditionSyntax(sysEnv);
 
-		checkUniqueness(sysEnv, fireId);
+		if (isInverse.booleanValue())
+			checkUniqueness(sysEnv, name, fireId, seId, isInverse);
+		else
+			checkUniqueness(sysEnv, name, fireId, seId, isInverse);
 
 		tId = t.getId(sysEnv);
 

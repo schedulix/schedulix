@@ -142,7 +142,7 @@ public class ShowScope extends ShowCommented
 		v.add(s.getNode(sysEnv));
 		v.add(new Long(s.getIdle(sysEnv)));
 		v.add(s.getErrmsg(sysEnv));
-		v.add(getCommentDescription(sysEnv, sId));
+		v.add(getCommentContainer(sysEnv, sId));
 		v.add(getCommentInfoType(sysEnv, sId));
 		try {
 			v.add(SDMSUserTable.getObject(sysEnv, s.getCreatorUId(sysEnv)).getName(sysEnv));

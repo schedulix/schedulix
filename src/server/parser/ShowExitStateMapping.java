@@ -80,7 +80,7 @@ public class ShowExitStateMapping extends ShowCommented
 		Vector data = new Vector();
 		data.add(esmpId);
 		data.add(esmp.getName(sysEnv));
-		data.add(getCommentDescription(sysEnv, esmpId));
+		data.add(getCommentContainer(sysEnv, esmpId));
 		data.add(getCommentInfoType(sysEnv, esmpId));
 
 		final Date d = new Date();

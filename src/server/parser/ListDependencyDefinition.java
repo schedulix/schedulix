@@ -89,9 +89,9 @@ public class ListDependencyDefinition extends Node
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.get(sysEnv, path, name);
 
 		HashMap resolveMap = new HashMap();
-		fill_resolveMap (sysEnv, se, new Vector(), "", resolveMap);
+		fill_resolveMap (sysEnv, se, new Vector(), "", resolveMap, false);
 
-		resolveChildren (sysEnv, se, new Vector(), "", resolveMap, d_container);
+		resolveChildren (sysEnv, se, new Vector(), "", resolveMap, d_container, false);
 
 		result.setOutputContainer(d_container);
 
@@ -102,7 +102,7 @@ public class ListDependencyDefinition extends Node
 	}
 
 	private void fill_resolveMap(SystemEnvironment sysEnv,
-			SDMSSchedulingEntity se, Vector p_v_Path, String p_s_Path, HashMap resolveMap)
+			SDMSSchedulingEntity se, Vector p_v_Path, String p_s_Path, HashMap resolveMap, boolean disabled)
 		throws SDMSException
 	{
 		String s_Path;
@@ -143,12 +143,15 @@ public class ListDependencyDefinition extends Node
 			}
 		}
 
+		if (disabled)
+			return;
+
 		Vector v = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, id);
 		Iterator iv = v.iterator();
 		while (iv.hasNext()) {
 			SDMSSchedulingHierarchy sh = (SDMSSchedulingHierarchy)iv.next();
 			SDMSSchedulingEntity cse = SDMSSchedulingEntityTable.getObject(sysEnv, sh.getSeChildId(sysEnv));
-			fill_resolveMap (sysEnv, cse, v_Path, s_Path, resolveMap);
+			fill_resolveMap (sysEnv, cse, v_Path, s_Path, resolveMap, sh.getIsDisabled(sysEnv).booleanValue());
 		}
 	}
 
@@ -198,7 +201,7 @@ public class ListDependencyDefinition extends Node
 
 	private void resolveChildren(SystemEnvironment sysEnv,
 			SDMSSchedulingEntity se, Vector p_v_Path, String p_s_Path, HashMap resolveMap,
-			SDMSOutputContainer d_container)
+			SDMSOutputContainer d_container, boolean disabled)
 		throws SDMSException
 	{
 		String s_Path;
@@ -270,12 +273,15 @@ public class ListDependencyDefinition extends Node
 			}
 		}
 
+		if (disabled)
+			return;
+
 		Vector v_sh = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, id);
 		i = v_sh.iterator();
 		while (i.hasNext()) {
 			SDMSSchedulingHierarchy sh = (SDMSSchedulingHierarchy)i.next();
 			SDMSSchedulingEntity cse = SDMSSchedulingEntityTable.getObject(sysEnv, sh.getSeChildId(sysEnv));
-			resolveChildren (sysEnv, cse, v_Path, s_Path, resolveMap, d_container);
+			resolveChildren (sysEnv, cse, v_Path, s_Path, resolveMap, d_container, sh.getIsDisabled(sysEnv).booleanValue());
 		}
 	}
 }

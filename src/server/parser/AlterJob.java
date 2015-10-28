@@ -43,6 +43,9 @@ public class AlterJob extends Node
 
 	public final static String __version = "@(#) $Id: AlterJob.java,v 2.35.2.4 2013/07/19 06:45:20 dieter Exp $";
 
+	public static final int LOCALSUSPEND      = 100;
+	public static final int LOCALADMINSUSPEND = 200;
+
 	private Long jobId		= null;
 	private WithHash with		= null;
 	private String execPid		= null;
@@ -55,6 +58,7 @@ public class AlterJob extends Node
 	private String errText		= null;
 	private Boolean suspend		= null;
 	private Boolean adminSuspend	= null;
+	private Boolean localSuspend	= null;
 	private Object resumeObj	= null;
 	private String runProgram	= null;
 	private String rerunProgram	= null;
@@ -200,11 +204,22 @@ public class AlterJob extends Node
 		rerunProgram = (String) with.get(ParseStr.S_RERUN_PROGRAM);
 		Object o = with.get(ParseStr.S_SUSPEND);
 		if (o != null) {
+			adminSuspend = Boolean.FALSE;
+			localSuspend = Boolean.FALSE;
 			if (o instanceof Boolean) {
 				suspend = (Boolean) o;
 			} else {
 				suspend = Boolean.TRUE;
-				adminSuspend = Boolean.TRUE;
+
+				int suspendType = ((Integer) o).intValue();
+
+				if (suspendType == LOCALADMINSUSPEND) {
+					adminSuspend = Boolean.TRUE;
+					localSuspend = Boolean.TRUE;
+				} else if (suspendType == LOCALSUSPEND) {
+					localSuspend = Boolean.TRUE;
+				} else
+					adminSuspend = Boolean.TRUE;
 			}
 		}
 		resumeObj = with.get(ParseStr.S_RESUME);
@@ -465,7 +480,7 @@ public class AlterJob extends Node
 		}
 		if(suspend != null) {
 			if(suspend.booleanValue()) {
-				sme.suspend(sysEnv, false, adminSuspend.booleanValue());
+				sme.suspend(sysEnv, localSuspend.booleanValue(), adminSuspend.booleanValue());
 				SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.SUSPEND);
 			} else {
 				if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.ADMINSUSPEND && !adminSuspend.booleanValue())

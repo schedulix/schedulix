@@ -60,6 +60,8 @@ public class ShowComment extends Node
 
 		desc.add("ID");
 
+		desc.add("TAG");
+
 		desc.add("COMMENT");
 
 		desc.add("COMMENTTYPE");
@@ -74,15 +76,20 @@ public class ShowComment extends Node
 
 		desc.add("PRIVS");
 
-		Vector data = new Vector();
 		Long objId = null;
 
 		obj.resolve(sysEnv);
 
+		d_container = new SDMSOutputContainer(sysEnv, "Comment", desc);
+
 		SDMSObjectComment oc;
-		try {
-			oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, obj.objId);
+		Vector ocv = SDMSObjectCommentTable.idx_objectId_getSortedVector(sysEnv, obj.objId);
+		for (int i = 0; i < ocv.size(); ++i) {
+			Vector data = new Vector();
+			oc = (SDMSObjectComment) ocv.get(i);
+
 			data.add(oc.getId(sysEnv));
+			data.add(oc.getTag(sysEnv));
 			data.add(oc.getDescription(sysEnv));
 			data.add(oc.getInfoTypeAsString(sysEnv));
 
@@ -102,18 +109,8 @@ public class ShowComment extends Node
 			data.add(sysEnv.systemDateFormat.format(d));
 			data.add(oc.getPrivileges(sysEnv).toString());
 
-		} catch (NotFoundException nfe) {
-			data.add(null);
-			data.add(null);
-			data.add(null);
-			data.add(null);
-			data.add(null);
-			data.add(null);
-			data.add(null);
-			data.add(null);
+			d_container.addData(sysEnv, data);
 		}
-
-		d_container = new SDMSOutputContainer(sysEnv, "Comment", desc, data);
 
 		result.setOutputContainer(d_container);
 

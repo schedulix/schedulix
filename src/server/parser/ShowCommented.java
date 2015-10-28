@@ -34,12 +34,12 @@ import java.lang.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.output.*;
 
 public abstract class ShowCommented extends Node
 {
 
-	public static final String __version = "@(#) $Id: ShowCommented.java,v 2.1.14.1 2013/03/14 10:24:48 ronald Exp $";
-
+	private Vector ocv;
 	private SDMSObjectComment oc;
 	private boolean oc_exists;
 	private Long lastId;
@@ -57,24 +57,43 @@ public abstract class ShowCommented extends Node
 	{
 		if(oc != null && id.equals(lastId)) return;
 		if(oc == null && id.equals(lastId) && !oc_exists) return;
-		try {
-			oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, id);
-		} catch(NotFoundException nfe) {
+		ocv = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, id);
+		if (ocv.size() == 0) {
 			oc_exists = false;
-			oc = null;
 		}
 		lastId = id;
 		return;
 	}
 
-	protected String getCommentDescription(SystemEnvironment sysEnv, Long id)
+	protected SDMSOutputContainer getCommentContainer(SystemEnvironment sysEnv, Long id)
 		throws SDMSException
 	{
-		String text = null;
+		SDMSOutputContainer result;
+		Vector desc = new Vector();
+		Vector data;
+
+		desc.add("ID");
+		desc.add("SEQNO");
+		desc.add("TAG");
+		desc.add("DESCRIPTION");
+
+		result = new SDMSOutputContainer(sysEnv, null, desc);
+
 		getObjectComment(sysEnv, id);
-		if(oc != null)
-			text = oc.getDescription(sysEnv);
-		return text;
+
+		for (int i = 0; i < ocv.size(); ++i) {
+			oc = (SDMSObjectComment) ocv.get(i);
+			data = new Vector();
+			data.add(oc.getId(sysEnv));
+			data.add(oc.getSequenceNumber(sysEnv));
+			data.add(oc.getTag(sysEnv));
+			data.add(oc.getDescription(sysEnv));
+			result.addData(sysEnv, data);
+		}
+
+		Collections.sort(result.dataset, result.getComparator(sysEnv, 1));
+
+		return result;
 	}
 
 	protected String getCommentInfoType(SystemEnvironment sysEnv, Long id)

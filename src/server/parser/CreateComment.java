@@ -38,9 +38,6 @@ import de.independit.scheduler.server.exception.*;
 
 public class CreateComment extends Node
 {
-
-	public final static String __version = "@(#) $Id: CreateComment.java,v 2.2.14.1 2013/03/14 10:24:25 ronald Exp $";
-
 	private int type;
 	private ObjectURL obj;
 	private WithHash with;
@@ -59,22 +56,24 @@ public class CreateComment extends Node
 		throws SDMSException
 	{
 		Integer infoType;
+		String tag = null;
+		String text = null;
 
 		if(! (with.containsKey(ParseStr.S_TEXT) ^ with.containsKey(ParseStr.S_URL)))
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "04411111628", "Must specify exactly one of " + ParseStr.S_TEXT + " or " + ParseStr.S_URL));
-		String text = (String) with.get(ParseStr.S_TEXT);
-		if(text == null) {
-			text = (String) with.get(ParseStr.S_URL);
+
+		obj.resolve(sysEnv);
+
+		if (with.containsKey(ParseStr.S_URL)) {
 			infoType = new Integer(SDMSObjectComment.URL);
+			text = (String) with.get(ParseStr.S_URL);
+			tag = null;
 		} else {
 			infoType = new Integer(SDMSObjectComment.TEXT);
 		}
 
-		obj.resolve(sysEnv);
-
-		try {
-			SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(1), text);
-		} catch(DuplicateKeyException dke) {
+		Vector v = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, obj.objId);
+		if (v.size() != 0) {
 			if(replace) {
 				AlterComment ac = new AlterComment(obj, with, Boolean.FALSE);
 				ac.setEnv(env);
@@ -82,7 +81,20 @@ public class CreateComment extends Node
 				result = ac.result;
 				return;
 			} else {
-				throw dke;
+				throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03510061519", "Comment already exists"));
+			}
+		}
+
+		if (infoType.intValue() == SDMSObjectComment.URL)
+			SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(1), tag, text);
+		else {
+			v = (Vector) with.get(ParseStr.S_TEXT);
+			for (int i = 0; i < v.size(); ++i) {
+				Vector tt = (Vector) v.get(i);
+				tag = (String) tt.get(0);
+				text = (String) tt.get(1);
+
+				SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(i+1), tag, text);
 			}
 		}
 

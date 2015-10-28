@@ -74,8 +74,10 @@ public class AlterResource extends ManipResource
 	{
 		int notify = SchedulingThread.ALTER;
 		if(online != null) {
-			r.setIsOnline(sysEnv, online);
-			notify = SchedulingThread.OFFLINE_ONLINE;
+			if (r.getIsOnline(sysEnv).booleanValue() != online.booleanValue()) {
+				r.setIsOnline(sysEnv, online);
+				notify = SchedulingThread.OFFLINE_ONLINE;
+			}
 		}
 
 		if(status != null) {
@@ -93,12 +95,22 @@ public class AlterResource extends ManipResource
 
 		if(requestableAmount != null) {
 			if(requestableAmount.intValue() == -1) requestableAmount = null;
-			r.setRequestableAmount(sysEnv, requestableAmount);
-			notify = SchedulingThread.ALTER_REQAMOUNT;
+			Integer ora = r.getRequestableAmount(sysEnv);
+			if ((ora == null && requestableAmount != null) ||
+			    (ora != null && requestableAmount == null) ||
+			    (ora != null && requestableAmount != null && ora.intValue() != requestableAmount.intValue())
+			   ) {
+				r.setRequestableAmount(sysEnv, requestableAmount);
+				notify = SchedulingThread.ALTER_REQAMOUNT;
+			}
 		}
 
 		if(amount != null) {
 			if(amount.intValue() == -1) amount = null;
+			Integer oam = r.getDefinedAmount(sysEnv);
+
+			if (oam != null && amount != null && oam.intValue() > amount.intValue())
+				notify = SchedulingThread.ALTER_REQAMOUNT;
 			r.setDefinedAmount(sysEnv, amount);
 			if (r.getManagerId(sysEnv) == null)
 				r.setAmount(sysEnv, amount);

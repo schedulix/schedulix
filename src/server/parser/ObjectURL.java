@@ -53,6 +53,7 @@ public class ObjectURL
 	public String mappedName = null;
 	public WithItem seSpec;
 	public boolean wildcard = false;
+	public WithItem triggerInverse;
 
 	private final static HashMap typeFromURL = new HashMap();
 	static
@@ -169,6 +170,16 @@ public class ObjectURL
 		master = o;
 		name = s;
 		parserType = t;
+
+	}
+
+	public ObjectURL(Integer t, String s, ObjectURL o, WithItem inverse)
+	{
+		objType = (Integer) typeFromURL.get(t);
+		master = o;
+		name = s;
+		parserType = t;
+		triggerInverse = inverse;
 
 	}
 
@@ -566,7 +577,17 @@ public class ObjectURL
 	{
 		SDMSTrigger p = null;
 		SDMSProxy m = master.resolve(sysEnv);
-		p = SDMSTriggerTable.idx_fireId_name_getUnique(sysEnv, new SDMSKey(master.objId, name));
+		Boolean isInverse = (Boolean) triggerInverse.value;
+		Vector v;
+		if (isInverse.booleanValue()) {
+			v = SDMSTriggerTable.idx_seId_name.getVector(sysEnv, new SDMSKey(master.objId, name));
+		} else {
+			v = SDMSTriggerTable.idx_fireId_name.getVector(sysEnv, new SDMSKey(master.objId, name));
+		}
+		for (int i = 0; i < v.size(); ++i) {
+			p = (SDMSTrigger) v.get(i);
+			if (p.getIsInverse(sysEnv).equals(isInverse)) break;
+		}
 		return p;
 	}
 

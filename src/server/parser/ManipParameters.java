@@ -62,6 +62,7 @@ public class ManipParameters
 			Integer t = (Integer) v.get(0);
 			final String value = (String) v.get (1);
 			final Boolean isLocal = (Boolean) v.get(2);
+			final String exportName = (v.size() > 3 ? (String)v.get(3) : null);
 
 			if(!allTypes)
 				t = defaultType;
@@ -71,7 +72,7 @@ public class ManipParameters
 
 			final String sic = (value == null ? value : '=' + value);
 
-			SDMSParameterDefinitionTable.table.create (sysEnv, id, name, t, aggFkt, sic, isLocal, null);
+			SDMSParameterDefinitionTable.table.create (sysEnv, id, name, t, aggFkt, sic, isLocal, null, exportName);
 		}
 	}
 
@@ -99,7 +100,8 @@ public class ManipParameters
 								pd.getAggFunction (sysEnv),
 								pd.getDefaultValue (sysEnv),
 								pd.getIsLocal (sysEnv),
-								null);
+			                null,
+			                pd.getExportName(sysEnv));
 		}
 	}
 
@@ -128,6 +130,7 @@ public class ManipParameters
 				Integer t = (Integer) v.get(0);
 				String pv = (String) v.get (1);
 				Boolean isLocal = (Boolean) v.get (2);
+				String exportName = (v.size() > 3 ? (String)v.get(3) : null);
 
 				if(!allTypes)
 					t = defaultType;
@@ -150,12 +153,13 @@ public class ManipParameters
 						pd.setDefaultValue(sysEnv, pdef);
 						pd.setIsLocal(sysEnv, isLocal);
 						pd.setLinkPdId(sysEnv, linkPdId);
+						pd.setExportName(sysEnv, exportName);
 						break;
 					}
 				}
 				if(idx >= act_parms.size()) {
 
-					SDMSParameterDefinitionTable.table.create(sysEnv, id, pn, t, aggFunction, pdef, isLocal, linkPdId);
+					SDMSParameterDefinitionTable.table.create(sysEnv, id, pn, t, aggFunction, pdef, isLocal, linkPdId, exportName);
 				}
 			}
 		}
@@ -174,6 +178,8 @@ public class ManipParameters
 		c_desc.add ("ID");
 
 		c_desc.add ("NAME");
+
+		c_desc.add ("EXPORT_NAME");
 
 		c_desc.add ("TYPE");
 
@@ -204,6 +210,7 @@ public class ManipParameters
 			final Long pdId = pd.getId (sysEnv);
 			c_data.add (pdId);
 			c_data.add (pd.getName (sysEnv));
+			c_data.add (pd.getExportName (sysEnv));
 
 			int ptype = pd.getType (sysEnv).intValue();
 			c_data.add (pd.getTypeAsString (sysEnv));
@@ -249,11 +256,28 @@ public class ManipParameters
 				c_data.add (null);
 			}
 
-			try {
-				final SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, pdId);
-				c_data.add (oc.getDescription(sysEnv));
-				c_data.add (oc.getInfoTypeAsString(sysEnv));
-			} catch(NotFoundException nfe) {
+			Vector ocv = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, pdId);
+			if (ocv.size() != 0) {
+				StringBuffer sb = new StringBuffer();
+				String tag;
+				String infoType = null;
+				for (int j = 0; j < ocv.size(); ++j) {
+					SDMSObjectComment oc = (SDMSObjectComment) ocv.get(j);
+					tag = oc.getTag(sysEnv);
+					if (tag != null) {
+						if (j != 0)
+							sb.append("\n");
+						sb.append(tag);
+						sb.append("\n\n");
+					}
+					sb.append (oc.getDescription(sysEnv));
+					sb.append ("\n");
+					if (j == 0)
+						infoType = oc.getInfoTypeAsString(sysEnv);
+				}
+				c_data.add (sb.toString());
+				c_data.add (infoType);
+			} else {
 				c_data.add (null);
 				c_data.add (null);
 			}
@@ -319,11 +343,28 @@ public class ManipParameters
 			c_data.add (se.getPrivileges(sysEnv).toString());
 			c_data.add (lpd.getName (sysEnv));
 
-			try {
-				final SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, pdId);
-				c_data.add (oc.getDescription(sysEnv));
-				c_data.add (oc.getInfoTypeAsString(sysEnv));
-			} catch(NotFoundException nfe) {
+			Vector ocv = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, pdId);
+			if (ocv.size() != 0) {
+				StringBuffer sb = new StringBuffer();
+				String tag;
+				String infoType = null;
+				for (int j = 0; j < ocv.size(); ++j) {
+					SDMSObjectComment oc = (SDMSObjectComment) ocv.get(j);
+					tag = oc.getTag(sysEnv);
+					if (tag != null) {
+						if (j != 0)
+							sb.append("\n");
+						sb.append(tag);
+						sb.append("\n\n");
+					}
+					sb.append (oc.getDescription(sysEnv));
+					sb.append ("\n");
+					if (j == 0)
+						infoType = oc.getInfoTypeAsString(sysEnv);
+				}
+				c_data.add (sb.toString());
+				c_data.add (infoType);
+			} else {
 				c_data.add (null);
 				c_data.add (null);
 			}

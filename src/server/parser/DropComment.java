@@ -59,18 +59,13 @@ public class DropComment extends Node
 
 		obj.resolve(sysEnv);
 
-		SDMSObjectComment oc;
-		try {
-			oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, obj.objId);
-		} catch (NotFoundException nfe) {
-			if(noerr) {
+		if (0 == SDMSObjectCommentTable.dropComment(sysEnv, obj.objId)) {
+			if (noerr) {
 				result.setFeedback(new SDMSMessage(sysEnv,"03311130113", "No Comment dropped"));
 				return;
-			}
-			throw nfe;
+			} else
+				throw new NotFoundException(new SDMSMessage(sysEnv, "03510121546", "No comment found for object $1", obj.toString()));
 		}
-
-		oc.delete(sysEnv);
 
 		result.setFeedback(new SDMSMessage(sysEnv,"03209240935", "Comment dropped"));
 	}

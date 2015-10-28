@@ -88,7 +88,7 @@ public class ShowNiceProfile extends ShowCommented
 		} else {
 			data.add(null);
 		}
-		data.add(getCommentDescription(sysEnv, npId));
+		data.add(getCommentContainer(sysEnv, npId));
 		data.add(getCommentInfoType(sysEnv, npId));
 
 		try {

@@ -80,6 +80,7 @@ public class ScopeParameter
 			                aggFunctionNone,
 			                sic,
 			                Boolean.FALSE,
+			                null,
 			                null);
 
 			if (type.intValue() != SDMSParameterDefinition.DYNAMICVALUE)
@@ -138,6 +139,7 @@ public class ScopeParameter
 				                pd.getAggFunction (sysEnv),
 				                pd.getDefaultValue (sysEnv),
 				                pd.getIsLocal (sysEnv),
+				                null,
 				                null);
 		}
 	}
@@ -236,6 +238,7 @@ public class ScopeParameter
 			                aggFunctionNone,
 			                sic,
 			                Boolean.FALSE,
+			                null,
 			                null);
 		}
 	}

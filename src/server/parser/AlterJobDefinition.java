@@ -225,6 +225,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 		Vector cPath;
 		Long newChildId;
 		Boolean isStatic;
+		Boolean isDisabled;
 		Integer prio;
 		Integer suspend;
 		String shResumeAt;
@@ -262,6 +263,11 @@ public class AlterJobDefinition extends ManipJobDefinition
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03406071443", "Only batches and jobs can have static children"));
 				}
 
+				if(wh.containsKey(ParseStr.S_ENABLE))
+					isDisabled = new Boolean(!((Boolean) wh.get(ParseStr.S_ENABLE)).booleanValue());
+				else
+					isDisabled = null;
+
 				prio = (Integer) wh.get(ParseStr.S_PRIORITY);
 				suspend = (Integer) wh.get(ParseStr.S_SUSPEND);
 				shResumeAt = null;
@@ -284,6 +290,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 
 						if(wh.containsKey(ParseStr.S_ALIAS))		sh.setAliasName(sysEnv, aliasName);
 						if(wh.containsKey(ParseStr.S_STATIC))		sh.setIsStatic(sysEnv, isStatic);
+						if(wh.containsKey(ParseStr.S_ENABLE))		sh.setIsDisabled(sysEnv, isDisabled);
 						if(wh.containsKey(ParseStr.S_PRIORITY))		sh.setPriority(sysEnv, prio);
 						if(wh.containsKey(ParseStr.S_SUSPEND))		sh.setSuspend(sysEnv, suspend);
 						suspend = sh.getSuspend(sysEnv);
@@ -314,6 +321,9 @@ public class AlterJobDefinition extends ManipJobDefinition
 							isStatic = Boolean.FALSE;
 						else	isStatic = Boolean.TRUE;
 					}
+					if(isDisabled == null) {
+						isDisabled = Boolean.FALSE;
+					}
 					if(suspend == null) suspend = new Integer(SDMSSchedulingHierarchy.CHILDSUSPEND);
 					if (suspend.intValue() == SDMSSchedulingHierarchy.SUSPEND) {
 						Object resumeObj = wh.get(ParseStr.S_RESUME);
@@ -340,7 +350,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 							"A job or batch cannot have itself as child"));
 					}
 
-					sh = SDMSSchedulingHierarchyTable.table.create(sysEnv, parentId, newChildId, aliasName, isStatic, prio,
+					sh = SDMSSchedulingHierarchyTable.table.create(sysEnv, parentId, newChildId, aliasName, isStatic, isDisabled, prio,
 							suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId);
 				}
 
@@ -416,6 +426,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 				WithItem pt = (WithItem) pv.get(0);
 				String pdef = (String) pv.get(1);
 				Boolean isLocal = (Boolean) pv.get(2);
+				String exportName = (String) pv.get(3);
 				Integer type = (pt == null ? new Integer(SDMSParameterDefinition.PARAMETER) : (Integer) pt.key);
 				Integer aggFunction = new Integer(SDMSParameterDefinition.NONE);
 				Long linkPdId = null;
@@ -475,12 +486,13 @@ public class AlterJobDefinition extends ManipJobDefinition
 						pd.setDefaultValue(sysEnv, pdef);
 						pd.setIsLocal(sysEnv, isLocal);
 						pd.setLinkPdId(sysEnv, linkPdId);
+						pd.setExportName(sysEnv, exportName);
 						break;
 					}
 				}
 				if(idx >= act_parms.size()) {
 
-					SDMSParameterDefinitionTable.table.create(sysEnv, seId, pn, type, aggFunction, pdef, isLocal, linkPdId);
+					SDMSParameterDefinitionTable.table.create(sysEnv, seId, pn, type, aggFunction, pdef, isLocal, linkPdId, exportName);
 				}
 			}
 		}

@@ -129,6 +129,8 @@ public class ListJobDefinitionHierarchy extends Node
 
 		desc.add("IS_STATIC");
 
+		desc.add("IS_DISABLED");
+
 		desc.add("SH_PRIORITY");
 
 		desc.add("SH_SUSPEND");
@@ -213,6 +215,7 @@ public class ListJobDefinitionHierarchy extends Node
 		v.add(new Integer(v1.size()));
 
 		String empty = "";
+		v.add(empty);
 		v.add(empty);
 		v.add(empty);
 		v.add(empty);
@@ -319,6 +322,7 @@ public class ListJobDefinitionHierarchy extends Node
 			v.add(new Integer(v1.size()));
 			v.add(shId);
 			v.add(sh.getIsStatic(sysEnv));
+			v.add(sh.getIsDisabled(sysEnv));
 			v.add(sh.getPriority(sysEnv));
 			v.add(sh.getSuspendAsString(sysEnv));
 			v.add(sh.getAliasName(sysEnv));
@@ -355,7 +359,7 @@ public class ListJobDefinitionHierarchy extends Node
 
 			oc.addData(sysEnv, v);
 
-			if(expand && p.can(SDMSPrivilege.VIEW)) {
+			if(expand && p.can(SDMSPrivilege.VIEW) && !sh.getIsDisabled(sysEnv).booleanValue()) {
 				if(expandIds == null || expandIds.contains(shId)) {
 					add_childs(sysEnv, oc, v1, shPath);
 				}

@@ -81,7 +81,7 @@ public class ShowRsm extends ShowCommented
 		Vector data = new Vector();
 		data.add(rsmpId);
 		data.add(rsmp.getName(sysEnv));
-		data.add(getCommentDescription(sysEnv, rsmpId));
+		data.add(getCommentContainer(sysEnv, rsmpId));
 		data.add(getCommentInfoType(sysEnv, rsmpId));
 
 		final Date d = new Date();

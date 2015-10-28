@@ -117,7 +117,7 @@ public class ShowSchedule
 		data.add(sysEnv.systemDateFormat.format(d));
 		data.add(sce.getPrivileges(sysEnv).toString());
 
-		data.add(getCommentDescription(sysEnv, sceId));
+		data.add(getCommentContainer(sysEnv, sceId));
 		data.add(getCommentInfoType(sysEnv, sceId));
 
 		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "Schedule", desc, data);

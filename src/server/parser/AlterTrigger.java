@@ -38,9 +38,6 @@ import de.independit.scheduler.server.exception.*;
 
 public class AlterTrigger extends ManipTrigger
 {
-
-	public final static String __version = "@(#) $Id: AlterTrigger.java,v 2.29.2.4 2013/03/22 14:32:15 dieter Exp $";
-
 	protected String name;
 	protected WithHash with;
 	protected WithItem fireObj;
@@ -48,6 +45,7 @@ public class AlterTrigger extends ManipTrigger
 
 	protected Long submitOwnerId;
 	protected Long fireId;
+	protected Long checkFireId;
 	protected int fireType;
 
 	protected SDMSSchedulingEntity fireSe = null;
@@ -63,6 +61,7 @@ public class AlterTrigger extends ManipTrigger
 		with = w;
 		fireObj = null;
 		url = u;
+		isInverse = (Boolean) u.triggerInverse.value;
 		noerr = ne.booleanValue();
 	}
 
@@ -75,6 +74,7 @@ public class AlterTrigger extends ManipTrigger
 		fireId = fId;
 		fireType = ot;
 		url = null;
+		isInverse = (Boolean) with.get(ParseStr.S_INVERSE);
 		noerr = ne.booleanValue();
 	}
 
@@ -97,20 +97,56 @@ public class AlterTrigger extends ManipTrigger
 			iaction = action.intValue();
 		}
 
-		Long checkSeId;
+		isMaster = (Boolean) with.get(ParseStr.S_MASTER);
+		Boolean checkIsMaster = isMaster;
+		if(isMaster != null) {
+			if(objType != SDMSTrigger.JOB_DEFINITION && objType != SDMSTrigger.OBJECT_MONITOR) {
+				if(!isMaster.booleanValue()) {
+					throw new CommonErrorException(
+					        new SDMSMessage(sysEnv, "03206202334", "Only master submits allowed for resource triggers"));
+				}
+			}
+			if (iaction == SDMSTrigger.RERUN && isMaster.booleanValue()) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03108091455", "Master option not valid for rerun triggers"));
+			}
+		} else
+			checkIsMaster = t.getIsMaster(sysEnv);
+
+		if (isInverse.booleanValue()) {
+			if (!checkIsMaster.booleanValue()) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "036231301", "Master option mandatory for inverse triggers"));
+			}
+			if (iaction == SDMSTrigger.RERUN) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "036231302", "Inverse option not valid for rerun triggers"));
+			}
+			if (objType != SDMSTrigger.JOB_DEFINITION) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "036231303", "Inverse option only valid for job triggers"));
+			}
+		}
+
+		Long checkSeId = null;
 		folderpath = (Vector) with.get(ParseStr.S_SUBMIT);
 		if((folderpath != null) && (iaction == SDMSTrigger.SUBMIT)) {
 			String n = (String) folderpath.remove(folderpath.size() -1);
 			se = SDMSSchedulingEntityTable.get(sysEnv, folderpath, n);
-			if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
-				throw new AccessViolationException(
-					new SDMSMessage(sysEnv, "03402131605", "Submit privilege on $1 missing", se.pathString(sysEnv))
-				);
-			seId = se.getId(sysEnv);
-			checkSeId = seId;
+			if (isInverse.booleanValue()) {
+				fireId = se.getId(sysEnv);
+				checkFireId = fireId;
+				seId = t.getSeId(sysEnv);
+			} else {
+				if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
+					throw new AccessViolationException(
+						new SDMSMessage(sysEnv, "03402131605", "Submit privilege on $1 missing", se.pathString(sysEnv))
+					);
+
+				seId = se.getId(sysEnv);
+				fireId = t.getFireId(sysEnv);
+				checkSeId = seId;
+			}
 		} else {
 			if ((folderpath == null) && with.containsKey(ParseStr.S_RERUN)) {
 				seId = t.getFireId(sysEnv);
+				fireId = seId;
 				checkSeId = seId;
 			} else {
 				seId = null;
@@ -140,21 +176,6 @@ public class AlterTrigger extends ManipTrigger
 			resumeBase = null;
 		} else
 			analyzeResumeObj(sysEnv);
-
-		isMaster = (Boolean) with.get(ParseStr.S_MASTER);
-		Boolean checkIsMaster = isMaster;
-		if(isMaster != null) {
-			if(objType != SDMSTrigger.JOB_DEFINITION && objType != SDMSTrigger.OBJECT_MONITOR) {
-				if(!isMaster.booleanValue()) {
-					throw new CommonErrorException(
-						new SDMSMessage(sysEnv, "03206202334", "Only master submits allowed for resource triggers"));
-				}
-			}
-			if (iaction == SDMSTrigger.RERUN && isMaster.booleanValue()) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03108091455", "Master option not valid for rerun triggers"));
-			}
-		} else
-			checkIsMaster = t.getIsMaster(sysEnv);
 
 		final String submitOwnerName = (String)with.get(ParseStr.S_GROUP);
 		Long checkSubmitOwnerId;
@@ -217,9 +238,22 @@ public class AlterTrigger extends ManipTrigger
 		if (condition != null && !(condition.equals("")))
 			sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXTENDED_TRIGGERS);
 
-		if (objType == SDMSTrigger.JOB_DEFINITION)
+		if (objType == SDMSTrigger.JOB_DEFINITION) {
 			isWarnOnLimit = (Boolean) with.get(ParseStr.S_WARN);
-		else
+			if (with.containsKey(ParseStr.S_LIMIT)) {
+				String sLimitState = (String) with.get(ParseStr.S_LIMIT);
+				if (sLimitState == null)
+					limitState = null;
+				else {
+					try {
+						SDMSExitStateDefinition lsEsd = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, sLimitState);
+						limitState = lsEsd.getId(sysEnv);
+					} catch (NotFoundException nfe) {
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03509181338", "Specified exit state " + sLimitState + " not found"));
+					}
+				}
+			}
+		} else
 			isWarnOnLimit = null;
 
 		condition = (String) with.get(ParseStr.S_CONDITION);
@@ -294,18 +328,29 @@ public class AlterTrigger extends ManipTrigger
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		SDMSTrigger t;
+		SDMSTrigger t = null;
 		Long tId;
 
 		try {
 			if (url == null) {
 				getFireId(sysEnv);
-				t = SDMSTriggerTable.idx_fireId_name_getUnique(sysEnv, new SDMSKey(fireId, name));
+				Vector v;
+				if (isInverse.booleanValue())
+					v = SDMSTriggerTable.idx_seId_name.getVector(sysEnv, new SDMSKey(fireId, name));
+				else
+					v = SDMSTriggerTable.idx_fireId_name.getVector(sysEnv, new SDMSKey(fireId, name));
+				if (v.size() == 0) throw new NotFoundException();
+				int i;
+				for (i = 0; i < v.size(); ++i) {
+					t = (SDMSTrigger) v.get(i);
+					if (t.getIsInverse(sysEnv).equals(isInverse)) break;
+				}
+				if (i == v.size()) throw new NotFoundException();
 			} else {
 				t = (SDMSTrigger) url.resolve(sysEnv);
 				fireId = t.getFireId(sysEnv);
 				fireType = t.getObjectType(sysEnv).intValue();
-				getFireId(sysEnv);
+				fireSe = SDMSSchedulingEntityTable.getObject(sysEnv, fireId);
 			}
 		} catch ( NotFoundException nfe) {
 			if(noerr) {
@@ -315,10 +360,19 @@ public class AlterTrigger extends ManipTrigger
 			throw nfe;
 		}
 		tId = t.getId(sysEnv);
+		fireId = t.getFireId(sysEnv);
+		seId = t.getSeId(sysEnv);
 
 		checkWith(sysEnv, t);
 
-		if(seId != null)		t.setSeId(sysEnv, seId);
+		if (isInverse.booleanValue()) {
+			if(fireId != null)
+				t.setFireId(sysEnv, seId);
+		} else {
+			if(seId != null)
+				t.setSeId(sysEnv, seId);
+		}
+
 		if(triggertype != null)	{
 			t.setType(sysEnv, triggertype);
 		}
@@ -330,10 +384,12 @@ public class AlterTrigger extends ManipTrigger
 		t.setResumeIn(sysEnv, resumeIn);
 		t.setResumeBase(sysEnv, resumeBase);
 		if(isWarnOnLimit != null)	t.setIsWarnOnLimit(sysEnv, isWarnOnLimit);
+		if (with.containsKey(ParseStr.S_LIMIT)) t.setLimitState(sysEnv, limitState);
 		if(maxRetry != null)		t.setMaxRetry(sysEnv, maxRetry);
 		if(with.containsKey(ParseStr.S_CONDITION))		t.setCondition(sysEnv, condition);
 
-		checkUniqueness(sysEnv, fireId);
+		checkUniqueness(sysEnv, name, fireId, seId, (isInverse == null ? t.getIsInverse(sysEnv) : isInverse));
+		if(isInverse != null) t.setIsInverse(sysEnv, isInverse);
 
 		if(isMaster == null) isMaster = t.getIsMaster(sysEnv);
 		if(isMaster.booleanValue())

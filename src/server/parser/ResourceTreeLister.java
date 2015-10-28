@@ -31,6 +31,7 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
+import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
@@ -132,6 +133,8 @@ public class ResourceTreeLister extends TreeLister
 		try {
 			v1  = getPath(systemEnvironment, (SDMSProxy)o1);
 			v2  = getPath(systemEnvironment, (SDMSProxy)o2);
+		} catch (SerializationException e) {
+			throw new RuntimeException();
 
 		} catch (SDMSException se) {
 			return 0;
@@ -151,6 +154,8 @@ public class ResourceTreeLister extends TreeLister
 			try {
 				v1s = getScopePath(systemEnvironment, (SDMSProxy)o1);
 				v2s = getScopePath(systemEnvironment, (SDMSProxy)o2);
+			} catch (SerializationException e) {
+				throw new RuntimeException();
 
 			} catch (SDMSException se) {
 				return 0;

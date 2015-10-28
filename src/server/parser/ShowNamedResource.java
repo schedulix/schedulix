@@ -119,7 +119,7 @@ public class ShowNamedResource extends ShowCommented
 			data.add(null);
 		}
 		data.add(nr.getFactor(sysEnv));
-		data.add(getCommentDescription(sysEnv, nrId));
+		data.add(getCommentContainer(sysEnv, nrId));
 		data.add(getCommentInfoType(sysEnv, nrId));
 
 		final Date d = new Date();
@@ -248,6 +248,7 @@ public class ShowNamedResource extends ShowCommented
 		c_desc.add ("TYPE");
 
 		c_desc.add ("DEFAULT_VALUE");
+		c_desc.add ("TAG");
 		c_desc.add ("COMMENT");
 		c_desc.add ("COMMENTTYPE");
 
@@ -285,10 +286,12 @@ public class ShowNamedResource extends ShowCommented
 			c_data.add(null);
 
 		try {
-			final SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, pdId);
+			final SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getFirst(sysEnv, pdId);
+			c_data.add (oc.getTag(sysEnv));
 			c_data.add (oc.getDescription(sysEnv));
 			c_data.add (oc.getInfoTypeAsString(sysEnv));
 		} catch(NotFoundException nfe) {
+			c_data.add (null);
 			c_data.add (null);
 			c_data.add (null);
 		}

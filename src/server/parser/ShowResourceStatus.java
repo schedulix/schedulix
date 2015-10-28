@@ -77,7 +77,7 @@ public class ShowResourceStatus extends ShowCommented
 
 		data.add(rsdId);
 		data.add(rsd.getName(sysEnv));
-		data.add(getCommentDescription(sysEnv, rsdId));
+		data.add(getCommentContainer(sysEnv, rsdId));
 		data.add(getCommentInfoType(sysEnv, rsdId));
 
 		final Date d = new Date();

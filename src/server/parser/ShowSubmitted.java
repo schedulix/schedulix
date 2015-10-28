@@ -185,6 +185,8 @@ public class ShowSubmitted extends Node
 
 		desc.add("STATE");
 
+		desc.add("IS_DISABLED");
+
 		desc.add("IS_CANCELLED");
 
 		desc.add("JOB_ESD_ID");
@@ -459,6 +461,7 @@ public class ShowSubmitted extends Node
 				isCancelled = Boolean.TRUE;
 			else
 				isCancelled = Boolean.FALSE;
+		data.add(sme.getIsDisabled(sysEnv));
 		data.add(isCancelled);
 		esdId = sme.getJobEsdId(sysEnv);
 		if(esdId != null) {

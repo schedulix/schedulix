@@ -115,7 +115,7 @@ public class ShowEvent
 		data.add (parm_list (sysEnv));
 		data.add (evt.getPrivileges(sysEnv).toString());
 
-		data.add (getCommentDescription (sysEnv, evtId));
+		data.add (getCommentContainer (sysEnv, evtId));
 		data.add (getCommentInfoType (sysEnv, evtId));
 
 		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "Event", desc, data);

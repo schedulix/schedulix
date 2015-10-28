@@ -301,6 +301,7 @@ public abstract class ManipJobDefinition extends Node
 
 		SDMSNamedEnvironment ne = SDMSNamedEnvironmentTable.getObject(sysEnv, neId);
 		Vector gv = new Vector();
+		gv.add(SDMSObject.publicGId);
 		gv.add(gId);
 		if(ne.getPrivileges(sysEnv, SDMSPrivilege.USE, false, gv) != SDMSPrivilege.USE) {
 			String gName = SDMSGroupTable.getObject(sysEnv,gId).getName(sysEnv);
@@ -441,6 +442,7 @@ public abstract class ManipJobDefinition extends Node
 		Vector cPath;
 		Long childId;
 		Boolean isStatic;
+		Boolean isDisabled = Boolean.FALSE;
 		Integer prio;
 		Integer suspend;
 		String shResumeAt;
@@ -474,6 +476,9 @@ public abstract class ManipJobDefinition extends Node
 			else
 				isStatic = Boolean.FALSE;
 		}
+
+		if(wh.containsKey(ParseStr.S_ENABLE))
+			isDisabled = new Boolean(!((Boolean) wh.get(ParseStr.S_ENABLE)).booleanValue());
 
 		if(parentType != SDMSSchedulingEntity.BATCH && parentType != SDMSSchedulingEntity.JOB && isStatic.equals(Boolean.TRUE)) {
 			throw new CommonErrorException(
@@ -536,13 +541,14 @@ public abstract class ManipJobDefinition extends Node
 
 		if(isAdd) {
 			try {
-				sh = SDMSSchedulingHierarchyTable.table.create(sysEnv, parentId, childId, aliasName, isStatic, prio,
+				sh = SDMSSchedulingHierarchyTable.table.create(sysEnv, parentId, childId, aliasName, isStatic, isDisabled, prio,
 								suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId);
 			} catch (DuplicateKeyException dke) {
 				if(processError) {
 					sh = SDMSSchedulingHierarchyTable.idx_parentId_childId_getUnique(sysEnv, new SDMSKey(parentId, childId));
 					sh.setAliasName(sysEnv, aliasName);
 					sh.setIsStatic(sysEnv, isStatic);
+					sh.setIsDisabled(sysEnv, isDisabled);
 					sh.setPriority(sysEnv, prio);
 					sh.setSuspend(sysEnv, suspend);
 					sh.setResumeAt(sysEnv, shResumeAt);
@@ -562,6 +568,7 @@ public abstract class ManipJobDefinition extends Node
 				sh = SDMSSchedulingHierarchyTable.idx_parentId_childId_getUnique(sysEnv, new SDMSKey(parentId, childId));
 				sh.setAliasName(sysEnv, aliasName);
 				sh.setIsStatic(sysEnv, isStatic);
+				sh.setIsDisabled(sysEnv, isDisabled);
 				sh.setPriority(sysEnv, prio);
 				sh.setSuspend(sysEnv, suspend);
 				sh.setResumeAt(sysEnv, shResumeAt);
@@ -645,6 +652,7 @@ public abstract class ManipJobDefinition extends Node
 			WithItem pt = (WithItem) pv.get(0);
 			String pdef = (String) pv.get(1);
 			Boolean isLocal = (Boolean) pv.get(2);
+			String exportName = (String) pv.get(3);
 			Integer type = (pt == null ? new Integer(SDMSParameterDefinition.PARAMETER) : (Integer) pt.key);
 			Integer aggFunction = new Integer(SDMSParameterDefinition.NONE);
 			Long linkPdId = null;
@@ -692,7 +700,7 @@ public abstract class ManipJobDefinition extends Node
 			}
 			if(isAdd) {
 				try {
-					SDMSParameterDefinitionTable.table.create(sysEnv, se.getId(sysEnv), pn, type, aggFunction, pdef, isLocal, linkPdId);
+					SDMSParameterDefinitionTable.table.create(sysEnv, se.getId(sysEnv), pn, type, aggFunction, pdef, isLocal, linkPdId, exportName);
 				} catch(DuplicateKeyException dke) {
 					if(processError) {
 						SDMSParameterDefinition pd =
@@ -702,6 +710,7 @@ public abstract class ManipJobDefinition extends Node
 						pd.setDefaultValue(sysEnv, pdef);
 						pd.setIsLocal(sysEnv, isLocal);
 						pd.setLinkPdId(sysEnv, linkPdId);
+						pd.setExportName(sysEnv, exportName);
 					} else {
 						throw dke;
 					}
@@ -716,6 +725,7 @@ public abstract class ManipJobDefinition extends Node
 					pd.setDefaultValue(sysEnv, pdef);
 					pd.setIsLocal(sysEnv, isLocal);
 					pd.setLinkPdId(sysEnv, linkPdId);
+					pd.setExportName(sysEnv, exportName);
 				} catch (NotFoundException nfe) {
 					if(processError) return;
 					throw nfe;

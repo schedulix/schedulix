@@ -92,7 +92,7 @@ public class ShowExitStateProfile extends ShowCommented
 			data.add(SystemEnvironment.nullString);
 		}
 		data.add(esp.getIsValid(sysEnv));
-		data.add(getCommentDescription(sysEnv, espId));
+		data.add(getCommentContainer(sysEnv, espId));
 		data.add(getCommentInfoType(sysEnv, espId));
 
 		final Date d = new Date();

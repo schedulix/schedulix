@@ -43,6 +43,7 @@ public class RunTest extends Node
 	public final static String __version = "@(#) $Id: RunTest.java,v 2.4.2.1 2013/03/14 10:24:46 ronald Exp $";
 
 	private int testid;
+	private Long objectId;
 	private String  str;
 	private String  str2;
 
@@ -60,6 +61,16 @@ public class RunTest extends Node
 		testid = id.intValue();
 		str = s;
 		str2 = null;
+	}
+
+	public RunTest(Integer id, String s, Long objectId)
+	{
+		super();
+		testid = id.intValue();
+		str = s;
+		str2 = null;
+		this.objectId = objectId;
+
 	}
 
 	public RunTest(Integer id, String s, boolean ro)
@@ -124,6 +135,9 @@ public class RunTest extends Node
 			break;
 		case 9:
 			do_test9(sysEnv);
+			break;
+		case 10:
+			do_test10(sysEnv);
 			break;
 		default:
 
@@ -295,5 +309,23 @@ public class RunTest extends Node
 		result.setFeedback(new SDMSMessage(sysEnv, "03212191003", "Memory Data Statistics shown"));
 	}
 
+	private void do_test10(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSTable t = sysEnv.repository.getTableByName(str);
+		if (t == null) {
+			result.setFeedback(new SDMSMessage(sysEnv, "03212191003", "Table " + str + " not found!"));
+			return;
+		}
+		SDMSVersions v = t.getVersions(objectId);
+		if (v == null) {
+			boolean exist = t.contains(objectId);
+			result.setFeedback(new SDMSMessage(sysEnv, "03212191003", "Object with id " + objectId + "(contains = " + exist + ") not found!"));
+			return;
+		}
+		System.out.println(v.toString());
+
+		result.setFeedback(new SDMSMessage(sysEnv, "03212191003", "Versions dumped to stdout"));
+	}
 }
 

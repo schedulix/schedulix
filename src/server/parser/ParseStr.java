@@ -148,6 +148,8 @@ public class ParseStr
 	public static final String S_EXIT_STATUS_TRANSLATION = "EXIT_STATUS_TRANSLATION";
 	public static final String S_EXPAND		= "EXPAND";
 	public static final String S_EXPIRED		= "EXPIRED";
+	public static final String S_EXPORT		= "EXPORT";
+	public static final String S_EXPR		= "EXPR";
 	public static final String S_EXT_PID		= "EXT_PID";
 	public static final String S_FACTOR		= "FACTOR";
 	public static final String S_FAILURE		= "FAILURE";
@@ -204,6 +206,7 @@ public class ParseStr
 	public static final String S_ISGROUPED		= "ISGROUPED";
 	public static final String S_ISX		= "ISX";
 	public static final String S_IX			= "IX";
+	public static final String S_JSON		= "JSON";
 	public static final String S_JOB		= "JOB";
 	public static final String S_JOB_DEFINITION	= "JOB_DEFINITION";
 	public static final String S_JOB_DEFINITION_HIERARCHY	= "JOB_DEFINITION_HIERARCHY";
@@ -213,7 +216,6 @@ public class ParseStr
 	public static final String S_JOB_FINAL		= "JOB_FINAL";
 	public static final String S_JOB_SERVER		= "JOB_SERVER";
 	public static final String S_JOB_STATUS		= "JOB_STATUS";
-	public static final String S_JSON		= "JSON";
 	public static final String S_KEEP		= "KEEP";
 	public static final String S_KEEP_FINAL		= "KEEP_FINAL";
 	public static final String S_KILL		= "KILL";
@@ -223,11 +225,12 @@ public class ParseStr
 	public static final String S_LEVEL		= "LEVEL";
 	public static final String S_LIBERAL		= "LIBERAL";
 	public static final String S_LIKE		= "LIKE";
-	public static final String S_LIMITS		= "LIMITS";
+	public static final String S_LIMIT		= "LIMIT";
 	public static final String S_LINE		= "LINE";
 	public static final String S_LIST		= "LIST";
 	public static final String S_LOCAL		= "LOCAL";
 	public static final String S_LOCAL_CONSTANT	= "LOCAL_CONSTANT";
+	public static final String S_LOCK		= "LOCK";
 	public static final String S_LOCKMODE		= "LOCKMODE";
 	public static final String S_LOGFILE		= "LOGFILE";
 	public static final String S_LOOPS		= "LOOPS";
@@ -538,6 +541,8 @@ public class ParseStr
 		mapper.put(new Integer(Parser.EXIT_STATUS_TRANSLATION),	ParseStr.S_EXIT_STATUS_TRANSLATION);
 		mapper.put(new Integer(Parser.EXPAND),			ParseStr.S_EXPAND);
 		mapper.put(new Integer(Parser.EXPIRED),			ParseStr.S_EXPIRED);
+		mapper.put(new Integer(Parser.EXPORT),			ParseStr.S_EXPORT);
+		mapper.put(new Integer(Parser.EXPR),			ParseStr.S_EXPR);
 		mapper.put(new Integer(Parser.EXT_PID),			ParseStr.S_EXT_PID);
 		mapper.put(new Integer(Parser.FACTOR),			ParseStr.S_FACTOR);
 		mapper.put(new Integer(Parser.FAILURE),			ParseStr.S_FAILURE);
@@ -585,13 +590,13 @@ public class ParseStr
 		mapper.put(new Integer(Parser.IS),			ParseStr.S_IS);
 		mapper.put(new Integer(Parser.ISX),			ParseStr.S_ISX);
 		mapper.put(new Integer(Parser.IX),			ParseStr.S_IX);
+		mapper.put(new Integer(Parser.JSON),			ParseStr.S_JSON);
 		mapper.put(new Integer(Parser.JOB),			ParseStr.S_JOB);
 		mapper.put(new Integer(Parser.JOB_DEFINITION),		ParseStr.S_JOB_DEFINITION);
 		mapper.put(new Integer(Parser.JOB_DEFINITION_HIERARCHY),	ParseStr.S_JOB_DEFINITION_HIERARCHY);
 		mapper.put(new Integer(Parser.JOB_FINAL),		ParseStr.S_JOB_FINAL);
 		mapper.put(new Integer(Parser.JOB_SERVER),		ParseStr.S_JOB_SERVER);
 		mapper.put(new Integer(Parser.JOB_STATUS),		ParseStr.S_JOB_STATUS);
-		mapper.put(new Integer(Parser.JSON),			ParseStr.S_JSON);
 		mapper.put(new Integer(Parser.KEEP),			ParseStr.S_KEEP);
 		mapper.put(new Integer(Parser.KEEP_FINAL),		ParseStr.S_KEEP_FINAL);
 		mapper.put(new Integer(Parser.KILL),			ParseStr.S_KILL);
@@ -601,11 +606,12 @@ public class ParseStr
 		mapper.put(new Integer(Parser.LEVEL),			ParseStr.S_LEVEL);
 		mapper.put(new Integer(Parser.LIBERAL),			ParseStr.S_LIBERAL);
 		mapper.put(new Integer(Parser.LIKE),			ParseStr.S_LIKE);
-		mapper.put(new Integer(Parser.LIMITS),			ParseStr.S_LIMITS);
+		mapper.put(new Integer(Parser.LIMIT),			ParseStr.S_LIMIT);
 		mapper.put(new Integer(Parser.LINE),			ParseStr.S_LINE);
 		mapper.put(new Integer(Parser.LIST),			ParseStr.S_LIST);
 		mapper.put(new Integer(Parser.LOCAL),			ParseStr.S_LOCAL);
 		mapper.put(new Integer(Parser.LOCAL_CONSTANT),		ParseStr.S_LOCAL_CONSTANT);
+		mapper.put(new Integer(Parser.LOCK),			ParseStr.S_LOCK);
 		mapper.put(new Integer(Parser.LOCKMODE),		ParseStr.S_LOCKMODE);
 		mapper.put(new Integer(Parser.LOGFILE),			ParseStr.S_LOGFILE);
 		mapper.put(new Integer(Parser.LOOPS),			ParseStr.S_LOOPS);

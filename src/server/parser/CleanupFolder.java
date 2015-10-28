@@ -85,29 +85,21 @@ public class CleanupFolder
 			keeplist.add(url.objId);
 		}
 
+		HashSet<Long> seIds = new HashSet<Long> ();
 		it = folders.iterator();
 		while (it.hasNext()) {
 			SDMSFolder f = (SDMSFolder) it.next();
-			f.deleteCascadeFirstPass(sysEnv, keeplist);
+			f.collectSeIds(sysEnv, seIds, keeplist);
 		}
 
-		HashSet parameterLinks = new HashSet();
+		SDMSSchedulingEntity.delete(sysEnv, seIds, force);
 
 		it = folders.iterator();
 		while (it.hasNext()) {
 			SDMSFolder f = (SDMSFolder) it.next();
-			f.deleteCascadeSecondPass(sysEnv, parameterLinks, force, keeplist);
-			f.dropResources(sysEnv, keeplist);
+			f.deleteCascade(sysEnv, keeplist);
 		}
 
-		if(!parameterLinks.isEmpty()) {
-			Iterator i = parameterLinks.iterator();
-			SDMSParameterDefinition pd = SDMSParameterDefinitionTable.getObject(sysEnv, (Long) i.next());
-			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, pd.getSeId(sysEnv));
-			throw new CommonErrorException (new SDMSMessage(sysEnv, "02707191115", "Parameter Reference from $1 ($2) still exists",
-						se.pathString(sysEnv),
-						pd.getName(sysEnv)));
-		}
 		result.setFeedback(new SDMSMessage(sysEnv, "02707191116", "Cleanup completed"));
 	}
 }

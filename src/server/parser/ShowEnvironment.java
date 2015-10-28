@@ -87,7 +87,7 @@ public class ShowEnvironment extends ShowCommented
 
 		data.add(neId);
 		data.add(ne.getName(sysEnv));
-		data.add(getCommentDescription(sysEnv, neId));
+		data.add(getCommentContainer(sysEnv, neId));
 		data.add(getCommentInfoType(sysEnv, neId));
 
 		final Date d = new Date();

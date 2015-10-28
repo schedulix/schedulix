@@ -31,6 +31,7 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
+import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
@@ -68,11 +69,14 @@ public class ShowSystem extends Node
 
 	};
 
-	public ShowSystem()
+	private boolean withLocks;
+
+	public ShowSystem(boolean withLocks)
 	{
 		super();
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
+		this.withLocks = withLocks;
 	}
 
 	public void go(SystemEnvironment sysEnv)
@@ -117,6 +121,8 @@ public class ShowSystem extends Node
 		}
 
 		desc.add("WORKER");
+		if (withLocks)
+			desc.add("LOCKING STATUS");
 
 		Vector data = new Vector();
 		data.add(SystemEnvironment.programVersion);
@@ -156,6 +162,7 @@ public class ShowSystem extends Node
 		w_desc = new Vector();
 
 		w_desc.add("ID");
+		w_desc.add("TYPE");
 		w_desc.add("NAME");
 
 		w_desc.add("STATE");
@@ -166,6 +173,9 @@ public class ShowSystem extends Node
 
 		add_worker(sysEnv, w_container);
 		data.add(w_container);
+
+		if (withLocks)
+			data.add(LockingSystemSynchronized.strDump().toString());
 
 		listObjects(sysEnv);
 
@@ -181,7 +191,7 @@ public class ShowSystem extends Node
 	{
 		Vector data;
 		ThreadGroup wg = SystemEnvironment.wg;
-		WorkerThread[] wt = new WorkerThread[SystemEnvironment.maxWorker + 1];
+		WorkerThread[] wt = new WorkerThread[SystemEnvironment.maxWorker + SystemEnvironment.maxWriter];
 
 		if(wt != null) {
 			wg.enumerate(wt);
@@ -190,6 +200,7 @@ public class ShowSystem extends Node
 					if(wt[i].isAlive()) {
 						data = new Vector();
 						data.add(new Integer(wt[i].id()));
+						data.add(i < SystemEnvironment.maxWriter ? "RW" : "RO");
 						data.add(wt[i].getName());
 						data.add(wt[i].getWorkerState());
 						data.add(wt[i].getWorkerStateTS(sysEnv));

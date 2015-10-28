@@ -78,7 +78,7 @@ public class ShowExitStatusDef extends ShowCommented
 
 		data.add(esdId);
 		data.add(esd.getName(sysEnv));
-		data.add(getCommentDescription(sysEnv, esdId));
+		data.add(getCommentContainer(sysEnv, esdId));
 		data.add(getCommentInfoType(sysEnv, esdId));
 
 		final Date d = new Date();

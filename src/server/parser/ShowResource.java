@@ -347,7 +347,7 @@ public class ShowResource extends ShowCommented
 		} else {
 			v.add(null);
 		}
-		v.add(getCommentDescription(sysEnv, id));
+		v.add(getCommentContainer(sysEnv, id));
 		v.add(getCommentInfoType(sysEnv, id));
 		v.add(getTag(sysEnv, r, rt));
 		Long rsdId = getRsdId(sysEnv, r, rt);

@@ -116,6 +116,8 @@ public class ShowTrigger extends ShowCommented
 
 		desc.add("MASTER");
 
+		desc.add("IS_INVERSE");
+
 		desc.add("SUBMIT_OWNER");
 
 		desc.add("IS_CREATE");
@@ -137,6 +139,8 @@ public class ShowTrigger extends ShowCommented
 		desc.add("RESUME_BASE");
 
 		desc.add("WARN");
+
+		desc.add("LIMIT_STATE");
 
 		desc.add("CONDITION");
 
@@ -214,6 +218,7 @@ public class ShowTrigger extends ShowCommented
 
 		data.add(t.getTypeAsString(sysEnv));
 		data.add(t.getIsMaster(sysEnv));
+		data.add(t.getIsInverse(sysEnv));
 
 		if (t.getIsMaster(sysEnv).booleanValue()) {
 			final Long submitOwnerId = t.getSubmitOwnerId (sysEnv);
@@ -232,10 +237,17 @@ public class ShowTrigger extends ShowCommented
 		data.add(t.getResumeIn(sysEnv));
 		data.add(t.getResumeBaseAsString(sysEnv));
 		data.add(t.getIsWarnOnLimit(sysEnv));
+		Long limitState = t.getLimitState(sysEnv);
+		if (limitState == null) {
+			data.add(null);
+		} else {
+			SDMSExitStateDefinition lsEsd = SDMSExitStateDefinitionTable.getObject(sysEnv, limitState);
+			data.add(lsEsd.getName(sysEnv));
+		}
 		data.add(t.getCondition(sysEnv));
 		data.add(t.getCheckAmount(sysEnv));
 		data.add(t.getCheckBaseAsString(sysEnv));
-		data.add(getCommentDescription(sysEnv, tId));
+		data.add(getCommentContainer(sysEnv, tId));
 		data.add(getCommentInfoType(sysEnv, tId));
 		try {
 			data.add(SDMSUserTable.getObject(sysEnv, t.getCreatorUId(sysEnv)).getName(sysEnv));

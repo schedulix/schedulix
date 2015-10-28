@@ -115,7 +115,7 @@ public class ShowFolder extends ShowCommented
 			v.add(null);
 		}
 		v.add(new SDMSPrivilege(sysEnv, f.getInheritPrivs(sysEnv).longValue()).toString());
-		v.add(getCommentDescription(sysEnv, id));
+		v.add(getCommentContainer(sysEnv, id));
 		v.add(getCommentInfoType(sysEnv, id));
 
 		final Date d = new Date();
@@ -311,7 +311,7 @@ public class ShowFolder extends ShowCommented
 		} else {
 			data.add(SystemEnvironment.nullString);
 		}
-		data.add(getCommentDescription(sysEnv, seId));
+		data.add(getCommentContainer(sysEnv, seId));
 		data.add(getCommentInfoType(sysEnv, seId));
 		data.add(se.getPrivileges(sysEnv).toString());
 
@@ -383,6 +383,8 @@ public class ShowFolder extends ShowCommented
 
 		c_desc.add("IS_STATIC");
 
+		c_desc.add("IS_DISABLED");
+
 		c_desc.add("PRIORITY");
 
 		c_desc.add("SUSPEND");
@@ -421,6 +423,7 @@ public class ShowFolder extends ShowCommented
 			c_data.add(cse.getPrivileges(sysEnv).toString());
 			c_data.add(sh.getAliasName(sysEnv));
 			c_data.add(sh.getIsStatic(sysEnv));
+			c_data.add(sh.getIsDisabled(sysEnv));
 			c_data.add(sh.getPriority(sysEnv));
 			c_data.add(sh.getSuspendAsString(sysEnv));
 			c_data.add(sh.getResumeAt(sysEnv));

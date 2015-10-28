@@ -192,7 +192,7 @@ public class ShowInterval
 		data.add(sysEnv.systemDateFormat.format(d));
 		data.add(ival.getPrivileges(sysEnv).toString());
 
-		data.add(getCommentDescription(sysEnv, ivalId));
+		data.add(getCommentContainer(sysEnv, ivalId));
 		data.add(getCommentInfoType(sysEnv, ivalId));
 
 		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "Interval", desc, data);

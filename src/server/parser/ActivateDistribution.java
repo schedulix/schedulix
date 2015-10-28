@@ -31,6 +31,7 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
+import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;

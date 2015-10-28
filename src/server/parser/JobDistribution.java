@@ -31,7 +31,9 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
+import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
+import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
@@ -77,6 +79,7 @@ public abstract class JobDistribution extends Node
 		desc.add(RepoIface.STARTJOB_ARGS);
 		desc.add(RepoIface.STARTJOB_ENV);
 		desc.add(RepoIface.STARTJOB_RUN);
+		desc.add(RepoIface.STARTJOB_JOBENV);
 
 		actVersion = sme.getSeVersion(sysEnv).longValue();
 
@@ -198,6 +201,7 @@ public abstract class JobDistribution extends Node
 
 		fillEnvironment(sysEnv, sme, data);
 
+		((SDMSThread)Thread.currentThread()).readLock = ObjectLock.EXCLUSIVE;
 		Vector jsv = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, smeId);
 		for(int i = 0; i < jsv.size(); i++) {
 			rq = (SDMSRunnableQueue) jsv.get(i);
@@ -207,8 +211,23 @@ public abstract class JobDistribution extends Node
 			}
 			rq.delete(sysEnv);
 		}
+		((SDMSThread)Thread.currentThread()).readLock = ObjectLock.SHARED;
 
 		data.add(sme.getRerunSeq(sysEnv));
+
+		Vector jobenv = new Vector();
+		Vector jpv = SDMSParameterDefinitionTable.idx_seId.getVector(sysEnv, se.getId(sysEnv));
+		Iterator jpi = jpv.iterator();
+		while(jpi.hasNext()) {
+			SDMSParameterDefinition pd = (SDMSParameterDefinition)jpi.next();
+
+			String exportName = pd.getExportName(sysEnv);
+			if (exportName != null) {
+				jobenv.add(exportName);
+				jobenv.add(sme.getVariableValue(sysEnv, pd.getName(sysEnv), false, ParseStr.S_DEFAULT));
+			}
+		}
+		data.add(jobenv);
 
 		try {
 			int exitcode = Integer.parseInt(cmd);

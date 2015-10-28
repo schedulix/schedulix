@@ -248,7 +248,7 @@ public class ShowScheduledEvent
 			data.add(empty);
 			data.add(empty);
 		}
-		data.add(getCommentDescription(sysEnv, scevId));
+		data.add(getCommentContainer(sysEnv, scevId));
 		data.add(getCommentInfoType(sysEnv, scevId));
 		data.add(renderCalendar(sysEnv, scevId, sce));
 

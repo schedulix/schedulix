@@ -54,6 +54,7 @@ public class ShowUser extends ShowCommented
 	private final static String FPR = "footprint";
 	private final static String ENV = "environment";
 	private final static String SYS = "system";
+	private final static String NP  = "nice profile";
 	private final static String SEL = "select";
 
 	private String name;
@@ -71,7 +72,9 @@ public class ShowUser extends ShowCommented
 	{
 		SDMSUser u;
 		SDMSOutputContainer d_container = null;
+		SDMSOutputContainer c_container = null;
 		Vector desc = new Vector();
+		Vector c_desc = new Vector();
 		Long sip;
 		Date d = new Date();
 
@@ -90,8 +93,6 @@ public class ShowUser extends ShowCommented
 		desc.add("IS_ENABLED");
 
 		desc.add("DEFAULT_GROUP");
-		desc.add("COMMENT");
-		desc.add("COMMENTTYPE");
 		desc.add("CREATOR");
 		desc.add("CREATE_TIME");
 		desc.add("CHANGER");
@@ -101,6 +102,11 @@ public class ShowUser extends ShowCommented
 		desc.add("MANAGE_PRIVS");
 
 		desc.add("GROUPS");
+		desc.add("COMMENTTYPE");
+		desc.add("COMMENT");
+
+		c_desc.add("TAG");
+		c_desc.add("COMMENT");
 
 		Vector data = new Vector();
 
@@ -109,8 +115,6 @@ public class ShowUser extends ShowCommented
 
 		data.add(u.getIsEnabled(sysEnv));
 		data.add(SDMSGroupTable.getObject(sysEnv, u.getDefaultGId(sysEnv)).getName(sysEnv));
-		data.add(getCommentDescription(sysEnv, uId));
-		data.add(getCommentInfoType(sysEnv, uId));
 		try {
 			data.add(SDMSUserTable.getObject(sysEnv, u.getCreatorUId(sysEnv)).getName(sysEnv));
 		} catch (NotFoundException nfe) {
@@ -128,6 +132,9 @@ public class ShowUser extends ShowCommented
 		data.add(u.getPrivileges(sysEnv).toString());
 		data.add(getManageList(sysEnv, uId));
 		data.add(getGroupList(sysEnv, uId));
+
+		data.add(getCommentInfoType(sysEnv, uId));
+		data.add(getCommentContainer(sysEnv, uId));
 
 		d_container = new SDMSOutputContainer(sysEnv, "User", desc, data);
 
@@ -248,6 +255,11 @@ public class ShowUser extends ShowCommented
 			}
 			if ((SDMSPrivilege.MANAGE_SYS & pr) ==  SDMSPrivilege.MANAGE_SYS) {
 				v.add(SYS);
+				dc.addData(sysEnv, v);
+				v = new Vector();
+			}
+			if ((SDMSPrivilege.MANAGE_NP & pr) ==  SDMSPrivilege.MANAGE_NP) {
+				v.add(NP);
 				dc.addData(sysEnv, v);
 				v = new Vector();
 			}

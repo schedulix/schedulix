@@ -315,6 +315,7 @@ public class ListSubmitted extends Node
 		v.add(null);
 		v.add(state);
 		v.add(Boolean.FALSE);
+		v.add(Boolean.FALSE);
 		v.add(null);
 		v.add(null);
 		v.add(Boolean.FALSE);
@@ -435,6 +436,7 @@ public class ListSubmitted extends Node
 		Integer child_suspended;
 		String child_tag;
 		Boolean isReplaced;
+		Boolean isDisabled;
 		Boolean isCancelled;
 		Integer warnCount;
 		Integer pendingCount;
@@ -491,6 +493,7 @@ public class ListSubmitted extends Node
 		pid = job.getPid(sysEnv);
 		extPid = job.getExtPid(sysEnv);
 		state = job.getStateAsString(sysEnv);
+		isDisabled = job.getIsDisabled(sysEnv);
 		isCancelled = job.getIsCancelled(sysEnv);
 		if (isCancelled == null)
 			if (job.getState(sysEnv).intValue() == SDMSSubmittedEntity.CANCELLED)
@@ -638,6 +641,7 @@ public class ListSubmitted extends Node
 			v.add(pid);
 			v.add(extPid);
 			v.add(state);
+			v.add(isDisabled);
 			v.add(isCancelled);
 			v.add(jobExitState);
 			v.add(exitState);
@@ -765,10 +769,10 @@ public class ListSubmitted extends Node
 		Iterator i = dataset.iterator();
 		while(i.hasNext()) {
 			Vector v = (Vector) i.next();
-			Long st = (Long) v.get(36);
+			Long st = (Long) v.get(37);
 			if(st != null) {
 				d.setTime(st.longValue());
-				v.set(36, sysEnv.systemDateFormat.format(d));
+				v.set(37, sysEnv.systemDateFormat.format(d));
 			}
 		}
 		return;
@@ -883,6 +887,8 @@ public class ListSubmitted extends Node
 		desc.add("EXTPID");
 
 		desc.add("STATE");
+
+		desc.add("IS_DISABLED");
 
 		desc.add("IS_CANCELLED");
 

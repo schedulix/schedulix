@@ -47,6 +47,7 @@ public abstract class ManipTrigger extends Node
 	protected Long parentSeId;
 	protected Boolean active;
 	protected Integer action;
+	protected Boolean isInverse;
 	protected int iaction;
 	protected Integer triggertype;
 	protected Boolean isMaster;
@@ -60,6 +61,7 @@ public abstract class ManipTrigger extends Node
 	protected Integer resumeIn = null;
 	protected Integer resumeBase = null;
 	protected Boolean isWarnOnLimit;
+	protected Long limitState;
 	protected Integer maxRetry;
 	protected Vector rscstate;
 	protected Vector state;
@@ -86,19 +88,35 @@ public abstract class ManipTrigger extends Node
 		}
 	}
 
-	protected void checkUniqueness(SystemEnvironment sysEnv, Long seId)
+	protected void checkUniqueness(SystemEnvironment sysEnv, String name, Long fireId, Long seId, Boolean isInverse)
 		throws SDMSException
 	{
 		Vector tv = SDMSTriggerTable.idx_fireId.getVector(sysEnv, seId);
+		SDMSTrigger t;
 		int cnt = 0;
 
 		for (int i = 0; i < tv.size(); ++i) {
-			SDMSTrigger t = (SDMSTrigger) tv.get(i);
+			t = (SDMSTrigger) tv.get(i);
 			if (t.getAction(sysEnv).intValue() == SDMSTrigger.RERUN) ++cnt;
 		}
 
 		if (cnt > 1)
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03108111353", "Only one rerun trigger per job allowed"));
+
+		if (isInverse.booleanValue()) {
+			tv = SDMSTriggerTable.idx_seId_name.getVector(sysEnv, new SDMSKey(seId, name));
+		} else {
+			tv = SDMSTriggerTable.idx_fireId_name.getVector(sysEnv, new SDMSKey(fireId, name));
+		}
+		cnt = 0;
+		for (int i = 0; i < tv.size(); ++i) {
+			t = (SDMSTrigger) tv.get(i);
+			if (t.getIsInverse(sysEnv).equals(isInverse)) {
+				cnt++;
+			}
+		}
+		if (cnt > 1)
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03506261701", "Duplicate nameis are not allowed"));
 	}
 
 	public abstract void go(SystemEnvironment sysEnv)
