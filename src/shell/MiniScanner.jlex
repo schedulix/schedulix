@@ -165,7 +165,7 @@ private void endInclude()
 lcomment1 =	"//".*
 lcomment2 =	"--".*
 lcomment =	{lcomment1}|{lcomment2}
-nl =		[\n\r]*
+nl =		[\n\r]+
 ws =		[ \t\b\015]+
 disconnect1 =	[Dd][Ii][Ss][Cc][Oo][Nn][Nn][Ee][Cc][Tt]
 disconnect2 =	[Ee][Xx][Ii][Tt]
@@ -187,7 +187,7 @@ multicommand =	[Mm][Uu][Ll][Tt][Ii][Cc][Oo][Mm][Mm][Aa][Nn][Dd]
 prompt =	[Pp][Rr][Oo][Mm][Pp][Tt]
 rollback =	[Rr][Oo][Ll][Ll][Bb][Aa][Cc][Kk]
 shell =		"!"
-uscore =	(_|[ \n\t\r]*)
+uscore =	(_|[ \n\t\r]+)
 number =	[0-9]
 bs_quote =	\\'
 no_bs_quote =	[^\\']
@@ -209,7 +209,7 @@ echooff =	{echo}{uscore}{off}
 <YYINITIAL>"/*"			{ if(inStatement) addVal();		yybegin(COMMENT); 	break;		}
 <YYINITIAL>'			{ addVal("'");				yybegin(STRING); 	break;		}
 <YYINITIAL>[-/]			{ addVal();		inStatement = true;			break;		}
-<YYINITIAL>[^-/;!'a-zA-Z0-9() \t]*	{ addVal();		inStatement = true;			break;		}
+<YYINITIAL>[^-/;!'a-zA-Z0-9() \t]+	{ addVal();		inStatement = true;			break;		}
 <YYINITIAL>"("			{ addVal();		brctr++;				break;		}
 <YYINITIAL>")"			{ addVal();		brctr--;				break;		}
 <YYINITIAL>;			{ // System.out.print("STATEMENT ");
@@ -296,13 +296,13 @@ echooff =	{echo}{uscore}{off}
 					return MiniParser.INTEGER;
 				  }
 				  addVal();							break;		}
-<YYINITIAL>[a-zA-Z]*		{ addVal();		inStatement = true;			break;		}
+<YYINITIAL>[a-zA-Z]+		{ addVal();		inStatement = true;			break;		}
 
 <COMMENT>"*/"			{ if(inStatement) addVal();		 yybegin(YYINITIAL);	break;		}
-<COMMENT>[^*]*			{ if(inStatement) addVal();					break;		}
+<COMMENT>[^*]+			{ if(inStatement) addVal();					break;		}
 <COMMENT>\*			{ if(inStatement) addVal();					break;		}
 
-<STRING>{no_bs_quote}*		{ addVal();		break;		}
+<STRING>{no_bs_quote}+		{ addVal();		break;		}
 <STRING>\\			{ addVal();		break;		}
 <STRING>{bs_quote}		{ addVal("\\'");	break;		}
 <STRING>\\\\			{ addVal("\\\\");	break;		}
@@ -316,7 +316,7 @@ echooff =	{echo}{uscore}{off}
 				  return MiniParser.INVALIDFILE;
 				}
 
-<FSSTR>{no_bs_quote}*		{ addVal();							break;		}
+<FSSTR>{no_bs_quote}+		{ addVal();							break;		}
 <FSSTR>\\			{ addVal();							break;		}
 <FSSTR>{bs_quote}		{ addVal("\\'");						break;		}
 <FSSTR>\\\\			{ addVal("\\\\");						break;		}
@@ -346,10 +346,12 @@ echooff =	{echo}{uscore}{off}
 				  value = new String("");
 				  break;
 				}
-<SHELL>.*			{ addVal(); break; }
+<SHELL>.+			{ addVal(); break; }
 <SHELL>[\n\r]			{ yybegin(YYINITIAL);
 				  // System.out.println("SHELLCMD ");
 				  return MiniParser.SHELLCMD;
 				}
 
-<<EOF>>				{ if(yymoreStreams()) { endInclude(); yypopStream(); } else return YYEOF; break;	}
+<<EOF>>				{ if(yymoreStreams()) { endInclude(); yypopStream(); } else return YYEOF;
+				  /* break; not necessary here because of fallthrough of default rule that ends the switch */
+				}

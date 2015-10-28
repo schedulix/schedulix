@@ -116,6 +116,8 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("EXISTING",		new Integer(Parser.EXISTING));
 	tokens.put("EXPAND",		new Integer(Parser.EXPAND));
 	tokens.put("EXPIRED",		new Integer(Parser.EXPIRED));
+	tokens.put("EXPORT",		new Integer(Parser.EXPORT));
+	tokens.put("EXPR",		new Integer(Parser.EXPR));
 	tokens.put("FACTOR",		new Integer(Parser.FACTOR));
 	tokens.put("FAILURE",		new Integer(Parser.FAILURE));
 	tokens.put("FATAL",		new Integer(Parser.FATAL));
@@ -171,11 +173,13 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("LEVEL",		new Integer(Parser.LEVEL));
 	tokens.put("LIBERAL",		new Integer(Parser.LIBERAL));
 	tokens.put("LIKE",		new Integer(Parser.LIKE));
-	tokens.put("LIMITS",		new Integer(Parser.LIMITS));
+	tokens.put("LIMIT",		new Integer(Parser.LIMIT));
 	tokens.put("LINE",		new Integer(Parser.LINE));
 	tokens.put("LINK",		new Integer(Parser.LINK));
 	tokens.put("LIST",		new Integer(Parser.LIST));
 	tokens.put("LOCAL",		new Integer(Parser.LOCAL));
+	tokens.put("LOCK",		new Integer(Parser.LOCK));
+	tokens.put("LOCKS",		new Integer(Parser.LOCK));
 	tokens.put("LOCKMODE",		new Integer(Parser.LOCKMODE));
 	tokens.put("LOGFILE",		new Integer(Parser.LOGFILE));
 	tokens.put("LOOPS",		new Integer(Parser.LOOPS));
@@ -725,10 +729,10 @@ until_finished =	{until}{uscore}{finished}
 <STRING>\\\'				{ value = ((String) value) + "'"; break; }
 <STRING>\\\\				{ value = ((String) value) + "\\"; break; }
 <STRING>\\				{ value = ((String) value) + "\\"; break; }
-<STRING>[^\\\'\0]*			{ value = ((String) value) + new String(yytext()); break; }
+<STRING>[^\\\'\0]+			{ value = ((String) value) + new String(yytext()); break; }
 <STRING>{nulbyte}			{ tell_input(); value = ""; yybegin(YYINITIAL); t = new Token(Parser.FORCED_EOC, (String) value); return Parser.FORCED_EOC; }
 <COMMENT>"*/"				{ yybegin(YYINITIAL); break; }
-<COMMENT>[^*\0]*			{ /* do nothing */ break; }
+<COMMENT>[^*\0]+			{ /* do nothing */ break; }
 <COMMENT>\*				{ /* do nothing */ break; }
 <COMMENT>{nulbyte}			{ tell_input(); value = ""; yybegin(YYINITIAL); t = new Token(Parser.FORCED_EOC, (String) value); return Parser.FORCED_EOC; }
 <SELECT>{ws}				{ proto_input(yytext()); sel_stmt.append(yytext()); break; }
@@ -762,6 +766,6 @@ until_finished =	{until}{uscore}{finished}
 <SELECT>{nulbyte}			{ tell_input(); value = ""; yybegin(YYINITIAL); t = new Token(Parser.FORCED_EOC, (String) value); return Parser.FORCED_EOC; }
 
 <SELECTSTR>\'				{ proto_input(yytext()); sel_stmt.append(yytext()); yybegin(SELECT); break; }
-<SELECTSTR>[^']*			{ proto_input(yytext()); sel_stmt.append(yytext()); break; }
+<SELECTSTR>[^']+			{ proto_input(yytext()); sel_stmt.append(yytext()); break; }
 
 
