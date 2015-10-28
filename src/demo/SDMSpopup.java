@@ -111,8 +111,11 @@ public class SDMSpopup
 
 		argv_column.pack();
 
-		data = new GridData(GridData.FILL_BOTH);
+		data = new GridData(SWT.FILL, SWT.FILL, true, true);
 		table.setLayoutData(data);
+		table.pack();
+		data.widthHint = table.getBounds().width;
+		data.heightHint = table.getBounds().height;
 
 		Composite bottom = new Composite(shell, SWT.NONE);
 		data = new GridData(GridData.FILL_HORIZONTAL);
