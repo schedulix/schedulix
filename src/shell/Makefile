@@ -44,9 +44,20 @@ syntax:
 	$(JAY) MiniParser.jay < /dev/null
 
 MiniScanner.java:       MiniScanner.jlex MiniParser.java
-	$(JLEX) -d /tmp -skel skeleton.nested MiniScanner.jlex
+	$(JLEX) -d /tmp -skel $(JFLEXSKELETON) MiniScanner.jlex
 	$(SED) -e 's/zzCMapL\[zzInput\]/(((zzInput >= 0) \&\& (zzInput < zzCMapL.length)) ? zzCMapL\[zzInput\] : 0)/' /tmp/$@ >$@
 	rm -f /tmp/$@
 
 include $(SDMSHOME)/src/Makefile.CommonRules
 
+ifneq ($(shell $(JLEX) -version | grep "1.7"),)
+	JFLEXSKELETON = skeleton.nested.1.7
+else
+	ifneq ($(shell $(JLEX) -version | grep "1.6.1"),)
+		JFLEXSKELETON = skeleton.nested.1.6.1
+	else
+		JFLEXSKELETON = skeleton.nested
+	endif
+endif
+
+#
