@@ -52,6 +52,7 @@ public class SDMSSchedulingHierarchyTable extends SDMSSchedulingHierarchyTableGe
 	                                      ,Long p_seChildId
 	                                      ,String p_aliasName
 	                                      ,Boolean p_isStatic
+	                                      ,Boolean p_isDisabled
 	                                      ,Integer p_priority
 	                                      ,Integer p_suspend
 	                                      ,String p_resumeAt
@@ -64,7 +65,7 @@ public class SDMSSchedulingHierarchyTable extends SDMSSchedulingHierarchyTableGe
 	{
 		SDMSSchedulingHierarchy p = super.create(
 		                                    env ,p_seParentId, p_seChildId, p_aliasName,
-		                                    p_isStatic, p_priority, p_suspend,
+		                                    p_isStatic, p_isDisabled, p_priority, p_suspend,
 		                                    p_resumeAt, p_resumeIn, p_resumeBase,
 		                                    p_mergeMode, p_estpId
 		                            );

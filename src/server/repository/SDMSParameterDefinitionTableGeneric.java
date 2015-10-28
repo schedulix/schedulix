@@ -51,6 +51,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		, "DEFAULTVALUE"
 		, "IS_LOCAL"
 		, "LINK_PD_ID"
+		, "EXPORT_NAME"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
 		, "CHANGER_U_ID"
@@ -71,9 +72,9 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		table = (SDMSParameterDefinitionTable) this;
 		SDMSParameterDefinitionTableGeneric.table = (SDMSParameterDefinitionTable) this;
 		isVersioned = true;
-		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_linkPdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_seId_Name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seId");
+		idx_linkPdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "linkPdId");
+		idx_seId_Name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "seId_Name");
 	}
 	public SDMSParameterDefinition create(SystemEnvironment env
 	                                      ,Long p_seId
@@ -83,6 +84,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 	                                      ,String p_defaultValue
 	                                      ,Boolean p_isLocal
 	                                      ,Long p_linkPdId
+	                                      ,String p_exportName
 	                                     )
 	throws SDMSException
 	{
@@ -103,6 +105,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		         , p_defaultValue
 		         , p_isLocal
 		         , p_linkPdId
+		         , p_exportName
 		         , p_creatorUId
 		         , p_createTs
 		         , p_changerUId
@@ -118,6 +121,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		                , p_defaultValue
 		                , p_isLocal
 		                , p_linkPdId
+		                , p_exportName
 		                , p_creatorUId
 		                , p_createTs
 		                , p_changerUId
@@ -163,6 +167,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 	                        ,String p_defaultValue
 	                        ,Boolean p_isLocal
 	                        ,Long p_linkPdId
+	                        ,String p_exportName
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
 	                        ,Long p_changerUId
@@ -190,6 +195,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		String defaultValue;
 		Boolean isLocal;
 		Long linkPdId;
+		String exportName;
 		Long creatorUId;
 		Long createTs;
 		Long changerUId;
@@ -208,12 +214,14 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 			isLocal = new Boolean ((r.getInt(7) == 0 ? false : true));
 			linkPdId = new Long (r.getLong(8));
 			if (r.wasNull()) linkPdId = null;
-			creatorUId = new Long (r.getLong(9));
-			createTs = new Long (r.getLong(10));
-			changerUId = new Long (r.getLong(11));
-			changeTs = new Long (r.getLong(12));
-			validFrom = r.getLong(13);
-			validTo = r.getLong(14);
+			exportName = r.getString(9);
+			if (r.wasNull()) exportName = null;
+			creatorUId = new Long (r.getLong(10));
+			createTs = new Long (r.getLong(11));
+			changerUId = new Long (r.getLong(12));
+			changeTs = new Long (r.getLong(13));
+			validFrom = r.getLong(14);
+			validTo = r.getLong(15);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 
@@ -228,6 +236,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		                defaultValue,
 		                isLocal,
 		                linkPdId,
+		                exportName,
 		                creatorUId,
 		                createTs,
 		                changerUId,
@@ -241,18 +250,9 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -264,6 +264,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		                                   ", " + squote + "DEFAULTVALUE" + equote +
 		                                   ", " + squote + "IS_LOCAL" + equote +
 		                                   ", " + squote + "LINK_PD_ID" + equote +
+		                                   ", " + squote + "EXPORT_NAME" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
@@ -282,16 +283,40 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_seId.put(env, ((SDMSParameterDefinitionGeneric) o).seId, o);
-		idx_linkPdId.put(env, ((SDMSParameterDefinitionGeneric) o).linkPdId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_seId.check(((SDMSParameterDefinitionGeneric) o).seId, o);
+		out = out + "idx_seId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_linkPdId.check(((SDMSParameterDefinitionGeneric) o).linkPdId, o);
+		out = out + "idx_linkPdId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSParameterDefinitionGeneric) o).seId);
 		k.add(((SDMSParameterDefinitionGeneric) o).name);
-		idx_seId_Name.put(env, k, o);
+		ok =  idx_seId_Name.check(k, o);
+		out = out + "idx_seId_Name: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_seId.put(env, ((SDMSParameterDefinitionGeneric) o).seId, o, ((1 & indexMember) != 0));
+		idx_linkPdId.put(env, ((SDMSParameterDefinitionGeneric) o).linkPdId, o, ((2 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSParameterDefinitionGeneric) o).seId);
+		k.add(((SDMSParameterDefinitionGeneric) o).name);
+		idx_seId_Name.put(env, k, o, ((4 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

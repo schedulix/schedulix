@@ -65,7 +65,7 @@ public class SDMSnpSrvrSRFootprintTableGeneric extends SDMSTable
 		table = (SDMSnpSrvrSRFootprintTable) this;
 		SDMSnpSrvrSRFootprintTableGeneric.table = (SDMSnpSrvrSRFootprintTable) this;
 		isVersioned = false;
-		idx_sId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_sId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "sId");
 	}
 	public SDMSnpSrvrSRFootprint create(SystemEnvironment env
 	                                    ,Long p_sId
@@ -157,10 +157,26 @@ public class SDMSnpSrvrSRFootprintTableGeneric extends SDMSTable
 
 	}
 
+	public String checkIndex(SDMSObject o)
+	throws SDMSException
+	{
+		String out = "";
+		boolean ok;
+		ok =  idx_sId.check(((SDMSnpSrvrSRFootprintGeneric) o).sId, o);
+		out = out + "idx_sId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
 	protected void index(SystemEnvironment env, SDMSObject o)
 	throws SDMSException
 	{
-		idx_sId.put(env, ((SDMSnpSrvrSRFootprintGeneric) o).sId, o);
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_sId.put(env, ((SDMSnpSrvrSRFootprintGeneric) o).sId, o, ((1 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

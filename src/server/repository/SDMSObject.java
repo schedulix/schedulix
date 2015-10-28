@@ -33,6 +33,7 @@ import java.sql.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.locking.*;
 
 public abstract class SDMSObject implements Cloneable, Comparable
 {
@@ -42,7 +43,7 @@ public abstract class SDMSObject implements Cloneable, Comparable
 
 	protected        long         validTo;
 
-	protected        SDMSVersions versions;
+	public        SDMSVersions versions;
 
 	protected        Long         id;
 
@@ -77,7 +78,8 @@ public abstract class SDMSObject implements Cloneable, Comparable
 		validFrom = -1;
 		validTo = -1;
 		versions = new SDMSVersions(table, id);
-		versions.lockExclusive(env);
+		if (env.maxWriter > 1)
+			LockingSystem.lock(versions, ObjectLock.EXCLUSIVE);
 		versions.tx = env.tx;
 		subTxId = env.tx.subTxId;
 		versions.o_v = new LinkedList();
@@ -233,6 +235,11 @@ public abstract class SDMSObject implements Cloneable, Comparable
 
 	public abstract void print();
 	public abstract String toString(int indent);
+
+	public String toShortString()
+	{
+		return "SDMSObject(" + versions.table.tableName() + ", " + id + ")";
+	}
 
 	public void dumpVersions()
 	{

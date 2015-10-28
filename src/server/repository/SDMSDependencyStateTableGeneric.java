@@ -66,8 +66,8 @@ public class SDMSDependencyStateTableGeneric extends SDMSTable
 		table = (SDMSDependencyStateTable) this;
 		SDMSDependencyStateTableGeneric.table = (SDMSDependencyStateTable) this;
 		isVersioned = true;
-		idx_ddId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_ddId_esdId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_ddId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "ddId");
+		idx_ddId_esdId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "ddId_esdId");
 	}
 	public SDMSDependencyState create(SystemEnvironment env
 	                                  ,Long p_ddId
@@ -200,18 +200,9 @@ public class SDMSDependencyStateTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -237,15 +228,37 @@ public class SDMSDependencyStateTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_ddId.put(env, ((SDMSDependencyStateGeneric) o).ddId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_ddId.check(((SDMSDependencyStateGeneric) o).ddId, o);
+		out = out + "idx_ddId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSDependencyStateGeneric) o).ddId);
 		k.add(((SDMSDependencyStateGeneric) o).esdId);
-		idx_ddId_esdId.put(env, k, o);
+		ok =  idx_ddId_esdId.check(k, o);
+		out = out + "idx_ddId_esdId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_ddId.put(env, ((SDMSDependencyStateGeneric) o).ddId, o, ((1 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSDependencyStateGeneric) o).ddId);
+		k.add(((SDMSDependencyStateGeneric) o).esdId);
+		idx_ddId_esdId.put(env, k, o, ((2 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

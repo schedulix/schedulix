@@ -36,10 +36,10 @@ import java.sql.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.locking.*;
 
 public class SDMSTransaction
 {
-
 	public final static String __version = "@(#) $Id: SDMSTransaction.java,v 2.12.2.1 2013/03/14 10:25:26 ronald Exp $";
 
 	public static final int READONLY  = 0x01;
@@ -48,6 +48,8 @@ public class SDMSTransaction
 	protected static final int UNDEFINED = -1;
 
 	private static TxCounter nextId = null;
+
+	private static final Object commitLock = new Object();
 
 	public int subTxId = 0;
 
@@ -65,6 +67,11 @@ public class SDMSTransaction
 	private   ChangeList changeList;
 	private   HashSet touchList;
 
+	public HashMap rscCache = null;
+	public HashMap envJSMap = null;
+
+	public boolean traceSubTx = false;
+
 	public SDMSTransaction(SystemEnvironment env, int m, Long version)
 		throws SDMSException
 	{
@@ -78,9 +85,8 @@ public class SDMSTransaction
 		if(m == READONLY) {
 			versionId = (version == null ? txId : version.longValue());
 			env.roTxList.add(env, versionId);
-		} else {
+		} else
 			versionId = UNDEFINED;
-		}
 		startTime = System.currentTimeMillis();
 	}
 
@@ -88,6 +94,7 @@ public class SDMSTransaction
 	{
 		return nextId.next(env, READWRITE);
 	}
+
 	public static long getRoVersion(SystemEnvironment env) throws SDMSException
 	{
 		return nextId.next(env, READONLY);
@@ -133,8 +140,8 @@ public class SDMSTransaction
 		} else {
 
 			synchronized(env.roTxList) {
-				env.roTxList.remove(env, versionId);
 				env.roTxList.add(env, version);
+				env.roTxList.remove(env, versionId);
 				versionId = version;
 			}
 		}
@@ -143,6 +150,8 @@ public class SDMSTransaction
 	public void commitOrRollback(SystemEnvironment env, boolean isCommit)
 		throws SQLException, SDMSException
 	{
+		if (traceSubTx)
+			SDMSThread.doTrace(null, "Commiting or rolling back Transaction", SDMSThread.SEVERITY_ERROR);
 		if (isCommit) {
 
 			if(subTxId != 0) {
@@ -175,8 +184,11 @@ public class SDMSTransaction
 		if (mode == READONLY || changeList == null) {
 
 			env.roTxList.remove(env, versionId);
-			if(mode != READONLY) nextId.releaseVersion(env);
+			if(mode != READONLY)
+				nextId.releaseVersion(env);
 			endTime = System.currentTimeMillis();
+			if (mode == READWRITE)
+				LockingSystem.release();
 			return;
 		}
 
@@ -188,28 +200,51 @@ public class SDMSTransaction
 		int maxElms = changeList.size();
 		SDMSChangeListElement ce;
 
+		int lockmode = ObjectLock.SHARED;
 		if (isCommit) {
-			SystemEnvironment.ticketThread.renewTicket(env);
+			boolean again = true;
+			while (again) {
+				again = false;
+				LockingSystem.lock(commitLock, lockmode);
+				try {
+					for(i = 0; i < maxElms; i++) {
+						ce = changeList.get(i);
+						ce.versions.flush(env, ce.isNew);
+					}
+				} catch (SDMSSQLException sqle) {
+					if (lockmode == ObjectLock.EXCLUSIVE) {
 
-			for(i = 0; i < maxElms; i++) {
-				ce = changeList.get(i);
-				ce.versions.flush(env, ce.isNew);
+						throw sqle;
+					}
+					again = true;
+					lockmode = ObjectLock.EXCLUSIVE;
+
+					env.dbConnection.rollback();
+
+					LockingSystem.release(commitLock);
+
+					continue;
+				}
+
+				SystemEnvironment.ticketThread.renewTicket(env);
+
+				env.dbConnection.commit();
+
+				LockingSystem.release(commitLock);
 			}
 		} else {
 			env.dbConnection.rollback();
 		}
+
 		for(i = 0; i < maxElms; i++) {
 
 			ce = changeList.get(i);
 
 			ce.versions.commitOrRollback(env, versionId, ce.isNew, isCommit);
 
-			ce.versions.unLock(env);
 		}
 		changeList = null;
-		if (isCommit) {
-			env.dbConnection.commit();
-		}
+		LockingSystem.release();
 		nextId.releaseVersion(env);
 		endTime = System.currentTimeMillis();
 	}
@@ -220,6 +255,8 @@ public class SDMSTransaction
 		ctrStack.push(smeCtr);
 		clStack.push(touchList);
 		touchList = null;
+		if (traceSubTx)
+			SDMSThread.doTrace(null, "Starting subtransaction", SDMSThread.SEVERITY_ERROR);
 	}
 
 	public void commitSubTransaction(SystemEnvironment env)
@@ -250,6 +287,8 @@ public class SDMSTransaction
 
 		SDMSChangeListElement ce;
 
+		if (traceSubTx)
+			SDMSThread.doTrace(null, "Terminating subtransaction" + (isCommit ? "(commit)" : "(rollback)"), SDMSThread.SEVERITY_ERROR);
 		subTxId --;
 		if (subTxId < 0) {
 			throw new FatalException(new SDMSMessage (env,
@@ -351,6 +390,7 @@ class TxCounter
 	private static final int QUANTUM = 1000;
 	private static long nextId = 0;
 	private static long lastId;
+
 	private static long lastRoId;
 
 	public TxCounter(SystemEnvironment env)
@@ -464,4 +504,3 @@ class ChangeList
 		}
 	}
 }
-

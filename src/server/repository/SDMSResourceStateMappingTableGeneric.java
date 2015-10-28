@@ -70,11 +70,11 @@ public class SDMSResourceStateMappingTableGeneric extends SDMSTable
 		table = (SDMSResourceStateMappingTable) this;
 		SDMSResourceStateMappingTableGeneric.table = (SDMSResourceStateMappingTable) this;
 		isVersioned = true;
-		idx_rsmpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_esdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_fromRsdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_toRsdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_rsmpId__esdId_fromRsdId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_rsmpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "rsmpId");
+		idx_esdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "esdId");
+		idx_fromRsdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "fromRsdId");
+		idx_toRsdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "toRsdId");
+		idx_rsmpId__esdId_fromRsdId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "rsmpId__esdId_fromRsdId");
 	}
 	public SDMSResourceStateMapping create(SystemEnvironment env
 	                                       ,Long p_rsmpId
@@ -214,18 +214,9 @@ public class SDMSResourceStateMappingTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -252,19 +243,48 @@ public class SDMSResourceStateMappingTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_rsmpId.put(env, ((SDMSResourceStateMappingGeneric) o).rsmpId, o);
-		idx_esdId.put(env, ((SDMSResourceStateMappingGeneric) o).esdId, o);
-		idx_fromRsdId.put(env, ((SDMSResourceStateMappingGeneric) o).fromRsdId, o);
-		idx_toRsdId.put(env, ((SDMSResourceStateMappingGeneric) o).toRsdId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_rsmpId.check(((SDMSResourceStateMappingGeneric) o).rsmpId, o);
+		out = out + "idx_rsmpId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_esdId.check(((SDMSResourceStateMappingGeneric) o).esdId, o);
+		out = out + "idx_esdId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_fromRsdId.check(((SDMSResourceStateMappingGeneric) o).fromRsdId, o);
+		out = out + "idx_fromRsdId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_toRsdId.check(((SDMSResourceStateMappingGeneric) o).toRsdId, o);
+		out = out + "idx_toRsdId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSResourceStateMappingGeneric) o).rsmpId);
 		k.add(((SDMSResourceStateMappingGeneric) o).esdId);
 		k.add(((SDMSResourceStateMappingGeneric) o).fromRsdId);
-		idx_rsmpId__esdId_fromRsdId.put(env, k, o);
+		ok =  idx_rsmpId__esdId_fromRsdId.check(k, o);
+		out = out + "idx_rsmpId__esdId_fromRsdId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_rsmpId.put(env, ((SDMSResourceStateMappingGeneric) o).rsmpId, o, ((1 & indexMember) != 0));
+		idx_esdId.put(env, ((SDMSResourceStateMappingGeneric) o).esdId, o, ((2 & indexMember) != 0));
+		idx_fromRsdId.put(env, ((SDMSResourceStateMappingGeneric) o).fromRsdId, o, ((4 & indexMember) != 0));
+		idx_toRsdId.put(env, ((SDMSResourceStateMappingGeneric) o).toRsdId, o, ((8 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSResourceStateMappingGeneric) o).rsmpId);
+		k.add(((SDMSResourceStateMappingGeneric) o).esdId);
+		k.add(((SDMSResourceStateMappingGeneric) o).fromRsdId);
+		idx_rsmpId__esdId_fromRsdId.put(env, k, o, ((16 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

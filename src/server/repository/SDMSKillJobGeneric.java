@@ -92,9 +92,9 @@ public class SDMSKillJobGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSKillJobGeneric(
 	        SystemEnvironment env,
@@ -172,10 +172,10 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (seId);
 	}
 
-	public	SDMSKillJobGeneric setSeId (SystemEnvironment env, Long p_seId)
+	public	void setSeId (SystemEnvironment env, Long p_seId)
 	throws SDMSException
 	{
-		if(seId.equals(p_seId)) return this;
+		if(seId.equals(p_seId)) return;
 		SDMSKillJobGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -188,13 +188,13 @@ public class SDMSKillJobGeneric extends SDMSObject
 			o.seId = p_seId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getSeVersion (SystemEnvironment env)
@@ -203,29 +203,22 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (seVersion);
 	}
 
-	public	SDMSKillJobGeneric setSeVersion (SystemEnvironment env, Long p_seVersion)
+	public	void setSeVersion (SystemEnvironment env, Long p_seVersion)
 	throws SDMSException
 	{
-		if(seVersion.equals(p_seVersion)) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			o.seVersion = p_seVersion;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(seVersion.equals(p_seVersion)) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		o.seVersion = p_seVersion;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getSmeId (SystemEnvironment env)
@@ -234,10 +227,10 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (smeId);
 	}
 
-	public	SDMSKillJobGeneric setSmeId (SystemEnvironment env, Long p_smeId)
+	public	void setSmeId (SystemEnvironment env, Long p_smeId)
 	throws SDMSException
 	{
-		if(smeId.equals(p_smeId)) return this;
+		if(smeId.equals(p_smeId)) return;
 		SDMSKillJobGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -250,13 +243,13 @@ public class SDMSKillJobGeneric extends SDMSObject
 			o.smeId = p_smeId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getScopeId (SystemEnvironment env)
@@ -265,10 +258,10 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (scopeId);
 	}
 
-	public	SDMSKillJobGeneric setScopeId (SystemEnvironment env, Long p_scopeId)
+	public	void setScopeId (SystemEnvironment env, Long p_scopeId)
 	throws SDMSException
 	{
-		if(scopeId.equals(p_scopeId)) return this;
+		if(scopeId.equals(p_scopeId)) return;
 		SDMSKillJobGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -281,13 +274,13 @@ public class SDMSKillJobGeneric extends SDMSObject
 			o.scopeId = p_scopeId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 4);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getState (SystemEnvironment env)
@@ -324,10 +317,10 @@ public class SDMSKillJobGeneric extends SDMSObject
 		                          getState (env)));
 	}
 
-	public	SDMSKillJobGeneric setState (SystemEnvironment env, Integer p_state)
+	public	void setState (SystemEnvironment env, Integer p_state)
 	throws SDMSException
 	{
-		if(state.equals(p_state)) return this;
+		if(state.equals(p_state)) return;
 		SDMSKillJobGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -340,13 +333,13 @@ public class SDMSKillJobGeneric extends SDMSObject
 			o.state = p_state;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getExitCode (SystemEnvironment env)
@@ -355,30 +348,23 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (exitCode);
 	}
 
-	public	SDMSKillJobGeneric setExitCode (SystemEnvironment env, Integer p_exitCode)
+	public	void setExitCode (SystemEnvironment env, Integer p_exitCode)
 	throws SDMSException
 	{
-		if(p_exitCode != null && p_exitCode.equals(exitCode)) return this;
-		if(p_exitCode == null && exitCode == null) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			o.exitCode = p_exitCode;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_exitCode != null && p_exitCode.equals(exitCode)) return;
+		if(p_exitCode == null && exitCode == null) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		o.exitCode = p_exitCode;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getCommandline (SystemEnvironment env)
@@ -387,33 +373,26 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (commandline);
 	}
 
-	public	SDMSKillJobGeneric setCommandline (SystemEnvironment env, String p_commandline)
+	public	void setCommandline (SystemEnvironment env, String p_commandline)
 	throws SDMSException
 	{
-		if(p_commandline != null && p_commandline.equals(commandline)) return this;
-		if(p_commandline == null && commandline == null) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			if (p_commandline != null && p_commandline.length() > 512) {
-				p_commandline = p_commandline.substring(0,512);
-			}
-			o.commandline = p_commandline;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_commandline != null && p_commandline.equals(commandline)) return;
+		if(p_commandline == null && commandline == null) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (p_commandline != null && p_commandline.length() > 512) {
+			p_commandline = p_commandline.substring(0,512);
+		}
+		o.commandline = p_commandline;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getLogfile (SystemEnvironment env)
@@ -422,33 +401,26 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (logfile);
 	}
 
-	public	SDMSKillJobGeneric setLogfile (SystemEnvironment env, String p_logfile)
+	public	void setLogfile (SystemEnvironment env, String p_logfile)
 	throws SDMSException
 	{
-		if(p_logfile != null && p_logfile.equals(logfile)) return this;
-		if(p_logfile == null && logfile == null) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			if (p_logfile != null && p_logfile.length() > 512) {
-				p_logfile = p_logfile.substring(0,512);
-			}
-			o.logfile = p_logfile;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_logfile != null && p_logfile.equals(logfile)) return;
+		if(p_logfile == null && logfile == null) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (p_logfile != null && p_logfile.length() > 512) {
+			p_logfile = p_logfile.substring(0,512);
+		}
+		o.logfile = p_logfile;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getErrlogfile (SystemEnvironment env)
@@ -457,33 +429,26 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (errlogfile);
 	}
 
-	public	SDMSKillJobGeneric setErrlogfile (SystemEnvironment env, String p_errlogfile)
+	public	void setErrlogfile (SystemEnvironment env, String p_errlogfile)
 	throws SDMSException
 	{
-		if(p_errlogfile != null && p_errlogfile.equals(errlogfile)) return this;
-		if(p_errlogfile == null && errlogfile == null) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			if (p_errlogfile != null && p_errlogfile.length() > 512) {
-				p_errlogfile = p_errlogfile.substring(0,512);
-			}
-			o.errlogfile = p_errlogfile;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_errlogfile != null && p_errlogfile.equals(errlogfile)) return;
+		if(p_errlogfile == null && errlogfile == null) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (p_errlogfile != null && p_errlogfile.length() > 512) {
+			p_errlogfile = p_errlogfile.substring(0,512);
+		}
+		o.errlogfile = p_errlogfile;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getPid (SystemEnvironment env)
@@ -492,36 +457,29 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (pid);
 	}
 
-	public	SDMSKillJobGeneric setPid (SystemEnvironment env, String p_pid)
+	public	void setPid (SystemEnvironment env, String p_pid)
 	throws SDMSException
 	{
-		if(p_pid != null && p_pid.equals(pid)) return this;
-		if(p_pid == null && pid == null) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			if (p_pid != null && p_pid.length() > 32) {
-				throw new CommonErrorException (
-				        new SDMSMessage(env, "01112141510",
-				                        "(KillJob) Length of $1 exceeds maximum length $2", "pid", "32")
-				);
-			}
-			o.pid = p_pid;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_pid != null && p_pid.equals(pid)) return;
+		if(p_pid == null && pid == null) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (p_pid != null && p_pid.length() > 32) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(KillJob) Length of $1 exceeds maximum length $2", "pid", "32")
+			);
+		}
+		o.pid = p_pid;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getExtPid (SystemEnvironment env)
@@ -530,36 +488,29 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (extPid);
 	}
 
-	public	SDMSKillJobGeneric setExtPid (SystemEnvironment env, String p_extPid)
+	public	void setExtPid (SystemEnvironment env, String p_extPid)
 	throws SDMSException
 	{
-		if(p_extPid != null && p_extPid.equals(extPid)) return this;
-		if(p_extPid == null && extPid == null) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			if (p_extPid != null && p_extPid.length() > 32) {
-				throw new CommonErrorException (
-				        new SDMSMessage(env, "01112141510",
-				                        "(KillJob) Length of $1 exceeds maximum length $2", "extPid", "32")
-				);
-			}
-			o.extPid = p_extPid;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_extPid != null && p_extPid.equals(extPid)) return;
+		if(p_extPid == null && extPid == null) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (p_extPid != null && p_extPid.length() > 32) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(KillJob) Length of $1 exceeds maximum length $2", "extPid", "32")
+			);
+		}
+		o.extPid = p_extPid;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getErrorMsg (SystemEnvironment env)
@@ -568,33 +519,26 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (errorMsg);
 	}
 
-	public	SDMSKillJobGeneric setErrorMsg (SystemEnvironment env, String p_errorMsg)
+	public	void setErrorMsg (SystemEnvironment env, String p_errorMsg)
 	throws SDMSException
 	{
-		if(p_errorMsg != null && p_errorMsg.equals(errorMsg)) return this;
-		if(p_errorMsg == null && errorMsg == null) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			if (p_errorMsg != null && p_errorMsg.length() > 256) {
-				p_errorMsg = p_errorMsg.substring(0,256);
-			}
-			o.errorMsg = p_errorMsg;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_errorMsg != null && p_errorMsg.equals(errorMsg)) return;
+		if(p_errorMsg == null && errorMsg == null) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (p_errorMsg != null && p_errorMsg.length() > 256) {
+			p_errorMsg = p_errorMsg.substring(0,256);
+		}
+		o.errorMsg = p_errorMsg;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getRunnableTs (SystemEnvironment env)
@@ -603,30 +547,23 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (runnableTs);
 	}
 
-	public	SDMSKillJobGeneric setRunnableTs (SystemEnvironment env, Long p_runnableTs)
+	public	void setRunnableTs (SystemEnvironment env, Long p_runnableTs)
 	throws SDMSException
 	{
-		if(p_runnableTs != null && p_runnableTs.equals(runnableTs)) return this;
-		if(p_runnableTs == null && runnableTs == null) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			o.runnableTs = p_runnableTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_runnableTs != null && p_runnableTs.equals(runnableTs)) return;
+		if(p_runnableTs == null && runnableTs == null) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		o.runnableTs = p_runnableTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getStartTs (SystemEnvironment env)
@@ -635,30 +572,23 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (startTs);
 	}
 
-	public	SDMSKillJobGeneric setStartTs (SystemEnvironment env, Long p_startTs)
+	public	void setStartTs (SystemEnvironment env, Long p_startTs)
 	throws SDMSException
 	{
-		if(p_startTs != null && p_startTs.equals(startTs)) return this;
-		if(p_startTs == null && startTs == null) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			o.startTs = p_startTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_startTs != null && p_startTs.equals(startTs)) return;
+		if(p_startTs == null && startTs == null) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		o.startTs = p_startTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getFinishTs (SystemEnvironment env)
@@ -667,30 +597,23 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (finishTs);
 	}
 
-	public	SDMSKillJobGeneric setFinishTs (SystemEnvironment env, Long p_finishTs)
+	public	void setFinishTs (SystemEnvironment env, Long p_finishTs)
 	throws SDMSException
 	{
-		if(p_finishTs != null && p_finishTs.equals(finishTs)) return this;
-		if(p_finishTs == null && finishTs == null) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			o.finishTs = p_finishTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_finishTs != null && p_finishTs.equals(finishTs)) return;
+		if(p_finishTs == null && finishTs == null) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		o.finishTs = p_finishTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -699,29 +622,22 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSKillJobGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -730,29 +646,22 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSKillJobGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
-				);
-			}
-			o = (SDMSKillJobGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSKillJobGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -761,22 +670,15 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSKillJobGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSKillJobGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSKillJobGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -785,23 +687,16 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSKillJobGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSKillJobGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSKillJobGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSKillJobGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	protected SDMSProxy toProxy()
@@ -864,19 +759,11 @@ public class SDMSKillJobGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO KILL_JOB (" +
 				        "ID" +
@@ -920,69 +807,70 @@ public class SDMSKillJobGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "KillJob: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, seId.longValue());
-			pInsert.setLong (3, seVersion.longValue());
-			pInsert.setLong (4, smeId.longValue());
-			pInsert.setLong (5, scopeId.longValue());
-			pInsert.setInt(6, state.intValue());
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, seId.longValue());
+			myInsert.setLong (3, seVersion.longValue());
+			myInsert.setLong (4, smeId.longValue());
+			myInsert.setLong (5, scopeId.longValue());
+			myInsert.setInt(6, state.intValue());
 			if (exitCode == null)
-				pInsert.setNull(7, Types.INTEGER);
+				myInsert.setNull(7, Types.INTEGER);
 			else
-				pInsert.setInt(7, exitCode.intValue());
+				myInsert.setInt(7, exitCode.intValue());
 			if (commandline == null)
-				pInsert.setNull(8, Types.VARCHAR);
+				myInsert.setNull(8, Types.VARCHAR);
 			else
-				pInsert.setString(8, commandline);
+				myInsert.setString(8, commandline);
 			if (logfile == null)
-				pInsert.setNull(9, Types.VARCHAR);
+				myInsert.setNull(9, Types.VARCHAR);
 			else
-				pInsert.setString(9, logfile);
+				myInsert.setString(9, logfile);
 			if (errlogfile == null)
-				pInsert.setNull(10, Types.VARCHAR);
+				myInsert.setNull(10, Types.VARCHAR);
 			else
-				pInsert.setString(10, errlogfile);
+				myInsert.setString(10, errlogfile);
 			if (pid == null)
-				pInsert.setNull(11, Types.VARCHAR);
+				myInsert.setNull(11, Types.VARCHAR);
 			else
-				pInsert.setString(11, pid);
+				myInsert.setString(11, pid);
 			if (extPid == null)
-				pInsert.setNull(12, Types.VARCHAR);
+				myInsert.setNull(12, Types.VARCHAR);
 			else
-				pInsert.setString(12, extPid);
+				myInsert.setString(12, extPid);
 			if (errorMsg == null)
-				pInsert.setNull(13, Types.VARCHAR);
+				myInsert.setNull(13, Types.VARCHAR);
 			else
-				pInsert.setString(13, errorMsg);
+				myInsert.setString(13, errorMsg);
 			if (runnableTs == null)
-				pInsert.setNull(14, Types.INTEGER);
+				myInsert.setNull(14, Types.INTEGER);
 			else
-				pInsert.setLong (14, runnableTs.longValue());
+				myInsert.setLong (14, runnableTs.longValue());
 			if (startTs == null)
-				pInsert.setNull(15, Types.INTEGER);
+				myInsert.setNull(15, Types.INTEGER);
 			else
-				pInsert.setLong (15, startTs.longValue());
+				myInsert.setLong (15, startTs.longValue());
 			if (finishTs == null)
-				pInsert.setNull(16, Types.INTEGER);
+				myInsert.setNull(16, Types.INTEGER);
 			else
-				pInsert.setLong (16, finishTs.longValue());
-			pInsert.setLong (17, creatorUId.longValue());
-			pInsert.setLong (18, createTs.longValue());
-			pInsert.setLong (19, changerUId.longValue());
-			pInsert.setLong (20, changeTs.longValue());
-			pInsert.executeUpdate();
+				myInsert.setLong (16, finishTs.longValue());
+			myInsert.setLong (17, creatorUId.longValue());
+			myInsert.setLong (18, createTs.longValue());
+			myInsert.setLong (19, changerUId.longValue());
+			myInsert.setLong (20, changeTs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -990,23 +878,25 @@ public class SDMSKillJobGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM KILL_JOB WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "KillJob: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -1014,19 +904,11 @@ public class SDMSKillJobGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE KILL_JOB SET " +
 				        "" + squote + "SE_ID" + equote + " = ? " +
@@ -1049,68 +931,69 @@ public class SDMSKillJobGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "KillJob: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong (1, seId.longValue());
-			pUpdate.setLong (2, seVersion.longValue());
-			pUpdate.setLong (3, smeId.longValue());
-			pUpdate.setLong (4, scopeId.longValue());
-			pUpdate.setInt(5, state.intValue());
+			myUpdate.clearParameters();
+			myUpdate.setLong (1, seId.longValue());
+			myUpdate.setLong (2, seVersion.longValue());
+			myUpdate.setLong (3, smeId.longValue());
+			myUpdate.setLong (4, scopeId.longValue());
+			myUpdate.setInt(5, state.intValue());
 			if (exitCode == null)
-				pUpdate.setNull(6, Types.INTEGER);
+				myUpdate.setNull(6, Types.INTEGER);
 			else
-				pUpdate.setInt(6, exitCode.intValue());
+				myUpdate.setInt(6, exitCode.intValue());
 			if (commandline == null)
-				pUpdate.setNull(7, Types.VARCHAR);
+				myUpdate.setNull(7, Types.VARCHAR);
 			else
-				pUpdate.setString(7, commandline);
+				myUpdate.setString(7, commandline);
 			if (logfile == null)
-				pUpdate.setNull(8, Types.VARCHAR);
+				myUpdate.setNull(8, Types.VARCHAR);
 			else
-				pUpdate.setString(8, logfile);
+				myUpdate.setString(8, logfile);
 			if (errlogfile == null)
-				pUpdate.setNull(9, Types.VARCHAR);
+				myUpdate.setNull(9, Types.VARCHAR);
 			else
-				pUpdate.setString(9, errlogfile);
+				myUpdate.setString(9, errlogfile);
 			if (pid == null)
-				pUpdate.setNull(10, Types.VARCHAR);
+				myUpdate.setNull(10, Types.VARCHAR);
 			else
-				pUpdate.setString(10, pid);
+				myUpdate.setString(10, pid);
 			if (extPid == null)
-				pUpdate.setNull(11, Types.VARCHAR);
+				myUpdate.setNull(11, Types.VARCHAR);
 			else
-				pUpdate.setString(11, extPid);
+				myUpdate.setString(11, extPid);
 			if (errorMsg == null)
-				pUpdate.setNull(12, Types.VARCHAR);
+				myUpdate.setNull(12, Types.VARCHAR);
 			else
-				pUpdate.setString(12, errorMsg);
+				myUpdate.setString(12, errorMsg);
 			if (runnableTs == null)
-				pUpdate.setNull(13, Types.INTEGER);
+				myUpdate.setNull(13, Types.INTEGER);
 			else
-				pUpdate.setLong (13, runnableTs.longValue());
+				myUpdate.setLong (13, runnableTs.longValue());
 			if (startTs == null)
-				pUpdate.setNull(14, Types.INTEGER);
+				myUpdate.setNull(14, Types.INTEGER);
 			else
-				pUpdate.setLong (14, startTs.longValue());
+				myUpdate.setLong (14, startTs.longValue());
 			if (finishTs == null)
-				pUpdate.setNull(15, Types.INTEGER);
+				myUpdate.setNull(15, Types.INTEGER);
 			else
-				pUpdate.setLong (15, finishTs.longValue());
-			pUpdate.setLong (16, creatorUId.longValue());
-			pUpdate.setLong (17, createTs.longValue());
-			pUpdate.setLong (18, changerUId.longValue());
-			pUpdate.setLong (19, changeTs.longValue());
-			pUpdate.setLong(20, id.longValue());
-			pUpdate.executeUpdate();
+				myUpdate.setLong (15, finishTs.longValue());
+			myUpdate.setLong (16, creatorUId.longValue());
+			myUpdate.setLong (17, createTs.longValue());
+			myUpdate.setLong (18, changerUId.longValue());
+			myUpdate.setLong (19, changeTs.longValue());
+			myUpdate.setLong(20, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

@@ -86,10 +86,10 @@ public class SDMSnpSrvrSRFootprintGeneric extends SDMSObject
 		return (sId);
 	}
 
-	public	SDMSnpSrvrSRFootprintGeneric setSId (SystemEnvironment env, Long p_sId)
+	public	void setSId (SystemEnvironment env, Long p_sId)
 	throws SDMSException
 	{
-		if(sId.equals(p_sId)) return this;
+		if(sId.equals(p_sId)) return;
 		SDMSnpSrvrSRFootprintGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -102,13 +102,13 @@ public class SDMSnpSrvrSRFootprintGeneric extends SDMSObject
 			o.sId = p_sId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getSessionId (SystemEnvironment env)
@@ -117,30 +117,23 @@ public class SDMSnpSrvrSRFootprintGeneric extends SDMSObject
 		return (sessionId);
 	}
 
-	public	SDMSnpSrvrSRFootprintGeneric setSessionId (SystemEnvironment env, Integer p_sessionId)
+	public	void setSessionId (SystemEnvironment env, Integer p_sessionId)
 	throws SDMSException
 	{
-		if(p_sessionId != null && p_sessionId.equals(sessionId)) return this;
-		if(p_sessionId == null && sessionId == null) return this;
-		SDMSnpSrvrSRFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(npSrvrSRFootprint) Change of system object not allowed")
-				);
-			}
-			o = (SDMSnpSrvrSRFootprintGeneric) change(env);
-			o.sessionId = p_sessionId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_sessionId != null && p_sessionId.equals(sessionId)) return;
+		if(p_sessionId == null && sessionId == null) return;
+		SDMSnpSrvrSRFootprintGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(npSrvrSRFootprint) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSnpSrvrSRFootprintGeneric) change(env);
+		o.sessionId = p_sessionId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public HashMap getFp (SystemEnvironment env)
@@ -149,29 +142,22 @@ public class SDMSnpSrvrSRFootprintGeneric extends SDMSObject
 		return (fp);
 	}
 
-	public	SDMSnpSrvrSRFootprintGeneric setFp (SystemEnvironment env, HashMap p_fp)
+	public	void setFp (SystemEnvironment env, HashMap p_fp)
 	throws SDMSException
 	{
-		if(fp.equals(p_fp)) return this;
-		SDMSnpSrvrSRFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(npSrvrSRFootprint) Change of system object not allowed")
-				);
-			}
-			o = (SDMSnpSrvrSRFootprintGeneric) change(env);
-			o.fp = p_fp;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(fp.equals(p_fp)) return;
+		SDMSnpSrvrSRFootprintGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(npSrvrSRFootprint) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSnpSrvrSRFootprintGeneric) change(env);
+		o.fp = p_fp;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -180,29 +166,22 @@ public class SDMSnpSrvrSRFootprintGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSnpSrvrSRFootprintGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSnpSrvrSRFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(npSrvrSRFootprint) Change of system object not allowed")
-				);
-			}
-			o = (SDMSnpSrvrSRFootprintGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSnpSrvrSRFootprintGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(npSrvrSRFootprint) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSnpSrvrSRFootprintGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -211,29 +190,22 @@ public class SDMSnpSrvrSRFootprintGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSnpSrvrSRFootprintGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSnpSrvrSRFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(npSrvrSRFootprint) Change of system object not allowed")
-				);
-			}
-			o = (SDMSnpSrvrSRFootprintGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSnpSrvrSRFootprintGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(npSrvrSRFootprint) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSnpSrvrSRFootprintGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -242,22 +214,15 @@ public class SDMSnpSrvrSRFootprintGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSnpSrvrSRFootprintGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSnpSrvrSRFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSnpSrvrSRFootprintGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSnpSrvrSRFootprintGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSnpSrvrSRFootprintGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -266,23 +231,16 @@ public class SDMSnpSrvrSRFootprintGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSnpSrvrSRFootprintGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSnpSrvrSRFootprintGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSnpSrvrSRFootprintGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSnpSrvrSRFootprintGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSnpSrvrSRFootprintGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	protected SDMSProxy toProxy()

@@ -44,4 +44,22 @@ public class SDMSParameterDefinitionTable extends SDMSParameterDefinitionTableGe
 	{
 		super(env);
 	}
+
+	public SDMSParameterDefinition create(SystemEnvironment env
+	                                      ,Long p_seId
+	                                      ,String p_name
+	                                      ,Integer p_type
+	                                      ,Integer p_aggFunction
+	                                      ,String p_defaultValue
+	                                      ,Boolean p_isLocal
+	                                      ,Long p_linkPdId
+	                                      ,String p_exportName
+	                                     )
+	throws SDMSException
+	{
+		SDMSParameterDefinition pd = super.create (env, p_seId, p_name, p_type, p_aggFunction, p_defaultValue, p_isLocal, p_linkPdId, p_exportName);
+		pd.checkRefCycle(env);
+		return pd;
+	}
+
 }

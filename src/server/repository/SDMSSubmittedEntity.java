@@ -36,6 +36,7 @@ import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.parser.*;
+import de.independit.scheduler.locking.*;
 
 public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	implements SDMSOwnedObject
@@ -422,7 +423,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				sme.cancel(sysEnv);
 		}
 
-		suspend (sysEnv, false, false, true, true);
+		suspend (sysEnv, false, false, true, true, true);
 		removeAsyncTrigger(sysEnv);
 		if (!active) {
 			deleteLocalResources(sysEnv);
@@ -641,6 +642,11 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	private void suspend (SystemEnvironment sysEnv, boolean suspend, boolean local, boolean admin, boolean operator)
 		throws SDMSException
 	{
+		suspend (sysEnv, suspend, local, admin, operator, false);
+	}
+	private void suspend (SystemEnvironment sysEnv, boolean suspend, boolean local, boolean admin, boolean operator, boolean cancelResume)
+	throws SDMSException
+	{
 
 		int oldSuspended = getIsSuspended(sysEnv).intValue();
 		Boolean booleanLocal = getIsSuspendedLocal(sysEnv);
@@ -654,10 +660,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (oldSuspended == ADMINSUSPEND && (suspend && admin))
 			return;
 
-		if (suspend && local && (booleanLocal == null || !booleanLocal.booleanValue()))
+		if (suspend && local && (oldSuspended != NOSUSPEND) && (booleanLocal == null || !booleanLocal.booleanValue()))
 			return;
 
-		if (admin && (!sysEnv.cEnv.isUser() || !sysEnv.cEnv.gid().contains(SDMSObject.adminGId))) {
+		if (!cancelResume && admin && (!sysEnv.cEnv.isUser() || !sysEnv.cEnv.gid().contains(SDMSObject.adminGId))) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03503051428", "Insufficient privileges for admin suspend/resume"));
 		}
 
@@ -1406,8 +1412,11 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 					break;
 				switch (type) {
 					case SDMSSchedulingEntity.JOB:
-						setState(sysEnv, new Integer(SYNCHRONIZE_WAIT));
-						break;
+
+						if (!getIsDisabled(sysEnv).booleanValue()) {
+							setState(sysEnv, new Integer(SYNCHRONIZE_WAIT));
+							break;
+						}
 					case SDMSSchedulingEntity.BATCH:
 
 						setJobIsFinal(sysEnv, Boolean.TRUE);
@@ -1446,6 +1455,9 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	protected void submitChilds (SystemEnvironment sysEnv, int parentSuspended, Long ownerId, Long replaceSmeId, int parentNiceX100)
 		throws SDMSException
 	{
+		if (getIsDisabled(sysEnv).booleanValue())
+			return;
+
 		long seVersion = getSeVersion(sysEnv).longValue();
 
 		Vector childs = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, getSeId(sysEnv), seVersion);
@@ -1478,6 +1490,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				}
 				doSubmitChild(sysEnv, seId, parentSuspended, null ,
 				              ownerId, sh, seVersion, newReplaceSmeId, null , null , null , true ,
+				              sh.getIsDisabled(sysEnv),
 				              new Integer(parentNiceX100));
 			}
 		}
@@ -1682,7 +1695,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 	private SDMSSubmittedEntity doSubmitChild(SystemEnvironment sysEnv, Long seChildId, int parentSuspended, Long resumeTs, Long ownerId,
 	                SDMSSchedulingHierarchy sh, long seVersion, Long replaceSmeId, Integer forceSuspend, String childTag,
-	                String submitTag, boolean isStatic, Integer parentNiceX100)
+	                String submitTag, boolean isStatic, boolean isDisabled, Integer parentNiceX100)
 		throws SDMSException
 	{
 		Long id = getId(sysEnv);
@@ -1745,7 +1758,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (submit) {
 			checkValidESP(sysEnv, se, seVersion);
 
-			sme = createSme(sysEnv, se, sh, childTag, ownerId, isStatic, (suspended.booleanValue() ? (forceSuspend == null ? new Integer(SUSPEND) : forceSuspend) : new Integer(NOSUSPEND)), parentSuspended, myResumeTs, replaceSmeId, submitTag, submitTs);
+			sme = createSme(sysEnv, se, sh, childTag, ownerId, isStatic, isDisabled, (suspended.booleanValue() ? (forceSuspend == null ? new Integer(SUSPEND) : forceSuspend) : new Integer(NOSUSPEND)), parentSuspended, myResumeTs, replaceSmeId, submitTag, submitTs);
 		}
 
 		SDMSHierarchyInstance hi = SDMSHierarchyInstanceTable.table.create(sysEnv,
@@ -2155,6 +2168,18 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		int fixError = 0;
 		int fixUnreachable = 0;
 
+		Date dts = new Date();
+		Long ts = new Long (dts.getTime());
+
+		if (newState == STARTING)
+			synchronized(sysEnv.jidsStarting) {
+				sysEnv.jidsStarting.put(getId(sysEnv), ts);
+			}
+		else if (oldState == STARTING)
+			synchronized(sysEnv.jidsStarting) {
+				sysEnv.jidsStarting.remove(getId(sysEnv));
+			}
+
 		if (oldState == newState)
 			return;
 
@@ -2281,8 +2306,6 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			return;
 		}
 
-		Date dts = new Date();
-		Long ts = new Long (dts.getTime());
 		if (newState == RESOURCE_WAIT) {
 			setResourceTs(sysEnv, ts);
 		}
@@ -2429,7 +2452,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		while (i.hasNext()) {
 			SDMSHierarchyInstance hi = (SDMSHierarchyInstance)i.next();
 			Long parentId = hi.getParentId(sysEnv);
+
+			((SDMSThread)Thread.currentThread()).readLock = ObjectLock.EXCLUSIVE;
 			SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, parentId);
+			((SDMSThread)Thread.currentThread()).readLock = ObjectLock.SHARED;
 
 			if (fixSubmitted	!= 0) {
 				sme.setCntSubmitted(sysEnv, new Integer(sme.getCntSubmitted(sysEnv).intValue() + fixSubmitted));
@@ -2559,6 +2585,16 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		} else {
 			return;
 		}
+	}
+
+	public void setResumeTs (SystemEnvironment sysEnv, Long resumeTs)
+	throws SDMSException
+	{
+		super.setResumeTs(sysEnv, resumeTs);
+		if (resumeTs == null)
+			sysEnv.tt.removeFromJobsToResume(sysEnv, getId(sysEnv));
+		else
+			sysEnv.tt.addToJobsToResume(sysEnv, getId(sysEnv));
 	}
 
 	public void setJobIsRestartable(SystemEnvironment sysEnv, Boolean flag)
@@ -2708,7 +2744,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 		int parentNiceX100 = getParentNiceX100(sysEnv) + getNice(sysEnv).intValue();
 		SDMSSubmittedEntity sme = doSubmitChild(sysEnv, childId, parentSuspended, resumeTs, ownerId,
-		                                        sh, seVersion, replaceSmeId, suspended, childTag, submitTag, false , parentNiceX100);
+		                                        sh, seVersion, replaceSmeId, suspended, childTag, submitTag, false , sh.getIsDisabled(sysEnv), parentNiceX100);
 
 		if(params != null) {
 			Iterator i = params.iterator();
@@ -2783,7 +2819,9 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 						}
 					}
 					boolean skip = false;
+					((SDMSThread)Thread.currentThread()).readLock = ObjectLock.EXCLUSIVE;
 					r = SDMSResourceTable.getObject(sysEnv, ra.getRId(sysEnv));
+					((SDMSThread)Thread.currentThread()).readLock = ObjectLock.SHARED;
 					if (ra.getIsSticky(sysEnv).booleanValue()) {
 						releaseStickyResource(sysEnv, ra, r, newState);
 						if(! getJobIsFinal(sysEnv).booleanValue() && state != CANCELLED)	{
@@ -3012,7 +3050,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private SDMSSubmittedEntity createSme(SystemEnvironment sysEnv, SDMSSchedulingEntity se, SDMSSchedulingHierarchy sh,
-	                                      String childTag, Long ownerId, boolean isStatic, Integer suspended, int parentSuspended,
+	                                      String childTag, Long ownerId, boolean isStatic, boolean isDisabled, Integer suspended, int parentSuspended,
 					      Long resumeTs, Long replaceSmeId, String submitTag, Long submitTs)
 		throws SDMSException
 	{
@@ -3079,6 +3117,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				getId(sysEnv),
 				null,
 				new Boolean(isStatic),
+		                new Boolean(isDisabled),
 				sh.getMergeMode(sysEnv),
 				new Integer(SDMSSubmittedEntity.SUBMITTED),
 				null,

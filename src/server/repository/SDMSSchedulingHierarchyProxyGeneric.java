@@ -48,6 +48,8 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 	public static final int FAILURE = 4;
 	public static final boolean STATIC = true;
 	public static final boolean DYNAMIC = false;
+	public static final boolean ENABLED = false;
+	public static final boolean DISABLED = true;
 	public static final int MINUTE = SDMSInterval.MINUTE;
 	public static final int HOUR = SDMSInterval.HOUR;
 	public static final int DAY = SDMSInterval.DAY;
@@ -143,6 +145,31 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 
 		touchMaster(env);
 		((SDMSSchedulingHierarchyGeneric)(object)).setIsStatic (env, p_isStatic);
+		return ;
+	}
+	public Boolean getIsDisabled (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingHierarchyGeneric)(object)).getIsDisabled (env));
+	}
+
+	public String getIsDisabledAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingHierarchyGeneric) object).getIsDisabledAsString (env);
+	}
+
+	public void setIsDisabled (SystemEnvironment env, Boolean p_isDisabled)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSSchedulingHierarchyGeneric)(object)).setIsDisabled (env, p_isDisabled);
 		return ;
 	}
 	public Integer getPriority (SystemEnvironment env)
@@ -448,20 +475,20 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 		else groups = checkGroups;
 
 		long p = 0;
-			p = checkPrivs;
-			SDMSTable t;
+		p = checkPrivs;
+		SDMSTable t;
 
-			t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getSeParentId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
-
+		t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getSeParentId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
+			p = p & sp;
+		} catch (NotFoundException nfe) {
+
+		}
 		return p;
 	}
 

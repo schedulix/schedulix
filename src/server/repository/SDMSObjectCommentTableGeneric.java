@@ -48,6 +48,7 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		, "OBJECT_TYPE"
 		, "INFO_TYPE"
 		, "SEQUENCE_NUMBER"
+		, "TAG"
 		, "DESCRIPTION"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
@@ -68,14 +69,15 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		table = (SDMSObjectCommentTable) this;
 		SDMSObjectCommentTableGeneric.table = (SDMSObjectCommentTable) this;
 		isVersioned = true;
-		idx_objectId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
-		idx_objectType = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_objectId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "objectId");
+		idx_objectType = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "objectType");
 	}
 	public SDMSObjectComment create(SystemEnvironment env
 	                                ,Long p_objectId
 	                                ,Integer p_objectType
 	                                ,Integer p_infoType
 	                                ,Integer p_sequenceNumber
+	                                ,String p_tag
 	                                ,String p_description
 	                               )
 	throws SDMSException
@@ -94,6 +96,7 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		         , p_objectType
 		         , p_infoType
 		         , p_sequenceNumber
+		         , p_tag
 		         , p_description
 		         , p_creatorUId
 		         , p_createTs
@@ -107,6 +110,7 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		                , p_objectType
 		                , p_infoType
 		                , p_sequenceNumber
+		                , p_tag
 		                , p_description
 		                , p_creatorUId
 		                , p_createTs
@@ -150,6 +154,7 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 	                        ,Integer p_objectType
 	                        ,Integer p_infoType
 	                        ,Integer p_sequenceNumber
+	                        ,String p_tag
 	                        ,String p_description
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
@@ -175,6 +180,7 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		Integer objectType;
 		Integer infoType;
 		Integer sequenceNumber;
+		String tag;
 		String description;
 		Long creatorUId;
 		Long createTs;
@@ -189,13 +195,15 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 			objectType = new Integer (r.getInt(3));
 			infoType = new Integer (r.getInt(4));
 			sequenceNumber = new Integer (r.getInt(5));
-			description = r.getString(6);
-			creatorUId = new Long (r.getLong(7));
-			createTs = new Long (r.getLong(8));
-			changerUId = new Long (r.getLong(9));
-			changeTs = new Long (r.getLong(10));
-			validFrom = r.getLong(11);
-			validTo = r.getLong(12);
+			tag = r.getString(6);
+			if (r.wasNull()) tag = null;
+			description = r.getString(7);
+			creatorUId = new Long (r.getLong(8));
+			createTs = new Long (r.getLong(9));
+			changerUId = new Long (r.getLong(10));
+			changeTs = new Long (r.getLong(11));
+			validFrom = r.getLong(12);
+			validTo = r.getLong(13);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 
@@ -207,6 +215,7 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		                                    objectType,
 		                                    infoType,
 		                                    sequenceNumber,
+		                                    tag,
 		                                    description,
 		                                    creatorUId,
 		                                    createTs,
@@ -221,18 +230,9 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -241,6 +241,7 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		                                   ", " + squote + "OBJECT_TYPE" + equote +
 		                                   ", " + squote + "INFO_TYPE" + equote +
 		                                   ", " + squote + "SEQUENCE_NUMBER" + equote +
+		                                   ", " + squote + "TAG" + equote +
 		                                   ", " + squote + "DESCRIPTION" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +
@@ -260,11 +261,29 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
+	public String checkIndex(SDMSObject o)
+	throws SDMSException
+	{
+		String out = "";
+		boolean ok;
+		ok =  idx_objectId.check(((SDMSObjectCommentGeneric) o).objectId, o);
+		out = out + "idx_objectId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_objectType.check(((SDMSObjectCommentGeneric) o).objectType, o);
+		out = out + "idx_objectType: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
 	protected void index(SystemEnvironment env, SDMSObject o)
 	throws SDMSException
 	{
-		idx_objectId.put(env, ((SDMSObjectCommentGeneric) o).objectId, o);
-		idx_objectType.put(env, ((SDMSObjectCommentGeneric) o).objectType, o);
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_objectId.put(env, ((SDMSObjectCommentGeneric) o).objectId, o, ((1 & indexMember) != 0));
+		idx_objectType.put(env, ((SDMSObjectCommentGeneric) o).objectType, o, ((2 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)
@@ -284,18 +303,6 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSObjectComment) table.get(env, id, version);
-	}
-
-	public static SDMSObjectComment idx_objectId_getUnique(SystemEnvironment env, Object key)
-	throws SDMSException
-	{
-		return (SDMSObjectComment) SDMSObjectCommentTableGeneric.idx_objectId.getUnique(env, key);
-	}
-
-	public static SDMSObjectComment idx_objectId_getUnique(SystemEnvironment env, Object key, long version)
-	throws SDMSException
-	{
-		return (SDMSObjectComment) SDMSObjectCommentTableGeneric.idx_objectId.getUnique(env, key, version);
 	}
 
 	public String tableName()

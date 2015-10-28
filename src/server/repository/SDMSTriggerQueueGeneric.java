@@ -63,9 +63,9 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSTriggerQueueGeneric(
 	        SystemEnvironment env,
@@ -99,10 +99,10 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 		return (smeId);
 	}
 
-	public	SDMSTriggerQueueGeneric setSmeId (SystemEnvironment env, Long p_smeId)
+	public	void setSmeId (SystemEnvironment env, Long p_smeId)
 	throws SDMSException
 	{
-		if(smeId.equals(p_smeId)) return this;
+		if(smeId.equals(p_smeId)) return;
 		SDMSTriggerQueueGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -115,13 +115,13 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 			o.smeId = p_smeId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 5);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getTrId (SystemEnvironment env)
@@ -130,10 +130,10 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 		return (trId);
 	}
 
-	public	SDMSTriggerQueueGeneric setTrId (SystemEnvironment env, Long p_trId)
+	public	void setTrId (SystemEnvironment env, Long p_trId)
 	throws SDMSException
 	{
-		if(trId.equals(p_trId)) return this;
+		if(trId.equals(p_trId)) return;
 		SDMSTriggerQueueGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -146,13 +146,13 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 			o.trId = p_trId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 6);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getNextTriggerTime (SystemEnvironment env)
@@ -161,29 +161,22 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 		return (nextTriggerTime);
 	}
 
-	public	SDMSTriggerQueueGeneric setNextTriggerTime (SystemEnvironment env, Long p_nextTriggerTime)
+	public	void setNextTriggerTime (SystemEnvironment env, Long p_nextTriggerTime)
 	throws SDMSException
 	{
-		if(nextTriggerTime.equals(p_nextTriggerTime)) return this;
-		SDMSTriggerQueueGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(TriggerQueue) Change of system object not allowed")
-				);
-			}
-			o = (SDMSTriggerQueueGeneric) change(env);
-			o.nextTriggerTime = p_nextTriggerTime;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(nextTriggerTime.equals(p_nextTriggerTime)) return;
+		SDMSTriggerQueueGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(TriggerQueue) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerQueueGeneric) change(env);
+		o.nextTriggerTime = p_nextTriggerTime;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getTimesChecked (SystemEnvironment env)
@@ -192,29 +185,22 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 		return (timesChecked);
 	}
 
-	public	SDMSTriggerQueueGeneric setTimesChecked (SystemEnvironment env, Integer p_timesChecked)
+	public	void setTimesChecked (SystemEnvironment env, Integer p_timesChecked)
 	throws SDMSException
 	{
-		if(timesChecked.equals(p_timesChecked)) return this;
-		SDMSTriggerQueueGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(TriggerQueue) Change of system object not allowed")
-				);
-			}
-			o = (SDMSTriggerQueueGeneric) change(env);
-			o.timesChecked = p_timesChecked;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(timesChecked.equals(p_timesChecked)) return;
+		SDMSTriggerQueueGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(TriggerQueue) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerQueueGeneric) change(env);
+		o.timesChecked = p_timesChecked;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getTimesTriggered (SystemEnvironment env)
@@ -223,29 +209,22 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 		return (timesTriggered);
 	}
 
-	public	SDMSTriggerQueueGeneric setTimesTriggered (SystemEnvironment env, Integer p_timesTriggered)
+	public	void setTimesTriggered (SystemEnvironment env, Integer p_timesTriggered)
 	throws SDMSException
 	{
-		if(timesTriggered.equals(p_timesTriggered)) return this;
-		SDMSTriggerQueueGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(TriggerQueue) Change of system object not allowed")
-				);
-			}
-			o = (SDMSTriggerQueueGeneric) change(env);
-			o.timesTriggered = p_timesTriggered;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(timesTriggered.equals(p_timesTriggered)) return;
+		SDMSTriggerQueueGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(TriggerQueue) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerQueueGeneric) change(env);
+		o.timesTriggered = p_timesTriggered;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -254,29 +233,22 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSTriggerQueueGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSTriggerQueueGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(TriggerQueue) Change of system object not allowed")
-				);
-			}
-			o = (SDMSTriggerQueueGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSTriggerQueueGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(TriggerQueue) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerQueueGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -285,29 +257,22 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSTriggerQueueGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSTriggerQueueGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(TriggerQueue) Change of system object not allowed")
-				);
-			}
-			o = (SDMSTriggerQueueGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSTriggerQueueGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(TriggerQueue) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerQueueGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -316,22 +281,15 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSTriggerQueueGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSTriggerQueueGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSTriggerQueueGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSTriggerQueueGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerQueueGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -340,23 +298,16 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSTriggerQueueGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSTriggerQueueGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSTriggerQueueGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSTriggerQueueGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerQueueGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSTriggerQueueGeneric set_SmeIdTrId (SystemEnvironment env, Long p_smeId, Long p_trId)
@@ -425,19 +376,11 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO TRIGGER_QUEUE (" +
 				        "ID" +
@@ -461,29 +404,30 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "TriggerQueue: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, smeId.longValue());
-			pInsert.setLong (3, trId.longValue());
-			pInsert.setLong (4, nextTriggerTime.longValue());
-			pInsert.setInt(5, timesChecked.intValue());
-			pInsert.setInt(6, timesTriggered.intValue());
-			pInsert.setLong (7, creatorUId.longValue());
-			pInsert.setLong (8, createTs.longValue());
-			pInsert.setLong (9, changerUId.longValue());
-			pInsert.setLong (10, changeTs.longValue());
-			pInsert.executeUpdate();
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, smeId.longValue());
+			myInsert.setLong (3, trId.longValue());
+			myInsert.setLong (4, nextTriggerTime.longValue());
+			myInsert.setInt(5, timesChecked.intValue());
+			myInsert.setInt(6, timesTriggered.intValue());
+			myInsert.setLong (7, creatorUId.longValue());
+			myInsert.setLong (8, createTs.longValue());
+			myInsert.setLong (9, changerUId.longValue());
+			myInsert.setLong (10, changeTs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "TriggerQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "TriggerQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -491,23 +435,25 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM TRIGGER_QUEUE WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "TriggerQueue: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "TriggerQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "TriggerQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -515,19 +461,11 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE TRIGGER_QUEUE SET " +
 				        "" + squote + "SME_ID" + equote + " = ? " +
@@ -540,28 +478,29 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "TriggerQueue: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong (1, smeId.longValue());
-			pUpdate.setLong (2, trId.longValue());
-			pUpdate.setLong (3, nextTriggerTime.longValue());
-			pUpdate.setInt(4, timesChecked.intValue());
-			pUpdate.setInt(5, timesTriggered.intValue());
-			pUpdate.setLong (6, creatorUId.longValue());
-			pUpdate.setLong (7, createTs.longValue());
-			pUpdate.setLong (8, changerUId.longValue());
-			pUpdate.setLong (9, changeTs.longValue());
-			pUpdate.setLong(10, id.longValue());
-			pUpdate.executeUpdate();
+			myUpdate.clearParameters();
+			myUpdate.setLong (1, smeId.longValue());
+			myUpdate.setLong (2, trId.longValue());
+			myUpdate.setLong (3, nextTriggerTime.longValue());
+			myUpdate.setInt(4, timesChecked.intValue());
+			myUpdate.setInt(5, timesTriggered.intValue());
+			myUpdate.setLong (6, creatorUId.longValue());
+			myUpdate.setLong (7, createTs.longValue());
+			myUpdate.setLong (8, changerUId.longValue());
+			myUpdate.setLong (9, changeTs.longValue());
+			myUpdate.setLong(10, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "TriggerQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "TriggerQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

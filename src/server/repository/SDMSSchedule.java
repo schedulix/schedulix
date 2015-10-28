@@ -41,7 +41,7 @@ public class SDMSSchedule
 {
 	public static final String __version = "@(#) $Id: SDMSSchedule.java,v 2.11.2.3 2013/03/16 11:47:21 dieter Exp $";
 
-	Thread thread = null;
+	SDMSThread thread = null;
 
 	private SDMSInterval interval = null;
 	private TimeZone tz = null;
@@ -134,7 +134,16 @@ public class SDMSSchedule
 
 	public Thread newThread(Runnable r)
 	{
-		thread = new Thread(r);
+		final int threadId = 1000 + ((SDMSThread)Thread.currentThread()).id();
+		final String threadName = "getNextTriggerDate from " + ((SDMSThread)Thread.currentThread()).getName();
+		thread = new SDMSThread(r) {
+			public int id() {
+				return threadId;
+			}
+			public void SDMSrun() {}
+		};
+		thread.lockThread = (SDMSThread)Thread.currentThread();
+		thread.setName(threadName);
 		return thread;
 	}
 

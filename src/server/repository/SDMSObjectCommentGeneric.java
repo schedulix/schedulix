@@ -81,11 +81,12 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	public final static int nr_objectType = 3;
 	public final static int nr_infoType = 4;
 	public final static int nr_sequenceNumber = 5;
-	public final static int nr_description = 6;
-	public final static int nr_creatorUId = 7;
-	public final static int nr_createTs = 8;
-	public final static int nr_changerUId = 9;
-	public final static int nr_changeTs = 10;
+	public final static int nr_tag = 6;
+	public final static int nr_description = 7;
+	public final static int nr_creatorUId = 8;
+	public final static int nr_createTs = 9;
+	public final static int nr_changerUId = 10;
+	public final static int nr_changeTs = 11;
 
 	public static String tableName = SDMSObjectCommentTableGeneric.tableName;
 
@@ -93,15 +94,16 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	protected Integer objectType;
 	protected Integer infoType;
 	protected Integer sequenceNumber;
+	protected String tag;
 	protected String description;
 	protected Long creatorUId;
 	protected Long createTs;
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSObjectCommentGeneric(
 	        SystemEnvironment env,
@@ -109,6 +111,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	        Integer p_objectType,
 	        Integer p_infoType,
 	        Integer p_sequenceNumber,
+	        String p_tag,
 	        String p_description,
 	        Long p_creatorUId,
 	        Long p_createTs,
@@ -122,6 +125,13 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		objectType = p_objectType;
 		infoType = p_infoType;
 		sequenceNumber = p_sequenceNumber;
+		if (p_tag != null && p_tag.length() > 64) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141528",
+			                        "(ObjectComment) Length of $1 exceeds maximum length $2", "tag", "64")
+			);
+		}
+		tag = p_tag;
 		if (p_description != null && p_description.length() > 1900) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141528",
@@ -141,10 +151,10 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		return (objectId);
 	}
 
-	public	SDMSObjectCommentGeneric setObjectId (SystemEnvironment env, Long p_objectId)
+	public	void setObjectId (SystemEnvironment env, Long p_objectId)
 	throws SDMSException
 	{
-		if(objectId.equals(p_objectId)) return this;
+		if(objectId.equals(p_objectId)) return;
 		SDMSObjectCommentGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -157,13 +167,13 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 			o.objectId = p_objectId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getObjectType (SystemEnvironment env)
@@ -240,10 +250,10 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		                          getObjectType (env)));
 	}
 
-	public	SDMSObjectCommentGeneric setObjectType (SystemEnvironment env, Integer p_objectType)
+	public	void setObjectType (SystemEnvironment env, Integer p_objectType)
 	throws SDMSException
 	{
-		if(objectType.equals(p_objectType)) return this;
+		if(objectType.equals(p_objectType)) return;
 		SDMSObjectCommentGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -256,13 +266,13 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 			o.objectType = p_objectType;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getInfoType (SystemEnvironment env)
@@ -287,29 +297,22 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		                          getInfoType (env)));
 	}
 
-	public	SDMSObjectCommentGeneric setInfoType (SystemEnvironment env, Integer p_infoType)
+	public	void setInfoType (SystemEnvironment env, Integer p_infoType)
 	throws SDMSException
 	{
-		if(infoType.equals(p_infoType)) return this;
-		SDMSObjectCommentGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
-				);
-			}
-			o = (SDMSObjectCommentGeneric) change(env);
-			o.infoType = p_infoType;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(infoType.equals(p_infoType)) return;
+		SDMSObjectCommentGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		o.infoType = p_infoType;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getSequenceNumber (SystemEnvironment env)
@@ -318,29 +321,53 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		return (sequenceNumber);
 	}
 
-	public	SDMSObjectCommentGeneric setSequenceNumber (SystemEnvironment env, Integer p_sequenceNumber)
+	public	void setSequenceNumber (SystemEnvironment env, Integer p_sequenceNumber)
 	throws SDMSException
 	{
-		if(sequenceNumber.equals(p_sequenceNumber)) return this;
-		SDMSObjectCommentGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
-				);
-			}
-			o = (SDMSObjectCommentGeneric) change(env);
-			o.sequenceNumber = p_sequenceNumber;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(sequenceNumber.equals(p_sequenceNumber)) return;
+		SDMSObjectCommentGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		o.sequenceNumber = p_sequenceNumber;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
+	public String getTag (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (tag);
+	}
+
+	public	void setTag (SystemEnvironment env, String p_tag)
+	throws SDMSException
+	{
+		if(p_tag != null && p_tag.equals(tag)) return;
+		if(p_tag == null && tag == null) return;
+		SDMSObjectCommentGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		if (p_tag != null && p_tag.length() > 64) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(ObjectComment) Length of $1 exceeds maximum length $2", "tag", "64")
+			);
+		}
+		o.tag = p_tag;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getDescription (SystemEnvironment env)
@@ -349,35 +376,28 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		return (description);
 	}
 
-	public	SDMSObjectCommentGeneric setDescription (SystemEnvironment env, String p_description)
+	public	void setDescription (SystemEnvironment env, String p_description)
 	throws SDMSException
 	{
-		if(description.equals(p_description)) return this;
-		SDMSObjectCommentGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
-				);
-			}
-			o = (SDMSObjectCommentGeneric) change(env);
-			if (p_description != null && p_description.length() > 1900) {
-				throw new CommonErrorException (
-				        new SDMSMessage(env, "01112141510",
-				                        "(ObjectComment) Length of $1 exceeds maximum length $2", "description", "1900")
-				);
-			}
-			o.description = p_description;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(description.equals(p_description)) return;
+		SDMSObjectCommentGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		if (p_description != null && p_description.length() > 1900) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(ObjectComment) Length of $1 exceeds maximum length $2", "description", "1900")
+			);
+		}
+		o.description = p_description;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -386,29 +406,22 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSObjectCommentGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSObjectCommentGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
-				);
-			}
-			o = (SDMSObjectCommentGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSObjectCommentGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -417,29 +430,22 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSObjectCommentGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSObjectCommentGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
-				);
-			}
-			o = (SDMSObjectCommentGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSObjectCommentGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -448,22 +454,15 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSObjectCommentGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSObjectCommentGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSObjectCommentGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSObjectCommentGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -472,23 +471,16 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSObjectCommentGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSObjectCommentGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSObjectCommentGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSObjectCommentGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	protected SDMSProxy toProxy()
@@ -501,6 +493,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	                                   Integer p_objectType,
 	                                   Integer p_infoType,
 	                                   Integer p_sequenceNumber,
+	                                   String p_tag,
 	                                   String p_description,
 	                                   Long p_creatorUId,
 	                                   Long p_createTs,
@@ -513,6 +506,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		objectType = p_objectType;
 		infoType = p_infoType;
 		sequenceNumber = p_sequenceNumber;
+		tag = p_tag;
 		description = p_description;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
@@ -531,19 +525,11 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO OBJECT_COMMENT (" +
 				        "ID" +
@@ -551,6 +537,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 				        ", " + squote + "OBJECT_TYPE" + equote +
 				        ", " + squote + "INFO_TYPE" + equote +
 				        ", " + squote + "SEQUENCE_NUMBER" + equote +
+				        ", " + squote + "TAG" + equote +
 				        ", " + squote + "DESCRIPTION" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
@@ -567,33 +554,39 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
+				        ", ?" +
 				        ", ?, ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ObjectComment: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, objectId.longValue());
-			pInsert.setInt(3, objectType.intValue());
-			pInsert.setInt(4, infoType.intValue());
-			pInsert.setInt(5, sequenceNumber.intValue());
-			pInsert.setString(6, description);
-			pInsert.setLong (7, creatorUId.longValue());
-			pInsert.setLong (8, createTs.longValue());
-			pInsert.setLong (9, changerUId.longValue());
-			pInsert.setLong (10, changeTs.longValue());
-			pInsert.setLong(11, env.tx.versionId);
-			pInsert.setLong(12, Long.MAX_VALUE);
-			pInsert.executeUpdate();
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, objectId.longValue());
+			myInsert.setInt(3, objectType.intValue());
+			myInsert.setInt(4, infoType.intValue());
+			myInsert.setInt(5, sequenceNumber.intValue());
+			if (tag == null)
+				myInsert.setNull(6, Types.VARCHAR);
+			else
+				myInsert.setString(6, tag);
+			myInsert.setString(7, description);
+			myInsert.setLong (8, creatorUId.longValue());
+			myInsert.setLong (9, createTs.longValue());
+			myInsert.setLong (10, changerUId.longValue());
+			myInsert.setLong (11, changeTs.longValue());
+			myInsert.setLong(12, env.tx.versionId);
+			myInsert.setLong(13, Long.MAX_VALUE);
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "ObjectComment: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ObjectComment: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -614,7 +607,8 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
@@ -627,22 +621,23 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 				        "  AND VALID_TO = " + (postgres ?
 				                               "CAST (\'" +  Long.MAX_VALUE + "\' AS DECIMAL)" :
 				                               "" + Long.MAX_VALUE);
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				// Can't prepare statement
 				throw new FatalException(new SDMSMessage(env, "01110181955", "ObjectComment : $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong(1, env.tx.versionId);
-			pUpdate.setLong(2, changeTs.longValue());
-			pUpdate.setLong(3, changerUId.longValue());
-			pUpdate.setLong(4, id.longValue());
-			pUpdate.executeUpdate();
+			myUpdate.clearParameters();
+			myUpdate.setLong(1, env.tx.versionId);
+			myUpdate.setLong(2, changeTs.longValue());
+			myUpdate.setLong(3, changerUId.longValue());
+			myUpdate.setLong(4, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181956", "ObjectComment: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ObjectComment: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -699,6 +694,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "objectType : " + objectType, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "infoType : " + infoType, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "sequenceNumber : " + sequenceNumber, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "tag : " + tag, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "description : " + description, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
@@ -720,6 +716,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		        indentString + "objectType     : " + objectType + "\n" +
 		        indentString + "infoType       : " + infoType + "\n" +
 		        indentString + "sequenceNumber : " + sequenceNumber + "\n" +
+		        indentString + "tag            : " + tag + "\n" +
 		        indentString + "description    : " + description + "\n" +
 		        indentString + "creatorUId     : " + creatorUId + "\n" +
 		        indentString + "createTs       : " + createTs + "\n" +

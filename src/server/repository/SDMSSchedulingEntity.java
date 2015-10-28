@@ -267,6 +267,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                                null,
 		                                null,
 		                                Boolean.TRUE,
+		                                Boolean.FALSE,
 		                                new Integer(SDMSSchedulingHierarchy.FAILURE),
 		                                new Integer(SDMSSubmittedEntity.SUBMITTED),
 		                                null,
@@ -546,7 +547,8 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                              pd.getAggFunction(sysEnv),
 			                              pd.getDefaultValue(sysEnv),
 			                              pd.getIsLocal(sysEnv),
-			                              pd.getLinkPdId(sysEnv)
+			                              pd.getLinkPdId(sysEnv),
+			                              pd.getExportName(sysEnv)
 			                                                                       );
 			if(relocationTable != null) {
 				relocationTable.put(pd.getId(sysEnv), npd.getId(sysEnv));
@@ -592,6 +594,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                sh.getSeChildId(sysEnv),
 			                sh.getAliasName(sysEnv),
 			                sh.getIsStatic(sysEnv),
+			                sh.getIsDisabled(sysEnv),
 			                sh.getPriority(sysEnv),
 			                sh.getSuspend(sysEnv),
 			                sh.getResumeAt(sysEnv),
@@ -602,60 +605,72 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                                         );
 		}
 
+		boolean testInverse = false;
+
 		Vector v_tr = SDMSTriggerTable.idx_fireId.getVector(sysEnv, id);
-		Iterator i_tr = v_tr.iterator();
-		while (i_tr.hasNext()) {
-			SDMSTrigger tr_o = (SDMSTrigger)i_tr.next();
-			SDMSTrigger tr_n = SDMSTriggerTable.table.create(sysEnv,
-			                   tr_o.getName(sysEnv),
-			                   seId,
-			                   tr_o.getObjectType(sysEnv),
-			                   tr_o.getSeId(sysEnv),
-			                   tr_o.getMainSeId(sysEnv),
-			                   tr_o.getParentSeId(sysEnv),
-			                   tr_o.getIsActive(sysEnv),
-			                   tr_o.getAction(sysEnv),
-			                   tr_o.getType(sysEnv),
-			                   tr_o.getIsMaster(sysEnv),
-			                   tr_o.getIsSuspend(sysEnv),
-			                   tr_o.getIsCreate(sysEnv),
-			                   tr_o.getIsChange(sysEnv),
-			                   tr_o.getIsDelete(sysEnv),
-			                   tr_o.getIsGroup(sysEnv),
-			                   tr_o.getResumeAt(sysEnv),
-			                   tr_o.getResumeIn(sysEnv),
-			                   tr_o.getResumeBase(sysEnv),
-			                   tr_o.getIsWarnOnLimit(sysEnv),
-			                   tr_o.getMaxRetry(sysEnv),
-			                   tr_o.getSubmitOwnerId(sysEnv),
-			                   tr_o.getCondition(sysEnv),
-			                   tr_o.getCheckAmount(sysEnv),
-			                   tr_o.getCheckBase(sysEnv)
-			                                                );
+		do {
+			Iterator i_tr = v_tr.iterator();
+			while (i_tr.hasNext()) {
+				SDMSTrigger tr_o = (SDMSTrigger)i_tr.next();
+				Boolean isInverse = tr_o.getIsInverse(sysEnv);
+				if (isInverse.booleanValue() == testInverse) {
+					SDMSTrigger tr_n = SDMSTriggerTable.table.create(sysEnv,
+					                   tr_o.getName(sysEnv),
+					                   testInverse ? tr_o.getFireId(sysEnv) : seId,
+					                   tr_o.getObjectType(sysEnv),
+					                   testInverse ? seId : tr_o.getSeId(sysEnv),
+					                   tr_o.getMainSeId(sysEnv),
+					                   tr_o.getParentSeId(sysEnv),
+					                   tr_o.getIsActive(sysEnv),
+					                   tr_o.getIsInverse(sysEnv),
+					                   tr_o.getAction(sysEnv),
+					                   tr_o.getType(sysEnv),
+					                   tr_o.getIsMaster(sysEnv),
+					                   tr_o.getIsSuspend(sysEnv),
+					                   tr_o.getIsCreate(sysEnv),
+					                   tr_o.getIsChange(sysEnv),
+					                   tr_o.getIsDelete(sysEnv),
+					                   tr_o.getIsGroup(sysEnv),
+					                   tr_o.getResumeAt(sysEnv),
+					                   tr_o.getResumeIn(sysEnv),
+					                   tr_o.getResumeBase(sysEnv),
+					                   tr_o.getIsWarnOnLimit(sysEnv),
+					                   tr_o.getLimitState(sysEnv),
+					                   tr_o.getMaxRetry(sysEnv),
+					                   tr_o.getSubmitOwnerId(sysEnv),
+					                   tr_o.getCondition(sysEnv),
+					                   tr_o.getCheckAmount(sysEnv),
+					                   tr_o.getCheckBase(sysEnv)
+					                                                );
 
-			Vector v_trs = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, tr_o.getId(sysEnv));
-			Iterator i_trs = v_trs.iterator();
-			while (i_trs.hasNext()) {
-				SDMSTriggerState trs = (SDMSTriggerState)i_trs.next();
-				SDMSTriggerStateTable.table.create(sysEnv,
-				                                   tr_n.getId(sysEnv),
-				                                   trs.getFromStateId(sysEnv),
-				                                   trs.getToStateId(sysEnv)
-				                                  );
+					Vector v_trs = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, tr_o.getId(sysEnv));
+					Iterator i_trs = v_trs.iterator();
+					while (i_trs.hasNext()) {
+						SDMSTriggerState trs = (SDMSTriggerState)i_trs.next();
+						SDMSTriggerStateTable.table.create(sysEnv,
+						                                   tr_n.getId(sysEnv),
+						                                   trs.getFromStateId(sysEnv),
+						                                   trs.getToStateId(sysEnv)
+						                                  );
+					}
+				}
 			}
-		}
+			if (!testInverse)
+				v_tr = SDMSTriggerTable.idx_seId.getVector(sysEnv, id);
+			testInverse = !testInverse;
+		} while(testInverse);
 
-		try {
-			SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, id);
+		Vector ocv = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, id);
+		for (int ii = 0; ii < ocv.size(); ++ii) {
+			SDMSObjectComment oc = (SDMSObjectComment) ocv.get(ii);
 			SDMSObjectCommentTable.table.create(sysEnv,
 			                                    seId,
 			                                    oc.getObjectType(sysEnv),
 			                                    oc.getInfoType(sysEnv),
 			                                    oc.getSequenceNumber(sysEnv),
+			                                    oc.getTag(sysEnv),
 			                                    oc.getDescription(sysEnv)
 			                                   );
-		} catch (NotFoundException nfe) {
-
 		}
 		return se;
 	}
@@ -701,6 +716,16 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			Long seId = (Long)relocationTable.get(tr.getSeId(sysEnv));
 			if (seId != null) {
 				tr.setSeId(sysEnv, seId);
+			}
+		}
+
+		v_tr = SDMSTriggerTable.idx_seId.getVector(sysEnv, id);
+		i_tr = v_tr.iterator();
+		while (i_tr.hasNext()) {
+			SDMSTrigger tr = (SDMSTrigger)i_tr.next();
+			Long fireId = (Long)relocationTable.get(tr.getFireId(sysEnv));
+			if (fireId != null) {
+				tr.setFireId(sysEnv, fireId);
 			}
 		}
 
@@ -896,97 +921,139 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 	public void delete(SystemEnvironment sysEnv)
 	throws SDMSException
 	{
-
-		SDMSNiceProfileEntry npe;
-		SDMSNiceProfile np;
-		Vector npev = SDMSNiceProfileEntryTable.idx_folderId.getVector(sysEnv, getId(sysEnv));
-		for (int i = 0; i < npev.size(); ++i) {
-			npe = (SDMSNiceProfileEntry) npev.get(i);
-			if (npe.getIsActive(sysEnv).booleanValue()) {
-				np = SDMSNiceProfileTable.getObject(sysEnv, npe.getNpId(sysEnv));
-				if (!np.getIsActive(sysEnv).booleanValue())
-					npe.delete(sysEnv);
-				else
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408211534",
-					                               "Job Definition $1 is addressed by active Nice Profile $2", pathString(sysEnv), np.getName(sysEnv)));
-			} else {
-				npe.delete(sysEnv);
-			}
-		}
-
-		HashSet parmLinks = new HashSet();
-		delete(sysEnv, false, parmLinks);
-		if (!parmLinks.isEmpty()) {
-			throw new CommonErrorException(
-			        new SDMSMessage(sysEnv, "03009011150", "Drop failed: External parameter references exist")
-			);
-		}
+		delete (sysEnv, false);
 	}
 
-	public void delete(SystemEnvironment sysEnv, boolean force, HashSet parmLinks)
+	private void doDelete(SystemEnvironment sysEnv)
 	throws SDMSException
 	{
-		Long seId = getId(sysEnv);
+		super.delete (sysEnv);
+	}
 
-		final Vector ddrv = SDMSDependencyDefinitionTable.idx_seDependentId.getVector(sysEnv, seId);
-		for(int i = 0; i < ddrv.size(); i++) {
-			((SDMSDependencyDefinition) ddrv.get(i)).delete(sysEnv);
+	public void delete(SystemEnvironment sysEnv, boolean force)
+	throws SDMSException
+	{
+		HashSet<Long> seIds = new HashSet<Long>();
+		seIds.add(getId(sysEnv));
+		delete (sysEnv, seIds, force);
+	}
+
+	public static void delete(SystemEnvironment sysEnv, HashSet<Long> seIds, boolean force)
+	throws SDMSException
+	{
+		Iterator<Long> i_se = seIds.iterator();
+		while (i_se.hasNext()) {
+
+			Long seId = i_se.next();
+			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
+
+			final Vector ddrv = SDMSDependencyDefinitionTable.idx_seDependentId.getVector(sysEnv, seId);
+			for(int i = 0; i < ddrv.size(); i++) {
+				((SDMSDependencyDefinition) ddrv.get(i)).delete(sysEnv);
+			}
+
+			Vector dddv = SDMSDependencyDefinitionTable.idx_seRequiredId.getVector(sysEnv, seId);
+			for(int i = 0; i < dddv.size(); i++) {
+				SDMSDependencyDefinition dd = (SDMSDependencyDefinition) dddv.get(i);
+				if (seIds.contains(dd.getSeDependentId(sysEnv)))
+					continue;
+				if (!force)
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03112202113",
+					                               "$1 is required by $2, specify force to delete anyway",
+					                               se.pathString(sysEnv),
+					                               SDMSSchedulingEntityTable.getObject(sysEnv, dd.getSeDependentId(sysEnv)).pathString(sysEnv)));
+				dd.delete(sysEnv);
+			}
+
+			final Vector shcv = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, seId);
+			for(int i = 0; i < shcv.size(); i++) {
+				final SDMSSchedulingHierarchy shc = (SDMSSchedulingHierarchy) shcv.get(i);
+				shc.delete(sysEnv);
+			}
+
+			final Vector shpv = SDMSSchedulingHierarchyTable.idx_seChildId.getVector(sysEnv, seId);
+			for(int i = 0; i < shpv.size(); i++) {
+				SDMSSchedulingHierarchy sh = (SDMSSchedulingHierarchy) shpv.get(i);
+				if (seIds.contains(sh.getSeParentId(sysEnv)))
+					continue;
+				if (!force)
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03207042302",
+					                               "$1 is used as a child of $2, specify force to delete anyway",
+					                               se.pathString(sysEnv),
+					                               SDMSSchedulingEntityTable.getObject(sysEnv, sh.getSeParentId(sysEnv)).pathString(sysEnv)));
+				sh.delete(sysEnv);
+			}
+
+			final Vector rrv = SDMSResourceRequirementTable.idx_seId.getVector(sysEnv, seId);
+			for(int i = 0; i < rrv.size(); i++) {
+				((SDMSResourceRequirement) rrv.get(i)).delete(sysEnv);
+			}
+
+			final Vector pdv = SDMSParameterDefinitionTable.idx_seId.getVector(sysEnv, seId);
+			for(int i = 0; i < pdv.size(); i++) {
+				final SDMSParameterDefinition pd = (SDMSParameterDefinition) pdv.get(i);
+				pd.delete(sysEnv, seIds, force);
+			}
+
+			final Vector ftv = SDMSTriggerTable.idx_fireId.getVector(sysEnv, seId);
+			for(int i = 0; i < ftv.size(); i++) {
+				final SDMSTrigger t = (SDMSTrigger) ftv.get(i);
+				if (t.getIsInverse(sysEnv).booleanValue()) {
+					if (seIds.contains(t.getSeId(sysEnv)))
+						continue;
+					if (!force)
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03207042303",
+						                               "$1 is used as triggering job of $2, specify force to delete anyway",
+						                               se.pathString(sysEnv),
+						                               SDMSSchedulingEntityTable.getObject(sysEnv, t.getSeId(sysEnv)).pathString(sysEnv)));
+				}
+				t.delete(sysEnv);
+			}
+
+			final Vector tv = SDMSTriggerTable.idx_seId.getVector(sysEnv, seId);
+			for(int i = 0; i < tv.size(); i++) {
+				final SDMSTrigger t = (SDMSTrigger) tv.get(i);
+				if (!t.getIsInverse(sysEnv).booleanValue()) {
+					if (seIds.contains(t.getFireId(sysEnv)))
+						continue;
+					if (!force)
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03207042304",
+						                               "$1 triggered by $2, specify force to delete anyway",
+						                               se.pathString(sysEnv),
+						                               SDMSSchedulingEntityTable.getObject(sysEnv, t.getFireId(sysEnv)).pathString(sysEnv)));
+				}
+				t.delete(sysEnv);
+			}
+
+			final Vector mtv = SDMSTriggerTable.idx_mainSeId.getVector(sysEnv, seId);
+			for(int i = 0; i < mtv.size(); i++) {
+				final SDMSTrigger t = (SDMSTrigger) mtv.get(i);
+				if (!force) {
+					SDMSObjectMonitor om = SDMSObjectMonitorTable.getObject(sysEnv, t.getFireId(sysEnv));
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03109120829",
+					                               "$1 is used as a trigger job (mainSe) of object monitor $2, specify force to delete anyway",
+					                               se.pathString(sysEnv),
+					                               om.getName(sysEnv)));
+				}
+				t.delete(sysEnv);
+			}
+
+			final Vector ptv = SDMSTriggerTable.idx_parentSeId.getVector(sysEnv, seId);
+			for(int i = 0; i < ptv.size(); i++) {
+				final SDMSTrigger t = (SDMSTrigger) ptv.get(i);
+				if (!force) {
+					SDMSObjectMonitor om = SDMSObjectMonitorTable.getObject(sysEnv, t.getFireId(sysEnv));
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03109120830",
+					                               "$1 is used as a trigger job (parentSe) of object monitor $2, specify force to delete anyway",
+					                               se.pathString(sysEnv),
+					                               om.getName(sysEnv)));
+				}
+				t.delete(sysEnv);
+			}
+
+			se.removeFromTimeScheduling(sysEnv);
+
+			se.doDelete(sysEnv);
 		}
-
-		Vector dddv = SDMSDependencyDefinitionTable.idx_seRequiredId.getVector(sysEnv, seId);
-		for(int i = 0; i < dddv.size(); i++) {
-			((SDMSDependencyDefinition) dddv.get(i)).delete(sysEnv);
-		}
-
-		final Vector shcv = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, seId);
-		for(int i = 0; i < shcv.size(); i++) {
-			final SDMSSchedulingHierarchy shc = (SDMSSchedulingHierarchy) shcv.get(i);
-			shc.delete(sysEnv);
-		}
-
-		final Vector shpv = SDMSSchedulingHierarchyTable.idx_seChildId.getVector(sysEnv, seId);
-		for(int i = 0; i < shpv.size(); i++) {
-			final SDMSSchedulingHierarchy shc = (SDMSSchedulingHierarchy) shpv.get(i);
-			shc.delete(sysEnv);
-		}
-
-		final Vector rrv = SDMSResourceRequirementTable.idx_seId.getVector(sysEnv, seId);
-		for(int i = 0; i < rrv.size(); i++) {
-			((SDMSResourceRequirement) rrv.get(i)).delete(sysEnv);
-		}
-
-		final Vector pdv = SDMSParameterDefinitionTable.idx_seId.getVector(sysEnv, seId);
-		for(int i = 0; i < pdv.size(); i++) {
-			final SDMSParameterDefinition pd = (SDMSParameterDefinition) pdv.get(i);
-			pd.delete(sysEnv, force, parmLinks);
-		}
-
-		final Vector tv = SDMSTriggerTable.idx_seId.getVector(sysEnv, seId);
-		for(int i = 0; i < tv.size(); i++) {
-			final SDMSTrigger t = (SDMSTrigger) tv.get(i);
-			t.delete(sysEnv);
-		}
-
-		final Vector ftv = SDMSTriggerTable.idx_fireId.getVector(sysEnv, seId);
-		for(int i = 0; i < ftv.size(); i++) {
-			final SDMSTrigger t = (SDMSTrigger) ftv.get(i);
-			t.delete(sysEnv);
-		}
-
-		final Vector mtv = SDMSTriggerTable.idx_mainSeId.getVector(sysEnv, seId);
-		for(int i = 0; i < mtv.size(); i++) {
-			final SDMSTrigger t = (SDMSTrigger) mtv.get(i);
-			t.delete(sysEnv);
-		}
-
-		final Vector ptv = SDMSTriggerTable.idx_parentSeId.getVector(sysEnv, seId);
-		for(int i = 0; i < ptv.size(); i++) {
-			final SDMSTrigger t = (SDMSTrigger) ptv.get(i);
-			t.delete(sysEnv);
-		}
-
-		removeFromTimeScheduling(sysEnv);
-
-		super.delete(sysEnv);
 	}
 }

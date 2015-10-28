@@ -65,9 +65,9 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSRunnableQueueGeneric(
 	        SystemEnvironment env,
@@ -97,10 +97,10 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 		return (smeId);
 	}
 
-	public	SDMSRunnableQueueGeneric setSmeId (SystemEnvironment env, Long p_smeId)
+	public	void setSmeId (SystemEnvironment env, Long p_smeId)
 	throws SDMSException
 	{
-		if(smeId.equals(p_smeId)) return this;
+		if(smeId.equals(p_smeId)) return;
 		SDMSRunnableQueueGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -113,13 +113,13 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 			o.smeId = p_smeId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 9);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getScopeId (SystemEnvironment env)
@@ -128,11 +128,11 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 		return (scopeId);
 	}
 
-	public	SDMSRunnableQueueGeneric setScopeId (SystemEnvironment env, Long p_scopeId)
+	public	void setScopeId (SystemEnvironment env, Long p_scopeId)
 	throws SDMSException
 	{
-		if(p_scopeId != null && p_scopeId.equals(scopeId)) return this;
-		if(p_scopeId == null && scopeId == null) return this;
+		if(p_scopeId != null && p_scopeId.equals(scopeId)) return;
+		if(p_scopeId == null && scopeId == null) return;
 		SDMSRunnableQueueGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -145,13 +145,13 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 			o.scopeId = p_scopeId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 26);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getState (SystemEnvironment env)
@@ -182,10 +182,10 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 		                          getState (env)));
 	}
 
-	public	SDMSRunnableQueueGeneric setState (SystemEnvironment env, Integer p_state)
+	public	void setState (SystemEnvironment env, Integer p_state)
 	throws SDMSException
 	{
-		if(state.equals(p_state)) return this;
+		if(state.equals(p_state)) return;
 		SDMSRunnableQueueGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -198,13 +198,13 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 			o.state = p_state;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 20);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -213,29 +213,22 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSRunnableQueueGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSRunnableQueueGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(RunnableQueue) Change of system object not allowed")
-				);
-			}
-			o = (SDMSRunnableQueueGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSRunnableQueueGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(RunnableQueue) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSRunnableQueueGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -244,29 +237,22 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSRunnableQueueGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSRunnableQueueGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(RunnableQueue) Change of system object not allowed")
-				);
-			}
-			o = (SDMSRunnableQueueGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSRunnableQueueGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(RunnableQueue) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSRunnableQueueGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -275,22 +261,15 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSRunnableQueueGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSRunnableQueueGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSRunnableQueueGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSRunnableQueueGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSRunnableQueueGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -299,23 +278,16 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSRunnableQueueGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSRunnableQueueGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSRunnableQueueGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSRunnableQueueGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSRunnableQueueGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSRunnableQueueGeneric set_SmeIdScopeId (SystemEnvironment env, Long p_smeId, Long p_scopeId)
@@ -406,19 +378,11 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO RUNNABLE_QUEUE (" +
 				        "ID" +
@@ -438,30 +402,31 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "RunnableQueue: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, smeId.longValue());
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, smeId.longValue());
 			if (scopeId == null)
-				pInsert.setNull(3, Types.INTEGER);
+				myInsert.setNull(3, Types.INTEGER);
 			else
-				pInsert.setLong (3, scopeId.longValue());
-			pInsert.setInt(4, state.intValue());
-			pInsert.setLong (5, creatorUId.longValue());
-			pInsert.setLong (6, createTs.longValue());
-			pInsert.setLong (7, changerUId.longValue());
-			pInsert.setLong (8, changeTs.longValue());
-			pInsert.executeUpdate();
+				myInsert.setLong (3, scopeId.longValue());
+			myInsert.setInt(4, state.intValue());
+			myInsert.setLong (5, creatorUId.longValue());
+			myInsert.setLong (6, createTs.longValue());
+			myInsert.setLong (7, changerUId.longValue());
+			myInsert.setLong (8, changeTs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "RunnableQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "RunnableQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -469,23 +434,25 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM RUNNABLE_QUEUE WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "RunnableQueue: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "RunnableQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "RunnableQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -493,19 +460,11 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE RUNNABLE_QUEUE SET " +
 				        "" + squote + "SME_ID" + equote + " = ? " +
@@ -516,29 +475,30 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "RunnableQueue: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong (1, smeId.longValue());
+			myUpdate.clearParameters();
+			myUpdate.setLong (1, smeId.longValue());
 			if (scopeId == null)
-				pUpdate.setNull(2, Types.INTEGER);
+				myUpdate.setNull(2, Types.INTEGER);
 			else
-				pUpdate.setLong (2, scopeId.longValue());
-			pUpdate.setInt(3, state.intValue());
-			pUpdate.setLong (4, creatorUId.longValue());
-			pUpdate.setLong (5, createTs.longValue());
-			pUpdate.setLong (6, changerUId.longValue());
-			pUpdate.setLong (7, changeTs.longValue());
-			pUpdate.setLong(8, id.longValue());
-			pUpdate.executeUpdate();
+				myUpdate.setLong (2, scopeId.longValue());
+			myUpdate.setInt(3, state.intValue());
+			myUpdate.setLong (4, creatorUId.longValue());
+			myUpdate.setLong (5, createTs.longValue());
+			myUpdate.setLong (6, changerUId.longValue());
+			myUpdate.setLong (7, changeTs.longValue());
+			myUpdate.setLong(8, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "RunnableQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "RunnableQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

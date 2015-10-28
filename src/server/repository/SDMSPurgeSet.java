@@ -44,39 +44,53 @@ public class SDMSPurgeSet
 
 	public final static String STAT_SIZE = "SIZE";
 
-	public HashSet s;
+	private HashSet s;
 
 	public SDMSPurgeSet()
 	{
 		s = new HashSet();
 	}
 
-	public synchronized void add(SystemEnvironment sysEnv, SDMSVersions v)
+	public void add(SystemEnvironment sysEnv, SDMSVersions v)
 		throws SDMSException
 	{
-		s.add(v);
-	}
-
-	public synchronized void purge(SystemEnvironment sysEnv, long purgeLow)
-		throws SDMSException
-	{
-		Iterator hi = s.iterator();
-		while(hi.hasNext()) {
-			((SDMSVersions) hi.next()).purge(sysEnv, purgeLow, hi);
+		synchronized (s) {
+			s.add(v);
 		}
 	}
 
-	public synchronized int size()
+	public void purge(SystemEnvironment sysEnv, long purgeLow)
+		throws SDMSException
 	{
-		return s.size();
+		Object va[];
+		int l;
+		synchronized(s) {
+			va = s.toArray();
+		}
+		for (int i = 0; i < va.length; ++i) {
+			SDMSVersions v = (SDMSVersions)va[i];
+			if (v.purge(sysEnv, purgeLow)) {
+				synchronized (s) {
+					s.remove(v);
+				}
+			}
+		}
 	}
 
-	public synchronized HashMap stat()
+	public int size()
+	{
+		synchronized (s) {
+			return s.size();
+		}
+	}
+
+	public HashMap stat()
 	{
 		HashMap result = new HashMap();
 
-		result.put(STAT_SIZE, new Long(s.size()));
-
+		synchronized (s) {
+			result.put(STAT_SIZE, new Long(s.size()));
+		}
 		return result;
 	}
 }

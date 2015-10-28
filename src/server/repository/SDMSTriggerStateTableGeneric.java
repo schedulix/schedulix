@@ -67,9 +67,9 @@ public class SDMSTriggerStateTableGeneric extends SDMSTable
 		table = (SDMSTriggerStateTable) this;
 		SDMSTriggerStateTableGeneric.table = (SDMSTriggerStateTable) this;
 		isVersioned = true;
-		idx_triggerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_fromStateId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_toStateId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_triggerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "triggerId");
+		idx_fromStateId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "fromStateId");
+		idx_toStateId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "toStateId");
 	}
 	public SDMSTriggerState create(SystemEnvironment env
 	                               ,Long p_triggerId
@@ -203,18 +203,9 @@ public class SDMSTriggerStateTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -240,12 +231,34 @@ public class SDMSTriggerStateTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
+	public String checkIndex(SDMSObject o)
+	throws SDMSException
+	{
+		String out = "";
+		boolean ok;
+		ok =  idx_triggerId.check(((SDMSTriggerStateGeneric) o).triggerId, o);
+		out = out + "idx_triggerId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_fromStateId.check(((SDMSTriggerStateGeneric) o).fromStateId, o);
+		out = out + "idx_fromStateId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_toStateId.check(((SDMSTriggerStateGeneric) o).toStateId, o);
+		out = out + "idx_toStateId: " + (ok ? "ok" : "missing") + "\n";
+		SDMSKey k;
+		return out;
+	}
+
 	protected void index(SystemEnvironment env, SDMSObject o)
 	throws SDMSException
 	{
-		idx_triggerId.put(env, ((SDMSTriggerStateGeneric) o).triggerId, o);
-		idx_fromStateId.put(env, ((SDMSTriggerStateGeneric) o).fromStateId, o);
-		idx_toStateId.put(env, ((SDMSTriggerStateGeneric) o).toStateId, o);
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_triggerId.put(env, ((SDMSTriggerStateGeneric) o).triggerId, o, ((1 & indexMember) != 0));
+		idx_fromStateId.put(env, ((SDMSTriggerStateGeneric) o).fromStateId, o, ((2 & indexMember) != 0));
+		idx_toStateId.put(env, ((SDMSTriggerStateGeneric) o).toStateId, o, ((4 & indexMember) != 0));
+		SDMSKey k;
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)
@@ -254,6 +267,7 @@ public class SDMSTriggerStateTableGeneric extends SDMSTable
 		idx_triggerId.remove(env, ((SDMSTriggerStateGeneric) o).triggerId, o);
 		idx_fromStateId.remove(env, ((SDMSTriggerStateGeneric) o).fromStateId, o);
 		idx_toStateId.remove(env, ((SDMSTriggerStateGeneric) o).toStateId, o);
+		SDMSKey k;
 	}
 
 	public static SDMSTriggerState getObject(SystemEnvironment env, Long id)

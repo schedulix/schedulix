@@ -51,6 +51,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		, "MAIN_SE_ID"
 		, "PARENT_SE_ID"
 		, "IS_ACTIVE"
+		, "IS_INVERSE"
 		, "ACTION"
 		, "TYPE"
 		, "IS_MASTER"
@@ -63,6 +64,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		, "RESUME_IN"
 		, "RESUME_BASE"
 		, "IS_WARN_ON_LIMIT"
+		, "LIMIT_STATE"
 		, "MAX_RETRY"
 		, "SUBMIT_OWNER_ID"
 		, "CONDITION"
@@ -80,6 +82,8 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 	public static SDMSIndex idx_submitOwnerId;
 	public static SDMSIndex idx_fireId_type;
 	public static SDMSIndex idx_fireId_name;
+	public static SDMSIndex idx_seId_name;
+	public static SDMSIndex idx_fireId_seId_name_isInverse;
 
 	public SDMSTriggerTableGeneric(SystemEnvironment env)
 	throws SDMSException
@@ -92,13 +96,15 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		table = (SDMSTriggerTable) this;
 		SDMSTriggerTableGeneric.table = (SDMSTriggerTable) this;
 		isVersioned = true;
-		idx_fireId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_mainSeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentSeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_submitOwnerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_fireId_type = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_fireId_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_fireId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "fireId");
+		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seId");
+		idx_mainSeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "mainSeId");
+		idx_parentSeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "parentSeId");
+		idx_submitOwnerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "submitOwnerId");
+		idx_fireId_type = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "fireId_type");
+		idx_fireId_name = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "fireId_name");
+		idx_seId_name = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seId_name");
+		idx_fireId_seId_name_isInverse = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "fireId_seId_name_isInverse");
 	}
 	public SDMSTrigger create(SystemEnvironment env
 	                          ,String p_name
@@ -108,6 +114,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 	                          ,Long p_mainSeId
 	                          ,Long p_parentSeId
 	                          ,Boolean p_isActive
+	                          ,Boolean p_isInverse
 	                          ,Integer p_action
 	                          ,Integer p_type
 	                          ,Boolean p_isMaster
@@ -120,6 +127,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 	                          ,Integer p_resumeIn
 	                          ,Integer p_resumeBase
 	                          ,Boolean p_isWarnOnLimit
+	                          ,Long p_limitState
 	                          ,Integer p_maxRetry
 	                          ,Long p_submitOwnerId
 	                          ,String p_condition
@@ -145,6 +153,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		         , p_mainSeId
 		         , p_parentSeId
 		         , p_isActive
+		         , p_isInverse
 		         , p_action
 		         , p_type
 		         , p_isMaster
@@ -157,6 +166,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		         , p_resumeIn
 		         , p_resumeBase
 		         , p_isWarnOnLimit
+		         , p_limitState
 		         , p_maxRetry
 		         , p_submitOwnerId
 		         , p_condition
@@ -177,6 +187,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		                , p_mainSeId
 		                , p_parentSeId
 		                , p_isActive
+		                , p_isInverse
 		                , p_action
 		                , p_type
 		                , p_isMaster
@@ -189,6 +200,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		                , p_resumeIn
 		                , p_resumeBase
 		                , p_isWarnOnLimit
+		                , p_limitState
 		                , p_maxRetry
 		                , p_submitOwnerId
 		                , p_condition
@@ -239,6 +251,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 	                        ,Long p_mainSeId
 	                        ,Long p_parentSeId
 	                        ,Boolean p_isActive
+	                        ,Boolean p_isInverse
 	                        ,Integer p_action
 	                        ,Integer p_type
 	                        ,Boolean p_isMaster
@@ -251,6 +264,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 	                        ,Integer p_resumeIn
 	                        ,Integer p_resumeBase
 	                        ,Boolean p_isWarnOnLimit
+	                        ,Long p_limitState
 	                        ,Integer p_maxRetry
 	                        ,Long p_submitOwnerId
 	                        ,String p_condition
@@ -298,6 +312,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		Long mainSeId;
 		Long parentSeId;
 		Boolean isActive;
+		Boolean isInverse;
 		Integer action;
 		Integer type;
 		Boolean isMaster;
@@ -310,6 +325,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		Integer resumeIn;
 		Integer resumeBase;
 		Boolean isWarnOnLimit;
+		Long limitState;
 		Integer maxRetry;
 		Long submitOwnerId;
 		String condition;
@@ -333,40 +349,43 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 			parentSeId = new Long (r.getLong(7));
 			if (r.wasNull()) parentSeId = null;
 			isActive = new Boolean ((r.getInt(8) == 0 ? false : true));
-			action = new Integer (r.getInt(9));
-			type = new Integer (r.getInt(10));
-			isMaster = new Boolean ((r.getInt(11) == 0 ? false : true));
-			isSuspend = new Boolean ((r.getInt(12) == 0 ? false : true));
-			isCreate = new Boolean ((r.getInt(13) == 0 ? false : true));
+			isInverse = new Boolean ((r.getInt(9) == 0 ? false : true));
+			action = new Integer (r.getInt(10));
+			type = new Integer (r.getInt(11));
+			isMaster = new Boolean ((r.getInt(12) == 0 ? false : true));
+			isSuspend = new Boolean ((r.getInt(13) == 0 ? false : true));
+			isCreate = new Boolean ((r.getInt(14) == 0 ? false : true));
 			if (r.wasNull()) isCreate = null;
-			isChange = new Boolean ((r.getInt(14) == 0 ? false : true));
+			isChange = new Boolean ((r.getInt(15) == 0 ? false : true));
 			if (r.wasNull()) isChange = null;
-			isDelete = new Boolean ((r.getInt(15) == 0 ? false : true));
+			isDelete = new Boolean ((r.getInt(16) == 0 ? false : true));
 			if (r.wasNull()) isDelete = null;
-			isGroup = new Boolean ((r.getInt(16) == 0 ? false : true));
+			isGroup = new Boolean ((r.getInt(17) == 0 ? false : true));
 			if (r.wasNull()) isGroup = null;
-			resumeAt = r.getString(17);
+			resumeAt = r.getString(18);
 			if (r.wasNull()) resumeAt = null;
-			resumeIn = new Integer (r.getInt(18));
+			resumeIn = new Integer (r.getInt(19));
 			if (r.wasNull()) resumeIn = null;
-			resumeBase = new Integer (r.getInt(19));
+			resumeBase = new Integer (r.getInt(20));
 			if (r.wasNull()) resumeBase = null;
-			isWarnOnLimit = new Boolean ((r.getInt(20) == 0 ? false : true));
-			maxRetry = new Integer (r.getInt(21));
-			submitOwnerId = new Long (r.getLong(22));
+			isWarnOnLimit = new Boolean ((r.getInt(21) == 0 ? false : true));
+			limitState = new Long (r.getLong(22));
+			if (r.wasNull()) limitState = null;
+			maxRetry = new Integer (r.getInt(23));
+			submitOwnerId = new Long (r.getLong(24));
 			if (r.wasNull()) submitOwnerId = null;
-			condition = r.getString(23);
+			condition = r.getString(25);
 			if (r.wasNull()) condition = null;
-			checkAmount = new Integer (r.getInt(24));
+			checkAmount = new Integer (r.getInt(26));
 			if (r.wasNull()) checkAmount = null;
-			checkBase = new Integer (r.getInt(25));
+			checkBase = new Integer (r.getInt(27));
 			if (r.wasNull()) checkBase = null;
-			creatorUId = new Long (r.getLong(26));
-			createTs = new Long (r.getLong(27));
-			changerUId = new Long (r.getLong(28));
-			changeTs = new Long (r.getLong(29));
-			validFrom = r.getLong(30);
-			validTo = r.getLong(31);
+			creatorUId = new Long (r.getLong(28));
+			createTs = new Long (r.getLong(29));
+			changerUId = new Long (r.getLong(30));
+			changeTs = new Long (r.getLong(31));
+			validFrom = r.getLong(32);
+			validTo = r.getLong(33);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 
@@ -381,6 +400,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		                              mainSeId,
 		                              parentSeId,
 		                              isActive,
+		                              isInverse,
 		                              action,
 		                              type,
 		                              isMaster,
@@ -393,6 +413,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		                              resumeIn,
 		                              resumeBase,
 		                              isWarnOnLimit,
+		                              limitState,
 		                              maxRetry,
 		                              submitOwnerId,
 		                              condition,
@@ -411,18 +432,9 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -434,6 +446,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		                                   ", " + squote + "MAIN_SE_ID" + equote +
 		                                   ", " + squote + "PARENT_SE_ID" + equote +
 		                                   ", " + squote + "IS_ACTIVE" + equote +
+		                                   ", " + squote + "IS_INVERSE" + equote +
 		                                   ", " + squote + "ACTION" + equote +
 		                                   ", " + squote + "TYPE" + equote +
 		                                   ", " + squote + "IS_MASTER" + equote +
@@ -446,6 +459,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		                                   ", " + squote + "RESUME_IN" + equote +
 		                                   ", " + squote + "RESUME_BASE" + equote +
 		                                   ", " + squote + "IS_WARN_ON_LIMIT" + equote +
+		                                   ", " + squote + "LIMIT_STATE" + equote +
 		                                   ", " + squote + "MAX_RETRY" + equote +
 		                                   ", " + squote + "SUBMIT_OWNER_ID" + equote +
 		                                   ", " + squote + "CONDITION" + equote +
@@ -469,23 +483,80 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_fireId.put(env, ((SDMSTriggerGeneric) o).fireId, o);
-		idx_seId.put(env, ((SDMSTriggerGeneric) o).seId, o);
-		idx_mainSeId.put(env, ((SDMSTriggerGeneric) o).mainSeId, o);
-		idx_parentSeId.put(env, ((SDMSTriggerGeneric) o).parentSeId, o);
-		idx_submitOwnerId.put(env, ((SDMSTriggerGeneric) o).submitOwnerId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_fireId.check(((SDMSTriggerGeneric) o).fireId, o);
+		out = out + "idx_fireId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_seId.check(((SDMSTriggerGeneric) o).seId, o);
+		out = out + "idx_seId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_mainSeId.check(((SDMSTriggerGeneric) o).mainSeId, o);
+		out = out + "idx_mainSeId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_parentSeId.check(((SDMSTriggerGeneric) o).parentSeId, o);
+		out = out + "idx_parentSeId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_submitOwnerId.check(((SDMSTriggerGeneric) o).submitOwnerId, o);
+		out = out + "idx_submitOwnerId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSTriggerGeneric) o).fireId);
 		k.add(((SDMSTriggerGeneric) o).type);
-		idx_fireId_type.put(env, k, o);
+		ok =  idx_fireId_type.check(k, o);
+		out = out + "idx_fireId_type: " + (ok ? "ok" : "missing") + "\n";
 		k = new SDMSKey();
 		k.add(((SDMSTriggerGeneric) o).fireId);
 		k.add(((SDMSTriggerGeneric) o).name);
-		idx_fireId_name.put(env, k, o);
+		ok =  idx_fireId_name.check(k, o);
+		out = out + "idx_fireId_name: " + (ok ? "ok" : "missing") + "\n";
+		k = new SDMSKey();
+		k.add(((SDMSTriggerGeneric) o).seId);
+		k.add(((SDMSTriggerGeneric) o).name);
+		ok =  idx_seId_name.check(k, o);
+		out = out + "idx_seId_name: " + (ok ? "ok" : "missing") + "\n";
+		k = new SDMSKey();
+		k.add(((SDMSTriggerGeneric) o).fireId);
+		k.add(((SDMSTriggerGeneric) o).seId);
+		k.add(((SDMSTriggerGeneric) o).name);
+		k.add(((SDMSTriggerGeneric) o).isInverse);
+		ok =  idx_fireId_seId_name_isInverse.check(k, o);
+		out = out + "idx_fireId_seId_name_isInverse: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_fireId.put(env, ((SDMSTriggerGeneric) o).fireId, o, ((1 & indexMember) != 0));
+		idx_seId.put(env, ((SDMSTriggerGeneric) o).seId, o, ((2 & indexMember) != 0));
+		idx_mainSeId.put(env, ((SDMSTriggerGeneric) o).mainSeId, o, ((4 & indexMember) != 0));
+		idx_parentSeId.put(env, ((SDMSTriggerGeneric) o).parentSeId, o, ((8 & indexMember) != 0));
+		idx_submitOwnerId.put(env, ((SDMSTriggerGeneric) o).submitOwnerId, o, ((16 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSTriggerGeneric) o).fireId);
+		k.add(((SDMSTriggerGeneric) o).type);
+		idx_fireId_type.put(env, k, o, ((32 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSTriggerGeneric) o).fireId);
+		k.add(((SDMSTriggerGeneric) o).name);
+		idx_fireId_name.put(env, k, o, ((64 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSTriggerGeneric) o).seId);
+		k.add(((SDMSTriggerGeneric) o).name);
+		idx_seId_name.put(env, k, o, ((128 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSTriggerGeneric) o).fireId);
+		k.add(((SDMSTriggerGeneric) o).seId);
+		k.add(((SDMSTriggerGeneric) o).name);
+		k.add(((SDMSTriggerGeneric) o).isInverse);
+		idx_fireId_seId_name_isInverse.put(env, k, o, ((256 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)
@@ -505,6 +576,16 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		k.add(((SDMSTriggerGeneric) o).fireId);
 		k.add(((SDMSTriggerGeneric) o).name);
 		idx_fireId_name.remove(env, k, o);
+		k = new SDMSKey();
+		k.add(((SDMSTriggerGeneric) o).seId);
+		k.add(((SDMSTriggerGeneric) o).name);
+		idx_seId_name.remove(env, k, o);
+		k = new SDMSKey();
+		k.add(((SDMSTriggerGeneric) o).fireId);
+		k.add(((SDMSTriggerGeneric) o).seId);
+		k.add(((SDMSTriggerGeneric) o).name);
+		k.add(((SDMSTriggerGeneric) o).isInverse);
+		idx_fireId_seId_name_isInverse.remove(env, k, o);
 	}
 
 	public static SDMSTrigger getObject(SystemEnvironment env, Long id)
@@ -519,16 +600,16 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		return (SDMSTrigger) table.get(env, id, version);
 	}
 
-	public static SDMSTrigger idx_fireId_name_getUnique(SystemEnvironment env, Object key)
+	public static SDMSTrigger idx_fireId_seId_name_isInverse_getUnique(SystemEnvironment env, Object key)
 	throws SDMSException
 	{
-		return (SDMSTrigger)  SDMSTriggerTableGeneric.idx_fireId_name.getUnique(env, key);
+		return (SDMSTrigger)  SDMSTriggerTableGeneric.idx_fireId_seId_name_isInverse.getUnique(env, key);
 	}
 
-	public static SDMSTrigger idx_fireId_name_getUnique(SystemEnvironment env, Object key, long version)
+	public static SDMSTrigger idx_fireId_seId_name_isInverse_getUnique(SystemEnvironment env, Object key, long version)
 	throws SDMSException
 	{
-		return (SDMSTrigger)  SDMSTriggerTableGeneric.idx_fireId_name.getUnique(env, key, version);
+		return (SDMSTrigger)  SDMSTriggerTableGeneric.idx_fireId_seId_name_isInverse.getUnique(env, key, version);
 	}
 
 	public String tableName()

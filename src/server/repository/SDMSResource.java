@@ -910,11 +910,28 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			c_data.add (value == null ? null : value.substring (1));
 			c_data.add (Boolean.FALSE);
 
-			try {
-				final SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, pdId);
-				c_data.add (oc.getDescription(sysEnv));
-				c_data.add (oc.getInfoTypeAsString(sysEnv));
-			} catch (NotFoundException nfe) {
+			Vector ocv = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, pdId);
+			if (ocv.size() != 0) {
+				StringBuffer sb = new StringBuffer();
+				String tag;
+				String infoType = null;
+				for (int j = 0; j < ocv.size(); ++j) {
+					SDMSObjectComment oc = (SDMSObjectComment) ocv.get(j);
+					tag = oc.getTag(sysEnv);
+					if (tag != null) {
+						if (j != 0)
+							sb.append("\n");
+						sb.append(tag);
+						sb.append("\n\n");
+					}
+					sb.append (oc.getDescription(sysEnv));
+					sb.append ("\n");
+					if (j == 0)
+						infoType = oc.getInfoTypeAsString(sysEnv);
+				}
+				c_data.add (sb.toString());
+				c_data.add (infoType);
+			} else {
 				c_data.add (null);
 				c_data.add (null);
 			}
@@ -937,11 +954,29 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 				final String value = pd.getDefaultValue(sysEnv);
 				c_data.add((value == null ? null : value.substring(1)));
 				c_data.add(Boolean.TRUE);
-				try {
-					final SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, pdId);
-					c_data.add (oc.getDescription(sysEnv));
-					c_data.add (oc.getInfoTypeAsString(sysEnv));
-				} catch (NotFoundException nfe) {
+
+				Vector ocv = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, pdId);
+				if (ocv.size() != 0) {
+					StringBuffer sb = new StringBuffer();
+					String tag;
+					String infoType = null;
+					for (int j = 0; j < ocv.size(); ++j) {
+						SDMSObjectComment oc = (SDMSObjectComment) ocv.get(j);
+						tag = oc.getTag(sysEnv);
+						if (tag != null) {
+							if (j != 0)
+								sb.append("\n");
+							sb.append(tag);
+							sb.append("\n\n");
+						}
+						sb.append (oc.getDescription(sysEnv));
+						sb.append ("\n");
+						if (j == 0)
+							infoType = oc.getInfoTypeAsString(sysEnv);
+					}
+					c_data.add (sb.toString());
+					c_data.add (infoType);
+				} else {
 					c_data.add (null);
 					c_data.add (null);
 				}

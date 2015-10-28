@@ -212,6 +212,24 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 		((SDMSTriggerGeneric)(object)).setIsActive (env, p_isActive);
 		return ;
 	}
+	public Boolean getIsInverse (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSTriggerGeneric)(object)).getIsInverse (env));
+	}
+
+	public void setIsInverse (SystemEnvironment env, Boolean p_isInverse)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSTriggerGeneric)(object)).setIsInverse (env, p_isInverse);
+		return ;
+	}
 	public Integer getAction (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -463,6 +481,24 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 		((SDMSTriggerGeneric)(object)).setIsWarnOnLimit (env, p_isWarnOnLimit);
 		return ;
 	}
+	public Long getLimitState (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSTriggerGeneric)(object)).getLimitState (env));
+	}
+
+	public void setLimitState (SystemEnvironment env, Long p_limitState)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSTriggerGeneric)(object)).setLimitState (env, p_limitState);
+		return ;
+	}
 	public Integer getMaxRetry (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -669,6 +705,30 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 
 		touchMaster(env);
 		((SDMSTriggerGeneric)(object)).set_FireIdName (env, p_fireId, p_name);
+		return (SDMSTrigger)this;
+	}
+
+	public SDMSTrigger set_SeIdName (SystemEnvironment env, Long p_seId, String p_name)
+	throws SDMSException
+	{
+		checkRead(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181242"));
+
+		touchMaster(env);
+		((SDMSTriggerGeneric)(object)).set_SeIdName (env, p_seId, p_name);
+		return (SDMSTrigger)this;
+	}
+
+	public SDMSTrigger set_FireIdSeIdNameIsInverse (SystemEnvironment env, Long p_fireId, Long p_seId, String p_name, Boolean p_isInverse)
+	throws SDMSException
+	{
+		checkRead(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181242"));
+
+		touchMaster(env);
+		((SDMSTriggerGeneric)(object)).set_FireIdSeIdNameIsInverse (env, p_fireId, p_seId, p_name, p_isInverse);
 		return (SDMSTrigger)this;
 	}
 

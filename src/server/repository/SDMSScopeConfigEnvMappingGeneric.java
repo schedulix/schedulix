@@ -59,9 +59,9 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSScopeConfigEnvMappingGeneric(
 	        SystemEnvironment env,
@@ -103,10 +103,10 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 		return (key);
 	}
 
-	public	SDMSScopeConfigEnvMappingGeneric setKey (SystemEnvironment env, String p_key)
+	public	void setKey (SystemEnvironment env, String p_key)
 	throws SDMSException
 	{
-		if(key.equals(p_key)) return this;
+		if(key.equals(p_key)) return;
 		SDMSScopeConfigEnvMappingGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -125,13 +125,13 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 			o.key = p_key;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public String getValue (SystemEnvironment env)
@@ -140,35 +140,28 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 		return (value);
 	}
 
-	public	SDMSScopeConfigEnvMappingGeneric setValue (SystemEnvironment env, String p_value)
+	public	void setValue (SystemEnvironment env, String p_value)
 	throws SDMSException
 	{
-		if(value.equals(p_value)) return this;
-		SDMSScopeConfigEnvMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScopeConfigEnvMapping) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScopeConfigEnvMappingGeneric) change(env);
-			if (p_value != null && p_value.length() > 256) {
-				throw new CommonErrorException (
-				        new SDMSMessage(env, "01112141510",
-				                        "(ScopeConfigEnvMapping) Length of $1 exceeds maximum length $2", "value", "256")
-				);
-			}
-			o.value = p_value;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(value.equals(p_value)) return;
+		SDMSScopeConfigEnvMappingGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScopeConfigEnvMapping) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigEnvMappingGeneric) change(env);
+		if (p_value != null && p_value.length() > 256) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(ScopeConfigEnvMapping) Length of $1 exceeds maximum length $2", "value", "256")
+			);
+		}
+		o.value = p_value;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getSId (SystemEnvironment env)
@@ -177,10 +170,10 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 		return (sId);
 	}
 
-	public	SDMSScopeConfigEnvMappingGeneric setSId (SystemEnvironment env, Long p_sId)
+	public	void setSId (SystemEnvironment env, Long p_sId)
 	throws SDMSException
 	{
-		if(sId.equals(p_sId)) return this;
+		if(sId.equals(p_sId)) return;
 		SDMSScopeConfigEnvMappingGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -193,13 +186,13 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 			o.sId = p_sId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 3);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -208,29 +201,22 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSScopeConfigEnvMappingGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSScopeConfigEnvMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScopeConfigEnvMapping) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScopeConfigEnvMappingGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSScopeConfigEnvMappingGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScopeConfigEnvMapping) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigEnvMappingGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -239,29 +225,22 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSScopeConfigEnvMappingGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSScopeConfigEnvMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ScopeConfigEnvMapping) Change of system object not allowed")
-				);
-			}
-			o = (SDMSScopeConfigEnvMappingGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSScopeConfigEnvMappingGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ScopeConfigEnvMapping) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigEnvMappingGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -270,22 +249,15 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSScopeConfigEnvMappingGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSScopeConfigEnvMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSScopeConfigEnvMappingGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSScopeConfigEnvMappingGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigEnvMappingGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -294,23 +266,16 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSScopeConfigEnvMappingGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSScopeConfigEnvMappingGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSScopeConfigEnvMappingGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSScopeConfigEnvMappingGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigEnvMappingGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSScopeConfigEnvMappingGeneric set_SIdKey (SystemEnvironment env, Long p_sId, String p_key)
@@ -381,19 +346,11 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO SCOPE_CONFIG_ENVMAPPING (" +
 				        "ID" +
@@ -413,27 +370,28 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ScopeConfigEnvMapping: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setString(2, key);
-			pInsert.setString(3, value);
-			pInsert.setLong (4, sId.longValue());
-			pInsert.setLong (5, creatorUId.longValue());
-			pInsert.setLong (6, createTs.longValue());
-			pInsert.setLong (7, changerUId.longValue());
-			pInsert.setLong (8, changeTs.longValue());
-			pInsert.executeUpdate();
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setString(2, key);
+			myInsert.setString(3, value);
+			myInsert.setLong (4, sId.longValue());
+			myInsert.setLong (5, creatorUId.longValue());
+			myInsert.setLong (6, createTs.longValue());
+			myInsert.setLong (7, changerUId.longValue());
+			myInsert.setLong (8, changeTs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "ScopeConfigEnvMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ScopeConfigEnvMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -441,23 +399,25 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM SCOPE_CONFIG_ENVMAPPING WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "ScopeConfigEnvMapping: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "ScopeConfigEnvMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "ScopeConfigEnvMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -465,19 +425,11 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE SCOPE_CONFIG_ENVMAPPING SET " +
 				        "" + squote + "KEY" + equote + " = ? " +
@@ -488,26 +440,27 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "ScopeConfigEnvMapping: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setString(1, key);
-			pUpdate.setString(2, value);
-			pUpdate.setLong (3, sId.longValue());
-			pUpdate.setLong (4, creatorUId.longValue());
-			pUpdate.setLong (5, createTs.longValue());
-			pUpdate.setLong (6, changerUId.longValue());
-			pUpdate.setLong (7, changeTs.longValue());
-			pUpdate.setLong(8, id.longValue());
-			pUpdate.executeUpdate();
+			myUpdate.clearParameters();
+			myUpdate.setString(1, key);
+			myUpdate.setString(2, value);
+			myUpdate.setLong (3, sId.longValue());
+			myUpdate.setLong (4, creatorUId.longValue());
+			myUpdate.setLong (5, createTs.longValue());
+			myUpdate.setLong (6, changerUId.longValue());
+			myUpdate.setLong (7, changeTs.longValue());
+			myUpdate.setLong(8, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "ScopeConfigEnvMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "ScopeConfigEnvMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

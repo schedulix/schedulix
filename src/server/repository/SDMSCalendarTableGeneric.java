@@ -65,8 +65,8 @@ public class SDMSCalendarTableGeneric extends SDMSTable
 		table = (SDMSCalendarTable) this;
 		SDMSCalendarTableGeneric.table = (SDMSCalendarTable) this;
 		isVersioned = false;
-		idx_scevId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_scevId_starttime = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_scevId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "scevId");
+		idx_scevId_starttime = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "scevId_starttime");
 	}
 	public SDMSCalendar create(SystemEnvironment env
 	                           ,Long p_scevId
@@ -191,18 +191,9 @@ public class SDMSCalendarTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -223,15 +214,37 @@ public class SDMSCalendarTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_scevId.put(env, ((SDMSCalendarGeneric) o).scevId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_scevId.check(((SDMSCalendarGeneric) o).scevId, o);
+		out = out + "idx_scevId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSCalendarGeneric) o).scevId);
 		k.add(((SDMSCalendarGeneric) o).starttime);
-		idx_scevId_starttime.put(env, k, o);
+		ok =  idx_scevId_starttime.check(k, o);
+		out = out + "idx_scevId_starttime: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_scevId.put(env, ((SDMSCalendarGeneric) o).scevId, o, ((1 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSCalendarGeneric) o).scevId);
+		k.add(((SDMSCalendarGeneric) o).starttime);
+		idx_scevId_starttime.put(env, k, o, ((2 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

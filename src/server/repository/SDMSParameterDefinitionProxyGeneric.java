@@ -60,6 +60,7 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 
 	static final public int name_size = 64;
 	static final public int defaultValue_size = 256;
+	static final public int exportName_size = 64;
 
 	private static SDMSTable masterTables[] = null;
 
@@ -206,6 +207,24 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 
 		touchMaster(env);
 		((SDMSParameterDefinitionGeneric)(object)).setLinkPdId (env, p_linkPdId);
+		return ;
+	}
+	public String getExportName (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSParameterDefinitionGeneric)(object)).getExportName (env));
+	}
+
+	public void setExportName (SystemEnvironment env, String p_exportName)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSParameterDefinitionGeneric)(object)).setExportName (env, p_exportName);
 		return ;
 	}
 	public Long getCreatorUId (SystemEnvironment env)

@@ -30,7 +30,6 @@ package de.independit.scheduler.server.repository;
 import java.io.*;
 import java.util.*;
 import java.lang.*;
-import java.sql.*;
 
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
@@ -82,5 +81,26 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 	{
 		setState(sysEnv, new Integer(ERROR));
 		setErrorMsg(sysEnv, msg);
+	}
+
+	public void setState(SystemEnvironment sysEnv, Integer state)
+	throws SDMSException
+	{
+		int oldState = getState(sysEnv).intValue();
+		int newState = state.intValue();
+
+		Date dts = new Date();
+		Long ts = new Long (dts.getTime());
+
+		if (newState == STARTING)
+			synchronized(sysEnv.jidsStarting) {
+				sysEnv.jidsStarting.put(getId(sysEnv), ts);
+			}
+		else if (oldState == STARTING)
+			synchronized(sysEnv.jidsStarting) {
+				sysEnv.jidsStarting.remove(getId(sysEnv));
+			}
+
+		super.setState(sysEnv, state);
 	}
 }

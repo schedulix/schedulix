@@ -275,6 +275,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			childTag = thisSme.getId(sysEnv).toString() + '.' + getId(sysEnv).toString() + ':' + trSeq.toString();
 		}
 
+		sysEnv.tx.traceSubTx = true;
 		sysEnv.tx.beginSubTransaction(sysEnv);
 		try {
 
@@ -340,6 +341,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 
 			sysEnv.tx.commitSubTransaction(sysEnv);
 		}
+		sysEnv.tx.traceSubTx = false;
 
 		mths.remove(trId);
 
@@ -470,5 +472,159 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		throws SDMSException
 	{
 		return "trigger " + getURLName(sysEnv);
+	}
+
+	public long getPrivileges(SystemEnvironment env, long checkPrivs, boolean fastFail, Vector checkGroups)
+	throws SDMSException
+	{
+		Vector groups;
+		if (checkGroups == null) groups = new Vector();
+		else groups = checkGroups;
+
+		long p = 0;
+		p = checkPrivs;
+		int objectType = getObjectType(env).intValue();
+		SDMSTable t;
+
+		switch (objectType) {
+		case JOB_DEFINITION:
+			boolean isInverse = getIsInverse(env).booleanValue();
+			t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
+			try {
+				SDMSProxy o = t.get(env, (isInverse ? getFireId(env) : getSeId(env)));
+				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+				}
+				p = p & sp;
+			} catch (NotFoundException nfe) {
+				p = 0;
+			}
+			break;
+		case RESOURCE:
+			t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
+			try {
+				SDMSProxy o = t.get(env, getFireId(env));
+				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+				}
+				p = p & sp;
+			} catch (NotFoundException nfe) {
+				p = 0;
+			}
+			break;
+		case NAMED_RESOURCE:
+			t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
+			try {
+				SDMSProxy o = t.get(env, getFireId(env));
+				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+				}
+				p = p & sp;
+			} catch (NotFoundException nfe) {
+				p = 0;
+			}
+			break;
+		}
+		return p;
+	}
+
+	public long getPrivileges(SystemEnvironment env, long checkPrivs, boolean fastFail, Vector checkGroups, long version)
+	throws SDMSException
+	{
+		Vector groups;
+		if (checkGroups == null) groups = new Vector();
+		else groups = checkGroups;
+
+		long p = 0;
+		int objectType = getObjectType(env).intValue();
+		p = checkPrivs;
+		SDMSTable t;
+
+		switch (objectType) {
+		case JOB_DEFINITION:
+			boolean isInverse = getIsInverse(env).booleanValue();
+			t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
+			try {
+
+				SDMSProxy o = t.get(env, (isInverse ? getFireId(env) : getSeId(env)), version);
+				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+				}
+				p = p & sp;
+			} catch (NotFoundException nfe) {
+				p = 0;
+			}
+			break;
+		case RESOURCE:
+			t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
+			try {
+
+				SDMSProxy o = t.get(env, getFireId(env), version);
+				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+				}
+				p = p & sp;
+			} catch (NotFoundException nfe) {
+				p = 0;
+			}
+			break;
+		case NAMED_RESOURCE:
+			t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
+			try {
+
+				SDMSProxy o = t.get(env, getFireId(env), version);
+				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+				}
+				p = p & sp;
+			} catch (NotFoundException nfe) {
+				p = 0;
+			}
+			break;
+		}
+		return p;
+	}
+
+	void touchMaster(SystemEnvironment env)
+	throws SDMSException
+	{
+		SDMSTable t;
+		int objectType = getObjectType(env).intValue();
+
+		switch (objectType) {
+		case JOB_DEFINITION:
+			boolean isInverse = getIsInverse(env).booleanValue();
+			t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
+			try {
+				SDMSProxy p = t.get(env, (isInverse ? getSeId(env) : getFireId(env)));
+				p.touch(env);
+			} catch (NotFoundException nfe) {
+
+			}
+			break;
+		case RESOURCE:
+			t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
+			try {
+				SDMSProxy p = t.get(env, getFireId(env));
+				p.touch(env);
+			} catch (NotFoundException nfe) {
+
+			}
+			break;
+		case NAMED_RESOURCE:
+			t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
+			try {
+				SDMSProxy p = t.get(env, getFireId(env));
+				p.touch(env);
+			} catch (NotFoundException nfe) {
+
+			}
+		}
 	}
 }

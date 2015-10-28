@@ -66,10 +66,11 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	public final static int nr_defaultValue = 6;
 	public final static int nr_isLocal = 7;
 	public final static int nr_linkPdId = 8;
-	public final static int nr_creatorUId = 9;
-	public final static int nr_createTs = 10;
-	public final static int nr_changerUId = 11;
-	public final static int nr_changeTs = 12;
+	public final static int nr_exportName = 9;
+	public final static int nr_creatorUId = 10;
+	public final static int nr_createTs = 11;
+	public final static int nr_changerUId = 12;
+	public final static int nr_changeTs = 13;
 
 	public static String tableName = SDMSParameterDefinitionTableGeneric.tableName;
 
@@ -80,14 +81,15 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	protected String defaultValue;
 	protected Boolean isLocal;
 	protected Long linkPdId;
+	protected String exportName;
 	protected Long creatorUId;
 	protected Long createTs;
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSParameterDefinitionGeneric(
 	        SystemEnvironment env,
@@ -98,6 +100,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	        String p_defaultValue,
 	        Boolean p_isLocal,
 	        Long p_linkPdId,
+	        String p_exportName,
 	        Long p_creatorUId,
 	        Long p_createTs,
 	        Long p_changerUId,
@@ -125,6 +128,13 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		defaultValue = p_defaultValue;
 		isLocal = p_isLocal;
 		linkPdId = p_linkPdId;
+		if (p_exportName != null && p_exportName.length() > 64) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141528",
+			                        "(ParameterDefinition) Length of $1 exceeds maximum length $2", "exportName", "64")
+			);
+		}
+		exportName = p_exportName;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -137,10 +147,10 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		return (seId);
 	}
 
-	public	SDMSParameterDefinitionGeneric setSeId (SystemEnvironment env, Long p_seId)
+	public	void setSeId (SystemEnvironment env, Long p_seId)
 	throws SDMSException
 	{
-		if(seId.equals(p_seId)) return this;
+		if(seId.equals(p_seId)) return;
 		SDMSParameterDefinitionGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -153,13 +163,13 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			o.seId = p_seId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 5);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public String getName (SystemEnvironment env)
@@ -168,10 +178,10 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		return (name);
 	}
 
-	public	SDMSParameterDefinitionGeneric setName (SystemEnvironment env, String p_name)
+	public	void setName (SystemEnvironment env, String p_name)
 	throws SDMSException
 	{
-		if(name.equals(p_name)) return this;
+		if(name.equals(p_name)) return;
 		SDMSParameterDefinitionGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -190,13 +200,13 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			o.name = p_name;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 4);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getType (SystemEnvironment env)
@@ -239,29 +249,22 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		                          getType (env)));
 	}
 
-	public	SDMSParameterDefinitionGeneric setType (SystemEnvironment env, Integer p_type)
+	public	void setType (SystemEnvironment env, Integer p_type)
 	throws SDMSException
 	{
-		if(type.equals(p_type)) return this;
-		SDMSParameterDefinitionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
-				);
-			}
-			o = (SDMSParameterDefinitionGeneric) change(env);
-			o.type = p_type;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(type.equals(p_type)) return;
+		SDMSParameterDefinitionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		o.type = p_type;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getAggFunction (SystemEnvironment env)
@@ -294,29 +297,22 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		                          getAggFunction (env)));
 	}
 
-	public	SDMSParameterDefinitionGeneric setAggFunction (SystemEnvironment env, Integer p_aggFunction)
+	public	void setAggFunction (SystemEnvironment env, Integer p_aggFunction)
 	throws SDMSException
 	{
-		if(aggFunction.equals(p_aggFunction)) return this;
-		SDMSParameterDefinitionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
-				);
-			}
-			o = (SDMSParameterDefinitionGeneric) change(env);
-			o.aggFunction = p_aggFunction;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(aggFunction.equals(p_aggFunction)) return;
+		SDMSParameterDefinitionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		o.aggFunction = p_aggFunction;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getDefaultValue (SystemEnvironment env)
@@ -325,36 +321,29 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		return (defaultValue);
 	}
 
-	public	SDMSParameterDefinitionGeneric setDefaultValue (SystemEnvironment env, String p_defaultValue)
+	public	void setDefaultValue (SystemEnvironment env, String p_defaultValue)
 	throws SDMSException
 	{
-		if(p_defaultValue != null && p_defaultValue.equals(defaultValue)) return this;
-		if(p_defaultValue == null && defaultValue == null) return this;
-		SDMSParameterDefinitionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
-				);
-			}
-			o = (SDMSParameterDefinitionGeneric) change(env);
-			if (p_defaultValue != null && p_defaultValue.length() > 256) {
-				throw new CommonErrorException (
-				        new SDMSMessage(env, "01112141510",
-				                        "(ParameterDefinition) Length of $1 exceeds maximum length $2", "defaultValue", "256")
-				);
-			}
-			o.defaultValue = p_defaultValue;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_defaultValue != null && p_defaultValue.equals(defaultValue)) return;
+		if(p_defaultValue == null && defaultValue == null) return;
+		SDMSParameterDefinitionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (p_defaultValue != null && p_defaultValue.length() > 256) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(ParameterDefinition) Length of $1 exceeds maximum length $2", "defaultValue", "256")
+			);
+		}
+		o.defaultValue = p_defaultValue;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Boolean getIsLocal (SystemEnvironment env)
@@ -363,29 +352,22 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		return (isLocal);
 	}
 
-	public	SDMSParameterDefinitionGeneric setIsLocal (SystemEnvironment env, Boolean p_isLocal)
+	public	void setIsLocal (SystemEnvironment env, Boolean p_isLocal)
 	throws SDMSException
 	{
-		if(isLocal.equals(p_isLocal)) return this;
-		SDMSParameterDefinitionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
-				);
-			}
-			o = (SDMSParameterDefinitionGeneric) change(env);
-			o.isLocal = p_isLocal;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(isLocal.equals(p_isLocal)) return;
+		SDMSParameterDefinitionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		o.isLocal = p_isLocal;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getLinkPdId (SystemEnvironment env)
@@ -394,11 +376,11 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		return (linkPdId);
 	}
 
-	public	SDMSParameterDefinitionGeneric setLinkPdId (SystemEnvironment env, Long p_linkPdId)
+	public	void setLinkPdId (SystemEnvironment env, Long p_linkPdId)
 	throws SDMSException
 	{
-		if(p_linkPdId != null && p_linkPdId.equals(linkPdId)) return this;
-		if(p_linkPdId == null && linkPdId == null) return this;
+		if(p_linkPdId != null && p_linkPdId.equals(linkPdId)) return;
+		if(p_linkPdId == null && linkPdId == null) return;
 		SDMSParameterDefinitionGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -411,13 +393,44 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			o.linkPdId = p_linkPdId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
+	}
+
+	public String getExportName (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (exportName);
+	}
+
+	public	void setExportName (SystemEnvironment env, String p_exportName)
+	throws SDMSException
+	{
+		if(p_exportName != null && p_exportName.equals(exportName)) return;
+		if(p_exportName == null && exportName == null) return;
+		SDMSParameterDefinitionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (p_exportName != null && p_exportName.length() > 64) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(ParameterDefinition) Length of $1 exceeds maximum length $2", "exportName", "64")
+			);
+		}
+		o.exportName = p_exportName;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -426,29 +439,22 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSParameterDefinitionGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSParameterDefinitionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
-				);
-			}
-			o = (SDMSParameterDefinitionGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSParameterDefinitionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -457,29 +463,22 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSParameterDefinitionGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSParameterDefinitionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
-				);
-			}
-			o = (SDMSParameterDefinitionGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSParameterDefinitionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -488,22 +487,15 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSParameterDefinitionGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSParameterDefinitionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSParameterDefinitionGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSParameterDefinitionGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -512,23 +504,16 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSParameterDefinitionGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSParameterDefinitionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSParameterDefinitionGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSParameterDefinitionGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public SDMSParameterDefinitionGeneric set_SeIdName (SystemEnvironment env, Long p_seId, String p_name)
@@ -576,6 +561,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	                String p_defaultValue,
 	                Boolean p_isLocal,
 	                Long p_linkPdId,
+	                String p_exportName,
 	                Long p_creatorUId,
 	                Long p_createTs,
 	                Long p_changerUId,
@@ -590,6 +576,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		defaultValue = p_defaultValue;
 		isLocal = p_isLocal;
 		linkPdId = p_linkPdId;
+		exportName = p_exportName;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -607,19 +594,11 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO PARAMETER_DEFINITION (" +
 				        "ID" +
@@ -630,6 +609,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 				        ", " + squote + "DEFAULTVALUE" + equote +
 				        ", " + squote + "IS_LOCAL" + equote +
 				        ", " + squote + "LINK_PD_ID" + equote +
+				        ", " + squote + "EXPORT_NAME" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
 				        ", " + squote + "CHANGER_U_ID" + equote +
@@ -647,41 +627,47 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
+				        ", ?" +
 				        ", ?, ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ParameterDefinition: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, seId.longValue());
-			pInsert.setString(3, name);
-			pInsert.setInt(4, type.intValue());
-			pInsert.setInt(5, aggFunction.intValue());
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, seId.longValue());
+			myInsert.setString(3, name);
+			myInsert.setInt(4, type.intValue());
+			myInsert.setInt(5, aggFunction.intValue());
 			if (defaultValue == null)
-				pInsert.setNull(6, Types.VARCHAR);
+				myInsert.setNull(6, Types.VARCHAR);
 			else
-				pInsert.setString(6, defaultValue);
-			pInsert.setInt (7, isLocal.booleanValue() ? 1 : 0);
+				myInsert.setString(6, defaultValue);
+			myInsert.setInt (7, isLocal.booleanValue() ? 1 : 0);
 			if (linkPdId == null)
-				pInsert.setNull(8, Types.INTEGER);
+				myInsert.setNull(8, Types.INTEGER);
 			else
-				pInsert.setLong (8, linkPdId.longValue());
-			pInsert.setLong (9, creatorUId.longValue());
-			pInsert.setLong (10, createTs.longValue());
-			pInsert.setLong (11, changerUId.longValue());
-			pInsert.setLong (12, changeTs.longValue());
-			pInsert.setLong(13, env.tx.versionId);
-			pInsert.setLong(14, Long.MAX_VALUE);
-			pInsert.executeUpdate();
+				myInsert.setLong (8, linkPdId.longValue());
+			if (exportName == null)
+				myInsert.setNull(9, Types.VARCHAR);
+			else
+				myInsert.setString(9, exportName);
+			myInsert.setLong (10, creatorUId.longValue());
+			myInsert.setLong (11, createTs.longValue());
+			myInsert.setLong (12, changerUId.longValue());
+			myInsert.setLong (13, changeTs.longValue());
+			myInsert.setLong(14, env.tx.versionId);
+			myInsert.setLong(15, Long.MAX_VALUE);
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "ParameterDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ParameterDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -702,7 +688,8 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
@@ -715,22 +702,23 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 				        "  AND VALID_TO = " + (postgres ?
 				                               "CAST (\'" +  Long.MAX_VALUE + "\' AS DECIMAL)" :
 				                               "" + Long.MAX_VALUE);
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				// Can't prepare statement
 				throw new FatalException(new SDMSMessage(env, "01110181955", "ParameterDefinition : $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong(1, env.tx.versionId);
-			pUpdate.setLong(2, changeTs.longValue());
-			pUpdate.setLong(3, changerUId.longValue());
-			pUpdate.setLong(4, id.longValue());
-			pUpdate.executeUpdate();
+			myUpdate.clearParameters();
+			myUpdate.setLong(1, env.tx.versionId);
+			myUpdate.setLong(2, changeTs.longValue());
+			myUpdate.setLong(3, changerUId.longValue());
+			myUpdate.setLong(4, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181956", "ParameterDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ParameterDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -777,6 +765,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "defaultValue : " + defaultValue, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isLocal : " + isLocal, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "linkPdId : " + linkPdId, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "exportName : " + exportName, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "changerUId : " + changerUId, SDMSThread.SEVERITY_MESSAGE);
@@ -800,6 +789,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		        indentString + "defaultValue : " + defaultValue + "\n" +
 		        indentString + "isLocal      : " + isLocal + "\n" +
 		        indentString + "linkPdId     : " + linkPdId + "\n" +
+		        indentString + "exportName   : " + exportName + "\n" +
 		        indentString + "creatorUId   : " + creatorUId + "\n" +
 		        indentString + "createTs     : " + createTs + "\n" +
 		        indentString + "changerUId   : " + changerUId + "\n" +

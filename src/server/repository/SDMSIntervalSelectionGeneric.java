@@ -61,9 +61,9 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSIntervalSelectionGeneric(
 	        SystemEnvironment env,
@@ -95,10 +95,10 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		return (intId);
 	}
 
-	public	SDMSIntervalSelectionGeneric setIntId (SystemEnvironment env, Long p_intId)
+	public	void setIntId (SystemEnvironment env, Long p_intId)
 	throws SDMSException
 	{
-		if(intId.equals(p_intId)) return this;
+		if(intId.equals(p_intId)) return;
 		SDMSIntervalSelectionGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -111,13 +111,13 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 			o.intId = p_intId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Integer getValue (SystemEnvironment env)
@@ -126,30 +126,23 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		return (value);
 	}
 
-	public	SDMSIntervalSelectionGeneric setValue (SystemEnvironment env, Integer p_value)
+	public	void setValue (SystemEnvironment env, Integer p_value)
 	throws SDMSException
 	{
-		if(p_value != null && p_value.equals(value)) return this;
-		if(p_value == null && value == null) return this;
-		SDMSIntervalSelectionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(IntervalSelection) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalSelectionGeneric) change(env);
-			o.value = p_value;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_value != null && p_value.equals(value)) return;
+		if(p_value == null && value == null) return;
+		SDMSIntervalSelectionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(IntervalSelection) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
+		o.value = p_value;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getPeriodFrom (SystemEnvironment env)
@@ -158,30 +151,23 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		return (periodFrom);
 	}
 
-	public	SDMSIntervalSelectionGeneric setPeriodFrom (SystemEnvironment env, Long p_periodFrom)
+	public	void setPeriodFrom (SystemEnvironment env, Long p_periodFrom)
 	throws SDMSException
 	{
-		if(p_periodFrom != null && p_periodFrom.equals(periodFrom)) return this;
-		if(p_periodFrom == null && periodFrom == null) return this;
-		SDMSIntervalSelectionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(IntervalSelection) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalSelectionGeneric) change(env);
-			o.periodFrom = p_periodFrom;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_periodFrom != null && p_periodFrom.equals(periodFrom)) return;
+		if(p_periodFrom == null && periodFrom == null) return;
+		SDMSIntervalSelectionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(IntervalSelection) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
+		o.periodFrom = p_periodFrom;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getPeriodTo (SystemEnvironment env)
@@ -190,30 +176,23 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		return (periodTo);
 	}
 
-	public	SDMSIntervalSelectionGeneric setPeriodTo (SystemEnvironment env, Long p_periodTo)
+	public	void setPeriodTo (SystemEnvironment env, Long p_periodTo)
 	throws SDMSException
 	{
-		if(p_periodTo != null && p_periodTo.equals(periodTo)) return this;
-		if(p_periodTo == null && periodTo == null) return this;
-		SDMSIntervalSelectionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(IntervalSelection) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalSelectionGeneric) change(env);
-			o.periodTo = p_periodTo;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_periodTo != null && p_periodTo.equals(periodTo)) return;
+		if(p_periodTo == null && periodTo == null) return;
+		SDMSIntervalSelectionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(IntervalSelection) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
+		o.periodTo = p_periodTo;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -222,29 +201,22 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSIntervalSelectionGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSIntervalSelectionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(IntervalSelection) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalSelectionGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSIntervalSelectionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(IntervalSelection) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -253,29 +225,22 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSIntervalSelectionGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSIntervalSelectionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(IntervalSelection) Change of system object not allowed")
-				);
-			}
-			o = (SDMSIntervalSelectionGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSIntervalSelectionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(IntervalSelection) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -284,22 +249,15 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSIntervalSelectionGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSIntervalSelectionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSIntervalSelectionGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSIntervalSelectionGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -308,23 +266,16 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSIntervalSelectionGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSIntervalSelectionGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSIntervalSelectionGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSIntervalSelectionGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	protected SDMSProxy toProxy()
@@ -365,19 +316,11 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO INTERVAL_SELECTION (" +
 				        "ID" +
@@ -399,37 +342,38 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "IntervalSelection: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, intId.longValue());
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, intId.longValue());
 			if (value == null)
-				pInsert.setNull(3, Types.INTEGER);
+				myInsert.setNull(3, Types.INTEGER);
 			else
-				pInsert.setInt(3, value.intValue());
+				myInsert.setInt(3, value.intValue());
 			if (periodFrom == null)
-				pInsert.setNull(4, Types.INTEGER);
+				myInsert.setNull(4, Types.INTEGER);
 			else
-				pInsert.setLong (4, periodFrom.longValue());
+				myInsert.setLong (4, periodFrom.longValue());
 			if (periodTo == null)
-				pInsert.setNull(5, Types.INTEGER);
+				myInsert.setNull(5, Types.INTEGER);
 			else
-				pInsert.setLong (5, periodTo.longValue());
-			pInsert.setLong (6, creatorUId.longValue());
-			pInsert.setLong (7, createTs.longValue());
-			pInsert.setLong (8, changerUId.longValue());
-			pInsert.setLong (9, changeTs.longValue());
-			pInsert.executeUpdate();
+				myInsert.setLong (5, periodTo.longValue());
+			myInsert.setLong (6, creatorUId.longValue());
+			myInsert.setLong (7, createTs.longValue());
+			myInsert.setLong (8, changerUId.longValue());
+			myInsert.setLong (9, changeTs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "IntervalSelection: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "IntervalSelection: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -437,23 +381,25 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM INTERVAL_SELECTION WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "IntervalSelection: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "IntervalSelection: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "IntervalSelection: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -461,19 +407,11 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE INTERVAL_SELECTION SET " +
 				        "" + squote + "INT_ID" + equote + " = ? " +
@@ -485,36 +423,37 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "IntervalSelection: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong (1, intId.longValue());
+			myUpdate.clearParameters();
+			myUpdate.setLong (1, intId.longValue());
 			if (value == null)
-				pUpdate.setNull(2, Types.INTEGER);
+				myUpdate.setNull(2, Types.INTEGER);
 			else
-				pUpdate.setInt(2, value.intValue());
+				myUpdate.setInt(2, value.intValue());
 			if (periodFrom == null)
-				pUpdate.setNull(3, Types.INTEGER);
+				myUpdate.setNull(3, Types.INTEGER);
 			else
-				pUpdate.setLong (3, periodFrom.longValue());
+				myUpdate.setLong (3, periodFrom.longValue());
 			if (periodTo == null)
-				pUpdate.setNull(4, Types.INTEGER);
+				myUpdate.setNull(4, Types.INTEGER);
 			else
-				pUpdate.setLong (4, periodTo.longValue());
-			pUpdate.setLong (5, creatorUId.longValue());
-			pUpdate.setLong (6, createTs.longValue());
-			pUpdate.setLong (7, changerUId.longValue());
-			pUpdate.setLong (8, changeTs.longValue());
-			pUpdate.setLong(9, id.longValue());
-			pUpdate.executeUpdate();
+				myUpdate.setLong (4, periodTo.longValue());
+			myUpdate.setLong (5, creatorUId.longValue());
+			myUpdate.setLong (6, createTs.longValue());
+			myUpdate.setLong (7, changerUId.longValue());
+			myUpdate.setLong (8, changeTs.longValue());
+			myUpdate.setLong(9, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "IntervalSelection: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "IntervalSelection: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

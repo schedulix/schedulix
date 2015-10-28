@@ -48,6 +48,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		, "SE_CHILD_ID"
 		, "ALIAS_NAME"
 		, "IS_STATIC"
+		, "IS_DISABLED"
 		, "PRIORITY"
 		, "SUSPEND"
 		, "RESUME_AT"
@@ -77,17 +78,18 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		table = (SDMSSchedulingHierarchyTable) this;
 		SDMSSchedulingHierarchyTableGeneric.table = (SDMSSchedulingHierarchyTable) this;
 		isVersioned = true;
-		idx_seParentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_seChildId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_estpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentId_childId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
-		idx_parentId_aliasName = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
+		idx_seParentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seParentId");
+		idx_seChildId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seChildId");
+		idx_estpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "estpId");
+		idx_parentId_childId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "parentId_childId");
+		idx_parentId_aliasName = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "parentId_aliasName");
 	}
 	public SDMSSchedulingHierarchy create(SystemEnvironment env
 	                                      ,Long p_seParentId
 	                                      ,Long p_seChildId
 	                                      ,String p_aliasName
 	                                      ,Boolean p_isStatic
+	                                      ,Boolean p_isDisabled
 	                                      ,Integer p_priority
 	                                      ,Integer p_suspend
 	                                      ,String p_resumeAt
@@ -112,6 +114,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		         , p_seChildId
 		         , p_aliasName
 		         , p_isStatic
+		         , p_isDisabled
 		         , p_priority
 		         , p_suspend
 		         , p_resumeAt
@@ -131,6 +134,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		                , p_seChildId
 		                , p_aliasName
 		                , p_isStatic
+		                , p_isDisabled
 		                , p_priority
 		                , p_suspend
 		                , p_resumeAt
@@ -180,6 +184,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 	                        ,Long p_seChildId
 	                        ,String p_aliasName
 	                        ,Boolean p_isStatic
+	                        ,Boolean p_isDisabled
 	                        ,Integer p_priority
 	                        ,Integer p_suspend
 	                        ,String p_resumeAt
@@ -197,6 +202,9 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		if (!SDMSSchedulingHierarchyGeneric.checkIsStatic(p_isStatic))
 
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingHierarchy: $1 $2", "isStatic", p_isStatic));
+		if (!SDMSSchedulingHierarchyGeneric.checkIsDisabled(p_isDisabled))
+
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingHierarchy: $1 $2", "isDisabled", p_isDisabled));
 		if (!SDMSSchedulingHierarchyGeneric.checkSuspend(p_suspend))
 
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingHierarchy: $1 $2", "suspend", p_suspend));
@@ -217,6 +225,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		Long seChildId;
 		String aliasName;
 		Boolean isStatic;
+		Boolean isDisabled;
 		Integer priority;
 		Integer suspend;
 		String resumeAt;
@@ -240,23 +249,24 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 			aliasName = r.getString(4);
 			if (r.wasNull()) aliasName = null;
 			isStatic = new Boolean ((r.getInt(5) == 0 ? false : true));
-			priority = new Integer (r.getInt(6));
-			suspend = new Integer (r.getInt(7));
-			resumeAt = r.getString(8);
+			isDisabled = new Boolean ((r.getInt(6) == 0 ? false : true));
+			priority = new Integer (r.getInt(7));
+			suspend = new Integer (r.getInt(8));
+			resumeAt = r.getString(9);
 			if (r.wasNull()) resumeAt = null;
-			resumeIn = new Integer (r.getInt(9));
+			resumeIn = new Integer (r.getInt(10));
 			if (r.wasNull()) resumeIn = null;
-			resumeBase = new Integer (r.getInt(10));
+			resumeBase = new Integer (r.getInt(11));
 			if (r.wasNull()) resumeBase = null;
-			mergeMode = new Integer (r.getInt(11));
-			estpId = new Long (r.getLong(12));
+			mergeMode = new Integer (r.getInt(12));
+			estpId = new Long (r.getLong(13));
 			if (r.wasNull()) estpId = null;
-			creatorUId = new Long (r.getLong(13));
-			createTs = new Long (r.getLong(14));
-			changerUId = new Long (r.getLong(15));
-			changeTs = new Long (r.getLong(16));
-			validFrom = r.getLong(17);
-			validTo = r.getLong(18);
+			creatorUId = new Long (r.getLong(14));
+			createTs = new Long (r.getLong(15));
+			changerUId = new Long (r.getLong(16));
+			changeTs = new Long (r.getLong(17));
+			validFrom = r.getLong(18);
+			validTo = r.getLong(19);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 
@@ -268,6 +278,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		                seChildId,
 		                aliasName,
 		                isStatic,
+		                isDisabled,
 		                priority,
 		                suspend,
 		                resumeAt,
@@ -288,18 +299,9 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -308,6 +310,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		                                   ", " + squote + "SE_CHILD_ID" + equote +
 		                                   ", " + squote + "ALIAS_NAME" + equote +
 		                                   ", " + squote + "IS_STATIC" + equote +
+		                                   ", " + squote + "IS_DISABLED" + equote +
 		                                   ", " + squote + "PRIORITY" + equote +
 		                                   ", " + squote + "SUSPEND" + equote +
 		                                   ", " + squote + "RESUME_AT" + equote +
@@ -333,21 +336,52 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_seParentId.put(env, ((SDMSSchedulingHierarchyGeneric) o).seParentId, o);
-		idx_seChildId.put(env, ((SDMSSchedulingHierarchyGeneric) o).seChildId, o);
-		idx_estpId.put(env, ((SDMSSchedulingHierarchyGeneric) o).estpId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_seParentId.check(((SDMSSchedulingHierarchyGeneric) o).seParentId, o);
+		out = out + "idx_seParentId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_seChildId.check(((SDMSSchedulingHierarchyGeneric) o).seChildId, o);
+		out = out + "idx_seChildId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_estpId.check(((SDMSSchedulingHierarchyGeneric) o).estpId, o);
+		out = out + "idx_estpId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSSchedulingHierarchyGeneric) o).seParentId);
 		k.add(((SDMSSchedulingHierarchyGeneric) o).seChildId);
-		idx_parentId_childId.put(env, k, o);
+		ok =  idx_parentId_childId.check(k, o);
+		out = out + "idx_parentId_childId: " + (ok ? "ok" : "missing") + "\n";
 		k = new SDMSKey();
 		k.add(((SDMSSchedulingHierarchyGeneric) o).seParentId);
 		k.add(((SDMSSchedulingHierarchyGeneric) o).aliasName);
-		idx_parentId_aliasName.put(env, k, o);
+		ok =  idx_parentId_aliasName.check(k, o);
+		out = out + "idx_parentId_aliasName: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_seParentId.put(env, ((SDMSSchedulingHierarchyGeneric) o).seParentId, o, ((1 & indexMember) != 0));
+		idx_seChildId.put(env, ((SDMSSchedulingHierarchyGeneric) o).seChildId, o, ((2 & indexMember) != 0));
+		idx_estpId.put(env, ((SDMSSchedulingHierarchyGeneric) o).estpId, o, ((4 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSSchedulingHierarchyGeneric) o).seParentId);
+		k.add(((SDMSSchedulingHierarchyGeneric) o).seChildId);
+		idx_parentId_childId.put(env, k, o, ((8 & indexMember) != 0));
+		k = new SDMSKey();
+		k.add(((SDMSSchedulingHierarchyGeneric) o).seParentId);
+		k.add(((SDMSSchedulingHierarchyGeneric) o).aliasName);
+		idx_parentId_aliasName.put(env, k, o, ((16 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

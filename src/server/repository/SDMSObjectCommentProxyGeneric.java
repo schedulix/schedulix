@@ -76,6 +76,7 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 	public static final int URL = 1;
 	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP;
 
+	static final public int tag_size = 64;
 	static final public int description_size = 1900;
 
 	private static SDMSTable masterTables[] = null;
@@ -169,6 +170,24 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 
 		touchMaster(env);
 		((SDMSObjectCommentGeneric)(object)).setSequenceNumber (env, p_sequenceNumber);
+		return ;
+	}
+	public String getTag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSObjectCommentGeneric)(object)).getTag (env));
+	}
+
+	public void setTag (SystemEnvironment env, String p_tag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSObjectCommentGeneric)(object)).setTag (env, p_tag);
 		return ;
 	}
 	public String getDescription (SystemEnvironment env)
@@ -321,141 +340,141 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 		else groups = checkGroups;
 
 		long p = 0;
-			p = checkPrivs;
-			SDMSTable t;
+		p = checkPrivs;
+		SDMSTable t;
 
-			t = SystemEnvironment.repository.getTable(env, SDMSNamedEnvironmentTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getObjectId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
-
+		t = SystemEnvironment.repository.getTable(env, SDMSNamedEnvironmentTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getObjectId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
-			t = SystemEnvironment.repository.getTable(env, SDMSEventTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getObjectId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
+			p = p & sp;
+		} catch (NotFoundException nfe) {
 
+		}
+		t = SystemEnvironment.repository.getTable(env, SDMSEventTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getObjectId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
-			t = SystemEnvironment.repository.getTable(env, SDMSExitStateDefinitionTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getObjectId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
+			p = p & sp;
+		} catch (NotFoundException nfe) {
 
+		}
+		t = SystemEnvironment.repository.getTable(env, SDMSExitStateDefinitionTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getObjectId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
-			t = SystemEnvironment.repository.getTable(env, SDMSExitStateProfileTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getObjectId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
+			p = p & sp;
+		} catch (NotFoundException nfe) {
 
+		}
+		t = SystemEnvironment.repository.getTable(env, SDMSExitStateProfileTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getObjectId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
-			t = SystemEnvironment.repository.getTable(env, SDMSExitStateMappingProfileTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getObjectId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
+			p = p & sp;
+		} catch (NotFoundException nfe) {
 
+		}
+		t = SystemEnvironment.repository.getTable(env, SDMSExitStateMappingProfileTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getObjectId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
-			t = SystemEnvironment.repository.getTable(env, SDMSFolderTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getObjectId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
+			p = p & sp;
+		} catch (NotFoundException nfe) {
 
+		}
+		t = SystemEnvironment.repository.getTable(env, SDMSFolderTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getObjectId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
-			t = SystemEnvironment.repository.getTable(env, SDMSFootprintTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getObjectId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
+			p = p & sp;
+		} catch (NotFoundException nfe) {
 
+		}
+		t = SystemEnvironment.repository.getTable(env, SDMSFootprintTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getObjectId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
-			t = SystemEnvironment.repository.getTable(env, SDMSGroupTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getObjectId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
+			p = p & sp;
+		} catch (NotFoundException nfe) {
 
+		}
+		t = SystemEnvironment.repository.getTable(env, SDMSGroupTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getObjectId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
-			t = SystemEnvironment.repository.getTable(env, SDMSIntervalTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getObjectId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
+			p = p & sp;
+		} catch (NotFoundException nfe) {
 
+		}
+		t = SystemEnvironment.repository.getTable(env, SDMSIntervalTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getObjectId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
-			t = SystemEnvironment.repository.getTable(env, SDMSSubmittedEntityTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getObjectId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
+			p = p & sp;
+		} catch (NotFoundException nfe) {
 
+		}
+		t = SystemEnvironment.repository.getTable(env, SDMSSubmittedEntityTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getObjectId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
-			t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getObjectId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
+			p = p & sp;
+		} catch (NotFoundException nfe) {
 
+		}
+		t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getObjectId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
-			t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getObjectId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
-				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
+			p = p & sp;
+		} catch (NotFoundException nfe) {
 
+		}
+		t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
+		try {
+			SDMSProxy o = t.get(env, getObjectId(env));
+			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
+			p = p & sp;
+		} catch (NotFoundException nfe) {
+
+		}
 		t = SystemEnvironment.repository.getTable(env, SDMSParameterDefinitionTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));

@@ -123,9 +123,9 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate;
-	private static PreparedStatement pDelete;
-	private static PreparedStatement pInsert;
+	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
+	private static PreparedStatement pDelete[] = new PreparedStatement[50];
+	private static PreparedStatement pInsert[] = new PreparedStatement[50];
 
 	public SDMSAuditTrailGeneric(
 	        SystemEnvironment env,
@@ -175,10 +175,10 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return (userId);
 	}
 
-	public	SDMSAuditTrailGeneric setUserId (SystemEnvironment env, Long p_userId)
+	public	void setUserId (SystemEnvironment env, Long p_userId)
 	throws SDMSException
 	{
-		if(userId.equals(p_userId)) return this;
+		if(userId.equals(p_userId)) return;
 		SDMSAuditTrailGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -191,13 +191,13 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			o.userId = p_userId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getTs (SystemEnvironment env)
@@ -206,29 +206,22 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return (ts);
 	}
 
-	public	SDMSAuditTrailGeneric setTs (SystemEnvironment env, Long p_ts)
+	public	void setTs (SystemEnvironment env, Long p_ts)
 	throws SDMSException
 	{
-		if(ts.equals(p_ts)) return this;
-		SDMSAuditTrailGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
-				);
-			}
-			o = (SDMSAuditTrailGeneric) change(env);
-			o.ts = p_ts;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(ts.equals(p_ts)) return;
+		SDMSAuditTrailGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		o.ts = p_ts;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getTxId (SystemEnvironment env)
@@ -237,29 +230,22 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return (txId);
 	}
 
-	public	SDMSAuditTrailGeneric setTxId (SystemEnvironment env, Long p_txId)
+	public	void setTxId (SystemEnvironment env, Long p_txId)
 	throws SDMSException
 	{
-		if(txId.equals(p_txId)) return this;
-		SDMSAuditTrailGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
-				);
-			}
-			o = (SDMSAuditTrailGeneric) change(env);
-			o.txId = p_txId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(txId.equals(p_txId)) return;
+		SDMSAuditTrailGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		o.txId = p_txId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getAction (SystemEnvironment env)
@@ -336,29 +322,22 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		                          getAction (env)));
 	}
 
-	public	SDMSAuditTrailGeneric setAction (SystemEnvironment env, Integer p_action)
+	public	void setAction (SystemEnvironment env, Integer p_action)
 	throws SDMSException
 	{
-		if(action.equals(p_action)) return this;
-		SDMSAuditTrailGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
-				);
-			}
-			o = (SDMSAuditTrailGeneric) change(env);
-			o.action = p_action;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(action.equals(p_action)) return;
+		SDMSAuditTrailGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		o.action = p_action;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Integer getObjectType (SystemEnvironment env)
@@ -381,29 +360,22 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		                          getObjectType (env)));
 	}
 
-	public	SDMSAuditTrailGeneric setObjectType (SystemEnvironment env, Integer p_objectType)
+	public	void setObjectType (SystemEnvironment env, Integer p_objectType)
 	throws SDMSException
 	{
-		if(objectType.equals(p_objectType)) return this;
-		SDMSAuditTrailGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
-				);
-			}
-			o = (SDMSAuditTrailGeneric) change(env);
-			o.objectType = p_objectType;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(objectType.equals(p_objectType)) return;
+		SDMSAuditTrailGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		o.objectType = p_objectType;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getObjectId (SystemEnvironment env)
@@ -412,10 +384,10 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return (objectId);
 	}
 
-	public	SDMSAuditTrailGeneric setObjectId (SystemEnvironment env, Long p_objectId)
+	public	void setObjectId (SystemEnvironment env, Long p_objectId)
 	throws SDMSException
 	{
-		if(objectId.equals(p_objectId)) return this;
+		if(objectId.equals(p_objectId)) return;
 		SDMSAuditTrailGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -428,13 +400,13 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			o.objectId = p_objectId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Long getOriginId (SystemEnvironment env)
@@ -443,10 +415,10 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return (originId);
 	}
 
-	public	SDMSAuditTrailGeneric setOriginId (SystemEnvironment env, Long p_originId)
+	public	void setOriginId (SystemEnvironment env, Long p_originId)
 	throws SDMSException
 	{
-		if(originId.equals(p_originId)) return this;
+		if(originId.equals(p_originId)) return;
 		SDMSAuditTrailGeneric o;
 		env.tx.beginSubTransaction(env);
 		try {
@@ -459,13 +431,13 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			o.originId = p_originId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
+			o.versions.table.index(env, o, 4);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
 			throw e;
 		}
-		return o;
+		return;
 	}
 
 	public Boolean getIsSetWarning (SystemEnvironment env)
@@ -474,29 +446,22 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return (isSetWarning);
 	}
 
-	public	SDMSAuditTrailGeneric setIsSetWarning (SystemEnvironment env, Boolean p_isSetWarning)
+	public	void setIsSetWarning (SystemEnvironment env, Boolean p_isSetWarning)
 	throws SDMSException
 	{
-		if(isSetWarning.equals(p_isSetWarning)) return this;
-		SDMSAuditTrailGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
-				);
-			}
-			o = (SDMSAuditTrailGeneric) change(env);
-			o.isSetWarning = p_isSetWarning;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(isSetWarning.equals(p_isSetWarning)) return;
+		SDMSAuditTrailGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		o.isSetWarning = p_isSetWarning;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getActionInfo (SystemEnvironment env)
@@ -505,33 +470,26 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return (actionInfo);
 	}
 
-	public	SDMSAuditTrailGeneric setActionInfo (SystemEnvironment env, String p_actionInfo)
+	public	void setActionInfo (SystemEnvironment env, String p_actionInfo)
 	throws SDMSException
 	{
-		if(p_actionInfo != null && p_actionInfo.equals(actionInfo)) return this;
-		if(p_actionInfo == null && actionInfo == null) return this;
-		SDMSAuditTrailGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
-				);
-			}
-			o = (SDMSAuditTrailGeneric) change(env);
-			if (p_actionInfo != null && p_actionInfo.length() > 1024) {
-				p_actionInfo = p_actionInfo.substring(0,1024);
-			}
-			o.actionInfo = p_actionInfo;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_actionInfo != null && p_actionInfo.equals(actionInfo)) return;
+		if(p_actionInfo == null && actionInfo == null) return;
+		SDMSAuditTrailGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (p_actionInfo != null && p_actionInfo.length() > 1024) {
+			p_actionInfo = p_actionInfo.substring(0,1024);
+		}
+		o.actionInfo = p_actionInfo;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public String getActionComment (SystemEnvironment env)
@@ -540,33 +498,26 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return (actionComment);
 	}
 
-	public	SDMSAuditTrailGeneric setActionComment (SystemEnvironment env, String p_actionComment)
+	public	void setActionComment (SystemEnvironment env, String p_actionComment)
 	throws SDMSException
 	{
-		if(p_actionComment != null && p_actionComment.equals(actionComment)) return this;
-		if(p_actionComment == null && actionComment == null) return this;
-		SDMSAuditTrailGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
-				);
-			}
-			o = (SDMSAuditTrailGeneric) change(env);
-			if (p_actionComment != null && p_actionComment.length() > 1024) {
-				p_actionComment = p_actionComment.substring(0,1024);
-			}
-			o.actionComment = p_actionComment;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(p_actionComment != null && p_actionComment.equals(actionComment)) return;
+		if(p_actionComment == null && actionComment == null) return;
+		SDMSAuditTrailGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (p_actionComment != null && p_actionComment.length() > 1024) {
+			p_actionComment = p_actionComment.substring(0,1024);
+		}
+		o.actionComment = p_actionComment;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreatorUId (SystemEnvironment env)
@@ -575,29 +526,22 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return (creatorUId);
 	}
 
-	SDMSAuditTrailGeneric setCreatorUId (SystemEnvironment env, Long p_creatorUId)
+	void setCreatorUId (SystemEnvironment env, Long p_creatorUId)
 	throws SDMSException
 	{
-		if(creatorUId.equals(p_creatorUId)) return this;
-		SDMSAuditTrailGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
-				);
-			}
-			o = (SDMSAuditTrailGeneric) change(env);
-			o.creatorUId = p_creatorUId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(creatorUId.equals(p_creatorUId)) return;
+		SDMSAuditTrailGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		o.creatorUId = p_creatorUId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getCreateTs (SystemEnvironment env)
@@ -606,29 +550,22 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return (createTs);
 	}
 
-	SDMSAuditTrailGeneric setCreateTs (SystemEnvironment env, Long p_createTs)
+	void setCreateTs (SystemEnvironment env, Long p_createTs)
 	throws SDMSException
 	{
-		if(createTs.equals(p_createTs)) return this;
-		SDMSAuditTrailGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
-				);
-			}
-			o = (SDMSAuditTrailGeneric) change(env);
-			o.createTs = p_createTs;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		if(createTs.equals(p_createTs)) return;
+		SDMSAuditTrailGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
+			);
 		}
-		return o;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		o.createTs = p_createTs;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangerUId (SystemEnvironment env)
@@ -637,22 +574,15 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return (changerUId);
 	}
 
-	public	SDMSAuditTrailGeneric setChangerUId (SystemEnvironment env, Long p_changerUId)
+	public	void setChangerUId (SystemEnvironment env, Long p_changerUId)
 	throws SDMSException
 	{
-		SDMSAuditTrailGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSAuditTrailGeneric) change(env);
-			o.changerUId = p_changerUId;
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		SDMSAuditTrailGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		o.changerUId = p_changerUId;
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	public Long getChangeTs (SystemEnvironment env)
@@ -661,23 +591,16 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return (changeTs);
 	}
 
-	SDMSAuditTrailGeneric setChangeTs (SystemEnvironment env, Long p_changeTs)
+	void setChangeTs (SystemEnvironment env, Long p_changeTs)
 	throws SDMSException
 	{
-		if(changeTs.equals(p_changeTs)) return this;
-		SDMSAuditTrailGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			o = (SDMSAuditTrailGeneric) change(env);
-			o.changeTs = p_changeTs;
-			o.changerUId = env.cEnv.euid();
-			o.versions.table.index(env, o);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
-		}
-		return o;
+		if(changeTs.equals(p_changeTs)) return;
+		SDMSAuditTrailGeneric o = this;
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		o.changeTs = p_changeTs;
+		o.changerUId = env.cEnv.euid();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
 	}
 
 	protected SDMSProxy toProxy()
@@ -730,19 +653,11 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pInsert == null) {
+		PreparedStatement myInsert;
+		if(pInsert[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "INSERT INTO AUDIT_TRAIL (" +
 				        "ID" +
@@ -776,40 +691,41 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				        ", ?" +
 				        ", ?" +
 				        ")";
-				pInsert = env.dbConnection.prepareStatement(stmt);
+				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110181952", "AuditTrail: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myInsert = pInsert[env.dbConnectionNr];
 
 		try {
-			pInsert.clearParameters();
-			pInsert.setLong(1, id.longValue());
-			pInsert.setLong (2, userId.longValue());
-			pInsert.setLong (3, ts.longValue());
-			pInsert.setLong (4, txId.longValue());
-			pInsert.setInt(5, action.intValue());
-			pInsert.setInt(6, objectType.intValue());
-			pInsert.setLong (7, objectId.longValue());
-			pInsert.setLong (8, originId.longValue());
-			pInsert.setInt (9, isSetWarning.booleanValue() ? 1 : 0);
+			myInsert.clearParameters();
+			myInsert.setLong(1, id.longValue());
+			myInsert.setLong (2, userId.longValue());
+			myInsert.setLong (3, ts.longValue());
+			myInsert.setLong (4, txId.longValue());
+			myInsert.setInt(5, action.intValue());
+			myInsert.setInt(6, objectType.intValue());
+			myInsert.setLong (7, objectId.longValue());
+			myInsert.setLong (8, originId.longValue());
+			myInsert.setInt (9, isSetWarning.booleanValue() ? 1 : 0);
 			if (actionInfo == null)
-				pInsert.setNull(10, Types.VARCHAR);
+				myInsert.setNull(10, Types.VARCHAR);
 			else
-				pInsert.setString(10, actionInfo);
+				myInsert.setString(10, actionInfo);
 			if (actionComment == null)
-				pInsert.setNull(11, Types.VARCHAR);
+				myInsert.setNull(11, Types.VARCHAR);
 			else
-				pInsert.setString(11, actionComment);
-			pInsert.setLong (12, creatorUId.longValue());
-			pInsert.setLong (13, createTs.longValue());
-			pInsert.setLong (14, changerUId.longValue());
-			pInsert.setLong (15, changeTs.longValue());
-			pInsert.executeUpdate();
+				myInsert.setString(11, actionComment);
+			myInsert.setLong (12, creatorUId.longValue());
+			myInsert.setLong (13, createTs.longValue());
+			myInsert.setLong (14, changerUId.longValue());
+			myInsert.setLong (15, changeTs.longValue());
+			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110181954", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -817,23 +733,25 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pDelete == null) {
+		PreparedStatement myDelete;
+		if(pDelete[env.dbConnectionNr] == null) {
 			try {
 				stmt =
 				        "DELETE FROM AUDIT_TRAIL WHERE ID = ?";
-				pDelete = env.dbConnection.prepareStatement(stmt);
+				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182001", "AuditTrail: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myDelete = pDelete[env.dbConnectionNr];
 		try {
-			pDelete.clearParameters();
-			pDelete.setLong(1, id.longValue());
-			pDelete.executeUpdate();
+			myDelete.clearParameters();
+			myDelete.setLong(1, id.longValue());
+			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182002", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -841,19 +759,11 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	throws SDMSException
 	{
 		String stmt = "";
-		if(pUpdate == null) {
+		PreparedStatement myUpdate;
+		if(pUpdate[env.dbConnectionNr] == null) {
 			try {
-				final String driverName = env.dbConnection.getMetaData().getDriverName();
-				String squote = "";
-				String equote = "";
-				if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-					squote = "`";
-					equote = "`";
-				}
-				if (driverName.startsWith("Microsoft")) {
-					squote = "[";
-					equote = "]";
-				}
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE AUDIT_TRAIL SET " +
 				        "" + squote + "USER_ID" + equote + " = ? " +
@@ -871,39 +781,40 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
 				        ", " + squote + "CHANGE_TS" + equote + " = ? " +
 				        "WHERE ID = ?";
-				pUpdate = env.dbConnection.prepareStatement(stmt);
+				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 
 				throw new FatalException(new SDMSMessage(env, "01110182005", "AuditTrail: $1\n$2", stmt, sqle.toString()));
 			}
 		}
+		myUpdate = pUpdate[env.dbConnectionNr];
 		try {
-			pUpdate.clearParameters();
-			pUpdate.setLong (1, userId.longValue());
-			pUpdate.setLong (2, ts.longValue());
-			pUpdate.setLong (3, txId.longValue());
-			pUpdate.setInt(4, action.intValue());
-			pUpdate.setInt(5, objectType.intValue());
-			pUpdate.setLong (6, objectId.longValue());
-			pUpdate.setLong (7, originId.longValue());
-			pUpdate.setInt (8, isSetWarning.booleanValue() ? 1 : 0);
+			myUpdate.clearParameters();
+			myUpdate.setLong (1, userId.longValue());
+			myUpdate.setLong (2, ts.longValue());
+			myUpdate.setLong (3, txId.longValue());
+			myUpdate.setInt(4, action.intValue());
+			myUpdate.setInt(5, objectType.intValue());
+			myUpdate.setLong (6, objectId.longValue());
+			myUpdate.setLong (7, originId.longValue());
+			myUpdate.setInt (8, isSetWarning.booleanValue() ? 1 : 0);
 			if (actionInfo == null)
-				pUpdate.setNull(9, Types.VARCHAR);
+				myUpdate.setNull(9, Types.VARCHAR);
 			else
-				pUpdate.setString(9, actionInfo);
+				myUpdate.setString(9, actionInfo);
 			if (actionComment == null)
-				pUpdate.setNull(10, Types.VARCHAR);
+				myUpdate.setNull(10, Types.VARCHAR);
 			else
-				pUpdate.setString(10, actionComment);
-			pUpdate.setLong (11, creatorUId.longValue());
-			pUpdate.setLong (12, createTs.longValue());
-			pUpdate.setLong (13, changerUId.longValue());
-			pUpdate.setLong (14, changeTs.longValue());
-			pUpdate.setLong(15, id.longValue());
-			pUpdate.executeUpdate();
+				myUpdate.setString(10, actionComment);
+			myUpdate.setLong (11, creatorUId.longValue());
+			myUpdate.setLong (12, createTs.longValue());
+			myUpdate.setLong (13, changerUId.longValue());
+			myUpdate.setLong (14, changeTs.longValue());
+			myUpdate.setLong(15, id.longValue());
+			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 
-			throw new FatalException(new SDMSMessage(env, "01110182006", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

@@ -68,8 +68,8 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 		table = (SDMSEntityVariableTable) this;
 		SDMSEntityVariableTableGeneric.table = (SDMSEntityVariableTable) this;
 		isVersioned = false;
-		idx_smeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_smeId_Name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_smeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "smeId");
+		idx_smeId_Name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "smeId_Name");
 	}
 	public SDMSEntityVariable create(SystemEnvironment env
 	                                 ,Long p_smeId
@@ -217,18 +217,9 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -254,15 +245,37 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_smeId.put(env, ((SDMSEntityVariableGeneric) o).smeId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_smeId.check(((SDMSEntityVariableGeneric) o).smeId, o);
+		out = out + "idx_smeId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSEntityVariableGeneric) o).smeId);
 		k.add(((SDMSEntityVariableGeneric) o).name);
-		idx_smeId_Name.put(env, k, o);
+		ok =  idx_smeId_Name.check(k, o);
+		out = out + "idx_smeId_Name: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_smeId.put(env, ((SDMSEntityVariableGeneric) o).smeId, o, ((1 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSEntityVariableGeneric) o).smeId);
+		k.add(((SDMSEntityVariableGeneric) o).name);
+		idx_smeId_Name.put(env, k, o, ((2 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

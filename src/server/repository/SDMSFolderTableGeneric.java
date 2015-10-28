@@ -70,10 +70,10 @@ public class SDMSFolderTableGeneric extends SDMSTable
 		table = (SDMSFolderTable) this;
 		SDMSFolderTableGeneric.table = (SDMSFolderTable) this;
 		isVersioned = true;
-		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_envId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_parentId_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "ownerId");
+		idx_envId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "envId");
+		idx_parentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "parentId");
+		idx_parentId_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "parentId_name");
 	}
 	public SDMSFolder create(SystemEnvironment env
 	                         ,String p_name
@@ -222,18 +222,9 @@ public class SDMSFolderTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -261,17 +252,43 @@ public class SDMSFolderTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_ownerId.put(env, ((SDMSFolderGeneric) o).ownerId, o);
-		idx_envId.put(env, ((SDMSFolderGeneric) o).envId, o);
-		idx_parentId.put(env, ((SDMSFolderGeneric) o).parentId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_ownerId.check(((SDMSFolderGeneric) o).ownerId, o);
+		out = out + "idx_ownerId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_envId.check(((SDMSFolderGeneric) o).envId, o);
+		out = out + "idx_envId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_parentId.check(((SDMSFolderGeneric) o).parentId, o);
+		out = out + "idx_parentId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSFolderGeneric) o).parentId);
 		k.add(((SDMSFolderGeneric) o).name);
-		idx_parentId_name.put(env, k, o);
+		ok =  idx_parentId_name.check(k, o);
+		out = out + "idx_parentId_name: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_ownerId.put(env, ((SDMSFolderGeneric) o).ownerId, o, ((1 & indexMember) != 0));
+		idx_envId.put(env, ((SDMSFolderGeneric) o).envId, o, ((2 & indexMember) != 0));
+		idx_parentId.put(env, ((SDMSFolderGeneric) o).parentId, o, ((4 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSFolderGeneric) o).parentId);
+		k.add(((SDMSFolderGeneric) o).name);
+		idx_parentId_name.put(env, k, o, ((8 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

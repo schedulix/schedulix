@@ -135,17 +135,17 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 			);
 		}
 
-		try {
-			SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getUnique(sysEnv, id);
+		Vector ocv = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, id);
+		for (int ii = 0; ii < ocv.size(); ++ii) {
+			SDMSObjectComment oc = (SDMSObjectComment) ocv.get(ii);
 			SDMSObjectCommentTable.table.create(sysEnv,
-					newId,
-					oc.getObjectType(sysEnv),
-					oc.getInfoType(sysEnv),
-					oc.getSequenceNumber(sysEnv),
-					oc.getDescription(sysEnv)
-			);
-		} catch (NotFoundException nfe) {
-
+			                                    newId,
+			                                    oc.getObjectType(sysEnv),
+			                                    oc.getInfoType(sysEnv),
+			                                    oc.getSequenceNumber(sysEnv),
+			                                    oc.getTag(sysEnv),
+			                                    oc.getDescription(sysEnv)
+			                                   );
 		}
 		return f;
 	}
@@ -171,16 +171,70 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 		}
 	}
 
+	public void collectSeIds (SystemEnvironment sysEnv, HashSet<Long> seIds, HashSet<Long> keeplist)
+	throws SDMSException
+	{
+
+		Long id = getId(sysEnv);
+
+		Vector v_se = SDMSSchedulingEntityTable.idx_folderId.getVector(sysEnv, id);
+		Iterator i_se = v_se.iterator();
+		while (i_se.hasNext()) {
+			SDMSSchedulingEntity se = (SDMSSchedulingEntity)i_se.next();
+			Long seId = se.getId(sysEnv);
+
+			if (keeplist != null && keeplist.contains(seId)) {
+				continue;
+			}
+			seIds.add(se.getId(sysEnv));
+		}
+
+		Vector v_sf = SDMSFolderTable.idx_parentId.getVector(sysEnv, id);
+		Iterator i_sf = v_sf.iterator();
+		while (i_sf.hasNext()) {
+			SDMSFolder sf = (SDMSFolder)i_sf.next();
+			sf.collectSeIds(sysEnv, seIds, keeplist);
+		}
+	}
+
 	public void delete(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
 		boolean dummy = delete (sysEnv, null);
 	}
 
+	public void deleteCascade(SystemEnvironment sysEnv, HashSet keeplist)
+	throws SDMSException
+	{
+		Vector v_sf = SDMSFolderTable.idx_parentId.getVector(sysEnv, getId(sysEnv));
+		Iterator i_sf = v_sf.iterator();
+		while (i_sf.hasNext()) {
+			SDMSFolder sf = (SDMSFolder)i_sf.next();
+			sf.deleteCascade(sysEnv, keeplist);
+		}
+		boolean dummy = delete(sysEnv, keeplist);
+	}
+
 	public boolean  delete(SystemEnvironment sysEnv, HashSet keeplist)
 		throws SDMSException
 	{
 		final Long fId = getId(sysEnv);
+
+		boolean dropped_all_resources = dropResources(sysEnv, keeplist);
+
+		if (dropped_all_resources && (keeplist == null || !(keeplist.contains(fId)))) {
+
+			if(SDMSFolderTable.idx_parentId.containsKey(sysEnv, fId)) {
+
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03112191517",
+				                               "Folder $1 not empty", pathString(sysEnv)));
+			}
+			if(SDMSSchedulingEntityTable.idx_folderId.containsKey(sysEnv, fId)) {
+
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03112191519",
+				                               "Folder $1 not empty", pathString(sysEnv)));
+			}
+			ManipParameters.kill (sysEnv, fId);
 
 		SDMSNiceProfileEntry npe;
 		SDMSNiceProfile np;
@@ -198,22 +252,6 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 				npe.delete(sysEnv);
 			}
 		}
-
-		boolean dropped_all_resources = dropResources(sysEnv, keeplist);
-
-		if (dropped_all_resources && (keeplist == null || !(keeplist.contains(fId)))) {
-
-			if(SDMSFolderTable.idx_parentId.containsKey(sysEnv, fId)) {
-
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03112191517",
-					"Folder $1 not empty", pathString(sysEnv)));
-			}
-			if(SDMSSchedulingEntityTable.idx_folderId.containsKey(sysEnv, fId)) {
-
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03112191519",
-					"Folder $1 not empty", pathString(sysEnv)));
-			}
-			ManipParameters.kill (sysEnv, fId);
 			super.delete(sysEnv);
 		}
 		return dropped_all_resources;
@@ -241,163 +279,6 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 			}
 		}
 		return dropped_all_resources;
-	}
-
-	public void deleteCascadeFirstPass(SystemEnvironment sysEnv, HashSet keeplist)
-		throws SDMSException
-	{
-		deleteCascadeFirstPass(sysEnv, this, keeplist);
-	}
-
-	private void deleteCascadeFirstPass(SystemEnvironment sysEnv, SDMSFolder f, HashSet keeplist)
-		throws SDMSException
-	{
-
-		Vector v = SDMSSchedulingEntityTable.idx_folderId.getVector(sysEnv, f.getId(sysEnv));
-		for(int i = 0; i < v.size(); i++) {
-			SDMSSchedulingEntity se = (SDMSSchedulingEntity) v.get(i);
-			Long seId = se.getId(sysEnv);
-
-			if (keeplist != null && keeplist.contains(seId)) {
-				continue;
-			}
-
-			Vector tv = SDMSTriggerTable.idx_fireId.getVector(sysEnv, seId);
-			for(int j = 0; j < tv.size(); j++) {
-				SDMSTrigger t = (SDMSTrigger) tv.get(j);
-
-				Vector tsv = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, t.getId(sysEnv));
-				for(int k = 0; k < tsv.size(); k++) {
-					((SDMSTriggerState) tsv.get(k)).delete(sysEnv);
-				}
-				t.delete(sysEnv);
-			}
-
-			Vector dv = SDMSDependencyDefinitionTable.idx_seDependentId.getVector(sysEnv, seId);
-			for(int j = 0; j < dv.size(); j++) {
-				SDMSDependencyDefinition dd = (SDMSDependencyDefinition) dv.get(j);
-				dd.delete(sysEnv);
-			}
-
-			Vector hv = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, seId);
-			for(int j = 0; j < hv.size(); j++) {
-				((SDMSSchedulingHierarchy) hv.get(j)).delete(sysEnv);
-			}
-		}
-
-		v = SDMSFolderTable.idx_parentId.getVector(sysEnv, f.getId(sysEnv));
-		for(int i = 0; i < v.size(); i++) {
-			SDMSFolder tf = (SDMSFolder) v.get(i);
-			deleteCascadeFirstPass(sysEnv, tf, keeplist);
-		}
-
-	}
-
-	public boolean deleteCascadeSecondPass(SystemEnvironment sysEnv, HashSet parameterLinks, boolean force, HashSet keeplist)
-		throws SDMSException
-	{
-		return deleteCascadeSecondPass(sysEnv, this, parameterLinks, force, keeplist);
-	}
-
-	private boolean deleteCascadeSecondPass(SystemEnvironment sysEnv, SDMSFolder f, HashSet parameterLinks, boolean force, HashSet keeplist)
-		throws SDMSException
-	{
-		boolean dropped_all_content = true;
-
-		Vector v = SDMSSchedulingEntityTable.idx_folderId.getVector(sysEnv, f.getId(sysEnv));
-		for(int i = 0; i < v.size(); i++) {
-			SDMSSchedulingEntity se = (SDMSSchedulingEntity) v.get(i);
-			Long seId = se.getId(sysEnv);
-
-			if (keeplist != null && keeplist.contains(seId)) {
-				dropped_all_content = false;
-				continue;
-			}
-
-			Vector tv = SDMSTriggerTable.idx_seId.getVector(sysEnv, seId);
-			if(force) {
-				for(int j = 0; j < tv.size(); j++) {
-					SDMSTrigger t = (SDMSTrigger) tv.get(j);
-
-					Vector tsv = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, t.getId(sysEnv));
-					for(int k = 0; k < tsv.size(); k++) {
-						((SDMSTriggerState) tsv.get(k)).delete(sysEnv);
-					}
-					t.delete(sysEnv);
-				}
-			} else {
-				if(tv.size() != 0) {
-					SDMSTrigger tt = (SDMSTrigger) tv.get(0);
-					String name = null;
-					int type = tt.getObjectType(sysEnv).intValue();
-					switch(type) {
-						case SDMSTrigger.JOB_DEFINITION:
-							name = SDMSSchedulingEntityTable.getObject(sysEnv, tt.getFireId(sysEnv)).pathString(sysEnv);
-							break;
-						case SDMSTrigger.RESOURCE:
-							SDMSResource r = SDMSResourceTable.getObject(sysEnv, tt.getFireId(sysEnv));
-							name = SDMSNamedResourceTable.getObject(sysEnv, r.getNrId(sysEnv)).pathString(sysEnv) +
-							       " in " +
-							       SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv)).pathString(sysEnv);
-							break;
-						case SDMSTrigger.NAMED_RESOURCE:
-							name = SDMSNamedResourceTable.getObject(sysEnv, tt.getFireId(sysEnv)).pathString(sysEnv);
-							break;
-					}
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03207041735",
-							"$1 in use by Trigger $2 in $3", se.pathString(sysEnv),
-							tt.getName(sysEnv), name));
-				}
-			}
-
-			Vector dv = SDMSDependencyDefinitionTable.idx_seRequiredId.getVector(sysEnv, seId);
-			if(force) {
-				for(int j = 0; j < dv.size(); j++) {
-					SDMSDependencyDefinition dd = (SDMSDependencyDefinition) dv.get(j);
-					dd.delete(sysEnv);
-				}
-			} else {
-				if(dv.size() != 0) {
-					SDMSSchedulingEntity tse = SDMSSchedulingEntityTable.getObject(sysEnv, ((SDMSDependencyDefinition) dv.get(0)).getSeDependentId(sysEnv));
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03207041736",
-							"$1 is required by job definition $2", se.pathString(sysEnv),
-							tse.pathString(sysEnv)));
-				}
-			}
-
-			Vector hv = SDMSSchedulingHierarchyTable.idx_seChildId.getVector(sysEnv, seId);
-			if(force) {
-				for(int j = 0; j < hv.size(); j++) {
-					((SDMSSchedulingHierarchy) hv.get(j)).delete(sysEnv);
-				}
-			} else {
-				if(hv.size() != 0) {
-					SDMSSchedulingEntity tse = SDMSSchedulingEntityTable.getObject(sysEnv,
-								((SDMSSchedulingHierarchy) hv.get(0)).getSeParentId(sysEnv));
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03207041737",
-							"$1 is child of job definition $2", se.pathString(sysEnv),
-							tse.pathString(sysEnv)));
-				}
-			}
-
-			se.delete(sysEnv, force, parameterLinks);
-		}
-
-		v = SDMSFolderTable.idx_parentId.getVector(sysEnv, f.getId(sysEnv));
-		for(int i = 0; i < v.size(); i++) {
-			SDMSFolder tf = (SDMSFolder) v.get(i);
-			if (deleteCascadeSecondPass(sysEnv, tf, parameterLinks, force, keeplist)) {
-
-				if (!(tf.delete(sysEnv, keeplist))) {
-					dropped_all_content = false;
-				}
-			} else {
-
-				tf.dropResources(sysEnv, keeplist);
-				dropped_all_content = false;
-			}
-		}
-		return dropped_all_content;
 	}
 
 	public String getVariableValue(SystemEnvironment sysEnv, String key)

@@ -94,15 +94,15 @@ public class SDMSResourceTableGeneric extends SDMSTable
 		table = (SDMSResourceTable) this;
 		SDMSResourceTableGeneric.table = (SDMSResourceTable) this;
 		isVersioned = false;
-		idx_nrId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_scopeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_masterId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_linkId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_managerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_tag = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_rsdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_nrId_scopeId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_nrId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "nrId");
+		idx_scopeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "scopeId");
+		idx_masterId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "masterId");
+		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "ownerId");
+		idx_linkId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "linkId");
+		idx_managerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "managerId");
+		idx_tag = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "tag");
+		idx_rsdId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "rsdId");
+		idx_nrId_scopeId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "nrId_scopeId");
 	}
 	public SDMSResource create(SystemEnvironment env
 	                           ,Long p_nrId
@@ -392,18 +392,9 @@ public class SDMSResourceTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -446,22 +437,58 @@ public class SDMSResourceTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_nrId.put(env, ((SDMSResourceGeneric) o).nrId, o);
-		idx_scopeId.put(env, ((SDMSResourceGeneric) o).scopeId, o);
-		idx_masterId.put(env, ((SDMSResourceGeneric) o).masterId, o);
-		idx_ownerId.put(env, ((SDMSResourceGeneric) o).ownerId, o);
-		idx_linkId.put(env, ((SDMSResourceGeneric) o).linkId, o);
-		idx_managerId.put(env, ((SDMSResourceGeneric) o).managerId, o);
-		idx_tag.put(env, ((SDMSResourceGeneric) o).tag, o);
-		idx_rsdId.put(env, ((SDMSResourceGeneric) o).rsdId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_nrId.check(((SDMSResourceGeneric) o).nrId, o);
+		out = out + "idx_nrId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_scopeId.check(((SDMSResourceGeneric) o).scopeId, o);
+		out = out + "idx_scopeId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_masterId.check(((SDMSResourceGeneric) o).masterId, o);
+		out = out + "idx_masterId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_ownerId.check(((SDMSResourceGeneric) o).ownerId, o);
+		out = out + "idx_ownerId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_linkId.check(((SDMSResourceGeneric) o).linkId, o);
+		out = out + "idx_linkId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_managerId.check(((SDMSResourceGeneric) o).managerId, o);
+		out = out + "idx_managerId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_tag.check(((SDMSResourceGeneric) o).tag, o);
+		out = out + "idx_tag: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_rsdId.check(((SDMSResourceGeneric) o).rsdId, o);
+		out = out + "idx_rsdId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSResourceGeneric) o).nrId);
 		k.add(((SDMSResourceGeneric) o).scopeId);
-		idx_nrId_scopeId.put(env, k, o);
+		ok =  idx_nrId_scopeId.check(k, o);
+		out = out + "idx_nrId_scopeId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_nrId.put(env, ((SDMSResourceGeneric) o).nrId, o, ((1 & indexMember) != 0));
+		idx_scopeId.put(env, ((SDMSResourceGeneric) o).scopeId, o, ((2 & indexMember) != 0));
+		idx_masterId.put(env, ((SDMSResourceGeneric) o).masterId, o, ((4 & indexMember) != 0));
+		idx_ownerId.put(env, ((SDMSResourceGeneric) o).ownerId, o, ((8 & indexMember) != 0));
+		idx_linkId.put(env, ((SDMSResourceGeneric) o).linkId, o, ((16 & indexMember) != 0));
+		idx_managerId.put(env, ((SDMSResourceGeneric) o).managerId, o, ((32 & indexMember) != 0));
+		idx_tag.put(env, ((SDMSResourceGeneric) o).tag, o, ((64 & indexMember) != 0));
+		idx_rsdId.put(env, ((SDMSResourceGeneric) o).rsdId, o, ((128 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSResourceGeneric) o).nrId);
+		k.add(((SDMSResourceGeneric) o).scopeId);
+		idx_nrId_scopeId.put(env, k, o, ((256 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)

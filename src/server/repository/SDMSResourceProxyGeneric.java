@@ -598,46 +598,39 @@ public class SDMSResourceProxyGeneric extends SDMSProxy
 		else groups = checkGroups;
 
 		long p = 0;
-		try {
-			if(env.cEnv.isUser() || env.cEnv.isJob()) {
-				if (env.cEnv.isJob()) {
-					HashSet hg = new HashSet();
-					SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(env, env.cEnv.uid());
-					Long smeOwner = sme.getOwnerId(env);
-					hg.add(smeOwner);
-					hg.add(SDMSObject.publicGId);
-					env.cEnv.pushGid(env, hg);
-				}
-				if(checkGroups == null)
-					groups.addAll(env.cEnv.gid());
-				if(groups.contains(SDMSObject.adminGId)) {
-					if (env.cEnv.isJob()) {
-						env.cEnv.popGid(env);
-					}
-					return checkPrivs;
-				}
-				if(groups.contains(getOwnerId(env))) {
-
-					p = checkPrivs & (~SDMSPrivilege.CREATE_PARENT_CONTENT);
-					if (p == checkPrivs) {
-						if (env.cEnv.isJob()) {
-							env.cEnv.popGid(env);
-						}
-						return p;
-					}
-				}
+		if(env.cEnv.isUser() || env.cEnv.isJob()) {
+			if (env.cEnv.isJob()) {
+				HashSet hg = new HashSet();
+				SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(env, env.cEnv.uid());
+				Long smeOwner = sme.getOwnerId(env);
+				hg.add(smeOwner);
+				hg.add(SDMSObject.publicGId);
+				env.cEnv.pushGid(env, hg);
+			}
+			if(checkGroups == null)
+				groups.addAll(env.cEnv.gid());
+			if(groups.contains(SDMSObject.adminGId)) {
 				if (env.cEnv.isJob()) {
 					env.cEnv.popGid(env);
 				}
-			} else {
-				if((env.cEnv.isJobServer()))
-					p = checkPrivs;
+				return checkPrivs;
 			}
-		} catch(Throwable t) {
+			if(groups.contains(getOwnerId(env))) {
+
+				p = checkPrivs & (~SDMSPrivilege.CREATE_PARENT_CONTENT);
+				if (p == checkPrivs) {
+					if (env.cEnv.isJob()) {
+						env.cEnv.popGid(env);
+					}
+					return p;
+				}
+			}
 			if (env.cEnv.isJob()) {
 				env.cEnv.popGid(env);
 			}
-			throw t;
+		} else {
+			if((env.cEnv.isJobServer()))
+				p = checkPrivs;
 		}
 		return p;
 	}

@@ -69,9 +69,9 @@ public class SDMSTriggerQueueTableGeneric extends SDMSTable
 		table = (SDMSTriggerQueueTable) this;
 		SDMSTriggerQueueTableGeneric.table = (SDMSTriggerQueueTable) this;
 		isVersioned = false;
-		idx_smeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_trId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned);
-		idx_smeId_trId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned);
+		idx_smeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "smeId");
+		idx_trId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "trId");
+		idx_smeId_trId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "smeId_trId");
 	}
 	public SDMSTriggerQueue create(SystemEnvironment env
 	                               ,Long p_smeId
@@ -213,18 +213,9 @@ public class SDMSTriggerQueueTableGeneric extends SDMSTable
 		int read = 0;
 		int loaded = 0;
 
-		final String driverName = env.dbConnection.getMetaData().getDriverName();
-		final boolean postgres = driverName.startsWith("PostgreSQL");
-		String squote = "";
-		String equote = "";
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		final boolean postgres = SystemEnvironment.isPostgreSQL;
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 
 		ResultSet rset = stmt.executeQuery("SELECT " +
@@ -248,16 +239,40 @@ public class SDMSTriggerQueueTableGeneric extends SDMSTable
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
 	}
 
-	protected void index(SystemEnvironment env, SDMSObject o)
+	public String checkIndex(SDMSObject o)
 	throws SDMSException
 	{
-		idx_smeId.put(env, ((SDMSTriggerQueueGeneric) o).smeId, o);
-		idx_trId.put(env, ((SDMSTriggerQueueGeneric) o).trId, o);
+		String out = "";
+		boolean ok;
+		ok =  idx_smeId.check(((SDMSTriggerQueueGeneric) o).smeId, o);
+		out = out + "idx_smeId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_trId.check(((SDMSTriggerQueueGeneric) o).trId, o);
+		out = out + "idx_trId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSTriggerQueueGeneric) o).smeId);
 		k.add(((SDMSTriggerQueueGeneric) o).trId);
-		idx_smeId_trId.put(env, k, o);
+		ok =  idx_smeId_trId.check(k, o);
+		out = out + "idx_smeId_trId: " + (ok ? "ok" : "missing") + "\n";
+		return out;
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o)
+	throws SDMSException
+	{
+		index(env, o, -1);
+	}
+
+	protected void index(SystemEnvironment env, SDMSObject o, long indexMember)
+	throws SDMSException
+	{
+		idx_smeId.put(env, ((SDMSTriggerQueueGeneric) o).smeId, o, ((1 & indexMember) != 0));
+		idx_trId.put(env, ((SDMSTriggerQueueGeneric) o).trId, o, ((2 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSTriggerQueueGeneric) o).smeId);
+		k.add(((SDMSTriggerQueueGeneric) o).trId);
+		idx_smeId_trId.put(env, k, o, ((4 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)
