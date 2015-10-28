@@ -37,6 +37,7 @@ public class JobServer
 
 	public static String env_filnam = null;
 	public static String session_info = "";
+	public static Server server = null;
 
 	public static void main (String argv[])
 	{
@@ -58,7 +59,7 @@ public class JobServer
 			}
 		}
 		if (argv.length > ppos) {
-			if (argv[1].equals("-e")) {
+			if (argv[ppos].equals("-e")) {
 				if (argv.length > ppos + 1) {
 					env_filnam = argv [ppos + 1];
 					ppos += 2;
@@ -70,7 +71,6 @@ public class JobServer
 			}
 		}
 
-		Server server = null;
 		try {
 			server = new Server (config_filnam);
 		}

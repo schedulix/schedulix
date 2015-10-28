@@ -46,11 +46,36 @@ public class Server
 
 	private static HashMap feilMap = null;
 
+	private Vector<String> jidsToBreed;
+
+	public void addJidToBreed(String jid)
+	{
+		synchronized (jidsToBreed) {
+			jidsToBreed.add(jid);
+		}
+	}
+
+	private HashSet<String> jidsWithEiThread;
+
+	public void removeJidWithEiThread(String jid)
+	{
+		synchronized (jidsWithEiThread) {
+			jidsWithEiThread.remove(jid);
+		}
+	}
+
+	private HashSet<String> jidsAwaitRunning;
+
+	HashMap<String,Long> startTimes = null;
+
 	public Server (final String config_filnam)
 		throws CommonErrorException
 	{
 		cfg = new Config (config_filnam);
 		ri  = new RepoIface (cfg);
+		jidsToBreed = new Vector<String>();
+		jidsWithEiThread = new HashSet<String>();
+		jidsAwaitRunning = new HashSet<String>();
 	}
 
 	public static final String getVersionInfo()
@@ -115,9 +140,12 @@ public class Server
 		int f = 0;
 		for (int i = 0; i < len; ++i)
 			if (list [i].startsWith (fnam_prefix) && !list [i].endsWith (Feil.ERROR_POSTFIX)) {
-				found [f++] = list [i].substring (fnam_prefix_len);
-				if (f == num)
-					break;
+				String jid = list [i].substring (fnam_prefix_len);
+				if (!jidsWithEiThread.contains(jid)) {
+					found [f++] = jid;
+					if (f == num)
+						break;
+				}
 			}
 
 		return found;
@@ -125,7 +153,7 @@ public class Server
 
 	private final boolean doRestart ()
 	{
-		HashMap<String,Long> startTimes = ProcessInfo.getStartTimes(null);
+		HashMap<String,Long> startTimes = ProcessInfo.getStartTimes(cfg, null);
 		final String jid[] = getJobFileIds();
 		for (int i = 0; i < jid.length; ++i) {
 			final Feil feil = Server.getFeil(cfg, jid[i]);
@@ -158,6 +186,9 @@ public class Server
 				switch (ri.reassureJob (feil.getId())) {
 				case RepoIface.START_JOB:
 					feil.close();
+					synchronized (jidsWithEiThread) {
+						jidsWithEiThread.add(jid[i]);
+					}
 					new EiThread (ri, cfg, jid [i]).start();
 					break;
 
@@ -180,7 +211,7 @@ public class Server
 
 	private final void breed()
 	{
-		HashMap<String,Long> startTimes = ProcessInfo.getStartTimes(null);
+		startTimes = ProcessInfo.getStartTimes(cfg, null);
 		final String jid[] = getJobFileIds();
 		for (int i = 0; i < jid.length; ++i) {
 			breed(jid[i], startTimes);
@@ -212,7 +243,7 @@ public class Server
 					if (feil.getStatus().equals (Feil.STATUS_RUNNING) || feil.getStatus().equals (Feil.STATUS_BROKEN_ACTIVE)) {
 						boolean alive = ProcessInfo.isAlive (feil.getExtPid(), startTimes) && ProcessInfo.isAlive (feil.getExecPid(), startTimes);
 						if (!alive) {
-							HashMap dummy = ProcessInfo.getStartTimes(startTimes);
+							HashMap dummy = ProcessInfo.getStartTimes(cfg, startTimes);
 						}
 					}
 					if (feil.getStatus().equals (Feil.STATUS_RUNNING)) {
@@ -234,6 +265,13 @@ public class Server
 						feil.open();
 
 						feil.setStatus_Tx (feil.getStatus());
+					}
+
+					if (!feil.getStatus().equals(Feil.STATUS_STARTED)) {
+						synchronized (jidsAwaitRunning) {
+							jidsAwaitRunning.remove(jid);
+						}
+
 					}
 
 					if (Utils.isOneOf (feil.getStatus_Tx(), FINAL_STATES))
@@ -268,9 +306,7 @@ public class Server
 			}
 			try {
 				feil.create (jd, ((Boolean) cfg.get (Config.USE_PATH)).booleanValue(), ((Boolean) cfg.get (Config.VERBOSE_LOGS)).booleanValue());
-			}
-
-			catch (final IOException ioe) {
+			} catch (final IOException ioe) {
 				Server.removeFeil(jd.id);
 				ri.notifyError (RepoIface.NONFATAL, "(04301271512) Cannot create job file " + feil.getFilename() + ": " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
 				++errorCount;
@@ -279,8 +315,26 @@ public class Server
 
 				return;
 			}
+			try {
+				ri.reportState (feil);
+				feil.open();
+				feil.setStatus_Tx (feil.getStatus());
+			} catch (final EOFException ioe) {
+				ri.notifyError (RepoIface.NONFATAL, "(03210150802) Unexpected End of File on jobfile " + feil.getFilename());
+			} catch (final IOException ioe) {
+				ri.notifyError (RepoIface.NONFATAL, "(04302041618) Cannot operate on jobfile " + feil.getFilename() + ": " + ioe.getMessage()  + " (" + ioe.getClass().getName() + ")");
+			} finally {
+				feil.close();
+			}
 		}
-		final EiThread ei = new EiThread (ri, cfg, jd.id, jd.env, jd.dir);
+		synchronized (jidsWithEiThread) {
+			jidsWithEiThread.add(jd.id);
+		}
+		synchronized (jidsAwaitRunning) {
+			jidsAwaitRunning.add(jd.id);
+		}
+
+		final EiThread ei = new EiThread (ri, cfg, jd.id, jd.env, jd.dir, jd.jobenv);
 		ei.start();
 
 		errorCount = 0;
@@ -308,38 +362,89 @@ public class Server
 		startWakeupThread(cfg);
 		startHttpThread(cfg);
 
-		final int loop_delay = 5000;
+		final int loop_delay = 500;
+		final int breed_delay = 5000;
 
 		boolean active = doRestart ();
 		long ts = 0;
+		long bts = 0;
 		while (active) {
-			breed();
+			Thread.interrupted();
 			long now = new Date().getTime();
+			if (now - bts - breed_delay > 0) {
+				synchronized (jidsToBreed) {
+					jidsToBreed.clear();
+				}
+
+				breed();
+				bts = now;
+			}
+			Vector<String> v_tmp = new Vector<String>();
+			synchronized(jidsToBreed) {
+
+				if (jidsToBreed.size() > 0) {
+					while(true) {
+						String jid = null;
+						if (jidsToBreed.size() > 0) {
+							jid = jidsToBreed.elementAt(0);
+							jidsToBreed.removeElementAt(0);
+						}
+						if (jid == null) break;
+						v_tmp.add(jid);
+					}
+				}
+			}
+			Iterator<String> i_tmp = v_tmp.iterator();
+			while (i_tmp.hasNext()) {
+				String jid = i_tmp.next();
+				breed(jid, startTimes);
+			}
+
+			v_tmp = new Vector<String>();
+			synchronized(jidsAwaitRunning) {
+
+				Iterator<String> i = jidsAwaitRunning.iterator();
+				while (i.hasNext()) {
+					v_tmp.add(i.next());
+				}
+			}
+			i_tmp = v_tmp.iterator();
+			while (i_tmp.hasNext()) {
+				String jid = i_tmp.next();
+
+				breed(jid, startTimes);
+			}
 			if (now - ts > ((Long) cfg.get (Config.NOP_DELAY)).longValue()) {
-				switch (ri.getNextCmd()) {
-				case RepoIface.NOP:
-					ts = now;
-					break;
+				boolean gotJob = true;
+				while (gotJob) {
+					gotJob = false;
+					switch (ri.getNextCmd()) {
+					case RepoIface.NOP:
+						ts = now;
+						break;
 
-				case RepoIface.START_JOB:
-					createNewEi (ri.getJobData());
-					break;
+					case RepoIface.START_JOB:
+						createNewEi (ri.getJobData());
+							gotJob = true;
+						break;
 
-				case RepoIface.SHUTDOWN_SERVER:
-					active = false;
-					break;
-				default:
-					Utils.abortProgram (ri, "(04504112210) Unexpected response");
+					case RepoIface.SHUTDOWN_SERVER:
+						active = false;
+						break;
+					default:
+						Utils.abortProgram (ri, "(04504112210) Unexpected response");
+					}
 				}
 			}
 			if (ts > 0) {
 				try {
 					Notifier.register(id, currentThread);
 					Thread.sleep (loop_delay);
-					Notifier.unregister(id);
 				} catch (Exception e) {
 					ts = 0;
+					bts = 0;
 				}
+				Notifier.unregister(id);
 			}
 		}
 	}

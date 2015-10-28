@@ -114,7 +114,7 @@ errmsg_t message[] = {
 #define MSG_NO_ERROR     0
 	{ "No error", T_NONE },
 #define INVALID_TASKFILE 1
-	{ "Invalid taskfile (doesn't exist, isn't readable or writable)", T_NONE },
+	{ "Invalid taskfile (doesn't exist, isn't readable or writable (%d / %s))", T_BOTH },
 #define INVALID_FD       2
 	{ "Invalid file descriptor (open() succeeded, fd invalid)", T_NONE },
 #define TFWRITE_FAILED   3
@@ -168,7 +168,6 @@ const char *ARG_HELP2    = "-h";
 
 unsigned char boottimeHow = 'N';
 
-
 const char *COMMAND       = "command";
 const char *ARGUMENT      = "argument";
 const char *WORKDIR       = "workdir";
@@ -221,7 +220,7 @@ struct _global {
 
 #ifndef WINDOWS
 	int buflen;
-	#define HANDLE FILE*
+#define HANDLE FILE*
 #else
 	DWORD buflen;
 #endif
@@ -257,6 +256,7 @@ void readWhiteSpace(callstatus *status);
 void readKey(callstatus *status, char *key);
 void readLength(callstatus *status, char *lgth);
 void readValue(callstatus *status, int lgth, char *value);
+char *renderError(callstatus *status);
 void processTaskfile(callstatus *status);
 void evaluateTaskfile(callstatus *status);
 void appendTaskfile(callstatus *status, const char *key, char *value, int alreadyOpen);
@@ -759,6 +759,7 @@ HANDLE openTaskfile(callstatus *status)
 		   ) {
 			status->severity = SEVERITY_FATAL;
 			status->msg = INVALID_TASKFILE;
+			status->syserror = errno;
 			return NULL;
 		}
 #else
@@ -766,18 +767,37 @@ HANDLE openTaskfile(callstatus *status)
 		taskfile = CreateFile (
 				global.taskfileName,
 				GENERIC_READ | GENERIC_WRITE,
-				0,
+		                   FILE_SHARE_READ | FILE_SHARE_WRITE,
 				NULL,
 				OPEN_EXISTING,
 				FILE_ATTRIBUTE_NORMAL,
 				NULL);
-		if (taskfile != INVALID_HANDLE_VALUE)
+		if (taskfile != INVALID_HANDLE_VALUE) {
+
+			OVERLAPPED regionStart;
+			DWORD fsLow = 0xFFFFFFFF, fsHigh = 0xFFFFFFFF;
+
+			regionStart.Offset = 0;
+			regionStart.OffsetHigh = 0;
+			regionStart.hEvent = (HANDLE)0;
+
+			if (!LockFileEx(taskfile, LOCKFILE_EXCLUSIVE_LOCK, 0, fsLow, fsHigh, &regionStart)) {
+				;
+				if (myLog != NULL) Hprintf(myLog, "Couldn't lock file > %s < (%d)\n", global.taskfileName, GetLastError());
+			}
 			break;
+		}
 
 		const DWORD errn = GetLastError();
-		if (errn != ERROR_TOO_MANY_OPEN_FILES) {
+		if (errn != ERROR_TOO_MANY_OPEN_FILES &&
+		    errn != ERROR_SHARING_VIOLATION &&
+		    errn != ERROR_LOCK_VIOLATION) {
 			status->severity = SEVERITY_FATAL;
 			status->msg = INVALID_TASKFILE;
+			status->syserror = errn;
+			if ((errn == ERROR_FILE_NOT_FOUND) && (retry_cnt < 11)) {
+				if (myLog != NULL) Hprintf(myLog, "Couldn't open file > %s <\n", global.taskfileName);
+			} else
 			return NULL;
 		}
 
@@ -826,7 +846,18 @@ void closeTaskfile(callstatus *status, HANDLE taskfile)
 #ifndef WINDOWS
 		if (fclose(taskfile) != 0) {		/* releases locks */
 #else
-		if (CloseHandle(taskfile) == 0) {		/* releases locks */
+
+		OVERLAPPED regionStart;
+		DWORD fsLow = 0xFFFFFFFF, fsHigh = 0xFFFFFFFF;
+
+		regionStart.Offset = 0;
+		regionStart.OffsetHigh = 0;
+		regionStart.hEvent = (HANDLE)0;
+
+		if (!UnlockFileEx(taskfile, 0, fsLow, fsHigh, &regionStart)) {
+			;
+		}
+		if (CloseHandle(taskfile) == 0) {
 #endif
 			status->severity = SEVERITY_WARNING;
 			status->msg = TFCLOSE_FAILED;
@@ -1400,6 +1431,8 @@ void run(callstatus *status)
 	if (status->severity != STATUS_OK) return;
 #ifndef WINDOWS
 
+	fflush(global.taskfile);
+
 	cpid = fork();
 
 	if (cpid < 0) {
@@ -1446,6 +1479,7 @@ void run(callstatus *status)
 		closeTaskfile(status, global.taskfile);
 		return;
 	}
+	global.taskfile = openTaskfile(status);
 
 	default_all_signals (status);
 	if (status->severity != STATUS_OK) {

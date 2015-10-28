@@ -42,6 +42,7 @@ public class Descr
 	public final boolean     elogapp;
 	public final boolean     samelog;
 	public final Environment env;
+	public final Environment jobenv;
 
 	public Descr (final long   id, final int run,
 		      final String cmd, final String[] args,
@@ -49,7 +50,8 @@ public class Descr
 		      final File log,  final boolean logapp,
 		      final File elog, final boolean elogapp,
 		      final boolean samelog,
-		      final Environment env)
+	              final Environment env,
+	              final Environment jobenv)
 	{
 		this.id      = String.valueOf (id);
 		this.run     = String.valueOf (run);
@@ -61,6 +63,7 @@ public class Descr
 		this.elogapp = elog != null ? elogapp : false;
 		this.samelog = samelog;
 		this.env     = env;
+		this.jobenv  = jobenv;
 
 		this.args = new String [args.length];
 		for (int i = 0; i < args.length; ++i)

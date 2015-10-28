@@ -45,10 +45,10 @@ public class EiThread
 
 	public EiThread (final RepoIface ri, final Config cfg, final String jid)
 	{
-		this (ri, cfg, jid, ri.getJobData().env, null);
+		this (ri, cfg, jid, ri.getJobData().env, null, ri.getJobData().jobenv);
 	}
 
-	public EiThread (final RepoIface ri, final Config cfg, final String jid, final Environment env, File workdir)
+	public EiThread (final RepoIface ri, final Config cfg, final String jid, final Environment env, File workdir, final Environment jobenv)
 	{
 		this.ri  = ri;
 		this.cfg = cfg;
@@ -56,6 +56,7 @@ public class EiThread
 		this.workdir = workdir;
 
 		final Environment e = Environment.getSystemEnvironment().merge (env, ri, cfg);
+		if (jobenv != null) e.putAll(jobenv);
 		this.env = e.toArray();
 
 		setPriority (Thread.MIN_PRIORITY);
@@ -64,136 +65,144 @@ public class EiThread
 
 	public final void run()
 	{
-		final Runtime rt = Runtime.getRuntime();
-		boolean wd_ok = true;
-		int rc = 0;
+		try {
+			final Runtime rt = Runtime.getRuntime();
+			boolean wd_ok = true;
+			int rc = 0;
 
-		final String[] cmdarray;
-		final Feil feil = Server.getFeil(cfg, jid);
-		synchronized(feil) {
-			cmdarray = new String[] {
-				cfg.get (Config.JOB_EXECUTOR).toString(),
-				String.valueOf (ProcessInfo.getBoottimeHow()),
-				feil.getFilename().toString(),
-				ProcessInfo.getBoottime(ProcessInfo.getBoottimeHow())
-			};
-		}
+			final String[] cmdarray;
+			final Feil feil = Server.getFeil(cfg, jid);
+			synchronized(feil) {
+				cmdarray = new String[] {
+					cfg.get (Config.JOB_EXECUTOR).toString(),
+					String.valueOf (ProcessInfo.getBoottimeHow()),
+					feil.getFilename().toString(),
+					ProcessInfo.getBoottime(ProcessInfo.getBoottimeHow())
+				};
+			}
 
-		final long nop_delay = ((Long) cfg.get (Config.NOP_DELAY)).longValue();
-		final long breed_delay = Math.min(nop_delay, DEFAULT_NOP_DELAY);
+			final long nop_delay = ((Long) cfg.get (Config.NOP_DELAY)).longValue();
+			final long breed_delay = Math.min(nop_delay, DEFAULT_NOP_DELAY);
 
-		if (workdir != null && ((Boolean) cfg.get (Config.CREATE_WORKDIR)).booleanValue()) {
-			if (!workdir.exists())
-				if (!workdir.mkdirs()) {
-					ri.notifyError(RepoIface.NONFATAL, "(03110261111) Cannot create working directory " + workdir.toString());
-					wd_ok = false;
+			if (workdir != null && ((Boolean) cfg.get (Config.CREATE_WORKDIR)).booleanValue()) {
+				if (!workdir.exists())
+					if (!workdir.mkdirs()) {
+						ri.notifyError(RepoIface.NONFATAL, "(03110261111) Cannot create working directory " + workdir.toString());
+						wd_ok = false;
+					}
+			}
+
+			if (wd_ok) {
+				Process p;
+				int trycnt = 0;
+				while (true) {
+					try {
+						p = rt.exec (cmdarray, env);
+						break;
+					} catch (final IOException ioe) {
+						Utils.sleep (1000);
+						trycnt ++;
+						if (trycnt >= 5) {
+							ri.notifyError (RepoIface.NONFATAL, "(04302012116) Cannot launch job executor: " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
+							System.exit(1);
+						}
+					}
 				}
-		}
 
-		if (wd_ok) {
-			Process p;
-			int trycnt = 0;
-			while (true) {
 				try {
-					p = rt.exec (cmdarray, env);
-					break;
+
+					InputStream i1 = p.getInputStream();
+					i1.close();
 				} catch (final IOException ioe) {
-					Utils.sleep (1000);
-					trycnt ++;
-					if (trycnt >= 5) {
-						ri.notifyError (RepoIface.NONFATAL, "(04302012116) Cannot launch job executor: " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
-						System.exit(1);
+					Trace.warning("(03210171637) Error closing pipe stdout : " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
+
+				}
+				try {
+
+					InputStream i1 = p.getErrorStream();
+					i1.close();
+				} catch (final IOException ioe) {
+					Trace.warning("(03210171638) Error closing pipe stderr : " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
+
+				}
+				try {
+
+					OutputStream i1 = p.getOutputStream();
+					i1.close();
+				} catch (final IOException ioe) {
+					Trace.warning("(03210171639) Error closing pipe stdin : " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
+
+				}
+
+				while (true) {
+					try {
+						rc = p.waitFor();
+						break;
+					} catch (final InterruptedException ie) {
+
 					}
 				}
 			}
 
-			try {
-
-				InputStream i1 = p.getInputStream();
-				i1.close();
-			} catch (final IOException ioe) {
-				Trace.warning("(03210171637) Error closing pipe stdout : " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
-
-			}
-			try {
-
-				InputStream i1 = p.getErrorStream();
-				i1.close();
-			} catch (final IOException ioe) {
-				Trace.warning("(03210171638) Error closing pipe stderr : " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
-
-			}
-			try {
-
-				OutputStream i1 = p.getOutputStream();
-				i1.close();
-			} catch (final IOException ioe) {
-				Trace.warning("(03210171639) Error closing pipe stdin : " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
-
-			}
-
-			while (true) {
-				try {
-					rc = p.waitFor();
-					break;
-				} catch (final InterruptedException ie) {
-
-				}
-			}
-		}
-
-		IOException ioe = null;
-		synchronized(feil) {
-
-			if (Server.feilExists(jid)) {
-				try {
-					feil.open();
-					feil.scan();
-
-					if (rc == 42) {
-
-						Trace.warning("(02402051056)Job executor for job " + jid + " returned error = " + rc + ", double execution ignored");
-					} else if (rc != 0) {
-						String extPid = feil.getExtPid();
-						boolean alive = false;
-						if (!(extPid.equals(""))) {
-							HashMap<String,Long> startTimes = ProcessInfo.getStartTimes(null);
-							alive = ProcessInfo.isAlive (extPid, startTimes);
-						}
-						if (alive)
-							feil.setStatus (Feil.STATUS_BROKEN_ACTIVE);
-						else {
-							feil.setError ("(04301271445) Job executor returned errno = " + rc);
-							feil.setStatus (Feil.STATUS_ERROR);
-						}
-					} else {
-						if (!wd_ok) {
-							feil.setError ("(03110261111) Cannot create working directory " + workdir.toString());
-							feil.setStatus (Feil.STATUS_ERROR);
-						} else {
-							if (feil.getStatus().equals (Feil.STATUS_STARTED)) {
-								feil.setError ("(04302042027) Error launching job executor");
-								feil.setStatus (Feil.STATUS_ERROR);
-							}
-						}
-					}
-				} catch (final OverlappingFileLockException ofle) {
-
-				} catch (final IOException e) {
-					ioe = e;
-				} finally {
-					feil.close();
-				}
-			}
-		}
-
-		Notifier.interrupt(new Long(0));
-
-		if (ioe != null)
+			IOException ioe = null;
 			synchronized(feil) {
 
-				ri.notifyError (RepoIface.NONFATAL, "(04302042025) Cannot operate on jobfile " + feil.getFilename() + ": " +
-					ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
+				if (Server.feilExists(jid)) {
+					try {
+						feil.open();
+						feil.scan();
+
+						if (rc == 42) {
+
+							Trace.warning("(02402051056)Job executor for job " + jid + " returned error = " + rc + ", double execution ignored");
+						} else if (rc != 0) {
+							String extPid = feil.getExtPid();
+							boolean alive = false;
+							if (!(extPid.equals(""))) {
+									HashMap<String,Long> startTimes = ProcessInfo.getStartTimes(cfg, null);
+								alive = ProcessInfo.isAlive (extPid, startTimes);
+							}
+							if (alive)
+								feil.setStatus (Feil.STATUS_BROKEN_ACTIVE);
+							else {
+								feil.setError ("(04301271445) Job executor returned errno = " + rc);
+								feil.setStatus (Feil.STATUS_ERROR);
+							}
+						} else {
+							if (!wd_ok) {
+								feil.setError ("(03110261111) Cannot create working directory " + workdir.toString());
+								feil.setStatus (Feil.STATUS_ERROR);
+							} else {
+								if (feil.getStatus().equals (Feil.STATUS_STARTED)) {
+									feil.setError ("(04302042027) Error launching job executor");
+									feil.setStatus (Feil.STATUS_ERROR);
+								}
+							}
+						}
+					} catch (final OverlappingFileLockException ofle) {
+
+					} catch (final IOException e) {
+						ioe = e;
+					} finally {
+						feil.close();
+
+							JobServer.server.removeJidWithEiThread(jid);
+							JobServer.server.addJidToBreed(jid);
+							Notifier.interrupt(new Long(0));
+					}
+				}
 			}
+
+			if (ioe != null)
+				synchronized(feil) {
+
+					ri.notifyError (RepoIface.NONFATAL, "(04302042025) Cannot operate on jobfile " + feil.getFilename() + ": " +
+						ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
+				}
+		} catch (Exception e) {
+			ri.notifyError (RepoIface.FATAL, "(03510221606) Exception caught while starting Thread : " + e.toString());
+		} catch (Error e) {
+			ri.notifyError (RepoIface.FATAL, "(03510221607) Exception caught while starting Thread : " + e.toString());
+		}
 	}
 }
