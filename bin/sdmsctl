@@ -43,6 +43,13 @@ do_start()
 	echo 'Server started'
 }
 
+do_test()
+{
+	echo "trying 
+		$BICSUITEJAVA_BS $BICSUITEJAVAFLAGS_BS -cp '$BICSUITECLASSPATH' de.independit.scheduler.TestConfig '$BICSUITECONFIG/server.conf' $*"
+	$BICSUITEJAVA_BS $BICSUITEJAVAFLAGS_BS -cp "$BICSUITECLASSPATH" de.independit.scheduler.TestConfig "$BICSUITECONFIG/server.conf" $*
+}
+
 ffuser()
 {
 	$BICSUITEFUSER $1 2>/dev/null | $BICSUITEGREP '[1-9][0-9]*'
@@ -148,6 +155,8 @@ case "$OPERATION" in
 
 	stop)		ensure_pipe "$LOGFILE";
 			do_stop ;;
+
+	test)		do_test ;;
 
 	*)		print_usage ;
 			exit 1 ;;
