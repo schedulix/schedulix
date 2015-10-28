@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE ENTITY_VARIABLE (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `SME_ID`                       decimal(20)     NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `VALUE`                        varchar(256)        NULL
@@ -37,11 +37,11 @@ CREATE TABLE ENTITY_VARIABLE (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_ENTITY_VARIABLE
-ON ENTITY_VARIABLE(id);
+ON ENTITY_VARIABLE(`ID`);
 CREATE TABLE ARC_ENTITY_VARIABLE (
-    ID                             DECIMAL (20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , `SME_ID`                       decimal(20)      NULL
     , `NAME`                         varchar(64)      NULL
     , `VALUE`                        varchar(256)     NULL
@@ -51,7 +51,7 @@ CREATE TABLE ARC_ENTITY_VARIABLE (
     , `CREATE_TS`                    decimal(20)      NULL
     , `CHANGER_U_ID`                 decimal(20)      NULL
     , `CHANGE_TS`                    decimal(20)      NULL
-);
+) ENGINE = INNODB;
 CREATE VIEW SCI_ENTITY_VARIABLE AS
 SELECT
     ID

@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE PERSISTENT_VALUE (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , NAME                           varchar(64)     NOT NULL
     , INT_VALUE                      integer         WITH NULL
     , CREATOR_U_ID                   decimal(20)     NOT NULL

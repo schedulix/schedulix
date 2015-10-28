@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE SUBMITTED_ENTITY (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , ACCESS_KEY                     decimal(20)     NOT NULL
     , MASTER_ID                      decimal(20)     NOT NULL
     , SUBMIT_TAG                     varchar(32)         NULL
@@ -39,6 +39,7 @@ CREATE TABLE SUBMITTED_ENTITY (
     , PARENT_ID                      decimal(20)         NULL
     , SCOPE_ID                       decimal(20)         NULL
     , IS_STATIC                      integer         NOT NULL
+    , IS_DISABLED                    integer         NOT NULL
     , MERGE_MODE                     integer         NOT NULL
     , STATE                          integer         NOT NULL
     , JOB_ESD_ID                     decimal(20)         NULL
@@ -128,7 +129,7 @@ CREATE TABLE SUBMITTED_ENTITY (
 CREATE UNIQUE INDEX PK_SUBMITTED_ENTITY
 ON SUBMITTED_ENTITY(ID);
 CREATE TABLE ARC_SUBMITTED_ENTITY (
-    ID                             DECIMAL (20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , ACCESS_KEY                     decimal(20)      NULL
     , MASTER_ID                      decimal(20)      NULL
     , SUBMIT_TAG                     varchar(32)      NULL
@@ -140,6 +141,7 @@ CREATE TABLE ARC_SUBMITTED_ENTITY (
     , PARENT_ID                      decimal(20)      NULL
     , SCOPE_ID                       decimal(20)      NULL
     , IS_STATIC                      integer          NULL
+    , IS_DISABLED                    integer          NULL
     , MERGE_MODE                     integer          NULL
     , STATE                          integer          NULL
     , JOB_ESD_ID                     decimal(20)      NULL
@@ -239,6 +241,7 @@ SELECT
     , PARENT_ID                      AS PARENT_ID
     , SCOPE_ID                       AS SCOPE_ID
     , CASE IS_STATIC WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_STATIC
+    , CASE IS_DISABLED WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_DISABLED
     , CASE MERGE_MODE WHEN 1 THEN 'MERGE_LOCAL' WHEN 2 THEN 'MERGE_GLOBAL' WHEN 3 THEN 'NOMERGE' WHEN 4 THEN 'FAILURE' END AS MERGE_MODE
     , CASE STATE WHEN 0 THEN 'SUBMITTED' WHEN 1 THEN 'DEPENDENCY_WAIT' WHEN 2 THEN 'SYNCHRONIZE_WAIT' WHEN 3 THEN 'RESOURCE_WAIT' WHEN 4 THEN 'RUNNABLE' WHEN 5 THEN 'STARTING' WHEN 6 THEN 'STARTED' WHEN 7 THEN 'RUNNING' WHEN 8 THEN 'TO_KILL' WHEN 9 THEN 'KILLED' WHEN 10 THEN 'CANCELLED' WHEN 11 THEN 'FINISHED' WHEN 12 THEN 'FINAL' WHEN 13 THEN 'BROKEN_ACTIVE' WHEN 14 THEN 'BROKEN_FINISHED' WHEN 15 THEN 'ERROR' WHEN 16 THEN 'UNREACHABLE' END AS STATE
     , JOB_ESD_ID                     AS JOB_ESD_ID

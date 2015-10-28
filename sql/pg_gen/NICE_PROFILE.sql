@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE NICE_PROFILE (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , NAME                           varchar(64)     NOT NULL
     , IS_ACTIVE                      integer         NOT NULL
     , ACTIVE_TS                      decimal(20)         NULL

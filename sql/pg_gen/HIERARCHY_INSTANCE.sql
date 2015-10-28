@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE HIERARCHY_INSTANCE (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , PARENT_ID                      decimal(20)     NOT NULL
     , CHILD_ID                       decimal(20)     NOT NULL
     , SH_ID                          decimal(20)     NOT NULL
@@ -43,7 +43,7 @@ CREATE TABLE HIERARCHY_INSTANCE (
 CREATE UNIQUE INDEX PK_HIERARCHY_INSTANCE
 ON HIERARCHY_INSTANCE(ID);
 CREATE TABLE ARC_HIERARCHY_INSTANCE (
-    ID                             DECIMAL (20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , PARENT_ID                      decimal(20)      NULL
     , CHILD_ID                       decimal(20)      NULL
     , SH_ID                          decimal(20)      NULL

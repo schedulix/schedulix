@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE INTERVAL_SELECTION (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `INT_ID`                       decimal(20)     NOT NULL
     , `VALUE`                        integer             NULL
     , `PERIOD_FROM`                  decimal(20)         NULL
@@ -36,9 +36,9 @@ CREATE TABLE INTERVAL_SELECTION (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_INTERVAL_SELECTION
-ON INTERVAL_SELECTION(id);
+ON INTERVAL_SELECTION(`ID`);
 CREATE VIEW SCI_INTERVAL_SELECTION AS
 SELECT
     ID

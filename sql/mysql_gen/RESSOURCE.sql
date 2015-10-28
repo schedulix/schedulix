@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE RESSOURCE (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `NR_ID`                        decimal(20)     NOT NULL
     , `SCOPE_ID`                     decimal(20)         NULL
     , `MASTER_ID`                    decimal(20)         NULL
@@ -56,9 +56,9 @@ CREATE TABLE RESSOURCE (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_RESSOURCE
-ON RESSOURCE(id);
+ON RESSOURCE(`ID`);
 CREATE VIEW SCI_RESSOURCE AS
 SELECT
     ID

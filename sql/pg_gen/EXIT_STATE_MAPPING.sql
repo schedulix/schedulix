@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE EXIT_STATE_MAPPING (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , ESMP_ID                        decimal(20)     NOT NULL
     , ESD_ID                         decimal(20)     NOT NULL
     , ECR_START                      integer             NULL
@@ -36,8 +36,8 @@ CREATE TABLE EXIT_STATE_MAPPING (
     , CREATE_TS                      decimal(20)     NOT NULL
     , CHANGER_U_ID                   decimal(20)     NOT NULL
     , CHANGE_TS                      decimal(20)     NOT NULL
-    , VALID_FROM                   DECIMAL(20) NOT NULL
-    , VALID_TO                     DECIMAL(20) NOT NULL
+    , VALID_FROM                   decimal(20) NOT NULL
+    , VALID_TO                     decimal(20) NOT NULL
 );
 CREATE INDEX PK_EXIT_STATE_MAPPING
 ON EXIT_STATE_MAPPING(ID);

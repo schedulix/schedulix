@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE SME_COUNTER (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `JAHR`                         integer         NOT NULL
     , `MONAT`                        integer         NOT NULL
     , `TAG`                          integer         NOT NULL
@@ -37,9 +37,9 @@ CREATE TABLE SME_COUNTER (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_SME_COUNTER
-ON SME_COUNTER(id);
+ON SME_COUNTER(`ID`);
 CREATE VIEW SCI_SME_COUNTER AS
 SELECT
     ID

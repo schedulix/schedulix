@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE TRIGGER_QUEUE (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , SME_ID                         decimal(20)     NOT NULL
     , TR_ID                          decimal(20)     NOT NULL
     , NEXT_TRIGGER_TIME              decimal(20)     NOT NULL

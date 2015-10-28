@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE TRIGGER_DEFINITION (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `FIRE_ID`                      decimal(20)     NOT NULL
     , `OBJECT_TYPE`                  integer         NOT NULL
@@ -35,6 +35,7 @@ CREATE TABLE TRIGGER_DEFINITION (
     , `MAIN_SE_ID`                   decimal(20)         NULL
     , `PARENT_SE_ID`                 decimal(20)         NULL
     , `IS_ACTIVE`                    integer         NOT NULL
+    , `IS_INVERSE`                   integer         NOT NULL
     , `ACTION`                       integer         NOT NULL
     , `TYPE`                         integer         NOT NULL
     , `IS_MASTER`                    integer         NOT NULL
@@ -47,6 +48,7 @@ CREATE TABLE TRIGGER_DEFINITION (
     , `RESUME_IN`                    integer             NULL
     , `RESUME_BASE`                  integer             NULL
     , `IS_WARN_ON_LIMIT`             integer         NOT NULL
+    , `LIMIT_STATE`                  decimal(20)         NULL
     , `MAX_RETRY`                    integer         NOT NULL
     , `SUBMIT_OWNER_ID`              decimal(20)         NULL
     , `CONDITION`                    varchar(1024)       NULL
@@ -56,11 +58,11 @@ CREATE TABLE TRIGGER_DEFINITION (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-    , VALID_FROM                   DECIMAL(20) NOT NULL
-    , VALID_TO                     DECIMAL(20) NOT NULL
-) engine = innodb;
+    , `VALID_FROM`                 decimal(20) NOT NULL
+    , `VALID_TO`                   decimal(20) NOT NULL
+) ENGINE = INNODB;
 CREATE INDEX PK_TRIGGER_DEFINITION
-ON TRIGGER_DEFINITION(id);
+ON TRIGGER_DEFINITION(`ID`);
 CREATE VIEW SCI_C_TRIGGER_DEFINITION AS
 SELECT
     ID
@@ -71,6 +73,7 @@ SELECT
     , `MAIN_SE_ID`                   AS `MAIN_SE_ID`
     , `PARENT_SE_ID`                 AS `PARENT_SE_ID`
     , CASE `IS_ACTIVE` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_ACTIVE`
+    , CASE `IS_INVERSE` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_INVERSE`
     , CASE `ACTION` WHEN 0 THEN 'SUBMIT' WHEN 1 THEN 'RERUN' END AS `ACTION`
     , CASE `TYPE` WHEN 0 THEN 'IMMEDIATE_LOCAL' WHEN 2 THEN 'BEFORE_FINAL' WHEN 3 THEN 'AFTER_FINAL' WHEN 1 THEN 'IMMEDIATE_MERGE' WHEN 4 THEN 'FINISH_CHILD' WHEN 5 THEN 'UNTIL_FINISHED' WHEN 6 THEN 'UNTIL_FINAL' WHEN 7 THEN 'WARNING' END AS `TYPE`
     , CASE `IS_MASTER` WHEN 1 THEN 'MASTER' WHEN 0 THEN 'NOMASTER' END AS `IS_MASTER`
@@ -83,6 +86,7 @@ SELECT
     , `RESUME_IN`                    AS `RESUME_IN`
     , CASE `RESUME_BASE` WHEN 0 THEN 'MINUTE' WHEN 1 THEN 'HOUR' WHEN 2 THEN 'DAY' WHEN 3 THEN 'WEEK' WHEN 4 THEN 'MONTH' WHEN 5 THEN 'YEAR' END AS `RESUME_BASE`
     , CASE `IS_WARN_ON_LIMIT` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_WARN_ON_LIMIT`
+    , `LIMIT_STATE`                  AS `LIMIT_STATE`
     , `MAX_RETRY`                    AS `MAX_RETRY`
     , `SUBMIT_OWNER_ID`              AS `SUBMIT_OWNER_ID`
     , `CONDITION`                    AS `CONDITION`
@@ -104,6 +108,7 @@ SELECT
     , `MAIN_SE_ID`                   AS `MAIN_SE_ID`
     , `PARENT_SE_ID`                 AS `PARENT_SE_ID`
     , CASE `IS_ACTIVE` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_ACTIVE`
+    , CASE `IS_INVERSE` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_INVERSE`
     , CASE `ACTION` WHEN 0 THEN 'SUBMIT' WHEN 1 THEN 'RERUN' END AS `ACTION`
     , CASE `TYPE` WHEN 0 THEN 'IMMEDIATE_LOCAL' WHEN 2 THEN 'BEFORE_FINAL' WHEN 3 THEN 'AFTER_FINAL' WHEN 1 THEN 'IMMEDIATE_MERGE' WHEN 4 THEN 'FINISH_CHILD' WHEN 5 THEN 'UNTIL_FINISHED' WHEN 6 THEN 'UNTIL_FINAL' WHEN 7 THEN 'WARNING' END AS `TYPE`
     , CASE `IS_MASTER` WHEN 1 THEN 'MASTER' WHEN 0 THEN 'NOMASTER' END AS `IS_MASTER`
@@ -116,6 +121,7 @@ SELECT
     , `RESUME_IN`                    AS `RESUME_IN`
     , CASE `RESUME_BASE` WHEN 0 THEN 'MINUTE' WHEN 1 THEN 'HOUR' WHEN 2 THEN 'DAY' WHEN 3 THEN 'WEEK' WHEN 4 THEN 'MONTH' WHEN 5 THEN 'YEAR' END AS `RESUME_BASE`
     , CASE `IS_WARN_ON_LIMIT` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_WARN_ON_LIMIT`
+    , `LIMIT_STATE`                  AS `LIMIT_STATE`
     , `MAX_RETRY`                    AS `MAX_RETRY`
     , `SUBMIT_OWNER_ID`              AS `SUBMIT_OWNER_ID`
     , `CONDITION`                    AS `CONDITION`

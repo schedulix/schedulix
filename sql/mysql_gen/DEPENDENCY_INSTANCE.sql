@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE DEPENDENCY_INSTANCE (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `DD_ID`                        decimal(20)     NOT NULL
     , `DEPENDENT_ID`                 decimal(20)     NOT NULL
     , `DEPENDENT_ID_ORIG`            decimal(20)     NOT NULL
@@ -41,11 +41,11 @@ CREATE TABLE DEPENDENCY_INSTANCE (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_DEPENDENCY_INSTANCE
-ON DEPENDENCY_INSTANCE(id);
+ON DEPENDENCY_INSTANCE(`ID`);
 CREATE TABLE ARC_DEPENDENCY_INSTANCE (
-    ID                             DECIMAL (20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , `DD_ID`                        decimal(20)      NULL
     , `DEPENDENT_ID`                 decimal(20)      NULL
     , `DEPENDENT_ID_ORIG`            decimal(20)      NULL
@@ -59,7 +59,7 @@ CREATE TABLE ARC_DEPENDENCY_INSTANCE (
     , `CREATE_TS`                    decimal(20)      NULL
     , `CHANGER_U_ID`                 decimal(20)      NULL
     , `CHANGE_TS`                    decimal(20)      NULL
-);
+) ENGINE = INNODB;
 CREATE VIEW SCI_DEPENDENCY_INSTANCE AS
 SELECT
     ID

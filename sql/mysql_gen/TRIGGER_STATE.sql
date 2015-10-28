@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE TRIGGER_STATE (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `TRIGGER_ID`                   decimal(20)     NOT NULL
     , `FROM_STATE_ID`                decimal(20)         NULL
     , `TO_STATE_ID`                  decimal(20)         NULL
@@ -35,11 +35,11 @@ CREATE TABLE TRIGGER_STATE (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-    , VALID_FROM                   DECIMAL(20) NOT NULL
-    , VALID_TO                     DECIMAL(20) NOT NULL
-) engine = innodb;
+    , `VALID_FROM`                 decimal(20) NOT NULL
+    , `VALID_TO`                   decimal(20) NOT NULL
+) ENGINE = INNODB;
 CREATE INDEX PK_TRIGGER_STATE
-ON TRIGGER_STATE(id);
+ON TRIGGER_STATE(`ID`);
 CREATE VIEW SCI_C_TRIGGER_STATE AS
 SELECT
     ID

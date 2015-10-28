@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE INSTANCE_VALUE (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , VALUE                          varchar(256)    WITH NULL
     , OI_ID                          decimal(20)     NOT NULL
     , WTP_ID                         decimal(20)     NOT NULL

@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE AUDIT_TRAIL (
-    ID                             DECIMAL(20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , USER_ID                        decimal(20)     NOT NULL
     , TS                             decimal(20)     NOT NULL
     , TXID                           decimal(20)     NOT NULL
@@ -46,7 +46,7 @@ CREATE TABLE AUDIT_TRAIL (
 CREATE UNIQUE INDEX PK_AUDIT_TRAIL
 ON AUDIT_TRAIL(ID);
 CREATE TABLE ARC_AUDIT_TRAIL (
-    ID                             DECIMAL (20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , USER_ID                        decimal(20)      NULL
     , TS                             decimal(20)      NULL
     , TXID                           decimal(20)      NULL

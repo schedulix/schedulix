@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE RESOURCE_ALLOCATION (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `R_ID`                         decimal(20)     NOT NULL
     , `SME_ID`                       decimal(20)     NOT NULL
     , `NR_ID`                        decimal(20)     NOT NULL
@@ -45,9 +45,9 @@ CREATE TABLE RESOURCE_ALLOCATION (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_RESOURCE_ALLOCATION
-ON RESOURCE_ALLOCATION(id);
+ON RESOURCE_ALLOCATION(`ID`);
 CREATE VIEW SCI_RESOURCE_ALLOCATION AS
 SELECT
     ID

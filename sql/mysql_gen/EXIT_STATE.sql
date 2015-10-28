@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE EXIT_STATE (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `PREFERENCE`                   integer         NOT NULL
     , `IS_FINAL`                     integer         NOT NULL
     , `IS_RESTARTABLE`               integer         NOT NULL
@@ -41,11 +41,11 @@ CREATE TABLE EXIT_STATE (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-    , VALID_FROM                   DECIMAL(20) NOT NULL
-    , VALID_TO                     DECIMAL(20) NOT NULL
-) engine = innodb;
+    , `VALID_FROM`                 decimal(20) NOT NULL
+    , `VALID_TO`                   decimal(20) NOT NULL
+) ENGINE = INNODB;
 CREATE INDEX PK_EXIT_STATE
-ON EXIT_STATE(id);
+ON EXIT_STATE(`ID`);
 CREATE VIEW SCI_C_EXIT_STATE AS
 SELECT
     ID

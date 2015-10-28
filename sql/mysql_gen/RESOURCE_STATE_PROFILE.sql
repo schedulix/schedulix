@@ -27,16 +27,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE RESOURCE_STATE_PROFILE (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `INITIAL_RSD_ID`               decimal(20)         NULL
     , `CREATOR_U_ID`                 decimal(20)     NOT NULL
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_RESOURCE_STATE_PROFILE
-ON RESOURCE_STATE_PROFILE(id);
+ON RESOURCE_STATE_PROFILE(`ID`);
 CREATE VIEW SCI_RESOURCE_STATE_PROFILE AS
 SELECT
     ID

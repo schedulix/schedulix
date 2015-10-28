@@ -27,7 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
 CREATE TABLE OBJECT_INSTANCE (
-    ID                             DECIMAL(20) NOT NULL
+    `ID`                           decimal(20) NOT NULL
     , `UNIQUE_NAME`                  varchar(256)    NOT NULL
     , `OM_ID`                        decimal(20)     NOT NULL
     , `MODIFY_TS`                    decimal(20)         NULL
@@ -36,9 +36,9 @@ CREATE TABLE OBJECT_INSTANCE (
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
-) engine = innodb;
+) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_OBJECT_INSTANCE
-ON OBJECT_INSTANCE(id);
+ON OBJECT_INSTANCE(`ID`);
 CREATE VIEW SCI_OBJECT_INSTANCE AS
 SELECT
     ID
