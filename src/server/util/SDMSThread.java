@@ -34,9 +34,12 @@ import java.util.*;
 import java.text.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.output.*;
+import de.independit.scheduler.locking.*;
 
 public abstract class SDMSThread extends Thread
 {
+	public SerializationException lastSerializationException = null;
+
 	public static final String __version = "@(#) $Id: SDMSThread.java,v 2.9.2.1 2013/03/14 10:25:29 ronald Exp $";
 
 	public final static int SEVERITY_DEBUG   =  3;
@@ -50,6 +53,10 @@ public abstract class SDMSThread extends Thread
 
 	private static final SimpleDateFormat sysDateFmt = (SimpleDateFormat) SystemEnvironment.staticSystemDateFormat.clone();
 
+	public int readLock = ObjectLock.SHARED;
+
+	public SDMSThread lockThread = null;
+
 	public SDMSThread()
 	{
 		super();
@@ -59,6 +66,12 @@ public abstract class SDMSThread extends Thread
 	public SDMSThread(String s)
 	{
 		super(s);
+		run = true;
+	}
+
+	public SDMSThread(Runnable r)
+	{
+		super(r);
 		run = true;
 	}
 
@@ -185,6 +198,11 @@ public abstract class SDMSThread extends Thread
 
 	public void run()
 	{
+		if (lockThread != null) {
+
+			super.run();
+			return;
+		}
 		try {
 			SDMSrun();
 		} catch (Exception e) {

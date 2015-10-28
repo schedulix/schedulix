@@ -230,12 +230,12 @@ public class DBCleanupThread extends SDMSThread
 				loadMasters.setLong(1, maxFinalTs);
 				loadMasters.setMaxRows(MASTERCHUNK);
 				ResultSet rs = loadMasters.executeQuery();
+				masterList.clear();
 				while(rs.next()) {
 					MasterEntry e = new MasterEntry();
 					e.finalTs = rs.getLong(2);
 					e.id = rs.getLong(1);
 					masterList.add(e);
-
 				}
 				sysEnv.dbConnection.commit();
 			} catch (SQLRecoverableException sqlre) {
@@ -286,7 +286,7 @@ public class DBCleanupThread extends SDMSThread
 			try {
 				sysEnv.dbConnection.rollback();
 			} catch (SQLException sqle1) {
-				// do nothing; at least we tried
+
 			}
 			doTrace(null, "Error loading master:" + sqle.getMessage(), SEVERITY_ERROR);
 			return null;
@@ -376,10 +376,14 @@ public class DBCleanupThread extends SDMSThread
 			if (!run) break;
 			MasterEntry master = masterList.get(0);
 
+			doTrace(null, "DBCleanupThread: checking existence of master id " + master.id, SEVERITY_DEBUG);
+
 			if (SDMSSubmittedEntityTable.table.exists(sysEnv, master.id)) {
+				doTrace(null, "DBCleanupThread: master id " + master.id + " still in memory", SEVERITY_DEBUG);
 				masterList.remove(0);
 				continue;
 			}
+			doTrace(null, "DBCleanupThread: master id " + master.id + " not in memory", SEVERITY_DEBUG);
 
 			try {
 				if (sysEnv.dbConnection.isClosed())
@@ -419,6 +423,8 @@ public class DBCleanupThread extends SDMSThread
 		try {
 			sleep(IDLE_SLEEP_TIME);
 			while(run) {
+
+				sysEnv.tx.versionId = sysEnv.tx.getRoVersion(sysEnv);
 				loadMasters();
 				if (masterList.size() == 0 || !processMasters() )
 					sleep(IDLE_SLEEP_TIME);

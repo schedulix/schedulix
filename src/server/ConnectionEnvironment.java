@@ -80,6 +80,7 @@ public class ConnectionEnvironment
 	protected String info;
 
 	private Stack groupStack;
+	public SDMSThread worker;
 
 	public ConnectionEnvironment(int c, String n, boolean svrtrc, PrintStream o, SyncFifo f, SyncFifo rof, int portno, InetAddress uNode)
 	{
@@ -101,6 +102,7 @@ public class ConnectionEnvironment
 		groupStack = new Stack();
 		userNode = uNode;
 		tracelevel = SDMSThread.SEVERITY_INFO;
+		worker = null;
 	}
 
 	public ConnectionEnvironment(int c, boolean svrtrc, PrintStream o, SyncFifo f, SyncFifo rof, int portno, InetAddress uNode)

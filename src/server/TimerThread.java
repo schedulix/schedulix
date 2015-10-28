@@ -34,6 +34,7 @@ import de.independit.scheduler.server.parser.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.timer.*;
+import de.independit.scheduler.locking.*;
 
 class TimeSchedule
 	extends Node
@@ -342,11 +343,15 @@ public class TimerThread
 					   final TimerDate suspendNow)
 		throws SDMSException
 	{
+		boolean setLastStartTime = true;
 		try {
 			doSubmit (sysEnv, evt, ownerId, triggerDate, suspendNow);
-		}
+		} catch (SerializationException e) {
 
-		finally {
+			setLastStartTime = false;
+			throw e;
+		} finally {
+			if (setLastStartTime)
 			scev.setLastStartTime (sysEnv, nowLong);
 
 		}
@@ -383,7 +388,7 @@ public class TimerThread
 		if (lastRun.lt (now)) {
 			nowLong = dateToDateTimeLong (now);
 
-			final Iterator scevIt = SDMSScheduledEventTable.table.iterator (sysEnv);
+			final Iterator scevIt = SDMSScheduledEventTable.table.iterator (sysEnv, false );
 			while (scevIt.hasNext()) {
 				current ++;
 				final SDMSScheduledEvent scev = (SDMSScheduledEvent) scevIt.next();
@@ -395,6 +400,9 @@ public class TimerThread
 						sysEnv.tx.beginSubTransaction (sysEnv);
 						doSchedule (sysEnv, scev);
 						sysEnv.tx.commitSubTransaction (sysEnv);
+					} catch (final SerializationException e) {
+						sysEnv.tx.rollbackSubTransaction (sysEnv);
+						throw e;
 					} catch (final SDMSException e) {
 						sysEnv.tx.rollbackSubTransaction (sysEnv);
 						createError (sysEnv, scev, e.toString());
@@ -437,9 +445,12 @@ public class TimerThread
 
 	}
 
-	public synchronized void schedule (final SystemEnvironment sysEnv)
+	public void schedule (final SystemEnvironment sysEnv)
 		throws SDMSException
 	{
+
+		if (sysEnv.maxWriter > 1)
+			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
 
 		loadNow();
 
@@ -449,7 +460,7 @@ public class TimerThread
 
 	}
 
-	public synchronized void notifyChange (final SystemEnvironment sysEnv, final SDMSEvent evt, final int action)
+	public void notifyChange (final SystemEnvironment sysEnv, final SDMSEvent evt, final int action)
 		throws SDMSException
 	{
 
@@ -460,12 +471,14 @@ public class TimerThread
 
 	private final HashSet ivalIds = new HashSet();
 
-	public synchronized final void notifyChange (final SystemEnvironment sysEnv, final SDMSInterval ival, final int action)
+	public final void notifyChange (final SystemEnvironment sysEnv, final SDMSInterval ival, final int action)
 		throws SDMSException
 	{
 
 		if (action != ALTER)
 			throw new FatalException (new SDMSMessage (sysEnv, "04207262215", "Unexpected action code $1 for Interval $2", new Integer (action), ival.getId (sysEnv)));
+		if (sysEnv.maxWriter > 1)
+			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
 
 		try {
 			collectIvals (sysEnv, ival.getId (sysEnv));
@@ -515,7 +528,7 @@ public class TimerThread
 
 	}
 
-	public synchronized final void notifyChange (final SystemEnvironment sysEnv, final SDMSSchedule sce, final int action)
+	public final void notifyChange (final SystemEnvironment sysEnv, final SDMSSchedule sce, final int action)
 		throws SDMSException
 	{
 
@@ -523,6 +536,9 @@ public class TimerThread
 
 		if (action != ALTER)
 			throw new FatalException (new SDMSMessage (sysEnv, "04207262216", "Unexpected action code $1 for Schedule $2", new Integer (action), sceId));
+
+		if (sysEnv.maxWriter > 1)
+			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
 
 		final Vector scevList = SDMSScheduledEventTable.idx_sceId.getVector (sysEnv, sceId);
 		final int size = scevList.size();
@@ -534,9 +550,12 @@ public class TimerThread
 
 	}
 
-	public synchronized final void notifyChange (final SystemEnvironment sysEnv, final SDMSScheduledEvent scev, final int action)
+	public final void notifyChange (final SystemEnvironment sysEnv, final SDMSScheduledEvent scev, final int action)
 		throws SDMSException
 	{
+
+		if (sysEnv.maxWriter > 1)
+			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
 
 		switch (action) {
 		case CREATE:

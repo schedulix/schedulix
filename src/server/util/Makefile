@@ -24,7 +24,7 @@
 
 CLASSES = SyncFifo.class ThreadLock.class PathVector.class DateTime.class \
 	Lockmode.class SDMSThread.class MasterReservationInfo.class CheckSum.class \
-	BoolExpr.class AuditWriter.class
+	BoolExpr.class AuditWriter.class LockableHashSet.class
 
 SUBDIRS = .
 

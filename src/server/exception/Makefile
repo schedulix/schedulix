@@ -33,6 +33,7 @@ CLASSES = SDMSException.class \
 	  RecoverableException.class \
 	  DeadlockException.class \
 	  SDMSEscape.class \
+	  SDMSSQLException.class \
 	  SDMSMessage.class
 
 SUBDIRS = .

@@ -149,24 +149,24 @@ public class Server
 		int maxWorker;
 		SyncFifo q;
 
-		maxWorker = SystemEnvironment.maxWorker;
-
-		maxWorker++;
+		maxWorker = SystemEnvironment.maxWorker + SystemEnvironment.maxWriter;
 
 		SDMSThread.doTrace(null, "Starting " + maxWorker + " Worker Threads", SDMSThread.SEVERITY_INFO);
 		wt = new WorkerThread[maxWorker];
 
 		q = cmdQueue;
 		for(int i=0; i < maxWorker; ++i) {
+			if (i >= SystemEnvironment.maxWriter)
+				q = roCmdQueue;
 			wt[i] = new WorkerThread(env, wg, q, i);
 			wt[i].start();
-			q = roCmdQueue;
 		}
 	}
 
 	private void initScheduling() throws SDMSException
 	{
 		wst = new SchedulingThread(env, cmdQueue);
+		wst.spinDelay = 50;
 		SystemEnvironment.sched = wst;
 	}
 
@@ -367,6 +367,28 @@ public class Server
 		} catch(SQLException sqle) {
 			throw new FatalException(new SDMSMessage(env,
 			                         "03202071128", "Cannot set autocommit off ($1)", sqle.toString()));
+		}
+
+		if (SystemEnvironment.SQUOTE == null) {
+			try {
+				final String driverName = c.getMetaData().getDriverName();
+				if (driverName.startsWith("MySQL")) {
+					SystemEnvironment.SQUOTE = "`";
+					SystemEnvironment.EQUOTE = "`";
+				} else if (driverName.startsWith("Microsoft")) {
+					SystemEnvironment.SQUOTE = "[";
+					SystemEnvironment.EQUOTE = "]";
+				} else {
+					if (driverName.startsWith("PostgreSQL"))
+						SystemEnvironment.isPostgreSQL = true;
+					SystemEnvironment.SQUOTE = "";
+					SystemEnvironment.EQUOTE = "";
+				}
+			} catch (SQLException sqle) {
+
+				SystemEnvironment.SQUOTE = "";
+				SystemEnvironment.EQUOTE = "";
+			}
 		}
 		return c;
 	}

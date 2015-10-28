@@ -38,6 +38,7 @@ import de.independit.scheduler.server.parser.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
+import de.independit.scheduler.locking.*;
 
 public abstract class InternalSession extends SDMSThread
 {
@@ -47,6 +48,10 @@ public abstract class InternalSession extends SDMSThread
 	protected ConnectionEnvironment	cEnv;
 	protected int wakeupInterval;
 	protected int NR;
+
+	private boolean doWait = true;
+	private long lastRun = 0;
+	public long spinDelay;
 
 	static final int NORMAL = 0;
 	static final int INITIALIZE = 1;
@@ -59,6 +64,7 @@ public abstract class InternalSession extends SDMSThread
 	protected void initThread(SystemEnvironment env, SyncFifo f, int N, String name, int w)
 	{
 		wakeupInterval = w;
+		spinDelay = wakeupInterval;
 
 		cEnv = new ConnectionEnvironment(NR, name, false, null, f, null, null);
 		cEnv.setMe(this);
@@ -109,6 +115,11 @@ public abstract class InternalSession extends SDMSThread
 
 	protected abstract Node getNode(int m);
 
+	public void wakeUp()
+	{
+		doWait = false;
+	}
+
 	public void SDMSrun()
 	{
 		try {
@@ -119,14 +130,21 @@ public abstract class InternalSession extends SDMSThread
 			}
 			while(run) {
 				try {
-					sleep(wakeupInterval);
-				} catch (InterruptedException ie) {
-
-				}
-				try {
+					doWait = true;
+					lastRun = new java.util.Date().getTime();
 					post(getNode(NORMAL));
 				} catch (SDMSException e) {
 
+				}
+				long now = new java.util.Date().getTime();
+				while (doWait) {
+					if (now - lastRun < wakeupInterval)
+						try {
+							sleep(spinDelay);
+						} catch (InterruptedException e) {}
+					else
+						break;
+					now = new java.util.Date().getTime();
 				}
 			}
 		} catch(Error e) {

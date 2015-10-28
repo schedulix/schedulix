@@ -32,6 +32,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.text.*;
+import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.output.*;
 import de.independit.scheduler.server.repository.*;
@@ -111,6 +112,8 @@ public class AuditWriter
 				audit.close();
 				audit = null;
 			}
+		} catch (SerializationException e) {
+			throw e;
 		} catch (SDMSException e) {
 
 		}

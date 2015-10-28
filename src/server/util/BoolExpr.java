@@ -94,25 +94,36 @@ public class BoolExpr
 	throws SDMSException
 	{
 		boolean rc = false;
-		SDMSMessage msg = null;
 
 		if(condition == null) return true;
 
+		rc = ((Boolean)evalExpression(sysEnv, r, sme, t, tq, s)).booleanValue();
+		return rc;
+	}
+
+	public Object evalExpression(SystemEnvironment sysEnv, SDMSResource r, SDMSSubmittedEntity sme, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope s)
+	throws SDMSException
+	{
+		Object rc = null;
+		SDMSMessage msg = null;
+
+		if(condition == null) return null;
+
 		try {
 			initParser(sysEnv, sme, r, t, tq, s, false);
-			rc = ((Boolean)exprp.yyparse(exprs)).booleanValue();
+			rc = exprp.yyparse(exprs);
 		} catch (IOException ioe) {
-			msg = new SDMSMessage(sysEnv, "03407140859", "I/O Error parsing '$1'", condition);
+			msg = new SDMSMessage(sysEnv, "03506171435", "I/O Error parsing '$1'", condition);
 		} catch (NotFoundException nfe) {
-			msg = new SDMSMessage(sysEnv, "03407140900", "Error resolving Parameter: $1", nfe);
+			msg = new SDMSMessage(sysEnv, "03506171436", "Error resolving Parameter: $1", nfe);
 		} catch (CommonErrorException cce) {
-			msg = new SDMSMessage(sysEnv, "03407140901", "Error parsing '$1': $2", condition, cce);
+			msg = new SDMSMessage(sysEnv, "03506171437", "Error parsing '$1': $2", condition, cce);
 		} catch (de.independit.scheduler.server.parser.triggerexpr.ExprParser.yyException yye) {
-			msg = new SDMSMessage(sysEnv, "03407140902", "Parse error while parsing '$1'", condition);
+			msg = new SDMSMessage(sysEnv, "03506171438", "Parse error while parsing '$1'", condition);
 		} catch (Exception e) {
-			msg = new SDMSMessage(sysEnv, "03407140903", "Exception ($1) occurred while calculating '$2'", e.toString(), condition);
+			msg = new SDMSMessage(sysEnv, "03506171439", "Exception ($1) occurred while calculating '$2'", e.toString(), condition);
 		} catch (Error e) {
-			msg = new SDMSMessage(sysEnv, "03407140904", "Error Exception parsing '$1'", condition);
+			msg = new SDMSMessage(sysEnv, "03506171440", "Error Exception parsing '$1'", condition);
 		}
 		if(msg != null) {
 			SDMSThread.doTrace(sysEnv.cEnv, msg.toString(), SDMSThread.SEVERITY_WARNING);

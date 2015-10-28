@@ -42,6 +42,7 @@ import de.independit.scheduler.server.timer.TimerUnit;
 
 public class SystemEnvironment implements Cloneable
 {
+	public String setStateThread = null;
 
 	public static final String S_OPEN         = "OPEN";
 	public static final String S_BASIC        = "BASIC";
@@ -60,6 +61,10 @@ public class SystemEnvironment implements Cloneable
 	private static final String NONE = "NONE";
 	private static final String ALL = "ALL";
 
+	public static String SQUOTE = null;
+	public static String EQUOTE = null;
+	public static boolean isPostgreSQL = false;
+
 	public static SDMSRepository repository;
 	public static Properties props;
 	public static long startTime;
@@ -74,6 +79,7 @@ public class SystemEnvironment implements Cloneable
 	public static ThreadGroup wg;
 
 	public Connection dbConnection;
+	public int dbConnectionNr;
 	public SDMSTransaction tx;
 	public ConnectionEnvironment cEnv;
 	public SDMSROTxList roTxList;
@@ -100,6 +106,7 @@ public class SystemEnvironment implements Cloneable
 	public static int minHistoryCount;
 	public static int maxHistoryCount;
 	public static int maxWorker;
+	public static int maxWriter;
 	public static int maxConnects;
 	public static String exportVariablesString;
 	public static String userExportVariablesString;
@@ -189,6 +196,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_USERTHREADS           = "UserThreads";
 	public static final String S_USEREXPORTVARIABLES   = "UserExportVariables";
 	public static final String S_WORKERTHREADS         = "WorkerThreads";
+	public static final String S_WRITERTHREADS         = "WriterThreads";
 
 	public static final String S_BASE_SME_ID           = "BASE_SME_ID";
 	public static final String S_TRIGGER_HASHSET       = "TRIGGER_HASH_SET";
@@ -231,6 +239,10 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_NICE_PROFILE	      = "NICE_PROFILE";
 
 	private HashMap featureLevels;
+
+	public final static HashMap<Long, Long> jidsStarting = new HashMap<Long, Long>();
+
+	public final static int startingResendDelay = 5000;
 
 	public boolean inExecution = false;
 
@@ -308,6 +320,7 @@ public class SystemEnvironment implements Cloneable
 		getMinHistoryCount();
 		getMaxHistoryCount();
 		getWorkerThreads();
+		getWriterThreads();
 		getUserThreads();
 		getExportVariables();
 		getScheduleWakeup();
@@ -539,8 +552,15 @@ public class SystemEnvironment implements Cloneable
 	private void getWorkerThreads()
 	{
 		String s_maxWorker = props.getProperty(S_WORKERTHREADS, "2");
-		maxWorker = checkIntProperty(s_maxWorker, S_WORKERTHREADS, 0, 2, 0, "Invalid number of Worker : ");
+		maxWorker = checkIntProperty(s_maxWorker, S_WORKERTHREADS, 0, 2, 0, "Invalid number of RO Worker : ");
 		props.setProperty(S_WORKERTHREADS, "" + maxWorker);
+	}
+
+	private void getWriterThreads()
+	{
+		String s_maxWriter = props.getProperty(S_WRITERTHREADS, "1");
+		maxWriter = checkIntProperty(s_maxWriter, S_WRITERTHREADS, 1, 1, 0, "Invalid number of RW Worker : ");
+		props.setProperty(S_WRITERTHREADS, "" + maxWriter);
 	}
 
 	private void getUserThreads()
@@ -833,7 +853,7 @@ public class SystemEnvironment implements Cloneable
 	{
 		final SystemEnvironment sysEnv = (SystemEnvironment) super.clone();
 		sysEnv.systemDateFormat = (SimpleDateFormat) systemDateFormat.clone();
-
+		sysEnv.jsCommDateFormat = (SimpleDateFormat) jsCommDateFormat.clone();
 		return sysEnv;
 	}
 

@@ -49,6 +49,8 @@ public class RenewTicketThread extends SDMSThread
 	private final static int NR = 888888888;
 	private final static int TICKETINTERVAL = 60 * 1000;
 	private final static int TICKET_TOO_OLD = 3;
+	private long lastTicket;
+	private long ticketMinTime;
 	private boolean postgres = false;
 	private String updateString;
 	private String selectString;
@@ -69,6 +71,8 @@ public class RenewTicketThread extends SDMSThread
 	{
 		super("TicketThread");
 		pSysEnv = null;
+		lastTicket = 0;
+		ticketMinTime = 3000;
 	}
 
 	public int id()
@@ -280,6 +284,10 @@ public class RenewTicketThread extends SDMSThread
 		throws SDMSException
 	{
 		int nrRows;
+		long now = System.currentTimeMillis();
+
+		if (now - lastTicket < ticketMinTime) return;
+		lastTicket = now;
 
 		try {
 			nrRows = updateTicket(sysEnv);
@@ -288,7 +296,7 @@ public class RenewTicketThread extends SDMSThread
 									"Error while setting Ticket (no rows updated)"));
 			}
 		} catch (SQLException sqle) {
-			throw new FatalException(new SDMSMessage(sysEnv, "03302061656", "Error while setting Ticket"));
+			throw new FatalException(new SDMSMessage(sysEnv, "03302061656", "Error while setting Ticket: " + sqle.toString()));
 		}
 
 		return;

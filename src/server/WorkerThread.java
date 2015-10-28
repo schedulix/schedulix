@@ -38,9 +38,11 @@ import de.independit.scheduler.server.parser.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
+import de.independit.scheduler.locking.*;
 
 public class WorkerThread extends SDMSThread
 {
+	private static String workerLock = "workerLock";
 
 	public final static String __version = "@(#) $Id: WorkerThread.java,v 2.18.2.2 2013/03/15 13:06:48 ronald Exp $";
 
@@ -48,18 +50,20 @@ public class WorkerThread extends SDMSThread
 
 	private SyncFifo	cmdQueue;
 	private int		nr;
-	private SystemEnvironment env;
+	public SystemEnvironment env;
 	private int		retryCount;
 	private String		state;
 	private java.util.Date	state_ts;
 	private Node		actNode = null;
 	private boolean		protoCommit = false;
 
+	public boolean		commiting;
+
 	public WorkerThread(SystemEnvironment sysEnv, ThreadGroup t, SyncFifo f, int i)
 		throws SDMSException
 	{
 		super(t, "Worker" + Integer.toString(i));
-		if (i == 0) protoCommit = true;
+		if (i < SystemEnvironment.maxWriter) protoCommit = true;
 		cmdQueue = f;
 		nr = i;
 		try {
@@ -69,6 +73,7 @@ public class WorkerThread extends SDMSThread
 							"Cannot Clone SystemEnvironment"));
 		}
 		env.dbConnection = Server.connectToDB(env);
+		env.dbConnectionNr = nr;
 		retryCount = SystemEnvironment.txRetryCount;
 		state = idle;
 		state_ts = new java.util.Date();
@@ -76,7 +81,7 @@ public class WorkerThread extends SDMSThread
 
 	public int id()
 	{
-		return -nr;
+		return nr;
 	}
 
 	public String getWorkerState()
@@ -108,8 +113,10 @@ public class WorkerThread extends SDMSThread
 			state = null;
 			cEnv = n.getEnv();
 			n.getLock();
+			commiting = false;
 			cEnv.setState(ConnectionEnvironment.ACTIVE);
 			cEnv.setLast();
+			cEnv.worker = this;
 			env.cEnv = cEnv;
 
 			try {
@@ -124,31 +131,48 @@ public class WorkerThread extends SDMSThread
 					cEnv.tx = new SDMSTransaction(env, n.txMode, n.contextVersion);
 					state_ts.setTime(cEnv.tx.startTime);
 					env.tx = cEnv.tx;
+					Exception lastE = null;
 					try {
-						env.inExecution = true;
-						n.go(env);
+						try {
+							if(n.txMode == SDMSTransaction.READWRITE) {
+								int lockMode = ObjectLock.SHARED;
+								if(i == retryCount - 1) {
+									lockMode = ObjectLock.EXCLUSIVE;
+									doTrace(cEnv, "SDMSRun() reached max retryCount, running exclusively now", SEVERITY_MESSAGE);
+								}
+								LockingSystem.lock(workerLock, lockMode);
+							}
 
-						if(n.txMode == SDMSTransaction.READWRITE) {
-							SDMSSmeCounterTable.updateCounter(env);
+							env.inExecution = true;
+							n.go(env);
+
+							if(n.txMode == SDMSTransaction.READWRITE) {
+								SDMSSmeCounterTable.updateCounter(env);
+							}
+
+							env.inExecution = false;
+							cEnv.setState(ConnectionEnvironment.COMMITTING);
+							commiting = true;
+							if (protoCommit)
+								doTrace(cEnv, "Server Execution time for " + n.getClass() + " : " + (System.currentTimeMillis() - cEnv.tx.startTime) +
+								        " ms -- Start Committing", SEVERITY_MESSAGE);
+							cEnv.tx.commit(env);
+
+							i = retryCount;
+							succeeded = true;
+							if (n instanceof Connect) {
+								Node cmd = ((Connect) n).getNode();
+								doTrace(cEnv, "Execution time for " + n.getClass() + (cmd == null ? "" : "/" + cmd.getClass()) + " : " +
+								        (cEnv.tx.endTime - cEnv.tx.startTime) + " ms", SEVERITY_MESSAGE);
+							} else
+								doTrace(cEnv, "Execution time for " + n.getClass() + " : " + (cEnv.tx.endTime - cEnv.tx.startTime) + " ms", SEVERITY_MESSAGE);
+						} catch (Exception e) {
+							lastE = e;
+							throw e;
 						}
-
-						env.inExecution = false;
-						cEnv.setState(ConnectionEnvironment.COMMITTING);
-						if (protoCommit)
-							doTrace(cEnv, "Server Execution time for " + n.getClass() + " : " + (System.currentTimeMillis() - cEnv.tx.startTime) +
-								" ms -- Start Committing", SEVERITY_MESSAGE);
-						cEnv.tx.commit(env);
-
-						i = retryCount;
-						succeeded = true;
-						if (n instanceof Connect) {
-							Node cmd = ((Connect) n).getNode();
-							doTrace(cEnv, "Execution time for " + n.getClass() + (cmd == null ? "" : "/" + cmd.getClass()) + " : " +
-								(cEnv.tx.endTime - cEnv.tx.startTime) + " ms", SEVERITY_MESSAGE);
-						} else
-							doTrace(cEnv, "Execution time for " + n.getClass() + " : " + (cEnv.tx.endTime - cEnv.tx.startTime) + " ms", SEVERITY_MESSAGE);
 					} catch (RecoverableException re) {
 						String msg = re.toString();
+						doTrace(cEnv, "RecoverableException: " + msg + " in Try " + (i + 1) + " of " + retryCount, SEVERITY_MESSAGE);
 						if (msg.contains("Connection lost")) {
 
 							env.dbConnection = Server.connectToDB(env);
@@ -191,9 +215,14 @@ public class WorkerThread extends SDMSThread
 					} finally {
 						if(!succeeded)
 							try {
+
+								if (lastE != null) {
+									System.out.println(Thread.currentThread().getName() + ":lastE = " + lastE.toString());
+									lastE.printStackTrace();
+								}
 								cEnv.tx.rollback(env);
 								cEnv.ostream.flush();
-							} catch (DeadlockException de) {
+							} catch (de.independit.scheduler.locking.DeadlockException de) {
 
 								throw new FatalException(
 										new SDMSMessage(env, "03110181515", "Deadlock at Rollback"));
@@ -224,6 +253,8 @@ public class WorkerThread extends SDMSThread
 			} catch(Error fe) {
 
 				doTrace(null, fe.toString(), fe.getStackTrace(), SEVERITY_FATAL);
+			} finally {
+				cEnv.worker = null;
 			}
 			n.releaseLock();
 			actNode = null;
