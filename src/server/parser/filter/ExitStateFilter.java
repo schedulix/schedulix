@@ -31,6 +31,7 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
+import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
@@ -58,12 +59,28 @@ public class ExitStateFilter extends Filter
 			if(esdIds  == null) {
 				esdIds = new HashSet();
 				for(int i = 0; i < exitStates.size(); i++) {
-					esdIds.add(((SDMSExitStateDefinition) SDMSExitStateDefinitionTable.idx_name.getUnique(sysEnv, exitStates.get(i), version)).getId(sysEnv));
+					try {
+						esdIds.add(((SDMSExitStateDefinition) SDMSExitStateDefinitionTable.idx_name.getUnique(sysEnv, exitStates.get(i), version)).getId(sysEnv));
+					} catch (SerializationException e) {
+						throw e;
+					} catch (SDMSException sdmse) { }
 				}
 			}
 			if(esdIds.contains(sme.getJobEsdId(sysEnv))) return true;
 		} catch (Exception e) { }
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof ExitStateFilter)) return false;
+		ExitStateFilter f;
+		f = (ExitStateFilter) o;
+		if (exitStates.size() != f.exitStates.size()) return false;
+		for (int i = 0; i < exitStates.size(); ++i)
+			if (!f.exitStates.contains(exitStates.get(i))) return false;
+		return true;
 	}
 }
 

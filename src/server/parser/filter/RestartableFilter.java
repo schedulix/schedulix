@@ -37,9 +37,6 @@ import de.independit.scheduler.server.exception.*;
 
 public class RestartableFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: RestartableFilter.java,v 2.3.18.1 2013/03/14 10:25:15 ronald Exp $";
-
 	Integer stateType;
 	public boolean mastersFirst;
 
@@ -76,6 +73,16 @@ public class RestartableFilter extends Filter
 			}
 		} catch (Exception e) { }
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof RestartableFilter)) return false;
+		RestartableFilter f;
+		f = (RestartableFilter) o;
+		if (mastersFirst != f.mastersFirst) return false;
+		return (stateType.equals(f.stateType));
 	}
 }
 

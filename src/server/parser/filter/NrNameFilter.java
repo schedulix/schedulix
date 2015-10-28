@@ -38,9 +38,6 @@ import de.independit.scheduler.server.exception.*;
 
 public class NrNameFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: NrNameFilter.java,v 2.0.20.1 2013/03/14 10:25:15 ronald Exp $";
-
 	String nrName;
 	Pattern p;
 
@@ -96,6 +93,15 @@ public class NrNameFilter extends Filter
 			return m.matches();
 		} catch (Exception e) { }
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof NrNameFilter)) return false;
+		NrNameFilter f;
+		f = (NrNameFilter) o;
+		return nrName.equals(f.nrName);
 	}
 }
 

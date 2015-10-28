@@ -37,9 +37,6 @@ import de.independit.scheduler.server.exception.*;
 
 public class JobidFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: JobidFilter.java,v 2.1.14.1 2013/03/14 10:25:14 ronald Exp $";
-
 	HashSet jids;
 
 	public JobidFilter(SystemEnvironment sysEnv, Vector ids)
@@ -58,6 +55,19 @@ public class JobidFilter extends Filter
 			if(jids.contains(p.getId(sysEnv))) return true;
 		} catch (Exception e) { }
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof JobidFilter)) return false;
+		JobidFilter f;
+		f = (JobidFilter) o;
+		if (jids.size() != f.jids.size()) return false;
+		Iterator i = jids.iterator();
+		while (i.hasNext())
+			if (!f.jids.contains(i.next())) return false;
+		return true;
 	}
 }
 

@@ -37,9 +37,6 @@ import de.independit.scheduler.server.exception.*;
 
 public class JobStateFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: JobStateFilter.java,v 2.0.20.1 2013/03/14 10:25:14 ronald Exp $";
-
 	HashSet jobStates;
 
 	public JobStateFilter(SystemEnvironment sysEnv, HashSet v)
@@ -56,6 +53,19 @@ public class JobStateFilter extends Filter
 			if(jobStates.contains(sme.getState(sysEnv))) return true;
 		} catch (Exception e) { }
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof JobStateFilter)) return false;
+		JobStateFilter f;
+		f = (JobStateFilter) o;
+		if (jobStates.size() != f.jobStates.size()) return false;
+		Iterator i = jobStates.iterator();
+		while (i.hasNext())
+			if (!f.jobStates.contains(i.next())) return false;
+		return true;
 	}
 }
 

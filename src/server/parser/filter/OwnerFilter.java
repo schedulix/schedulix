@@ -31,22 +31,22 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
+import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 
 public class OwnerFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: OwnerFilter.java,v 2.2.6.1 2013/03/14 10:25:15 ronald Exp $";
-
 	HashSet owners = null;
 	Vector names;
+	SystemEnvironment env;
 
 	public OwnerFilter(SystemEnvironment sysEnv, Vector v)
 	{
 		super();
 		names = v;
+		env = sysEnv;
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
@@ -54,15 +54,7 @@ public class OwnerFilter extends Filter
 	{
 		try {
 			if(owners == null) {
-				owners = new HashSet();
-				for(int i = 0; i < names.size(); i++) {
-					try {
-						Long gid = ((SDMSGroup) SDMSGroupTable.idx_name.getUnique(sysEnv, names.get(i))).getId(sysEnv);
-						owners.add(gid);
-					} catch (NotFoundException nfe) {
-
-					}
-				}
+				fillOwners(sysEnv);
 			}
 			SDMSOwnedObject oo;
 
@@ -78,8 +70,42 @@ public class OwnerFilter extends Filter
 			}
 
 			if(owners.contains(oo.getOwnerId(sysEnv))) return true;
-		} catch (Exception e) { }
+		} catch (SerializationException e) {
+			throw new RuntimeException();
+		} catch (SDMSException e) { }
 		return false;
+	}
+
+	private void fillOwners(SystemEnvironment sysEnv)
+	{
+		if(owners == null) {
+			owners = new HashSet();
+			for(int i = 0; i < names.size(); i++) {
+				try {
+					Long gid = ((SDMSGroup) SDMSGroupTable.idx_name.getUnique(sysEnv, names.get(i))).getId(sysEnv);
+					owners.add(gid);
+				} catch (SerializationException e) {
+					throw new RuntimeException();
+				} catch (SDMSException nfe) {
+
+				}
+			}
+		}
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof OwnerFilter)) return false;
+		OwnerFilter f;
+		f = (OwnerFilter) o;
+		if (owners == null) fillOwners(env);
+		if (f.owners == null) f.fillOwners(env);
+		if (owners.size() != f.owners.size()) return false;
+		Iterator i = owners.iterator();
+		while (i.hasNext())
+			if (!f.owners.contains(i.next())) return false;
+		return true;
 	}
 }
 

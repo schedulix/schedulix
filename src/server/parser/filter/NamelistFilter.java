@@ -38,9 +38,6 @@ import de.independit.scheduler.server.util.*;
 
 public class NamelistFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: NamelistFilter.java,v 2.1.6.1 2013/03/14 10:25:15 ronald Exp $";
-
 	Vector paths;
 	HashSet pathStrings = null;
 
@@ -55,9 +52,7 @@ public class NamelistFilter extends Filter
 	{
 		try {
 			if (pathStrings == null) {
-				pathStrings = new HashSet();
-				for(int i = 0; i < paths.size(); i++)
-					pathStrings.add(((PathVector)paths.get(i)).toString());
+				fillPathstrings();
 			}
 			Long seId = null;
 			SDMSSchedulingEntity se;
@@ -79,6 +74,30 @@ public class NamelistFilter extends Filter
 				return true;
 		} catch (Exception e) { }
 		return false;
+	}
+
+	private void fillPathstrings()
+	{
+		if (pathStrings == null) {
+			pathStrings = new HashSet();
+			for(int i = 0; i < paths.size(); i++)
+				pathStrings.add(((PathVector)paths.get(i)).toString());
+		}
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof NamelistFilter)) return false;
+		NamelistFilter f;
+		f = (NamelistFilter) o;
+		if (paths.size() != f.paths.size()) return false;
+		if (pathStrings == null) fillPathstrings();
+		if (f.pathStrings == null) f.fillPathstrings();
+		Iterator i = pathStrings.iterator();
+		while (i.hasNext())
+			if (!f.pathStrings.contains(i.next())) return false;
+		return true;
 	}
 }
 

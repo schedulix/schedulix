@@ -37,9 +37,6 @@ import de.independit.scheduler.server.exception.*;
 
 public class WarningFilter extends Filter
 {
-
-	public final static String __version = "@(#) $Id: WarningFilter.java,v 2.1.14.1 2013/03/14 10:25:16 ronald Exp $";
-
 	boolean isWarning;
 
 	public WarningFilter(SystemEnvironment sysEnv, Boolean isWarning)
@@ -57,6 +54,15 @@ public class WarningFilter extends Filter
 			return (isWarning ? false : true);
 		} catch (Exception e) { }
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this) return true;
+		if (!(o instanceof WarningFilter)) return false;
+		WarningFilter f;
+		f = (WarningFilter) o;
+		return (isWarning == f.isWarning);
 	}
 }
 

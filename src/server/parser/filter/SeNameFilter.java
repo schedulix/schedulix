@@ -96,17 +96,19 @@ public class SeNameFilter extends Filter
 		long version;
 		String pathString = null;
 		SeNameFilterCache seNameFilterCache;
+		Long pId = p.getId(sysEnv);
+
 		if (sysEnv.tx.txData.containsKey(SystemEnvironment.S_SE_NAMEFILTER_CACHE)) {
 			seNameFilterCache = (SeNameFilterCache)(sysEnv.tx.txData.get(SystemEnvironment.S_SE_NAMEFILTER_CACHE));
 
-			if (! seNameFilterCache.id.equals(p.getId(sysEnv))) {
-				seNameFilterCache.id = p.getId(sysEnv);
+			if (! seNameFilterCache.id.equals(pId)) {
+				seNameFilterCache.id = pId;
 				seNameFilterCache.name = null;
 			} else
 				pathString = seNameFilterCache.name;
 		} else {
 			seNameFilterCache = new SeNameFilterCache();
-			seNameFilterCache.id = p.getId(sysEnv);
+			seNameFilterCache.id = pId;
 			sysEnv.tx.txData.put(SystemEnvironment.S_SE_NAMEFILTER_CACHE, seNameFilterCache);
 		}
 		try {
@@ -143,6 +145,16 @@ public class SeNameFilter extends Filter
 			return m.matches();
 		} catch (Exception e) { }
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (this == o) return true;
+		if (!(o instanceof SeNameFilter)) return false;
+		SeNameFilter f;
+		f = (SeNameFilter) o;
+		if (!seName.equals(f.seName)) return false;
+		return true;
 	}
 
 	class SeNameFilterCache

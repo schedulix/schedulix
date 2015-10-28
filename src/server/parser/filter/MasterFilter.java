@@ -38,8 +38,6 @@ import de.independit.scheduler.server.exception.*;
 public class MasterFilter extends Filter
 {
 
-	public final static String __version = "@(#) $Id: MasterFilter.java,v 2.1.6.1 2013/03/14 10:25:14 ronald Exp $";
-
 	public MasterFilter(SystemEnvironment sysEnv, Boolean dummy)
 	{
 		super();
@@ -59,6 +57,12 @@ public class MasterFilter extends Filter
 			return true;
 		}
 		return false;
+	}
+
+	public boolean equals(Object o)
+	{
+		if (!(o instanceof MasterFilter)) return false;
+		return true;
 	}
 }
 
