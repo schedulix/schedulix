@@ -1028,26 +1028,12 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			final Vector mtv = SDMSTriggerTable.idx_mainSeId.getVector(sysEnv, seId);
 			for(int i = 0; i < mtv.size(); i++) {
 				final SDMSTrigger t = (SDMSTrigger) mtv.get(i);
-				if (!force) {
-					SDMSObjectMonitor om = SDMSObjectMonitorTable.getObject(sysEnv, t.getFireId(sysEnv));
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03109120829",
-					                               "$1 is used as a trigger job (mainSe) of object monitor $2, specify force to delete anyway",
-					                               se.pathString(sysEnv),
-					                               om.getName(sysEnv)));
-				}
 				t.delete(sysEnv);
 			}
 
 			final Vector ptv = SDMSTriggerTable.idx_parentSeId.getVector(sysEnv, seId);
 			for(int i = 0; i < ptv.size(); i++) {
 				final SDMSTrigger t = (SDMSTrigger) ptv.get(i);
-				if (!force) {
-					SDMSObjectMonitor om = SDMSObjectMonitorTable.getObject(sysEnv, t.getFireId(sysEnv));
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03109120830",
-					                               "$1 is used as a trigger job (parentSe) of object monitor $2, specify force to delete anyway",
-					                               se.pathString(sysEnv),
-					                               om.getName(sysEnv)));
-				}
 				t.delete(sysEnv);
 			}
 
