@@ -2447,7 +2447,9 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		)
 		throws SDMSException
 	{
+		((SDMSThread)Thread.currentThread()).readLock = ObjectLock.EXCLUSIVE;
 		Vector v_sh = SDMSHierarchyInstanceTable.idx_childId.getVector(sysEnv, getId(sysEnv));
+		((SDMSThread)Thread.currentThread()).readLock = ObjectLock.SHARED;
 		Iterator i = v_sh.iterator();
 		while (i.hasNext()) {
 			SDMSHierarchyInstance hi = (SDMSHierarchyInstance)i.next();
