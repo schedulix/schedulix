@@ -48,7 +48,7 @@ endif
 
 CLASSES = BICServer.class sdmsh.class 
 
-SUBDIRS = server jobserver shell utility md5 SDMSApp tools demo 
+SUBDIRS = server jobserver shell utility md5 SDMSApp tools demo locking
 JARDIRS = de
 
 PROGRAM_VERSION = $(shell grep programVersion server/SystemEnvironment.java | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
@@ -103,6 +103,7 @@ $(JAR_FILE): BICServer.class sdmsh.class \
 		`find $(JARDIRS) -follow \( -type d -name test \) -prune -o -name parser.tables -print`; \
 	$(JAR) -i $(JAR_FILE); \
 	touch $(JAR_FILE); \
+	chmod 644 $(JAR_FILE); \
 	rm -f $(MANIFEST)
 
 include $(SDMSHOME)/src/Makefile.CommonRules
