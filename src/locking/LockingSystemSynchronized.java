@@ -33,6 +33,7 @@ import java.util.Vector;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;
+import de.independit.scheduler.server.exception.*;
 
 public class LockingSystemSynchronized
 {
@@ -56,11 +57,10 @@ public class LockingSystemSynchronized
 		return lock.objectToShortString();
 	}
 
-	protected static synchronized Vector<ObjectLock> release()
+	protected static synchronized Vector<ObjectLock> release(SystemEnvironment sysEnv)
+	throws FatalException
 	{
-		SDMSThread t = (SDMSThread)Thread.currentThread();
-		if (t.lockThread != null) t = t.lockThread;
-		HashMap<Object, ObjectLock> locksHeld = threads.get(t);
+		HashMap<Object, ObjectLock> locksHeld = threads.get(sysEnv.thread);
 		if (locksHeld == null)
 			return null;
 		Iterator<ObjectLock> i = locksHeld.values().iterator();
@@ -81,14 +81,12 @@ public class LockingSystemSynchronized
 				sep = ", ";
 			}
 
-			Vector<ObjectLock> locksToNotifyForLock = releaseLock(lock);
+			Vector<ObjectLock> locksToNotifyForLock = releaseLock(sysEnv, lock, false);
 			if (locksToNotifyForLock != null) {
 				if (locksToNotify == null)
 					locksToNotify = new Vector<ObjectLock> ();
 				locksToNotify.addAll(locksToNotifyForLock);
 			}
-
-			lock.syncLock.freeObjectLock();
 		}
 
 		if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_RELEASE)) != 0) {
@@ -108,27 +106,88 @@ public class LockingSystemSynchronized
 			}
 		}
 
-		threads.put(t, null);
+		threads.put(sysEnv.thread, null);
 
 		return locksToNotify;
 	}
 
-	protected static synchronized Vector<ObjectLock> release(Object object)
+	protected static synchronized Vector<ObjectLock> releaseSubTxLocks(SystemEnvironment sysEnv, long checkPoint)
+	throws FatalException
 	{
-		SDMSThread t = (SDMSThread)Thread.currentThread();
-		if (t.lockThread != null) t = t.lockThread;
 
-		ObjectLock lock = getLockForThread(t, object);
+		ObjectLock[] locks = (ObjectLock[]) sysEnv.tx.subTxLocks.toArray(new ObjectLock[0]);
+		Vector<ObjectLock> locksToNotify = null;
+
+		String out = null;
+		String sep = null;
+		if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_RELEASE)) != 0) {
+			out = Thread.currentThread().getName() + ":releaseSubTxLocks:";
+			sep = "";
+		}
+		for (int i = 0; i < locks.length; i ++) {
+			ObjectLock lock = locks[i];
+			if (lock.createCp <= checkPoint)
+				throw new FatalException(new SDMSMessage(sysEnv, "03511100813", "bad lock in subTxLocks with createCp (" + lock.createCp +
+				                         ") <= checkPoint (" + checkPoint + "):" + lock.objectToShortString()));
+
+			if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_RELEASE)) != 0) {
+				out = out + sep + lock.objectToShortString();
+				sep = ", ";
+			}
+
+			Vector<ObjectLock> locksToNotifyForLock = releaseLock(sysEnv, lock, true);
+			if (locksToNotifyForLock != null) {
+				if (locksToNotify == null)
+					locksToNotify = new Vector<ObjectLock> ();
+				locksToNotify.addAll(locksToNotifyForLock);
+			}
+		}
+
+		return locksToNotify;
+	}
+
+	private static synchronized void removeLockFromSubTxStack(SystemEnvironment sysEnv, ObjectLock lock)
+	{
+		if (sysEnv.tx.subTxLocks != null) {
+			if (!sysEnv.tx.subTxLocks.remove(lock)) {
+				Iterator i = sysEnv.tx.lockStack.iterator();
+				while (i.hasNext()) {
+					HashSet locks = (HashSet)i.next();
+					if (locks != null)
+						if (locks.remove(lock))
+							break;
+				}
+			}
+		}
+	}
+
+	protected static synchronized Vector<ObjectLock> release(SystemEnvironment sysEnv, Object object)
+	throws FatalException
+	{
+
+		ObjectLock lock = getLockForThread(sysEnv.thread, object);
 		Vector<ObjectLock> locksToNotify = null;
 		if (lock != null) {
-			locksToNotify = releaseLock(lock);
-			HashMap threadLocks = threads.get(t);
-			threadLocks.remove(object);
-			if (threadLocks.isEmpty())
-				threads.put(t, null);
+			locksToNotify = releaseLock(sysEnv, lock, true);
 
-			lock.syncLock.freeObjectLock();
+			removeLockFromSubTxStack(sysEnv, lock);
+		}
+		return locksToNotify;
+	}
+	protected static synchronized Vector<ObjectLock> releaseToCheckPoint(SystemEnvironment sysEnv, Object object, long checkPoint)
+	throws FatalException
+	{
 
+		ObjectLock lock = getLockForThread(sysEnv.thread, object);
+
+		Vector<ObjectLock> locksToNotify = null;
+		if (lock != null) {
+			if (lock.createCp <= checkPoint)
+				return null;
+
+			locksToNotify = releaseLock(sysEnv, lock, true);
+
+			removeLockFromSubTxStack(sysEnv, lock);
 		}
 		return locksToNotify;
 	}
@@ -146,6 +205,16 @@ public class LockingSystemSynchronized
 		return threadLocks.get(object);
 	}
 
+	private static void clearLockForThread(SDMSThread thread, ObjectLock lock)
+	{
+		HashMap<Object, ObjectLock> threadLocks = threads.get(thread);
+		if (threadLocks == null)
+			return;
+		threadLocks.remove(lock.object);
+		if (threadLocks.isEmpty())
+			threads.put(thread, null);
+	}
+
 	private static void registerLockForThread (SDMSThread thread, Object object, ObjectLock lock)
 	{
 		HashMap<Object, ObjectLock> threadLocks = threads.get(thread);
@@ -156,16 +225,13 @@ public class LockingSystemSynchronized
 		threadLocks.put(object, lock);
 	}
 
-	protected static synchronized ObjectLock getLock(Object object, int mode)
+	protected static synchronized ObjectLock getLock(SystemEnvironment sysEnv, Object object, int mode)
 	throws DeadlockException
 	{
 
 		if (object == null) throw new RuntimeException();
 
-		SDMSThread t = (SDMSThread)Thread.currentThread();
-		if (t.lockThread != null) t = t.lockThread;
-
-		ObjectLock lock = getLockForThread(t, object);
+		ObjectLock lock = getLockForThread(sysEnv.thread, object);
 		boolean escalateDeadlock = false;
 
 		if (lock != null) {
@@ -194,6 +260,10 @@ public class LockingSystemSynchronized
 				if ((LockingSystem.debug & LockingSystem.DEBUG_ALL) != 0)
 					System.out.println(Thread.currentThread().getName() +
 					                   ":Lock Escalation on Object[" +  ObjectLock.objectToShortString(object) + "]");
+
+				if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_STACK_TRACES)) != 0)
+
+					System.out.println("Lock Escalation Start Stacktrace on " + lock.objectToShortString() + ":\n" + lock.stackTrace + "Lock Escalation End Stacktrace:\n");
 
 				lock.mode = ObjectLock.EXCLUSIVE;
 
@@ -246,8 +316,10 @@ public class LockingSystemSynchronized
 
 		} else {
 
-			lock = ObjectLock.getObjectLock(t, object, mode);
-			registerLockForThread(t, object, lock);
+			lock = ObjectLock.getObjectLock(sysEnv.thread, object, mode, sysEnv.getLockCp());
+			if (sysEnv.tx.subTxLocks != null)
+				sysEnv.tx.subTxLocks.add(lock);
+			registerLockForThread(sysEnv.thread, object, lock);
 
 			ObjectLock locks = objectLocks.get(object);
 
@@ -277,32 +349,31 @@ public class LockingSystemSynchronized
 
 		if (lock.wait) {
 			if (lock.object == null) throw new RuntimeException();
-			waits.put(t, lock);
-		}
-
-		ObjectLock firstLock = objectLocks.get(lock.object);
-
-		if (firstLock.wait && !firstLock.notify) {
-			if (firstLock == lock)
-				System.out.println("Error while locking (firstlock == lock)" + lock.toString());
-			else
-				System.out.println("Error while locking  (firstlock != lock)" + firstLock.toString());
-			dump();
-			throw new RuntimeException();
+			waits.put(sysEnv.thread, lock);
 		}
 
 		if ((LockingSystem.debug & LockingSystem.DEBUG_ALL) != 0)
 			System.out.println(Thread.currentThread().getName() +
 			                   ":getLock() returned " +  lock.toString());
 
-		if (escalateDeadlock)
+		if (escalateDeadlock) {
+			if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_STACK_TRACES)) != 0)
+
+				System.out.println("Escalation Deadlock Start Stacktrace on " + lock.objectToShortString() + ":\n" + lock.stackTrace + "Escalation Deadlock End Stacktrace:\n");
+
 			throw new DeadlockException();
+		}
 
 		return lock;
 	}
 
-	private static synchronized Vector<ObjectLock> releaseLock(ObjectLock lock)
+	private static synchronized Vector<ObjectLock> releaseLock(SystemEnvironment sysEnv, ObjectLock lock, boolean removeFromThreadLocks)
+	throws FatalException
 	{
+		if (!lock.releaseAllowed(sysEnv)) {
+			SDMSThread.doTrace (null, "Invalid attempt to release lock:" + lock.objectToShortString() + "\n" + lock.getStackTrace(), SDMSThread.SEVERITY_FATAL);
+			throw new FatalException(new SDMSMessage(sysEnv, "03511021603", "Invalid attempt to release lock:" + lock.objectToShortString()));
+		}
 
 		Vector<ObjectLock> locksToNotify = null;
 		if (lock.next != null &&
@@ -319,12 +390,14 @@ public class LockingSystemSynchronized
 			while (p != null) {
 				if (p == lock.next || p.mode != ObjectLock.EXCLUSIVE) {
 
-					if (p.wait) {
-						if (locksToNotify == null)
-							locksToNotify = new Vector<ObjectLock>();
-						p.notify = true;
-						p.wait = false;
-						locksToNotify.add(p);
+					synchronized (p.syncLock) {
+						if (p.wait && !p.notify) {
+							if (locksToNotify == null)
+								locksToNotify = new Vector<ObjectLock>();
+							p.notify = true;
+							p.wait = false;
+							locksToNotify.add(p);
+						}
 					}
 				}
 				if (p.mode == ObjectLock.EXCLUSIVE)
@@ -336,7 +409,16 @@ public class LockingSystemSynchronized
 
 		if (lock.prev == null) {
 
-			if (lock.object == null) throw new RuntimeException();
+			if (lock.object == null) {
+
+				if (lock.freeStackTrace != null) {
+					System.out.println("Lock has been freed at:\n" + lock.freeStackTrace);
+					System.out.println("Current Stack Trace:");
+					System.out.println(ObjectLock.getStackTrace());
+				}
+
+				throw new RuntimeException();
+			}
 			objectLocks.put(lock.object, lock.next);
 		} else
 
@@ -346,16 +428,11 @@ public class LockingSystemSynchronized
 
 			lock.next.prev = lock.prev;
 
-		ObjectLock firstLock = objectLocks.get(lock.object);
-		if (firstLock != null)
-
-			if (firstLock.wait) {
-				if (locksToNotify == null || !locksToNotify.contains(firstLock)) {
-					System.out.println("Error in release (firstlock is waiting)" + lock.toString());
-					dump();
-					throw new RuntimeException();
-				}
+		if (removeFromThreadLocks) {
+			clearLockForThread(sysEnv.thread, lock);
 			}
+
+		lock.syncLock.freeObjectLock(sysEnv);
 
 		return locksToNotify;
 	}
@@ -365,36 +442,33 @@ public class LockingSystemSynchronized
 		return objectLocks.get(object);
 	}
 
-	protected static synchronized void deadlockDetection(SDMSThread thread, HashSet<SDMSThread> waiters)
+	protected static synchronized void deadlockDetection(SystemEnvironment sysEnv, SDMSThread thread, HashSet<SDMSThread> waiters)
 	throws DeadlockException, NotMyDeadlockException
 	{
 		ObjectLock lock = waits.get(thread);
 		if (lock == null)
 			return;
-
 		if (!lock.wait)
 			return;
 		if (waiters.contains(thread)) {
-			SDMSThread t = (SDMSThread)Thread.currentThread();
-			if (t.lockThread != null) t = t.lockThread;
-			if (thread == t)
+			if (thread == sysEnv.thread)
 				throw new DeadlockException();
 			else
 				throw new NotMyDeadlockException();
 		}
 		waiters.add(thread);
 
-		deadlockDetection(lock.object, waiters);
+		deadlockDetection(sysEnv, lock.object, waiters);
 	}
 
-	private static synchronized void deadlockDetection(Object object, HashSet<SDMSThread> waiters)
+	private static synchronized void deadlockDetection(SystemEnvironment sysEnv, Object object, HashSet<SDMSThread> waiters)
 	throws DeadlockException, NotMyDeadlockException
 	{
 		ObjectLock lock = objectLocks.get(object);
 
 		while (lock != null && !lock.wait) {
 			try {
-				deadlockDetection(lock.thread, waiters);
+				deadlockDetection(sysEnv, lock.thread, waiters);
 			} catch (DeadlockException de) {
 				if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_DEADLOCK_DETECTION)) != 0)
 					System.out.println(lock.objectToShortString() + " " + lock.dumpLockList ());
@@ -457,13 +531,12 @@ public class LockingSystemSynchronized
 						os = lock.object.toString();
 					else
 						os = "Oops! lock.object == null!";
-
 					tmp.append("    Object[" + os + "] mode = " + lock.mode +
 					           ", wait = " + lock.wait +
 					           ", waiting = " + lock.waiting +
 					           ", escalated=" + lock.escalated +
-					           ", notify=" + lock.notify +
-					           ", release=" + lock.release);
+					           ", notify=" + lock.notify
+					          );
 					tmp.append("\n");
 					numlocks++;
 				}
@@ -497,13 +570,12 @@ public class LockingSystemSynchronized
 			b.append("Locks held on object " + os);
 			b.append("\n");
 			while (lock != null) {
-
 				b.append("    Thread[" + lock.thread.getName() + "] id = " + lock.id + ", mode = " + lock.mode +
 				         ", wait = " + lock.wait +
 				         ", waiting = " + lock.waiting +
 				         ", escalated=" + lock.escalated +
-				         ", notify=" + lock.notify +
-				         ", release=" + lock.release);
+				         ", notify=" + lock.notify
+				        );
 				b.append("\n");
 				lock = lock.next;
 			}

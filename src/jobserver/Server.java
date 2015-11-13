@@ -43,6 +43,7 @@ public class Server
 	private final RepoIface ri;
 	private WakeupThread wecker = null;
 	private HttpThread httpserver = null;
+	private int fullFullBreed = 0;
 
 	private static HashMap feilMap = null;
 
@@ -95,6 +96,7 @@ public class Server
 			f = (Feil) feilMap.get(jid);
 		else {
 			f = new Feil ((File) cfg.get (Config.JOB_FILE_PREFIX), jid);
+			Trace.debug("Adding feil for jid " + jid);
 			feilMap.put(jid, f);
 		}
 		return f;
@@ -102,6 +104,7 @@ public class Server
 
 	public static final synchronized void removeFeil(String jid)
 	{
+		Trace.debug("Removing feil for jid " + jid);
 		Feil f;
 		if (feilMap.containsKey(jid))
 			f = (Feil) feilMap.get(jid);
@@ -130,25 +133,25 @@ public class Server
 		final String list[] = job_file_dir.list();
 		final int len = list != null ? list.length : 0;
 
-		int num = 0;
-		for (int i = 0; i < len; ++i)
-			if (list [i].startsWith (fnam_prefix) && !list [i].endsWith (Feil.ERROR_POSTFIX)) {
-				++num;
-			}
-
-		final String found[] = new String [num];
-		int f = 0;
-		for (int i = 0; i < len; ++i)
-			if (list [i].startsWith (fnam_prefix) && !list [i].endsWith (Feil.ERROR_POSTFIX)) {
-				String jid = list [i].substring (fnam_prefix_len);
-				if (!jidsWithEiThread.contains(jid)) {
-					found [f++] = jid;
-					if (f == num)
-						break;
+		fullFullBreed = (fullFullBreed + 1) % 100;
+		Trace.debug("Server:breeding " + (fullFullBreed == 0 ? "all files" : "files not in jidsWithEiThread only"));
+		Vector<String> hits = new Vector<String>();
+		synchronized (jidsWithEiThread) {
+			for (int i = 0; i < len; ++i) {
+				if (list [i].startsWith (fnam_prefix) && !list [i].endsWith (Feil.ERROR_POSTFIX)) {
+					String jid = list [i].substring (fnam_prefix_len);
+					if (!jidsWithEiThread.contains(jid) || fullFullBreed == 0) {
+						hits.add(jid);
+					}
 				}
 			}
+		}
 
-		return found;
+		String[] result = new String[hits.size()];
+		for (int i = 0; i < hits.size(); ++i)
+			result[i] = hits.get(i);
+
+		return result;
 	}
 
 	private final boolean doRestart ()
@@ -214,6 +217,7 @@ public class Server
 		startTimes = ProcessInfo.getStartTimes(cfg, null);
 		final String jid[] = getJobFileIds();
 		for (int i = 0; i < jid.length; ++i) {
+			Trace.debug("Server:breeding jid " + jid[i] + " from breed()");
 			breed(jid[i], startTimes);
 		}
 	}
@@ -268,10 +272,10 @@ public class Server
 					}
 
 					if (!feil.getStatus().equals(Feil.STATUS_STARTED)) {
+						Trace.debug("Server:removing jid " + jid + " from jidsAwaitRunning, state = " + feil.getStatus());
 						synchronized (jidsAwaitRunning) {
 							jidsAwaitRunning.remove(jid);
 						}
-
 					}
 
 					if (Utils.isOneOf (feil.getStatus_Tx(), FINAL_STATES))
@@ -279,16 +283,16 @@ public class Server
 				}
 			} catch (final EOFException ioe) {
 				ri.notifyError (RepoIface.NONFATAL, "(03210150802) Unexpected End of File on jobfile " + feil.getFilename());
-			}
-
-			catch (final IOException ioe) {
+			} catch (final IOException ioe) {
 				ri.notifyError (RepoIface.NONFATAL, "(04302041618) Cannot operate on jobfile " + feil.getFilename() + ": " + ioe.getMessage()  + " (" + ioe.getClass().getName() + ")");
-			}
-
-			finally {
-				if (feil_expired)
+			} finally {
+				if (feil_expired) {
+					Trace.debug("Server:removing jid " + jid + " from jidsAwaitRunning, state = " + feil.getStatus());
+					synchronized (jidsAwaitRunning) {
+						jidsAwaitRunning.remove(jid);
+					}
 					Server.removeFeil(jid);
-				else
+				} else
 					feil.close();
 			}
 		}
@@ -327,13 +331,13 @@ public class Server
 				feil.close();
 			}
 		}
+		Trace.debug("Server:adding jid " + jd.id + " to jidsWithEiThread and jidsAwaitRunning");
 		synchronized (jidsWithEiThread) {
 			jidsWithEiThread.add(jd.id);
 		}
 		synchronized (jidsAwaitRunning) {
 			jidsAwaitRunning.add(jd.id);
 		}
-
 		final EiThread ei = new EiThread (ri, cfg, jd.id, jd.env, jd.dir, jd.jobenv);
 		ei.start();
 
@@ -362,69 +366,64 @@ public class Server
 		startWakeupThread(cfg);
 		startHttpThread(cfg);
 
-		final int loop_delay = 500;
+		final int loop_delay = 100;
 		final int breed_delay = 5000;
 
 		boolean active = doRestart ();
-		long ts = 0;
 		long bts = 0;
+		long ts = 0;
 		while (active) {
+			boolean gotNop = false;
 			Thread.interrupted();
-			long now = new Date().getTime();
+			long now = System.currentTimeMillis();
 			if (now - bts - breed_delay > 0) {
 				synchronized (jidsToBreed) {
 					jidsToBreed.clear();
 				}
 
+				Trace.debug("Server:running breed()");
 				breed();
 				bts = now;
 			}
 			Vector<String> v_tmp = new Vector<String>();
 			synchronized(jidsToBreed) {
 
-				if (jidsToBreed.size() > 0) {
-					while(true) {
-						String jid = null;
-						if (jidsToBreed.size() > 0) {
-							jid = jidsToBreed.elementAt(0);
-							jidsToBreed.removeElementAt(0);
-						}
-						if (jid == null) break;
-						v_tmp.add(jid);
-					}
-				}
+				v_tmp.addAll(jidsToBreed);
+				jidsToBreed.clear();
 			}
 			Iterator<String> i_tmp = v_tmp.iterator();
 			while (i_tmp.hasNext()) {
 				String jid = i_tmp.next();
+				Trace.debug("Server:breeding jid " + jid + " from jidsToBreed");
 				breed(jid, startTimes);
 			}
 
-			v_tmp = new Vector<String>();
+			v_tmp.clear();
 			synchronized(jidsAwaitRunning) {
 
-				Iterator<String> i = jidsAwaitRunning.iterator();
-				while (i.hasNext()) {
-					v_tmp.add(i.next());
-				}
+				v_tmp.addAll(jidsAwaitRunning);
 			}
 			i_tmp = v_tmp.iterator();
 			while (i_tmp.hasNext()) {
 				String jid = i_tmp.next();
-
+				Trace.debug("Server:breeding jid " + jid + " from jidsAwaitRunning");
 				breed(jid, startTimes);
 			}
-			if (now - ts > ((Long) cfg.get (Config.NOP_DELAY)).longValue()) {
+			long nopDelay = ((Long) cfg.get (Config.NOP_DELAY)).longValue();
+			if (now - ts - nopDelay > 0) {
 				boolean gotJob = true;
 				while (gotJob) {
 					gotJob = false;
 					switch (ri.getNextCmd()) {
 					case RepoIface.NOP:
+						gotNop = true;
 						ts = now;
 						break;
 
 					case RepoIface.START_JOB:
-						createNewEi (ri.getJobData());
+						Descr jd = ri.getJobData();
+						Trace.debug("Server:starting job " + jd.id);
+						createNewEi (jd);
 							gotJob = true;
 						break;
 
@@ -434,14 +433,22 @@ public class Server
 					default:
 						Utils.abortProgram (ri, "(04504112210) Unexpected response");
 					}
+
+					if (now - bts - breed_delay > 0) {
+						break;
+					}
 				}
 			}
-			if (ts > 0) {
+			boolean doSleep = true;
+			synchronized (jidsToBreed) {
+				if (jidsToBreed.size() > 0) doSleep = false;
+			}
+			if (gotNop && doSleep) {
+				Trace.debug("Server:got a NOP");
 				try {
 					Notifier.register(id, currentThread);
 					Thread.sleep (loop_delay);
 				} catch (Exception e) {
-					ts = 0;
 					bts = 0;
 				}
 				Notifier.unregister(id);

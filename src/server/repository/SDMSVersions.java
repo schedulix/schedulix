@@ -43,9 +43,9 @@ public class SDMSVersions
 
 	Vector	  versions;
 
-	LinkedList	o_v;
+	public LinkedList	o_v;
 
-	SDMSTransaction tx;
+	public SDMSTransaction tx;
 
 	SDMSTable       table;
 
@@ -104,6 +104,11 @@ public class SDMSVersions
 		int s;
 		SDMSPurgeSet purgeSet;
 
+		if (o_v == null) {
+
+			return;
+		}
+
 		long purgeLow;
 		purgeLow = env.roTxList.first(env);
 		if (table.getIsVersioned()) {
@@ -114,11 +119,6 @@ public class SDMSVersions
 			purgeSet = env.vPurgeSet;
 		} else {
 			purgeSet = env.nvPurgeSet;
-		}
-
-		if (o_v == null) {
-			throw new FatalException (new SDMSMessage(env, "02110261556",
-						  "Cannot commit or rollback an unchanged versions"));
 		}
 
 		if (o_v.size() == 0) {
@@ -240,7 +240,7 @@ public class SDMSVersions
 		return obj;
 	}
 
-	protected SDMSObject getRaw (SystemEnvironment env, boolean unlocked)
+	protected synchronized SDMSObject getRaw (SystemEnvironment env, boolean unlocked)
 		throws SDMSException
 	{
 		SDMSObject o;
@@ -250,6 +250,8 @@ public class SDMSVersions
 				o = (SDMSObject) getRaw(env, Long.MAX_VALUE);
 				if (o == null) return null;
 				if (!o.isCurrent) {
+					System.out.println("get returned non current version:\ntx:\n" + tx + "env.tx:\n" + env.tx);
+					System.out.println(this.toString());
 					throw new FatalException( new SDMSMessage (env, "02110301833", "get returned non current version"));
 				}
 				return o;
@@ -258,6 +260,8 @@ public class SDMSVersions
 				o = (SDMSObject)(o_v.getLast());
 				if (! o.isDeleted) {
 					if (!o.isCurrent) {
+						System.out.println("get returned non current version:\ntx:\n" + tx + "env.tx:\n" + env.tx);
+						System.out.println(this.toString());
 						throw new FatalException( new SDMSMessage (env, "02110301834", "get returned non current version"));
 					}
 					return o;
@@ -271,9 +275,11 @@ public class SDMSVersions
 			} else {
 				o = (SDMSObject)getRaw(env, Long.MAX_VALUE);
 				if (o != null && !o.isCurrent) {
-					if (!unlocked)
+					if (!unlocked) {
+						System.out.println("get returned non current version:\ntx:\n" + tx + "env.tx:\n" + env.tx);
+						System.out.println(this.toString());
 						throw new FatalException( new SDMSMessage (env, "02110301835", "get returned non current version"));
-					else
+					} else
 						o = null;
 				}
 				return o;
@@ -351,17 +357,24 @@ public class SDMSVersions
 			SDMSObject o;
 			while (i.hasNext()) {
 				o = (SDMSObject)(i.next());
-				result.append(
-					"\n==========================\n" +
-					"validFrom : " + o.validFrom + "\n" +
-					"validTo : " + o.validTo + "\n" +
-					"subTxId : " + o.subTxId + "\n" +
-					"isDeleted : " + o.isDeleted + "\n" +
-					"memOnly : " + o.memOnly + "\n" +
-					"--------------------------\n" +
-				        o.toString(indent) +
-				        "- - - - - - - - - - - - - \n" +
-				        table.checkIndex(o));
+				if (o == null) {
+					result.append(
+					        "\n==========================\n" +
+					        "o is null\n" );
+				} else {
+					result.append(
+						"\n==========================\n" +
+						"validFrom : " + o.validFrom + "\n" +
+						"validTo : " + o.validTo + "\n" +
+						"subTxId : " + o.subTxId + "\n" +
+						"isDeleted : " + o.isDeleted + "\n" +
+					        "isCurrent : " + o.isCurrent + "\n" +
+						"memOnly : " + o.memOnly + "\n" +
+						"--------------------------\n" +
+				        	o.toString(indent) +
+				        	"- - - - - - - - - - - - - \n" +
+						table.checkIndex(o));
+				}
 			}
 			result.append("-- End Committed Versions --\n");
 
@@ -376,7 +389,7 @@ public class SDMSVersions
 						"----------------------------\n" +
 						"subTxId : " + o.subTxId + "\n" +
 						"isDeleted : " + o.isDeleted + "\n" +
-						"isCurrent : " + o.isDeleted + "\n" +
+					              "isCurrent : " + o.isCurrent + "\n" +
 						"memOnly : " + o.memOnly + "\n" +
 						"============================\n");
 				}
@@ -387,7 +400,14 @@ public class SDMSVersions
 
 			return result.toString();
 		} catch (Exception e) {
-			return "Dump of Versions Object run into an Exception : " + e.toString();
+			StringBuffer m = new StringBuffer();
+			m.append("Dump of Versions Object run into an Exception : " + e.toString() + "\n");
+			StackTraceElement[] ste = e.getStackTrace();
+			for (int i = 0; i < ste.length; ++i) {
+				m.append(ste[i].toString());
+				m.append("\n");
+			}
+			return m.toString();
 		}
 	}
 

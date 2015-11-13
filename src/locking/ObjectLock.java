@@ -25,12 +25,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package de.independit.scheduler.locking;
 
+import java.util.*;
+import java.io.*;
 import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.server.*;
 import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.repository.*;
 
 public class ObjectLock
 {
+
+	private static final boolean reUseLocks = true;
 
 	public static final int SHARED = 0;
 	public static final int EXCLUSIVE = 1;
@@ -41,80 +46,130 @@ public class ObjectLock
 	public static final String S_WAIT = "W";
 	public static final String S_NOWAIT = "N";
 
-	protected boolean wait;
+	public boolean wait;
 	protected boolean waiting;
 	protected boolean escalated;
+
 	protected boolean notify;
-	protected boolean release;
 
 	private static ObjectLock unusedLocks = null;
 
 	protected int id;
-	protected Object object = null;
+
+	public Object object = null;
 	protected SDMSThread thread = null;
 	protected SyncLock syncLock;
 
-	protected int mode = 0;
+	public int mode = 0;
 	protected ObjectLock next = null;
 	protected ObjectLock prev = null;
-
-	public void setWait(boolean wait)
-	{
-		this.wait = wait;
-		if (wait) {
-			System.out.println("ObjectLock.setWait(true) for ObjectLock[" + id + "] in Thread " + Thread.currentThread().getName());
-			Thread.currentThread().dumpStack();
-		}
-	}
+	public static long lockHWM = 0;
+	public static long lockUsed = 0;
+	public static long lockRequest = 0;
+	public static long lockDiscarded = 0;
+	public static long lockHWMdelta = 0;
 
 	private static int lastId = 0;
 
-	protected ObjectLock(SDMSThread thread, Object object, int mode)
+	public long createCp;
+
+	public String stackTrace = null;
+	public String freeStackTrace = null;
+
+	protected ObjectLock(SDMSThread thread, Object object, int mode, long createCp)
 	{
 		id = lastId;
 		lastId = lastId + 1;
 		syncLock = new SyncLock(this);
-		initialize(thread, object, mode);
+		initialize(thread, object, mode, createCp);
 	}
 
-	protected static synchronized void freeObjectLock(ObjectLock objectLock)
+	protected static synchronized void freeObjectLock(SystemEnvironment sysEnv, ObjectLock objectLock)
 	{
+
+		if (objectLock.thread == null || !sysEnv.thread.equals(objectLock.thread)) {
+			System.out.println("ObjectLock:freeObjectLock: Oops, trying to free a lock which doesnt belong to our thread !");
+			if (objectLock.freeStackTrace != null) {
+				System.out.println("Lock has been freed at:\n" + objectLock.freeStackTrace);
+				System.out.println("Current Stack Trace:");
+				System.out.println(getStackTrace());
+			}
+			return;
+		}
+
+		lockUsed--;
+		if (objectLock.notify) {
+
+			lockDiscarded++;
+			lockHWMdelta++;
+			return;
+		}
 
 		objectLock.object = null;
 		objectLock.thread = null;
 
-		objectLock.next = unusedLocks;
 		objectLock.prev = null;
+		if (reUseLocks) {
+			objectLock.next = unusedLocks;
 
-		unusedLocks = objectLock;
+			unusedLocks = objectLock;
+			if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_FREE)) != 0)
+				objectLock.freeStackTrace = getStackTrace();
+		} else {
+			objectLock.next = null;
+		}
 	}
 
-	protected static synchronized ObjectLock getObjectLock(SDMSThread thread, Object object, int mode)
+	protected static synchronized ObjectLock getObjectLock(SDMSThread thread, Object object, int mode, long createCp)
 	{
 		ObjectLock lock = null;
-		if (unusedLocks == null) {
-			lock = new ObjectLock(thread, object, mode);
+		if (unusedLocks == null || !reUseLocks) {
+			lock = new ObjectLock(thread, object, mode, createCp);
+			if (lockHWMdelta > 0)
+				lockHWMdelta--;
+			else
+				lockHWM++;
 		} else {
 			lock = unusedLocks;
 			unusedLocks = lock.next;
-			lock.initialize(thread, object, mode);
+			lock.initialize(thread, object, mode, createCp);
 		}
+		lockUsed++;
+		lockRequest++;
 		return lock;
 	}
 
-	private void initialize(SDMSThread thread, Object object, int mode)
+	private void initialize(SDMSThread thread, Object object, int mode, long createCp)
 	{
+
+		if (object == null) throw new RuntimeException();
 		this.object = object;
 		this.thread = thread;
 		this.mode = mode;
 		this.next = null;
 		this.prev = null;
+		this.createCp = createCp;
 
 		wait = false;
 		waiting = false;
 		escalated = false;
+
 		notify = false;
-		release = false;
+
+		if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_STACK_TRACES)) != 0)
+			this.stackTrace = getStackTrace();
+		if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_FREE)) != 0)
+			this.freeStackTrace = null;
+	}
+
+	public boolean releaseAllowed(SystemEnvironment sysEnv)
+	{
+		boolean ok = true;
+		if (object instanceof SDMSVersions) {
+			if (mode == EXCLUSIVE && ((SDMSVersions)object).tx == sysEnv.tx && ((SDMSVersions)object).o_v != null && ((SDMSVersions)object).o_v.size() > 0)
+				ok = false;
+		}
+		return ok;
 	}
 
 	public String modeToString()
@@ -135,7 +190,6 @@ public class ObjectLock
 			       ", waiting=" + waiting +
 			       ", escalated=" + escalated +
 			       ", notify=" + notify +
-			       ", release=" + release +
 			       "]";
 		} else
 			return "ObjectLock[" + id + "] uninitialized";
@@ -160,7 +214,6 @@ public class ObjectLock
 				      ", waiting=" + lock.waiting +
 				      ", escalated=" + lock.escalated +
 				      ", notify=" + lock.notify +
-				      ", release=" + lock.release +
 				      "}";
 			else
 				out = out + sep + "[Thread " + threadName +
@@ -170,7 +223,6 @@ public class ObjectLock
 				      ", waiting=" + lock.waiting +
 				      ", escalated=" + lock.escalated +
 				      ", notify=" + lock.notify +
-				      ", release=" + lock.release +
 				      "]";
 			sep = " -> ";
 			lock = lock.next;
@@ -213,4 +265,13 @@ public class ObjectLock
 			os = "Oops! lock.object == null!";
 		return os;
 	}
+
+	static public String getStackTrace()
+	{
+		Exception e = new Exception();
+		StringWriter stackTrace = new StringWriter();
+		e.printStackTrace(new PrintWriter(stackTrace));
+		return stackTrace.toString().intern();
+	}
+
 }

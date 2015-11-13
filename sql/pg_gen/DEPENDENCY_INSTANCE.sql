@@ -45,7 +45,7 @@ CREATE TABLE DEPENDENCY_INSTANCE (
 CREATE UNIQUE INDEX PK_DEPENDENCY_INSTANCE
 ON DEPENDENCY_INSTANCE(ID);
 CREATE TABLE ARC_DEPENDENCY_INSTANCE (
-    ID                             decimal (20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , DD_ID                          decimal(20)      NULL
     , DEPENDENT_ID                   decimal(20)      NULL
     , DEPENDENT_ID_ORIG              decimal(20)      NULL

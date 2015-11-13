@@ -78,13 +78,14 @@ public class TriggerThread extends InternalSession
 		int ctr = 0;
 		doTrace(cEnv, "Start Resuming Jobs", SEVERITY_MESSAGE);
 
-		LockingSystem.lock(jobsToResume, ObjectLock.EXCLUSIVE);
+		if (sysEnv.maxWriter > 1)
+			LockingSystem.lock(sysEnv, jobsToResume, ObjectLock.EXCLUSIVE);
 		if (firstTime) {
 
 		i = SDMSSubmittedEntityTable.table.iterator(sysEnv,
 			new SDMSFilter() {
 				public boolean isValid(SystemEnvironment sysEnv, SDMSProxy p)
-					throws SDMSException {
+				throws SDMSException {
 					SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
 					if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) return false;
 					if (sme.getResumeTs(sysEnv) == null) return false;
@@ -127,7 +128,8 @@ public class TriggerThread extends InternalSession
 			jobsToResume.addAll(jobsResumed);
 			throw s;
 		}
-		LockingSystem.release(jobsToResume);
+		if (sysEnv.maxWriter > 1)
+			LockingSystem.release(sysEnv, jobsToResume);
 		doTrace(cEnv, "End Resuming Jobs (" + ctr + " jobs resumed)", SEVERITY_MESSAGE);
 		now = System.currentTimeMillis();
 		if (now + maxWakeupInterval > nextTime) {
@@ -140,17 +142,21 @@ public class TriggerThread extends InternalSession
 	public void removeFromJobsToResume(SystemEnvironment sysEnv, Long id)
 		throws SDMSException
 	{
-		LockingSystem.lock(jobsToResume, ObjectLock.EXCLUSIVE);
+		if (sysEnv.maxWriter > 1)
+			LockingSystem.lock(sysEnv, jobsToResume, ObjectLock.EXCLUSIVE);
 		jobsToResume.remove(id);
-		LockingSystem.release(jobsToResume);
+		if (sysEnv.maxWriter > 1)
+			LockingSystem.release(sysEnv, jobsToResume);
 	}
 
 	public void addToJobsToResume(SystemEnvironment sysEnv, Long id)
 		throws SDMSException
 	{
-		LockingSystem.lock(jobsToResume, ObjectLock.EXCLUSIVE);
+		if (sysEnv.maxWriter > 1)
+			LockingSystem.lock(sysEnv, jobsToResume, ObjectLock.EXCLUSIVE);
 		jobsToResume.add(id);
-		LockingSystem.release(jobsToResume);
+		if (sysEnv.maxWriter > 1)
+			LockingSystem.release(sysEnv, jobsToResume);
 	}
 
 }

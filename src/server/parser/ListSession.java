@@ -60,6 +60,7 @@ public class ListSession extends Node
 		int i, nt, sessionCtr;
 		ConnectionEnvironment cEnv;
 		SDMSOutputContainer d_container = null;
+		boolean isInternal;
 
 		if(sysEnv.cEnv.gid().contains(SDMSObject.adminGId))	fullView = true;
 		else {
@@ -112,17 +113,31 @@ public class ListSession extends Node
 		desc.add("WAIT");
 
 		tg = env.getMe().getThreadGroup();
-		list = new SDMSThread[tg.activeCount()];
+		list = new SDMSThread[tg.activeCount() + 5];
 		nt = tg.enumerate(list);
+		list[nt] = SystemEnvironment.sched;
+		nt++;
+		list[nt] = SystemEnvironment.tt;
+		nt++;
+		list[nt] = SystemEnvironment.garb;
+		nt++;
+		list[nt] = SystemEnvironment.timer;
+		nt++;
 
 		d_container = new SDMSOutputContainer(sysEnv, "List of Sessions", desc);
 		sessionCtr = 0;
 		for(i=0; i<nt; i++) {
-			if(list[i] instanceof ListenThread) continue;
-			if(!list[i].isAlive()) continue;
-			cEnv = ((UserConnection) list[i]).getEnv();
+			if (list[i] instanceof ListenThread) continue;
+			if (!list[i].isAlive()) continue;
+			if (list[i] instanceof UserConnection) {
+				cEnv = ((UserConnection) list[i]).getEnv();
+				isInternal = false;
+			} else {
+				cEnv = ((InternalSession) list[i]).getEnv();
+				isInternal = true;
+			}
 			Vector data = new Vector();
-			if (fillVector(sysEnv, cEnv, data)) {
+			if (fillVector(sysEnv, cEnv, data, isInternal)) {
 				d_container.addData(sysEnv, data);
 				sessionCtr++;
 			}
@@ -134,7 +149,7 @@ public class ListSession extends Node
 		result.setOutputContainer(d_container);
 	}
 
-	private boolean fillVector(SystemEnvironment sysEnv, ConnectionEnvironment cEnv, Vector data)
+	private boolean fillVector(SystemEnvironment sysEnv, ConnectionEnvironment cEnv, Vector data, boolean isInternal)
 		throws SDMSException
 	{
 		if(cEnv.id() == env.id()) {
@@ -150,7 +165,11 @@ public class ListSession extends Node
 				try {
 					String userName = SDMSUserTable.getObject(sysEnv, cEnv.uid()).getName(sysEnv);
 					data.add("USER");
-					data.add(userName);
+					if (isInternal) {
+						String s = cEnv.getMe().getClass().getCanonicalName();
+						data.add(s.substring(s.lastIndexOf('.')+1));
+					} else
+						data.add(userName);
 				} catch (NotFoundException nfe) {
 					String jsName = SDMSScopeTable.getObject(sysEnv, cEnv.uid()).pathString(sysEnv);
 					data.add("JOBSERVER");
@@ -174,7 +193,7 @@ public class ListSession extends Node
 			String state = (cEnv.getState()).toString();
 
 			String waitInfo = "";
-			if (cEnv.worker != null) {
+			if (sysEnv.maxWriter > 1 && cEnv.worker != null) {
 				waitInfo = LockingSystemSynchronized.waitInfo(cEnv.worker);
 				if (!waitInfo.equals("")) {
 					state = state + "[W]";

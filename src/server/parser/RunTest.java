@@ -36,6 +36,7 @@ import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
+import de.independit.scheduler.locking.*;
 
 public class RunTest extends Node
 {
@@ -138,6 +139,9 @@ public class RunTest extends Node
 			break;
 		case 10:
 			do_test10(sysEnv);
+			break;
+		case 11:
+			do_test11(sysEnv);
 			break;
 		default:
 
@@ -310,7 +314,7 @@ public class RunTest extends Node
 	}
 
 	private void do_test10(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSTable t = sysEnv.repository.getTableByName(str);
 		if (t == null) {
@@ -326,6 +330,12 @@ public class RunTest extends Node
 		System.out.println(v.toString());
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03212191003", "Versions dumped to stdout"));
+	}
+
+	private void do_test11(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		LockingSystemSynchronized.dump();
 	}
 }
 

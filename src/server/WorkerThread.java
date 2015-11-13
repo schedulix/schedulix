@@ -103,6 +103,8 @@ public class WorkerThread extends SDMSThread
 		boolean succeeded;
 		PrintStream sav;
 
+		env.thread = this;
+
 		while(run) {
 			n = (Node) cmdQueue.get();
 			if(!run) break;
@@ -134,21 +136,23 @@ public class WorkerThread extends SDMSThread
 					Exception lastE = null;
 					try {
 						try {
-							if(n.txMode == SDMSTransaction.READWRITE) {
-								int lockMode = ObjectLock.SHARED;
+							if(env.maxWriter > 1 && n.txMode == SDMSTransaction.READWRITE) {
 								if(i == retryCount - 1) {
-									lockMode = ObjectLock.EXCLUSIVE;
 									doTrace(cEnv, "SDMSRun() reached max retryCount, running exclusively now", SEVERITY_MESSAGE);
-								}
-								LockingSystem.lock(workerLock, lockMode);
+									LockingSystem.lock(env, workerLock, ObjectLock.EXCLUSIVE);
+								} else
+									LockingSystem.lock(env, workerLock, ObjectLock.SHARED);
 							}
 
 							env.inExecution = true;
+							env.initLockCp();
 							n.go(env);
 
 							if(n.txMode == SDMSTransaction.READWRITE) {
 								SDMSSmeCounterTable.updateCounter(env);
 							}
+
+							LockingSystem.release(env, workerLock);
 
 							env.inExecution = false;
 							cEnv.setState(ConnectionEnvironment.COMMITTING);
@@ -216,20 +220,16 @@ public class WorkerThread extends SDMSThread
 						if(!succeeded)
 							try {
 
-								if (lastE != null) {
-									System.out.println(Thread.currentThread().getName() + ":lastE = " + lastE.toString());
-									lastE.printStackTrace();
-								}
 								cEnv.tx.rollback(env);
 								cEnv.ostream.flush();
 							} catch (de.independit.scheduler.locking.DeadlockException de) {
 
 								throw new FatalException(
-										new SDMSMessage(env, "03110181515", "Deadlock at Rollback"));
+								        new SDMSMessage(env, "03110181515", "Deadlock at Rollback"));
 							} catch (SQLException sqle) {
 
 								throw new FatalException(
-										new SDMSMessage(env, "03110181516", "Rollback failed"));
+								        new SDMSMessage(env, "03110181516", "Rollback failed"));
 							}
 					}
 				} while(i < retryCount);

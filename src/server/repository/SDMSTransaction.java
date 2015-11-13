@@ -42,6 +42,8 @@ public class SDMSTransaction
 {
 	public final static String __version = "@(#) $Id: SDMSTransaction.java,v 2.12.2.1 2013/03/14 10:25:26 ronald Exp $";
 
+	SDMSThread thread = null;
+
 	public static final int READONLY  = 0x01;
 	public static final int READWRITE = 0x02;
 
@@ -52,20 +54,24 @@ public class SDMSTransaction
 	private static final Object commitLock = new Object();
 
 	public int subTxId = 0;
+	Stack subTxCheckPoints;
+	public long subTxCheckPoint = 0;
 
 	public HashMap txData = new HashMap();
 	public Integer smeCtr = new Integer(0);
 	private Stack ctrStack = new Stack();
 	private Stack clStack = new Stack();
+	public Stack lockStack = new Stack();
 	public HashMap privCache = new HashMap();
 
 	public    long    txId;
 	public    int     mode;
 	public    long    versionId;
 	public final long startTime;
-	public long endTime;
-	private   ChangeList changeList;
+	public long endTime = 0;
+
 	private   HashSet touchList;
+	public    HashSet subTxLocks;
 
 	public HashMap rscCache = null;
 	public HashMap envJSMap = null;
@@ -76,18 +82,25 @@ public class SDMSTransaction
 		throws SDMSException
 	{
 		if (nextId == null) {
-			nextId = new TxCounter(env);
+			synchronized(commitLock) {
+				if (nextId == null)
+					nextId = new TxCounter(env);
+			}
 		}
 		mode = m;
 		txId = nextId.next(env, m);
-		changeList = null;
+
 		touchList = null;
+		subTxLocks = null;
 		if(m == READONLY) {
 			versionId = (version == null ? txId : version.longValue());
+
 			env.roTxList.add(env, versionId);
 		} else
 			versionId = UNDEFINED;
 		startTime = System.currentTimeMillis();
+		subTxCheckPoints = new Stack();
+		thread = env.thread;
 	}
 
 	public static long drawVersion(SystemEnvironment env) throws SDMSException
@@ -181,14 +194,16 @@ public class SDMSTransaction
 			}
 		}
 
-		if (mode == READONLY || changeList == null) {
-
-			env.roTxList.remove(env, versionId);
+		if (mode == READONLY || touchList == null) {
 			if(mode != READONLY)
 				nextId.releaseVersion(env);
+			else {
+
+				env.roTxList.remove(env, versionId);
+			}
 			endTime = System.currentTimeMillis();
-			if (mode == READWRITE)
-				LockingSystem.release();
+			if (env.maxWriter > 1 && mode == READWRITE)
+				LockingSystem.release(env);
 			return;
 		}
 
@@ -196,8 +211,7 @@ public class SDMSTransaction
 			throw new FatalException(new SDMSMessage(env, "03406061057",
 					"Error in SME Counter, tried to submit $1 unregistered entities", smeCtr));
 
-		int i;
-		int maxElms = changeList.size();
+		Iterator i;
 		SDMSChangeListElement ce;
 
 		int lockmode = ObjectLock.SHARED;
@@ -205,10 +219,14 @@ public class SDMSTransaction
 			boolean again = true;
 			while (again) {
 				again = false;
-				LockingSystem.lock(commitLock, lockmode);
+				if (env.maxWriter > 1)
+					LockingSystem.lock(env, commitLock, lockmode);
 				try {
-					for(i = 0; i < maxElms; i++) {
-						ce = changeList.get(i);
+					i = touchList.iterator();
+
+					while(i.hasNext()) {
+						ce = (SDMSChangeListElement) i.next();
+
 						ce.versions.flush(env, ce.isNew);
 					}
 				} catch (SDMSSQLException sqle) {
@@ -221,7 +239,8 @@ public class SDMSTransaction
 
 					env.dbConnection.rollback();
 
-					LockingSystem.release(commitLock);
+					if (env.maxWriter > 1)
+						LockingSystem.release(env, commitLock);
 
 					continue;
 				}
@@ -230,21 +249,24 @@ public class SDMSTransaction
 
 				env.dbConnection.commit();
 
-				LockingSystem.release(commitLock);
+				if (env.maxWriter > 1)
+					LockingSystem.release(env, commitLock);
 			}
 		} else {
 			env.dbConnection.rollback();
 		}
 
-		for(i = 0; i < maxElms; i++) {
+		i = touchList.iterator();
+		while(i.hasNext()) {
 
-			ce = changeList.get(i);
+			ce = (SDMSChangeListElement) i.next();
 
 			ce.versions.commitOrRollback(env, versionId, ce.isNew, isCommit);
 
 		}
-		changeList = null;
-		LockingSystem.release();
+
+		if (env.maxWriter > 1)
+			LockingSystem.release(env);
 		nextId.releaseVersion(env);
 		endTime = System.currentTimeMillis();
 	}
@@ -254,16 +276,27 @@ public class SDMSTransaction
 		subTxId ++;
 		ctrStack.push(smeCtr);
 		clStack.push(touchList);
-		touchList = null;
+		lockStack.push(subTxLocks);
+		subTxLocks = new HashSet();
+		touchList = new HashSet();
 		if (traceSubTx)
 			SDMSThread.doTrace(null, "Starting subtransaction", SDMSThread.SEVERITY_ERROR);
+		subTxCheckPoints.push(new Long(subTxCheckPoint));
+		subTxCheckPoint = env.newLockCp();
 	}
 
 	public void commitSubTransaction(SystemEnvironment env)
 		throws SDMSException
 	{
 		commitOrRollbackSubTransaction(env, true);
+		subTxCheckPoint = ((Long)subTxCheckPoints.pop()).longValue();
 		ctrStack.pop();
+
+		HashSet oldSubTxLocks = subTxLocks;
+		subTxLocks = (HashSet) lockStack.pop();
+		if (subTxLocks != null)
+			subTxLocks.addAll(oldSubTxLocks);
+
 		HashSet oldList = touchList;
 		touchList = (HashSet) clStack.pop();
 
@@ -277,6 +310,8 @@ public class SDMSTransaction
 		throws SDMSException
 	{
 		commitOrRollbackSubTransaction(env, false);
+		subTxCheckPoint = ((Long)subTxCheckPoints.pop()).longValue();
+		subTxLocks = (HashSet) lockStack.pop();
 		smeCtr = (Integer) ctrStack.pop();
 		touchList = (HashSet) clStack.pop();
 	}
@@ -295,12 +330,19 @@ public class SDMSTransaction
 						"02110261755", "sub transaction underflow"));
 		}
 		if (mode == READONLY || touchList == null) {
+			if (mode == READWRITE && !isCommit && env.maxWriter > 1) {
+				LockingSystem.releaseSubTxLocks(env, subTxCheckPoint);
+			}
 			return;
 		}
+
 		int s;
 		Iterator i = touchList.iterator();
 		while(i.hasNext()) {
 			ce = (SDMSChangeListElement) i.next();
+
+			if (ce.versions.o_v == null)
+				continue;
 
 			s = ce.versions.o_v.size();
 			if (s == 0) {
@@ -315,7 +357,7 @@ public class SDMSTransaction
 			if (isCommit) {
 
 				o.subTxId = subTxId;
-				if (s > 1 && o.subTxId == subTxId) {
+				if (s > 1) {
 
 					o = (SDMSObject)(ce.versions.o_v.get(s - 2));
 					if (o.subTxId == subTxId) {
@@ -343,9 +385,14 @@ public class SDMSTransaction
 							o.isCurrent = true;
 						}
 					}
+					o.versions.tx = null;
 				}
 			}
 
+		}
+
+		if (!isCommit && env.maxWriter > 1) {
+			LockingSystem.releaseSubTxLocks(env, subTxCheckPoint);
 		}
 	}
 
@@ -359,16 +406,6 @@ public class SDMSTransaction
 		touchList.add(changeListElement);
 	}
 
-	protected void addToChangeSet(SystemEnvironment env, SDMSVersions versions, boolean isNew)
-		throws SDMSException
-	{
-		SDMSChangeListElement changeListElement = new SDMSChangeListElement(env, versions, isNew);
-		if (changeList == null) {
-			changeList = new ChangeList();
-		}
-		changeList.addElement(changeListElement);
-	}
-
 	public String toString()
 	{
 		String rc = new String (
@@ -377,7 +414,10 @@ public class SDMSTransaction
 			"  txId      : " + txId + "\n" +
 			"  mode      : " + (mode == READONLY ? "READONLY" : "READWRITE") + "\n" +
 			"  versionId : " + (versionId == UNDEFINED ? "UNDEFINED" : "" + versionId) + "\n" +
-			"  Changes   : " + changeList.size() + "\n" +
+		        "  Changes   : " + (touchList == null ? "0" : touchList.size()) + "\n" +
+		        "  StartTime : " + startTime + "\n" +
+		        "  EndTime   : " + endTime + "\n" +
+		        "  Thread    : " + thread.getName() + "\n" +
 			"-- End Transaction Data --\n"
 		);
 		return rc;
@@ -463,44 +503,3 @@ class TxCounter
 	}
 }
 
-class ChangeList
-{
-
-	final static public int INITIAL_CAPACITY = 25;
-	private SDMSChangeListElement elm[];
-	private int size = 0;
-
-	public ChangeList()
-	{
-		elm = new SDMSChangeListElement[INITIAL_CAPACITY+1];
-	}
-
-	public int size()
-	{
-		return size;
-	}
-
-	public SDMSChangeListElement get(int pos)
-	{
-		if(pos >= size || pos < 0)
-			throw new ArrayIndexOutOfBoundsException();
-		return elm[pos];
-	}
-
-	public void addElement(SDMSChangeListElement e)
-	{
-		elm[size] = e;
-		size++;
-		ensureCapacity(size);
-	}
-
-	private void ensureCapacity(int s)
-	{
-		int old = elm.length;
-		if(s >= old) {
-			SDMSChangeListElement oldElm[] = elm;
-			elm = new SDMSChangeListElement[s*2];
-			System.arraycopy(oldElm, 0, elm, 0, size);
-		}
-	}
-}

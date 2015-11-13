@@ -35,6 +35,7 @@ public class EiThread
 	extends Thread
 {
 	private static final long DEFAULT_NOP_DELAY = 30000;
+	private static final Long ZERO = new Long(0);
 
 	private final RepoIface ri;
 	private final Config    cfg;
@@ -186,10 +187,9 @@ public class EiThread
 					} finally {
 						feil.close();
 
-							JobServer.server.removeJidWithEiThread(jid);
-							JobServer.server.addJidToBreed(jid);
-							Notifier.interrupt(new Long(0));
 					}
+				} else {
+					System.out.println("Feil for jid " + jid + " does not exist !");
 				}
 			}
 
@@ -204,5 +204,13 @@ public class EiThread
 		} catch (Error e) {
 			ri.notifyError (RepoIface.FATAL, "(03510221607) Exception caught while starting Thread : " + e.toString());
 		}
+
+		Trace.debug("EiThread:Removing jid " + jid  + " from jidsWithEiThread");
+		JobServer.server.removeJidWithEiThread(jid);
+
+		Trace.debug("EiThread:Adding jid " + jid + " to jidsToBreed");
+		JobServer.server.addJidToBreed(jid);
+
+		Notifier.interrupt(ZERO);
 	}
 }

@@ -62,8 +62,10 @@ public class GetNextJob extends JobDistribution
 		desc.add (RepoIface.COMMAND);
 
 		s = SDMSScopeTable.getObject(sysEnv, sysEnv.cEnv.uid());
+
 		if(s.getIsTerminate(sysEnv).booleanValue()) {
 			data.add(RepoIface.CMD_SHUTDOWN);
+			s = SDMSScopeTable.getObjectForUpdate(sysEnv, sysEnv.cEnv.uid());
 			s.setIsTerminate(sysEnv, Boolean.FALSE);
 		} else {
 			if (s.getHasAlteredConfig (sysEnv).booleanValue()) {
@@ -72,6 +74,7 @@ public class GetNextJob extends JobDistribution
 				desc.add (RepoIface.ALTER_CONFIG);
 				data.add (ScopeConfig.get (sysEnv, s));
 
+				s = SDMSScopeTable.getObjectForUpdate(sysEnv, sysEnv.cEnv.uid());
 				s.setHasAlteredConfig (sysEnv, Boolean.FALSE);
 			} else {
 				if(s.getIsSuspended(sysEnv).booleanValue() || !s.getIsRegistered(sysEnv).booleanValue()) {
@@ -88,7 +91,11 @@ public class GetNextJob extends JobDistribution
 		}
 
 		SystemEnvironment.sched.removeFromPingList(s.getId(sysEnv));
-		s.setLastActive(sysEnv, new Long(sysEnv.cEnv.last()));
+		long l = sysEnv.cEnv.last();
+		if (l > s.getLastActive(sysEnv).longValue()) {
+			s = SDMSScopeTable.getObjectForUpdate(sysEnv, sysEnv.cEnv.uid());
+			s.setLastActive(sysEnv, new Long(l));
+		}
 
 		d_container = new SDMSOutputContainer(sysEnv, "Jobserver Command", desc, data);
 
@@ -112,7 +119,7 @@ public class GetNextJob extends JobDistribution
 
 		Long jId;
 		long now = new Date().getTime();
-		v = SDMSRunnableQueueTable.idx_scopeId_state.getVector(sysEnv, new SDMSKey(sId, new Integer(SDMSSubmittedEntity.STARTING)));
+		v = SDMSRunnableQueueTable.idx_scopeId_state.getVectorForUpdate(sysEnv, new SDMSKey(sId, new Integer(SDMSSubmittedEntity.STARTING)));
 		Iterator i_sj = v.iterator();
 		while (i_sj.hasNext()) {
 
@@ -120,10 +127,10 @@ public class GetNextJob extends JobDistribution
 				rqState = rq.getState(sysEnv).intValue();
 				smeId = rq.getSmeId(sysEnv);
 				try {
-					sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
+					sme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
 				} catch (NotFoundException nfe) {
 
-					kj = SDMSKillJobTable.getObject(sysEnv, smeId);
+					kj = SDMSKillJobTable.getObjectForUpdate(sysEnv, smeId);
 				}
 			Long startingTs;
 			synchronized (sysEnv.jidsStarting) {
@@ -136,6 +143,7 @@ public class GetNextJob extends JobDistribution
 					continue;
 			}
 
+			sysEnv.jidsStarting.put(smeId, new Long(now));
 			break;
 		}
 
@@ -144,7 +152,7 @@ public class GetNextJob extends JobDistribution
 				public boolean isValid(SystemEnvironment sysEnv, SDMSProxy obj) throws SDMSException {
 					Long smeId = ((SDMSRunnableQueue)obj).getSmeId(sysEnv);
 					try {
-						SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
+						SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
 						if(sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND && sme.getParentSuspended(sysEnv).intValue() == 0)
 							return true;
 						else
@@ -156,7 +164,7 @@ public class GetNextJob extends JobDistribution
 				}
 			};
 
-			v = SDMSRunnableQueueTable.idx_scopeId_state.getVector(sysEnv, new SDMSKey(sId, new Integer(SDMSSubmittedEntity.RUNNABLE)), filter);
+			v = SDMSRunnableQueueTable.idx_scopeId_state.getVectorForUpdate(sysEnv, new SDMSKey(sId, new Integer(SDMSSubmittedEntity.RUNNABLE)), filter);
 			if(v.size() == 0) {
 				if (sysEnv.maxWriter == 1) {
 
@@ -180,9 +188,7 @@ public class GetNextJob extends JobDistribution
 					try {
 						smeId = rq.getSmeId(sysEnv);
 
-						((SDMSThread)Thread.currentThread()).readLock = ObjectLock.EXCLUSIVE;
-						SDMSSubmittedEntity tmpsme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
-						((SDMSThread)Thread.currentThread()).readLock = ObjectLock.SHARED;
+						SDMSSubmittedEntity tmpsme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
 						if (tmpsme == null) {
 							System.out.println("tmpsme is null!");
 						}

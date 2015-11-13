@@ -75,9 +75,24 @@ public abstract class SDMSTable
 
 		return iterator (env, null, false );
 	}
+	public Iterator iteratorForUpdate (SystemEnvironment env)
+	throws SDMSException
+	{
+		env.thread.readLock = ObjectLock.EXCLUSIVE;
+
+		return iterator (env, null, false );
+	}
+
 	public Iterator iterator (SystemEnvironment env, boolean unlocked)
 	throws SDMSException
 	{
+
+		return iterator (env, null, unlocked);
+	}
+	public Iterator iteratorForUpdate (SystemEnvironment env, boolean unlocked)
+	throws SDMSException
+	{
+		env.thread.readLock = ObjectLock.EXCLUSIVE;
 
 		return iterator (env, null, unlocked);
 	}
@@ -88,9 +103,25 @@ public abstract class SDMSTable
 
 		return iterator (env, f, false);
 	}
+	public Iterator iteratorForUpdate (SystemEnvironment env, SDMSFilter f)
+	throws SDMSException
+	{
+		env.thread.readLock = ObjectLock.EXCLUSIVE;
+
+		return iterator (env, f, false);
+	}
+	public Iterator iteratorForUpdate (SystemEnvironment env, SDMSFilter f, boolean unlocked)
+	throws SDMSException
+	{
+		env.thread.readLock = ObjectLock.EXCLUSIVE;
+		return iterator(env, f, unlocked);
+	}
 	public Iterator iterator (SystemEnvironment env, SDMSFilter f, boolean unlocked)
 	throws SDMSException
 	{
+		int readLock = env.thread.readLock;
+		env.thread.readLock = ObjectLock.SHARED;
+
 		Vector r = new Vector();
 		SDMSVersions v;
 		SDMSProxy p = null;
@@ -101,7 +132,7 @@ public abstract class SDMSTable
 		for (int i = 0; i < va.length; ++i) {
 			v = (SDMSVersions) va[i];
 			if (env.tx.mode == SDMSTransaction.READWRITE && env.maxWriter > 1 && !unlocked)
-				LockingSystem.lock(v,  ((SDMSThread)Thread.currentThread()).readLock);
+				LockingSystem.lock(env, v, readLock);
 			SDMSObject o = v.getRaw(env, unlocked);
 			if (o == null) continue;
 			if (p == null) {
@@ -203,6 +234,9 @@ public abstract class SDMSTable
 	public SDMSProxy get (SystemEnvironment env, Long id)
 		throws SDMSException
 	{
+		int readLock = env.thread.readLock;
+		env.thread.readLock = ObjectLock.SHARED;
+
 		SDMSProxy p;
 		SDMSVersions versions;
 
@@ -213,11 +247,17 @@ public abstract class SDMSTable
 			throw new NotFoundException (new SDMSMessage(env, "03110251037", "Key $1 not found (" + this.getClass().getName() + ")", id));
 		}
 		if (env.tx.mode == SDMSTransaction.READWRITE && env.maxWriter > 1)
-			LockingSystem.lock(versions,  ((SDMSThread)Thread.currentThread()).readLock);
+			LockingSystem.lock(env, versions, readLock);
 		p = (versions.get(env)).toProxy();
 		p.current = true;
 		return p;
 
+	}
+	public SDMSProxy getForUpdate (SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		env.thread.readLock = ObjectLock.EXCLUSIVE;
+		return get(env, id);
 	}
 
 	public SDMSVersions getVersions(Long id)
@@ -250,6 +290,9 @@ public abstract class SDMSTable
 	public boolean exists (SystemEnvironment env, Long id)
 		throws SDMSException
 	{
+		int readLock = env.thread.readLock;
+		env.thread.readLock = ObjectLock.SHARED;
+
 		SDMSVersions versions;
 
 		synchronized (hashMap) {
@@ -259,10 +302,16 @@ public abstract class SDMSTable
 			return false;
 		}
 		if (env.tx.mode == SDMSTransaction.READWRITE && env.maxWriter > 1)
-			LockingSystem.lock(versions, ObjectLock.SHARED);
+			LockingSystem.lock(env, versions, readLock);
 		if (versions.getRaw(env, false) == null) return false;
 		return true;
 
+	}
+	public boolean existsForUpdate (SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		env.thread.readLock = ObjectLock.EXCLUSIVE;
+		return exists(env, id);
 	}
 
 	protected void put(SystemEnvironment env, Long id, SDMSVersions versions)

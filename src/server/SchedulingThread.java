@@ -165,7 +165,7 @@ public class SchedulingThread extends InternalSession
 	}
 
 	protected void scheduleProtected(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			schedule(sysEnv);
@@ -191,7 +191,7 @@ public class SchedulingThread extends InternalSession
 		timer = dts.getTime();
 
 		if (sysEnv.maxWriter > 1)
-			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		if(needReSched) {
 			doTrace(cEnv, "==============> Start Resource Rescheduling <=================\nStartTime = 0", SEVERITY_MESSAGE);
@@ -240,7 +240,7 @@ public class SchedulingThread extends InternalSession
 			return false;
 
 		if (sysEnv.maxWriter > 1) {
-			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 			if(needReSched)
 				return false;
 		}
@@ -266,7 +266,7 @@ public class SchedulingThread extends InternalSession
 			return false;
 
 		if (sysEnv.maxWriter > 1) {
-			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 			if(needReSched)
 				return false;
 		}
@@ -282,22 +282,22 @@ public class SchedulingThread extends InternalSession
 		pc.setNow();
 		needReSched = false;
 
-		Vector sv = SDMSScopeTable.idx_type.getVector(sysEnv, new Integer(SDMSScope.SERVER));
+		Vector sv = SDMSScopeTable.idx_type.getVectorForUpdate(sysEnv, new Integer(SDMSScope.SERVER));
 
-		Vector rjv = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, new Integer(SDMSSubmittedEntity.RUNNABLE), null, Integer.MAX_VALUE);
+		Vector rjv = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, new Integer(SDMSSubmittedEntity.RUNNABLE), null, Integer.MAX_VALUE);
 		doTrace(cEnv, "Number of Runnable Jobs found: " + rjv.size(), SEVERITY_MESSAGE);
 
 		doTrace(cEnv, "==============> Rescheduling Runnables <=================\nStartTime = " + (dts.getTime() - timer), SEVERITY_MESSAGE);
 		rescheduleVector(sysEnv, rjv, sv, SDMSSubmittedEntity.RUNNABLE);
 
 		doTrace(cEnv, "==============> Rescheduling Resource Wait <=================\nStartTime = " + (dts.getTime() - timer), SEVERITY_MESSAGE);
-		Vector smev = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, new Integer(SDMSSubmittedEntity.RESOURCE_WAIT), null, Integer.MAX_VALUE);
+		Vector smev = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, new Integer(SDMSSubmittedEntity.RESOURCE_WAIT), null, Integer.MAX_VALUE);
 		doTrace(cEnv, "Number of Jobs in Resource Wait found: " + smev.size(), SEVERITY_MESSAGE);
 
 		rescheduleVector(sysEnv, smev, sv, SDMSSubmittedEntity.RESOURCE_WAIT);
 
 		doTrace(cEnv, "==============> Rescheduling Synchronize Wait <=================\nStartTime = " + (dts.getTime() - timer), SEVERITY_MESSAGE);
-		smev = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, new Integer(SDMSSubmittedEntity.SYNCHRONIZE_WAIT), null, Integer.MAX_VALUE);
+		smev = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, new Integer(SDMSSubmittedEntity.SYNCHRONIZE_WAIT), null, Integer.MAX_VALUE);
 		doTrace(cEnv, "Number of Jobs in Synchronize Wait found: " + smev.size(), SEVERITY_MESSAGE);
 
 		rescheduleVector(sysEnv, smev, sv, SDMSSubmittedEntity.SYNCHRONIZE_WAIT);
@@ -334,11 +334,11 @@ public class SchedulingThread extends InternalSession
 			else
 				suspended = false;
 
-			Vector v = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, smeId);
+			Vector v = SDMSRunnableQueueTable.idx_smeId.getVectorForUpdate(sysEnv, smeId);
 			for(int j = 0; j < v.size(); j++) {
 				((SDMSRunnableQueue) v.get(j)).delete(sysEnv);
 			}
-			v = SDMSResourceAllocationTable.idx_smeId.getVector(sysEnv, smeId);
+			v = SDMSResourceAllocationTable.idx_smeId.getVectorForUpdate(sysEnv, smeId);
 			for(int j = 0; j < v.size(); j++) {
 				ra = (SDMSResourceAllocation) v.get(j);
 
@@ -381,12 +381,12 @@ public class SchedulingThread extends InternalSession
 		throws SDMSException
 	{
 		if (sysEnv.maxWriter > 1)
-			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		SDMSSubmittedEntity sme;
 		int i;
 
-		Vector smev = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, new Integer(SDMSSubmittedEntity.SYNCHRONIZE_WAIT), null, Integer.MAX_VALUE);
+		Vector smev = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, new Integer(SDMSSubmittedEntity.SYNCHRONIZE_WAIT), null, Integer.MAX_VALUE);
 		Vector sv = SDMSScopeTable.idx_type.getVector(sysEnv, new Integer(SDMSScope.SERVER));
 		doTrace(cEnv, "Number of Job Server : " + sv.size(), SEVERITY_DEBUG);
 		doTrace(cEnv, "Number of Jobs in SYNCHRONIZE_WAIT : " + smev.size(), SEVERITY_DEBUG);
@@ -411,7 +411,7 @@ public class SchedulingThread extends InternalSession
 		throws SDMSException
 	{
 		if (sysEnv.maxWriter > 1)
-			LockingSystem.lock(this, ObjectLock.SHARED);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		long actVersion = sme.getSeVersion(sysEnv).longValue();
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion);
@@ -426,7 +426,7 @@ public class SchedulingThread extends InternalSession
 		throws SDMSException
 	{
 		if (sysEnv.maxWriter > 1)
-			LockingSystem.lock(this, ObjectLock.SHARED);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		long actVersion = sme.getSeVersion(sysEnv).longValue();
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion);
@@ -471,7 +471,7 @@ public class SchedulingThread extends InternalSession
 			SDMSNamedEnvironment ne = SDMSNamedEnvironmentTable.getObject(sysEnv, envId);
 			validFrom = new Long(ne.getValidFrom(sysEnv));
 			validTo = new Long(ne.getValidTo(sysEnv));
-			result = SDMSScopeTable.idx_type.getVector(sysEnv, new Integer(SDMSScope.SERVER));
+			result = SDMSScopeTable.idx_type.getVectorForUpdate(sysEnv, new Integer(SDMSScope.SERVER));
 
 			Iterator i = result.iterator();
 			while (i.hasNext()) {
@@ -483,7 +483,7 @@ public class SchedulingThread extends InternalSession
 				}
 
 				Long sId = s.getId(sysEnv);
-				SDMSnpSrvrSRFootprint npsfp = SDMSnpSrvrSRFootprintTable.idx_sId_getUnique(sysEnv, sId);
+				SDMSnpSrvrSRFootprint npsfp = SDMSnpSrvrSRFootprintTable.idx_sId_getUniqueForUpdate(sysEnv, sId);
 				HashMap sfp = npsfp.getFp(sysEnv);
 
 				for (int j = 0; j < envv.size(); ++j) {
@@ -494,7 +494,7 @@ public class SchedulingThread extends InternalSession
 
 						break;
 					}
-					SDMSResource r = SDMSResourceTable.getObject(sysEnv, (Long) sfp.get(nrId));
+					SDMSResource r = SDMSResourceTable.getObjectForUpdate(sysEnv, (Long) sfp.get(nrId));
 					if(!r.getIsOnline(sysEnv).booleanValue()) {
 						i.remove();
 
@@ -518,7 +518,7 @@ public class SchedulingThread extends InternalSession
 		throws SDMSException
 	{
 		if (sysEnv.maxWriter > 1)
-			LockingSystem.lock(sysEnv.sched, ObjectLock.SHARED);
+			LockingSystem.lock(sysEnv, sysEnv.sched, ObjectLock.EXCLUSIVE);
 
 		Long rId;
 		Long nrId;
@@ -541,20 +541,18 @@ public class SchedulingThread extends InternalSession
 		SDMSnpSrvrSRFootprint npsfp = SDMSnpSrvrSRFootprintTable.idx_sId_getUnique(sysEnv, s.getId(sysEnv));
 		HashMap sfp = npsfp.getFp(sysEnv);
 
-		Vector v = SDMSResourceAllocationTable.idx_smeId.getVector(sysEnv, sme.getId(sysEnv));
+		Vector v = SDMSResourceAllocationTable.idx_smeId.getVectorForUpdate(sysEnv, sme.getId(sysEnv));
 		for(int i = 0; i < v.size(); i++) {
 			ra = (SDMSResourceAllocation) v.get(i);
 			rId = ra.getRId(sysEnv);
-			((SDMSThread)Thread.currentThread()).readLock = ObjectLock.EXCLUSIVE;
-			r = SDMSResourceTable.getObject(sysEnv, rId);
-			((SDMSThread)Thread.currentThread()).readLock = ObjectLock.SHARED;
+			r = SDMSResourceTable.getObjectForUpdate(sysEnv, rId);
 			nrId = r.getNrId(sysEnv);
 			if(ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.RESERVATION) {
 				if(fpFolder.containsKey(nrId) || fpLocal.containsKey(nrId)) {
 					ra.setAllocationType(sysEnv, new Integer(SDMSResourceAllocation.ALLOCATION));
 				} else {
 					srId = (Long) sfp.get(nrId);
-					sr = SDMSResourceTable.getObject(sysEnv, srId);
+					sr = SDMSResourceTable.getObjectForUpdate(sysEnv, srId);
 					if(sr.getId(sysEnv).equals(rId)) {
 
 						ra.setAllocationType(sysEnv, new Integer(SDMSResourceAllocation.ALLOCATION));
@@ -618,7 +616,7 @@ public class SchedulingThread extends InternalSession
 					requestResources(sysEnv, sme, se, actVersion, sfp, type, smefp, masterMap, oldState);
 
 					try {
-						SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUnique(sysEnv, new SDMSKey(smeId, sId));
+						SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUniqueForUpdate(sysEnv, new SDMSKey(smeId, sId));
 						rq.setState(sysEnv, smeState);
 					} catch (NotFoundException nfe) {
 						SDMSRunnableQueueTable.table.create(sysEnv, smeId, sId, smeState);
@@ -673,7 +671,7 @@ public class SchedulingThread extends InternalSession
 		throws SDMSException
 	{
 		if (sysEnv.maxWriter > 1)
-			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		SDMSScope s;
 		Long smeId = sme.getId(sysEnv);
@@ -686,7 +684,7 @@ public class SchedulingThread extends InternalSession
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion);
 		if(se.getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) return;
 
-		final Vector rqv = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, sme.getId(sysEnv));
+		final Vector rqv = SDMSRunnableQueueTable.idx_smeId.getVectorForUpdate(sysEnv, sme.getId(sysEnv));
 		final Vector sv = new Vector();
 		for(int j = 0; j < rqv.size(); j++) {
 			SDMSRunnableQueue rq = (SDMSRunnableQueue) rqv.get(j);
@@ -755,7 +753,7 @@ public class SchedulingThread extends InternalSession
 		Long smeId = sme.getId(sysEnv);
 
 		try {
-			jfp = SDMSnpJobFootprintTable.idx_smeId_getUnique(sysEnv, smeId);
+			jfp = SDMSnpJobFootprintTable.idx_smeId_getUniqueForUpdate(sysEnv, smeId);
 			HashMap fpLocal = jfp.getFpLocal(sysEnv);
 			requestLocalFolderResources(sysEnv, sme, smeId, fpLocal, type, masterMap, oldState);
 		} catch(NotFoundException nfe) {
@@ -844,7 +842,7 @@ public class SchedulingThread extends InternalSession
 		rId = r.getId(sysEnv);
 
 		try {
-			SDMSResourceAllocation ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(
+			SDMSResourceAllocation ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUniqueForUpdate(
 				sysEnv, new SDMSKey(smeId, rId, rr.getStickyName(sysEnv)));
 			ra.setRefcount(sysEnv, new Integer(ra.getRefcount(sysEnv).intValue() + 1));
 			return;
@@ -1009,7 +1007,7 @@ public class SchedulingThread extends InternalSession
 		throws SDMSException
 	{
 		Vector sv = new Vector();
-		Vector rqv = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, sme.getId(sysEnv));
+		Vector rqv = SDMSRunnableQueueTable.idx_smeId.getVectorForUpdate(sysEnv, sme.getId(sysEnv));
 		for(int j = 0; j < rqv.size(); j++) {
 			SDMSRunnableQueue rq = (SDMSRunnableQueue) rqv.get(j);
 			SDMSScope s = SDMSScopeTable.getObject(sysEnv, rq.getScopeId(sysEnv));
@@ -1063,14 +1061,14 @@ public class SchedulingThread extends InternalSession
 			if(reserveSyncResources(sysEnv, sme, se, actVersion, sfp, resourceChain, rrvi)) {
 				resourcesReserved = true;
 
-				SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUnique(sysEnv, new SDMSKey(smeId, sId));
+				SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUniqueForUpdate(sysEnv, new SDMSKey(smeId, sId));
 				rq.setState(sysEnv, new Integer(SDMSSubmittedEntity.RESOURCE_WAIT));
 			}
 		}
 
 		if(resourcesReserved) {
 
-			Vector rv = SDMSResourceAllocationTable.idx_smeId.getVector(sysEnv, smeId);
+			Vector rv = SDMSResourceAllocationTable.idx_smeId.getVectorForUpdate(sysEnv, smeId);
 			for(int i = 0; i < rv.size(); i++) {
 				SDMSResourceAllocation ra = (SDMSResourceAllocation) rv.get(i);
 				if(ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.REQUEST) {
@@ -1100,7 +1098,7 @@ public class SchedulingThread extends InternalSession
 	{
 		SDMSScope s;
 
-		Vector rav = SDMSResourceAllocationTable.idx_smeId.getVector(sysEnv, smeId);
+		Vector rav = SDMSResourceAllocationTable.idx_smeId.getVectorForUpdate(sysEnv, smeId);
 		boolean jsv_used = false;
 		for(int j = 0; j < rav.size(); j++) {
 			SDMSResourceAllocation ra = (SDMSResourceAllocation) rav.get(j);
@@ -1224,9 +1222,9 @@ public class SchedulingThread extends InternalSession
 		Vector sv;
 
 		if (sysEnv.maxWriter > 1)
-			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
-		sv = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, new Integer(SDMSSubmittedEntity.RESOURCE_WAIT), null, Integer.MAX_VALUE);
+		sv = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, new Integer(SDMSSubmittedEntity.RESOURCE_WAIT), null, Integer.MAX_VALUE);
 		doTrace(cEnv, "Number of Jobs in RESOURCE_WAIT : " + sv.size(), SEVERITY_DEBUG);
 
 		pc.setNow();
@@ -1264,7 +1262,7 @@ public class SchedulingThread extends InternalSession
 		}
 		resourcesReserved = false;
 
-		Vector v = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, smeId);
+		Vector v = SDMSRunnableQueueTable.idx_smeId.getVectorForUpdate(sysEnv, smeId);
 		if(v.size() == 0) {
 			doTrace(cEnv, ": Job " +  sme.getId(sysEnv) + " cannot run in any scope", SEVERITY_WARNING);
 			return;
@@ -1280,6 +1278,8 @@ public class SchedulingThread extends InternalSession
 			if(reserveSysResources(sysEnv, sme, sfp, resourceChain, it)) {
 				resourcesReserved = true;
 				rq.setState(sysEnv, new Integer(SDMSSubmittedEntity.RUNNABLE));
+				allocateAndReleaseResources(sysEnv, sme, s);
+				break;
 			}
 		}
 		if(resourcesReserved) {
@@ -1317,7 +1317,7 @@ public class SchedulingThread extends InternalSession
 		throws SDMSException
 	{
 		if (sysEnv.maxWriter > 1 && sysEnv.tx.mode == SDMSTransaction.READWRITE)
-			LockingSystem.lock(sysEnv.sched, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, sysEnv.sched, ObjectLock.EXCLUSIVE);
 
 		Iterator i = smeFp.keySet().iterator();
 		while(i.hasNext()) {
@@ -1434,7 +1434,7 @@ public class SchedulingThread extends InternalSession
 			Long L = (Long) i.next();
 			if(!scopeFp.containsKey(L))
 				return false;
-			SDMSResource r = SDMSResourceTable.getObject(sysEnv, (Long) scopeFp.get(L));
+			SDMSResource r = SDMSResourceTable.getObjectForUpdate(sysEnv, (Long) scopeFp.get(L));
 			SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, r.getNrId(sysEnv));
 			if(nr.getUsage(sysEnv).intValue() != SDMSNamedResource.STATIC) continue;
 			if(!r.getIsOnline(sysEnv).booleanValue()) return false;
@@ -1622,7 +1622,7 @@ public class SchedulingThread extends InternalSession
 		int amount = 0;
 		int refcount = 0;
 
-		v = SDMSSubmittedEntityTable.idx_masterId.getVector(sysEnv, sme.getMasterId(sysEnv));
+		v = SDMSSubmittedEntityTable.idx_masterId.getVectorForUpdate(sysEnv, sme.getMasterId(sysEnv));
 		for(int i = 0; i < v.size(); i++) {
 			tsme = (SDMSSubmittedEntity) v.get(i);
 			int state = tsme.getState(sysEnv).intValue();
@@ -1683,7 +1683,7 @@ public class SchedulingThread extends InternalSession
 			throws SDMSException
 	{
 		if (sysEnv.maxWriter > 1 && sysEnv.tx.mode == SDMSTransaction.READWRITE)
-			LockingSystem.lock(this, ObjectLock.SHARED);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		SDMSSubmittedEntity tsme;
 		SDMSResourceRequirement trr;
@@ -1760,12 +1760,12 @@ public class SchedulingThread extends InternalSession
 				SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, nrId);
 				if(nr.getUsage(sysEnv).intValue() != SDMSNamedResource.SYSTEM) continue;
 
-				SDMSResource r = SDMSResourceTable.getObject(sysEnv, (Long) sfp.get(nrId));
+				SDMSResource r = SDMSResourceTable.getObjectForUpdate(sysEnv, (Long) sfp.get(nrId));
 				rId =  r.getId(sysEnv);
 
 				SDMSResourceAllocation ra = null;
 				try {
-					 ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(sysEnv, new SDMSKey(smeId, rId, null));
+					 ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUniqueForUpdate(sysEnv, new SDMSKey(smeId, rId, null));
 				} catch (NotFoundException nfe) {
 					if(SDMSResourceAllocationTable.idx_smeId_rId_stickyName.containsKey(sysEnv, new SDMSKey(smeId, nrId, null))) continue;
 
@@ -1827,7 +1827,7 @@ public class SchedulingThread extends InternalSession
 		throws SDMSException
 	{
 		if (sysEnv.maxWriter > 1 && sysEnv.tx.mode == SDMSTransaction.READWRITE)
-			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		SDMSResource r;
 		SDMSScope ps;
@@ -1855,7 +1855,7 @@ public class SchedulingThread extends InternalSession
 		throws SDMSException
 	{
 		if (sysEnv.maxWriter > 1 && sysEnv.tx.mode == SDMSTransaction.READWRITE)
-			LockingSystem.lock(sysEnv.sched, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, sysEnv.sched, ObjectLock.EXCLUSIVE);
 
 		SDMSnpJobFootprint jfp;
 		SDMSSchedulingEntity se;
@@ -1865,7 +1865,7 @@ public class SchedulingThread extends InternalSession
 		Long smeId = sme.getId(sysEnv);
 
 		try {
-			jfp = SDMSnpJobFootprintTable.idx_smeId_getUnique(sysEnv, smeId);
+			jfp = SDMSnpJobFootprintTable.idx_smeId_getUniqueForUpdate(sysEnv, smeId);
 			Vector result = new Vector();
 			result.add(jfp.getFpScope(sysEnv)) ;
 			result.add(jfp.getFpFolder(sysEnv)) ;
@@ -2135,7 +2135,7 @@ public class SchedulingThread extends InternalSession
 		throws SDMSException
 	{
 		if (sysEnv.maxWriter > 1)
-			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		if (scopeId != null) {
 			SDMSScope s = null;
@@ -2193,7 +2193,7 @@ public class SchedulingThread extends InternalSession
 		switch(change) {
 			case CREATE:
 			if (sysEnv.maxWriter > 1)
-				LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+				LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 				SDMSnpSrvrSRFootprintTable.table.create(sysEnv, s.getId(sysEnv), null, getScopeFootprint(sysEnv, s));
 
 				break;
@@ -2202,7 +2202,7 @@ public class SchedulingThread extends InternalSession
 				break;
 			case DELETE:
 			if (sysEnv.maxWriter > 1)
-				LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+				LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 				SDMSnpSrvrSRFootprint f = SDMSnpSrvrSRFootprintTable.idx_sId_getUnique(sysEnv, s.getId(sysEnv));
 				f.delete(sysEnv);
 				needReSched = true;
@@ -2222,7 +2222,7 @@ public class SchedulingThread extends InternalSession
 			case MOVE:
 			case COPY:
 			if (sysEnv.maxWriter > 1)
-				LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+				LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 				destroyEnvironment(sysEnv);
 				buildEnvironment(sysEnv);
 				needSched = true;

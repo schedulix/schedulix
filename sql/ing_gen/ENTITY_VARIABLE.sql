@@ -41,7 +41,7 @@ CREATE TABLE ENTITY_VARIABLE (
 CREATE UNIQUE INDEX PK_ENTITY_VARIABLE
 ON ENTITY_VARIABLE(ID) WITH STRUCTURE = BTREE;\g
 CREATE TABLE ARC_ENTITY_VARIABLE (
-    ID                             decimal (20) NOT NULL
+    ID                             decimal(20) NOT NULL
     , SME_ID                         decimal(20)      NULL
     , NAME                           varchar(64)      NULL
     , VALUE                          varchar(256)     NULL

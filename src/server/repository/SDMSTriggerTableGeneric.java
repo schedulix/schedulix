@@ -214,7 +214,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 
 		SDMSTrigger p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -594,6 +594,12 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		return (SDMSTrigger) table.get(env, id);
 	}
 
+	public static SDMSTrigger getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSTrigger) table.getForUpdate(env, id);
+	}
+
 	public static SDMSTrigger getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -604,6 +610,12 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSTrigger)  SDMSTriggerTableGeneric.idx_fireId_seId_name_isInverse.getUnique(env, key);
+	}
+
+	public static SDMSTrigger idx_fireId_seId_name_isInverse_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSTrigger)  SDMSTriggerTableGeneric.idx_fireId_seId_name_isInverse.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSTrigger idx_fireId_seId_name_isInverse_getUnique(SystemEnvironment env, Object key, long version)

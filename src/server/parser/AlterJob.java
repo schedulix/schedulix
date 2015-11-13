@@ -450,7 +450,7 @@ public class AlterJob extends Node
 		if(status != null) {
 			changeState(sysEnv, sme, false);
 		}
-		SDMSScope s = SDMSScopeTable.getObject(sysEnv, sId);
+		SDMSScope s = SDMSScopeTable.getObjectForUpdate(sysEnv, sId);
 		s.setLastActive(sysEnv, new Long(sysEnv.cEnv.last()));
 	}
 
@@ -558,10 +558,10 @@ public class AlterJob extends Node
 
 		if(sysEnv.cEnv.isJob()) {
 			jobId = sysEnv.cEnv.uid();
-			sme = SDMSSubmittedEntityTable.getObject(sysEnv, jobId);
+			sme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, jobId);
 		} else {
 			try {
-				sme = SDMSSubmittedEntityTable.getObject(sysEnv, jobId);
+				sme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, jobId);
 			} catch (NotFoundException nfe) {}
 		}
 
@@ -745,7 +745,7 @@ public class AlterJob extends Node
 		throws SDMSException
 	{
 		try {
-			SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUnique(sysEnv, new SDMSKey(sme.getId(sysEnv), sysEnv.cEnv.uid()));
+			SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUniqueForUpdate(sysEnv, new SDMSKey(sme.getId(sysEnv), sysEnv.cEnv.uid()));
 			rq.delete(sysEnv);
 		} catch (NotFoundException nfe) {
 

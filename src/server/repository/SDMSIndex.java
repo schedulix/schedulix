@@ -78,7 +78,7 @@ public class SDMSIndex
 	}
 
 	public void put (SystemEnvironment env, Object key, SDMSObject o, boolean doLockBucket)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSIndexBucket v = null;
 		synchronized(hashMap) {
@@ -97,7 +97,7 @@ public class SDMSIndex
 
 		if (env.maxWriter > 1 && doLockBucket) {
 			try {
-				LockingSystem.lock(v, ObjectLock.EXCLUSIVE);
+				LockingSystem.lock(env, v, ObjectLock.EXCLUSIVE);
 			} catch (Exception e) {
 				synchronized(v) {
 					v.modCnt --;
@@ -116,7 +116,7 @@ public class SDMSIndex
 		}
 		if (newBucket) {
 			if (env.maxWriter > 1)
-				LockingSystem.release(v);
+				LockingSystem.release(env, v);
 			return;
 		}
 
@@ -129,7 +129,7 @@ public class SDMSIndex
 			}
 
 			SDMSObject old;
-			ObjectLock versionsLock = null;
+			long checkPoint = env.newLockCp();
 
 			Object va[];
 			synchronized(v) {
@@ -142,9 +142,7 @@ public class SDMSIndex
 				SDMSVersions ov = old.versions;
 
 				if (env.maxWriter > 1) {
-
-					versionsLock = LockingSystemSynchronized.getLockForThread(t, ov);
-					LockingSystem.lock(ov, ((SDMSThread)Thread.currentThread()).readLock);
+					LockingSystem.lock(env, ov, ((SDMSThread)Thread.currentThread()).readLock);
 				}
 
 				if (!old.isCurrent) {
@@ -171,9 +169,8 @@ public class SDMSIndex
 						"Duplicate Key $1: Second object exists", key));
 				}
 
-				if (versionsLock == null) {
-					LockingSystem.release(ov);
-				}
+				if (env.maxWriter > 1)
+					LockingSystem.releaseToCheckPoint(env, ov, checkPoint);
 
 				if (old != null && o.validFrom < old.validTo && old.validFrom < o.validTo) {
 					Object[] p = new Object[7];
@@ -196,7 +193,7 @@ public class SDMSIndex
 		}
 
 		if (env.maxWriter > 1 && doLockBucket)
-			LockingSystem.release(v);
+			LockingSystem.release(env, v);
 	}
 
 	public boolean remove(SystemEnvironment env, Object key, SDMSObject o)
@@ -229,8 +226,8 @@ public class SDMSIndex
 		}
 	}
 
-	private SDMSIndexBucket getOrCreateBucket(SystemEnvironment env, Object key)
-	throws SerializationException
+	private SDMSIndexBucket getOrCreateBucket(SystemEnvironment env, Object key, int lockMode)
+		throws SerializationException
 	{
 		SDMSIndexBucket v;
 		synchronized(hashMap) {
@@ -243,28 +240,32 @@ public class SDMSIndex
 			}
 		}
 		if (v != null && env.maxWriter > 1 && env.tx.mode == SDMSTransaction.READWRITE)
-			LockingSystem.lock(v, ObjectLock.SHARED);
+			LockingSystem.lock(env, v, lockMode);
 		return v;
+	}
+
+	public boolean containsKeyForUpdate(SystemEnvironment env, Object key)
+		throws SerializationException, SDMSException
+	{
+		env.thread.readLock = ObjectLock.EXCLUSIVE;
+		return containsKey(env, key);
 	}
 
 	public boolean containsKey(SystemEnvironment env, Object key)
 	throws SerializationException, SDMSException
 	{
+		int readLock = env.thread.readLock;
+		env.thread.readLock = ObjectLock.SHARED;
+
 		SDMSIndexBucket v;
 
-		v = getOrCreateBucket(env, key);
+		v = getOrCreateBucket(env, key, readLock);
 		if (v == null || v.size() == 0) return false;
 
 		if(env.tx.mode == SDMSTransaction.READWRITE) {
 
-			SDMSThread t = null;
-			if (env.maxWriter > 1 ) {
-				t = (SDMSThread)Thread.currentThread();
-				if (t.lockThread != null) t = t.lockThread;
-			}
-
 			SDMSObject o;
-			ObjectLock versionsLock = null;
+			long checkPoint = env.newLockCp();
 			Object va[];
 
 			synchronized(v) {
@@ -282,9 +283,7 @@ public class SDMSIndex
 				versionsChecked.add(ov);
 
 				if (env.maxWriter > 1) {
-
-					versionsLock = LockingSystemSynchronized.getLockForThread(t, ov);
-					LockingSystem.lock(ov,  ((SDMSThread)Thread.currentThread()).readLock);
+					LockingSystem.lock(env, ov, readLock);
 				}
 
 				if (!o.isCurrent) {
@@ -300,9 +299,8 @@ public class SDMSIndex
 				}
 
 				if (o == null)  {
-					if (versionsLock == null) {
-						LockingSystem.release(ov);
-					}
+					if (env.maxWriter > 1)
+						LockingSystem.releaseToCheckPoint(env, ov, checkPoint);
 					continue;
 				}
 
@@ -340,10 +338,22 @@ public class SDMSIndex
 	{
 		return getVector(env, key, null, 0);
 	}
+	public Vector getVectorForUpdate(SystemEnvironment env, Object key)
+	throws SerializationException, SDMSException
+	{
+		env.thread.readLock = ObjectLock.EXCLUSIVE;
+		return getVector(env, key, null, 0);
+	}
 
 	public Vector getVector(SystemEnvironment env, Object key, SDMSFilter filter)
 		throws SDMSException
 	{
+		return getVector(env, key, filter, 0);
+	}
+	public Vector getVectorForUpdate(SystemEnvironment env, Object key, SDMSFilter filter)
+	throws SDMSException
+	{
+		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return getVector(env, key, filter, 0);
 	}
 
@@ -352,25 +362,35 @@ public class SDMSIndex
 	{
 		return getVector(env, key, null, limit);
 	}
+	public Vector getVectorForUpdate(SystemEnvironment env, Object key, int limit)
+	throws SDMSException
+	{
+		env.thread.readLock = ObjectLock.EXCLUSIVE;
+		return getVector(env, key, null, limit);
+	}
 
+	public Vector getVectorForUpdate(SystemEnvironment env, Object key, SDMSFilter filter, int limit)
+	throws SDMSException
+	{
+		env.thread.readLock = ObjectLock.EXCLUSIVE;
+		return getVector(env, key, filter, limit);
+	}
 	public Vector getVector(SystemEnvironment env, Object key, SDMSFilter filter, int limit)
 		throws SDMSException
 	{
+		int readLock = env.thread.readLock;
+		env.thread.readLock = ObjectLock.SHARED;
+
+		long checkPoint = env.newLockCp();
 		Vector r = new Vector();
 		int count = 0;
 
 		if(env.tx.mode == SDMSTransaction.READWRITE) {
 
-			SDMSThread t = null;
-			if (env.maxWriter > 1 ) {
-				t = (SDMSThread)Thread.currentThread();
-				if (t.lockThread != null) t = t.lockThread;
-			}
-
 			Object va[];
 			SDMSIndexBucket v;
 
-			v = getOrCreateBucket(env, key);
+			v = getOrCreateBucket(env, key, readLock);
 			if (v == null || v.size() == 0) return r;
 			synchronized(v) {
 				va = v.toArray();
@@ -389,9 +409,7 @@ public class SDMSIndex
 				versionsChecked.add(ov);
 
 				if (env.maxWriter > 1) {
-
-					versionsLock = LockingSystemSynchronized.getLockForThread(t, ov);
-					LockingSystem.lock(ov,  ((SDMSThread)Thread.currentThread()).readLock);
+					LockingSystem.lock(env, ov, readLock);
 				}
 
 				if (!o.isCurrent) {
@@ -423,13 +441,14 @@ public class SDMSIndex
 						o = null;
 				}
 
-				if (versionsLock == null && o == null) {
-					LockingSystem.release(ov);
+				if (o == null) {
+					if (env.maxWriter > 1)
+						LockingSystem.releaseToCheckPoint(env, ov, checkPoint);
 				}
 			}
 
 			if (env.maxWriter > 1)
-				LockingSystem.release(v);
+				LockingSystem.release(env, v);
 			return r;
 		} else {
 
@@ -437,6 +456,13 @@ public class SDMSIndex
 		}
 	}
 
+	public Vector getSortedVectorForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		Vector v = getVectorForUpdate(env, key);
+		Collections.sort(v);
+		return v;
+	}
 	public Vector getSortedVector(SystemEnvironment env, Object key)
 		throws SDMSException
 	{
@@ -495,24 +521,29 @@ public class SDMSIndex
 		return v;
 	}
 
+	public SDMSProxy getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		env.thread.readLock = ObjectLock.EXCLUSIVE;
+		return getUnique(env, key);
+	}
 	public SDMSProxy getUnique(SystemEnvironment env, Object key)
 		throws SDMSException
 	{
+		int readLock = env.thread.readLock;
+		env.thread.readLock = ObjectLock.SHARED;
+
+		long checkPoint = env.newLockCp();
+
 		if((type&UNIQUE) == 0)
 			throw new FatalException(new SDMSMessage(env, "03110181530",
 				"Attempt to retrieve unique value from nonunique index"));
 
 		if(env.tx.mode == SDMSTransaction.READWRITE) {
 
-			SDMSThread t = null;
-			if (env.maxWriter > 1 ) {
-				t = (SDMSThread)Thread.currentThread();
-				if (t.lockThread != null) t = t.lockThread;
-			}
-
 			SDMSIndexBucket v;
 
-			v = getOrCreateBucket(env, key);
+			v = getOrCreateBucket(env, key, readLock);
 			if (v == null || v.size() == 0) throw new NotFoundException(new SDMSMessage(env, "03110181532", "$1 not found", key));
 
 			SDMSProxy p;
@@ -528,9 +559,7 @@ public class SDMSIndex
 				SDMSVersions ov = o.versions;
 
 				if (env.maxWriter > 1) {
-
-					versionsLock = LockingSystemSynchronized.getLockForThread(t, ov);
-					LockingSystem.lock(ov,  ((SDMSThread)Thread.currentThread()).readLock);
+					LockingSystem.lock(env, ov, readLock);
 				}
 
 				if (!o.isCurrent) {
@@ -549,9 +578,8 @@ public class SDMSIndex
 				}
 
 				if (o == null)  {
-					if (versionsLock == null) {
-						LockingSystem.release(ov);
-					}
+					if (env.maxWriter > 1)
+						LockingSystem.releaseToCheckPoint(env, ov, checkPoint);
 					continue;
 				}
 
