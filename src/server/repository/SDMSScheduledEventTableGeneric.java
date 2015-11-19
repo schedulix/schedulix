@@ -160,7 +160,7 @@ public class SDMSScheduledEventTableGeneric extends SDMSTable
 
 		SDMSScheduledEvent p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -412,6 +412,12 @@ public class SDMSScheduledEventTableGeneric extends SDMSTable
 		return (SDMSScheduledEvent) table.get(env, id);
 	}
 
+	public static SDMSScheduledEvent getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSScheduledEvent) table.getForUpdate(env, id);
+	}
+
 	public static SDMSScheduledEvent getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -422,6 +428,12 @@ public class SDMSScheduledEventTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSScheduledEvent)  SDMSScheduledEventTableGeneric.idx_sceId_evtId.getUnique(env, key);
+	}
+
+	public static SDMSScheduledEvent idx_sceId_evtId_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSScheduledEvent)  SDMSScheduledEventTableGeneric.idx_sceId_evtId.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSScheduledEvent idx_sceId_evtId_getUnique(SystemEnvironment env, Object key, long version)

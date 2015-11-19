@@ -56,6 +56,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		, "SCOPE_ID"
 		, "IS_STATIC"
 		, "IS_DISABLED"
+		, "OLD_STATE"
 		, "MERGE_MODE"
 		, "STATE"
 		, "JOB_ESD_ID"
@@ -194,6 +195,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                                  ,Long p_scopeId
 	                                  ,Boolean p_isStatic
 	                                  ,Boolean p_isDisabled
+	                                  ,Integer p_oldState
 	                                  ,Integer p_mergeMode
 	                                  ,Integer p_state
 	                                  ,Long p_jobEsdId
@@ -300,6 +302,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		         , p_scopeId
 		         , p_isStatic
 		         , p_isDisabled
+		         , p_oldState
 		         , p_mergeMode
 		         , p_state
 		         , p_jobEsdId
@@ -401,6 +404,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                , p_scopeId
 		                , p_isStatic
 		                , p_isDisabled
+		                , p_oldState
 		                , p_mergeMode
 		                , p_state
 		                , p_jobEsdId
@@ -490,7 +494,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 
 		SDMSSubmittedEntity p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -528,6 +532,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                        ,Long p_scopeId
 	                        ,Boolean p_isStatic
 	                        ,Boolean p_isDisabled
+	                        ,Integer p_oldState
 	                        ,Integer p_mergeMode
 	                        ,Integer p_state
 	                        ,Long p_jobEsdId
@@ -647,6 +652,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		Long scopeId;
 		Boolean isStatic;
 		Boolean isDisabled;
+		Integer oldState;
 		Integer mergeMode;
 		Integer state;
 		Long jobEsdId;
@@ -754,134 +760,136 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 			if (r.wasNull()) scopeId = null;
 			isStatic = new Boolean ((r.getInt(12) == 0 ? false : true));
 			isDisabled = new Boolean ((r.getInt(13) == 0 ? false : true));
-			mergeMode = new Integer (r.getInt(14));
-			state = new Integer (r.getInt(15));
-			jobEsdId = new Long (r.getLong(16));
+			oldState = new Integer (r.getInt(14));
+			if (r.wasNull()) oldState = null;
+			mergeMode = new Integer (r.getInt(15));
+			state = new Integer (r.getInt(16));
+			jobEsdId = new Long (r.getLong(17));
 			if (r.wasNull()) jobEsdId = null;
-			jobEsdPref = new Integer (r.getInt(17));
+			jobEsdPref = new Integer (r.getInt(18));
 			if (r.wasNull()) jobEsdPref = null;
-			jobIsFinal = new Boolean ((r.getInt(18) == 0 ? false : true));
-			jobIsRestartable = new Boolean ((r.getInt(19) == 0 ? false : true));
-			finalEsdId = new Long (r.getLong(20));
+			jobIsFinal = new Boolean ((r.getInt(19) == 0 ? false : true));
+			jobIsRestartable = new Boolean ((r.getInt(20) == 0 ? false : true));
+			finalEsdId = new Long (r.getLong(21));
 			if (r.wasNull()) finalEsdId = null;
-			exitCode = new Integer (r.getInt(21));
+			exitCode = new Integer (r.getInt(22));
 			if (r.wasNull()) exitCode = null;
-			commandline = r.getString(22);
+			commandline = r.getString(23);
 			if (r.wasNull()) commandline = null;
-			rrCommandline = r.getString(23);
+			rrCommandline = r.getString(24);
 			if (r.wasNull()) rrCommandline = null;
-			rerunSeq = new Integer (r.getInt(24));
-			isReplaced = new Boolean ((r.getInt(25) == 0 ? false : true));
-			isCancelled = new Boolean ((r.getInt(26) == 0 ? false : true));
+			rerunSeq = new Integer (r.getInt(25));
+			isReplaced = new Boolean ((r.getInt(26) == 0 ? false : true));
+			isCancelled = new Boolean ((r.getInt(27) == 0 ? false : true));
 			if (r.wasNull()) isCancelled = null;
-			baseSmeId = new Long (r.getLong(27));
+			baseSmeId = new Long (r.getLong(28));
 			if (r.wasNull()) baseSmeId = null;
-			reasonSmeId = new Long (r.getLong(28));
+			reasonSmeId = new Long (r.getLong(29));
 			if (r.wasNull()) reasonSmeId = null;
-			fireSmeId = new Long (r.getLong(29));
+			fireSmeId = new Long (r.getLong(30));
 			if (r.wasNull()) fireSmeId = null;
-			fireSeId = new Long (r.getLong(30));
+			fireSeId = new Long (r.getLong(31));
 			if (r.wasNull()) fireSeId = null;
-			trId = new Long (r.getLong(31));
+			trId = new Long (r.getLong(32));
 			if (r.wasNull()) trId = null;
-			trSdIdOld = new Long (r.getLong(32));
+			trSdIdOld = new Long (r.getLong(33));
 			if (r.wasNull()) trSdIdOld = null;
-			trSdIdNew = new Long (r.getLong(33));
+			trSdIdNew = new Long (r.getLong(34));
 			if (r.wasNull()) trSdIdNew = null;
-			trSeq = new Integer (r.getInt(34));
-			workdir = r.getString(35);
+			trSeq = new Integer (r.getInt(35));
+			workdir = r.getString(36);
 			if (r.wasNull()) workdir = null;
-			logfile = r.getString(36);
+			logfile = r.getString(37);
 			if (r.wasNull()) logfile = null;
-			errlogfile = r.getString(37);
+			errlogfile = r.getString(38);
 			if (r.wasNull()) errlogfile = null;
-			pid = r.getString(38);
+			pid = r.getString(39);
 			if (r.wasNull()) pid = null;
-			extPid = r.getString(39);
+			extPid = r.getString(40);
 			if (r.wasNull()) extPid = null;
-			errorMsg = r.getString(40);
+			errorMsg = r.getString(41);
 			if (r.wasNull()) errorMsg = null;
-			killId = new Long (r.getLong(41));
+			killId = new Long (r.getLong(42));
 			if (r.wasNull()) killId = null;
-			killExitCode = new Integer (r.getInt(42));
+			killExitCode = new Integer (r.getInt(43));
 			if (r.wasNull()) killExitCode = null;
-			isSuspended = new Integer (r.getInt(43));
-			isSuspendedLocal = new Boolean ((r.getInt(44) == 0 ? false : true));
+			isSuspended = new Integer (r.getInt(44));
+			isSuspendedLocal = new Boolean ((r.getInt(45) == 0 ? false : true));
 			if (r.wasNull()) isSuspendedLocal = null;
-			priority = new Integer (r.getInt(45));
-			rawPriority = new Integer (r.getInt(46));
-			nice = new Integer (r.getInt(47));
-			npNice = new Integer (r.getInt(48));
-			minPriority = new Integer (r.getInt(49));
-			agingAmount = new Integer (r.getInt(50));
-			parentSuspended = new Integer (r.getInt(51));
-			childSuspended = new Integer (r.getInt(52));
-			warnCount = new Integer (r.getInt(53));
-			warnLink = new Long (r.getLong(54));
+			priority = new Integer (r.getInt(46));
+			rawPriority = new Integer (r.getInt(47));
+			nice = new Integer (r.getInt(48));
+			npNice = new Integer (r.getInt(49));
+			minPriority = new Integer (r.getInt(50));
+			agingAmount = new Integer (r.getInt(51));
+			parentSuspended = new Integer (r.getInt(52));
+			childSuspended = new Integer (r.getInt(53));
+			warnCount = new Integer (r.getInt(54));
+			warnLink = new Long (r.getLong(55));
 			if (r.wasNull()) warnLink = null;
-			submitTs = new Long (r.getLong(55));
-			resumeTs = new Long (r.getLong(56));
+			submitTs = new Long (r.getLong(56));
+			resumeTs = new Long (r.getLong(57));
 			if (r.wasNull()) resumeTs = null;
-			syncTs = new Long (r.getLong(57));
+			syncTs = new Long (r.getLong(58));
 			if (r.wasNull()) syncTs = null;
-			resourceTs = new Long (r.getLong(58));
+			resourceTs = new Long (r.getLong(59));
 			if (r.wasNull()) resourceTs = null;
-			runnableTs = new Long (r.getLong(59));
+			runnableTs = new Long (r.getLong(60));
 			if (r.wasNull()) runnableTs = null;
-			startTs = new Long (r.getLong(60));
+			startTs = new Long (r.getLong(61));
 			if (r.wasNull()) startTs = null;
-			finishTs = new Long (r.getLong(61));
+			finishTs = new Long (r.getLong(62));
 			if (r.wasNull()) finishTs = null;
-			finalTs = new Long (r.getLong(62));
+			finalTs = new Long (r.getLong(63));
 			if (r.wasNull()) finalTs = null;
-			cntSubmitted = new Integer (r.getInt(63));
-			cntDependencyWait = new Integer (r.getInt(64));
-			cntSynchronizeWait = new Integer (r.getInt(65));
-			cntResourceWait = new Integer (r.getInt(66));
-			cntRunnable = new Integer (r.getInt(67));
-			cntStarting = new Integer (r.getInt(68));
-			cntStarted = new Integer (r.getInt(69));
-			cntRunning = new Integer (r.getInt(70));
-			cntToKill = new Integer (r.getInt(71));
-			cntKilled = new Integer (r.getInt(72));
-			cntCancelled = new Integer (r.getInt(73));
-			cntFinished = new Integer (r.getInt(74));
-			cntFinal = new Integer (r.getInt(75));
-			cntBrokenActive = new Integer (r.getInt(76));
-			cntBrokenFinished = new Integer (r.getInt(77));
-			cntError = new Integer (r.getInt(78));
-			cntUnreachable = new Integer (r.getInt(79));
-			cntRestartable = new Integer (r.getInt(80));
-			cntWarn = new Integer (r.getInt(81));
-			cntPending = new Integer (r.getInt(82));
-			idleTs = new Integer (r.getInt(83));
+			cntSubmitted = new Integer (r.getInt(64));
+			cntDependencyWait = new Integer (r.getInt(65));
+			cntSynchronizeWait = new Integer (r.getInt(66));
+			cntResourceWait = new Integer (r.getInt(67));
+			cntRunnable = new Integer (r.getInt(68));
+			cntStarting = new Integer (r.getInt(69));
+			cntStarted = new Integer (r.getInt(70));
+			cntRunning = new Integer (r.getInt(71));
+			cntToKill = new Integer (r.getInt(72));
+			cntKilled = new Integer (r.getInt(73));
+			cntCancelled = new Integer (r.getInt(74));
+			cntFinished = new Integer (r.getInt(75));
+			cntFinal = new Integer (r.getInt(76));
+			cntBrokenActive = new Integer (r.getInt(77));
+			cntBrokenFinished = new Integer (r.getInt(78));
+			cntError = new Integer (r.getInt(79));
+			cntUnreachable = new Integer (r.getInt(80));
+			cntRestartable = new Integer (r.getInt(81));
+			cntWarn = new Integer (r.getInt(82));
+			cntPending = new Integer (r.getInt(83));
+			idleTs = new Integer (r.getInt(84));
 			if (r.wasNull()) idleTs = null;
-			idleTime = new Integer (r.getInt(84));
+			idleTime = new Integer (r.getInt(85));
 			if (r.wasNull()) idleTime = null;
-			statisticTs = new Integer (r.getInt(85));
+			statisticTs = new Integer (r.getInt(86));
 			if (r.wasNull()) statisticTs = null;
-			dependencyWaitTime = new Integer (r.getInt(86));
+			dependencyWaitTime = new Integer (r.getInt(87));
 			if (r.wasNull()) dependencyWaitTime = null;
-			suspendTime = new Integer (r.getInt(87));
+			suspendTime = new Integer (r.getInt(88));
 			if (r.wasNull()) suspendTime = null;
-			syncTime = new Integer (r.getInt(88));
+			syncTime = new Integer (r.getInt(89));
 			if (r.wasNull()) syncTime = null;
-			resourceTime = new Integer (r.getInt(89));
+			resourceTime = new Integer (r.getInt(90));
 			if (r.wasNull()) resourceTime = null;
-			jobserverTime = new Integer (r.getInt(90));
+			jobserverTime = new Integer (r.getInt(91));
 			if (r.wasNull()) jobserverTime = null;
-			restartableTime = new Integer (r.getInt(91));
+			restartableTime = new Integer (r.getInt(92));
 			if (r.wasNull()) restartableTime = null;
-			childWaitTime = new Integer (r.getInt(92));
+			childWaitTime = new Integer (r.getInt(93));
 			if (r.wasNull()) childWaitTime = null;
-			opSusresTs = new Long (r.getLong(93));
+			opSusresTs = new Long (r.getLong(94));
 			if (r.wasNull()) opSusresTs = null;
-			npeId = new Long (r.getLong(94));
+			npeId = new Long (r.getLong(95));
 			if (r.wasNull()) npeId = null;
-			creatorUId = new Long (r.getLong(95));
-			createTs = new Long (r.getLong(96));
-			changerUId = new Long (r.getLong(97));
-			changeTs = new Long (r.getLong(98));
+			creatorUId = new Long (r.getLong(96));
+			createTs = new Long (r.getLong(97));
+			changerUId = new Long (r.getLong(98));
+			changeTs = new Long (r.getLong(99));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -903,6 +911,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                      scopeId,
 		                                      isStatic,
 		                                      isDisabled,
+		                                      oldState,
 		                                      mergeMode,
 		                                      state,
 		                                      jobEsdId,
@@ -1015,6 +1024,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                   ", " + squote + "SCOPE_ID" + equote +
 		                                   ", " + squote + "IS_STATIC" + equote +
 		                                   ", " + squote + "IS_DISABLED" + equote +
+		                                   ", " + squote + "OLD_STATE" + equote +
 		                                   ", " + squote + "MERGE_MODE" + equote +
 		                                   ", " + squote + "STATE" + equote +
 		                                   ", " + squote + "JOB_ESD_ID" + equote +
@@ -1260,6 +1270,12 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		return (SDMSSubmittedEntity) table.get(env, id);
 	}
 
+	public static SDMSSubmittedEntity getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSSubmittedEntity) table.getForUpdate(env, id);
+	}
+
 	public static SDMSSubmittedEntity getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -1270,6 +1286,12 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSSubmittedEntity)  SDMSSubmittedEntityTableGeneric.idx_masterId_parentId_seId_childTag.getUnique(env, key);
+	}
+
+	public static SDMSSubmittedEntity idx_masterId_parentId_seId_childTag_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSSubmittedEntity)  SDMSSubmittedEntityTableGeneric.idx_masterId_parentId_seId_childTag.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSSubmittedEntity idx_masterId_parentId_seId_childTag_getUnique(SystemEnvironment env, Object key, long version)

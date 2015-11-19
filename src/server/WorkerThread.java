@@ -38,7 +38,7 @@ import de.independit.scheduler.server.parser.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
-import de.independit.scheduler.locking.*;
+import de.independit.scheduler.server.locking.*;
 
 public class WorkerThread extends SDMSThread
 {
@@ -127,6 +127,7 @@ public class WorkerThread extends SDMSThread
 
 				sav = cEnv.ostream;
 				cEnv.ostream = System.out;
+				SystemEnvironment.incrCntRwTx();
 
 				do {
 
@@ -139,6 +140,7 @@ public class WorkerThread extends SDMSThread
 							if(env.maxWriter > 1 && n.txMode == SDMSTransaction.READWRITE) {
 								if(i == retryCount - 1) {
 									doTrace(cEnv, "SDMSRun() reached max retryCount, running exclusively now", SEVERITY_MESSAGE);
+									SystemEnvironment.incrCntWl();
 									LockingSystem.lock(env, workerLock, ObjectLock.EXCLUSIVE);
 								} else
 									LockingSystem.lock(env, workerLock, ObjectLock.SHARED);
@@ -162,6 +164,7 @@ public class WorkerThread extends SDMSThread
 								        " ms -- Start Committing", SEVERITY_MESSAGE);
 							cEnv.tx.commit(env);
 
+							env.sched.publishRequestList(env);
 							i = retryCount;
 							succeeded = true;
 							if (n instanceof Connect) {
@@ -175,6 +178,7 @@ public class WorkerThread extends SDMSThread
 							throw e;
 						}
 					} catch (RecoverableException re) {
+						SystemEnvironment.incrCntDl();
 						String msg = re.toString();
 						doTrace(cEnv, "RecoverableException: " + msg + " in Try " + (i + 1) + " of " + retryCount, SEVERITY_MESSAGE);
 						if (msg.contains("Connection lost")) {
@@ -222,7 +226,7 @@ public class WorkerThread extends SDMSThread
 
 								cEnv.tx.rollback(env);
 								cEnv.ostream.flush();
-							} catch (de.independit.scheduler.locking.DeadlockException de) {
+							} catch (DeadlockException de) {
 
 								throw new FatalException(
 								        new SDMSMessage(env, "03110181515", "Deadlock at Rollback"));

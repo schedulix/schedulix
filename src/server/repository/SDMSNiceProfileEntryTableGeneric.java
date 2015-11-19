@@ -120,7 +120,7 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 
 		SDMSNiceProfileEntry p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -293,6 +293,12 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSNiceProfileEntry) table.get(env, id);
+	}
+
+	public static SDMSNiceProfileEntry getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSNiceProfileEntry) table.getForUpdate(env, id);
 	}
 
 	public static SDMSNiceProfileEntry getObject(SystemEnvironment env, Long id, long version)

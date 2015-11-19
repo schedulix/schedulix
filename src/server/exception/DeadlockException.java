@@ -27,10 +27,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 package de.independit.scheduler.server.exception;
 
-public class DeadlockException extends RecoverableException
+import java.util.*;
+
+public class DeadlockException extends SerializationException
 {
 
-	public final static String __version = "@(#) $Id: DeadlockException.java,v 2.0.20.1 2013/03/14 10:24:16 ronald Exp $";
+	private static HashMap<String,Long> stackTraces = new HashMap<String,Long>();
+	private static final Long ONE = new Long(1);
 
 	public DeadlockException()
 	{
@@ -45,6 +48,49 @@ public class DeadlockException extends RecoverableException
 	public DeadlockException(SDMSMessage msg)
 	{
 		super(msg);
+	}
+
+	public static void countAndTraceDeadlock(String stackTrace)
+	{
+		synchronized (stackTraces) {
+			Long ctr = stackTraces.get(stackTrace);
+			if (ctr == null) {
+				stackTraces.put(stackTrace, ONE);
+			} else {
+				stackTraces.put(stackTrace, new Long(ctr.longValue() + 1));
+			}
+		}
+	}
+
+	public static Map.Entry<String,Long>[] getStackTraces(int topHits)
+	{
+		@SuppressWarnings("unchecked")
+		Map.Entry<String,Long> m[] = new Map.Entry[1];
+		int topHitCtr = (topHits <= 0 ? Integer.MAX_VALUE : topHits);
+		synchronized(stackTraces) {
+			Vector<Map.Entry<String,Long>> v = new Vector<Map.Entry<String,Long>>();
+			Vector<Map.Entry<String,Long>> w = new Vector<Map.Entry<String,Long>>();
+			v.addAll(stackTraces.entrySet());
+			Collections.sort(v, new Comparator<Map.Entry<String,Long>>() {
+				public int compare(Map.Entry<String,Long> o1, Map.Entry<String,Long> o2) {
+					if (o1.getValue().longValue() > o2.getValue().longValue())
+						return -1;
+					if (o1.getValue().longValue() < o2.getValue().longValue())
+						return 1;
+					return o1.getKey().compareTo(o2.getKey());
+				}
+			});
+			Iterator<Map.Entry<String,Long>> i = (Iterator<Map.Entry<String,Long>>) v.iterator();
+			while (i.hasNext() && topHitCtr > 0) {
+				topHitCtr --;
+				Map.Entry<String,Long> me = i.next();
+				me.setValue(new Long(me.getValue()));
+				w.add(me);
+			}
+			m = w.toArray(m);
+		}
+
+		return m;
 	}
 }
 

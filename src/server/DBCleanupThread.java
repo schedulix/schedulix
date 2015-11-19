@@ -204,6 +204,11 @@ public class DBCleanupThread extends SDMSThread
 			                         "Cannot Clone SystemEnvironment"));
 		}
 		prepareConnection();
+		sysEnv.tx = new SDMSTransaction(sysEnv, SDMSTransaction.READONLY, null);
+		synchronized(sysEnv.roTxList) {
+			sysEnv.roTxList.remove(sysEnv, sysEnv.tx.versionId);
+		}
+		sysEnv.thread = this;
 
 		return;
 	}
@@ -425,14 +430,25 @@ public class DBCleanupThread extends SDMSThread
 			while(run) {
 
 				sysEnv.tx.versionId = sysEnv.tx.getRoVersion(sysEnv);
+				synchronized(sysEnv.roTxList) {
+					sysEnv.roTxList.add(sysEnv, sysEnv.tx.versionId);
+				}
 				loadMasters();
-				if (masterList.size() == 0 || !processMasters() )
+				if (masterList.size() == 0 || !processMasters() ) {
+					synchronized(sysEnv.roTxList) {
+						sysEnv.roTxList.remove(sysEnv, sysEnv.tx.versionId);
+					}
 					sleep(IDLE_SLEEP_TIME);
+				}
 			}
 		} catch(SDMSException e) {
 			doTrace(null, "Error occurred : " + e.toString(), SEVERITY_FATAL);
 		} catch(InterruptedException ie) {
 
+		} finally {
+			synchronized(sysEnv.roTxList) {
+				sysEnv.roTxList.remove(sysEnv, sysEnv.tx.versionId);
+			}
 		}
 
 		try {

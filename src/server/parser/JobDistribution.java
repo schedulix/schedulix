@@ -31,13 +31,13 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
-import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
-import de.independit.scheduler.server.util.*;
-import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
 import de.independit.scheduler.server.output.*;
 import de.independit.scheduler.server.parser.cmdline.*;
+import de.independit.scheduler.server.repository.*;
+import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.jobserver.RepoIface;
 import de.independit.scheduler.jobserver.Config;
 
@@ -109,8 +109,6 @@ public abstract class JobDistribution extends Node
 		}
 
 		sme.setScopeId(sysEnv, sId);
-
-		SchedulingThread.allocateAndReleaseResources(sysEnv, sme, s);
 
 		StringReader sr;
 
@@ -201,8 +199,7 @@ public abstract class JobDistribution extends Node
 
 		fillEnvironment(sysEnv, sme, data);
 
-		((SDMSThread)Thread.currentThread()).readLock = ObjectLock.EXCLUSIVE;
-		Vector jsv = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, smeId);
+		Vector jsv = SDMSRunnableQueueTable.idx_smeId.getVectorForUpdate(sysEnv, smeId);
 		for(int i = 0; i < jsv.size(); i++) {
 			rq = (SDMSRunnableQueue) jsv.get(i);
 			if(rq.getScopeId(sysEnv).equals(sId)) {
@@ -211,7 +208,6 @@ public abstract class JobDistribution extends Node
 			}
 			rq.delete(sysEnv);
 		}
-		((SDMSThread)Thread.currentThread()).readLock = ObjectLock.SHARED;
 
 		data.add(sme.getRerunSeq(sysEnv));
 

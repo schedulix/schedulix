@@ -118,7 +118,7 @@ public class SDMSGrantTableGeneric extends SDMSTable
 
 		SDMSGrant p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -301,6 +301,12 @@ public class SDMSGrantTableGeneric extends SDMSTable
 		return (SDMSGrant) table.get(env, id);
 	}
 
+	public static SDMSGrant getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSGrant) table.getForUpdate(env, id);
+	}
+
 	public static SDMSGrant getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -311,6 +317,12 @@ public class SDMSGrantTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSGrant)  SDMSGrantTableGeneric.idx_objectId_gId.getUnique(env, key);
+	}
+
+	public static SDMSGrant idx_objectId_gId_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSGrant)  SDMSGrantTableGeneric.idx_objectId_gId.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSGrant idx_objectId_gId_getUnique(SystemEnvironment env, Object key, long version)

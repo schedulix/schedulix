@@ -23,7 +23,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package de.independit.scheduler.locking;
+package de.independit.scheduler.server.locking;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -115,6 +115,7 @@ public class LockingSystemSynchronized
 	throws FatalException
 	{
 
+		@SuppressWarnings("unchecked")
 		ObjectLock[] locks = (ObjectLock[]) sysEnv.tx.subTxLocks.toArray(new ObjectLock[0]);
 		Vector<ObjectLock> locksToNotify = null;
 
@@ -317,8 +318,9 @@ public class LockingSystemSynchronized
 		} else {
 
 			lock = ObjectLock.getObjectLock(sysEnv.thread, object, mode, sysEnv.getLockCp());
-			if (sysEnv.tx.subTxLocks != null)
+			if (sysEnv.tx.subTxLocks != null) {
 				sysEnv.tx.subTxLocks.add(lock);
+			}
 			registerLockForThread(sysEnv.thread, object, lock);
 
 			ObjectLock locks = objectLocks.get(object);
@@ -361,6 +363,8 @@ public class LockingSystemSynchronized
 
 				System.out.println("Escalation Deadlock Start Stacktrace on " + lock.objectToShortString() + ":\n" + lock.stackTrace + "Escalation Deadlock End Stacktrace:\n");
 
+			String stackTrace = ObjectLock.getStackTrace();
+			DeadlockException.countAndTraceDeadlock(stackTrace);
 			throw new DeadlockException();
 		}
 

@@ -65,6 +65,8 @@ public class Server
 		}
 	}
 
+	public static boolean notified = true;
+
 	private HashSet<String> jidsAwaitRunning;
 
 	HashMap<String,Long> startTimes = null;
@@ -366,14 +368,14 @@ public class Server
 		startWakeupThread(cfg);
 		startHttpThread(cfg);
 
-		final int loop_delay = 100;
+		final int loop_delay = 500;
 		final int breed_delay = 5000;
 
 		boolean active = doRestart ();
 		long bts = 0;
 		long ts = 0;
 		while (active) {
-			boolean gotNop = false;
+			boolean delayLoop = false;
 			Thread.interrupted();
 			long now = System.currentTimeMillis();
 			if (now - bts - breed_delay > 0) {
@@ -410,13 +412,15 @@ public class Server
 				breed(jid, startTimes);
 			}
 			long nopDelay = ((Long) cfg.get (Config.NOP_DELAY)).longValue();
-			if (now - ts - nopDelay > 0) {
+			if (notified || now - ts - nopDelay > 0) {
+				notified = false;
 				boolean gotJob = true;
 				while (gotJob) {
 					gotJob = false;
+					now = System.currentTimeMillis();
 					switch (ri.getNextCmd()) {
 					case RepoIface.NOP:
-						gotNop = true;
+						delayLoop = true;
 						ts = now;
 						break;
 
@@ -433,24 +437,20 @@ public class Server
 					default:
 						Utils.abortProgram (ri, "(04504112210) Unexpected response");
 					}
-
 					if (now - bts - breed_delay > 0) {
 						break;
 					}
 				}
-			}
-			boolean doSleep = true;
+			} else
+				delayLoop = true;
 			synchronized (jidsToBreed) {
-				if (jidsToBreed.size() > 0) doSleep = false;
+				if (jidsToBreed.size() > 0) delayLoop = false;
 			}
-			if (gotNop && doSleep) {
-				Trace.debug("Server:got a NOP");
+			if (delayLoop) {
 				try {
 					Notifier.register(id, currentThread);
 					Thread.sleep (loop_delay);
-				} catch (Exception e) {
-					bts = 0;
-				}
+				} catch (Exception e) { }
 				Notifier.unregister(id);
 			}
 		}

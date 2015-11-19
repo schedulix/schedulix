@@ -108,7 +108,7 @@ public class SDMSDependencyStateTableGeneric extends SDMSTable
 
 		SDMSDependencyState p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -278,6 +278,12 @@ public class SDMSDependencyStateTableGeneric extends SDMSTable
 		return (SDMSDependencyState) table.get(env, id);
 	}
 
+	public static SDMSDependencyState getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSDependencyState) table.getForUpdate(env, id);
+	}
+
 	public static SDMSDependencyState getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -288,6 +294,12 @@ public class SDMSDependencyStateTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSDependencyState)  SDMSDependencyStateTableGeneric.idx_ddId_esdId.getUnique(env, key);
+	}
+
+	public static SDMSDependencyState idx_ddId_esdId_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSDependencyState)  SDMSDependencyStateTableGeneric.idx_ddId_esdId.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSDependencyState idx_ddId_esdId_getUnique(SystemEnvironment env, Object key, long version)

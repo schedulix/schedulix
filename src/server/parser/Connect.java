@@ -206,7 +206,7 @@ public class Connect extends Node
 					"03202041510", "Invalid jobservername or password"));
 		}
 
-		SDMSnpSrvrSRFootprint sf = SDMSnpSrvrSRFootprintTable.idx_sId_getUnique(sysEnv, s.getId(sysEnv));
+		SDMSnpSrvrSRFootprint sf = SDMSnpSrvrSRFootprintTable.idx_sId_getUniqueForUpdate(sysEnv, s.getId(sysEnv));
 		if(s.isConnected(sysEnv)) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03204102020", JS_ALREADY_CONNECTED));
 		} else {

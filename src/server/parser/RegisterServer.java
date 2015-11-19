@@ -141,7 +141,7 @@ public class RegisterServer extends Node
 	private SDMSScope registerByServer(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		SDMSScope s = SDMSScopeTable.getObject(sysEnv, sysEnv.cEnv.uid());
+		SDMSScope s = SDMSScopeTable.getObjectForUpdate(sysEnv, sysEnv.cEnv.uid());
 		s.setIsRegistered(sysEnv, Boolean.TRUE);
 		s.setState(sysEnv, new Integer(SDMSScope.NOMINAL));
 		s.setErrmsg(sysEnv, null);

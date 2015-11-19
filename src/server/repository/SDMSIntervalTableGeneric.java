@@ -156,7 +156,7 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 
 		SDMSInterval p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -383,6 +383,12 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		return (SDMSInterval) table.get(env, id);
 	}
 
+	public static SDMSInterval getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSInterval) table.getForUpdate(env, id);
+	}
+
 	public static SDMSInterval getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -393,6 +399,12 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSInterval) SDMSIntervalTableGeneric.idx_name.getUnique(env, key);
+	}
+
+	public static SDMSInterval idx_name_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSInterval) SDMSIntervalTableGeneric.idx_name.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSInterval idx_name_getUnique(SystemEnvironment env, Object key, long version)

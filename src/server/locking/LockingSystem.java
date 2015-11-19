@@ -23,7 +23,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package de.independit.scheduler.locking;
+package de.independit.scheduler.server.locking;
 
 import java.util.Iterator;
 import java.util.Vector;
@@ -99,6 +99,10 @@ public class LockingSystem
 		} catch(NotMyDeadlockException nmde) {
 			endDeadlockDetection();
 			throw nmde;
+		} catch(DeadlockException mde) {
+			String stackTrace = ObjectLock.getStackTrace();
+			DeadlockException.countAndTraceDeadlock(stackTrace);
+			throw mde;
 		}
 
 		if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_DEADLOCK_DETECTION)) != 0)

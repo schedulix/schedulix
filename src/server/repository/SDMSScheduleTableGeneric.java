@@ -134,7 +134,7 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 
 		SDMSSchedule p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -343,6 +343,12 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 		return (SDMSSchedule) table.get(env, id);
 	}
 
+	public static SDMSSchedule getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSSchedule) table.getForUpdate(env, id);
+	}
+
 	public static SDMSSchedule getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -353,6 +359,12 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSSchedule)  SDMSScheduleTableGeneric.idx_parentId_name.getUnique(env, key);
+	}
+
+	public static SDMSSchedule idx_parentId_name_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSSchedule)  SDMSScheduleTableGeneric.idx_parentId_name.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSSchedule idx_parentId_name_getUnique(SystemEnvironment env, Object key, long version)
@@ -367,6 +379,12 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 		return getSchedule(sysEnv, path).getId(sysEnv);
 	}
 
+	public static Long pathToIdForUpdate(SystemEnvironment sysEnv, Vector path)
+	throws SDMSException
+	{
+		return getScheduleForUpdate(sysEnv, path).getId(sysEnv);
+	}
+
 	public static SDMSSchedule getSchedule(SystemEnvironment sysEnv, Vector path)
 	throws SDMSException
 	{
@@ -378,6 +396,22 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 		for(i=0; i<path.size(); ++i) {
 			s = (String) path.get(i);
 			f = (SDMSSchedule) (SDMSScheduleTable.idx_parentId_name.getUnique(sysEnv, new SDMSKey(parentId, s)));
+			parentId = f.getId(sysEnv);
+		}
+		return f;
+	}
+
+	public static SDMSSchedule getScheduleForUpdate(SystemEnvironment sysEnv, Vector path)
+	throws SDMSException
+	{
+		Long   parentId = null;
+		SDMSSchedule f = null;
+		String s;
+		int i;
+
+		for(i=0; i<path.size(); ++i) {
+			s = (String) path.get(i);
+			f = (SDMSSchedule) (SDMSScheduleTable.idx_parentId_name.getUniqueForUpdate(sysEnv, new SDMSKey(parentId, s)));
 			parentId = f.getId(sysEnv);
 		}
 		return f;

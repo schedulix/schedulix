@@ -118,7 +118,7 @@ public class SDMSTriggerQueueTableGeneric extends SDMSTable
 
 		SDMSTriggerQueue p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -293,6 +293,12 @@ public class SDMSTriggerQueueTableGeneric extends SDMSTable
 		return (SDMSTriggerQueue) table.get(env, id);
 	}
 
+	public static SDMSTriggerQueue getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSTriggerQueue) table.getForUpdate(env, id);
+	}
+
 	public static SDMSTriggerQueue getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -303,6 +309,12 @@ public class SDMSTriggerQueueTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSTriggerQueue)  SDMSTriggerQueueTableGeneric.idx_smeId_trId.getUnique(env, key);
+	}
+
+	public static SDMSTriggerQueue idx_smeId_trId_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSTriggerQueue)  SDMSTriggerQueueTableGeneric.idx_smeId_trId.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSTriggerQueue idx_smeId_trId_getUnique(SystemEnvironment env, Object key, long version)

@@ -31,9 +31,9 @@ import java.util.*;
 import java.sql.*;
 
 import de.independit.scheduler.server.*;
-import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
-import de.independit.scheduler.locking.*;
+import de.independit.scheduler.server.locking.*;
+import de.independit.scheduler.server.util.*;
 
 public abstract class SDMSObject implements Cloneable, Comparable
 {
@@ -57,6 +57,10 @@ public abstract class SDMSObject implements Cloneable, Comparable
 
 	private static ObjectCounter nextId = null;
 
+	public final static Long systemUId    = new Long(0);
+	public final static Long nobodyUId    = new Long(1);
+	public final static Long internalUId  = new Long(2);
+
 	public final static Long adminGId  = new Long(81);
 	public final static Long publicGId = new Long(80);
 
@@ -79,7 +83,7 @@ public abstract class SDMSObject implements Cloneable, Comparable
 		validTo = -1;
 		versions = new SDMSVersions(table, id);
 		if (env.maxWriter > 1)
-			LockingSystem.lock(versions, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(env, versions, ObjectLock.EXCLUSIVE);
 		versions.tx = env.tx;
 		subTxId = env.tx.subTxId;
 		versions.o_v = new LinkedList();
@@ -112,7 +116,7 @@ public abstract class SDMSObject implements Cloneable, Comparable
 
 			versions.o_v = new LinkedList();
 			versions.tx = env.tx;
-			env.tx.addToChangeSet(env, versions, false);
+
 		}
 
 		SDMSObject o;
@@ -184,7 +188,7 @@ public abstract class SDMSObject implements Cloneable, Comparable
 
 			versions.tx = env.tx;
 			versions.o_v = new LinkedList();
-			env.tx.addToChangeSet(env, versions, false);
+
 		}
 		try {
 

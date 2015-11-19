@@ -32,16 +32,14 @@ import java.util.*;
 import java.lang.*;
 
 import de.independit.scheduler.server.*;
-import de.independit.scheduler.server.util.*;
-import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
 import de.independit.scheduler.server.output.*;
-import de.independit.scheduler.locking.*;
+import de.independit.scheduler.server.repository.*;
+import de.independit.scheduler.server.util.*;
 
 public class RunTest extends Node
 {
-
-	public final static String __version = "@(#) $Id: RunTest.java,v 2.4.2.1 2013/03/14 10:24:46 ronald Exp $";
 
 	private int testid;
 	private Long objectId;
@@ -142,6 +140,9 @@ public class RunTest extends Node
 			break;
 		case 11:
 			do_test11(sysEnv);
+			break;
+		case 12:
+			do_test12(sysEnv);
 			break;
 		default:
 
@@ -336,6 +337,40 @@ public class RunTest extends Node
 	throws SDMSException
 	{
 		LockingSystemSynchronized.dump();
+	}
+
+	private void do_test12(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Map.Entry<String,Long>[] m = de.independit.scheduler.server.exception.DeadlockException.getStackTraces(10);
+		SDMSOutputContainer d_container = null;
+		Vector desc = new Vector();
+		Vector data = new Vector();
+
+		desc.add("Stack Traces");
+
+		Vector t_desc = new Vector();
+		t_desc.add("Stack Trace");
+		t_desc.add("Count");
+		SDMSOutputContainer t_container = new SDMSOutputContainer(sysEnv, null, t_desc);
+
+		Vector t_data;
+
+		for (int i = 0; i < m.length; ++i) {
+			if (m[i] == null) continue;
+			t_data = new Vector();
+			t_data.add(m[i].getKey());
+			t_data.add(m[i].getValue());
+			t_container.addData(sysEnv, t_data);
+		}
+		data.add(t_container);
+
+		d_container = new SDMSOutputContainer(sysEnv,
+		                                      new SDMSMessage(sysEnv, "03212191004", "Deadlock Stack Traces"), desc, data);
+
+		result.setOutputContainer(d_container);
+
+		result.setFeedback(new SDMSMessage(sysEnv, "03212191005", "Deadlock Stack Traces shown"));
 	}
 }
 

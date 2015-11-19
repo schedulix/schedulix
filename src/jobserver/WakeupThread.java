@@ -88,6 +88,7 @@ public class WakeupThread
 						String msg = new String(d.getData(), 0, d.getLength());
 
 						try {
+							Server.notified = true;
 							Notifier.interrupt(new Long(0L));
 						} catch(NumberFormatException nfe) {
 

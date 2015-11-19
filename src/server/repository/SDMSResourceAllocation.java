@@ -112,7 +112,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 					}
 				}
 				try {
-					SDMSResource r = SDMSResourceTable.getObject(sysEnv, rId);
+					SDMSResource r = SDMSResourceTable.getObjectForUpdate(sysEnv, rId);
 					r.releaseAmount(sysEnv, iraAmount);
 				} catch(NotFoundException nfe) {
 

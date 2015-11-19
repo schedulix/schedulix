@@ -33,9 +33,10 @@ import java.lang.*;
 import java.net.*;
 
 import de.independit.scheduler.server.*;
-import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
 import de.independit.scheduler.server.output.*;
+import de.independit.scheduler.server.util.*;
 
 public class SDMSROTxList extends SDMSVersionList
 {
@@ -50,8 +51,9 @@ public class SDMSROTxList extends SDMSVersionList
 	}
 
 	public synchronized void remove(SystemEnvironment sysEnv, long v)
-		throws SDMSException
+
 	{
+
 		remove(v);
 	}
 }

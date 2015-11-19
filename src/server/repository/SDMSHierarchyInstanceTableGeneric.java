@@ -126,7 +126,7 @@ public class SDMSHierarchyInstanceTableGeneric extends SDMSTable
 
 		SDMSHierarchyInstance p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -318,6 +318,12 @@ public class SDMSHierarchyInstanceTableGeneric extends SDMSTable
 		return (SDMSHierarchyInstance) table.get(env, id);
 	}
 
+	public static SDMSHierarchyInstance getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSHierarchyInstance) table.getForUpdate(env, id);
+	}
+
 	public static SDMSHierarchyInstance getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -328,6 +334,12 @@ public class SDMSHierarchyInstanceTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSHierarchyInstance)  SDMSHierarchyInstanceTableGeneric.idx_parentId_childId.getUnique(env, key);
+	}
+
+	public static SDMSHierarchyInstance idx_parentId_childId_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSHierarchyInstance)  SDMSHierarchyInstanceTableGeneric.idx_parentId_childId.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSHierarchyInstance idx_parentId_childId_getUnique(SystemEnvironment env, Object key, long version)

@@ -268,6 +268,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                                null,
 		                                Boolean.TRUE,
 		                                Boolean.FALSE,
+						null,
 		                                new Integer(SDMSSchedulingHierarchy.FAILURE),
 		                                new Integer(SDMSSubmittedEntity.SUBMITTED),
 		                                null,

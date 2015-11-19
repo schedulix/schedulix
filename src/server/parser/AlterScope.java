@@ -247,7 +247,7 @@ public class AlterScope
 	private void jobServerAlter(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		final SDMSScope s = SDMSScopeTable.getObject(sysEnv, sysEnv.cEnv.uid());
+		final SDMSScope s = SDMSScopeTable.getObjectForUpdate(sysEnv, sysEnv.cEnv.uid());
 
 		if (dynamic) {
 			ScopeParameter.setDynamicValues (sysEnv, s, with);

@@ -110,7 +110,7 @@ public class SDMSnpJobFootprintTableGeneric extends SDMSTable
 
 		SDMSnpJobFootprint p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -196,6 +196,12 @@ public class SDMSnpJobFootprintTableGeneric extends SDMSTable
 		return (SDMSnpJobFootprint) table.get(env, id);
 	}
 
+	public static SDMSnpJobFootprint getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSnpJobFootprint) table.getForUpdate(env, id);
+	}
+
 	public static SDMSnpJobFootprint getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -206,6 +212,12 @@ public class SDMSnpJobFootprintTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSnpJobFootprint) SDMSnpJobFootprintTableGeneric.idx_smeId.getUnique(env, key);
+	}
+
+	public static SDMSnpJobFootprint idx_smeId_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSnpJobFootprint) SDMSnpJobFootprintTableGeneric.idx_smeId.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSnpJobFootprint idx_smeId_getUnique(SystemEnvironment env, Object key, long version)

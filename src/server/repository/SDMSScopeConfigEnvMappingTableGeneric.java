@@ -108,7 +108,7 @@ public class SDMSScopeConfigEnvMappingTableGeneric extends SDMSTable
 
 		SDMSScopeConfigEnvMapping p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -273,6 +273,12 @@ public class SDMSScopeConfigEnvMappingTableGeneric extends SDMSTable
 		return (SDMSScopeConfigEnvMapping) table.get(env, id);
 	}
 
+	public static SDMSScopeConfigEnvMapping getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSScopeConfigEnvMapping) table.getForUpdate(env, id);
+	}
+
 	public static SDMSScopeConfigEnvMapping getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -283,6 +289,12 @@ public class SDMSScopeConfigEnvMappingTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSScopeConfigEnvMapping)  SDMSScopeConfigEnvMappingTableGeneric.idx_scopeId_key.getUnique(env, key);
+	}
+
+	public static SDMSScopeConfigEnvMapping idx_scopeId_key_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSScopeConfigEnvMapping)  SDMSScopeConfigEnvMappingTableGeneric.idx_scopeId_key.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSScopeConfigEnvMapping idx_scopeId_key_getUnique(SystemEnvironment env, Object key, long version)

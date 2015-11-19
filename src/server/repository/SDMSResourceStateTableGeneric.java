@@ -106,7 +106,7 @@ public class SDMSResourceStateTableGeneric extends SDMSTable
 
 		SDMSResourceState p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -270,6 +270,12 @@ public class SDMSResourceStateTableGeneric extends SDMSTable
 		return (SDMSResourceState) table.get(env, id);
 	}
 
+	public static SDMSResourceState getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSResourceState) table.getForUpdate(env, id);
+	}
+
 	public static SDMSResourceState getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -280,6 +286,12 @@ public class SDMSResourceStateTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSResourceState)  SDMSResourceStateTableGeneric.idx_rsdId_rspId.getUnique(env, key);
+	}
+
+	public static SDMSResourceState idx_rsdId_rspId_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSResourceState)  SDMSResourceStateTableGeneric.idx_rsdId_rspId.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSResourceState idx_rsdId_rspId_getUnique(SystemEnvironment env, Object key, long version)

@@ -33,7 +33,7 @@ import java.sql.*;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
-import de.independit.scheduler.locking.*;
+import de.independit.scheduler.server.locking.*;
 
 public abstract class SDMSTable
 {

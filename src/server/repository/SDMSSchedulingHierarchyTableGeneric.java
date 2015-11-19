@@ -150,7 +150,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 
 		SDMSSchedulingHierarchy p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -407,6 +407,12 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		return (SDMSSchedulingHierarchy) table.get(env, id);
 	}
 
+	public static SDMSSchedulingHierarchy getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSSchedulingHierarchy) table.getForUpdate(env, id);
+	}
+
 	public static SDMSSchedulingHierarchy getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -417,6 +423,12 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSSchedulingHierarchy)  SDMSSchedulingHierarchyTableGeneric.idx_parentId_childId.getUnique(env, key);
+	}
+
+	public static SDMSSchedulingHierarchy idx_parentId_childId_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSSchedulingHierarchy)  SDMSSchedulingHierarchyTableGeneric.idx_parentId_childId.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSSchedulingHierarchy idx_parentId_childId_getUnique(SystemEnvironment env, Object key, long version)

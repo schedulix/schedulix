@@ -63,6 +63,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 	                                  ,Long p_scopeId
 	                                  ,Boolean p_isStatic
 	                                  ,Boolean p_isDisabled
+	                                  ,Integer p_oldState
 	                                  ,Integer p_mergeMode
 	                                  ,Integer p_state
 	                                  ,Long p_jobEsdId
@@ -159,6 +160,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       ,p_scopeId
 		                                       ,p_isStatic
 		                                       ,p_isDisabled
+		                                       ,p_oldState
 		                                       ,p_mergeMode
 		                                       ,p_state
 		                                       ,p_jobEsdId
@@ -283,6 +285,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       ,null
 		                                       ,Boolean.TRUE
 		                                       ,Boolean.FALSE
+		                                       ,null
 		                                       ,new Integer(SDMSSchedulingHierarchy.FAILURE)
 		                                       ,new Integer(SDMSSubmittedEntity.ERROR)
 		                                       ,p_jobEsdId

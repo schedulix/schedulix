@@ -302,6 +302,23 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 		((SDMSSubmittedEntityGeneric)(object)).setIsDisabled (env, p_isDisabled);
 		return ;
 	}
+	public Integer getOldState (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSubmittedEntityGeneric)(object)).getOldState (env));
+	}
+
+	public void setOldState (SystemEnvironment env, Integer p_oldState)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSubmittedEntityGeneric)(object)).setOldState (env, p_oldState);
+		return ;
+	}
 	public Integer getMergeMode (SystemEnvironment env)
 	throws SDMSException
 	{

@@ -104,7 +104,7 @@ public class SDMSIntervalHierarchyTableGeneric extends SDMSTable
 
 		SDMSIntervalHierarchy p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -250,6 +250,12 @@ public class SDMSIntervalHierarchyTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSIntervalHierarchy) table.get(env, id);
+	}
+
+	public static SDMSIntervalHierarchy getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSIntervalHierarchy) table.getForUpdate(env, id);
 	}
 
 	public static SDMSIntervalHierarchy getObject(SystemEnvironment env, Long id, long version)

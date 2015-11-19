@@ -48,7 +48,7 @@ endif
 
 CLASSES = BICServer.class sdmsh.class 
 
-SUBDIRS = server jobserver shell utility md5 SDMSApp tools demo locking
+SUBDIRS = server jobserver shell utility md5 SDMSApp tools demo
 JARDIRS = de
 
 PROGRAM_VERSION = $(shell grep programVersion server/SystemEnvironment.java | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')

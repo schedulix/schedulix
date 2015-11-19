@@ -34,7 +34,7 @@ import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
 import de.independit.scheduler.server.util.*;
-import de.independit.scheduler.locking.*;
+import de.independit.scheduler.server.locking.*;
 
 public class SDMSIndex
 {
@@ -53,6 +53,8 @@ public class SDMSIndex
 
 	public SDMSTable table;
 	public String indexName;
+
+	private static final Comparator objectIdComparator = new ObjectIdComparator();
 
 	public SDMSIndex (SystemEnvironment env, int t, boolean versioned, SDMSTable table, String indexName)
 	throws SDMSException
@@ -395,6 +397,10 @@ public class SDMSIndex
 			synchronized(v) {
 				va = v.toArray();
 			}
+
+			if (env.maxWriter > 1) {
+				Arrays.sort(va, objectIdComparator);
+			}
 			ObjectLock versionsLock = null;
 			SDMSProxy p = null;
 			SDMSObject o;
@@ -654,5 +660,31 @@ public class SDMSIndex
 			}
 		}
 		SDMSThread.doTrace(env.cEnv, "----------- Index Dump ------------", s, SDMSThread.SEVERITY_DEBUG);
+	}
+}
+
+class ObjectIdComparator implements Comparator
+{
+	public int compare(Object o1, Object o2)
+	throws ClassCastException
+	{
+		long id1 = ((SDMSObject)o1).id;
+		long id2 = ((SDMSObject)o2).id;
+		if (id1 < id2)
+			return -1;
+		else if (id1 > id2)
+			return 1;
+		else
+			return 0;
+	}
+	public boolean equals(Object o1, Object o2)
+	throws ClassCastException
+	{
+		long id1 = ((SDMSObject)o1).id;
+		long id2 = ((SDMSObject)o2).id;
+		if (id1 == id2)
+			return true;
+		else
+			return false;
 	}
 }

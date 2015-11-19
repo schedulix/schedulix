@@ -32,11 +32,11 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.text.*;
-import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
+import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
 import de.independit.scheduler.server.output.*;
 import de.independit.scheduler.server.repository.*;
-import de.independit.scheduler.server.exception.*;
 
 public class AuditWriter
 {

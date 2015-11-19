@@ -33,8 +33,9 @@ import java.net.*;
 import java.util.*;
 import java.text.*;
 import de.independit.scheduler.server.*;
+import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
 import de.independit.scheduler.server.output.*;
-import de.independit.scheduler.locking.*;
 
 public abstract class SDMSThread extends Thread
 {
@@ -54,7 +55,6 @@ public abstract class SDMSThread extends Thread
 	private static final SimpleDateFormat sysDateFmt = (SimpleDateFormat) SystemEnvironment.staticSystemDateFormat.clone();
 
 	public int readLock = ObjectLock.SHARED;
-
 	public SDMSThread lockThread = null;
 
 	public SDMSThread()

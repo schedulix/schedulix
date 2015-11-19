@@ -156,7 +156,7 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 
 		SDMSResourceAllocation p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -426,6 +426,12 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		return (SDMSResourceAllocation) table.get(env, id);
 	}
 
+	public static SDMSResourceAllocation getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSResourceAllocation) table.getForUpdate(env, id);
+	}
+
 	public static SDMSResourceAllocation getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -436,6 +442,12 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSResourceAllocation)  SDMSResourceAllocationTableGeneric.idx_smeId_rId_stickyName.getUnique(env, key);
+	}
+
+	public static SDMSResourceAllocation idx_smeId_rId_stickyName_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSResourceAllocation)  SDMSResourceAllocationTableGeneric.idx_smeId_rId_stickyName.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSResourceAllocation idx_smeId_rId_stickyName_getUnique(SystemEnvironment env, Object key, long version)

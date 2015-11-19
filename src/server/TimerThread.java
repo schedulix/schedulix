@@ -29,12 +29,12 @@ package de.independit.scheduler.server;
 
 import java.util.*;
 
-import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
 import de.independit.scheduler.server.parser.*;
 import de.independit.scheduler.server.repository.*;
-import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.timer.*;
-import de.independit.scheduler.locking.*;
+import de.independit.scheduler.server.util.*;
 
 class TimeSchedule
 	extends Node
@@ -155,7 +155,7 @@ public class TimerThread
 	private final void setLastRunToNow (final SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		final SDMSPersistentValue persVal = SDMSPersistentValueTable.idx_name_getUnique (sysEnv, LAST_SCHEDULE_RUN);
+		final SDMSPersistentValue persVal = SDMSPersistentValueTable.idx_name_getUniqueForUpdate(sysEnv, LAST_SCHEDULE_RUN);
 		persVal.setIntValue (sysEnv, new Integer (now.toMinutes()));
 		lastRun.set (now);
 	}
@@ -450,7 +450,7 @@ public class TimerThread
 	{
 
 		if (sysEnv.maxWriter > 1)
-			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		loadNow();
 
@@ -478,7 +478,7 @@ public class TimerThread
 		if (action != ALTER)
 			throw new FatalException (new SDMSMessage (sysEnv, "04207262215", "Unexpected action code $1 for Interval $2", new Integer (action), ival.getId (sysEnv)));
 		if (sysEnv.maxWriter > 1)
-			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		try {
 			collectIvals (sysEnv, ival.getId (sysEnv));
@@ -538,7 +538,7 @@ public class TimerThread
 			throw new FatalException (new SDMSMessage (sysEnv, "04207262216", "Unexpected action code $1 for Schedule $2", new Integer (action), sceId));
 
 		if (sysEnv.maxWriter > 1)
-			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		final Vector scevList = SDMSScheduledEventTable.idx_sceId.getVector (sysEnv, sceId);
 		final int size = scevList.size();
@@ -555,7 +555,7 @@ public class TimerThread
 	{
 
 		if (sysEnv.maxWriter > 1)
-			LockingSystem.lock(this, ObjectLock.EXCLUSIVE);
+			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		switch (action) {
 		case CREATE:

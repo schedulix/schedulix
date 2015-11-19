@@ -63,7 +63,7 @@ public class SDMSSmeCounterTable extends SDMSSmeCounterTableGeneric
 
 		SDMSSmeCounter ctr;
 		try {
-			ctr = SDMSSmeCounterTable.idx_jahr_monat_tag_getUnique(env, new SDMSKey(year, month, day));
+			ctr = SDMSSmeCounterTable.idx_jahr_monat_tag_getUniqueForUpdate(env, new SDMSKey(year, month, day));
 		} catch(NotFoundException nfe) {
 			ctr = SDMSSmeCounterTable.table.create(env, year, month, day, new Integer(0), new Long(0));
 		}

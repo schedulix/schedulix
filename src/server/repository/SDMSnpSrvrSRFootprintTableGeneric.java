@@ -106,7 +106,7 @@ public class SDMSnpSrvrSRFootprintTableGeneric extends SDMSTable
 
 		SDMSnpSrvrSRFootprint p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -191,6 +191,12 @@ public class SDMSnpSrvrSRFootprintTableGeneric extends SDMSTable
 		return (SDMSnpSrvrSRFootprint) table.get(env, id);
 	}
 
+	public static SDMSnpSrvrSRFootprint getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSnpSrvrSRFootprint) table.getForUpdate(env, id);
+	}
+
 	public static SDMSnpSrvrSRFootprint getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -201,6 +207,12 @@ public class SDMSnpSrvrSRFootprintTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSnpSrvrSRFootprint) SDMSnpSrvrSRFootprintTableGeneric.idx_sId.getUnique(env, key);
+	}
+
+	public static SDMSnpSrvrSRFootprint idx_sId_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSnpSrvrSRFootprint) SDMSnpSrvrSRFootprintTableGeneric.idx_sId.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSnpSrvrSRFootprint idx_sId_getUnique(SystemEnvironment env, Object key, long version)

@@ -33,12 +33,12 @@ import java.net.*;
 import java.sql.*;
 import java.math.*;
 
-import de.independit.scheduler.locking.*;
-import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
+import de.independit.scheduler.server.output.*;
 import de.independit.scheduler.server.parser.*;
 import de.independit.scheduler.server.repository.*;
-import de.independit.scheduler.server.exception.*;
-import de.independit.scheduler.server.output.*;
+import de.independit.scheduler.server.util.*;
 
 public class TriggerThread extends InternalSession
 {

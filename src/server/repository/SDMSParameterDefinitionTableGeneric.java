@@ -130,7 +130,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 
 		SDMSParameterDefinition p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -337,6 +337,12 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		return (SDMSParameterDefinition) table.get(env, id);
 	}
 
+	public static SDMSParameterDefinition getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSParameterDefinition) table.getForUpdate(env, id);
+	}
+
 	public static SDMSParameterDefinition getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -347,6 +353,12 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSParameterDefinition)  SDMSParameterDefinitionTableGeneric.idx_seId_Name.getUnique(env, key);
+	}
+
+	public static SDMSParameterDefinition idx_seId_Name_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSParameterDefinition)  SDMSParameterDefinitionTableGeneric.idx_seId_Name.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSParameterDefinition idx_seId_Name_getUnique(SystemEnvironment env, Object key, long version)

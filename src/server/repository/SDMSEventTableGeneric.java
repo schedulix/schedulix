@@ -110,7 +110,7 @@ public class SDMSEventTableGeneric extends SDMSTable
 
 		SDMSEvent p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -264,6 +264,12 @@ public class SDMSEventTableGeneric extends SDMSTable
 		return (SDMSEvent) table.get(env, id);
 	}
 
+	public static SDMSEvent getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSEvent) table.getForUpdate(env, id);
+	}
+
 	public static SDMSEvent getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -274,6 +280,12 @@ public class SDMSEventTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSEvent) SDMSEventTableGeneric.idx_name.getUnique(env, key);
+	}
+
+	public static SDMSEvent idx_name_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSEvent) SDMSEventTableGeneric.idx_name.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSEvent idx_name_getUnique(SystemEnvironment env, Object key, long version)

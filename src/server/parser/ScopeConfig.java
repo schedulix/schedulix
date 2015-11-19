@@ -30,11 +30,12 @@ package de.independit.scheduler.server.parser;
 import java.util.*;
 
 import de.independit.scheduler.server.SystemEnvironment;
-import de.independit.scheduler.server.util.SDMSThread;
-import de.independit.scheduler.server.exception.*;
-import de.independit.scheduler.server.repository.*;
-import de.independit.scheduler.server.output.SDMSOutputContainer;
 import de.independit.scheduler.server.dump.Dump;
+import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
+import de.independit.scheduler.server.output.SDMSOutputContainer;
+import de.independit.scheduler.server.repository.*;
+import de.independit.scheduler.server.util.SDMSThread;
 import de.independit.scheduler.jobserver.Config;
 
 public class ScopeConfig
@@ -371,7 +372,7 @@ public class ScopeConfig
 		int size;
 
 		if (config != null) {
-			list = SDMSScopeConfigTable.idx_sId.getVector (sysEnv, sId);
+			list = SDMSScopeConfigTable.idx_sId.getVectorForUpdate (sysEnv, sId);
 			size = list.size();
 			for (int i = 0; i < size; ++i) {
 				final SDMSScopeConfig sc = (SDMSScopeConfig) list.get (i);

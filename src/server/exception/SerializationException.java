@@ -23,17 +23,25 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package de.independit.scheduler.locking;
-
-import de.independit.scheduler.server.exception.*;
+package de.independit.scheduler.server.exception;
 
 public class SerializationException extends RecoverableException
 {
 
 	public SerializationException ()
 	{
+		super();
 	}
 
+	public SerializationException(String msg)
+	{
+		super(msg);
+	}
+
+	public SerializationException(SDMSMessage msg)
+	{
+		super(msg);
+	}
 
 	private static final long serialVersionUID = 1L;
 

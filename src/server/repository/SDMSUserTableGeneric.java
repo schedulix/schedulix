@@ -124,7 +124,7 @@ public class SDMSUserTableGeneric extends SDMSTable
 
 		SDMSUser p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -312,6 +312,12 @@ public class SDMSUserTableGeneric extends SDMSTable
 		return (SDMSUser) table.get(env, id);
 	}
 
+	public static SDMSUser getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSUser) table.getForUpdate(env, id);
+	}
+
 	public static SDMSUser getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -324,6 +330,12 @@ public class SDMSUserTableGeneric extends SDMSTable
 		return (SDMSUser) SDMSUserTableGeneric.idx_name.getUnique(env, key);
 	}
 
+	public static SDMSUser idx_name_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSUser) SDMSUserTableGeneric.idx_name.getUniqueForUpdate(env, key);
+	}
+
 	public static SDMSUser idx_name_getUnique(SystemEnvironment env, Object key, long version)
 	throws SDMSException
 	{
@@ -334,6 +346,12 @@ public class SDMSUserTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSUser)  SDMSUserTableGeneric.idx_name_deleteVersion.getUnique(env, key);
+	}
+
+	public static SDMSUser idx_name_deleteVersion_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSUser)  SDMSUserTableGeneric.idx_name_deleteVersion.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSUser idx_name_deleteVersion_getUnique(SystemEnvironment env, Object key, long version)

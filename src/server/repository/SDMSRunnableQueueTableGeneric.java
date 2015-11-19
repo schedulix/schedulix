@@ -114,7 +114,7 @@ public class SDMSRunnableQueueTableGeneric extends SDMSTable
 
 		SDMSRunnableQueue p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -300,6 +300,12 @@ public class SDMSRunnableQueueTableGeneric extends SDMSTable
 		return (SDMSRunnableQueue) table.get(env, id);
 	}
 
+	public static SDMSRunnableQueue getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSRunnableQueue) table.getForUpdate(env, id);
+	}
+
 	public static SDMSRunnableQueue getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -310,6 +316,12 @@ public class SDMSRunnableQueueTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSRunnableQueue)  SDMSRunnableQueueTableGeneric.idx_smeId_scopeId.getUnique(env, key);
+	}
+
+	public static SDMSRunnableQueue idx_smeId_scopeId_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSRunnableQueue)  SDMSRunnableQueueTableGeneric.idx_smeId_scopeId.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSRunnableQueue idx_smeId_scopeId_getUnique(SystemEnvironment env, Object key, long version)

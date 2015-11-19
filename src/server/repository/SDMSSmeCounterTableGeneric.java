@@ -114,7 +114,7 @@ public class SDMSSmeCounterTableGeneric extends SDMSTable
 
 		SDMSSmeCounter p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -284,6 +284,12 @@ public class SDMSSmeCounterTableGeneric extends SDMSTable
 		return (SDMSSmeCounter) table.get(env, id);
 	}
 
+	public static SDMSSmeCounter getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSSmeCounter) table.getForUpdate(env, id);
+	}
+
 	public static SDMSSmeCounter getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -294,6 +300,12 @@ public class SDMSSmeCounterTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSSmeCounter)  SDMSSmeCounterTableGeneric.idx_jahr_monat_tag.getUnique(env, key);
+	}
+
+	public static SDMSSmeCounter idx_jahr_monat_tag_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSSmeCounter)  SDMSSmeCounterTableGeneric.idx_jahr_monat_tag.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSSmeCounter idx_jahr_monat_tag_getUnique(SystemEnvironment env, Object key, long version)

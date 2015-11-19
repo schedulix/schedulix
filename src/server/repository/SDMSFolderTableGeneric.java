@@ -120,7 +120,7 @@ public class SDMSFolderTableGeneric extends SDMSTable
 
 		SDMSFolder p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -310,6 +310,12 @@ public class SDMSFolderTableGeneric extends SDMSTable
 		return (SDMSFolder) table.get(env, id);
 	}
 
+	public static SDMSFolder getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSFolder) table.getForUpdate(env, id);
+	}
+
 	public static SDMSFolder getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -320,6 +326,12 @@ public class SDMSFolderTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSFolder)  SDMSFolderTableGeneric.idx_parentId_name.getUnique(env, key);
+	}
+
+	public static SDMSFolder idx_parentId_name_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSFolder)  SDMSFolderTableGeneric.idx_parentId_name.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSFolder idx_parentId_name_getUnique(SystemEnvironment env, Object key, long version)
@@ -334,6 +346,12 @@ public class SDMSFolderTableGeneric extends SDMSTable
 		return getFolder(sysEnv, path).getId(sysEnv);
 	}
 
+	public static Long pathToIdForUpdate(SystemEnvironment sysEnv, Vector path)
+	throws SDMSException
+	{
+		return getFolderForUpdate(sysEnv, path).getId(sysEnv);
+	}
+
 	public static SDMSFolder getFolder(SystemEnvironment sysEnv, Vector path)
 	throws SDMSException
 	{
@@ -345,6 +363,22 @@ public class SDMSFolderTableGeneric extends SDMSTable
 		for(i=0; i<path.size(); ++i) {
 			s = (String) path.get(i);
 			f = (SDMSFolder) (SDMSFolderTable.idx_parentId_name.getUnique(sysEnv, new SDMSKey(parentId, s)));
+			parentId = f.getId(sysEnv);
+		}
+		return f;
+	}
+
+	public static SDMSFolder getFolderForUpdate(SystemEnvironment sysEnv, Vector path)
+	throws SDMSException
+	{
+		Long   parentId = null;
+		SDMSFolder f = null;
+		String s;
+		int i;
+
+		for(i=0; i<path.size(); ++i) {
+			s = (String) path.get(i);
+			f = (SDMSFolder) (SDMSFolderTable.idx_parentId_name.getUniqueForUpdate(sysEnv, new SDMSKey(parentId, s)));
 			parentId = f.getId(sysEnv);
 		}
 		return f;

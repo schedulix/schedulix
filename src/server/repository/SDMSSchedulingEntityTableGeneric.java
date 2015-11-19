@@ -254,7 +254,7 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 
 		SDMSSchedulingEntity p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -681,6 +681,12 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		return (SDMSSchedulingEntity) table.get(env, id);
 	}
 
+	public static SDMSSchedulingEntity getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSSchedulingEntity) table.getForUpdate(env, id);
+	}
+
 	public static SDMSSchedulingEntity getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -691,6 +697,12 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSSchedulingEntity)  SDMSSchedulingEntityTableGeneric.idx_folderId_name.getUnique(env, key);
+	}
+
+	public static SDMSSchedulingEntity idx_folderId_name_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSSchedulingEntity)  SDMSSchedulingEntityTableGeneric.idx_folderId_name.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSSchedulingEntity idx_folderId_name_getUnique(SystemEnvironment env, Object key, long version)

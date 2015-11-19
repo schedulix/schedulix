@@ -31,11 +31,11 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
-import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
-import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
 import de.independit.scheduler.server.output.*;
+import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.util.*;
 
 public class ShowSystem extends Node
@@ -106,6 +106,20 @@ public class ShowSystem extends Node
 		desc.add("UPTIME");
 
 		desc.add("HITRATE");
+
+		desc.add("LOCK_HWM");
+
+		desc.add("LOCKS_REQUESTED");
+
+		desc.add("LOCKS_USED");
+
+		desc.add("LOCKS_DISCARDED");
+
+		desc.add("CNT_RW_TX");
+
+		desc.add("CNT_DL");
+
+		desc.add("CNT_WL");
 		Iterator i = s.iterator();
 		Vector conf = new Vector();
 		while(i.hasNext()) {
@@ -147,6 +161,14 @@ public class ShowSystem extends Node
 			data.add("0 %");
 		else
 			data.add("" + (int) (SystemEnvironment.sched.envhit * 100.0)/(SystemEnvironment.sched.envhit + SystemEnvironment.sched.envmiss) + " %");
+
+		data.add(new Long(ObjectLock.lockHWM));
+		data.add(new Long(ObjectLock.lockRequest));
+		data.add(new Long(ObjectLock.lockUsed));
+		data.add(new Long(ObjectLock.lockDiscarded));
+		data.add(new Long(SystemEnvironment.cntRwTx));
+		data.add(new Long(SystemEnvironment.cntDl));
+		data.add(new Long(SystemEnvironment.cntWl));
 		i = conf.iterator();
 		while(i.hasNext()) {
 			String str = (String) i.next();

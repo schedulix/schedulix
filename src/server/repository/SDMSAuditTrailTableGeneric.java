@@ -138,7 +138,7 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 
 		SDMSAuditTrail p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -338,6 +338,12 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSAuditTrail) table.get(env, id);
+	}
+
+	public static SDMSAuditTrail getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSAuditTrail) table.getForUpdate(env, id);
 	}
 
 	public static SDMSAuditTrail getObject(SystemEnvironment env, Long id, long version)

@@ -33,8 +33,8 @@ import java.io.*;
 
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
 import de.independit.scheduler.server.util.*;
-import de.independit.scheduler.locking.*;
 
 public class SDMSVersions
 {

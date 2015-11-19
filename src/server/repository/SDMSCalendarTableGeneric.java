@@ -104,7 +104,7 @@ public class SDMSCalendarTableGeneric extends SDMSTable
 
 		SDMSCalendar p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -264,6 +264,12 @@ public class SDMSCalendarTableGeneric extends SDMSTable
 		return (SDMSCalendar) table.get(env, id);
 	}
 
+	public static SDMSCalendar getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSCalendar) table.getForUpdate(env, id);
+	}
+
 	public static SDMSCalendar getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -274,6 +280,12 @@ public class SDMSCalendarTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSCalendar)  SDMSCalendarTableGeneric.idx_scevId_starttime.getUnique(env, key);
+	}
+
+	public static SDMSCalendar idx_scevId_starttime_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSCalendar)  SDMSCalendarTableGeneric.idx_scevId_starttime.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSCalendar idx_scevId_starttime_getUnique(SystemEnvironment env, Object key, long version)

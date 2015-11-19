@@ -110,7 +110,7 @@ public class SDMSIntervalSelectionTableGeneric extends SDMSTable
 
 		SDMSIntervalSelection p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -265,6 +265,12 @@ public class SDMSIntervalSelectionTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSIntervalSelection) table.get(env, id);
+	}
+
+	public static SDMSIntervalSelection getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSIntervalSelection) table.getForUpdate(env, id);
 	}
 
 	public static SDMSIntervalSelection getObject(SystemEnvironment env, Long id, long version)

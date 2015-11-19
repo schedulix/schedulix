@@ -33,12 +33,12 @@ import java.net.*;
 import java.sql.*;
 import java.math.*;
 
-import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
+import de.independit.scheduler.server.output.*;
 import de.independit.scheduler.server.parser.*;
 import de.independit.scheduler.server.repository.*;
-import de.independit.scheduler.server.exception.*;
-import de.independit.scheduler.server.output.*;
-import de.independit.scheduler.locking.*;
+import de.independit.scheduler.server.util.*;
 
 public abstract class InternalSession extends SDMSThread
 {
@@ -70,18 +70,10 @@ public abstract class InternalSession extends SDMSThread
 		cEnv.setMe(this);
 		try {
 			env.dbConnection = Server.connectToDB(env);
-			cEnv.tx = new SDMSTransaction(env, SDMSTransaction.READONLY, null);
-			env.tx = cEnv.tx;
-			SDMSUser u = SDMSUserTable.idx_name_deleteVersion_getUnique(env, new SDMSKey(SDMSUser.INTERNAL, new Long(0)));
-			Long uId = u.getId(env);
-			try {
-				cEnv.tx.commit(env);
-			} catch (SQLException sqle) {
-				doTrace(cEnv, "Error on initializing Thread : " + sqle.toString(), SEVERITY_FATAL);
-			}
+
 			cEnv.setGid(env, new Vector());
 			cEnv.gid().add(SDMSObject.adminGId);
-			cEnv.setUid(uId);
+			cEnv.setUid(SDMSObject.internalUId);
 			cEnv.setUser();
 		} catch (SDMSException e) {
 			doTrace(cEnv, "Cannot find INTERNAL User : " + e.toString(), SEVERITY_FATAL);
@@ -97,12 +89,15 @@ public abstract class InternalSession extends SDMSThread
 		throws FatalException
 	{
 		n.setEnv(cEnv);
+		cEnv.actstmt = n.getName();
 		cEnv.cmdQueue().post(n);
 		cEnv.lock().do_wait();
 
 		if(n.result.error != null) {
 			doTrace(cEnv, "Error in internal Statement: " + n.result.error.code + " " + n.result.error.message, SEVERITY_ERROR);
 		}
+		cEnv.setState(ConnectionEnvironment.IDLE);
+		cEnv.actstmt = null;
 
 		if(n.result.error != null) return false;
 		return true;
@@ -114,6 +109,11 @@ public abstract class InternalSession extends SDMSThread
 	}
 
 	protected abstract Node getNode(int m);
+
+	public ConnectionEnvironment getEnv()
+	{
+		return cEnv;
+	}
 
 	public void wakeUp()
 	{

@@ -34,9 +34,9 @@ import java.net.*;
 import java.sql.*;
 
 import de.independit.scheduler.server.*;
-import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
-import de.independit.scheduler.locking.*;
+import de.independit.scheduler.server.locking.*;
+import de.independit.scheduler.server.util.*;
 
 public class SDMSTransaction
 {
@@ -63,6 +63,7 @@ public class SDMSTransaction
 	private Stack clStack = new Stack();
 	public Stack lockStack = new Stack();
 	public HashMap privCache = new HashMap();
+	public Vector resourceRequestList = null;
 
 	public    long    txId;
 	public    int     mode;

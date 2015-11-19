@@ -31,13 +31,13 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
-import de.independit.scheduler.locking.*;
 import de.independit.scheduler.server.*;
-import de.independit.scheduler.server.util.*;
-import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
 import de.independit.scheduler.server.output.*;
 import de.independit.scheduler.server.parser.cmdline.*;
+import de.independit.scheduler.server.repository.*;
+import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.jobserver.RepoIface;
 
 public class GetNextJob extends JobDistribution
@@ -92,7 +92,8 @@ public class GetNextJob extends JobDistribution
 
 		SystemEnvironment.sched.removeFromPingList(s.getId(sysEnv));
 		long l = sysEnv.cEnv.last();
-		if (l > s.getLastActive(sysEnv).longValue()) {
+		Long lastActive = s.getLastActive(sysEnv);
+		if (lastActive == null || l > lastActive.longValue()) {
 			s = SDMSScopeTable.getObjectForUpdate(sysEnv, sysEnv.cEnv.uid());
 			s.setLastActive(sysEnv, new Long(l));
 		}
@@ -133,17 +134,19 @@ public class GetNextJob extends JobDistribution
 					kj = SDMSKillJobTable.getObjectForUpdate(sysEnv, smeId);
 				}
 			Long startingTs;
-			synchronized (sysEnv.jidsStarting) {
-				startingTs = sysEnv.jidsStarting.get(smeId);
+			synchronized (SystemEnvironment.jidsStarting) {
+				startingTs = SystemEnvironment.jidsStarting.get(smeId);
 			}
 			if (startingTs != null) {
 				long sTs = startingTs.longValue();
-				if (sTs + sysEnv.startingResendDelay > now)
+				if (sTs + SystemEnvironment.startingResendDelay > now)
 
 					continue;
 			}
 
-			sysEnv.jidsStarting.put(smeId, new Long(now));
+			synchronized (SystemEnvironment.jidsStarting) {
+				SystemEnvironment.jidsStarting.put(smeId, new Long(now));
+			}
 			break;
 		}
 

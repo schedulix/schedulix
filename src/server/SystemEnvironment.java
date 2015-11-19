@@ -68,6 +68,9 @@ public class SystemEnvironment implements Cloneable
 	public static SDMSRepository repository;
 	public static Properties props;
 	public static long startTime;
+	public static long cntRwTx = 0;
+	public static long cntDl = 0;
+	public static long cntWl = 0;
 	public static Server server;
 	public static SchedulingThread sched;
 	public static GarbageThread garb;
@@ -243,6 +246,26 @@ public class SystemEnvironment implements Cloneable
 	public final static HashMap<Long, Long> jidsStarting = new HashMap<Long, Long>();
 
 	public final static int startingResendDelay = 5000;
+
+	public SDMSThread thread;
+	private long lockCp;
+
+	public long getLockCp ()
+	{
+		return lockCp;
+	}
+
+	public void initLockCp ()
+	{
+		lockCp = 0;
+	}
+
+	public long newLockCp ()
+	{
+		long r = lockCp;
+		lockCp ++;
+		return r;
+	}
 
 	public boolean inExecution = false;
 
@@ -846,6 +869,19 @@ public class SystemEnvironment implements Cloneable
 			rc = def;
 		}
 		return rc;
+	}
+
+	public static synchronized void incrCntRwTx ()
+	{
+		cntRwTx ++;
+	}
+	public static synchronized void incrCntDl ()
+	{
+		cntDl   ++;
+	}
+	public static synchronized void incrCntWl ()
+	{
+		cntWl   ++;
 	}
 
 	public Object clone()

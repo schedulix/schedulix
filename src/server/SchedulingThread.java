@@ -34,12 +34,12 @@ import java.net.*;
 import java.sql.*;
 import java.math.*;
 
-import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
+import de.independit.scheduler.server.output.*;
 import de.independit.scheduler.server.parser.*;
 import de.independit.scheduler.server.repository.*;
-import de.independit.scheduler.server.exception.*;
-import de.independit.scheduler.server.output.*;
-import de.independit.scheduler.locking.*;
+import de.independit.scheduler.server.util.*;
 
 public class SchedulingThread extends InternalSession
 {
@@ -52,7 +52,10 @@ public class SchedulingThread extends InternalSession
 	private prioComparator pc;
 	private long timeoutWakeup;
 	private Locklist publl = null;
+	private Vector<Long> resourceRequestList = null;
+	private final Object resourceRequestLock = new Object();
 	private final Integer lock = new Integer(0);
+	private Vector<Long> actualRequestList;
 
 	public static final int CREATE	= 1;
 	public static final int ALTER	 = 2;
@@ -142,6 +145,92 @@ public class SchedulingThread extends InternalSession
 		}
 	}
 
+	public void addToRequestList(SystemEnvironment sysEnv, Long smeId)
+	{
+
+		synchronized (resourceRequestLock) {
+			if (sysEnv.tx.resourceRequestList == null)
+				sysEnv.tx.resourceRequestList = new Vector<Long>();
+			sysEnv.tx.resourceRequestList.add(smeId);
+		}
+	}
+
+	public void publishRequestList(SystemEnvironment sysEnv)
+	{
+		if (sysEnv.tx.resourceRequestList == null) return;
+		addToRequestList(sysEnv.tx.resourceRequestList);
+	}
+
+	private void addToRequestList(Vector v)
+	{
+		synchronized (resourceRequestLock) {
+			if (resourceRequestList == null)
+				resourceRequestList = new Vector<Long>();
+			resourceRequestList.addAll(v);
+		}
+	}
+
+	private Vector getRequestList()
+	{
+		Vector retval;
+		synchronized (resourceRequestLock) {
+			retval = resourceRequestList;
+			resourceRequestList = null;
+		}
+		return (retval == null ? new Vector<Long>() : retval);
+	}
+
+	private void processRequestList(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Vector<Long> v = getRequestList();
+		actualRequestList = v;
+
+		try {
+
+			for (int i = 0; i < v.size(); ++i) {
+				SDMSSubmittedEntity sme;
+				Long smeId = v.get(i);
+				Integer oldState;
+
+				try {
+					sme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
+					oldState = sme.getOldState(sysEnv);
+					if (oldState == null) {
+
+						continue;
+					}
+				} catch (NotFoundException nfe) {
+
+					continue;
+				}
+				int state = sme.getState(sysEnv).intValue();
+				if (state == SDMSSubmittedEntity.DEPENDENCY_WAIT) {
+
+					requestSyncSme(sysEnv, sme, oldState.intValue());
+
+					if (sme.getState(sysEnv).intValue() != SDMSSubmittedEntity.ERROR &&
+					    oldState.intValue() <= SDMSSubmittedEntity.DEPENDENCY_WAIT
+					   )
+						sme.checkDependencies(sysEnv);
+					else if (oldState.intValue() > SDMSSubmittedEntity.DEPENDENCY_WAIT)
+						sme.setState(sysEnv, SDMSSubmittedEntity.SYNCHRONIZE_WAIT);
+
+				} else if (state == SDMSSubmittedEntity.SYNCHRONIZE_WAIT) {
+
+					reevaluateJSAssignment(sysEnv, sme);
+					requestSysSme(sysEnv, sme);
+
+				} else {
+
+				}
+			}
+		} catch (SDMSException e) {
+
+			throw e;
+		}
+	}
+
 	private void notifyJobservers(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
@@ -173,6 +262,9 @@ public class SchedulingThread extends InternalSession
 
 			if (e instanceof SerializationException) {
 
+				if (actualRequestList != null) {
+					addToRequestList(actualRequestList);
+				}
 				throw e;
 			} else {
 				StringWriter stackTrace = new StringWriter();
@@ -181,10 +273,10 @@ public class SchedulingThread extends InternalSession
 				System.exit(1);
 			}
 		}
-
+		actualRequestList = null;
 	}
 
-	protected void schedule(SystemEnvironment sysEnv)
+	private void schedule(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
 		dts = new java.util.Date();
@@ -192,6 +284,8 @@ public class SchedulingThread extends InternalSession
 
 		if (sysEnv.maxWriter > 1)
 			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
+
+		processRequestList(sysEnv);
 
 		if(needReSched) {
 			doTrace(cEnv, "==============> Start Resource Rescheduling <=================\nStartTime = 0", SEVERITY_MESSAGE);
@@ -362,8 +456,9 @@ public class SchedulingThread extends InternalSession
 
 			if(maxState == SDMSSubmittedEntity.RUNNABLE ||
 			   maxState == SDMSSubmittedEntity.RESOURCE_WAIT ||
-			   maxState == SDMSSubmittedEntity.SYNCHRONIZE_WAIT)
+			   maxState == SDMSSubmittedEntity.SYNCHRONIZE_WAIT) {
 				requestSysSme(sysEnv, sme);
+			}
 
 			if((maxState == SDMSSubmittedEntity.RUNNABLE ||
 			    maxState == SDMSSubmittedEntity.RESOURCE_WAIT) ||
@@ -400,7 +495,9 @@ public class SchedulingThread extends InternalSession
 
 		for(i = 0; i < smev.size(); ++i) {
 			sme = (SDMSSubmittedEntity) smev.get(i);
-			if(sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND || sme.getParentSuspended(sysEnv).intValue() > 0)
+			if(sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND ||
+			    sme.getParentSuspended(sysEnv).intValue() > 0			  ||
+			    sme.getOldState(sysEnv) != null)
 				continue;
 
 			syncScheduleSme(sysEnv, sme, resourceChain);
@@ -420,6 +517,7 @@ public class SchedulingThread extends InternalSession
 		Vector sv = getServerList(sysEnv, sme, se, actVersion);
 
 		requestResourceSme(sysEnv, sme, se, sv, SDMSNamedResource.SYNCHRONIZING, actVersion, oldState);
+		sme.setOldState(sysEnv, null);
 	}
 
 	public void requestSysSme(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
@@ -435,6 +533,7 @@ public class SchedulingThread extends InternalSession
 		Vector sv = findRelevantJobserver (sysEnv, sme);
 
 		requestResourceSme(sysEnv, sme, se, sv, SDMSNamedResource.SYSTEM, actVersion, SDMSSubmittedEntity.SYNCHRONIZE_WAIT);
+		sme.setOldState(sysEnv, null);
 	}
 
 	private Vector getServerList(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, SDMSSchedulingEntity se, long actVersion)
@@ -2111,7 +2210,7 @@ public class SchedulingThread extends InternalSession
 		SDMSnpSrvrSRFootprintTable.table.clearTableUnlocked(sysEnv);
 	}
 
-	void buildEnvironment(SystemEnvironment sysEnv)
+	void buildEnvironment(SystemEnvironment sysEnv, boolean jsOnly)
 		throws SDMSException
 	{
 		SDMSScope s;
@@ -2121,6 +2220,29 @@ public class SchedulingThread extends InternalSession
 		for(int j = 0; j < v.size(); j++) {
 			s = (SDMSScope) v.get(j);
 			SDMSnpSrvrSRFootprintTable.table.create(sysEnv, s.getId(sysEnv), null, getScopeFootprint(sysEnv, s));
+		}
+
+		if (!jsOnly) {
+			Vector rl = new Vector();
+			SDMSSubmittedEntity sme;
+			SDMSSchedulingEntity se;
+			v = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, new Integer(SDMSSubmittedEntity.DEPENDENCY_WAIT));
+			for (int i = 0; i < v.size(); ++i) {
+				sme = (SDMSSubmittedEntity) v.get(i);
+				se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), sme.getSeVersion(sysEnv));
+				if (se.getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) continue;
+				if (sme.getOldState(sysEnv) != null)
+					rl.add(sme.getId(sysEnv));
+			}
+			v = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, new Integer(SDMSSubmittedEntity.SYNCHRONIZE_WAIT));
+			for (int i = 0; i < v.size(); ++i) {
+				sme = (SDMSSubmittedEntity) v.get(i);
+				se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), sme.getSeVersion(sysEnv));
+				if (se.getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) continue;
+				if (sme.getOldState(sysEnv) != null)
+					rl.add(sme.getId(sysEnv));
+			}
+			addToRequestList(rl);
 		}
 		needSched = true;
 	}
@@ -2224,7 +2346,7 @@ public class SchedulingThread extends InternalSession
 			if (sysEnv.maxWriter > 1)
 				LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 				destroyEnvironment(sysEnv);
-				buildEnvironment(sysEnv);
+				buildEnvironment(sysEnv, true);
 				needSched = true;
 				break;
 			default:
@@ -2310,7 +2432,7 @@ class DoSchedule extends Node
 				SystemEnvironment.sched.scheduleProtected(sysEnv);
 				break;
 			case INITIALIZE:
-				SystemEnvironment.sched.buildEnvironment(sysEnv);
+				SystemEnvironment.sched.buildEnvironment(sysEnv, false);
 		}
 	}
 

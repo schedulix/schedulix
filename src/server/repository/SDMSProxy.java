@@ -31,9 +31,9 @@ import java.util.*;
 import java.sql.*;
 
 import de.independit.scheduler.server.*;
-import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
-import de.independit.scheduler.locking.*;
+import de.independit.scheduler.server.locking.*;
+import de.independit.scheduler.server.util.*;
 
 public abstract class SDMSProxy implements Comparable
 {
@@ -83,7 +83,7 @@ public abstract class SDMSProxy implements Comparable
 
 		if (!lockedExclusive) {
 			if (env.maxWriter > 1)
-				LockingSystem.lock(object.versions, ObjectLock.EXCLUSIVE);
+				LockingSystem.lock(env, object.versions, ObjectLock.EXCLUSIVE);
 			lockedExclusive = true;
 		}
 
@@ -108,7 +108,7 @@ public abstract class SDMSProxy implements Comparable
 
 		if (!lockedExclusive) {
 			if (env.maxWriter > 1)
-				LockingSystem.lock(object.versions, ObjectLock.EXCLUSIVE);
+				LockingSystem.lock(env, object.versions, ObjectLock.EXCLUSIVE);
 			lockedExclusive = true;
 		}
 
@@ -164,6 +164,13 @@ public abstract class SDMSProxy implements Comparable
 	{
 
 		return null;
+	}
+
+	public void releaseLockToCheckPoint(SystemEnvironment env, int checkPoint)
+	throws FatalException
+	{
+		if (env.maxWriter > 1 )
+			LockingSystem.releaseToCheckPoint(env, object.versions, checkPoint);
 	}
 
 	public abstract long getPrivilegeMask();

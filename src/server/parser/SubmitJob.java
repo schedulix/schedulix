@@ -32,11 +32,11 @@ import java.util.*;
 import java.lang.*;
 
 import de.independit.scheduler.server.*;
-import de.independit.scheduler.server.util.*;
-import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
+import de.independit.scheduler.server.locking.*;
 import de.independit.scheduler.server.output.*;
-import de.independit.scheduler.locking.*;
+import de.independit.scheduler.server.repository.*;
+import de.independit.scheduler.server.util.*;
 
 public class SubmitJob extends Node
 {

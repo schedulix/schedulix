@@ -160,7 +160,7 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 
 		SDMSKillJob p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -394,6 +394,12 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSKillJob) table.get(env, id);
+	}
+
+	public static SDMSKillJob getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSKillJob) table.getForUpdate(env, id);
 	}
 
 	public static SDMSKillJob getObject(SystemEnvironment env, Long id, long version)

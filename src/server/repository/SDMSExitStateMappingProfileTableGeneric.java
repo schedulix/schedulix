@@ -98,7 +98,7 @@ public class SDMSExitStateMappingProfileTableGeneric extends SDMSTable
 
 		SDMSExitStateMappingProfile p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -240,6 +240,12 @@ public class SDMSExitStateMappingProfileTableGeneric extends SDMSTable
 		return (SDMSExitStateMappingProfile) table.get(env, id);
 	}
 
+	public static SDMSExitStateMappingProfile getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSExitStateMappingProfile) table.getForUpdate(env, id);
+	}
+
 	public static SDMSExitStateMappingProfile getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -250,6 +256,12 @@ public class SDMSExitStateMappingProfileTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSExitStateMappingProfile) SDMSExitStateMappingProfileTableGeneric.idx_name.getUnique(env, key);
+	}
+
+	public static SDMSExitStateMappingProfile idx_name_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSExitStateMappingProfile) SDMSExitStateMappingProfileTableGeneric.idx_name.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSExitStateMappingProfile idx_name_getUnique(SystemEnvironment env, Object key, long version)

@@ -130,7 +130,7 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 
 		SDMSNamedResource p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -334,6 +334,12 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 		return (SDMSNamedResource) table.get(env, id);
 	}
 
+	public static SDMSNamedResource getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSNamedResource) table.getForUpdate(env, id);
+	}
+
 	public static SDMSNamedResource getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -344,6 +350,12 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSNamedResource)  SDMSNamedResourceTableGeneric.idx_parentId_name.getUnique(env, key);
+	}
+
+	public static SDMSNamedResource idx_parentId_name_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSNamedResource)  SDMSNamedResourceTableGeneric.idx_parentId_name.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSNamedResource idx_parentId_name_getUnique(SystemEnvironment env, Object key, long version)
@@ -358,6 +370,12 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 		return getNamedResource(sysEnv, path).getId(sysEnv);
 	}
 
+	public static Long pathToIdForUpdate(SystemEnvironment sysEnv, Vector path)
+	throws SDMSException
+	{
+		return getNamedResourceForUpdate(sysEnv, path).getId(sysEnv);
+	}
+
 	public static SDMSNamedResource getNamedResource(SystemEnvironment sysEnv, Vector path)
 	throws SDMSException
 	{
@@ -369,6 +387,22 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 		for(i=0; i<path.size(); ++i) {
 			s = (String) path.get(i);
 			f = (SDMSNamedResource) (SDMSNamedResourceTable.idx_parentId_name.getUnique(sysEnv, new SDMSKey(parentId, s)));
+			parentId = f.getId(sysEnv);
+		}
+		return f;
+	}
+
+	public static SDMSNamedResource getNamedResourceForUpdate(SystemEnvironment sysEnv, Vector path)
+	throws SDMSException
+	{
+		Long   parentId = null;
+		SDMSNamedResource f = null;
+		String s;
+		int i;
+
+		for(i=0; i<path.size(); ++i) {
+			s = (String) path.get(i);
+			f = (SDMSNamedResource) (SDMSNamedResourceTable.idx_parentId_name.getUniqueForUpdate(sysEnv, new SDMSKey(parentId, s)));
 			parentId = f.getId(sysEnv);
 		}
 		return f;

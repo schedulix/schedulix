@@ -210,6 +210,7 @@ public class ProcessInfo
 				pb.redirectOutput(new File(tmpfilename));
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
+				p.getOutputStream().close();
 				try {
 					p.waitFor();
 				} catch (InterruptedException ie) {  }
@@ -243,7 +244,9 @@ public class ProcessInfo
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
 				p.getOutputStream().close();
-				p.waitFor();
+				try {
+					p.waitFor();
+				} catch (InterruptedException ie) {  }
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename), "UTF-16"));
 				String line;
 				String pattern = "yyyyMMddHHmmss";

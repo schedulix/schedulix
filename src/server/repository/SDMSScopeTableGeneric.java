@@ -174,7 +174,7 @@ public class SDMSScopeTableGeneric extends SDMSTable
 
 		SDMSScope p;
 		try {
-			env.tx.addToChangeSet(env, o.versions, true);
+
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -449,6 +449,12 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		return (SDMSScope) table.get(env, id);
 	}
 
+	public static SDMSScope getObjectForUpdate(SystemEnvironment env, Long id)
+	throws SDMSException
+	{
+		return (SDMSScope) table.getForUpdate(env, id);
+	}
+
 	public static SDMSScope getObject(SystemEnvironment env, Long id, long version)
 	throws SDMSException
 	{
@@ -459,6 +465,12 @@ public class SDMSScopeTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		return (SDMSScope)  SDMSScopeTableGeneric.idx_parentId_name.getUnique(env, key);
+	}
+
+	public static SDMSScope idx_parentId_name_getUniqueForUpdate(SystemEnvironment env, Object key)
+	throws SDMSException
+	{
+		return (SDMSScope)  SDMSScopeTableGeneric.idx_parentId_name.getUniqueForUpdate(env, key);
 	}
 
 	public static SDMSScope idx_parentId_name_getUnique(SystemEnvironment env, Object key, long version)
@@ -473,6 +485,12 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		return getScope(sysEnv, path).getId(sysEnv);
 	}
 
+	public static Long pathToIdForUpdate(SystemEnvironment sysEnv, Vector path)
+	throws SDMSException
+	{
+		return getScopeForUpdate(sysEnv, path).getId(sysEnv);
+	}
+
 	public static SDMSScope getScope(SystemEnvironment sysEnv, Vector path)
 	throws SDMSException
 	{
@@ -484,6 +502,22 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		for(i=0; i<path.size(); ++i) {
 			s = (String) path.get(i);
 			f = (SDMSScope) (SDMSScopeTable.idx_parentId_name.getUnique(sysEnv, new SDMSKey(parentId, s)));
+			parentId = f.getId(sysEnv);
+		}
+		return f;
+	}
+
+	public static SDMSScope getScopeForUpdate(SystemEnvironment sysEnv, Vector path)
+	throws SDMSException
+	{
+		Long   parentId = null;
+		SDMSScope f = null;
+		String s;
+		int i;
+
+		for(i=0; i<path.size(); ++i) {
+			s = (String) path.get(i);
+			f = (SDMSScope) (SDMSScopeTable.idx_parentId_name.getUniqueForUpdate(sysEnv, new SDMSKey(parentId, s)));
 			parentId = f.getId(sysEnv);
 		}
 		return f;
