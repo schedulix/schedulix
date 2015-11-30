@@ -589,6 +589,10 @@ public class SchedulingThread extends InternalSession
 
 				sysEnv.tx.rollbackSubTransaction(sysEnv);
 				continue;
+			} catch (Exception e) {
+				doTrace(cEnv, ": Job " + smeId + " run into an Exception during Resource Scheduling : " + e.toString(), SEVERITY_WARNING);
+				sysEnv.tx.rollbackSubTransaction(sysEnv);
+				continue;
 			}
 			sysEnv.tx.commitSubTransaction(sysEnv);
 		}
@@ -886,7 +890,7 @@ public class SchedulingThread extends InternalSession
 						raOK = true;
 						entry.set(1, Boolean.TRUE);
 
-						int raReqAmount = ra.getAmount(sysEnv).intValue();
+						int raReqAmount = ra.getOrigAmount(sysEnv).intValue();
 						int raLockMode = ra.getLockmode(sysEnv).intValue();
 
 						if (raReqAmount < reqAmount.intValue()) {
@@ -898,6 +902,7 @@ public class SchedulingThread extends InternalSession
 									"Invalid amount escalation for already reserved sticky resource $1, job definition $2",
 										rId, se.pathString(sysEnv)));
 							}
+							ra.setOrigAmount(sysEnv, reqAmount);
 							ra.setAmount(sysEnv, reqAmount);
 						}
 
