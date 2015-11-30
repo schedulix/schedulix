@@ -179,12 +179,13 @@ public class ProcessInfo
 				result = attr.creationTime().to(TimeUnit.SECONDS);
 			} catch (Exception e) {
 				return 0;
+
 			}
 		}
 		return result;
 	}
 
-	public static HashMap<String,Long> getStartTimes(HashMap<String,Long> startTimes)
+	synchronized public static HashMap<String,Long> getStartTimes(Config cfg, HashMap<String,Long> startTimes)
 	{
 		HashMap<String,Long> result = startTimes;
 		if (result == null)
@@ -192,14 +193,29 @@ public class ProcessInfo
 		else
 			result.clear();
 		String os = System.getProperty("os.name").toLowerCase();
+
+		final File job_file_prefix = (File) cfg.get (Config.JOB_FILE_PREFIX);
+		final File tmp_file = new File(job_file_prefix.getParent() + "/starttimes." + cfg.get(Config.REPO_USER));
+		String tmpfilename = null;
+		try {
+			tmpfilename = tmp_file.getCanonicalPath();
+		} catch (Exception e) {}
+
 		if(   os.contains("mac")
 		   || os.contains("nix")
 		      || os.contains("nux")
 		   || os.contains("aix")
 		  ) {
 			try {
-				Process p = Runtime.getRuntime().exec("ps -e -o pid= -o lstart=");
-				BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				ProcessBuilder pb = new ProcessBuilder("ps", "-e", "-o", "pid=", "-o", "lstart=");
+				pb.redirectOutput(new File(tmpfilename));
+				pb.redirectErrorStream(true);
+				Process p = pb.start();
+				p.getOutputStream().close();
+				try {
+					p.waitFor();
+				} catch (InterruptedException ie) {  }
+				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename)));
 				String line;
 				String pattern = "MMM d HH:mm:ss yyyy";
 				int patternLength = pattern.length();
@@ -219,19 +235,28 @@ public class ProcessInfo
 						continue;
 					}
 				}
+				in.close();
 			} catch (IOException e) {
 				throw new RuntimeException("(02310251043) Exception in getStartTimes() : " + e.toString());
 			}
 		} else if (os.contains("win")) {
 			try {
-				Process p = Runtime.getRuntime().exec("CMD /C WMIC PROCESS GET HANDLE, CREATIONDATE");
-				BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+				ProcessBuilder pb = new ProcessBuilder("WMIC", "PROCESS", "GET", "HANDLE,", "CREATIONDATE");
+				pb.redirectOutput(new File(tmpfilename));
+				pb.redirectErrorStream(true);
+				Process p = pb.start();
 				p.getOutputStream().close();
+				try {
+					p.waitFor();
+				} catch (InterruptedException ie) {  }
+				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename), "UTF-16"));
 				String line;
 				String pattern = "yyyyMMddHHmmss";
 				int patternLength = pattern.length();
 				SimpleDateFormat format = new SimpleDateFormat(pattern);
 				while ((line = in.readLine()) != null) {
+
 					line = line.trim();
 					if (line.length() < patternLength) continue;
 					String strDate = line.substring(0, patternLength);
@@ -242,10 +267,12 @@ public class ProcessInfo
 					try {
 						Long startTime = new Long (format.parse(strDate).getTime() / 1000);
 						result.put(strPid,startTime);
+
 					} catch (ParseException pe) {
 						continue;
 					}
 				}
+				in.close();
 			} catch (Exception e) {
 				throw new RuntimeException("(02310251044) Process start times : " + e.toString());
 			}

@@ -157,7 +157,7 @@ public class EiThread
 						String extPid = feil.getExtPid();
 						boolean alive = false;
 						if (!(extPid.equals(""))) {
-							HashMap<String,Long> startTimes = ProcessInfo.getStartTimes(null);
+							HashMap<String,Long> startTimes = ProcessInfo.getStartTimes(cfg, null);
 							alive = ProcessInfo.isAlive (extPid, startTimes);
 						}
 						if (alive)
