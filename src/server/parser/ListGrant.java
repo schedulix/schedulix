@@ -294,9 +294,6 @@ public class ListGrant extends Node
 				case SDMSObjectComment.NAMED_RESOURCE:
 					p = SDMSNamedResourceTable.getObject(sysEnv, objId);
 					break;
-				case SDMSObjectComment.NICE_PROFILE:
-					p = SDMSNiceProfileTable.getObject(sysEnv, objId);
-					break;
 				case SDMSObjectComment.PARAMETER:
 					p = SDMSParameterDefinitionTable.getObject(sysEnv, objId);
 					break;
