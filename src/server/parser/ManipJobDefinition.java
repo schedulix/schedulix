@@ -301,6 +301,7 @@ public abstract class ManipJobDefinition extends Node
 
 		SDMSNamedEnvironment ne = SDMSNamedEnvironmentTable.getObject(sysEnv, neId);
 		Vector gv = new Vector();
+		gv.add(SDMSObject.publicGId);
 		gv.add(gId);
 		if(ne.getPrivileges(sysEnv, SDMSPrivilege.USE, false, gv) != SDMSPrivilege.USE) {
 			String gName = SDMSGroupTable.getObject(sysEnv,gId).getName(sysEnv);
