@@ -419,6 +419,8 @@ public class DBCleanupThread extends SDMSThread
 		try {
 			sleep(IDLE_SLEEP_TIME);
 			while(run) {
+
+				sysEnv.tx.versionId = sysEnv.tx.getRoVersion(sysEnv);
 				loadMasters();
 				if (masterList.size() == 0 || !processMasters() )
 					sleep(IDLE_SLEEP_TIME);
