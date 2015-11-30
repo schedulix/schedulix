@@ -422,7 +422,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				sme.cancel(sysEnv);
 		}
 
-		suspend (sysEnv, false, false, true, true);
+		suspend (sysEnv, false, false, true, true, true);
 		removeAsyncTrigger(sysEnv);
 		if (!active) {
 			deleteLocalResources(sysEnv);
@@ -641,6 +641,11 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	private void suspend (SystemEnvironment sysEnv, boolean suspend, boolean local, boolean admin, boolean operator)
 		throws SDMSException
 	{
+		suspend (sysEnv, suspend, local, admin, operator, false);
+	}
+	private void suspend (SystemEnvironment sysEnv, boolean suspend, boolean local, boolean admin, boolean operator, boolean cancelResume)
+	throws SDMSException
+	{
 
 		int oldSuspended = getIsSuspended(sysEnv).intValue();
 		Boolean booleanLocal = getIsSuspendedLocal(sysEnv);
@@ -657,7 +662,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (suspend && local && (oldSuspended != NOSUSPEND) && (booleanLocal == null || !booleanLocal.booleanValue()))
 			return;
 
-		if (admin && (!sysEnv.cEnv.isUser() || !sysEnv.cEnv.gid().contains(SDMSObject.adminGId))) {
+		if (!cancelResume && admin && (!sysEnv.cEnv.isUser() || !sysEnv.cEnv.gid().contains(SDMSObject.adminGId))) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03503051428", "Insufficient privileges for admin suspend/resume"));
 		}
 
