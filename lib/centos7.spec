@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.6.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -79,45 +79,56 @@ Requires:		java-1.7.0-openjdk jna
 The schedulix base package provides the files that are used by most other packages
 
 %pre base
-if [ ! -d /opt/schedulix ]; then \
-	mkdir -p /opt/schedulix; \
-	chmod 755 /opt/schedulix; \
-fi; \
-if ! grep schedulix /etc/passwd >/dev/null 2>&1; then \
-	useradd schedulix -d /opt/schedulix -m -s /bin/bash -U -p "RJteetpJ9UFeQ"; \
-fi; \
-chown schedulix.schedulix /opt/schedulix
+if [ "$1" == "1" ]; then
+	if [ ! -d /opt/schedulix ]; then
+		mkdir -p /opt/schedulix;
+		chmod 755 /opt/schedulix;
+	fi; \
+	if ! grep schedulix /etc/passwd >/dev/null 2>&1; then
+		useradd schedulix -d /opt/schedulix -m -s /bin/bash -U -p "RJteetpJ9UFeQ";
+	fi; \
+	chown schedulix.schedulix /opt/schedulix
+else
+	echo "Upgrading schedulix-base";
+	# if there is some server installed, stop it (if it's running, but the server-stop utility is forgiving if not)
+	if [ -x /opt/schedulix/schedulix/bin/server-stop ]; then
+		su - schedulix -c ". ~/.bashrc; server-stop"
+	fi
+fi
 
 
 %post base
-# we basically write the configuration files bicsuite.conf, java.conf and a settings file here
-sed '
-s!JNAJAR=.*!JNAJAR=/usr/share/java/jna.jar!
-s!SWTJAR=.*!SWTJAR=/usr/share/java/swt.jar!' < /opt/schedulix/schedulix-%{version}/etc/java.conf.template > /opt/schedulix/etc/java.conf
+if [ "$1" == "1" ]; then
+	# we basically write the configuration files bicsuite.conf, java.conf and a settings file here
+	sed '
+	s!JNAJAR=.*!JNAJAR=/usr/share/java/jna.jar!
+	s!SWTJAR=.*!SWTJAR=/usr/share/java/swt.jar!' < /opt/schedulix/schedulix-%{version}/etc/java.conf.template > /opt/schedulix/etc/java.conf
 
-cp /opt/schedulix/schedulix-%{version}/etc/bicsuite.conf.template /opt/schedulix/etc/bicsuite.conf
-echo '
-BICSUITEHOME=/opt/schedulix/schedulix
-BICSUITECONFIG=/opt/schedulix/etc
-BICSUITELOGDIR=/opt/schedulix/log
-PATH=$BICSUITEHOME/bin:$PATH
-export BICSUITEHOME BICSUITECONFIG BICSUITELOGDIR PATH
-' > /opt/schedulix/etc/SETTINGS
+	cp /opt/schedulix/schedulix-%{version}/etc/bicsuite.conf.template /opt/schedulix/etc/bicsuite.conf
+	echo '
+	BICSUITEHOME=/opt/schedulix/schedulix
+	BICSUITECONFIG=/opt/schedulix/etc
+	BICSUITELOGDIR=/opt/schedulix/log
+	PATH=$BICSUITEHOME/bin:$PATH
+	export BICSUITEHOME BICSUITECONFIG BICSUITELOGDIR PATH
+	' > /opt/schedulix/etc/SETTINGS
 
-# make the three files readable for world
-chown schedulix.schedulix /opt/schedulix/etc/bicsuite.conf /opt/schedulix/etc/java.conf /opt/schedulix/etc/SETTINGS
-chmod 644 /opt/schedulix/etc/bicsuite.conf /opt/schedulix/etc/java.conf /opt/schedulix/etc/SETTINGS
+	# make the three files readable for world
+	chown schedulix.schedulix /opt/schedulix/etc/bicsuite.conf /opt/schedulix/etc/java.conf /opt/schedulix/etc/SETTINGS
+	chmod 644 /opt/schedulix/etc/bicsuite.conf /opt/schedulix/etc/java.conf /opt/schedulix/etc/SETTINGS
 
-echo '
-# source schedulix environment
-. /opt/schedulix/etc/SETTINGS' >> ~schedulix/.bashrc
-chown schedulix.schedulix ~schedulix/.bashrc
-
+	echo '
+	# source schedulix environment
+	. /opt/schedulix/etc/SETTINGS' >> ~schedulix/.bashrc
+	chown schedulix.schedulix ~schedulix/.bashrc
+fi
+# link has to be created or recreated to point to the actual version
 cd /opt/schedulix
 if [ -L schedulix ]; then
 	rm schedulix
 fi
 su schedulix -c "ln -s schedulix-%{version} schedulix"
+
 
 %postun base
 userdel schedulix
@@ -159,7 +170,7 @@ rm -rf /opt/schedulix
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix server pg package installs a schedulix server based on an underlying Postgres RDBMS
 Group:			Applications/System
-Requires:		schedulix-base >= %{version} postgresql-server postgresql-jdbc
+Requires:		schedulix-base = %{version} postgresql-server postgresql-jdbc
 Provides:		schedulix-server %{version}
 Conflicts:		schedulix-server-mariadb
 
@@ -285,6 +296,7 @@ su - postgres -c 'echo "drop user schedulix;" | psql'
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/sql/init.sql
 %dir %attr(0755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/install
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/install/convenience.sdms
+%attr(0744, root, root)             /etc/init.d/schedulix-server-pg
 /opt/schedulix/schedulix-%{version}/sql/pg
 /opt/schedulix/schedulix-%{version}/sql/pg_gen
 %ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/etc/server.conf
@@ -301,7 +313,7 @@ su - postgres -c 'echo "drop user schedulix;" | psql'
 Summary:		The schedulix server mariadb package installs a schedulix server based on an underlying MariaDB od MySQL RDBMS
 Group:			Applications/System
 # Requires: schedulix-base mysql-server mysql-connector-java
-Requires:		schedulix-base >= %{version} mariadb mariadb-libs mariadb-server mysql-connector-java
+Requires:		schedulix-base = %{version} mariadb mariadb-libs mariadb-server mysql-connector-java
 Provides:		schedulix-server %{version}
 Conflicts:		schedulix-server-pg
 
@@ -412,6 +424,7 @@ ENDMYSQL
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/sql/MASTER_STATE.sql
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/sql/REPOSITORY_LOCK.sql
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/sql/init.sql
+%attr(0744, root, root)             /etc/init.d/schedulix-server-mariadb
 %dir %attr(0755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/install
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/install/convenience.sdms
 /opt/schedulix/schedulix-%{version}/sql/mysql
@@ -433,7 +446,7 @@ ENDMYSQL
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix client package installs everything needed to setup a jobserver
 Group:			Applications/System
-Requires:		schedulix-base >= %{version}
+Requires:		schedulix-base = %{version}
 
 %description client
 %commonDescription
@@ -576,9 +589,13 @@ if [ $ret != 0 ]; then
 	exit 1
 fi
 rm -f cookies.txt
+# we shut the server down since the init.d script uses a different method of starting it
+su schedulix -c "/opt/schedulix/schedulixweb/bin/zopectl stop"
+
 
 %preun zope
-su schedulix -c "/opt/schedulix/schedulixweb/bin/zopectl stop"
+/etc/init.d/schedulix-zope stop
+
 
 %postun zope
 rm -rf /opt/schedulix/software
@@ -609,6 +626,7 @@ rm -rf /opt/schedulix/schedulixweb
 %exclude   /opt/schedulix/schedulix-%{version}/zope/sdms.pyo
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/software
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/schedulixweb
+%attr(0744, root, root)             /etc/init.d/schedulix-zope
 
 %package examples
 # ----------------------------------------------------------------------------------------
@@ -648,6 +666,7 @@ rm -f *.log
 %ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/etc/localhost.conf
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/install/setup_example_jobservers.sh
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/install/setup_examples.sdms
+%attr(0744, root, root)             /etc/init.d/schedulix-examples
 
 %package doc
 # ----------------------------------------------------------------------------------------
@@ -702,6 +721,12 @@ mkdir %{buildroot}/opt/schedulix/log
 mkdir %{buildroot}/opt/schedulix/taskfiles
 mkdir -p %{buildroot}/usr/share/doc/schedulix-%{version}
 cp doc/* %{buildroot}/usr/share/doc/schedulix-%{version}
+mkdir -p %{buildroot}/etc/init.d
+# here we move the init.d scripts from the bin directory to the init.d directory
+mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-server-mariadb %{buildroot}/etc/init.d/schedulix-server-mariadb
+mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-server-pg %{buildroot}/etc/init.d/schedulix-server-pg
+mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-zope %{buildroot}/etc/init.d/schedulix-zope
+mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-examples %{buildroot}/etc/init.d/schedulix-examples
 
 
 echo "End of the installation of schedulix"
