@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.6.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -171,11 +171,107 @@ It loads the convenience package, but does not load the examples.
 
 %serverNotes
 
+The configuration file will be changed. Instead of the 'ident' method we need the 'md5' method
+in order to be able to connect by jdbc.
+
+
 %post server-pg
 # create a valid server.conf
 echo "creating server.conf file"
-echo "creating database"
+HOSTNAME=`hostname`
+su - schedulix -c "
+. ~/.bashrc;
+sed '
+	s:DbPasswd=.*:DbPasswd=schedulix:
+	s!DbUrl=.*!DbUrl=jdbc:postgresql:schedulixdb!
+	s:DbUser=.*:DbUser=schedulix:
+	s:Hostname=.*:Hostname=$HOSTNAME:
+	s:JdbcDriver=.*:JdbcDriver=org.postgresql.Driver:
+' < /opt/schedulix/schedulix/etc/server.conf.template > /opt/schedulix/etc/server.conf;
+chmod 600 /opt/schedulix/etc/server.conf;
+cp /opt/schedulix/etc/java.conf /tmp/$$.tmp;
+sed '
+	s:JDBCJAR=.*:JDBCJAR=/usr/share/java/postgresql-jdbc.jar:
+' < /tmp/$$.tmp > /opt/schedulix/etc/java.conf;
+rm -f /tmp/$$.tmp
+"
+
+# if this is a new postgresql installation, we'll have to do an initdb first
+if [ ! -d /var/lib/pgsql ]; then
+	postgresql-setup initdb
+fi
+
+echo "creating database user"
+su - postgres -c 'echo "create user schedulix with password '"'schedulix'"' createdb;" | psql'
+
+# write the password file in order to be able to connect without a password prompt
+echo "127.0.0.1:5432:schedulixdb:schedulix:schedulix" > /opt/schedulix/.pgpass
+
+# modify /var/lib/pgsql/data/pg_hba.conf in order to allow jdbc connects
+sed --in-place=.save '
+     s!^host *all * all *127.0.0.1/32 *.*!host    all             all             127.0.0.1/32            md5!
+     s!^host *all * all *::1/128 *.*!host    all             all             ::1/128                 md5!
+' /var/lib/pgsql/data/pg_hba.conf
+
+# we now restart the DBMS to make our config change effective
+if ps -fu postgres | grep 'postgres: checkpointer process'; then
+	service postgresql restart
+else
+	service postgresql start
+fi
+
 echo "populating database"
+su - schedulix -c '
+	. ~/.bashrc;
+	cd $BICSUITEHOME/sql
+	createdb schedulixdb
+	psql -f pg/install.sql schedulixdb
+	ret=$?
+	if [ $ret != 0 ]
+	then
+		echo "Error initializing repository database schedulixdb -- exit code $ret"
+		exit 1
+	fi
+'
+
+echo "Setting up /opt/schedulix/.sdmshrc"
+su - schedulix -c "
+echo 'User=SYSTEM
+Password=G0H0ME
+Timeout=0' > /opt/schedulix/.sdmshrc
+chmod 600 /opt/schedulix/.sdmshrc
+"
+
+echo "Setting up /opt/schedulix/etc/sdmshrc"
+
+su - schedulix -c "
+echo 'Host=$HOSTNAME
+Port=2506' > /opt/schedulix/etc/sdmshrc
+chmod 644 /opt/schedulix/etc/sdmshrc
+"
+
+echo "Loading convenience package"
+su - schedulix -c "
+. ~/.bashrc;
+/opt/schedulix/schedulix/bin/server-start;
+sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;
+"
+
+
+
+%preun server-pg
+echo "Stopping server ..."
+su - schedulix -c "
+. ~/.bashrc;
+/opt/schedulix/schedulix/bin/server-stop;
+"
+
+%postun server-pg
+echo "Dropping database"
+su - schedulix -c "dropdb schedulixdb"
+su - postgres -c 'echo "drop user schedulix;" | psql'
+
+
 
 %files server-pg
 %defattr(644, schedulix, schedulix, 755)
@@ -193,6 +289,8 @@ echo "populating database"
 /opt/schedulix/schedulix-%{version}/sql/pg_gen
 %ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/etc/server.conf
 %ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/.sdmshrc
+
+
 
 %package server-mariadb
 # ----------------------------------------------------------------------------------------
@@ -297,7 +395,11 @@ su - schedulix -c "
 
 %postun server-mariadb
 echo "Dropping database"
-echo "cleaning up"
+mysql --user=root << ENDMYSQL
+drop user schedulix@localhost;
+drop database schedulixdb;
+quit
+ENDMYSQL
 
 
 %files server-mariadb
