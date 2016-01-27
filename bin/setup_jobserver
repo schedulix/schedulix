@@ -1,0 +1,453 @@
+#!/bin/bash
+#
+# This script installs a jobserver for the user calling it.
+# Some information is needed though:
+#
+# * optionally the name of the jobserver; if not specified, it'll default to 'DEFAULT'
+# * optionally a password of the jobserver (if not specified, a password is generated)
+# * credentials of some ADMIN user (which implies REPOHOST and REPOPORT); if an ~/.sdmshrc is present, this is evaluated
+#   If the Host isn't specified, the default will be 'localhost'
+#   If the Port isn't specified, the default will be '2506'
+#   If the Password isn't specified, it will be prompted for
+# * optionally the owner group; if not specified, the default group of the ADMIN user is used
+# * optionally the working directory of the jobserver (default $HOME)
+# * optionally the hostname to use (else `hostname` will be used)
+#
+# The script will create a taskfile directory in $BICSUITEHOME/../taskfiles
+# which is named the same as the user
+# Below this directory a directory with the name of the jobserver will be created
+#
+# An etc directory will be created within $HOME.
+# The configuration file for the new jobserver will be created
+# (~/etc/jobserver name.conf)
+#
+# A log directory will be created as well
+#
+# Next the new jobserver will be created within the scheduling system
+# The scope structure is very simple:
+#
+# GLOBAL
+#    |
+#    +--- hostname
+#    |        |
+#    .        +--- username
+#    .        |        |
+#    .        .        +--- jobserver name
+#    .        .        |
+#    .        .        .
+#
+# Then some static named resources will be created:
+# RESOURCE.STATIC.HOSTS.hostname
+# RESOURCE.STATIC.USERS.username
+# RESOURCE.STATIC.SERVERS.jobserver name
+#
+# as well as their instances and an Environment requesting all three.
+#
+# The init.d script will derive its actions from the directory tree
+# described above.
+#
+# Script call convention:
+
+usage()
+{
+	echo "Usage: $0 [-h] [-n JSNAME] [-w JSPWD] [-o OWNER] [-H SDMSHOST] [-P SDMSPORT] [-w JSWD] [-c] [-u SDMSUSER] [-p SDMSPWD]"
+	echo "JSNAME   is the name of the jobserver to create"
+	echo "JSPWD    is the password of the jobserver to create"
+	echo "OWNER    is the owner group of the jobserver to create"
+	echo "SDMSHOST is the hostname of the host running the scheduling server"
+	echo "SDMSPORT is the port at which the scheduling server listens"
+	echo "JSWD     is the working directory of the jobserver"
+	echo "SDMSUSER is the username of the admin user that creates the jobserver within schedulix"
+	echo "SDMSPWD  is the password of SDMSUSER"
+	echo "-c       this flag tries to create the jobserver's working directory if it doesn't exist"
+	echo "-h       gives this message"
+}
+
+outputConfig()
+{
+	echo "JSNAME   = '$JSNAME'"
+	echo "JSPWD    = '$JSPWD'"
+	echo "OWNER    = '$OWNER'"
+	echo "SDMSHOST = '$SDMSHOST'"
+	echo "SDMSPORT = '$SDMSPORT'"
+	echo "JSWD     = '$JSWD'"
+	echo "SDMSUSER = '$SDMSUSER'"
+	echo "SDMSPWD  = '$SDMSPWD'"
+	echo "-c       = '$CREATEWD'"
+}
+
+checkWd()
+{
+	if [ ! -d $JSWD ]; then
+		if [ "$CREATEWD" == "1" ]; then
+			mkdir -p $JSWD
+			if [ "$?" -ne 0 ]; then
+				echo "ERROR: Couldn't create working directory '$JSWD'" 2>&1
+				exit 1
+			fi
+		else
+			echo "ERROR: working directory "$JSWD" does not exist" >&2
+			exit 1
+		fi
+	fi
+	if [ ! -x $JSWD ]; then
+		echo "ERROR: working directory "$JSWD" does exist, but can't cd to it" >&2
+		exit 1
+	fi
+	if [ ! -w $JSWD ]; then
+		echo "WARNING: Working directory '$JSWD' exists, but isn't writeable" >&2
+	fi
+}
+
+checkAdmin()
+{
+	# first we write a private sdmshrc
+	touch $SDMSHRC
+	chmod 0600 $SDMSHRC
+	echo "
+Host=$SDMSHOST
+Port=$SDMSPORT
+User=$SDMSUSER
+Password=$SDMSPWD
+" >> $SDMSHRC
+	# check if server is accessible
+	echo -e "quit\n" | sdmsh --ini $SDMSHRC >/dev/null
+	if [ "$?" -ne 0 ]; then
+		echo "ERROR: Can't access scheduling server"
+		exit 1
+	fi
+	# check if we have admin rights
+	echo -e "show user $SDMSUSER;" | sdmsh --ini $SDMSHRC | grep -e "ADMIN *KDEMOVG$" >/dev/null
+	if [ "$?" -ne 0 ]; then
+		echo "ERROR: The specified user does not belong to group ADMIN"
+		exit 1
+	fi
+	DEFGRP=`echo -e "show user $SDMSUSER;" | sdmsh --ini $SDMSHRC | grep -e "DEFAULT_GROUP :" | cut -d " " -f 3`
+}
+
+promptForPwd()
+{
+	echo "The password required to access schedulix as $SDMSUSER is missing"
+	read -p "Password: " -s SDMSPWD
+}
+
+checkJsPwd()
+{
+	if [ -z "$JSPWD" ]; then
+		declare -a CHARS
+		CHARS=('a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' \
+		       'n' 'o' 'p' 'q' 'r' 's' 't' 'u' 'v' 'w' 'x' 'y' 'z' \
+		       'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' 'I' 'J' 'K' 'L' 'M' \
+		       'N' 'O' 'P' 'Q' 'R' 'S' 'T' 'U' 'V' 'W' 'X' 'Y' 'Z' \
+		       '1' '2' '3' '4' '5' '6' '7' '8' '9' '0' '!' '$' '%' \
+		       '=' '?' '+' '-' '_' '#' ':' ';' '<' '>' '|' '.' ',' \
+		       '*' '&' '(' ')' '{' '}' '[' ']' '~')
+		NUMCHARS=87
+		I=0
+		while [ $I -lt 12 ]; do
+			R=`expr $RANDOM % $NUMCHARS`
+			JSPWD=$JSPWD${CHARS[$R]}
+			I=`expr $I + 1`
+		done
+	fi
+}
+
+checkJsExists()
+{
+	# if we run into a NotFoundException, the sdmsh script terminates with exit code 1.
+	# if the scope is found, the script will exit normally.
+	# hence, if it works, it's wrong ;-)
+	echo "whenever error disconnect 1;
+	      show scope $FQJSNAME;
+	" | sdmsh --ini $SDMSHRC >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		echo "ERROR: The jobserver or scope $FQJSNAME already exists"
+		exit 1
+	fi
+}
+
+# to get some DEBUG output, set this variable to 1
+DEBUG=0
+if [ "$DEBUG" == "1" ]; then
+	set -x
+fi
+
+# for the time this script is running, we'll use a dedicated sdmshrc file
+# it will be cleaned up afterwards
+SDMSHRC=/tmp/sdmshrc.$$
+
+trap "rm -f $SDMSHRC;" 0 1 2 3 
+
+if [ -z "$BICSUITEHOME" ]; then
+	echo BICSUITEHOME must be set
+	exit 1
+fi
+. $BICSUITEHOME/../etc/SETTINGS
+. $BICSUITECONFIG/bicsuite.conf
+
+if [ -f ~/.sdmshrc ]; then
+	. ~/.sdmshrc
+fi
+
+JSNAME="DEFAULT"
+JSPWD=""
+THISUSER=`$WHOAMI | tr [a-z] [A-Z]`
+
+if [ -z "$User" ]; then
+	SDMSUSER=""
+else
+	SDMSUSER=$User
+	unset User
+fi
+if [ -z "$Password" ]; then
+	SDMSPWD=""
+else
+	SDMSPWD="$Password"
+	unset Password
+fi
+if [ -z "$Host" ]; then
+	SDMSHOST="localhost"
+else
+	SDMSHOST=$Host
+	unset Host
+fi
+if [ -z "$Port" ]; then
+	SDMSPORT=2506
+else
+	SDMSPORT=$Port
+	unset Port
+fi
+OWNERGRP=""
+DEFGRP=""
+JSWD=$HOME
+HOSTNAME=`hostname | tr [a-z] [A-Z]`
+CREATEWD=0
+
+# collect cmdline arguments
+while [ -n "$1" ]; do
+	case $1 in
+	-h)	usage ;
+		exit 0 ;;
+	-c)	CREATEWD=1 ;;
+	-n)	JSNAME=$2 ;
+		shift ;;
+	-w)	JSPWD="$2" ;
+		shift ;;
+	-o)	OWNER=$2 ;
+		shift ;;
+	-H)	SDMSHOST=$2 ;
+		shift ;;
+	-P)	SDMSPORT=$2 ;
+		shift ;;
+	-w)	JSWD="$2" ;
+		shift ;;
+	-u)	SDMSUSER=$2 ;
+		shift ;;
+	-p)	SDMSPWD="$2" ;
+		shift ;;
+	*)	echo -e "ERROR: didn't understand parameter '$1'\n\n" >&2 ;
+		usage ;
+		exit 1;
+	esac
+	shift
+done
+
+if [ "$DEBUG" == "1" ]; then
+	outputConfig
+fi
+
+# we now have all information, but we'll check for completeness and validity
+# the check routine will exit with exit code 1 on error
+
+if [ -z "$SDMSUSER" ]; then
+	echo "ERROR: The name of the ADMIN user is missing" >&2
+	exit 1
+fi
+
+checkWd
+if [ -z "$SDMSPWD" ]; then
+	promptForPwd
+fi
+checkAdmin
+if [ -z "$OWNER" ]; then
+	OWNER=$DEFGRP
+fi
+checkJsPwd
+
+FQJSNAME=GLOBAL."'$HOSTNAME'"."'$THISUSER'"."'$JSNAME'"
+checkJsExists
+
+# checks are all OK, now we can start to do some work
+# The configuration file and the hook for setting up environment will be stored in the etc directory
+# the latter file, called <jobserver name>.init _must_ be present, even if empty. If it doesn't exist,
+# the init.d script will not start this jobserver
+mkdir -p $HOME/etc
+
+echo "The full qualified name of the jobserver will be $FQJSNAME"
+read -p "Is this correct? [Y/n] " ANSWER
+if [ "$ANSWER" == "" ]; then
+	ANSWER=Y
+fi
+case $ANSWER in
+	[Yy]*)	: do nothing ;;
+	[Nn]*)  exit 0 ;;
+esac
+
+FQSCOPE1=GLOBAL."'$HOSTNAME'"
+FQSCOPE2=GLOBAL."'$HOSTNAME'"."'$THISUSER'"
+
+# 1. create taskfile Directory
+TFDIR=/opt/schedulix/taskfiles/`$WHOAMI`/$JSNAME
+mkdir -p "$TFDIR"
+chmod -R 0700 "$FQSCOPE2"
+
+# 2. create config file
+touch $HOME/etc/$JSNAME.conf
+chmod 0600 $HOME/etc/$JSNAME.conf
+echo "
+RepoHost= $SDMSHOST
+RepoPort= $SDMSPORT
+RepoUser= \"$FQJSNAME\"
+RepoPass= \"$JSPWD\"
+" >> $HOME/etc/$JSNAME.conf
+
+# 3. create loggin directory
+mkdir -p $HOME/log
+
+# calculate some httpport for logfile view
+MYEUID=`id -u`
+HTTPPORT=`expr 10 * $MYEUID + 10240`
+while netstat -an | grep $HTTPPORT; do
+	HTTPPORT=`expr $HTTPPORT + 1`
+	if [ $HTTPPORT -gt 65535 ]; then
+		echo "ERROR: couldn't find a suitable httpport for logfile view"
+		exit 1
+	fi
+done
+
+echo "
+whenever error disconnect 1;
+
+begin multicommand
+
+create or alter scope $FQSCOPE1
+with
+	group = 'ADMIN',
+	config = (
+		'REPOHOST' = '$HOSTNAME',
+		'REPOPORT' = '2506',
+		'BOOTTIME' = 'NONE',
+		'USEPATH' = 'true',
+		'JOBEXECUTOR' = '$BICSUITEHOME/bin/jobexecutor',
+		'DEFAULTWORKDIR' = '$JSWD',
+		'VERBOSELOGS' = 'true',
+		'NAME_PATTERN_LOGFILES' = '.*\\.log',
+		'ENV' = (
+			'SDMSHOST' = 'SDMSHOST',
+			'JOBID' = 'JOBID',
+			'SDMSPORT' = 'SDMSPORT',
+			'KEY' = 'KEY'
+		)
+	);
+
+create or alter scope $FQSCOPE2
+with
+	group = 'PUBLIC',
+	config = (
+		'HTTPHOST' = '$HOSTNAME'
+	);
+
+create or alter job server $FQJSNAME
+with
+	group = '$OWNER',
+	password = '$JSPWD',
+	node = '$HOSTNAME',
+	config = (
+		'JOBFILEPREFIX' = '${TFDIR}/${JSNAME}-',
+		'HTTPPORT' = '$HTTPPORT'
+	);
+
+create or alter named resource RESOURCE.'STATIC'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'STATIC'.'HOSTS'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'STATIC'.'HOSTS'.'$HOSTNAME'
+with
+	group = 'PUBLIC',
+	usage = STATIC;
+
+create or alter named resource RESOURCE.'STATIC'.'USERS'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'STATIC'.'USERS'.'$THISUSER'
+with
+	group = 'PUBLIC',
+	usage = STATIC;
+
+create or alter named resource RESOURCE.'STATIC'.'SERVERS'
+with
+	group = 'PUBLIC',
+	usage = CATEGORY;
+
+create or alter named resource RESOURCE.'STATIC'.'SERVERS'.'$JSNAME'
+with
+	group = 'PUBLIC',
+	usage = STATIC;
+
+
+create or alter resource RESOURCE.'STATIC'.'HOSTS'.'$HOSTNAME' in $FQSCOPE1
+with
+	group = 'PUBLIC',
+	online;
+
+create or alter resource RESOURCE.'STATIC'.'USERS'.'$THISUSER' in $FQSCOPE2
+with
+	group = 'PUBLIC',
+	online;
+
+create or alter resource RESOURCE.'STATIC'.'SERVERS'.'$JSNAME' in $FQJSNAME
+with
+	group = 'PUBLIC',
+	online;
+
+create or alter environment '${THISUSER}_${JSNAME}@${HOSTNAME}'
+with
+	resources = (
+		RESOURCE.'STATIC'.'HOSTS'.'$HOSTNAME',
+		RESOURCE.'STATIC'.'USERS'.'$THISUSER',	
+		RESOURCE.'STATIC'.'SERVERS'.'$JSNAME'
+	);
+
+grant USE, VIEW
+on environment '${THISUSER}_${JSNAME}@${HOSTNAME}'
+to '$OWNER';
+
+end multicommand /* rollback */;
+" | sdmsh --ini $SDMSHRC
+
+if [ $? -ne 0 ]; then
+	echo "ERROR: something went wrong while trying to create the jobserver on the server side" >&2
+	echo "the created files and directories will be removed. After eliminating the error cause" >&2
+	echo "the script can be executed again".
+	rmdir $TFDIR
+	rm $HOME/etc/$JSNAME.*
+	exit 1
+fi
+
+#
+# By touching the following file, this jobserver will be started by the init.d script
+# This file is also sourced before starting the jobserver (as the user running the jobserver)
+# and can be used to create the desired runtime environment for the jobs
+#
+touch $HOME/etc/$JSNAME.init
+
+#
+#

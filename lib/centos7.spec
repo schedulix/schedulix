@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.6.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -91,8 +91,11 @@ if [ "$1" == "1" ]; then
 else
 	echo "Upgrading schedulix-base";
 	# if there is some server installed, stop it (if it's running, but the server-stop utility is forgiving if not)
-	if [ -x /opt/schedulix/schedulix/bin/server-stop ]; then
-		su - schedulix -c ". ~/.bashrc; server-stop"
+	if [ -x /etc/init.d/schedulix-server ]; then
+		service schedulix-server stop
+	fi
+	if [ -x /etc/init.d/schedulix-client ]; then
+		service schedulix-client stop
 	fi
 fi
 
@@ -131,9 +134,11 @@ su schedulix -c "ln -s schedulix-%{version} schedulix"
 
 
 %postun base
-userdel schedulix
-rm -rf /var/spool/mail/schedulix
-rm -rf /opt/schedulix
+if [ "$1" == "0" ]; then
+	userdel schedulix
+	rm -rf /var/spool/mail/schedulix
+	rm -rf /opt/schedulix
+fi
 
 %files base
 %ghost %attr(-, schedulix, schedulix) /opt/schedulix/schedulix
@@ -170,7 +175,7 @@ rm -rf /opt/schedulix
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix server pg package installs a schedulix server based on an underlying Postgres RDBMS
 Group:			Applications/System
-Requires:		schedulix-base = %{version} postgresql-server postgresql-jdbc
+Requires:		schedulix-base = %{version} postgresql-server postgresql-jdbc coreutils
 Provides:		schedulix-server %{version}
 Conflicts:		schedulix-server-mariadb
 
@@ -187,100 +192,103 @@ in order to be able to connect by jdbc.
 
 
 %post server-pg
-# create a valid server.conf
-echo "creating server.conf file"
-HOSTNAME=`hostname`
-su - schedulix -c "
-. ~/.bashrc;
-sed '
-	s:DbPasswd=.*:DbPasswd=schedulix:
-	s!DbUrl=.*!DbUrl=jdbc:postgresql:schedulixdb!
-	s:DbUser=.*:DbUser=schedulix:
-	s:Hostname=.*:Hostname=$HOSTNAME:
-	s:JdbcDriver=.*:JdbcDriver=org.postgresql.Driver:
-' < /opt/schedulix/schedulix/etc/server.conf.template > /opt/schedulix/etc/server.conf;
-chmod 600 /opt/schedulix/etc/server.conf;
-cp /opt/schedulix/etc/java.conf /tmp/$$.tmp;
-sed '
-	s:JDBCJAR=.*:JDBCJAR=/usr/share/java/postgresql-jdbc.jar:
-' < /tmp/$$.tmp > /opt/schedulix/etc/java.conf;
-rm -f /tmp/$$.tmp
-"
-
-# if this is a new postgresql installation, we'll have to do an initdb first
-if [ ! -d /var/lib/pgsql ]; then
-	postgresql-setup initdb
-fi
-
-echo "creating database user"
-su - postgres -c 'echo "create user schedulix with password '"'schedulix'"' createdb;" | psql'
-
-# write the password file in order to be able to connect without a password prompt
-echo "127.0.0.1:5432:schedulixdb:schedulix:schedulix" > /opt/schedulix/.pgpass
-
-# modify /var/lib/pgsql/data/pg_hba.conf in order to allow jdbc connects
-sed --in-place=.save '
-     s!^host *all * all *127.0.0.1/32 *.*!host    all             all             127.0.0.1/32            md5!
-     s!^host *all * all *::1/128 *.*!host    all             all             ::1/128                 md5!
-' /var/lib/pgsql/data/pg_hba.conf
-
-# we now restart the DBMS to make our config change effective
-if ps -fu postgres | grep 'postgres: checkpointer process'; then
-	service postgresql restart
-else
-	service postgresql start
-fi
-
-echo "populating database"
-su - schedulix -c '
+if [ "$1" == "1" ]; then
+	# create a valid server.conf
+	echo "creating server.conf file"
+	HOSTNAME=`hostname`
+	su - schedulix -c "
 	. ~/.bashrc;
-	cd $BICSUITEHOME/sql
-	createdb schedulixdb
-	psql -f pg/install.sql schedulixdb
-	ret=$?
-	if [ $ret != 0 ]
-	then
-		echo "Error initializing repository database schedulixdb -- exit code $ret"
-		exit 1
+	sed '
+		s:DbPasswd=.*:DbPasswd=schedulix:
+		s!DbUrl=.*!DbUrl=jdbc:postgresql:schedulixdb!
+		s:DbUser=.*:DbUser=schedulix:
+		s:Hostname=.*:Hostname=$HOSTNAME:
+		s:JdbcDriver=.*:JdbcDriver=org.postgresql.Driver:
+	' < /opt/schedulix/schedulix/etc/server.conf.template > /opt/schedulix/etc/server.conf;
+	chmod 600 /opt/schedulix/etc/server.conf;
+	cp /opt/schedulix/etc/java.conf /tmp/$$.tmp;
+	sed '
+		s:JDBCJAR=.*:JDBCJAR=/usr/share/java/postgresql-jdbc.jar:
+	' < /tmp/$$.tmp > /opt/schedulix/etc/java.conf;
+	rm -f /tmp/$$.tmp
+	"
+
+	# if this is a new postgresql installation, we'll have to do an initdb first
+	if [ ! -d /var/lib/pgsql ]; then
+		postgresql-setup initdb
 	fi
-'
 
-echo "Setting up /opt/schedulix/.sdmshrc"
-su - schedulix -c "
-echo 'User=SYSTEM
-Password=G0H0ME
-Timeout=0' > /opt/schedulix/.sdmshrc
-chmod 600 /opt/schedulix/.sdmshrc
-"
+	echo "creating database user"
+	su - postgres -c 'echo "create user schedulix with password '"'schedulix'"' createdb;" | psql'
 
-echo "Setting up /opt/schedulix/etc/sdmshrc"
+	# write the password file in order to be able to connect without a password prompt
+	echo "127.0.0.1:5432:schedulixdb:schedulix:schedulix" > /opt/schedulix/.pgpass
 
-su - schedulix -c "
-echo 'Host=$HOSTNAME
-Port=2506' > /opt/schedulix/etc/sdmshrc
-chmod 644 /opt/schedulix/etc/sdmshrc
-"
+	# modify /var/lib/pgsql/data/pg_hba.conf in order to allow jdbc connects
+	sed --in-place=.save '
+	     s!^host *all * all *127.0.0.1/32 *.*!host    all             all             127.0.0.1/32            md5!
+	     s!^host *all * all *::1/128 *.*!host    all             all             ::1/128                 md5!
+	' /var/lib/pgsql/data/pg_hba.conf
 
-echo "Loading convenience package"
-su - schedulix -c "
-. ~/.bashrc;
-/opt/schedulix/schedulix/bin/server-start;
-sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;
-"
+	# we now restart the DBMS to make our config change effective
+	if ps -fu postgres | grep 'postgres: checkpointer process'; then
+		service postgresql restart
+	else
+		service postgresql start
+	fi
+
+	echo "populating database"
+	su - schedulix -c '
+		. ~/.bashrc;
+		cd $BICSUITEHOME/sql
+		createdb schedulixdb
+		psql -f pg/install.sql schedulixdb
+		ret=$?
+		if [ $ret != 0 ]
+		then
+			echo "Error initializing repository database schedulixdb -- exit code $ret"
+			exit 1
+		fi
+	'
+
+	echo "Setting up /opt/schedulix/.sdmshrc"
+	su - schedulix -c "
+	echo 'User=SYSTEM
+	Password=G0H0ME
+	Timeout=0' > /opt/schedulix/.sdmshrc
+	chmod 600 /opt/schedulix/.sdmshrc
+	"
+
+	echo "Setting up /opt/schedulix/etc/sdmshrc"
+
+	su - schedulix -c "
+	echo 'Host=$HOSTNAME
+	Port=2506' > /opt/schedulix/etc/sdmshrc
+	chmod 644 /opt/schedulix/etc/sdmshrc
+	"
+
+	echo "Loading convenience package"
+	su - schedulix -c "
+	. ~/.bashrc;
+	/opt/schedulix/schedulix/bin/server-start;
+	sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;
+	"
+else
+	: todo
+fi
 
 
 
 %preun server-pg
 echo "Stopping server ..."
-su - schedulix -c "
-. ~/.bashrc;
-/opt/schedulix/schedulix/bin/server-stop;
-"
+service schedulix-server stop
 
 %postun server-pg
-echo "Dropping database"
-su - schedulix -c "dropdb schedulixdb"
-su - postgres -c 'echo "drop user schedulix;" | psql'
+if [ "$1" == "0" ]; then
+	echo "Dropping database"
+	su - schedulix -c "dropdb schedulixdb"
+	su - postgres -c 'echo "drop user schedulix;" | psql'
+fi
 
 
 
@@ -313,7 +321,7 @@ su - postgres -c 'echo "drop user schedulix;" | psql'
 Summary:		The schedulix server mariadb package installs a schedulix server based on an underlying MariaDB od MySQL RDBMS
 Group:			Applications/System
 # Requires: schedulix-base mysql-server mysql-connector-java
-Requires:		schedulix-base = %{version} mariadb mariadb-libs mariadb-server mysql-connector-java
+Requires:		schedulix-base = %{version} mariadb mariadb-libs mariadb-server mysql-connector-java coreutils 
 Provides:		schedulix-server %{version}
 Conflicts:		schedulix-server-pg
 
@@ -331,87 +339,89 @@ It will load the convenience package, but does not load the examples.
 %serverNotes
 
 %post server-mariadb
-echo "creating server.conf file"
-HOSTNAME=`hostname`
-su - schedulix -c "
-. ~/.bashrc;
-sed '
-	s:DbPasswd=.*:DbPasswd=schedulix:
-	s:DbUrl=.*:DbUrl=jdbc\:mysql\:///schedulixdb:
-	s:DbUser=.*:DbUser=schedulix:
-	s:Hostname=.*:Hostname=$HOSTNAME:
-	s:JdbcDriver=.*:JdbcDriver=com.mysql.jdbc.Driver:
-' < /opt/schedulix/schedulix/etc/server.conf.template > /opt/schedulix/etc/server.conf;
-chmod 600 /opt/schedulix/etc/server.conf;
-cp /opt/schedulix/etc/java.conf /tmp/$$.tmp;
-sed '
-	s:JDBCJAR=.*:JDBCJAR=/usr/share/java/mysql-connector-java.jar:
-' < /tmp/$$.tmp > /opt/schedulix/etc/java.conf;
-rm -f /tmp/$$.tmp
-"
-
-echo "creating database"
-service mariadb start
-mysql --user=root << ENDMYSQL
-create user schedulix@localhost identified by 'schedulix';
-create database schedulixdb;
-grant all on schedulixdb.* to schedulix;
-quit
-ENDMYSQL
-
-echo "populating database"
-su - schedulix -c '
+if [ "$1" == "1" ]; then
+	echo "creating server.conf file"
+	HOSTNAME=`hostname`
+	su - schedulix -c "
 	. ~/.bashrc;
-	cd $BICSUITEHOME/sql
-	mysql --user=schedulix --password=schedulix --database=schedulixdb --execute "source mysql/install.sql"
-	ret=$?
-	if [ $ret != 0 ]
-	then
-		echo "Error initializing repository database schedulixdb -- exit code $ret"
-		exit 1
-	fi
-'
+	sed '
+		s:DbPasswd=.*:DbPasswd=schedulix:
+		s:DbUrl=.*:DbUrl=jdbc\:mysql\:///schedulixdb:
+		s:DbUser=.*:DbUser=schedulix:
+		s:Hostname=.*:Hostname=$HOSTNAME:
+		s:JdbcDriver=.*:JdbcDriver=com.mysql.jdbc.Driver:
+	' < /opt/schedulix/schedulix/etc/server.conf.template > /opt/schedulix/etc/server.conf;
+	chmod 600 /opt/schedulix/etc/server.conf;
+	cp /opt/schedulix/etc/java.conf /tmp/$$.tmp;
+	sed '
+		s:JDBCJAR=.*:JDBCJAR=/usr/share/java/mysql-connector-java.jar:
+	' < /tmp/$$.tmp > /opt/schedulix/etc/java.conf;
+	rm -f /tmp/$$.tmp
+	"
 
-echo "Setting up /opt/schedulix/.sdmshrc"
+	echo "creating database"
+	service mariadb start
+	mysql --user=root << ENDMYSQL
+	create user schedulix@localhost identified by 'schedulix';
+	create database schedulixdb;
+	grant all on schedulixdb.* to schedulix;
+	quit
+	ENDMYSQL
 
-su - schedulix -c "
-echo 'User=SYSTEM
-Password=G0H0ME
-Timeout=0' > /opt/schedulix/.sdmshrc
-chmod 600 /opt/schedulix/.sdmshrc
-"
+	echo "populating database"
+	su - schedulix -c '
+		. ~/.bashrc;
+		cd $BICSUITEHOME/sql
+		mysql --user=schedulix --password=schedulix --database=schedulixdb --execute "source mysql/install.sql"
+		ret=$?
+		if [ $ret != 0 ]
+		then
+			echo "Error initializing repository database schedulixdb -- exit code $ret"
+			exit 1
+		fi
+	'
 
-echo "Setting up /opt/schedulix/etc/sdmshrc"
+	echo "Setting up /opt/schedulix/.sdmshrc"
 
-su - schedulix -c "
-echo 'Host=$HOSTNAME
-Port=2506' > /opt/schedulix/etc/sdmshrc
-chmod 644 /opt/schedulix/etc/sdmshrc
-"
+	su - schedulix -c "
+	echo 'User=SYSTEM
+	Password=G0H0ME
+	Timeout=0' > /opt/schedulix/.sdmshrc
+	chmod 600 /opt/schedulix/.sdmshrc
+	"
 
-echo "Loading convenience package"
-su - schedulix -c "
-. ~/.bashrc;
-/opt/schedulix/schedulix/bin/server-start;
-sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;
-"
+	echo "Setting up /opt/schedulix/etc/sdmshrc"
 
+	su - schedulix -c "
+	echo 'Host=$HOSTNAME
+	Port=2506' > /opt/schedulix/etc/sdmshrc
+	chmod 644 /opt/schedulix/etc/sdmshrc
+	"
+
+	echo "Loading convenience package"
+	su - schedulix -c "
+	. ~/.bashrc;
+	/opt/schedulix/schedulix/bin/server-start;
+	sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;
+	"
+else
+	: todo
+fi
 
 
 %preun server-mariadb
 echo "Stopping server ..."
-su - schedulix -c "
-. ~/.bashrc;
-/opt/schedulix/schedulix/bin/server-stop;
-"
+service schedulix-server stop
 
 %postun server-mariadb
-echo "Dropping database"
-mysql --user=root << ENDMYSQL
-drop user schedulix@localhost;
-drop database schedulixdb;
-quit
-ENDMYSQL
+if [ "$1" == "0" ]; then
+	echo "Dropping database"
+	mysql --user=root << ENDMYSQL
+	drop user schedulix@localhost;
+	drop database schedulixdb;
+	quit
+	ENDMYSQL
+fi
 
 
 %files server-mariadb
@@ -446,7 +456,7 @@ ENDMYSQL
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix client package installs everything needed to setup a jobserver
 Group:			Applications/System
-Requires:		schedulix-base = %{version}
+Requires:		schedulix-base = %{version} coreutils
 
 %description client
 %commonDescription
@@ -464,6 +474,7 @@ The schedulix client package installs everything needed to setup a jobserver
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/sdms-set_variable
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/sdms-set_warning
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/sdms-submit
+%attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/setup_jobserver
 %dir %attr(0755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/bin/Images
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/Images/Bullit.png
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/Images/Logo.png
@@ -473,7 +484,8 @@ The schedulix client package installs everything needed to setup a jobserver
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/stop_example_jobservers.sh
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/watch.sh
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/jobserver.conf.template
-%dir %attr(777, schedulix, schedulix) /opt/schedulix/taskfiles
+%attr(0744, root, root)             /etc/init.d/schedulix-client
+%dir %attr(1777, schedulix, schedulix) /opt/schedulix/taskfiles
 
 %package zope
 # ----------------------------------------------------------------------------------------
@@ -515,82 +527,89 @@ This will make the port 8080 accessible from other computers.
 your security concept).
 
 %post zope
-echo "fetching zope"
-su schedulix -c "mkdir -p /opt/schedulix/software"
-cd /opt/schedulix/software
-su schedulix -c "virtualenv --no-site-packages Zope"
-if [ $? != 0 ]; then
-	echo "Error creating python virtualenv environment"
-	exit 1
-fi
-cd /opt/schedulix/software/Zope
-su schedulix -c "bin/easy_install -i http://download.zope.org/Zope2/index/%{zope2version} Zope2"
-ret=$?
-if [ $ret != 0 ]; then
-	echo "Error during easy_install of Zope2 version %{zope2version}"
-	exit 1
-fi
-
-echo "building zope instance"
-su schedulix -c "bin/mkzopeinstance -d /opt/schedulix/schedulixweb -u sdmsadm:sdmsadm"
-ret=$?
-if [ $ret != 0 ]; then
-	echo "Error creating Zope instance for schedulix!web"
-	exit 1
-fi
-
-echo "loading application"
-su schedulix -c "
-cd /opt/schedulix/schedulixweb;
-mkdir Extensions;
-cd Extensions;
-ln -s /opt/schedulix/schedulix/zope/*.py .;
-cd ../Products;
-ln -s /opt/schedulix/schedulix/zope/BICsuiteSubmitMemory .;
-cd ../import;
-ln -s /opt/schedulix/schedulix/zope/SDMS.zexp .;
-cd ..;
-"
-
-su schedulix -c "/opt/schedulix/schedulixweb/bin/zopectl start"
-ret=$?
-if [ $ret != 0 ]; then
-	echo "Error starting Zope instance"
-	exit 1	
-fi
-sleep 5
-
-CNT=0
-QUIET="--quiet"
-while [ $CNT -lt 5 ]; do
-	wget $QUIET --user=sdmsadm --password=sdmsadm --output-document=/dev/null "http://localhost:8080/manage_importObject?file=SDMS.zexp"
+if [ "$1" == "1" ]; then
+	# we set the umask such that the allowed access is user-only (if not overridden)
+	# nobody needs to read the zope directories at silesystem level, except for zope itself
+	umask 077
+	echo "fetching zope"
+	su schedulix -c "mkdir -p /opt/schedulix/software"
+	cd /opt/schedulix/software
+	su schedulix -c "virtualenv --no-site-packages Zope"
+	if [ $? != 0 ]; then
+		echo "Error creating python virtualenv environment"
+		exit 1
+	fi
+	cd /opt/schedulix/software/Zope
+	su schedulix -c "bin/easy_install -i http://download.zope.org/Zope2/index/%{zope2version} Zope2"
 	ret=$?
 	if [ $ret != 0 ]; then
-		echo "Error importing SDMS.zexp"
-		QUIET="--verbose"
-	else
-		break;
+		echo "Error during easy_install of Zope2 version %{zope2version}"
+		exit 1
 	fi
-	CNT=`expr $CNT + 1`
-done
-rm -f cookies.txt
 
-wget --quiet --user=sdmsadm --password=sdmsadm --output-document=/dev/null --keep-session-cookies --save-cookies cookies.txt "http://localhost:8080/SDMS/Install?manage_copyObjects:method=Copy&ids:list=User&ids:list=Custom"
-ret=$?
-if [ $ret != 0 ]; then
-	echo "Error copying User and Custom Zope template folders from Zope /SDMS/install"
-	exit 1
-fi
+	echo "building zope instance"
+	su schedulix -c "bin/mkzopeinstance -d /opt/schedulix/schedulixweb -u sdmsadm:sdmsadm"
+	ret=$?
+	if [ $ret != 0 ]; then
+		echo "Error creating Zope instance for schedulix!web"
+		exit 1
+	fi
 
-wget --quiet --user=sdmsadm --password=sdmsadm --output-document=/dev/null --load-cookies cookies.txt "http://localhost:8080?manage_pasteObjects:method=Paste"
-ret=$?
-if [ $ret != 0 ]; then
-	echo "Error pasting User and Custom Zope folders into Zope"
-	exit 1
+	echo "loading application"
+	su schedulix -c "
+	cd /opt/schedulix/schedulixweb;
+	mkdir Extensions;
+	cd Extensions;
+	ln -s /opt/schedulix/schedulix/zope/*.py .;
+	cd ../Products;
+	ln -s /opt/schedulix/schedulix/zope/BICsuiteSubmitMemory .;
+	cd ../import;
+	ln -s /opt/schedulix/schedulix/zope/SDMS.zexp .;
+	cd ..;
+	"
+
+	su schedulix -c "/opt/schedulix/schedulixweb/bin/zopectl start"
+	ret=$?
+	if [ $ret != 0 ]; then
+		echo "Error starting Zope instance"
+		exit 1	
+	fi
+	sleep 5
+
+	CNT=0
+	QUIET="--quiet"
+	while [ $CNT -lt 5 ]; do
+		wget $QUIET --user=sdmsadm --password=sdmsadm --output-document=/dev/null "http://localhost:8080/manage_importObject?file=SDMS.zexp"
+		ret=$?
+		if [ $ret != 0 ]; then
+			echo "Error importing SDMS.zexp"
+			QUIET="--verbose"
+		else
+			break;
+		fi
+		CNT=`expr $CNT + 1`
+	done
+	rm -f cookies.txt
+
+	wget --quiet --user=sdmsadm --password=sdmsadm --output-document=/dev/null --keep-session-cookies --save-cookies cookies.txt "http://localhost:8080/SDMS/Install?manage_copyObjects:method=Copy&ids:list=User&ids:list=Custom"
+	ret=$?
+	if [ $ret != 0 ]; then
+		echo "Error copying User and Custom Zope template folders from Zope /SDMS/install"
+		exit 1
+	fi
+
+	wget --quiet --user=sdmsadm --password=sdmsadm --output-document=/dev/null --load-cookies cookies.txt "http://localhost:8080?manage_pasteObjects:method=Paste"
+	ret=$?
+	if [ $ret != 0 ]; then
+		echo "Error pasting User and Custom Zope folders into Zope"
+		exit 1
+	fi
+	rm -f cookies.txt
+	# we shut the server down since the init.d script uses a different method of starting it
+	su schedulix -c "/opt/schedulix/schedulixweb/bin/zopectl stop"
+else
+	: todo -> exchange SDMS.zexp
 fi
-rm -f cookies.txt
-# we shut the server down since the init.d script uses a different method of starting it
-su schedulix -c "/opt/schedulix/schedulixweb/bin/zopectl stop"
 
 
 %preun zope
@@ -598,8 +617,10 @@ su schedulix -c "/opt/schedulix/schedulixweb/bin/zopectl stop"
 
 
 %postun zope
-rm -rf /opt/schedulix/software
-rm -rf /opt/schedulix/schedulixweb
+if [ "$1" == "0" ]; then
+	rm -rf /opt/schedulix/software
+	rm -rf /opt/schedulix/schedulixweb
+fi
 
 
 %files zope
@@ -646,14 +667,17 @@ The logs can be found in the $BICSUITEHOME/install directory.
 It is assumed that a valid .sdmshrc file is installed in $HOME.
 
 %post examples
-su - schedulix -c '
-. ~/.bashrc;
-cd $BICSUITEHOME/install;
-./setup_example_jobservers.sh > setup_example_jobservers.log 2>&1;
-sdmsh < setup_examples.sdms > setup_examples.log 2>&1
-'
+if [ "$1" == "1" ]; then
+	su - schedulix -c '
+	. ~/.bashrc;
+	cd $BICSUITEHOME/install;
+	./setup_example_jobservers.sh > setup_example_jobservers.log 2>&1;
+	sdmsh < setup_examples.sdms > setup_examples.log 2>&1
+	'
+fi
 
 %preun examples
+service schedulix-examples stop
 cd /opt/schedulix/schedulix/install
 rm -f *.log
 
@@ -727,6 +751,7 @@ mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-server-mariadb 
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-server-pg %{buildroot}/etc/init.d/schedulix-server-pg
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-zope %{buildroot}/etc/init.d/schedulix-zope
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-examples %{buildroot}/etc/init.d/schedulix-examples
+mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-client %{buildroot}/etc/init.d/schedulix-client
 
 
 echo "End of the installation of schedulix"
