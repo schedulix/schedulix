@@ -468,12 +468,7 @@ public class ObjectURL
 		final SDMSNamedResource nr = SDMSNamedResourceTable.getNamedResource(sysEnv, path);
 		final Long nrId = nr.getId(sysEnv);
 		final SDMSKey key = new SDMSKey(nrId, master.objId);
-		try {
-			p = SDMSResourceTable.idx_nrId_scopeId_getUnique(sysEnv, key);
-		} catch (NotFoundException nfe) {
-			objType = new Integer(SDMSObjectComment.RESOURCE_TEMPLATE);
-			p = SDMSResourceTemplateTable.idx_nrId_seId_getUnique(sysEnv, key);
-		}
+		p = SDMSResourceTable.idx_nrId_scopeId_getUnique(sysEnv, key);
 		return p;
 	}
 
