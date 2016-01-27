@@ -297,9 +297,9 @@ FQSCOPE1=GLOBAL."'$HOSTNAME'"
 FQSCOPE2=GLOBAL."'$HOSTNAME'"."'$THISUSER'"
 
 # 1. create taskfile Directory
-TFDIR=/opt/schedulix/taskfiles/`$WHOAMI`/$JSNAME
+TFDIR=/opt/schedulix/taskfiles/$HOSTNAME/`$WHOAMI`/$JSNAME
 mkdir -p "$TFDIR"
-chmod -R 0700 "$FQSCOPE2"
+chmod -R 0700 "$TFDIR"
 
 # 2. create config file
 touch $HOME/etc/$JSNAME.conf
