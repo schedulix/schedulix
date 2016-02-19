@@ -20,8 +20,8 @@ if [ -f /lib/lsb/init-functions ]; then
 	. /lib/lsb/init-functions
 	LOG_WARNING_MSG=log_warning_msg
 	LOG_FAILURE_MSG=log_failure_msg
-	ECHO_SUCCESS=echo_success
-	ECHO_FAILURE=echo_failure
+	ECHO_SUCCESS=echo
+	ECHO_FAILURE=echo
 else
 	LOG_WARNING_MSG=echo
 	LOG_FAILURE_MSG=echo

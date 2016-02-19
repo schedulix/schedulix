@@ -20,8 +20,8 @@ if [ -f /lib/lsb/init-functions ]; then
 	. /lib/lsb/init-functions
 	LOG_WARNING_MSG=log_warning_msg
 	LOG_FAILURE_MSG=log_failure_msg
-	ECHO_SUCCESS=echo_success
-	ECHO_FAILURE=echo_failure
+	ECHO_SUCCESS=echo
+	ECHO_FAILURE=echo
 else
 	LOG_WARNING_MSG=echo
 	LOG_FAILURE_MSG=echo
@@ -48,10 +48,10 @@ case "${1:-''}" in
 				cd $USR;
 				for SVR in *; do
 					su - $USR -c "
-						[ -f $HOME/.bashrc ] && . $HOME/.bashrc;
-						if [ -f $HOME/etc/$SVR.init ]; then 
-							. $HOME/etc/$SVR.init;
-							$BICSUITEHOME/bin/jobserver-run $HOME/etc/$SVR.conf $HOME/log/$SRV.out;
+						[ -f \$HOME/.bashrc ] && . \$HOME/.bashrc;
+						if [ -f \$HOME/etc/$SVR.init ]; then 
+							. \$HOME/etc/$SVR.init;
+							$BICSUITEHOME/bin/jobserver-run \$HOME/etc/$SVR.conf \$HOME/log/$SVR.out;
 						fi
 					"
 				done
@@ -70,7 +70,13 @@ case "${1:-''}" in
 			if grep $USR /etc/passwd >/dev/null 2>&1; then
 				cd $USR;
 				for SVR in *; do
-					fuser -k $HOME/log/$SRV.out;
+					PNAME="~$USR/log/$SVR.out"
+					PNAME=`eval "ls $PNAME"`
+					if [ -p $PNAME ]; then
+						if fuser -s $PNAME >/dev/null 2>&1; then
+							fuser -k $PNAME >/dev/null 2>&1;
+						fi
+					fi
 				done
 				cd ..;
 			fi
@@ -97,7 +103,9 @@ case "${1:-''}" in
 			if grep $USR /etc/passwd >/dev/null 2>&1; then
 				cd $USR;
 				for SVR in *; do
-					if fuser -s $HOME/log/$SRV.out >/dev/null 2>&1; then
+					PNAME="~$USR/log/$SVR.out"
+					PNAME=`eval "ls $PNAME"`
+					if fuser -s $PNAME >/dev/null 2>&1; then
 						echo "GLOBAL.$HOSTNAME.$USR.$SVR is up"
 					else
 						echo "GLOBAL.$HOSTNAME.$USR.$SVR is down"

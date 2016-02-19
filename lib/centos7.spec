@@ -105,7 +105,7 @@ if [ "$1" == "1" ]; then
 	# we basically write the configuration files bicsuite.conf, java.conf and a settings file here
 	sed '
 	s!JNAJAR=.*!JNAJAR=/usr/share/java/jna.jar!
-	s!SWTJAR=.*!SWTJAR=/usr/share/java/swt.jar!' < /opt/schedulix/schedulix-%{version}/etc/java.conf.template > /opt/schedulix/etc/java.conf
+	s!SWTJAR=.*!SWTJAR=/usr/lib64/java/swt.jar!' < /opt/schedulix/schedulix-%{version}/etc/java.conf.template > /opt/schedulix/etc/java.conf
 
 	cp /opt/schedulix/schedulix-%{version}/etc/bicsuite.conf.template /opt/schedulix/etc/bicsuite.conf
 	echo '
@@ -214,8 +214,12 @@ if [ "$1" == "1" ]; then
 	"
 
 	# if this is a new postgresql installation, we'll have to do an initdb first
-	if [ ! -d /var/lib/pgsql ]; then
+	if [ ! -f /var/lib/pgsql/data/pg_hba.conf ]; then
 		postgresql-setup initdb
+	fi
+	# check if pg is running, start if not
+	if ! service postgresql status | grep active >/dev/null 2>&1; then
+		service postgresql start
 	fi
 
 	echo "creating database user"
@@ -223,6 +227,8 @@ if [ "$1" == "1" ]; then
 
 	# write the password file in order to be able to connect without a password prompt
 	echo "127.0.0.1:5432:schedulixdb:schedulix:schedulix" > /opt/schedulix/.pgpass
+	chmod 0600 /opt/schedulix/.pgpass
+	chown schedulix.schedulix /opt/schedulix/.pgpass
 
 	# modify /var/lib/pgsql/data/pg_hba.conf in order to allow jdbc connects
 	sed --in-place=.save '
@@ -231,11 +237,10 @@ if [ "$1" == "1" ]; then
 	' /var/lib/pgsql/data/pg_hba.conf
 
 	# we now restart the DBMS to make our config change effective
-	if ps -fu postgres | grep 'postgres: checkpointer process'; then
-		service postgresql restart
-	else
-		service postgresql start
-	fi
+	service postgresql restart
+
+	# since we need the DBMS, we'll enable it
+	systemctl enable postgresql
 
 	echo "populating database"
 	su - schedulix -c '
@@ -267,12 +272,12 @@ if [ "$1" == "1" ]; then
 	chmod 644 /opt/schedulix/etc/sdmshrc
 	"
 
+	ln -s /etc/init.d/schedulix-server-pg /etc/init.d/schedulix-server
+
+	chkconfig schedulix-server on
 	echo "Loading convenience package"
-	su - schedulix -c "
-	. ~/.bashrc;
-	/opt/schedulix/schedulix/bin/server-start;
-	sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;
-	"
+	service schedulix-server start
+	su - schedulix -c ". \$HOME/.bashrc; sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;"
 else
 	: todo
 fi
@@ -286,8 +291,8 @@ service schedulix-server stop
 %postun server-pg
 if [ "$1" == "0" ]; then
 	echo "Dropping database"
-	su - schedulix -c "dropdb schedulixdb"
-	su - postgres -c 'echo "drop user schedulix;" | psql'
+	su - schedulix -c "dropdb schedulixdb" || echo "drop of schedulixdb failed; continuing anyway"
+	su - postgres -c 'echo "drop user schedulix;" | psql' || echo "drop role schedulix failed; continuing anyway"
 fi
 
 
@@ -309,6 +314,8 @@ fi
 /opt/schedulix/schedulix-%{version}/sql/pg_gen
 %ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/etc/server.conf
 %ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/.sdmshrc
+%ghost %attr(-, root, root) /etc/init.d/schedulix-server
+%ghost %attr(0600, schedulix, schedulix) /opt/schedulix/.pgpass
 
 
 
@@ -368,6 +375,9 @@ if [ "$1" == "1" ]; then
 	quit
 	ENDMYSQL
 
+	# we enable the service. We need it
+	systemctl enable mariadb
+
 	echo "populating database"
 	su - schedulix -c '
 		. ~/.bashrc;
@@ -398,12 +408,12 @@ if [ "$1" == "1" ]; then
 	chmod 644 /opt/schedulix/etc/sdmshrc
 	"
 
+	ln -s /etc/init.d/schedulix-server-mariadb /etc/init.d/schedulix-server
+
+	chkconfig schedulix-server on
+	service schedulix-server start
 	echo "Loading convenience package"
-	su - schedulix -c "
-	. ~/.bashrc;
-	/opt/schedulix/schedulix/bin/server-start;
-	sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;
-	"
+	su - schedulix -c ". \$HOME/.bashrc; sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;"
 else
 	: todo
 fi
@@ -441,6 +451,7 @@ fi
 /opt/schedulix/schedulix-%{version}/sql/mysql_gen
 %ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/etc/server.conf
 %ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/.sdmshrc
+%ghost %attr(-, root, root) /etc/init.d/schedulix-server
 
 #
 # exclude ingres sql files for now
@@ -462,6 +473,9 @@ Requires:		schedulix-base = %{version} coreutils
 %commonDescription
 
 The schedulix client package installs everything needed to setup a jobserver
+
+%post
+chkconfig schedulix-client on
 
 %files client
 %defattr(0644, schedulix, schedulix, 0755)
@@ -607,6 +621,10 @@ if [ "$1" == "1" ]; then
 	rm -f cookies.txt
 	# we shut the server down since the init.d script uses a different method of starting it
 	su schedulix -c "/opt/schedulix/schedulixweb/bin/zopectl stop"
+
+	# now we enable the service an start it
+	chkconfig schedulix-zope on
+	service schedulix-zope start
 else
 	: todo -> exchange SDMS.zexp
 fi
@@ -674,6 +692,8 @@ if [ "$1" == "1" ]; then
 	./setup_example_jobservers.sh > setup_example_jobservers.log 2>&1;
 	sdmsh < setup_examples.sdms > setup_examples.log 2>&1
 	'
+	chkconfig schedulix-examples on
+	service schedulix-examples start
 fi
 
 %preun examples
