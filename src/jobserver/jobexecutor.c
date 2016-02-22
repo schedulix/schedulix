@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -73,24 +73,24 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define true  (0 == 0)
 
 #ifdef WINDOWS
-#define sleep(a)           Sleep((a) * 1000)
+#define sleep(a)	   Sleep((a) * 1000)
 #define Fread(a,b,c,d,e)   (ReadFile((d), (a), (b) * (c), (&e), NULL), e)
 #define Fwrite(a,b,c,d,e)  (WriteFile((d), (a), (b) * (c), (&e), NULL), e)
 #define Fseek(a,b,c)       SetFilePointer((a), (b), NULL, (c))
-#define Hprintf            hprintf
-#define Strerror           winStrerror
+#define Hprintf		   hprintf
+#define Strerror	   winStrerror
 #else
-#define FILE_BEGIN         SEEK_SET
+#define FILE_BEGIN	   SEEK_SET
 #define FILE_CURRENT	   SEEK_CUR
-#define FILE_END           SEEK_END
+#define FILE_END	   SEEK_END
 #define Fread(a,b,c,d,e)   fread((a), (b), (c), (d))
 #define Fwrite(a,b,c,d,e)  fwrite((a), (b), (c), (d))
 #define Fseek(a, b, c)     fseek((a), (b), (c))
-#define Hprintf            fprintf
-#define Strerror           strerror
+#define Hprintf	    	   fprintf
+#define Strerror	   strerror
 #endif
 
-#define STATUS_OK      0
+#define STATUS_OK        0
 #define SEVERITY_WARNING 1
 #define SEVERITY_FATAL   3
 
@@ -114,14 +114,14 @@ errmsg_t message[] = {
 #define MSG_NO_ERROR     0
 	{ "No error", T_NONE },
 #define INVALID_TASKFILE 1
-	{ "Invalid taskfile (doesn't exist, isn't readable or writable)", T_NONE },
+	{ "Invalid taskfile (doesn't exist, isn't readable or writable (%d / %s))", T_BOTH },
 #define INVALID_FD       2
 	{ "Invalid file descriptor (open() succeeded, fd invalid)", T_NONE },
 #define TFWRITE_FAILED   3
 	{ "Write to taskfile failed", T_NONE },
 #define TFCLOSE_FAILED   4
 	{ "Close of taskfile failed (%d / %s)", T_BOTH },
-#define TF_EMPTY         5
+#define TF_EMPTY	 5
 	{ "Task file empty", T_NONE },
 #define TFREAD_ERROR     6
 	{ "Error on read (%d / %s)", T_BOTH },
@@ -168,7 +168,6 @@ const char *ARG_HELP2    = "-h";
 
 unsigned char boottimeHow = 'N';
 
-
 const char *COMMAND       = "command";
 const char *ARGUMENT      = "argument";
 const char *WORKDIR       = "workdir";
@@ -176,14 +175,14 @@ const char *USEPATH       = "usepath";
 const char *VERBOSELOGS   = "verboselogs";
 const char *LOGFILE       = "logfile";
 const char *LOGFILEAPPEND = "logfile_append";
-const char *ERRLOG        = "errlog";
+const char *ERRLOG	  = "errlog";
 const char *ERRLOGAPPEND  = "errlog_append";
 const char *SAMELOGS      = "samelogs";
 const char *EXECPID       = "execpid";
-const char *EXTPID        = "extpid";
+const char *EXTPID	  = "extpid";
 const char *RETURNCODE    = "returncode";
 const char *S_ERROR       = "error";
-const char *STATUS        = "status";
+const char *STATUS	  = "status";
 const char *STATUS_TX     = "status_tx";
 const char *INCOMPLETE    = "incomplete";
 const char *COMPLETE      = "complete";
@@ -201,8 +200,8 @@ struct _global {
 
 	char *command;
 	char **argument;
-	int num_args;
-	int argsize;
+	int  num_args;
+	int  argsize;
 	char *workdir;
 	int  usepath;
 	int  verboselogs;
@@ -257,6 +256,7 @@ void readWhiteSpace(callstatus *status);
 void readKey(callstatus *status, char *key);
 void readLength(callstatus *status, char *lgth);
 void readValue(callstatus *status, int lgth, char *value);
+char *renderError(callstatus *status);
 void processTaskfile(callstatus *status);
 void evaluateTaskfile(callstatus *status);
 void appendTaskfile(callstatus *status, const char *key, char *value, int alreadyOpen);
@@ -409,7 +409,7 @@ char *renderError(callstatus *status)
 				len += (int) strlen(status->msg2);
 			break;
 		case T_INT:
-			len += 10;	/* max length of a 4 byte int */
+			len += 10;
 			break;
 		case T_BOTH:
 			len += 10;
@@ -439,7 +439,7 @@ char *renderError(callstatus *status)
 		}
 	} else
 		msg = (char *) "unable to render error message";
-	
+
 	return msg;	/* we generously accept this memory leak. The program will terminate soon anyway */
 }
 
@@ -450,14 +450,14 @@ char *winStrerror(DWORD errorno)
 	DWORD retSize;
 
 	retSize=FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|
-	                      FORMAT_MESSAGE_FROM_SYSTEM|
-	                      FORMAT_MESSAGE_ARGUMENT_ARRAY,
-	                      NULL,
-	                      errorno,
-	                      LANG_NEUTRAL,
-	                      (LPTSTR) &result,
-	                      0,
-	                      NULL );
+			      FORMAT_MESSAGE_FROM_SYSTEM|
+			      FORMAT_MESSAGE_ARGUMENT_ARRAY,
+			      NULL,
+			      errorno,
+			      LANG_NEUTRAL,
+			      (LPTSTR) &result,
+			      0,
+			      NULL );
 	if (!retSize || result == NULL) {
 		return (char *) "(Failed to render error message)";
 	}
@@ -469,28 +469,28 @@ char *winStrerror(DWORD errorno)
 DWORD hprintf(HANDLE wrc, char *format, ...)
 {
 #define BUFSIZE 2048
-        va_list ap;
-        char buf[BUFSIZE];
-        DWORD nc;       /* number of chars */
-        DWORD nw;       /* number written */
+	va_list ap;
+	char buf[BUFSIZE];
+	DWORD nc;       /* number of chars */
+	DWORD nw;       /* number written */
 
-        if (wrc == INVALID_HANDLE_VALUE) return (DWORD) -1;
-        va_start(ap, format);
-        nc = vsnprintf(buf, BUFSIZE, format, ap);
-        va_end(ap);
-        if (nc < 0) return nc;
-        if (nc == BUFSIZE) {
-                /* would have been too long; we simply truncate it since it's only used for error messages */
-                buf[BUFSIZE - 1] = '\0';
-        }
-        if (!WriteFile(wrc, buf, nc, &nw, NULL)) {
-                /* process write error */;
-        }
-        if (nc != nw) {
-                /* hm, what to do here ??? */;
-        }
+	if (wrc == INVALID_HANDLE_VALUE) return (DWORD) -1;
+	va_start(ap, format);
+	nc = vsnprintf(buf, BUFSIZE, format, ap);
+	va_end(ap);
+	if (nc < 0) return nc;
+	if (nc == BUFSIZE) {
+		/* would have been too long; we simply truncate it since it's only used for error messages */
+		buf[BUFSIZE - 1] = '\0';
+	}
+	if (!WriteFile(wrc, buf, nc, &nw, NULL)) {
+		/* process write error */;
+	}
+	if (nc != nw) {
+		/* hm, what to do here ??? */;
+	}
 
-        return nw;
+	return nw;
 }
 #endif
 
@@ -613,13 +613,13 @@ void printJobFields()
 	Hprintf(myLog, "verboselogs   = %s\n", global.verboselogs == false ? "false" : "true");
 	Hprintf(myLog, "logfile       = %s\n", global.logfile != NULL ? global.logfile : "NULL");
 	Hprintf(myLog, "logfileappend = %s\n", global.logfileappend == false ? "false" : "true");
-	Hprintf(myLog, "errlog        = %s\n", global.errlog != NULL ? global.errlog : "NULL");
+	Hprintf(myLog, "errlog	= %s\n", global.errlog != NULL ? global.errlog : "NULL");
 	Hprintf(myLog, "errlogappend  = %s\n", global.errlogappend == false ? "false" : "true");
 	Hprintf(myLog, "samelogs      = %s\n", global.samelogs == false ? "false" : "true");
 	Hprintf(myLog, "execpid       = %s\n", global.execpid != NULL ? global.execpid : "NULL");
-	Hprintf(myLog, "extpid        = %s\n", global.extpid != NULL ? global.extpid : "NULL");
+	Hprintf(myLog, "extpid	= %s\n", global.extpid != NULL ? global.extpid : "NULL");
 	Hprintf(myLog, "returncode    = %s\n", global.returncode != NULL ? global.returncode : "NULL");
-	Hprintf(myLog, "error         = %s\n", global.error != NULL ? global.error : "NULL");
+	Hprintf(myLog, "error	 = %s\n", global.error != NULL ? global.error : "NULL");
 	Hprintf(myLog, "jstatus       = %s\n", global.jstatus != NULL ? global.jstatus : "NULL");
 	Hprintf(myLog, "jstatus_tx    = %s\n", global.jstatus_tx != NULL ? global.jstatus_tx : "NULL");
 	Hprintf(myLog, "complete      = %s\n", global.complete == false ? "false" : "true");
@@ -759,26 +759,46 @@ HANDLE openTaskfile(callstatus *status)
 		   ) {
 			status->severity = SEVERITY_FATAL;
 			status->msg = INVALID_TASKFILE;
+			status->syserror = errno;
 			return NULL;
 		}
 #else
 
 		taskfile = CreateFile (
-				global.taskfileName,
-				GENERIC_READ | GENERIC_WRITE,
-				0,
-				NULL,
-				OPEN_EXISTING,
-				FILE_ATTRIBUTE_NORMAL,
-				NULL);
-		if (taskfile != INVALID_HANDLE_VALUE)
+				   global.taskfileName,
+				   GENERIC_READ | GENERIC_WRITE,
+				   FILE_SHARE_READ | FILE_SHARE_WRITE,
+				   NULL,
+				   OPEN_EXISTING,
+				   FILE_ATTRIBUTE_NORMAL,
+				   NULL);
+		if (taskfile != INVALID_HANDLE_VALUE) {
+
+			OVERLAPPED regionStart;
+			DWORD fsLow = 0xFFFFFFFF, fsHigh = 0xFFFFFFFF;
+
+			regionStart.Offset = 0;
+			regionStart.OffsetHigh = 0;
+			regionStart.hEvent = (HANDLE)0;
+
+			if (!LockFileEx(taskfile, LOCKFILE_EXCLUSIVE_LOCK, 0, fsLow, fsHigh, &regionStart)) {
+				;
+				if (myLog != NULL) Hprintf(myLog, "Couldn't lock file > %s < (%d)\n", global.taskfileName, GetLastError());
+			}
 			break;
+		}
 
 		const DWORD errn = GetLastError();
-		if (errn != ERROR_TOO_MANY_OPEN_FILES) {
+		if (errn != ERROR_TOO_MANY_OPEN_FILES &&
+		    errn != ERROR_SHARING_VIOLATION &&
+		    errn != ERROR_LOCK_VIOLATION) {
 			status->severity = SEVERITY_FATAL;
 			status->msg = INVALID_TASKFILE;
-			return NULL;
+			status->syserror = errn;
+			if ((errn == ERROR_FILE_NOT_FOUND) && (retry_cnt < 11)) {
+				if (myLog != NULL) Hprintf(myLog, "Couldn't open file > %s <\n", global.taskfileName);
+			} else
+				return NULL;
 		}
 
 #endif
@@ -826,7 +846,18 @@ void closeTaskfile(callstatus *status, HANDLE taskfile)
 #ifndef WINDOWS
 		if (fclose(taskfile) != 0) {		/* releases locks */
 #else
-		if (CloseHandle(taskfile) == 0) {		/* releases locks */
+
+		OVERLAPPED regionStart;
+		DWORD fsLow = 0xFFFFFFFF, fsHigh = 0xFFFFFFFF;
+
+		regionStart.Offset = 0;
+		regionStart.OffsetHigh = 0;
+		regionStart.hEvent = (HANDLE)0;
+
+		if (!UnlockFileEx(taskfile, 0, fsLow, fsHigh, &regionStart)) {
+			;
+		}
+		if (CloseHandle(taskfile) == 0) {
 #endif
 			status->severity = SEVERITY_WARNING;
 			status->msg = TFCLOSE_FAILED;
@@ -1142,19 +1173,19 @@ char *getTimestamp(time_t tim, int local)
 #else
 	snprintf (buf, sizeof (buf), "%c%02.2d-%02.2d-%04.4d %02.2d:%02.2d:%02.2d %s%c",
 #endif
-	          TIMESTAMP_LEADIN,
-	          timeval->tm_mday,
-	          timeval->tm_mon + 1,
-	          timeval->tm_year + 1900,
-	          timeval->tm_hour,
-	          timeval->tm_min,
-	          timeval->tm_sec,
+		  TIMESTAMP_LEADIN,
+		  timeval->tm_mday,
+		  timeval->tm_mon + 1,
+		  timeval->tm_year + 1900,
+		  timeval->tm_hour,
+		  timeval->tm_min,
+		  timeval->tm_sec,
 #ifdef WINDOWS
-	          (local ? (timeval->tm_isdst > 0 ? _tzname[1] : _tzname[0]) : "GMT"),
+		  (local ? (timeval->tm_isdst > 0 ? _tzname[1] : _tzname[0]) : "GMT"),
 #else
-	          timeval->tm_zone,
+		  timeval->tm_zone,
 #endif
-		          TIMESTAMP_LEADOUT);
+		  TIMESTAMP_LEADOUT);
 #else
 	static const char *gmtformat = "%d-%m-%Y %H:%M:%S GMT";
 	static const char *localformat = "%d-%m-%Y %H:%M:%S %Z";
@@ -1257,15 +1288,15 @@ void redirect(callstatus *status)
 		return;
 	}
 #ifdef WINDOWS
-        // excerpt from visual C documentation:
-        //
-        // When a file is opened with the "a" or "a+" access type, all write operations take place
-        // at the end of the file. Although the file pointer can be repositioned using fseek or rewind,
-        // the file pointer is always moved back to the end of the file before any write operation is
-        // carried out. Thus, existing data cannot be overwritten.
-        // 
-        // since this statement is wrong, we'll have to do the seek manually
-        if (global.logfileappend) fseek(stdout, 0, SEEK_END);
+	// excerpt from visual C documentation:
+	//
+	// When a file is opened with the "a" or "a+" access type, all write operations take place
+	// at the end of the file. Although the file pointer can be repositioned using fseek or rewind,
+	// the file pointer is always moved back to the end of the file before any write operation is
+	// carried out. Thus, existing data cannot be overwritten.
+	// 
+	// since this statement is wrong, we'll have to do the seek manually
+	if (global.logfileappend) fseek(stdout, 0, SEEK_END);
 #endif
 	if (!global.samelogs) {
 		if (!freopen(global.errlog == NULL ? NULLDEVICE : global.errlog , global.errlogappend ? APPENDFLAG : "w", stderr)) {
@@ -1275,7 +1306,7 @@ void redirect(callstatus *status)
 			return;
 		}
 #ifdef WINDOWS
-        	if (global.errlogappend) fseek(stderr, 0, SEEK_END);
+		if (global.errlogappend) fseek(stderr, 0, SEEK_END);
 #endif
 	} else {
 		if (dup2(fileno(stdout), fileno(stderr)) < 0) {
@@ -1298,7 +1329,7 @@ void openLog(callstatus *status)
 	if (pl == NULL) {
 		myLog = NULL;
 		return;
-	} else 
+	} else
 		snprintf(privateLog, PATH_MAX, "%s.%d", pl, (int) getpid());
 
 #ifndef WINDOWS
@@ -1400,6 +1431,8 @@ void run(callstatus *status)
 	if (status->severity != STATUS_OK) return;
 #ifndef WINDOWS
 
+	fflush(global.taskfile);
+
 	cpid = fork();
 
 	if (cpid < 0) {
@@ -1446,6 +1479,7 @@ void run(callstatus *status)
 		closeTaskfile(status, global.taskfile);
 		return;
 	}
+	global.taskfile = openTaskfile(status);
 
 	default_all_signals (status);
 	if (status->severity != STATUS_OK) {
@@ -1493,13 +1527,13 @@ void run(callstatus *status)
 		fprintf(stdout, "------- %s Start --------\n", getTimestamp(time(NULL), 1));
 		fflush(stdout);		/* seems to be necessary */
 	}
-        // It seems that Windows only really *appends* to files if something has happend with them before the child is started,
-        // even if the file has been reopen()ed with "a"! (I really *LOVE* that too!!!)
-        // So by explicitly moving the filepointer to the end of the stream, even Windows can't refuse to *append* child's output...
-        else {
-                fseek (stdout, 0, SEEK_END);
-                fseek (stderr, 0, SEEK_END);
-        }
+	// It seems that Windows only really *appends* to files if something has happend with them before the child is started,
+	// even if the file has been reopen()ed with "a"! (I really *LOVE* that too!!!)
+	// So by explicitly moving the filepointer to the end of the stream, even Windows can't refuse to *append* child's output...
+	else {
+		fseek (stdout, 0, SEEK_END);
+		fseek (stderr, 0, SEEK_END);
+	}
 
 	size_t size = strlen(argv[0]) + sizeof ('\0');
 	for (i = 1; argv[i]; ++i)
