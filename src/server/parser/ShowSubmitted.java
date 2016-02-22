@@ -1246,12 +1246,10 @@ public class ShowSubmitted extends Node
 					resourceList.add(((SDMSResourceAllocation) rav.get(i)).getRId(sysEnv));
 				}
 
-				if (smeId.equals(sme.getMasterId(sysEnv))) {
-					rav = SDMSResourceAllocationTable.idx_smeId.getVector(sysEnv, new Long(- smeId.longValue()));
-					size = rav.size();
-					for(int i = 0; i < size; i++) {
-						resourceList.add(((SDMSResourceAllocation) rav.get(i)).getRId(sysEnv));
-					}
+				rav = SDMSResourceAllocationTable.idx_smeId.getVector(sysEnv, new Long(- smeId.longValue()));
+				size = rav.size();
+				for(int i = 0; i < size; i++) {
+					resourceList.add(((SDMSResourceAllocation) rav.get(i)).getRId(sysEnv));
 				}
 				break;
 		}
@@ -1391,6 +1389,12 @@ public class ShowSubmitted extends Node
 
 class SsResourceScopeFormatter implements Formatter
 {
+
+	private static final String ALLOCATED = "ALLOCATED";
+	private static final String RESERVED  = "RESERVED";
+	private static final String IGNORE    = "IGNORE";
+	private static final String BLOCKED   = "BLOCKED";
+	private static final String AVAILABLE = "AVAILABLE";
 
 	SDMSSubmittedEntity sme;
 	SDMSSchedulingEntity se;
@@ -1620,7 +1624,7 @@ class SsResourceScopeFormatter implements Formatter
 
 					rr = SDMSResourceRequirementTable.idx_seId_nrId_getUnique(sysEnv, new SDMSKey(seId, nrId), actVersion);
 					break;
-			}
+				}
 		} catch (NotFoundException nfe) {
 
 		}
@@ -1672,10 +1676,17 @@ class SsResourceScopeFormatter implements Formatter
 				}
 
 			} catch (NotFoundException nfe) {
-				ra = null;
-				v.add(null);
-				v.add(null);
-				v.add(null);
+				try {
+					ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(sysEnv, new SDMSKey(new Long(- smeId.longValue()), rId, rr.getStickyName(sysEnv)));
+					v.add(ra.getAmount(sysEnv));
+					v.add(new Integer(0));
+					v.add(ra.getLockmodeAsString(sysEnv));
+				} catch (NotFoundException nfe2) {
+					ra = null;
+					v.add(null);
+					v.add(null);
+					v.add(null);
+				}
 			}
 			v.add(Boolean.FALSE);
 			v.add(rr.getIsSticky(sysEnv));
@@ -1702,35 +1713,37 @@ class SsResourceScopeFormatter implements Formatter
 			v.add(r.getIsOnline(sysEnv));
 			if(ra != null) {
 				if(ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.ALLOCATION) {
-					v.add("ALLOCATED");
+					v.add(ALLOCATED);
 				} else if(ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.RESERVATION) {
-					v.add("RESERVED");
+					v.add(RESERVED);
 				} else if(ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.IGNORE) {
-					v.add("IGNORE");
+					v.add(IGNORE);
+				} else if (ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.MASTER_RESERVATION) {
+					v.add(ALLOCATED);
 				} else {
 
 					if(r.checkAllocate(sysEnv, rr, sme, ra) == SDMSResource.REASON_AVAILABLE) {
 						if(SystemEnvironment.sched.isBlocked(sysEnv, smeId, r.getId(sysEnv))) {
-							v.add("BLOCKED");
+							v.add(BLOCKED);
 						} else {
 							if(ra.getIsSticky(sysEnv).booleanValue()) {
 								MasterReservationInfo mri =
 									SystemEnvironment.sched.checkMasterReservation(sysEnv, sme, rr, ra.getStickyParent(sysEnv), r);
-								if(mri.canAllocate)	v.add("AVAILABLE");
-								else			v.add("BLOCKED");
+								if(mri.canAllocate)	v.add(AVAILABLE);
+								else			v.add(BLOCKED);
 							} else {
-								v.add("AVAILABLE");
+								v.add(AVAILABLE);
 							}
 						}
 					} else {
-						v.add("BLOCKED");
+						v.add(BLOCKED);
 					}
 				}
 			} else {
 				if(r.checkAllocate(sysEnv, rr, sme, ra) == SDMSResource.REASON_AVAILABLE) {
-					v.add("AVAILABLE");
+					v.add(AVAILABLE);
 				} else {
-					v.add("BLOCKED");
+					v.add(BLOCKED);
 				}
 			}
 			Integer expBase = rr.getExpiredBase(sysEnv);
