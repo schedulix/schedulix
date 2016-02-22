@@ -900,7 +900,7 @@ public class SchedulingThread extends InternalSession
 												sme.getSeId(sysEnv), sme.getSeVersion(sysEnv));
 								throw new CommonErrorException(new SDMSMessage(sysEnv, "03405261410",
 									"Invalid amount escalation for already reserved sticky resource $1, job definition $2",
-										rId, se.pathString(sysEnv)));
+									rId, se.pathString(sysEnv)));
 							}
 							ra.setOrigAmount(sysEnv, reqAmount);
 							ra.setAmount(sysEnv, reqAmount);
@@ -1713,12 +1713,12 @@ public class SchedulingThread extends InternalSession
 
 				SDMSResourceAllocation ra = null;
 				try {
-					 ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(sysEnv, new SDMSKey(smeId, rId, null));
+					ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(sysEnv, new SDMSKey(smeId, rId, null));
 				} catch (NotFoundException nfe) {
 					if(SDMSResourceAllocationTable.idx_smeId_rId_stickyName.containsKey(sysEnv, new SDMSKey(smeId, nrId, null))) continue;
 
 					doTrace(cEnv, ": Job " +  smeId + " needs a resource " + nrId + "/" + rId +
-								" which is neither requested/reserved/allocated nor ignored", SEVERITY_ERROR);
+						" which is neither requested/reserved/allocated nor ignored", SEVERITY_ERROR);
 					continue;
 				}
 
