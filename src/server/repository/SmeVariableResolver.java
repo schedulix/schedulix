@@ -330,7 +330,7 @@ public class SmeVariableResolver extends VariableResolver
 		if(retVal == null || isDefault) {
 			long seVersion = thisSme.getSeVersion(sysEnv).longValue();
 			Long scopeId = thisSme.getScopeId(sysEnv);
-			SDMSScope s = null;
+			SDMSScope s = evalScope;
 			if(scopeId != null)
 				s = SDMSScopeTable.getObject(sysEnv, scopeId);
 			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
