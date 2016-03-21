@@ -162,7 +162,7 @@ public class SDMSIndex
 					}
 				}
 
-				if (old != null && old.isCurrent) {
+				if (old != null && old.isCurrent && o.isCurrent) {
 
 					synchronized (v) {
 						v.modCnt --;
