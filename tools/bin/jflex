@@ -1,10 +1,14 @@
 #!/bin/bash
 
+if [ -f /usr/share/java/java_cup-runtime.jar ]; then
+	CUP=/usr/share/java/java_cup-runtime.jar
+fi
+
 if ! echo $CLASSPATH | grep -i jflex >/dev/null 2>&1; then
 	echo "WARNING: Didn't find jflex.jar or similar in CLASSPATH"
 	# The next will do an educated guess (which works on several Linux)
 	if [ -d /usr/share/java ]; then
-		X=`ls /usr/share/java/[Jj][Ff]lex* 2>/dev/null | head -1`
+		X=`ls /usr/share/java/[Jj][Ff]lex* 2>/dev/null | head -1`:$CUP
 		if [ $? -eq 0 ]; then
 			export CLASSPATH=$X:$CLASSPATH
 		fi
