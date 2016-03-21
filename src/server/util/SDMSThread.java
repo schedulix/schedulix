@@ -217,9 +217,9 @@ public abstract class SDMSThread extends Thread
 					System.err.println("FATAL\t *****************************************");
 				} catch (Error e3) {
 
-				} finally {
-					System.exit(1);
 				}
+
+				Runtime.getRuntime().halt(1);
 			}
 		} catch (Error e) {
 			try {
@@ -233,10 +233,10 @@ public abstract class SDMSThread extends Thread
 					System.err.println("FATAL\t *****************************************");
 				} catch (Error e3) {
 
-				} finally {
-					System.exit(1);
 				}
 			}
+
+			Runtime.getRuntime().halt(1);
 		}
 	}
 }
