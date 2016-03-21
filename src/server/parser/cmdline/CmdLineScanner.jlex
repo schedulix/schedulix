@@ -88,6 +88,7 @@ eidentifier =   [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z
 <YYINITIAL>{ws}			{ proto("WS ");			return CmdLineParser.SEPARATOR; }
 <YYINITIAL>\'			{				yybegin(SQSTRING); value = new String(""); eofProhibited = true; break; }
 <YYINITIAL>`			{				yybegin(BTSTRING); value = new String("`"); eofProhibited = true; break; }
+<YYINITIAL>\\`			{ proto("BACKTICK ");		value = new String("`"); return CmdLineParser.CHAR; }
 <YYINITIAL>\"			{ proto("DQSTRING_START ");	yybegin(DQSTRING); return CmdLineParser.DQSTRING_START; }
 <YYINITIAL>\\			{ proto("\\");			value = new String(yytext()); return CmdLineParser.CHAR; }
 <YYINITIAL>\\\\			{ proto("\\\\");		value = new String("\\"); return CmdLineParser.CHAR; }
@@ -126,7 +127,7 @@ eidentifier =   [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z
 <BTSTRING>[^`\\]+		{				value = ((String) value) + new String(yytext()); break; }
 <BTSTRING>\\			{				value = ((String) value) + new String(yytext()); break; }
 <BTSTRING>\\\\			{				value = ((String) value) + "\\"; break; }
-<BTSTRING>\\`			{				value = ((String) value) + "\\`"; break; }
+<BTSTRING>\\`			{				value = ((String) value) + "`"; break; }
 
 
 //------------------------------------------------------------------------------------------
