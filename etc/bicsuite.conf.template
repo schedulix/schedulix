@@ -24,7 +24,7 @@ SCROLLLOGOPTS=
 #
 # Directory where logfiles are stored
 #
-BICSUITELOGDIR=$BICSUITEHOME/log
+[ -z "$BICSUITELOGDIR" ] && BICSUITELOGDIR=$BICSUITEHOME/log
 #
 # UNIX Commands to use
 # change if Commands found by PATH do not match
