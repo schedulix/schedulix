@@ -234,6 +234,7 @@ public class ProcessInfo
 						continue;
 					}
 				}
+				in.close();
 			} catch (IOException e) {
 				throw new RuntimeException("(02310251043) Exception in getStartTimes() : " + e.toString());
 			}
@@ -267,6 +268,7 @@ public class ProcessInfo
 						continue;
 					}
 				}
+				in.close();
 			} catch (Exception e) {
 				throw new RuntimeException("(02310251044) Process start times : " + e.toString());
 			}
