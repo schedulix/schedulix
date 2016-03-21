@@ -289,7 +289,7 @@ const char *getUsage()
 const char *getVersion()
 {
 
-	return  "Jobserver (executor) 2.6.1\n" \
+	return  "Jobserver (executor) 2.7\n" \
 		"Copyright (C) 2013 independIT Integrative Technologies GmbH\n" \
 		"All rights reserved\n";
 }
