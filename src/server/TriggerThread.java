@@ -108,7 +108,15 @@ public class TriggerThread extends InternalSession
 			i = jobsToResume.iterator();
 			while (i.hasNext()) {
 				Long smeId = (Long) i.next();
-				SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
+				SDMSSubmittedEntity sme;
+				try {
+					sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
+				} catch (NotFoundException nfe) {
+
+					i.remove();
+					doTrace(cEnv, "Submitted Entity " + smeId + "not found (" + nfe.toString() + ")", SEVERITY_ERROR);
+					continue;
+				}
 				if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) continue;
 				Long resumeTs = sme.getResumeTs(sysEnv);
 				if (resumeTs != null) {
@@ -122,6 +130,9 @@ public class TriggerThread extends InternalSession
 					} else {
 						if (rts < nextTime) nextTime = rts;
 					}
+				} else {
+
+					doTrace(cEnv, "Submitted Entity " + smeId + " has resumeTs == null", SEVERITY_WARNING);
 				}
 			}
 		} catch (SerializationException s) {
