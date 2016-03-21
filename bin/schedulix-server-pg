@@ -1,0 +1,114 @@
+#!/bin/bash
+#
+### BEGIN INIT INFO
+# Provides:          schedulix-server
+# Required-Start:    $remote_fs $syslog postgresql
+# Required-Stop:     $remote_fs $syslog
+# Should-Start:      $network $named $time
+# Should-Stop:       $network $named $time
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start and stop the schedulix Enterprise Job Scheduling server daemon
+# Description:       Controls the schedulix server process
+### END INIT INFO
+#
+. /opt/schedulix/etc/SETTINGS
+set -e
+set -u
+
+# if the start- and/or stop scripts don't exist, we exit silently
+test -x $BICSUITEHOME/bin/server-start || exit 0
+test -x $BICSUITEHOME/bin/server-stop || exit 0
+test -x $BICSUITEHOME/bin/server-restart || exit 0
+
+if [ -f /lib/lsb/init-functions ]; then
+	. /lib/lsb/init-functions
+	LOG_WARNING_MSG=log_warning_msg
+	LOG_FAILURE_MSG=log_failure_msg
+	ECHO_SUCCESS=echo
+	ECHO_FAILURE=echo
+else
+	LOG_WARNING_MSG=echo
+	LOG_FAILURE_MSG=echo
+	ECHO_SUCCESS=echo
+	ECHO_FAILURE=echo
+fi
+
+
+SELF=$(cd $(dirname $0); pwd -P)/$(basename $0)
+
+# Safeguard (relative paths, core dumps..)
+cd /
+umask 077
+
+case "${1:-''}" in
+  'start')
+	echo -n "Starting schedulix Enterprise Job Scheduling server"
+	if fuser -s /opt/schedulix/log/BICserver.out 2>/dev/null
+	then
+	    $LOG_WARNING_MSG "already running"
+	    $ECHO_SUCCESS
+	else
+	    # Start schedulix!server
+	    su - schedulix /bin/bash -c ". ~/.bashrc; server-start" >/dev/null 2>&1
+	    if fuser -s /opt/schedulix/log/BICserver.out 2>/dev/null
+	    then
+	        $ECHO_SUCCESS
+	    else
+                log_end_msg 1
+	        $LOG_FAILURE_MSG "Please take a look at the /opt/schedulix/log/BICserver.out.* files"
+	    fi
+	fi
+	;;
+
+  'stop')
+	echo -n "Stopping schedulix Enterprise Job Scheduling server"
+	if fuser -s /opt/schedulix/log/BICserver.out 2>/dev/null
+	then
+	    # Stop schedulix!server
+	    su - schedulix /bin/bash -c ". ~/.bashrc; server-stop" >/dev/null 2>&1
+	    $ECHO_SUCCESS
+	else
+	    $LOG_WARNING_MSG "not running"
+	    $ECHO_SUCCESS
+	fi
+	;;
+
+  'restart')
+	echo -n "Restarting schedulix Enterprise Job Scheduling server"
+	if fuser -s /opt/schedulix/log/BICserver.out 2>/dev/null
+	then
+	    # Stop schedulix!server
+	    su - schedulix /bin/bash -c ". ~/.bashrc; server-stop" >/dev/null 2>&1
+	fi
+	# Start schedulix!server
+	su - schedulix /bin/bash -c ". ~/.bashrc; server-start" >/dev/null 2>&1
+	if fuser -s $INSTALLTO/log/BICserver.out 2>/dev/null
+	then
+	    $ECHO_SUCCESS
+	else
+            $ECHO_FAILURE
+	    $LOG_FAILURE_MSG "Please take a look at the /home/schedulix/log/BICserver.out.* files"
+	fi
+	;;
+
+  'reload'|'force-reload')
+  	$LOG_WARNING_MSG "Reloading schedulix!server not supported; use 'restart' instead"
+	log_end_msg 0
+	;;
+
+  'status')
+	if fuser -s /opt/schedulix/log/BICserver.out 2>/dev/null
+	then
+	  echo "schedulix!server is up"
+	else
+	  echo "schedulix!server is down"
+	  exit 3
+	fi
+  	;;
+
+  *)
+	echo "Usage: $SELF start|stop|restart|reload|force-reload|status"
+	exit 1
+	;;
+esac

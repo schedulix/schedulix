@@ -1,0 +1,80 @@
+#!/bin/bash
+#
+### BEGIN INIT INFO
+# Provides:          schedulix-zope
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Should-Start:      $network $named $time
+# Should-Stop:       $network $named $time
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start and stop the schedulix Enterprise Job Scheduling web gui
+# Description:       Controls the schedulix web gui zope server
+### END INIT INFO
+#
+. /opt/schedulix/etc/SETTINGS
+set -e
+set -u
+
+if [ -f /lib/lsb/init-functions ]; then
+	. /lib/lsb/init-functions
+	LOG_WARNING_MSG=log_warning_msg
+	LOG_FAILURE_MSG=log_failure_msg
+	ECHO_SUCCESS=echo
+	ECHO_FAILURE=echo
+else
+	LOG_WARNING_MSG=echo
+	LOG_FAILURE_MSG=echo
+	ECHO_SUCCESS=echo
+	ECHO_FAILURE=echo
+fi
+
+
+SELF=$(cd $(dirname $0); pwd -P)/$(basename $0)
+
+# Safeguard (relative paths, core dumps..)
+cd /
+umask 077
+
+case "${1:-''}" in
+  'start')
+	echo -n "Starting schedulix Enterprise Job Scheduling webserver"
+	[ -p /opt/schedulix/log/zope.out ] || su schedulix -c "mkfifo /opt/schedulix/log/zope.out"
+	su - schedulix /bin/bash -c ". /opt/schedulix/.bashrc; scrolllog /opt/schedulix/log/zope.out -e /opt/schedulix/schedulixweb/bin/runzope" >/dev/null 2>&1
+	$ECHO_SUCCESS
+	;;
+
+  'stop')
+	echo -n "Stopping schedulix Enterprise Job Scheduling webserver"
+	su - schedulix /bin/bash -c ". /opt/schedulix/.bashrc; fuser -k -INT /opt/schedulix/log/zope.out" >/dev/null 2>&1
+	$ECHO_SUCCESS
+	;;
+
+  'restart')
+	echo -n "Restarting schedulix Enterprise Job Scheduling webserver"
+	[ -p /opt/schedulix/log/zope.out ] || su schedulix -c "mkfifo /opt/schedulix/log/zope.out"
+	su - schedulix /bin/bash -c ". /opt/schedulix/.bashrc; fuser -k -INT /opt/schedulix/log/zope.out" >/dev/null 2>&1
+	su - schedulix /bin/bash -c ". /opt/schedulix/.bashrc; scrolllog /opt/schedulix/log/zope.out -e /opt/schedulix/schedulixweb/bin/runzope" >/dev/null 2>&1
+	$ECHO_SUCCESS
+	;;
+
+  'reload'|'force-reload')
+  	$LOG_WARNING_MSG "Reloading schedulix!web not supported; use 'restart' instead"
+	log_end_msg 0
+	;;
+
+  'status')
+	if fuser -s /opt/schedulix/log/zope.out 2>/dev/null
+	then
+	  echo "schedulix!web is up"
+	else
+	  echo "schedulix!web is down"
+	  exit 3
+	fi
+  	;;
+
+  *)
+	echo "Usage: $SELF start|stop|restart|reload|force-reload|status"
+	exit 1
+	;;
+esac
