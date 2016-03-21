@@ -133,6 +133,11 @@ Hostname=hostname.domain.de
 JdbcDriver=NOT_SET
 
 #
+# Keystore Information (needed for TLS/SSL communication)
+#
+KeyStore=/home/bicsuite/etc/certs/srvkeystore
+KeyStorePassword=VerySecret
+#
 #
 # MinHistoryCount: Minimum number of masters loaded (if present), disregarding the
 #                  History. 0 means no minimum
@@ -207,6 +212,18 @@ SessionTimeout=0
 #               false = warm standby
 #
 SingleServer=true
+
+#
+#
+# SSLport: The port for SSL/TLS Connections
+#
+#SSLPort=2507
+
+#
+# Truststore Information (needed for TLS/SSL communication with client authentication)
+#
+TrustStore=/home/bicsuite/etc/certs/srvkeystore
+TrustStorePassword=VerySecret
 
 #
 # SysPasswd: The password of user SYSTEM

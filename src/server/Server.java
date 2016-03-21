@@ -44,6 +44,7 @@ public class Server
 	public final static String __version = "@(#) $Id: Server.java,v 2.17.2.6 2013/09/11 11:50:39 ronald Exp $";
 
 	private ThreadGroup utg;
+	private SSLListenThread ssllt;
 	private OrdinaryListenThread ult;
 	private OrdinaryListenThread svt;
 	private SchedulingThread wst;
@@ -82,6 +83,8 @@ public class Server
 			String k = (String) e.nextElement();
 			if(k.equals(SystemEnvironment.S_DBPASSWD))		continue;
 			if(k.equals(SystemEnvironment.S_SYSPASSWD))		continue;
+			if(k.equals(SystemEnvironment.S_KEYSTOREPASSWORD))	continue;
+			if(k.equals(SystemEnvironment.S_TRUSTSTOREPASSWORD))	continue;
 			SDMSThread.doTrace(null, k + "=" + props.getProperty(k), SDMSThread.SEVERITY_INFO);
 		}
 
@@ -244,6 +247,23 @@ public class Server
 			svt = null;
 		}
 
+		if (SystemEnvironment.sslport != 0) {
+			ssllt = new SSLListenThread(utg, SystemEnvironment.sslport, SystemEnvironment.maxConnects, cmdQueue, roCmdQueue, ListenThread.LISTENER);
+
+			ssllt.start();
+			try {
+				Thread.sleep(1000);
+			} catch (java.lang.InterruptedException ie) {  }
+			String[] prots = ssllt.getProtocols();
+			if (prots != null) {
+				SDMSThread.doTrace(null, "TLS Listen Thread started. Supported Protocols :", SDMSThread.SEVERITY_INFO);
+				for (int i = 0; i < prots.length; ++i)
+					SDMSThread.doTrace(null, "\t" + prots[i], SDMSThread.SEVERITY_INFO);
+			}
+		} else {
+			SDMSThread.doTrace(null, "SSL communication Listener disabled", SDMSThread.SEVERITY_INFO);
+			ssllt = null;
+		}
 	}
 
 	public void shutdown()
@@ -263,6 +283,12 @@ public class Server
 		if(svt != null) {
 			if(svt.isAlive()) {
 				svt.do_stop();
+			}
+			killAll();
+		}
+		if(ssllt != null) {
+			if(ssllt.isAlive()) {
+				ssllt.do_stop();
 			}
 			killAll();
 		}

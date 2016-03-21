@@ -49,7 +49,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_PROFESSIONAL = "PROFESSIONAL";
 	public static final String S_ENTERPRISE   = "ENTERPRISE";
 
-	public static final String programVersion = "2.6.1";
+	public static final String programVersion = "2.7";
 	public static String programLevel = null;
 
 	public static final long SYSTEM_OBJECTS_BOUNDARY = 1000;
@@ -100,6 +100,7 @@ public class SystemEnvironment implements Cloneable
 	public static TimerUnit timerRecalc;
 	public static String hostname;
 	public static int port;
+	public static int sslport;
 	public static int service_port;
 	public static int txRetryCount;
 	public static long preserveTime;
@@ -149,6 +150,12 @@ public class SystemEnvironment implements Cloneable
 	public static Vector hiColumns;
 	public static Vector kjColumns;
 
+	public static String keystore;
+	public static String keystorepassword;
+	public static String truststore;
+	public static String truststorepassword;
+	public static boolean clientAuthentication;
+
 	private static boolean got_properties = false;
 
 	public static final String S_ARCHIVE               = "Archive";
@@ -185,6 +192,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_SERVICEPORT           = "ServicePort";
 	public static final String S_SESSIONTIMEOUT        = "SessionTimeout";
 	public static final String S_SINGLESERVER          = "SingleServer";
+	public static final String S_SSLPORT               = "SSLPort";
 	public static final String S_SYSPASSWD             = "SysPasswd";
 	public static final String S_TIMERHORIZON          = "TimerHorizon";
 	public static final String S_TIMERRECALC           = "TimerRecalc";
@@ -200,6 +208,25 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_USEREXPORTVARIABLES   = "UserExportVariables";
 	public static final String S_WORKERTHREADS         = "WorkerThreads";
 	public static final String S_WRITERTHREADS         = "WriterThreads";
+
+	public static final String S_KEYSTORE              = "KeyStore";
+	public static final String S_KEYSTOREPASSWORD      = "KeyStorePassword";
+	public static final String S_KEYSTOREPROVIDER      = "KeyStoreProvider";
+	public static final String S_KEYSTORETYPE          = "KeyStoreType";
+	public static final String S_TRUSTSTORE            = "TrustStore";
+	public static final String S_TRUSTSTOREPASSWORD    = "TrustStorePassword";
+	public static final String S_TRUSTSTOREPROVIDER    = "TrustStoreProvider";
+	public static final String S_TRUSTSTORETYPE        = "TrustStoreType";
+	public static final String S_CLIENTAUTHENTICATION  = "ClientAuthentication";
+
+	public static final String J_KEYSTORE                     = "javax.net.ssl.keyStore";
+	public static final String J_KEYSTOREPASSWORD             = "javax.net.ssl.keyStorePassword";
+	public static final String J_KEYSTOREPROVIDER             = "javax.net.ssl.keyStoreProvider";
+	public static final String J_KEYSTORETYPE                 = "javax.net.ssl.keyStoreType";
+	public static final String J_TRUSTSTORE                   = "javax.net.ssl.trustStore";
+	public static final String J_TRUSTSTOREPASSWORD           = "javax.net.ssl.trustStorePassword";
+	public static final String J_TRUSTSTOREPROVIDER           = "javax.net.ssl.trustStoreProvider";
+	public static final String J_TRUSTSTORETYPE               = "javax.net.ssl.trustStoreType";
 
 	public static final String S_BASE_SME_ID           = "BASE_SME_ID";
 	public static final String S_TRIGGER_HASHSET       = "TRIGGER_HASH_SET";
@@ -369,8 +396,9 @@ public class SystemEnvironment implements Cloneable
 			getAuditFile();
 		}
 
-		if ((port == 0) && (service_port == 0)
-		   ) {
+		getSSLproperties();
+
+		if ((port == 0) && (service_port == 0) && (sslport == 0)) {
 
 			port = 2506;
 		}
@@ -416,6 +444,54 @@ public class SystemEnvironment implements Cloneable
 				compatLevel = programLevel;
 		}
 		props.setProperty(S_LEVEL, "" + compatLevel);
+	}
+
+	private void getSSLproperties()
+	{
+		getSSLPort();
+		if (sslport != 0) {
+			keystore = props.getProperty(S_KEYSTORE);
+			if (keystore == null) {
+				keystore = System.getProperty(J_KEYSTORE);
+			}
+			if (keystore != null) {
+				System.setProperty(J_KEYSTORE, keystore);
+				props.setProperty(S_KEYSTORE, keystore);
+			} else {
+
+				sslport = 0;
+				return;
+			}
+
+			keystorepassword = props.getProperty(S_KEYSTOREPASSWORD);
+			if (keystorepassword == null) {
+				keystorepassword = System.getProperty(J_KEYSTOREPASSWORD);
+			}
+			if (keystorepassword != null) {
+				System.setProperty(J_KEYSTOREPASSWORD, keystorepassword);
+				props.setProperty(S_KEYSTOREPASSWORD, keystorepassword);
+			}
+
+			truststore = props.getProperty(S_TRUSTSTORE);
+			if (truststore == null) {
+				truststore = System.getProperty(J_TRUSTSTORE);
+			}
+			if (truststore != null) {
+				System.setProperty(J_TRUSTSTORE, truststore);
+				props.setProperty(S_TRUSTSTORE, truststore);
+			}
+
+			truststorepassword = props.getProperty(S_TRUSTSTOREPASSWORD);
+			if (truststorepassword == null) {
+				truststorepassword = System.getProperty(J_TRUSTSTOREPASSWORD);
+			}
+			if (truststorepassword != null) {
+				System.setProperty(J_TRUSTSTOREPASSWORD, truststorepassword);
+				props.setProperty(S_TRUSTSTOREPASSWORD, truststorepassword);
+			}
+
+			clientAuthentication = Boolean.parseBoolean(props.getProperty(S_CLIENTAUTHENTICATION, "false").trim());
+		}
 	}
 
 	public boolean checkCompatLevel(String requiredLevel)
@@ -491,6 +567,13 @@ public class SystemEnvironment implements Cloneable
 		String s_port = props.getProperty(S_PORT, "0");
 		port = checkIntProperty(s_port, S_PORT, 0, 2506, 0, "Invalid port number : ");
 		props.setProperty(S_PORT, "" + port);
+	}
+
+	private void getSSLPort()
+	{
+		String s_port = props.getProperty(S_SSLPORT, "0");
+		sslport = checkIntProperty(s_port, S_SSLPORT, 0, 2507, 0, "Invalid port number : ");
+		props.setProperty(S_SSLPORT, "" + sslport);
 	}
 
 	private void getServicePort()
