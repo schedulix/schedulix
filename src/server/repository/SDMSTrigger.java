@@ -184,6 +184,23 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 
 		if (maxTrSeq >= maxRetry && maxRetry != 0) {
 
+			Long limitState = getLimitState(sysEnv);
+			if (limitState != null) {
+				Long seId = thisSme.getSeId(sysEnv);
+				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, seId, seVersion);
+				Long espId = se.getEspId(sysEnv);
+				SDMSExitState es;
+				try {
+					es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, limitState), seVersion);
+				} catch (NotFoundException nfe) {
+
+					throw new FatalException(new SDMSMessage(sysEnv, "03602151332",
+					                         "Invalid limitState $1 not in exit state profile $2",
+					                         limitState, espId));
+
+				}
+				thisSme.changeState(sysEnv, limitState, es, null, null, null, false);
+			}
 			return fired;
 		}
 
@@ -275,7 +292,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			childTag = thisSme.getId(sysEnv).toString() + '.' + getId(sysEnv).toString() + ':' + trSeq.toString();
 		}
 
-		sysEnv.tx.traceSubTx = true;
 		sysEnv.tx.beginSubTransaction(sysEnv);
 		try {
 
@@ -341,7 +357,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 
 			sysEnv.tx.commitSubTransaction(sysEnv);
 		}
-		sysEnv.tx.traceSubTx = false;
 
 		mths.remove(trId);
 
