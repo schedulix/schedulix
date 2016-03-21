@@ -75,7 +75,7 @@ rpmstructure:
 	mkdir -p $(HOME)/rpmbuild/SPECS
 	mkdir -p $(HOME)/rpmbuild/SRPMS
 	cd $(SDMSHOME)/..; \
-	tar czf $(HOME)/rpmbuild/SOURCES/schedulix-$(PROGRAM_VERSION).tgz --exclude .git $(SWDIR)
+	tar czf $(HOME)/rpmbuild/SOURCES/schedulix-$(PROGRAM_VERSION).tgz --exclude .git $(SWDIR)/*
 
 rpmbuild:
 	rpmbuild -ba ../lib/centos7.spec
