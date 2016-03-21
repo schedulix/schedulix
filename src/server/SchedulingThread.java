@@ -224,6 +224,7 @@ public class SchedulingThread extends InternalSession
 				} else {
 
 				}
+				needSched = true;
 			}
 		} catch (SDMSException e) {
 
@@ -609,7 +610,6 @@ public class SchedulingThread extends InternalSession
 			cacheEntry.add(v);
 			envJSMap.put(envId, cacheEntry);
 		}
-
 		return result;
 	}
 
