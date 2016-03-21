@@ -324,6 +324,7 @@ public class TimerThread
 		if (trigDate.isNaD()) {
 			scev.setNextActivityTime      (sysEnv, dateToDateTimeLong (new TimerDate (baseDate.plus (SystemEnvironment.timerRecalc))));
 			scev.setNextActivityIsTrigger (sysEnv, Boolean.FALSE);
+			scev.clearCalendar(sysEnv);
 		}
 
 		else {
