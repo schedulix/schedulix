@@ -281,7 +281,7 @@ public class SmeVariableResolver extends VariableResolver
 			}
 		}
 
-		if(specialNames.containsKey(key)) return getSpecialValue(sysEnv, thisSme, key, triggercontext);
+		if(specialNames.containsKey(key)) return getSpecialValue(sysEnv, thisSme, key, triggercontext, evalScope);
 
 		try {
 			ev = SDMSEntityVariableTable.idx_smeId_Name_getUnique(sysEnv, new SDMSKey(thisSme.getId(sysEnv), key));
@@ -330,7 +330,7 @@ public class SmeVariableResolver extends VariableResolver
 		if(retVal == null || isDefault) {
 			long seVersion = thisSme.getSeVersion(sysEnv).longValue();
 			Long scopeId = thisSme.getScopeId(sysEnv);
-			SDMSScope s = null;
+			SDMSScope s = evalScope;
 			if(scopeId != null)
 				s = SDMSScopeTable.getObject(sysEnv, scopeId);
 			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
@@ -393,7 +393,7 @@ public class SmeVariableResolver extends VariableResolver
 		}
 	}
 
-	private String getSpecialValue(SystemEnvironment sysEnv, SDMSSubmittedEntity thisSme, String key, boolean triggercontext)
+	private String getSpecialValue(SystemEnvironment sysEnv, SDMSSubmittedEntity thisSme, String key, boolean triggercontext, SDMSScope evalScope)
 		throws SDMSException
 	{
 		long seVersion;
@@ -669,8 +669,14 @@ public class SmeVariableResolver extends VariableResolver
 				return emptyString + thisSme.getRerunSeq(sysEnv);
 
 			case I_SCOPENAME:
+				SDMSScope scope;
 				Long scopeId = thisSme.getScopeId(sysEnv);
-				SDMSScope scope = SDMSScopeTable.getObject(sysEnv, scopeId);
+				if (scopeId != null)
+					scope = SDMSScopeTable.getObject(sysEnv, scopeId);
+				else {
+
+					scope = evalScope;
+				}
 				return (scope == null ? emptyString : scope.pathString(sysEnv));
 
 			case I_IDLE_TIME:
