@@ -40,6 +40,7 @@ CREATE TABLE SUBMITTED_ENTITY (
     , `SCOPE_ID`                     decimal(20)         NULL
     , `IS_STATIC`                    integer         NOT NULL
     , `IS_DISABLED`                  integer         NOT NULL
+    , `OLD_STATE`                    integer             NULL
     , `MERGE_MODE`                   integer         NOT NULL
     , `STATE`                        integer         NOT NULL
     , `JOB_ESD_ID`                   decimal(20)         NULL
