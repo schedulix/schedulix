@@ -47,7 +47,7 @@ public class ListSubmitted extends Node
 	public final static int TREE = 0;
 	public final static int LIST = 1;
 	final static int sortCols[] = { 1, 2, 35 };
-	final static int sortColsF[] = { 36, 2 };
+	final static int sortColsF[] = { 37, 2 };
 
 	private final static String emptyString = new String("");
 	private final ObjectFilter objFilter = new ObjectFilter()
