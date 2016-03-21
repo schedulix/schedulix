@@ -223,7 +223,10 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 
 		if(!getIsOnline(sysEnv).booleanValue())			return REASON_OFFLINE;
 
-		Long stickyParent = ra.getStickyParent(sysEnv);
+		Long stickyParent;
+		if (ra != null) stickyParent = ra.getStickyParent(sysEnv);
+		else		stickyParent = null;
+
 		SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, getNrId(sysEnv));
 		int usage = nr.getUsage(sysEnv).intValue();
 		if(usage == SDMSNamedResource.STATIC) return REASON_AVAILABLE;
