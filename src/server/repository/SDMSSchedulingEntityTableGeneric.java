@@ -89,7 +89,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 	public static SDMSIndex idx_ownerId;
 	public static SDMSIndex idx_esmpId;
 	public static SDMSIndex idx_espId;
-	public static SDMSIndex idx_qaId;
 	public static SDMSIndex idx_neId;
 	public static SDMSIndex idx_fpId;
 	public static SDMSIndex idx_folderId_name;
@@ -110,7 +109,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "ownerId");
 		idx_esmpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "esmpId");
 		idx_espId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "espId");
-		idx_qaId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "qaId");
 		idx_neId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "neId");
 		idx_fpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "fpId");
 		idx_folderId_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "folderId_name");
@@ -607,8 +605,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		out = out + "idx_esmpId: " + (ok ? "ok" : "missing") + "\n";
 		ok =  idx_espId.check(((SDMSSchedulingEntityGeneric) o).espId, o);
 		out = out + "idx_espId: " + (ok ? "ok" : "missing") + "\n";
-		ok =  idx_qaId.check(((SDMSSchedulingEntityGeneric) o).qaId, o);
-		out = out + "idx_qaId: " + (ok ? "ok" : "missing") + "\n";
 		ok =  idx_neId.check(((SDMSSchedulingEntityGeneric) o).neId, o);
 		out = out + "idx_neId: " + (ok ? "ok" : "missing") + "\n";
 		ok =  idx_fpId.check(((SDMSSchedulingEntityGeneric) o).fpId, o);
@@ -640,18 +636,17 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		idx_ownerId.put(env, ((SDMSSchedulingEntityGeneric) o).ownerId, o, ((2 & indexMember) != 0));
 		idx_esmpId.put(env, ((SDMSSchedulingEntityGeneric) o).esmpId, o, ((4 & indexMember) != 0));
 		idx_espId.put(env, ((SDMSSchedulingEntityGeneric) o).espId, o, ((8 & indexMember) != 0));
-		idx_qaId.put(env, ((SDMSSchedulingEntityGeneric) o).qaId, o, ((16 & indexMember) != 0));
-		idx_neId.put(env, ((SDMSSchedulingEntityGeneric) o).neId, o, ((32 & indexMember) != 0));
-		idx_fpId.put(env, ((SDMSSchedulingEntityGeneric) o).fpId, o, ((64 & indexMember) != 0));
+		idx_neId.put(env, ((SDMSSchedulingEntityGeneric) o).neId, o, ((16 & indexMember) != 0));
+		idx_fpId.put(env, ((SDMSSchedulingEntityGeneric) o).fpId, o, ((32 & indexMember) != 0));
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSSchedulingEntityGeneric) o).folderId);
 		k.add(((SDMSSchedulingEntityGeneric) o).name);
-		idx_folderId_name.put(env, k, o, ((128 & indexMember) != 0));
+		idx_folderId_name.put(env, k, o, ((64 & indexMember) != 0));
 		k = new SDMSKey();
 		k.add(((SDMSSchedulingEntityGeneric) o).folderId);
 		k.add(((SDMSSchedulingEntityGeneric) o).masterSubmittable);
-		idx_folderId_masterSubmittable.put(env, k, o, ((256 & indexMember) != 0));
+		idx_folderId_masterSubmittable.put(env, k, o, ((128 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)
@@ -661,7 +656,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		idx_ownerId.remove(env, ((SDMSSchedulingEntityGeneric) o).ownerId, o);
 		idx_esmpId.remove(env, ((SDMSSchedulingEntityGeneric) o).esmpId, o);
 		idx_espId.remove(env, ((SDMSSchedulingEntityGeneric) o).espId, o);
-		idx_qaId.remove(env, ((SDMSSchedulingEntityGeneric) o).qaId, o);
 		idx_neId.remove(env, ((SDMSSchedulingEntityGeneric) o).neId, o);
 		idx_fpId.remove(env, ((SDMSSchedulingEntityGeneric) o).fpId, o);
 		SDMSKey k;

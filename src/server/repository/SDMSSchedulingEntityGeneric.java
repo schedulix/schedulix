@@ -321,7 +321,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			o.name = p_name;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 128);
+			o.versions.table.index(env, o, 64);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -352,7 +352,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			o.folderId = p_folderId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 385);
+			o.versions.table.index(env, o, 193);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -1093,7 +1093,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			o.masterSubmittable = p_masterSubmittable;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 256);
+			o.versions.table.index(env, o, 128);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -1402,24 +1402,17 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	{
 		if(p_qaId != null && p_qaId.equals(qaId)) return;
 		if(p_qaId == null && qaId == null) return;
-		SDMSSchedulingEntityGeneric o;
-		env.tx.beginSubTransaction(env);
-		try {
-			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-				throw new CommonErrorException(
-				        new SDMSMessage (env, "02112141636", "(SchedulingEntity) Change of system object not allowed")
-				);
-			}
-			o = (SDMSSchedulingEntityGeneric) change(env);
-			o.qaId = p_qaId;
-			o.changerUId = env.cEnv.euid();
-			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 16);
-			env.tx.commitSubTransaction(env);
-		} catch (SDMSException e) {
-			env.tx.rollbackSubTransaction(env);
-			throw e;
+		SDMSSchedulingEntityGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(SchedulingEntity) Change of system object not allowed")
+			);
 		}
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
+		o.qaId = p_qaId;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
 
@@ -1446,7 +1439,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			o.neId = p_neId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 32);
+			o.versions.table.index(env, o, 16);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -1478,7 +1471,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			o.fpId = p_fpId;
 			o.changerUId = env.cEnv.euid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 64);
+			o.versions.table.index(env, o, 32);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
