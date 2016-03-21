@@ -420,6 +420,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				sme.cancel(sysEnv);
 		}
 
+		setResumeTs(sysEnv, null);
 		suspend (sysEnv, false, false, true, true, true);
 		removeAsyncTrigger(sysEnv);
 		if (!active) {
