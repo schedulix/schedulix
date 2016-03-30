@@ -2423,6 +2423,7 @@ jrd_sticky:		STICKY opt_stickyspec					{ $$ = $2; }
 			//D:DEFAULT
 	|		NOSTICKY						{ $$ = null; }
 
+//D:LINEBREAK
 opt_stickyspec:									{ $$ = new WithHash(); }
 	|		'(' stickyspec ')'					{ $$ = $2; }
 
@@ -2464,6 +2465,7 @@ job_parameter:		parametername opt_jp_withitem jp_optdefault jp_optlocal	jp_optex
 opt_jp_withitem:								{ $$ = new WithItem(new Integer(SDMSParameterDefinition.PARAMETER), null); }
 	|		jp_withitem						{ $$ = $1; }
 
+//NT-ALIAS = parametertype
 jp_withitem:		PARAMETERS						{ $$ = new WithItem(new Integer(SDMSParameterDefinition.PARAMETER), null); }
 	|		REFERENCE folderpath '(' parametername ')'		{ $2.addElement($4);
 										  $$ = new WithItem(new Integer(SDMSParameterDefinition.REFERENCE), $2);
@@ -2491,6 +2493,7 @@ jp_nondefwith:		CONSTANT '=' STRING					{ $$ = new WithItem(new Integer(SDMSPara
 jp_optdefault:									{ $$ = null; }
 	|		DEFAULT '=' STRING					{ $$ = $3.textValue; }
 
+//D:LINEBREAK
 jp_optlocal:									{ $$ = Boolean.FALSE; }
 	|		LOCAL							{ $$ = Boolean.TRUE; }
 
