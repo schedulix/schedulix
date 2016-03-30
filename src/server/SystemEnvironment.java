@@ -61,6 +61,19 @@ public class SystemEnvironment implements Cloneable
 	private static final String NONE = "NONE";
 	private static final String ALL = "ALL";
 
+	private static final String S_LANGLEVEL261 = "2.6.1";
+	public static final int LANGLEVEL261 = 0;
+
+	private static final String S_LANGLEVEL27  = "2.7";
+	public static final int LANGLEVEL27 = 1;
+
+	private static final String LANGLEVELS[] = {
+		S_LANGLEVEL261,
+		S_LANGLEVEL27
+	};
+
+	private static final int DEFAULT_LANGLEVEL = LANGLEVELS.length - 1;
+
 	public static String SQUOTE = null;
 	public static String EQUOTE = null;
 	public static boolean isPostgreSQL = false;
@@ -150,6 +163,8 @@ public class SystemEnvironment implements Cloneable
 	public static Vector hiColumns;
 	public static Vector kjColumns;
 
+	public static int dumpLangLevel;
+
 	public static String keystore;
 	public static String keystorepassword;
 	public static String truststore;
@@ -172,6 +187,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_DBPASSWD              = "DbPasswd";
 	public static final String S_DBURL                 = "DbUrl";
 	public static final String S_DBUSER                = "DbUser";
+	public static final String S_DMPLANGLEVEL          = "DumpLangLevel";
 	public static final String S_EXPORTVARIABLES       = "ExportVariables";
 	public static final String S_GCWAKEUP              = "GCWakeup";
 	public static final String S_HISTORY               = "History";
@@ -402,6 +418,8 @@ public class SystemEnvironment implements Cloneable
 
 			port = 2506;
 		}
+
+		getDumpLangLevel();
 
 		got_properties = true;
 	}
@@ -932,6 +950,18 @@ public class SystemEnvironment implements Cloneable
 			if (i < exportVariables.size() - 1) ergebnis.append(",");
 		}
 		props.setProperty(S_EXPORTVARIABLES, ergebnis.toString());
+	}
+
+	private void getDumpLangLevel()
+	{
+		String cnfLangLevel = props.getProperty(S_DMPLANGLEVEL, LANGLEVELS[DEFAULT_LANGLEVEL]);
+		for (int i = 0; i < LANGLEVELS.length; ++i) {
+			if (cnfLangLevel.equals(LANGLEVELS[i]) || cnfLangLevel.equals("v" + LANGLEVELS[i]) || cnfLangLevel.equals("V" + LANGLEVELS[i])) {
+				dumpLangLevel = i;
+				break;
+			}
+		}
+		props.setProperty(S_DMPLANGLEVEL, LANGLEVELS[dumpLangLevel]);
 	}
 
 	private int checkIntProperty(String val, String name, int minval, int def, int maxval, String msg)
