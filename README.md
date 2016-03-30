@@ -12,10 +12,10 @@ All the progress will be twittered (https://twitter.com/schedulix).
 
 -------------------------------------------------------------------------------------------
 
-The last stable branch is v2.6.1
+The last stable branch is v2.7
 It can be obtained by doing a
 
-git clone https://github.com/schedulix/schedulix.git -b v2.6.1
+git clone https://github.com/schedulix/schedulix.git -b v2.7
 
 -------------------------------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ Support will be added soon.
 
 -------------------------------------------------------------------------------------------
 
-To upgrade from an older version to the current version, some database ischema changes have
+To upgrade from an older version to the current version, some database schema changes have
 to be made. SQL scripts are found in the sql/*_gen directories.
 
 Happy Hacking :-)
