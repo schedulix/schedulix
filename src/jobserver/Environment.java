@@ -199,48 +199,6 @@ public class Environment
 		inp.close();
 	}
 
-	public boolean containsKey (Object key)
-	{
-		if(Config.isWindows())
-			return super.containsKey (((String) key).toUpperCase());
-		else
-			return super.containsKey (key);
-	}
-
-	public Object get (Object key)
-	{
-		if(Config.isWindows())
-			return super.get (((String) key).toUpperCase());
-		else
-			return super.get (key);
-	}
-
-	public Object put (Object key, Object value)
-	{
-		if(Config.isWindows())
-			return super.put (((String) key).toUpperCase(), value);
-		else
-			return super.put (key, value);
-	}
-
-	public void putAll (Map m)
-	{
-		final Vector keys = new Vector (m.keySet());
-		final int size = keys.size();
-		for (int i = 0; i < size; ++i) {
-			final Object key = keys.get (i);
-			put (key, m.get (key));
-		}
-	}
-
-	public Object remove (Object key)
-	{
-		if(Config.isWindows())
-			return super.remove (((String) key).toUpperCase());
-		else
-			return super.remove (key);
-	}
-
 	public final Environment merge (final Environment env, final RepoIface ri, final Config cfg)
 	{
 		final HashMap result = new HashMap (this);
