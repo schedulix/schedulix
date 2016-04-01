@@ -669,14 +669,14 @@ public class SmeVariableResolver extends VariableResolver
 				return emptyString + thisSme.getRerunSeq(sysEnv);
 
 			case I_SCOPENAME:
-			SDMSScope scope;
+				SDMSScope scope;
 				Long scopeId = thisSme.getScopeId(sysEnv);
-			if (scopeId != null)
-				scope = SDMSScopeTable.getObject(sysEnv, scopeId);
-			else {
+				if (scopeId != null)
+					scope = SDMSScopeTable.getObject(sysEnv, scopeId);
+				else {
 
-				scope = evalScope;
-			}
+					scope = evalScope;
+				}
 				return (scope == null ? emptyString : scope.pathString(sysEnv));
 
 			case I_IDLE_TIME:
