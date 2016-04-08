@@ -55,7 +55,7 @@ PROGRAM_VERSION = $(shell grep programVersion server/SystemEnvironment.java | se
 BUILD_DATE = $(shell date '+%d.%m.%Y %H:%M')
 COPYRIGHT = $(shell grep 'public static final String copyright' jobserver/Libjni.java | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
 COMPANY = $(shell grep 'public static final String company' jobserver/Libjni.java | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
-BUILD = $(shell git log | awk '/commit/ { print $$2; exit }')
+BUILD = $(shell if [ -d ../.git ]; then git log | awk '/commit/ { print $$2; exit }' | tee $(SDMSHOME)/buildhash; else cat ../buildhash; fi)
 SWDIR = $(shell basename $(SDMSHOME))
 
 JAR_FILE = $(SDMSHOME)/lib/BICsuite.jar
@@ -75,10 +75,10 @@ rpmstructure:
 	mkdir -p $(HOME)/rpmbuild/SPECS
 	mkdir -p $(HOME)/rpmbuild/SRPMS
 	cd $(SDMSHOME)/..; \
-	tar czf $(HOME)/rpmbuild/SOURCES/schedulix-$(PROGRAM_VERSION).tgz --exclude .git $(SWDIR)
+	tar czf $(HOME)/rpmbuild/SOURCES/schedulix-$(PROGRAM_VERSION).tgz --exclude .git $(SWDIR)/*
 
 rpmbuild:
-	rpmbuild -ba ../lib/centos7.spec
+	if [ -x ~/bin/buildrpm ]; then ~/bin/buildrpm ../lib/centos7.spec; else rpmbuild -ba ../lib/centos7.spec; fi
 
 jar:
 	rm $(JAR_FILE)

@@ -6,3 +6,4 @@ lib/libBICsuite.so
 *.conf
 *.pyc
 log/*
+buildhash
