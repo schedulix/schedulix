@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.7
-Release:	1%{?dist}
+Release:	3%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -79,6 +79,7 @@ Requires:		java-1.7.0-openjdk jna
 The schedulix base package provides the files that are used by most other packages
 
 %pre base
+echo "executing pre base -- %version-%release"
 if [ "$1" == "1" ]; then
 	if [ ! -d /opt/schedulix ]; then
 		mkdir -p /opt/schedulix;
@@ -92,15 +93,16 @@ else
 	echo "Upgrading schedulix-base";
 	# if there is some server installed, stop it (if it's running, but the server-stop utility is forgiving if not)
 	if [ -x /etc/init.d/schedulix-server ]; then
-		service schedulix-server stop
+		service schedulix-server stop || true
 	fi
 	if [ -x /etc/init.d/schedulix-client ]; then
-		service schedulix-client stop
+		service schedulix-client stop || true
 	fi
 fi
 
 
 %post base
+echo "executing post base -- %version-%release"
 if [ "$1" == "1" ]; then
 	# we basically write the configuration files bicsuite.conf, java.conf and a settings file here
 	sed '
@@ -131,14 +133,26 @@ if [ -L schedulix ]; then
 	rm schedulix
 fi
 su schedulix -c "ln -s schedulix-%{version} schedulix"
+if [ "$1" != "1" ]; then
+	if [ -x /etc/init.d/schedulix-server ]; then
+		service schedulix-server start || true
+	fi
+	if [ -x /etc/init.d/schedulix-client ]; then
+		service schedulix-client start || true
+	fi
+fi
 
 
 %postun base
+echo "executing postun base -- %version-%release"
 if [ "$1" == "0" ]; then
 	userdel schedulix
 	rm -rf /var/spool/mail/schedulix
 	rm -rf /opt/schedulix
 fi
+
+%preun base
+echo "executing preun base -- %version-%release"
 
 %files base
 %ghost %attr(-, schedulix, schedulix) /opt/schedulix/schedulix
@@ -191,7 +205,16 @@ The configuration file will be changed. Instead of the 'ident' method we need th
 in order to be able to connect by jdbc.
 
 
+%pre server-pg
+echo "executing pre server-pg -- %version-%release"
+if [ "$1" == "1" ]; then
+	: noting to do on initial install
+else
+	service schedulix-server stop || true
+fi
+
 %post server-pg
+echo "executing post server-pg -- %version-%release"
 if [ "$1" == "1" ]; then
 	# create a valid server.conf
 	echo "creating server.conf file"
@@ -254,6 +277,9 @@ if [ "$1" == "1" ]; then
 			echo "Error initializing repository database schedulixdb -- exit code $ret"
 			exit 1
 		fi
+		echo "create table schema_version (version char(10), release char(20));
+		      insert into schema_version (version, release) values ('"'"'%{version}'"'"', '"'"'%{release}'"'"');
+		" | psql schedulixdb
 	'
 
 	echo "Setting up /opt/schedulix/.sdmshrc"
@@ -278,23 +304,62 @@ if [ "$1" == "1" ]; then
 	echo "Loading convenience package"
 	service schedulix-server start
 	su - schedulix -c ". \$HOME/.bashrc; sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;"
+
+	chkconfig schedulix-server on
 else
-	: todo
+	# determine password from server.conf and write .pgpass
+	. /opt/schedulix/etc/SETTINGS
+	DBPASSWD=`egrep -e '^DbPasswd=' $BICSUITECONFIG/server.conf | sed 's/DbPasswd=//'`
+
+	# remove the old entry
+	mv /opt/schedulix/.pgpass /opt/schedulix/.tmp.$$
+	grep -v "schedulixdb" < /opt/schedulix/.tmp.$$ > /opt/schedulix/.pgpass
+	rm -f /opt/schedulix/.tmp.$$
+
+	# add the new one
+	echo "127.0.0.1:5432:schedulixdb:schedulix:$DBPASSWD" >> /opt/schedulix/.pgpass
+
+	su - schedulix -c 'echo -e "\\\\t on\nselect version from schema_version;" | psql -q schedulixdb | head -1 | sed "s/ //g"' > /tmp/ver.$$
+	OLDVERSION=`cat /tmp/ver.$$`
+	rm -f /tmp/ver.$$
+	echo "currently installed: '$OLDVERSION', target: '%{version}'"
+	cd /opt/schedulix/schedulix-%{version}/sql/pg_gen
+	while [ "$OLDVERSION" != "%{version}" ]; do
+		UPGRADESCRIPT=`ls -1 generated-upgrade-${OLDVERSION}-to-*`
+		if [ -z "$UPGRADESCRIPT" ]; then
+			echo "WARNING: didn't find any more upgrade scripts!"
+			break;
+		fi
+		OLDVERSION=`basename $UPGRADESCRIPT .sql | sed 's/.*-to-//'`
+		echo "changing schema version to '$OLDVERSION' ..."
+		echo "executing $UPGRADESCRIPT ..."
+		su - schedulix -c "cd /opt/schedulix/schedulix-%{version}/sql/pg_gen; psql -f $UPGRADESCRIPT schedulixdb"
+	done
+	su - schedulix -c '
+		echo   "begin;
+			delete from schema_version;
+			insert into schema_version (version, release) values ('"'"'%{version}'"'"', '"'"'%{release}'"'"');
+			commit;
+		" | psql schedulixdb'
 fi
 
 
 
 %preun server-pg
-echo "Stopping server ..."
-service schedulix-server stop
+echo "executing preun server-pg -- %version-%release"
+if [ "$1" == "0" ]; then
+	echo "Stopping server ..."
+	service schedulix-server stop || true
+	chkconfig schedulix-server off
+fi
 
 %postun server-pg
+echo "executing postun server-pg -- %version-%release"
 if [ "$1" == "0" ]; then
 	echo "Dropping database"
 	su - schedulix -c "dropdb schedulixdb" || echo "drop of schedulixdb failed; continuing anyway"
 	su - postgres -c 'echo "drop user schedulix;" | psql' || echo "drop role schedulix failed; continuing anyway"
 fi
-
 
 
 %files server-pg
@@ -345,7 +410,18 @@ It will load the convenience package, but does not load the examples.
 
 %serverNotes
 
+%pre server-mariadb
+echo "executing pre server-mariadb -- %version-%release"
+if [ "$1" == "1" ]; then
+	: noting to do on initial install
+else
+	service schedulix-server stop || true
+fi
+
 %post server-mariadb
+echo "executing post server-mariadb -- %version-%release"
+V="'%{version}'"
+R="'%{release}'"
 if [ "$1" == "1" ]; then
 	echo "creating server.conf file"
 	HOSTNAME=`hostname`
@@ -373,23 +449,26 @@ if [ "$1" == "1" ]; then
 	create database schedulixdb;
 	grant all on schedulixdb.* to schedulix;
 	quit
-	ENDMYSQL
+ENDMYSQL
 
 	# we enable the service. We need it
 	systemctl enable mariadb
 
 	echo "populating database"
-	su - schedulix -c '
-		. ~/.bashrc;
-		cd $BICSUITEHOME/sql
-		mysql --user=schedulix --password=schedulix --database=schedulixdb --execute "source mysql/install.sql"
-		ret=$?
-		if [ $ret != 0 ]
+	su - schedulix -c "
+		. ~/.bashrc
+		cd "'$BICSUITEHOME'"/sql
+		mysql --user=schedulix --password=schedulix --database=schedulixdb --execute 'source mysql/install.sql'
+		"'ret=$?
+		if [ $ret != 0 ]'"
 		then
-			echo "Error initializing repository database schedulixdb -- exit code $ret"
+			echo "'"Error initializing repository database schedulixdb -- exit code $ret"'"
 			exit 1
 		fi
-	'
+	"
+	echo 'create table schema_version (`version` char(10), `release` char(20));
+	      insert into schema_version (`version`, `release`) values ('"$V, $R"');
+	' | mysql --user=schedulix --password=schedulix --database=schedulixdb
 
 	echo "Setting up /opt/schedulix/.sdmshrc"
 
@@ -413,24 +492,54 @@ if [ "$1" == "1" ]; then
 	chkconfig schedulix-server on
 	service schedulix-server start
 	echo "Loading convenience package"
-	su - schedulix -c ". \$HOME/.bashrc; sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;"
+	su - schedulix -c ". ~/.bashrc; sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;"
 else
-	: todo
+	# determine password from server.conf
+	. /opt/schedulix/etc/SETTINGS
+	DBPASSWD=`egrep -e '^DbPasswd=' $BICSUITECONFIG/server.conf | sed 's/DbPasswd=//'`
+
+	su - schedulix -c 'echo -e "select version from schema_version;" | mysql -sN --user=schedulix --password='"$DBPASSWD"' --database=schedulixdb | sed "s/ //g"' > /tmp/ver.$$
+	OLDVERSION=`cat /tmp/ver.$$`
+	rm -f /tmp/ver.$$
+	echo "currently installed: '$OLDVERSION', target: '%{version}'"
+	cd /opt/schedulix/schedulix-%{version}/sql/mysql_gen
+	while [ "$OLDVERSION" != "%{version}" ]; do
+		UPGRADESCRIPT=`ls -1 generated-upgrade-${OLDVERSION}-to-*`
+		if [ -z "$UPGRADESCRIPT" ]; then
+			echo "WARNING: didn't find any more upgrade scripts!"
+			break;
+		fi
+		OLDVERSION=`basename $UPGRADESCRIPT .sql | sed 's/.*-to-//'`
+		echo "changing schema version to '$OLDVERSION' ..."
+		echo "executing $UPGRADESCRIPT ..."
+		su - schedulix -c "cd /opt/schedulix/schedulix-%{version}/sql/mysql_gen; mysql --user=schedulix --password='$DBPASSWD' --database=schedulixdb --execute 'source $UPGRADESCRIPT'"
+	done
+	echo   'begin;
+		delete from schema_version;
+		insert into schema_version (`version`, `release`) values ('"$V, $R"');
+		commit;
+	' | mysql --user=schedulix --password="$DBPASSWD" --database=schedulixdb
+	service schedulix-server start
 fi
 
 
 %preun server-mariadb
-echo "Stopping server ..."
-service schedulix-server stop
+echo "executing preun server-mariadb -- %version-%release"
+if [ "$1" == "0" ]; then
+	echo "Stopping server ..."
+	service schedulix-server stop || true
+	chkconfig schedulix-server off
+fi
 
 %postun server-mariadb
+echo "executing postun server-mariadb -- %version-%release"
 if [ "$1" == "0" ]; then
 	echo "Dropping database"
 	mysql --user=root << ENDMYSQL
 	drop user schedulix@localhost;
 	drop database schedulixdb;
 	quit
-	ENDMYSQL
+ENDMYSQL
 fi
 
 
@@ -459,6 +568,12 @@ fi
 %exclude   /opt/schedulix/schedulix-%{version}/sql/ing
 %exclude   /opt/schedulix/schedulix-%{version}/sql/ing_gen
 
+#
+# exclude the buildhash file
+# This file is only required to get a correct build outside of a git repository
+#
+%exclude /opt/schedulix/schedulix-%{version}/buildhash
+
 %package client
 # ----------------------------------------------------------------------------------------
 #
@@ -474,8 +589,31 @@ Requires:		schedulix-base = %{version} coreutils
 
 The schedulix client package installs everything needed to setup a jobserver
 
+%pre
+echo "executing pre client -- %version-%release"
+if [ "$1" == "1" ]; then
+	: nothing to do on initial install
+else
+	service schedulix-client stop || true
+fi
+
 %post
-chkconfig schedulix-client on
+echo "executing post client -- %version-%release"
+if [ "$1" == "1" ]; then
+	chkconfig schedulix-client on
+fi
+service schedulix-client start || true
+
+
+%preun
+echo "executing preun client -- %version-%release"
+if [ "$1" == "0" ]; then
+	service schedulix-client stop || true
+	chkconfig schedulix-client off
+fi
+
+%postun
+echo "executing postun client -- %version-%release"
 
 %files client
 %defattr(0644, schedulix, schedulix, 0755)
@@ -540,7 +678,8 @@ This will make the port 8080 accessible from other computers.
 (We don't do this, because we don't want to automagically introduce holes into
 your security concept).
 
-%post zope
+%pre zope
+echo "executing pre zope -- %version-%release"
 if [ "$1" == "1" ]; then
 	# we set the umask such that the allowed access is user-only (if not overridden)
 	# nobody needs to read the zope directories at silesystem level, except for zope itself
@@ -554,14 +693,41 @@ if [ "$1" == "1" ]; then
 		exit 1
 	fi
 	cd /opt/schedulix/software/Zope
-	su schedulix -c "bin/easy_install -i http://download.zope.org/Zope2/index/%{zope2version} Zope2"
-	ret=$?
-	if [ $ret != 0 ]; then
-		echo "Error during easy_install of Zope2 version %{zope2version}"
-		exit 1
-	fi
+	retryctr=1
+	maxretry=10
+	while true; do
+		su schedulix -c "bin/easy_install -i http://download.zope.org/Zope2/index/%{zope2version} Zope2"
+		ret=$?
+		if [ $ret != 0 ]; then
+			echo "Error during easy_install of Zope2 version %{zope2version}"
+			if [ $retryctr -gt $maxretry ]; then
+				exit 1
+			fi
+			echo "retrying ...($retryctr/$maxretry)"
+			retryctr=`expr $retryctr + 1`
+		else
+			break;
+		fi
+	done
 
 	echo "building zope instance"
+	su schedulix -c "bin/mkzopeinstance -d /opt/schedulix/schedulixweb -u sdmsadm:sdmsadm"
+	ret=$?
+	if [ $ret != 0 ]; then
+		echo "Error creating Zope instance for schedulix!web"
+		exit 1
+	fi
+else
+	echo "upgrading... software is already there"
+	service schedulix-zope stop || true
+fi
+
+
+%post zope
+echo "executing post zope -- %version-%release"
+if [ "$1" == "1" ]; then
+	echo "building zope instance"
+	cd /opt/schedulix/software/Zope
 	su schedulix -c "bin/mkzopeinstance -d /opt/schedulix/schedulixweb -u sdmsadm:sdmsadm"
 	ret=$?
 	if [ $ret != 0 ]; then
@@ -602,6 +768,7 @@ if [ "$1" == "1" ]; then
 			break;
 		fi
 		CNT=`expr $CNT + 1`
+		sleep 2
 	done
 	rm -f cookies.txt
 
@@ -626,15 +793,73 @@ if [ "$1" == "1" ]; then
 	chkconfig schedulix-zope on
 	service schedulix-zope start
 else
-	: todo -> exchange SDMS.zexp
+	# create a temporary zope admin user
+	ZOPEADMINUSER=schedulix_zau
+	ZOPEADMINPASSWORD=sdms$RANDOM$RANDOM
+
+	# stop zope and create access file
+	service schedulix-zope stop || true
+	echo ""
+	su - schedulix -c "
+	. /opt/schedulix/etc/SETTINGS
+	cd /opt/schedulix/schedulixweb
+	../software/Zope/bin/zpasswd -u $ZOPEADMINUSER -p $ZOPEADMINPASSWORD access
+	chmod 0600 access
+	"
+	# start Zope again
+	service schedulix-zope start
+	sleep 5		# zope seems to need a little time to reflect about life, the universe and everything
+	echo ""
+
+	# exchange SDMS.zexp
+	TS=`date +%Y%m%d%H%M%S`
+	CNT=0
+	QUIET="--quiet"
+	while [ $CNT -lt 5 ]; do
+		wget --verbose --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_renameObjects?ids:list=SDMS&new_ids:list=SDMS_$TS"
+		ret=$?
+		if [ $ret != 0 ]; then
+			echo "Error renaming SDMS folder"
+			QUIET="--verbose"
+		else
+			break;
+		fi
+		CNT=`expr $CNT + 1`
+		sleep 2
+	done
+
+	CNT=0
+	QUIET="--quiet"
+	while [ $CNT -lt 5 ]; do
+		wget $QUIET --user=sdmsadm --password=sdmsadm --output-document=/dev/null "http://localhost:8080/manage_importObject?file=SDMS.zexp"
+		ret=$?
+		if [ $ret != 0 ]; then
+			echo "Error importing SDMS.zexp"
+			QUIET="--verbose"
+		else
+			break;
+		fi
+		CNT=`expr $CNT + 1`
+		sleep 2
+	done
+
+	# stop Zope, remove "backdoor" and start it again
+	service schedulix-zope stop
+	rm -f /opt/schedulix/schedulixweb/access
+	service schedulix-zope start
 fi
 
 
 %preun zope
-/etc/init.d/schedulix-zope stop
+echo "executing preun zope -- %version-%release"
+if [ "$1" == "0" ]; then
+	/etc/init.d/schedulix-zope stop || true
+	chkconfig schedulix-zope off
+fi
 
 
 %postun zope
+echo "executing postun zope -- %version-%release"
 if [ "$1" == "0" ]; then
 	rm -rf /opt/schedulix/software
 	rm -rf /opt/schedulix/schedulixweb
@@ -684,7 +909,11 @@ The schedulix examples package installs a few local jobservers and loads a bunch
 The logs can be found in the $BICSUITEHOME/install directory.
 It is assumed that a valid .sdmshrc file is installed in $HOME.
 
+%pre examples
+echo "executing pre examples -- %version-%release"
+
 %post examples
+echo "executing post examples -- %version-%release"
 if [ "$1" == "1" ]; then
 	su - schedulix -c '
 	. ~/.bashrc;
@@ -694,12 +923,25 @@ if [ "$1" == "1" ]; then
 	'
 	chkconfig schedulix-examples on
 	service schedulix-examples start
+else
+	su - schedulix -c '
+	. ~/.bashrc
+	cd $BICSUITEHOME/install
+	sdmsh < setup_examples.sdms > setup_examples.log 2>&1
+	'
 fi
 
 %preun examples
-service schedulix-examples stop
-cd /opt/schedulix/schedulix/install
-rm -f *.log
+echo "executing preun examples -- %version-%release"
+if [ "$1" == "0" ]; then
+	service schedulix-examples stop || true
+	chkconfig schedulix-examples off
+	cd /opt/schedulix/schedulix/install
+	rm -f *.log
+fi
+
+%postun examples
+echo "executing postun examples -- %version-%release"
 
 %files examples
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/host_1.conf.template
@@ -758,7 +1000,7 @@ cd ..
 %install
 echo "starting the installation of schedulix"
 mkdir -p %{buildroot}/opt/schedulix/schedulix-%{version}
-cp -r bin etc install lib sql zope AGPL.TXT README.md %{buildroot}/opt/schedulix/schedulix-%{version}
+cp -r bin etc install lib sql zope AGPL.TXT README.md buildhash %{buildroot}/opt/schedulix/schedulix-%{version}
 mkdir %{buildroot}/opt/schedulix/etc
 mkdir %{buildroot}/opt/schedulix/bin
 mkdir %{buildroot}/opt/schedulix/log
