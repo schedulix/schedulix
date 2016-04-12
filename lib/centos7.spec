@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.7
-Release:	3%{?dist}
+Release:	4%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -121,6 +121,10 @@ if [ "$1" == "1" ]; then
 	# make the three files readable for world
 	chown schedulix.schedulix /opt/schedulix/etc/bicsuite.conf /opt/schedulix/etc/java.conf /opt/schedulix/etc/SETTINGS
 	chmod 644 /opt/schedulix/etc/bicsuite.conf /opt/schedulix/etc/java.conf /opt/schedulix/etc/SETTINGS
+	if [ %{arch} == "ppc64le" ]; then
+		# we'll have to remove the "-client" flag as the ppc openJDK Java doesn't like it
+		sed --in-place=.save 's/-client[ ]?//' /opt/schedulix/etc/java.conf
+	fi
 
 	echo '
 	# source schedulix environment
@@ -208,7 +212,15 @@ in order to be able to connect by jdbc.
 %pre server-pg
 echo "executing pre server-pg -- %version-%release"
 if [ "$1" == "1" ]; then
-	: noting to do on initial install
+	# if this is a new postgresql installation, we'll have to do an initdb first
+	if [ ! -f /var/lib/pgsql/data/pg_hba.conf ]; then
+		postgresql-setup initdb
+		# this seems to take some time after finishing the initialization
+		sleep 5
+		chkconfig postgresql on
+	fi
+	service postgresql start || true
+
 else
 	service schedulix-server stop || true
 fi
@@ -236,17 +248,8 @@ if [ "$1" == "1" ]; then
 	rm -f /tmp/$$.tmp
 	"
 
-	# if this is a new postgresql installation, we'll have to do an initdb first
-	if [ ! -f /var/lib/pgsql/data/pg_hba.conf ]; then
-		postgresql-setup initdb
-	fi
-	# check if pg is running, start if not
-	if ! service postgresql status | grep active >/dev/null 2>&1; then
-		service postgresql start
-	fi
-
 	echo "creating database user"
-	su - postgres -c 'echo "create user schedulix with password '"'schedulix'"' createdb;" | psql'
+	su - postgres -c 'echo "create user schedulix with password '"'schedulix'"' createdb login;" | psql'
 
 	# write the password file in order to be able to connect without a password prompt
 	echo "127.0.0.1:5432:schedulixdb:schedulix:schedulix" > /opt/schedulix/.pgpass
@@ -443,6 +446,7 @@ if [ "$1" == "1" ]; then
 	"
 
 	echo "creating database"
+	chkconfig mariadb on
 	service mariadb start
 	mysql --user=root << ENDMYSQL
 	create user schedulix@localhost identified by 'schedulix';
