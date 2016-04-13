@@ -1479,6 +1479,7 @@ void run(callstatus *status)
 		closeTaskfile(status, global.taskfile);
 		return;
 	}
+	global.myStartTime = time(NULL);
 	global.taskfile = openTaskfile(status);
 
 	default_all_signals (status);
@@ -1487,7 +1488,6 @@ void run(callstatus *status)
 		status->severity = STATUS_OK;
 		status->msg = MSG_NO_ERROR;
 	}
-	global.myStartTime = time(NULL);
 	global.extpid = getUniquePid(status, getpid());
 	if (status->severity != STATUS_OK) return;
 
