@@ -83,7 +83,7 @@ case "${1:-''}" in
 	fi
 	# Start schedulix!server
 	su - schedulix /bin/bash -c ". ~/.bashrc; server-start" >/dev/null 2>&1
-	if fuser -s $INSTALLTO/log/BICserver.out 2>/dev/null
+	if fuser -s /opt/schedulix/log/BICserver.out 2>/dev/null
 	then
 	    $ECHO_SUCCESS
 	else
