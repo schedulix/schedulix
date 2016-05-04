@@ -481,7 +481,7 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getSeParentId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -519,7 +519,7 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 		try {
 
 			SDMSProxy o = t.get(env, getSeParentId(env), version);
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}

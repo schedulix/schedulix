@@ -506,8 +506,8 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			boolean isInverse = getIsInverse(env).booleanValue();
 			t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
 			try {
-				SDMSProxy o = t.get(env, (isInverse ? getFireId(env) : getSeId(env)));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				SDMSProxy o = t.get(env, (isInverse ? getSeId(env) : getFireId(env)));
+				long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 				}
@@ -520,7 +520,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
 			try {
 				SDMSProxy o = t.get(env, getFireId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 				}
@@ -533,7 +533,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
 			try {
 				SDMSProxy o = t.get(env, getFireId(env));
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 				}
@@ -564,8 +564,8 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
 			try {
 
-				SDMSProxy o = t.get(env, (isInverse ? getFireId(env) : getSeId(env)), version);
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				SDMSProxy o = t.get(env, (isInverse ? getSeId(env) : getFireId(env)), version);
+				long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 				}
@@ -579,7 +579,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			try {
 
 				SDMSProxy o = t.get(env, getFireId(env), version);
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 				}
@@ -593,7 +593,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			try {
 
 				SDMSProxy o = t.get(env, getFireId(env), version);
-				long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+				long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 				}

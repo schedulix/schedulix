@@ -228,7 +228,7 @@ public class SDMSResourceStateProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceStateProfileTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getRspId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}

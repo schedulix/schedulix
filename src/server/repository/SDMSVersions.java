@@ -316,15 +316,44 @@ public class SDMSVersions
 		throws SDMSException
 	{
 		int s = versions.size();
+		if (s == 0) return null;
 		SDMSObject obj;
-		obj = null;
+		obj = (SDMSObject)(versions.elementAt(s - 1));
 
-		for (; s > 0; --s) {
-			obj = (SDMSObject)(versions.elementAt(s - 1));
-			if (obj.validTo >= versionId && obj.validFrom < versionId) {
-				return obj;
+		if (obj.validTo <= versionId && versionId != Long.MAX_VALUE) {
+			if (SystemEnvironment.maxWriter > 1 && env.tx.mode == SDMSTransaction.READONLY) {
+				int i;
+				for (i = 0; i < env.tx.commitingTx.length; ++i) {
+					if (env.tx.commitingTx[i] > obj.validTo)
+						return null;
+					if (env.tx.commitingTx[i] == obj.validTo) {
+						return obj;
+					}
+				}
 			}
+			return null;
 		}
+
+		do {
+			if (obj.validFrom <= versionId) {
+				if (SystemEnvironment.maxWriter > 1 && env.tx.mode == SDMSTransaction.READONLY) {
+					int i;
+					for (i = 0; i < env.tx.commitingTx.length; ++i) {
+						if (env.tx.commitingTx[i] > obj.validFrom)
+							return obj;
+						if (env.tx.commitingTx[i] == obj.validFrom) {
+							break;
+						}
+					}
+					if (i == env.tx.commitingTx.length) return obj;
+				} else
+					return obj;
+			}
+			s--;
+			if (s == 0) break;
+			obj = (SDMSObject)(versions.elementAt(s - 1));
+		} while (true);
+
 		return null;
 	}
 

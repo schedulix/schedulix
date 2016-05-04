@@ -270,7 +270,7 @@ public class SDMSExitStateMappingProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSExitStateMappingProfileTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getEsmpId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -308,7 +308,7 @@ public class SDMSExitStateMappingProxyGeneric extends SDMSProxy
 		try {
 
 			SDMSProxy o = t.get(env, getEsmpId(env), version);
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}

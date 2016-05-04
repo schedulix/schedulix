@@ -73,6 +73,7 @@ public class SDMSTransaction
 
 	private   HashSet touchList;
 	public    HashSet subTxLocks;
+	public long[] commitingTx;
 
 	public HashMap rscCache = null;
 	public HashMap envJSMap = null;
@@ -89,14 +90,15 @@ public class SDMSTransaction
 			}
 		}
 		mode = m;
-		txId = nextId.next(env, m);
+		txId = nextId.next(env, m, false);
 
 		touchList = null;
 		subTxLocks = null;
 		if(m == READONLY) {
 			versionId = (version == null ? txId : version.longValue());
-
 			env.roTxList.add(env, versionId);
+			if (SystemEnvironment.maxWriter > 1)
+				commitingTx = nextId.getCommitingTx();
 		} else
 			versionId = UNDEFINED;
 		startTime = System.currentTimeMillis();
@@ -106,12 +108,12 @@ public class SDMSTransaction
 
 	public static long drawVersion(SystemEnvironment env) throws SDMSException
 	{
-		return nextId.next(env, READWRITE);
+		return nextId.next(env, READWRITE, false);
 	}
 
 	public static long getRoVersion(SystemEnvironment env) throws SDMSException
 	{
-		return nextId.next(env, READONLY);
+		return nextId.next(env, READONLY, false);
 	}
 
 	public long txId()
@@ -134,8 +136,13 @@ public class SDMSTransaction
 	public void commit(SystemEnvironment env)
 		throws SQLException, SDMSException
 	{
-		if(versionId == UNDEFINED) versionId = nextId.next(env, READWRITE);
-		commitOrRollback(env, true);
+		if(versionId == UNDEFINED) versionId = nextId.next(env, READWRITE, true);
+		try {
+			commitOrRollback(env, true);
+		} catch(Throwable t) {
+			nextId.releaseVersion(env);
+			throw t;
+		}
 	}
 
 	public void rollback(SystemEnvironment env)
@@ -434,35 +441,72 @@ class TxCounter
 
 	private static long lastRoId;
 
+	private long commitingTx[];
+	private int commitingTxCnt = 0;
+
 	public TxCounter(SystemEnvironment env)
 		throws SDMSException
 	{
 		lastId = getNextQuantum(env);
 		nextId = lastId - QUANTUM + 1;
 		lastRoId = nextId;
+
+		commitingTx = new long[SystemEnvironment.maxWriter];
 	}
 
-	private synchronized long next(SystemEnvironment env)
+	private synchronized long next(SystemEnvironment env, boolean isCommitVersion)
 		throws SDMSException
 	{
 		if(nextId == lastId) {
 			lastId = getNextQuantum(env);
 			nextId = lastId - QUANTUM;
 		}
-		return ++nextId;
+		++nextId;
+		if (isCommitVersion && SystemEnvironment.maxWriter > 1) {
+			commitingTx[env.dbConnectionNr] = nextId;
+			commitingTxCnt ++;
+		}
+		return nextId;
 	}
 
-	public synchronized long next(SystemEnvironment env, int m)
+	public synchronized long next(SystemEnvironment env, int m, boolean isCommitVersion)
 		throws SDMSException
 	{
 		if(m == SDMSTransaction.READONLY)	return lastRoId;
-		else					return next(env);
+		else					return next(env, isCommitVersion);
 	}
 
 	public synchronized void releaseVersion(SystemEnvironment env)
 		throws SDMSException
 	{
-		lastRoId = next(env);
+		if (SystemEnvironment.maxWriter > 1 && commitingTx[env.dbConnectionNr] != 0) {
+			commitingTx[env.dbConnectionNr] = 0;
+			commitingTxCnt--;
+		}
+		lastRoId = next(env, false);
+	}
+
+	public synchronized long[] getCommitingTx()
+	{
+		long[] result;
+
+		if (commitingTxCnt > 0) {
+			result = new long[commitingTxCnt];
+
+			int j = 0;
+			for (int i = 0; i < SystemEnvironment.maxWriter; ++i) {
+				if (commitingTx[i] != 0) {
+					result[j] = commitingTx[i];
+					j++;
+				}
+			}
+
+			Arrays.sort(result);
+		} else {
+			result = new long[1];
+			result[0] = Long.MAX_VALUE;
+		}
+		return result;
 	}
 
 	private synchronized long getNextQuantum(SystemEnvironment env)
