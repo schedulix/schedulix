@@ -45,23 +45,6 @@ CREATE TABLE AUDIT_TRAIL (
 );
 CREATE UNIQUE INDEX PK_AUDIT_TRAIL
 ON AUDIT_TRAIL(ID);
-CREATE TABLE ARC_AUDIT_TRAIL (
-    ID                             decimal(20) NOT NULL
-    , USER_ID                        decimal(20)      NULL
-    , TS                             decimal(20)      NULL
-    , TXID                           decimal(20)      NULL
-    , ACTION                         integer          NULL
-    , OBJECT_TYPE                    integer          NULL
-    , OBJECT_ID                      decimal(20)      NULL
-    , ORIGIN_ID                      decimal(20)      NULL
-    , IS_SET_WARNING                 integer          NULL
-    , ACTION_INFO                    varchar(1024)    NULL
-    , ACTION_COMMENT                 varchar(1024)    NULL
-    , CREATOR_U_ID                   decimal(20)      NULL
-    , CREATE_TS                      decimal(20)      NULL
-    , CHANGER_U_ID                   decimal(20)      NULL
-    , CHANGE_TS                      decimal(20)      NULL
-);
 CREATE VIEW SCI_AUDIT_TRAIL AS
 SELECT
     ID
@@ -80,3 +63,20 @@ SELECT
     , CHANGER_U_ID                   AS CHANGER_U_ID
     , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM AUDIT_TRAIL;
+CREATE TABLE ARC_AUDIT_TRAIL (
+    ID                             decimal(20) NOT NULL
+    , USER_ID                        decimal(20)      NULL
+    , TS                             decimal(20)      NULL
+    , TXID                           decimal(20)      NULL
+    , ACTION                         integer          NULL
+    , OBJECT_TYPE                    integer          NULL
+    , OBJECT_ID                      decimal(20)      NULL
+    , ORIGIN_ID                      decimal(20)      NULL
+    , IS_SET_WARNING                 integer          NULL
+    , ACTION_INFO                    varchar(1024)    NULL
+    , ACTION_COMMENT                 varchar(1024)    NULL
+    , CREATOR_U_ID                   decimal(20)      NULL
+    , CREATE_TS                      decimal(20)      NULL
+    , CHANGER_U_ID                   decimal(20)      NULL
+    , CHANGE_TS                      decimal(20)      NULL
+);

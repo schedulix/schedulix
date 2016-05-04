@@ -44,22 +44,6 @@ CREATE TABLE DEPENDENCY_INSTANCE (
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_DEPENDENCY_INSTANCE
 ON DEPENDENCY_INSTANCE(`ID`);
-CREATE TABLE ARC_DEPENDENCY_INSTANCE (
-    ID                             decimal(20) NOT NULL
-    , `DD_ID`                        decimal(20)      NULL
-    , `DEPENDENT_ID`                 decimal(20)      NULL
-    , `DEPENDENT_ID_ORIG`            decimal(20)      NULL
-    , `DEPENDENCY_OPERATION`         integer          NULL
-    , `REQUIRED_ID`                  decimal(20)      NULL
-    , `STATE`                        integer          NULL
-    , `IGNORE`                       integer          NULL
-    , `DI_ID_ORIG`                   decimal(20)      NULL
-    , `SE_VERSION`                   decimal(20)      NULL
-    , `CREATOR_U_ID`                 decimal(20)      NULL
-    , `CREATE_TS`                    decimal(20)      NULL
-    , `CHANGER_U_ID`                 decimal(20)      NULL
-    , `CHANGE_TS`                    decimal(20)      NULL
-) ENGINE = INNODB;
 CREATE VIEW SCI_DEPENDENCY_INSTANCE AS
 SELECT
     ID
@@ -77,3 +61,19 @@ SELECT
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
   FROM DEPENDENCY_INSTANCE;
+CREATE TABLE ARC_DEPENDENCY_INSTANCE (
+    ID                             decimal(20) NOT NULL
+    , `DD_ID`                        decimal(20)      NULL
+    , `DEPENDENT_ID`                 decimal(20)      NULL
+    , `DEPENDENT_ID_ORIG`            decimal(20)      NULL
+    , `DEPENDENCY_OPERATION`         integer          NULL
+    , `REQUIRED_ID`                  decimal(20)      NULL
+    , `STATE`                        integer          NULL
+    , `IGNORE`                       integer          NULL
+    , `DI_ID_ORIG`                   decimal(20)      NULL
+    , `SE_VERSION`                   decimal(20)      NULL
+    , `CREATOR_U_ID`                 decimal(20)      NULL
+    , `CREATE_TS`                    decimal(20)      NULL
+    , `CHANGER_U_ID`                 decimal(20)      NULL
+    , `CHANGE_TS`                    decimal(20)      NULL
+) ENGINE = INNODB;

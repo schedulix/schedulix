@@ -42,20 +42,6 @@ CREATE TABLE HIERARCHY_INSTANCE (
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_HIERARCHY_INSTANCE
 ON HIERARCHY_INSTANCE(`ID`);
-CREATE TABLE ARC_HIERARCHY_INSTANCE (
-    ID                             decimal(20) NOT NULL
-    , `PARENT_ID`                    decimal(20)      NULL
-    , `CHILD_ID`                     decimal(20)      NULL
-    , `SH_ID`                        decimal(20)      NULL
-    , `NICE`                         integer          NULL
-    , `CHILD_ESD_ID`                 decimal(20)      NULL
-    , `CHILD_ES_PREFERENCE`          integer          NULL
-    , `SE_VERSION`                   decimal(20)      NULL
-    , `CREATOR_U_ID`                 decimal(20)      NULL
-    , `CREATE_TS`                    decimal(20)      NULL
-    , `CHANGER_U_ID`                 decimal(20)      NULL
-    , `CHANGE_TS`                    decimal(20)      NULL
-) ENGINE = INNODB;
 CREATE VIEW SCI_HIERARCHY_INSTANCE AS
 SELECT
     ID
@@ -71,3 +57,17 @@ SELECT
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
   FROM HIERARCHY_INSTANCE;
+CREATE TABLE ARC_HIERARCHY_INSTANCE (
+    ID                             decimal(20) NOT NULL
+    , `PARENT_ID`                    decimal(20)      NULL
+    , `CHILD_ID`                     decimal(20)      NULL
+    , `SH_ID`                        decimal(20)      NULL
+    , `NICE`                         integer          NULL
+    , `CHILD_ESD_ID`                 decimal(20)      NULL
+    , `CHILD_ES_PREFERENCE`          integer          NULL
+    , `SE_VERSION`                   decimal(20)      NULL
+    , `CREATOR_U_ID`                 decimal(20)      NULL
+    , `CREATE_TS`                    decimal(20)      NULL
+    , `CHANGER_U_ID`                 decimal(20)      NULL
+    , `CHANGE_TS`                    decimal(20)      NULL
+) ENGINE = INNODB;

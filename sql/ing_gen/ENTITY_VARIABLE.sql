@@ -40,18 +40,6 @@ CREATE TABLE ENTITY_VARIABLE (
 );\g
 CREATE UNIQUE INDEX PK_ENTITY_VARIABLE
 ON ENTITY_VARIABLE(ID) WITH STRUCTURE = BTREE;\g
-CREATE TABLE ARC_ENTITY_VARIABLE (
-    ID                             decimal(20) NOT NULL
-    , SME_ID                         decimal(20)      NULL
-    , NAME                           varchar(64)      NULL
-    , VALUE                          varchar(256)     NULL
-    , IS_LOCAL                       integer          NULL
-    , EV_LINK                        decimal(20)      NULL
-    , CREATOR_U_ID                   decimal(20)      NULL
-    , CREATE_TS                      decimal(20)      NULL
-    , CHANGER_U_ID                   decimal(20)      NULL
-    , CHANGE_TS                      decimal(20)      NULL
-);\g
 CREATE VIEW SCI_ENTITY_VARIABLE AS
 SELECT
     ID
@@ -64,3 +52,15 @@ SELECT
     , CHANGER_U_ID                   AS CHANGER_U_ID
     , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CHANGE_TS- decimal(CHANGE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CHANGE_TS
   FROM ENTITY_VARIABLE;\g
+CREATE TABLE ARC_ENTITY_VARIABLE (
+    ID                             decimal(20) NOT NULL
+    , SME_ID                         decimal(20)      NULL
+    , NAME                           varchar(64)      NULL
+    , VALUE                          varchar(256)     NULL
+    , IS_LOCAL                       integer          NULL
+    , EV_LINK                        decimal(20)      NULL
+    , CREATOR_U_ID                   decimal(20)      NULL
+    , CREATE_TS                      decimal(20)      NULL
+    , CHANGER_U_ID                   decimal(20)      NULL
+    , CHANGE_TS                      decimal(20)      NULL
+);\g

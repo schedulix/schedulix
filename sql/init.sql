@@ -90,7 +90,7 @@ INSERT INTO FOLDER (ID, NAME,     OWNER_ID, ENV_ID, PARENT_ID, VALID_FROM, VALID
 
 -- Create GLOBAL scope owned by ADMIN without parent
 INSERT INTO SCOPE (ID, NAME,     OWNER_ID, TYPE, METHOD, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS, INHERIT_PRIVS)
-	VALUES    (50, 'GLOBAL', 81,       1,    0,      0,            0,         0,            0        , 0);
+	VALUES    (50, 'GLOBAL', 81,       1,    0,      0,            0,         0,            0,         0);
 
 --------------------------------------------------------------------------------
 --	Table "NAMED_RESOURCE"
@@ -108,7 +108,7 @@ INSERT INTO NAMED_RESOURCE (ID, NAME,       OWNER_ID, PARENT_ID, USAGE, RSP_ID, 
 -- IMPORTANT!!!
 --	If this ID is changed, it also has to be changed in BICsuite!web SDMS/SDMSDesigner/Schedules/NavigatorQueryMethod
 INSERT INTO SCHEDULE (ID, NAME,   OWNER_ID, INT_ID, PARENT_ID, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS, ACTIVE, INHERIT_PRIVS, TIME_ZONE)
-	VALUES       (70, 'ROOT', 81,       NULL,   NULL,      0,            0,         0,            0,         1,      0,             'GMT'    );
+	VALUES       (70, 'ROOT', 81,       NULL,   NULL,      0,            0,         0,            0,         1,      0,             'GMT');
 
 --------------------------------------------------------------------------------
 --	Table "MEMBER"
