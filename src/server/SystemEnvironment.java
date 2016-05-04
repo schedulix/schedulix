@@ -683,7 +683,8 @@ public class SystemEnvironment implements Cloneable
 	private void getWriterThreads()
 	{
 		String s_maxWriter = props.getProperty(S_WRITERTHREADS, "1");
-		maxWriter = checkIntProperty(s_maxWriter, S_WRITERTHREADS, 1, 1, 0, "Invalid number of RW Worker : ");
+
+		maxWriter = checkIntProperty(s_maxWriter, S_WRITERTHREADS, 1, 1, 50, "Invalid number of RW Worker : ");
 		props.setProperty(S_WRITERTHREADS, "" + maxWriter);
 	}
 
@@ -697,7 +698,7 @@ public class SystemEnvironment implements Cloneable
 	private void getScheduleWakeup()
 	{
 		String s_scheduleWakeupInterval = props.getProperty(S_SCHEDULEWAKEUP, "30");
-		scheduleWakeupInterval = checkIntProperty(s_scheduleWakeupInterval, S_SCHEDULEWAKEUP, 2, 30, 0,
+		scheduleWakeupInterval = checkIntProperty(s_scheduleWakeupInterval, S_SCHEDULEWAKEUP, 1, 30, 0,
 								"Invalid wakeup interval for scheduler : ");
 		props.setProperty(S_SCHEDULEWAKEUP, "" + scheduleWakeupInterval);
 	}
