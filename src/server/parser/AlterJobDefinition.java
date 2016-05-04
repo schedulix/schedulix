@@ -847,7 +847,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 		}
 
 		if (withs.containsKey(ParseStr.S_INHERIT)) {
-			Long inheritPrivs = (Long) withs.get(ParseStr.S_INHERIT);
+			inheritPrivs = (Long) withs.get(ParseStr.S_INHERIT);
 			if (inheritPrivs == null) inheritPrivs = new Long(0);
 			long lpriv = inheritPrivs.longValue();
 			if((se.getPrivilegeMask() & lpriv) != lpriv) {
@@ -855,7 +855,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 			}
 
 		} else
-			inheritPrivs = se.getInheritPrivs(sysEnv);
+			inheritPrivs = null;
 
 		se.setType(sysEnv, otype);
 		se.setRunProgram(sysEnv, runProgram);
@@ -885,7 +885,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 		se.setDependencyOperation(sysEnv, dependencyOperation);
 		se.setEsmpId(sysEnv, esmpId);
 		se.setOwnerId(sysEnv, gId);
-		se.setInheritPrivs(sysEnv, inheritPrivs);
+		if (inheritPrivs != null) se.setInheritPrivs(sysEnv, inheritPrivs);
 
 		Boolean oldMasterSubmittable = se.getMasterSubmittable(sysEnv);
 		if (oldMasterSubmittable.booleanValue() && !masterSubmittable.booleanValue()) {
