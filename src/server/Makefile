@@ -28,7 +28,7 @@ CLASSES = UserConnection.class ListenThread.class WorkerThread.class \
 	ConnectionEnvironment.class GarbageThread.class InternalSession.class \
 	OrdinaryListenThread.class
 
-SUBDIRS = parser util repository exception output dump timer
+SUBDIRS = parser util repository exception output dump timer locking
 
 all: generate subdirs $(CLASSES)
 
