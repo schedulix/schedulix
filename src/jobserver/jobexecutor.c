@@ -1189,7 +1189,7 @@ char *getTimestamp(time_t tim, int local)
 #else
 	static const char *gmtformat = "%d-%m-%Y %H:%M:%S GMT";
 	static const char *localformat = "%d-%m-%Y %H:%M:%S %Z";
-	char *format = (local ? localformat : gmtformat);
+	char *format = (char *) (local ? localformat : gmtformat);
 	buf [0] = TIMESTAMP_LEADIN;
 	const size_t len = strftime (buf + 1, sizeof (buf) - 3 * sizeof (char), format, local ? localtime (&tim) : gmtime(&tim));
 	buf [len + 1] = TIMESTAMP_LEADOUT;
