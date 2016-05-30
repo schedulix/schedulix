@@ -40,18 +40,6 @@ CREATE TABLE ENTITY_VARIABLE (
 );
 CREATE UNIQUE INDEX PK_ENTITY_VARIABLE
 ON ENTITY_VARIABLE(ID);
-CREATE TABLE ARC_ENTITY_VARIABLE (
-    ID                             decimal(20) NOT NULL
-    , SME_ID                         decimal(20)      NULL
-    , NAME                           varchar(64)      NULL
-    , VALUE                          varchar(256)     NULL
-    , IS_LOCAL                       integer          NULL
-    , EV_LINK                        decimal(20)      NULL
-    , CREATOR_U_ID                   decimal(20)      NULL
-    , CREATE_TS                      decimal(20)      NULL
-    , CHANGER_U_ID                   decimal(20)      NULL
-    , CHANGE_TS                      decimal(20)      NULL
-);
 CREATE VIEW SCI_ENTITY_VARIABLE AS
 SELECT
     ID
@@ -64,3 +52,15 @@ SELECT
     , CHANGER_U_ID                   AS CHANGER_U_ID
     , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM ENTITY_VARIABLE;
+CREATE TABLE ARC_ENTITY_VARIABLE (
+    ID                             decimal(20) NOT NULL
+    , SME_ID                         decimal(20)      NULL
+    , NAME                           varchar(64)      NULL
+    , VALUE                          varchar(256)     NULL
+    , IS_LOCAL                       integer          NULL
+    , EV_LINK                        decimal(20)      NULL
+    , CREATOR_U_ID                   decimal(20)      NULL
+    , CREATE_TS                      decimal(20)      NULL
+    , CHANGER_U_ID                   decimal(20)      NULL
+    , CHANGE_TS                      decimal(20)      NULL
+);

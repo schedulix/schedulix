@@ -42,20 +42,6 @@ CREATE TABLE HIERARCHY_INSTANCE (
 );\g
 CREATE UNIQUE INDEX PK_HIERARCHY_INSTANCE
 ON HIERARCHY_INSTANCE(ID) WITH STRUCTURE = BTREE;\g
-CREATE TABLE ARC_HIERARCHY_INSTANCE (
-    ID                             decimal(20) NOT NULL
-    , PARENT_ID                      decimal(20)      NULL
-    , CHILD_ID                       decimal(20)      NULL
-    , SH_ID                          decimal(20)      NULL
-    , NICE                           integer          NULL
-    , CHILD_ESD_ID                   decimal(20)      NULL
-    , CHILD_ES_PREFERENCE            integer          NULL
-    , SE_VERSION                     decimal(20)      NULL
-    , CREATOR_U_ID                   decimal(20)      NULL
-    , CREATE_TS                      decimal(20)      NULL
-    , CHANGER_U_ID                   decimal(20)      NULL
-    , CHANGE_TS                      decimal(20)      NULL
-);\g
 CREATE VIEW SCI_HIERARCHY_INSTANCE AS
 SELECT
     ID
@@ -71,3 +57,17 @@ SELECT
     , CHANGER_U_ID                   AS CHANGER_U_ID
     , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CHANGE_TS- decimal(CHANGE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CHANGE_TS
   FROM HIERARCHY_INSTANCE;\g
+CREATE TABLE ARC_HIERARCHY_INSTANCE (
+    ID                             decimal(20) NOT NULL
+    , PARENT_ID                      decimal(20)      NULL
+    , CHILD_ID                       decimal(20)      NULL
+    , SH_ID                          decimal(20)      NULL
+    , NICE                           integer          NULL
+    , CHILD_ESD_ID                   decimal(20)      NULL
+    , CHILD_ES_PREFERENCE            integer          NULL
+    , SE_VERSION                     decimal(20)      NULL
+    , CREATOR_U_ID                   decimal(20)      NULL
+    , CREATE_TS                      decimal(20)      NULL
+    , CHANGER_U_ID                   decimal(20)      NULL
+    , CHANGE_TS                      decimal(20)      NULL
+);\g

@@ -50,28 +50,6 @@ CREATE TABLE KILL_JOB (
 );
 CREATE UNIQUE INDEX PK_KILL_JOB
 ON KILL_JOB(ID);
-CREATE TABLE ARC_KILL_JOB (
-    ID                             decimal(20) NOT NULL
-    , SE_ID                          decimal(20)      NULL
-    , SE_VERSION                     decimal(20)      NULL
-    , SME_ID                         decimal(20)      NULL
-    , SCOPE_ID                       decimal(20)      NULL
-    , STATE                          integer          NULL
-    , EXIT_CODE                      integer          NULL
-    , COMMANDLINE                    varchar(512)     NULL
-    , LOGFILE                        varchar(512)     NULL
-    , ERRLOGFILE                     varchar(512)     NULL
-    , PID                            varchar(32)      NULL
-    , EXTPID                         varchar(32)      NULL
-    , ERROR_MSG                      varchar(256)     NULL
-    , RUNNABLE_TS                    decimal(20)      NULL
-    , START_TS                       decimal(20)      NULL
-    , FINSH_TS                       decimal(20)      NULL
-    , CREATOR_U_ID                   decimal(20)      NULL
-    , CREATE_TS                      decimal(20)      NULL
-    , CHANGER_U_ID                   decimal(20)      NULL
-    , CHANGE_TS                      decimal(20)      NULL
-);
 CREATE VIEW SCI_KILL_JOB AS
 SELECT
     ID
@@ -95,3 +73,25 @@ SELECT
     , CHANGER_U_ID                   AS CHANGER_U_ID
     , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM KILL_JOB;
+CREATE TABLE ARC_KILL_JOB (
+    ID                             decimal(20) NOT NULL
+    , SE_ID                          decimal(20)      NULL
+    , SE_VERSION                     decimal(20)      NULL
+    , SME_ID                         decimal(20)      NULL
+    , SCOPE_ID                       decimal(20)      NULL
+    , STATE                          integer          NULL
+    , EXIT_CODE                      integer          NULL
+    , COMMANDLINE                    varchar(512)     NULL
+    , LOGFILE                        varchar(512)     NULL
+    , ERRLOGFILE                     varchar(512)     NULL
+    , PID                            varchar(32)      NULL
+    , EXTPID                         varchar(32)      NULL
+    , ERROR_MSG                      varchar(256)     NULL
+    , RUNNABLE_TS                    decimal(20)      NULL
+    , START_TS                       decimal(20)      NULL
+    , FINSH_TS                       decimal(20)      NULL
+    , CREATOR_U_ID                   decimal(20)      NULL
+    , CREATE_TS                      decimal(20)      NULL
+    , CHANGER_U_ID                   decimal(20)      NULL
+    , CHANGE_TS                      decimal(20)      NULL
+);

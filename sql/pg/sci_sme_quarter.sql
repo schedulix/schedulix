@@ -40,7 +40,7 @@ SELECT  jahr,
 				*
 				date_part( 'day', date_trunc('quarter', now()) + '3 month' - date_trunc('quarter', now())) -- anzahl tage des aktuellen quartals
 				/
-				date_part( 'day', now()                                    - date_trunc('quarter', now())) -- anzahl vergangene tage des aktuellen quartals
+				greatest(1, date_part( 'day', now()                                    - date_trunc('quarter', now()))) -- anzahl vergangene tage des aktuellen quartals
 			ELSE
 				sum(anzahl)
         	END
@@ -50,7 +50,7 @@ SELECT  jahr,
 			WHEN (int4(monat                    ) - 1) / 3 THEN
 				sum(anzahl)
 				/
-				date_part( 'day', now()                                    - date_trunc('quarter', now())) -- anzahl vergangene tage des aktuellen quartals
+				greatest(1, date_part( 'day', now()                                    - date_trunc('quarter', now()))) -- anzahl vergangene tage des aktuellen quartals
 			ELSE
 				sum(anzahl)
 				/
