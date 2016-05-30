@@ -188,7 +188,7 @@ public class Server
 					continue;
 				}
 
-				switch (ri.reassureJob (feil.getId())) {
+				switch (ri.reassureJob (feil)) {
 				case RepoIface.START_JOB:
 					feil.close();
 					synchronized (jidsWithEiThread) {

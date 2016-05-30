@@ -505,11 +505,23 @@ public class RepoIface
 		return jobData;
 	}
 
-	public final synchronized int reassureJob (final String jid)
+	public final synchronized int reassureJob (final Feil feil)
 	{
-		final SDMSOutput res = sdmsExec ("reassure " + jid + ";");
-		if (res.error != null)
-			Utils.abortProgram (this, "(04301271504) Error received: (" + res.error.code + ") " + res.error.message);
+		String command = "reassure " + feil.getId() + ";";
+		final SDMSOutput res = sdmsExec (command);
+		if (res.error != null) {
+			if (res.error.code.equals("03110251037")) {
+
+				Trace.error("Server responded with a not found error for job " + feil.getId());
+				Trace.error("The issued command was:");
+				Trace.error(command);
+				if(!feil.emergency_rename()) {
+
+				}
+			} else {
+				Utils.abortProgram (this, "(04301271504) Unexpected response: (" + res.error.code + ") " + res.error.message);
+			}
+		}
 		final String cmdstr = (String) getByName (res.container, COMMAND);
 
 		int cmd = NOP;
