@@ -90,6 +90,7 @@ public class SDMSParser extends Parser
 		n.setEnv(env);
 		env.setLast();
 		env.setState(ConnectionEnvironment.QUEUED);
+		env.firstToken = null;
 		if(n.txMode == SDMSTransaction.READWRITE) {
 			env.cmdQueue().post(n);
 		} else {
@@ -97,6 +98,7 @@ public class SDMSParser extends Parser
 		}
 		env.lock().do_wait();
 
+		env.setState(ConnectionEnvironment.RENDERING);
 		n.render(ostream);
 		env.setLast();
 		env.setState(ConnectionEnvironment.IDLE);

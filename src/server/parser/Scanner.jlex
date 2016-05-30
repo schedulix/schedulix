@@ -409,6 +409,10 @@ public void proto_input(String s)
 	if (debug) {
 		System.err.println("Found Token ->" + s + "<-");
 	}
+	if (env.firstToken == null) {
+		env.firstToken = s;
+		env.setState(ConnectionEnvironment.PARSING);
+	}
 	stmt.append(s);
 }
 

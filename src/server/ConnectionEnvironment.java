@@ -48,9 +48,11 @@ public class ConnectionEnvironment
 	public static final int ACTIVE    = 2;
 	public static final int COMMITTING = 3;
 	public static final int CONNECTED = 4;
+        public static final int PARSING = 5;
+        public static final int RENDERING = 6;
 
 	public static final String stateNames[] = {
-		"IDLE", "QUEUED", "ACTIVE", "COMMITTING", "CONNECTED"
+		"IDLE", "QUEUED", "ACTIVE", "COMMITTING", "CONNECTED", "PARSING", "RENDERING"
 	};
 
 	protected final int id;
@@ -76,6 +78,7 @@ public class ConnectionEnvironment
 	protected final int port;
 	protected int state;
 	public  String actstmt;
+	public  String firstToken;
 	protected InetAddress userNode;
 	protected String info;
 
@@ -97,6 +100,7 @@ public class ConnectionEnvironment
 		trace = svrtrc;
 		port = portno;
 		actstmt = null;
+		firstToken = null;
 		info = null;
 		state = CONNECTED;
 		groupStack = new Stack();
@@ -350,9 +354,9 @@ public class ConnectionEnvironment
 			case Parser.PYTHON:
 				renderer = new SDMSPythonRenderer();
 				break;
-		case Parser.JSON:
-			renderer = new SDMSJsonRenderer();
-			break;
+			case Parser.JSON:
+				renderer = new SDMSJsonRenderer();
+				break;
 			case Parser.SERIAL:
 				renderer = new SDMSSerialRenderer();
 				break;
@@ -378,7 +382,7 @@ public class ConnectionEnvironment
 
 	public void setState(int s)
 	{
-		if(s == IDLE || s == QUEUED || s == ACTIVE || s == COMMITTING || s == CONNECTED)
+		if(s == IDLE || s == QUEUED || s == ACTIVE || s == COMMITTING || s == CONNECTED || s == PARSING || s == RENDERING)
 			state = s;
 	}
 
