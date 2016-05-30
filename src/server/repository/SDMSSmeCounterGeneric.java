@@ -63,21 +63,21 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSSmeCounterGeneric(
-	        SystemEnvironment env,
-	        Integer p_jahr,
-	        Integer p_monat,
-	        Integer p_tag,
-	        Integer p_anzahl,
-	        Long p_checksum,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		Integer p_jahr,
+		Integer p_monat,
+		Integer p_tag,
+		Integer p_anzahl,
+		Long p_checksum,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

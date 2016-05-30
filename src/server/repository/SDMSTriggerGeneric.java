@@ -133,42 +133,42 @@ public class SDMSTriggerGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSTriggerGeneric(
-	        SystemEnvironment env,
-	        String p_name,
-	        Long p_fireId,
-	        Integer p_objectType,
-	        Long p_seId,
-	        Long p_mainSeId,
-	        Long p_parentSeId,
-	        Boolean p_isActive,
-	        Boolean p_isInverse,
-	        Integer p_action,
-	        Integer p_type,
-	        Boolean p_isMaster,
-	        Boolean p_isSuspend,
-	        Boolean p_isCreate,
-	        Boolean p_isChange,
-	        Boolean p_isDelete,
-	        Boolean p_isGroup,
-	        String p_resumeAt,
-	        Integer p_resumeIn,
-	        Integer p_resumeBase,
-	        Boolean p_isWarnOnLimit,
-	        Long p_limitState,
-	        Integer p_maxRetry,
-	        Long p_submitOwnerId,
-	        String p_condition,
-	        Integer p_checkAmount,
-	        Integer p_checkBase,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		String p_name,
+		Long p_fireId,
+		Integer p_objectType,
+		Long p_seId,
+		Long p_mainSeId,
+		Long p_parentSeId,
+		Boolean p_isActive,
+		Boolean p_isInverse,
+		Integer p_action,
+		Integer p_type,
+		Boolean p_isMaster,
+		Boolean p_isSuspend,
+		Boolean p_isCreate,
+		Boolean p_isChange,
+		Boolean p_isDelete,
+		Boolean p_isGroup,
+		String p_resumeAt,
+		Integer p_resumeIn,
+		Integer p_resumeBase,
+		Boolean p_isWarnOnLimit,
+		Long p_limitState,
+		Integer p_maxRetry,
+		Long p_submitOwnerId,
+		String p_condition,
+		Integer p_checkAmount,
+		Integer p_checkBase,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

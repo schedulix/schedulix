@@ -97,34 +97,34 @@ public class SDMSScopeGeneric extends SDMSObject
 	protected Long changeTs;
 	protected Long inheritPrivs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSScopeGeneric(
-	        SystemEnvironment env,
-	        String p_name,
-	        Long p_ownerId,
-	        Long p_parentId,
-	        Integer p_type,
-	        Boolean p_isTerminate,
-	        Boolean p_hasAlteredConfig,
-	        Boolean p_isSuspended,
-	        Boolean p_isEnabled,
-	        Boolean p_isRegistered,
-	        Integer p_state,
-	        String p_passwd,
-	        String p_salt,
-	        Integer p_method,
-	        String p_pid,
-	        String p_node,
-	        String p_errmsg,
-	        Long p_lastActive,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs,
-	        Long p_inheritPrivs
+		SystemEnvironment env,
+		String p_name,
+		Long p_ownerId,
+		Long p_parentId,
+		Integer p_type,
+		Boolean p_isTerminate,
+		Boolean p_hasAlteredConfig,
+		Boolean p_isSuspended,
+		Boolean p_isEnabled,
+		Boolean p_isRegistered,
+		Integer p_state,
+		String p_passwd,
+		String p_salt,
+		Integer p_method,
+		String p_pid,
+		String p_node,
+		String p_errmsg,
+		Long p_lastActive,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs,
+		Long p_inheritPrivs
 	)
 	throws SDMSException
 	{

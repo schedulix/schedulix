@@ -106,30 +106,30 @@ public class SDMSIntervalGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSIntervalGeneric(
-	        SystemEnvironment env,
-	        String p_name,
-	        Long p_ownerId,
-	        Long p_startTime,
-	        Long p_endTime,
-	        Long p_delay,
-	        Integer p_baseInterval,
-	        Integer p_baseIntervalMultiplier,
-	        Integer p_duration,
-	        Integer p_durationMultiplier,
-	        Long p_syncTime,
-	        Boolean p_isInverse,
-	        Boolean p_isMerge,
-	        Long p_embeddedIntervalId,
-	        Long p_seId,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		String p_name,
+		Long p_ownerId,
+		Long p_startTime,
+		Long p_endTime,
+		Long p_delay,
+		Integer p_baseInterval,
+		Integer p_baseIntervalMultiplier,
+		Integer p_duration,
+		Integer p_durationMultiplier,
+		Long p_syncTime,
+		Boolean p_isInverse,
+		Boolean p_isMerge,
+		Long p_embeddedIntervalId,
+		Long p_seId,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

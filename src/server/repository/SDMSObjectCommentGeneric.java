@@ -101,22 +101,22 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSObjectCommentGeneric(
-	        SystemEnvironment env,
-	        Long p_objectId,
-	        Integer p_objectType,
-	        Integer p_infoType,
-	        Integer p_sequenceNumber,
-	        String p_tag,
-	        String p_description,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		Long p_objectId,
+		Integer p_objectType,
+		Integer p_infoType,
+		Integer p_sequenceNumber,
+		String p_tag,
+		String p_description,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

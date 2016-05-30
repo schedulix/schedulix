@@ -67,23 +67,23 @@ public class SDMSResourceTemplateGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSResourceTemplateGeneric(
-	        SystemEnvironment env,
-	        Long p_nrId,
-	        Long p_seId,
-	        Long p_ownerId,
-	        Long p_rsdId,
-	        Integer p_RequestableAmount,
-	        Integer p_amount,
-	        Boolean p_isOnline,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		Long p_nrId,
+		Long p_seId,
+		Long p_ownerId,
+		Long p_rsdId,
+		Integer p_RequestableAmount,
+		Integer p_amount,
+		Boolean p_isOnline,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

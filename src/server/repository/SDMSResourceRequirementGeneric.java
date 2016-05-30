@@ -92,28 +92,28 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSResourceRequirementGeneric(
-	        SystemEnvironment env,
-	        Long p_nrId,
-	        Long p_seId,
-	        Integer p_amount,
-	        Integer p_keepMode,
-	        Boolean p_isSticky,
-	        String p_stickyName,
-	        Long p_stickyParent,
-	        Long p_rsmpId,
-	        Integer p_expiredAmount,
-	        Integer p_expiredBase,
-	        Integer p_lockmode,
-	        String p_condition,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		Long p_nrId,
+		Long p_seId,
+		Integer p_amount,
+		Integer p_keepMode,
+		Boolean p_isSticky,
+		String p_stickyName,
+		Long p_stickyParent,
+		Long p_rsmpId,
+		Integer p_expiredAmount,
+		Integer p_expiredBase,
+		Integer p_lockmode,
+		String p_condition,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

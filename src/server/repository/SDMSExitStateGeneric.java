@@ -76,25 +76,25 @@ public class SDMSExitStateGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSExitStateGeneric(
-	        SystemEnvironment env,
-	        Integer p_preference,
-	        Boolean p_isFinal,
-	        Boolean p_isRestartable,
-	        Boolean p_isUnreachable,
-	        Boolean p_isBroken,
-	        Boolean p_isBatchDefault,
-	        Boolean p_isDependencyDefault,
-	        Long p_espId,
-	        Long p_esdId,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		Integer p_preference,
+		Boolean p_isFinal,
+		Boolean p_isRestartable,
+		Boolean p_isUnreachable,
+		Boolean p_isBroken,
+		Boolean p_isBatchDefault,
+		Boolean p_isDependencyDefault,
+		Long p_espId,
+		Long p_esdId,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

@@ -83,25 +83,25 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSDependencyInstanceGeneric(
-	        SystemEnvironment env,
-	        Long p_ddId,
-	        Long p_dependentId,
-	        Long p_dependentIdOrig,
-	        Integer p_dependencyOperation,
-	        Long p_requiredId,
-	        Integer p_state,
-	        Integer p_ignore,
-	        Long p_diIdOrig,
-	        Long p_seVersion,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		Long p_ddId,
+		Long p_dependentId,
+		Long p_dependentIdOrig,
+		Integer p_dependencyOperation,
+		Long p_requiredId,
+		Integer p_state,
+		Integer p_ignore,
+		Long p_diIdOrig,
+		Long p_seVersion,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

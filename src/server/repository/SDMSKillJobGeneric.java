@@ -92,31 +92,31 @@ public class SDMSKillJobGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSKillJobGeneric(
-	        SystemEnvironment env,
-	        Long p_seId,
-	        Long p_seVersion,
-	        Long p_smeId,
-	        Long p_scopeId,
-	        Integer p_state,
-	        Integer p_exitCode,
-	        String p_commandline,
-	        String p_logfile,
-	        String p_errlogfile,
-	        String p_pid,
-	        String p_extPid,
-	        String p_errorMsg,
-	        Long p_runnableTs,
-	        Long p_startTs,
-	        Long p_finishTs,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		Long p_seId,
+		Long p_seVersion,
+		Long p_smeId,
+		Long p_scopeId,
+		Integer p_state,
+		Integer p_exitCode,
+		String p_commandline,
+		String p_logfile,
+		String p_errlogfile,
+		String p_pid,
+		String p_extPid,
+		String p_errorMsg,
+		Long p_runnableTs,
+		Long p_startTs,
+		Long p_finishTs,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

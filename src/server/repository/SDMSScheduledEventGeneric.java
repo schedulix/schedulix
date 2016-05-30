@@ -97,31 +97,31 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSScheduledEventGeneric(
-	        SystemEnvironment env,
-	        Long p_ownerId,
-	        Long p_sceId,
-	        Long p_evtId,
-	        Boolean p_isActive,
-	        Boolean p_isBroken,
-	        String p_errorCode,
-	        String p_errorMsg,
-	        Long p_lastStartTime,
-	        Long p_nextActivityTime,
-	        Boolean p_nextActivityIsTrigger,
-	        Integer p_backlogHandling,
-	        Integer p_suspendLimit,
-	        Integer p_suspendLimitMultiplier,
-	        Boolean p_isCalendar,
-	        Integer p_calendarHorizon,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		Long p_ownerId,
+		Long p_sceId,
+		Long p_evtId,
+		Boolean p_isActive,
+		Boolean p_isBroken,
+		String p_errorCode,
+		String p_errorMsg,
+		Long p_lastStartTime,
+		Long p_nextActivityTime,
+		Boolean p_nextActivityIsTrigger,
+		Integer p_backlogHandling,
+		Integer p_suspendLimit,
+		Integer p_suspendLimitMultiplier,
+		Boolean p_isCalendar,
+		Integer p_calendarHorizon,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

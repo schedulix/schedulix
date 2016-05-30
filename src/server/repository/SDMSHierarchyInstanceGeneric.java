@@ -67,23 +67,23 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSHierarchyInstanceGeneric(
-	        SystemEnvironment env,
-	        Long p_parentId,
-	        Long p_childId,
-	        Long p_shId,
-	        Integer p_nice,
-	        Long p_childEsdId,
-	        Integer p_childEsPreference,
-	        Long p_seVersionHi,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		Long p_parentId,
+		Long p_childId,
+		Long p_shId,
+		Integer p_nice,
+		Long p_childEsdId,
+		Integer p_childEsPreference,
+		Long p_seVersionHi,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

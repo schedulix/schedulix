@@ -108,40 +108,40 @@ public class SDMSResourceGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSResourceGeneric(
-	        SystemEnvironment env,
-	        Long p_nrId,
-	        Long p_scopeId,
-	        Long p_masterId,
-	        Long p_ownerId,
-	        Long p_linkId,
-	        Long p_managerId,
-	        String p_tag,
-	        Long p_rsdId,
-	        Long p_rsdTime,
-	        Integer p_definedAmount,
-	        Integer p_requestableAmount,
-	        Integer p_amount,
-	        Integer p_freeAmount,
-	        Boolean p_isOnline,
-	        Float p_factor,
-	        Integer p_traceInterval,
-	        Integer p_traceBase,
-	        Integer p_traceBaseMultiplier,
-	        Float p_td0Avg,
-	        Float p_td1Avg,
-	        Float p_td2Avg,
-	        Float p_lwAvg,
-	        Long p_lastEval,
-	        Long p_lastWrite,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		Long p_nrId,
+		Long p_scopeId,
+		Long p_masterId,
+		Long p_ownerId,
+		Long p_linkId,
+		Long p_managerId,
+		String p_tag,
+		Long p_rsdId,
+		Long p_rsdTime,
+		Integer p_definedAmount,
+		Integer p_requestableAmount,
+		Integer p_amount,
+		Integer p_freeAmount,
+		Boolean p_isOnline,
+		Float p_factor,
+		Integer p_traceInterval,
+		Integer p_traceBase,
+		Integer p_traceBaseMultiplier,
+		Float p_td0Avg,
+		Float p_td1Avg,
+		Float p_td2Avg,
+		Float p_lwAvg,
+		Long p_lastEval,
+		Long p_lastWrite,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

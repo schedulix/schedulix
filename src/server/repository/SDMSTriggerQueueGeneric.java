@@ -63,21 +63,21 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSTriggerQueueGeneric(
-	        SystemEnvironment env,
-	        Long p_smeId,
-	        Long p_trId,
-	        Long p_nextTriggerTime,
-	        Integer p_timesChecked,
-	        Integer p_timesTriggered,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		Long p_smeId,
+		Long p_trId,
+		Long p_nextTriggerTime,
+		Integer p_timesChecked,
+		Integer p_timesTriggered,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

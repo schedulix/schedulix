@@ -69,22 +69,22 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSNiceProfileEntryGeneric(
-	        SystemEnvironment env,
-	        Long p_npId,
-	        Integer p_preference,
-	        Long p_folderId,
-	        Integer p_isSuspended,
-	        Integer p_renice,
-	        Boolean p_isActive,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs
+		SystemEnvironment env,
+		Long p_npId,
+		Integer p_preference,
+		Long p_folderId,
+		Integer p_isSuspended,
+		Integer p_renice,
+		Boolean p_isActive,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs
 	)
 	throws SDMSException
 	{

@@ -73,23 +73,23 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 	protected Long changeTs;
 	protected Long inheritPrivs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSNamedResourceGeneric(
-	        SystemEnvironment env,
-	        String p_name,
-	        Long p_ownerId,
-	        Long p_parentId,
-	        Integer p_usage,
-	        Long p_rspId,
-	        Float p_factor,
-	        Long p_creatorUId,
-	        Long p_createTs,
-	        Long p_changerUId,
-	        Long p_changeTs,
-	        Long p_inheritPrivs
+		SystemEnvironment env,
+		String p_name,
+		Long p_ownerId,
+		Long p_parentId,
+		Integer p_usage,
+		Long p_rspId,
+		Float p_factor,
+		Long p_creatorUId,
+		Long p_createTs,
+		Long p_changerUId,
+		Long p_changeTs,
+		Long p_inheritPrivs
 	)
 	throws SDMSException
 	{
