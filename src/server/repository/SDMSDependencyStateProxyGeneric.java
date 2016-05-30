@@ -254,7 +254,7 @@ public class SDMSDependencyStateProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSDependencyDefinitionTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getDdId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -292,7 +292,7 @@ public class SDMSDependencyStateProxyGeneric extends SDMSProxy
 		try {
 
 			SDMSProxy o = t.get(env, getDdId(env), version);
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}

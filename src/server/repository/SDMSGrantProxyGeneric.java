@@ -316,7 +316,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSEventTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -327,7 +327,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSFolderTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -338,7 +338,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSGroupTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -349,7 +349,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSIntervalTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -360,7 +360,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedEnvironmentTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -371,7 +371,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -382,7 +382,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -393,7 +393,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -404,7 +404,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSScheduleTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -415,7 +415,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSScheduledEventTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -426,7 +426,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSScopeTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
@@ -437,7 +437,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSSubmittedEntityTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getObjectId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}

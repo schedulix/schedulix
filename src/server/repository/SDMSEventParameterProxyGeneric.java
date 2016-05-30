@@ -250,7 +250,7 @@ public class SDMSEventParameterProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSEventTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getEvtId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}

@@ -249,7 +249,7 @@ public class SDMSScopeConfigEnvMappingProxyGeneric extends SDMSProxy
 		t = SystemEnvironment.repository.getTable(env, SDMSScopeTable.tableName);
 		try {
 			SDMSProxy o = t.get(env, getSId(env));
-			long sp = o.getPrivileges(env, privilegeMask, fastFail, checkGroups);
+			long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
 			if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
 				sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 			}
