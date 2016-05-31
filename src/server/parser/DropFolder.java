@@ -87,8 +87,13 @@ public class DropFolder extends Node
 				}
 			} else {
 
-				SDMSSchedulingEntity se = (SDMSSchedulingEntity)url.resolve(sysEnv);
-				seIds.add(se.getId(sysEnv));
+				SDMSSchedulingEntity se;
+				try {
+					se = (SDMSSchedulingEntity)url.resolve(sysEnv);
+					seIds.add(se.getId(sysEnv));
+				} catch (NotFoundException nfe) {
+					if (!noerr) throw nfe;
+				}
 			}
 		}
 

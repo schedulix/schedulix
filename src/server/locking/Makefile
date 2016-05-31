@@ -5,7 +5,8 @@
 # Copyright (C) 2003-2015 independIT Integrative Technologies GmbH
 #
 
-CLASSES = LockingSystem.class LockingSystemSynchronized.class Makefile ObjectLock.class SyncLock.class
+CLASSES = DeadlockException.class SerializationException.class InterruptedLockException.class LockingSystem.class \
+	LockingSystemSynchronized.class Makefile ObjectLock.class SyncLock.class NotMyDeadlockException.class
 
 SUBDIRS = .
 
