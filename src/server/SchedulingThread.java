@@ -192,6 +192,7 @@ public class SchedulingThread extends InternalSession
 				SDMSSubmittedEntity sme;
 				Long smeId = v.get(i);
 				Integer oldState;
+				int os;
 
 				try {
 					sme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
@@ -200,6 +201,7 @@ public class SchedulingThread extends InternalSession
 
 						continue;
 					}
+					os = oldState.intValue();
 				} catch (NotFoundException nfe) {
 
 					continue;
@@ -209,20 +211,24 @@ public class SchedulingThread extends InternalSession
 
 					requestSyncSme(sysEnv, sme, oldState.intValue());
 
-					if (sme.getState(sysEnv).intValue() != SDMSSubmittedEntity.ERROR &&
-					    oldState.intValue() <= SDMSSubmittedEntity.DEPENDENCY_WAIT
-					   )
-						sme.checkDependencies(sysEnv);
-					else if (oldState.intValue() > SDMSSubmittedEntity.DEPENDENCY_WAIT)
-						sme.setState(sysEnv, SDMSSubmittedEntity.SYNCHRONIZE_WAIT);
-
-				} else if (state == SDMSSubmittedEntity.SYNCHRONIZE_WAIT) {
-
-					reevaluateJSAssignment(sysEnv, sme);
-					requestSysSme(sysEnv, sme);
-
+					if (sme.getState(sysEnv).intValue() != SDMSSubmittedEntity.ERROR) {
+						if (os == SDMSSubmittedEntity.SUBMITTED ||
+						    os == SDMSSubmittedEntity.DEPENDENCY_WAIT ||
+						    os == SDMSSubmittedEntity.ERROR ||
+						    os == SDMSSubmittedEntity.UNREACHABLE)
+							sme.checkDependencies(sysEnv);
+						else
+							sme.setState(sysEnv, SDMSSubmittedEntity.SYNCHRONIZE_WAIT);
+					}
 				} else {
+					if (state == SDMSSubmittedEntity.SYNCHRONIZE_WAIT) {
 
+						reevaluateJSAssignment(sysEnv, sme);
+						requestSysSme(sysEnv, sme);
+
+					} else {
+
+					}
 				}
 				needSched = true;
 			}
@@ -497,8 +503,8 @@ public class SchedulingThread extends InternalSession
 		for(i = 0; i < smev.size(); ++i) {
 			sme = (SDMSSubmittedEntity) smev.get(i);
 			if(sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND ||
-			    sme.getParentSuspended(sysEnv).intValue() > 0			  ||
-			    sme.getOldState(sysEnv) != null)
+			   sme.getParentSuspended(sysEnv).intValue() > 0			  ||
+			   sme.getOldState(sysEnv) != null)
 				continue;
 
 			syncScheduleSme(sysEnv, sme, resourceChain);
@@ -1446,7 +1452,7 @@ public class SchedulingThread extends InternalSession
 							return false;
 						}
 					} catch (CommonErrorException cee) {
-	
+
 						if (sysEnv.tx.mode == SDMSTransaction.READWRITE) {
 							SDMSNamedResource nr;
 							if (rr != null) {
@@ -2314,8 +2320,8 @@ public class SchedulingThread extends InternalSession
 
 		switch(change) {
 			case CREATE:
-			if (sysEnv.maxWriter > 1)
-				LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
+				if (sysEnv.maxWriter > 1)
+					LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 				SDMSnpSrvrSRFootprintTable.table.create(sysEnv, s.getId(sysEnv), null, getScopeFootprint(sysEnv, s));
 
 				break;
@@ -2323,8 +2329,8 @@ public class SchedulingThread extends InternalSession
 
 				break;
 			case DELETE:
-			if (sysEnv.maxWriter > 1)
-				LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
+				if (sysEnv.maxWriter > 1)
+					LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 				SDMSnpSrvrSRFootprint f = SDMSnpSrvrSRFootprintTable.idx_sId_getUnique(sysEnv, s.getId(sysEnv));
 				f.delete(sysEnv);
 				needReSched = true;
@@ -2343,8 +2349,8 @@ public class SchedulingThread extends InternalSession
 				break;
 			case MOVE:
 			case COPY:
-			if (sysEnv.maxWriter > 1)
-				LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
+				if (sysEnv.maxWriter > 1)
+					LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 				destroyEnvironment(sysEnv);
 				buildEnvironment(sysEnv, true);
 				needSched = true;
