@@ -684,7 +684,7 @@ public class SystemEnvironment implements Cloneable
 	{
 		String s_maxWriter = props.getProperty(S_WRITERTHREADS, "1");
 
-		maxWriter = checkIntProperty(s_maxWriter, S_WRITERTHREADS, 1, 1, 50, "Invalid number of RW Worker : ");
+		maxWriter = checkIntProperty(s_maxWriter, S_WRITERTHREADS, 1, 1, 128, "Invalid number of RW Worker : ");
 		props.setProperty(S_WRITERTHREADS, "" + maxWriter);
 	}
 

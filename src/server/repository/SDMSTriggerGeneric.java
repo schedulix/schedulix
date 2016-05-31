@@ -133,9 +133,9 @@ public class SDMSTriggerGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSTriggerGeneric(
 	        SystemEnvironment env,
@@ -302,14 +302,14 @@ public class SDMSTriggerGeneric extends SDMSObject
 	{
 		final Integer v = getObjectType (env);
 		switch (v.intValue()) {
-		case SDMSTrigger.JOB_DEFINITION:
-			return "JOB_DEFINITION";
-		case SDMSTrigger.RESOURCE:
-			return "RESOURCE";
-		case SDMSTrigger.NAMED_RESOURCE:
-			return "NAMED_RESOURCE";
-		case SDMSTrigger.OBJECT_MONITOR:
-			return "OBJECT_MONITOR";
+			case SDMSTrigger.JOB_DEFINITION:
+				return "JOB_DEFINITION";
+			case SDMSTrigger.RESOURCE:
+				return "RESOURCE";
+			case SDMSTrigger.NAMED_RESOURCE:
+				return "NAMED_RESOURCE";
+			case SDMSTrigger.OBJECT_MONITOR:
+				return "OBJECT_MONITOR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -496,10 +496,10 @@ public class SDMSTriggerGeneric extends SDMSObject
 	{
 		final Integer v = getAction (env);
 		switch (v.intValue()) {
-		case SDMSTrigger.SUBMIT:
-			return "SUBMIT";
-		case SDMSTrigger.RERUN:
-			return "RERUN";
+			case SDMSTrigger.SUBMIT:
+				return "SUBMIT";
+			case SDMSTrigger.RERUN:
+				return "RERUN";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -536,22 +536,22 @@ public class SDMSTriggerGeneric extends SDMSObject
 	{
 		final Integer v = getType (env);
 		switch (v.intValue()) {
-		case SDMSTrigger.IMMEDIATE_LOCAL:
-			return "IMMEDIATE_LOCAL";
-		case SDMSTrigger.BEFORE_FINAL:
-			return "BEFORE_FINAL";
-		case SDMSTrigger.AFTER_FINAL:
-			return "AFTER_FINAL";
-		case SDMSTrigger.IMMEDIATE_MERGE:
-			return "IMMEDIATE_MERGE";
-		case SDMSTrigger.FINISH_CHILD:
-			return "FINISH_CHILD";
-		case SDMSTrigger.UNTIL_FINISHED:
-			return "UNTIL_FINISHED";
-		case SDMSTrigger.UNTIL_FINAL:
-			return "UNTIL_FINAL";
-		case SDMSTrigger.WARNING:
-			return "WARNING";
+			case SDMSTrigger.IMMEDIATE_LOCAL:
+				return "IMMEDIATE_LOCAL";
+			case SDMSTrigger.BEFORE_FINAL:
+				return "BEFORE_FINAL";
+			case SDMSTrigger.AFTER_FINAL:
+				return "AFTER_FINAL";
+			case SDMSTrigger.IMMEDIATE_MERGE:
+				return "IMMEDIATE_MERGE";
+			case SDMSTrigger.FINISH_CHILD:
+				return "FINISH_CHILD";
+			case SDMSTrigger.UNTIL_FINISHED:
+				return "UNTIL_FINISHED";
+			case SDMSTrigger.UNTIL_FINAL:
+				return "UNTIL_FINAL";
+			case SDMSTrigger.WARNING:
+				return "WARNING";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -831,18 +831,18 @@ public class SDMSTriggerGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSTrigger.MINUTE:
-			return "MINUTE";
-		case SDMSTrigger.HOUR:
-			return "HOUR";
-		case SDMSTrigger.DAY:
-			return "DAY";
-		case SDMSTrigger.WEEK:
-			return "WEEK";
-		case SDMSTrigger.MONTH:
-			return "MONTH";
-		case SDMSTrigger.YEAR:
-			return "YEAR";
+			case SDMSTrigger.MINUTE:
+				return "MINUTE";
+			case SDMSTrigger.HOUR:
+				return "HOUR";
+			case SDMSTrigger.DAY:
+				return "DAY";
+			case SDMSTrigger.WEEK:
+				return "WEEK";
+			case SDMSTrigger.MONTH:
+				return "MONTH";
+			case SDMSTrigger.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1043,18 +1043,18 @@ public class SDMSTriggerGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSTrigger.MINUTE:
-			return "MINUTE";
-		case SDMSTrigger.HOUR:
-			return "HOUR";
-		case SDMSTrigger.DAY:
-			return "DAY";
-		case SDMSTrigger.WEEK:
-			return "WEEK";
-		case SDMSTrigger.MONTH:
-			return "MONTH";
-		case SDMSTrigger.YEAR:
-			return "YEAR";
+			case SDMSTrigger.MINUTE:
+				return "MINUTE";
+			case SDMSTrigger.HOUR:
+				return "HOUR";
+			case SDMSTrigger.DAY:
+				return "DAY";
+			case SDMSTrigger.WEEK:
+				return "WEEK";
+			case SDMSTrigger.MONTH:
+				return "MONTH";
+			case SDMSTrigger.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1588,35 +1588,35 @@ public class SDMSTriggerGeneric extends SDMSObject
 	static public boolean checkObjectType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSTrigger.JOB_DEFINITION:
-		case SDMSTrigger.RESOURCE:
-		case SDMSTrigger.NAMED_RESOURCE:
-		case SDMSTrigger.OBJECT_MONITOR:
-			return true;
+			case SDMSTrigger.JOB_DEFINITION:
+			case SDMSTrigger.RESOURCE:
+			case SDMSTrigger.NAMED_RESOURCE:
+			case SDMSTrigger.OBJECT_MONITOR:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkAction(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSTrigger.SUBMIT:
-		case SDMSTrigger.RERUN:
-			return true;
+			case SDMSTrigger.SUBMIT:
+			case SDMSTrigger.RERUN:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSTrigger.IMMEDIATE_LOCAL:
-		case SDMSTrigger.BEFORE_FINAL:
-		case SDMSTrigger.AFTER_FINAL:
-		case SDMSTrigger.IMMEDIATE_MERGE:
-		case SDMSTrigger.FINISH_CHILD:
-		case SDMSTrigger.UNTIL_FINISHED:
-		case SDMSTrigger.UNTIL_FINAL:
-		case SDMSTrigger.WARNING:
-			return true;
+			case SDMSTrigger.IMMEDIATE_LOCAL:
+			case SDMSTrigger.BEFORE_FINAL:
+			case SDMSTrigger.AFTER_FINAL:
+			case SDMSTrigger.IMMEDIATE_MERGE:
+			case SDMSTrigger.FINISH_CHILD:
+			case SDMSTrigger.UNTIL_FINISHED:
+			case SDMSTrigger.UNTIL_FINAL:
+			case SDMSTrigger.WARNING:
+				return true;
 		}
 		return false;
 	}
@@ -1636,13 +1636,13 @@ public class SDMSTriggerGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSTrigger.MINUTE:
-		case SDMSTrigger.HOUR:
-		case SDMSTrigger.DAY:
-		case SDMSTrigger.WEEK:
-		case SDMSTrigger.MONTH:
-		case SDMSTrigger.YEAR:
-			return true;
+			case SDMSTrigger.MINUTE:
+			case SDMSTrigger.HOUR:
+			case SDMSTrigger.DAY:
+			case SDMSTrigger.WEEK:
+			case SDMSTrigger.MONTH:
+			case SDMSTrigger.YEAR:
+				return true;
 		}
 		return false;
 	}
@@ -1650,13 +1650,13 @@ public class SDMSTriggerGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSTrigger.MINUTE:
-		case SDMSTrigger.HOUR:
-		case SDMSTrigger.DAY:
-		case SDMSTrigger.WEEK:
-		case SDMSTrigger.MONTH:
-		case SDMSTrigger.YEAR:
-			return true;
+			case SDMSTrigger.MINUTE:
+			case SDMSTrigger.HOUR:
+			case SDMSTrigger.DAY:
+			case SDMSTrigger.WEEK:
+			case SDMSTrigger.MONTH:
+			case SDMSTrigger.YEAR:
+				return true;
 		}
 		return false;
 	}

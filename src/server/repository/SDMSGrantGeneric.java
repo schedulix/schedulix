@@ -91,9 +91,9 @@ public class SDMSGrantGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSGrantGeneric(
 	        SystemEnvironment env,
@@ -194,52 +194,52 @@ public class SDMSGrantGeneric extends SDMSObject
 	{
 		final Integer v = getObjectType (env);
 		switch (v.intValue()) {
-		case SDMSGrant.ENVIRONMENT:
-			return "ENVIRONMENT";
-		case SDMSGrant.EVENT:
-			return "EVENT";
-		case SDMSGrant.FOLDER:
-			return "FOLDER";
-		case SDMSGrant.INTERVAL:
-			return "INTERVAL";
-		case SDMSGrant.JOB:
-			return "JOB";
-		case SDMSGrant.JOB_DEFINITION:
-			return "JOB_DEFINITION";
-		case SDMSGrant.NAMED_RESOURCE:
-			return "NAMED_RESOURCE";
-		case SDMSGrant.SCHEDULE:
-			return "SCHEDULE";
-		case SDMSGrant.SCHEDULED_EVENT:
-			return "SCHEDULED_EVENT";
-		case SDMSGrant.SCOPE:
-			return "SCOPE";
-		case SDMSGrant.GROUP:
-			return "GROUP";
-		case SDMSGrant.RESOURCE:
-			return "RESOURCE";
-		case SDMSGrant.EXIT_STATE_DEFINITION:
-			return "EXIT_STATE_DEFINITION";
-		case SDMSGrant.EXIT_STATE_PROFILE:
-			return "EXIT_STATE_PROFILE";
-		case SDMSGrant.EXIT_STATE_MAPPING:
-			return "EXIT_STATE_MAPPING";
-		case SDMSGrant.EXIT_STATE_TRANSLATION:
-			return "EXIT_STATE_TRANSLATION";
-		case SDMSGrant.RESOURCE_STATE_DEFINITION:
-			return "RESOURCE_STATE_DEFINITION";
-		case SDMSGrant.RESOURCE_STATE_PROFILE:
-			return "RESOURCE_STATE_PROFILE";
-		case SDMSGrant.RESOURCE_STATE_MAPPING:
-			return "RESOURCE_STATE_MAPPING";
-		case SDMSGrant.FOOTPRINT:
-			return "FOOTPRINT";
-		case SDMSGrant.USER:
-			return "USER";
-		case SDMSGrant.OBJECT_MONITOR:
-			return "OBJECT_MONITOR";
-		case SDMSGrant.SYSTEM:
-			return "SYSTEM";
+			case SDMSGrant.ENVIRONMENT:
+				return "ENVIRONMENT";
+			case SDMSGrant.EVENT:
+				return "EVENT";
+			case SDMSGrant.FOLDER:
+				return "FOLDER";
+			case SDMSGrant.INTERVAL:
+				return "INTERVAL";
+			case SDMSGrant.JOB:
+				return "JOB";
+			case SDMSGrant.JOB_DEFINITION:
+				return "JOB_DEFINITION";
+			case SDMSGrant.NAMED_RESOURCE:
+				return "NAMED_RESOURCE";
+			case SDMSGrant.SCHEDULE:
+				return "SCHEDULE";
+			case SDMSGrant.SCHEDULED_EVENT:
+				return "SCHEDULED_EVENT";
+			case SDMSGrant.SCOPE:
+				return "SCOPE";
+			case SDMSGrant.GROUP:
+				return "GROUP";
+			case SDMSGrant.RESOURCE:
+				return "RESOURCE";
+			case SDMSGrant.EXIT_STATE_DEFINITION:
+				return "EXIT_STATE_DEFINITION";
+			case SDMSGrant.EXIT_STATE_PROFILE:
+				return "EXIT_STATE_PROFILE";
+			case SDMSGrant.EXIT_STATE_MAPPING:
+				return "EXIT_STATE_MAPPING";
+			case SDMSGrant.EXIT_STATE_TRANSLATION:
+				return "EXIT_STATE_TRANSLATION";
+			case SDMSGrant.RESOURCE_STATE_DEFINITION:
+				return "RESOURCE_STATE_DEFINITION";
+			case SDMSGrant.RESOURCE_STATE_PROFILE:
+				return "RESOURCE_STATE_PROFILE";
+			case SDMSGrant.RESOURCE_STATE_MAPPING:
+				return "RESOURCE_STATE_MAPPING";
+			case SDMSGrant.FOOTPRINT:
+				return "FOOTPRINT";
+			case SDMSGrant.USER:
+				return "USER";
+			case SDMSGrant.OBJECT_MONITOR:
+				return "OBJECT_MONITOR";
+			case SDMSGrant.SYSTEM:
+				return "SYSTEM";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -600,30 +600,30 @@ public class SDMSGrantGeneric extends SDMSObject
 	static public boolean checkObjectType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSGrant.ENVIRONMENT:
-		case SDMSGrant.EVENT:
-		case SDMSGrant.FOLDER:
-		case SDMSGrant.INTERVAL:
-		case SDMSGrant.JOB:
-		case SDMSGrant.JOB_DEFINITION:
-		case SDMSGrant.NAMED_RESOURCE:
-		case SDMSGrant.SCHEDULE:
-		case SDMSGrant.SCHEDULED_EVENT:
-		case SDMSGrant.SCOPE:
-		case SDMSGrant.GROUP:
-		case SDMSGrant.RESOURCE:
-		case SDMSGrant.EXIT_STATE_DEFINITION:
-		case SDMSGrant.EXIT_STATE_PROFILE:
-		case SDMSGrant.EXIT_STATE_MAPPING:
-		case SDMSGrant.EXIT_STATE_TRANSLATION:
-		case SDMSGrant.RESOURCE_STATE_DEFINITION:
-		case SDMSGrant.RESOURCE_STATE_PROFILE:
-		case SDMSGrant.RESOURCE_STATE_MAPPING:
-		case SDMSGrant.FOOTPRINT:
-		case SDMSGrant.USER:
-		case SDMSGrant.OBJECT_MONITOR:
-		case SDMSGrant.SYSTEM:
-			return true;
+			case SDMSGrant.ENVIRONMENT:
+			case SDMSGrant.EVENT:
+			case SDMSGrant.FOLDER:
+			case SDMSGrant.INTERVAL:
+			case SDMSGrant.JOB:
+			case SDMSGrant.JOB_DEFINITION:
+			case SDMSGrant.NAMED_RESOURCE:
+			case SDMSGrant.SCHEDULE:
+			case SDMSGrant.SCHEDULED_EVENT:
+			case SDMSGrant.SCOPE:
+			case SDMSGrant.GROUP:
+			case SDMSGrant.RESOURCE:
+			case SDMSGrant.EXIT_STATE_DEFINITION:
+			case SDMSGrant.EXIT_STATE_PROFILE:
+			case SDMSGrant.EXIT_STATE_MAPPING:
+			case SDMSGrant.EXIT_STATE_TRANSLATION:
+			case SDMSGrant.RESOURCE_STATE_DEFINITION:
+			case SDMSGrant.RESOURCE_STATE_PROFILE:
+			case SDMSGrant.RESOURCE_STATE_MAPPING:
+			case SDMSGrant.FOOTPRINT:
+			case SDMSGrant.USER:
+			case SDMSGrant.OBJECT_MONITOR:
+			case SDMSGrant.SYSTEM:
+				return true;
 		}
 		return false;
 	}

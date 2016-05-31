@@ -95,9 +95,9 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSSchedulingHierarchyGeneric(
 	        SystemEnvironment env,
@@ -366,12 +366,12 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	{
 		final Integer v = getSuspend (env);
 		switch (v.intValue()) {
-		case SDMSSchedulingHierarchy.CHILDSUSPEND:
-			return "CHILDSUSPEND";
-		case SDMSSchedulingHierarchy.NOSUSPEND:
-			return "NOSUSPEND";
-		case SDMSSchedulingHierarchy.SUSPEND:
-			return "SUSPEND";
+			case SDMSSchedulingHierarchy.CHILDSUSPEND:
+				return "CHILDSUSPEND";
+			case SDMSSchedulingHierarchy.NOSUSPEND:
+				return "NOSUSPEND";
+			case SDMSSchedulingHierarchy.SUSPEND:
+				return "SUSPEND";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -466,18 +466,18 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSSchedulingHierarchy.MINUTE:
-			return "MINUTE";
-		case SDMSSchedulingHierarchy.HOUR:
-			return "HOUR";
-		case SDMSSchedulingHierarchy.DAY:
-			return "DAY";
-		case SDMSSchedulingHierarchy.WEEK:
-			return "WEEK";
-		case SDMSSchedulingHierarchy.MONTH:
-			return "MONTH";
-		case SDMSSchedulingHierarchy.YEAR:
-			return "YEAR";
+			case SDMSSchedulingHierarchy.MINUTE:
+				return "MINUTE";
+			case SDMSSchedulingHierarchy.HOUR:
+				return "HOUR";
+			case SDMSSchedulingHierarchy.DAY:
+				return "DAY";
+			case SDMSSchedulingHierarchy.WEEK:
+				return "WEEK";
+			case SDMSSchedulingHierarchy.MONTH:
+				return "MONTH";
+			case SDMSSchedulingHierarchy.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -515,14 +515,14 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	{
 		final Integer v = getMergeMode (env);
 		switch (v.intValue()) {
-		case SDMSSchedulingHierarchy.MERGE_LOCAL:
-			return "MERGE_LOCAL";
-		case SDMSSchedulingHierarchy.MERGE_GLOBAL:
-			return "MERGE_GLOBAL";
-		case SDMSSchedulingHierarchy.NOMERGE:
-			return "NOMERGE";
-		case SDMSSchedulingHierarchy.FAILURE:
-			return "FAILURE";
+			case SDMSSchedulingHierarchy.MERGE_LOCAL:
+				return "MERGE_LOCAL";
+			case SDMSSchedulingHierarchy.MERGE_GLOBAL:
+				return "MERGE_GLOBAL";
+			case SDMSSchedulingHierarchy.NOMERGE:
+				return "NOMERGE";
+			case SDMSSchedulingHierarchy.FAILURE:
+				return "FAILURE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -942,10 +942,10 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	static public boolean checkSuspend(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSSchedulingHierarchy.CHILDSUSPEND:
-		case SDMSSchedulingHierarchy.NOSUSPEND:
-		case SDMSSchedulingHierarchy.SUSPEND:
-			return true;
+			case SDMSSchedulingHierarchy.CHILDSUSPEND:
+			case SDMSSchedulingHierarchy.NOSUSPEND:
+			case SDMSSchedulingHierarchy.SUSPEND:
+				return true;
 		}
 		return false;
 	}
@@ -953,24 +953,24 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSSchedulingHierarchy.MINUTE:
-		case SDMSSchedulingHierarchy.HOUR:
-		case SDMSSchedulingHierarchy.DAY:
-		case SDMSSchedulingHierarchy.WEEK:
-		case SDMSSchedulingHierarchy.MONTH:
-		case SDMSSchedulingHierarchy.YEAR:
-			return true;
+			case SDMSSchedulingHierarchy.MINUTE:
+			case SDMSSchedulingHierarchy.HOUR:
+			case SDMSSchedulingHierarchy.DAY:
+			case SDMSSchedulingHierarchy.WEEK:
+			case SDMSSchedulingHierarchy.MONTH:
+			case SDMSSchedulingHierarchy.YEAR:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkMergeMode(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSSchedulingHierarchy.MERGE_LOCAL:
-		case SDMSSchedulingHierarchy.MERGE_GLOBAL:
-		case SDMSSchedulingHierarchy.NOMERGE:
-		case SDMSSchedulingHierarchy.FAILURE:
-			return true;
+			case SDMSSchedulingHierarchy.MERGE_LOCAL:
+			case SDMSSchedulingHierarchy.MERGE_GLOBAL:
+			case SDMSSchedulingHierarchy.NOMERGE:
+			case SDMSSchedulingHierarchy.FAILURE:
+				return true;
 		}
 		return false;
 	}

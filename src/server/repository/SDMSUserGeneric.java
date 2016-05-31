@@ -74,9 +74,9 @@ public class SDMSUserGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSUserGeneric(
 	        SystemEnvironment env,
@@ -225,10 +225,10 @@ public class SDMSUserGeneric extends SDMSObject
 	{
 		final Integer v = getMethod (env);
 		switch (v.intValue()) {
-		case SDMSUser.MD5:
-			return "MD5";
-		case SDMSUser.SHA256:
-			return "SHA256";
+			case SDMSUser.MD5:
+				return "MD5";
+			case SDMSUser.SHA256:
+				return "SHA256";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -629,9 +629,9 @@ public class SDMSUserGeneric extends SDMSObject
 	static public boolean checkMethod(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSUser.MD5:
-		case SDMSUser.SHA256:
-			return true;
+			case SDMSUser.MD5:
+			case SDMSUser.SHA256:
+				return true;
 		}
 		return false;
 	}

@@ -63,9 +63,9 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSTriggerQueueGeneric(
 	        SystemEnvironment env,

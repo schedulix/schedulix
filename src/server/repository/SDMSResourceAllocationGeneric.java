@@ -94,9 +94,9 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSResourceAllocationGeneric(
 	        SystemEnvironment env,
@@ -300,12 +300,12 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	{
 		final Integer v = getKeepMode (env);
 		switch (v.intValue()) {
-		case SDMSResourceAllocation.NOKEEP:
-			return "NOKEEP";
-		case SDMSResourceAllocation.KEEP:
-			return "KEEP";
-		case SDMSResourceAllocation.KEEP_FINAL:
-			return "KEEP_FINAL";
+			case SDMSResourceAllocation.NOKEEP:
+				return "NOKEEP";
+			case SDMSResourceAllocation.KEEP:
+				return "KEEP";
+			case SDMSResourceAllocation.KEEP_FINAL:
+				return "KEEP_FINAL";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -436,18 +436,18 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	{
 		final Integer v = getAllocationType (env);
 		switch (v.intValue()) {
-		case SDMSResourceAllocation.REQUEST:
-			return "REQUEST";
-		case SDMSResourceAllocation.MASTER_REQUEST:
-			return "MASTER_REQUEST";
-		case SDMSResourceAllocation.RESERVATION:
-			return "RESERVATION";
-		case SDMSResourceAllocation.MASTER_RESERVATION:
-			return "MASTER_RESERVATION";
-		case SDMSResourceAllocation.ALLOCATION:
-			return "ALLOCATION";
-		case SDMSResourceAllocation.IGNORE:
-			return "IGNORE";
+			case SDMSResourceAllocation.REQUEST:
+				return "REQUEST";
+			case SDMSResourceAllocation.MASTER_REQUEST:
+				return "MASTER_REQUEST";
+			case SDMSResourceAllocation.RESERVATION:
+				return "RESERVATION";
+			case SDMSResourceAllocation.MASTER_RESERVATION:
+				return "MASTER_RESERVATION";
+			case SDMSResourceAllocation.ALLOCATION:
+				return "ALLOCATION";
+			case SDMSResourceAllocation.IGNORE:
+				return "IGNORE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -511,16 +511,16 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSResourceAllocation.N:
-			return "N";
-		case SDMSResourceAllocation.X:
-			return "X";
-		case SDMSResourceAllocation.SX:
-			return "SX";
-		case SDMSResourceAllocation.S:
-			return "S";
-		case SDMSResourceAllocation.SC:
-			return "SC";
+			case SDMSResourceAllocation.N:
+				return "N";
+			case SDMSResourceAllocation.X:
+				return "X";
+			case SDMSResourceAllocation.SX:
+				return "SX";
+			case SDMSResourceAllocation.S:
+				return "S";
+			case SDMSResourceAllocation.SC:
+				return "SC";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1009,23 +1009,23 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	static public boolean checkKeepMode(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSResourceAllocation.NOKEEP:
-		case SDMSResourceAllocation.KEEP:
-		case SDMSResourceAllocation.KEEP_FINAL:
-			return true;
+			case SDMSResourceAllocation.NOKEEP:
+			case SDMSResourceAllocation.KEEP:
+			case SDMSResourceAllocation.KEEP_FINAL:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkAllocationType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSResourceAllocation.REQUEST:
-		case SDMSResourceAllocation.MASTER_REQUEST:
-		case SDMSResourceAllocation.RESERVATION:
-		case SDMSResourceAllocation.MASTER_RESERVATION:
-		case SDMSResourceAllocation.ALLOCATION:
-		case SDMSResourceAllocation.IGNORE:
-			return true;
+			case SDMSResourceAllocation.REQUEST:
+			case SDMSResourceAllocation.MASTER_REQUEST:
+			case SDMSResourceAllocation.RESERVATION:
+			case SDMSResourceAllocation.MASTER_RESERVATION:
+			case SDMSResourceAllocation.ALLOCATION:
+			case SDMSResourceAllocation.IGNORE:
+				return true;
 		}
 		return false;
 	}
@@ -1033,12 +1033,12 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSResourceAllocation.N:
-		case SDMSResourceAllocation.X:
-		case SDMSResourceAllocation.SX:
-		case SDMSResourceAllocation.S:
-		case SDMSResourceAllocation.SC:
-			return true;
+			case SDMSResourceAllocation.N:
+			case SDMSResourceAllocation.X:
+			case SDMSResourceAllocation.SX:
+			case SDMSResourceAllocation.S:
+			case SDMSResourceAllocation.SC:
+				return true;
 		}
 		return false;
 	}

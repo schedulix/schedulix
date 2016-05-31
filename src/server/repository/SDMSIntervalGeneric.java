@@ -106,9 +106,9 @@ public class SDMSIntervalGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSIntervalGeneric(
 	        SystemEnvironment env,
@@ -316,18 +316,18 @@ public class SDMSIntervalGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSInterval.MINUTE:
-			return "MINUTE";
-		case SDMSInterval.HOUR:
-			return "HOUR";
-		case SDMSInterval.DAY:
-			return "DAY";
-		case SDMSInterval.WEEK:
-			return "WEEK";
-		case SDMSInterval.MONTH:
-			return "MONTH";
-		case SDMSInterval.YEAR:
-			return "YEAR";
+			case SDMSInterval.MINUTE:
+				return "MINUTE";
+			case SDMSInterval.HOUR:
+				return "HOUR";
+			case SDMSInterval.DAY:
+				return "DAY";
+			case SDMSInterval.WEEK:
+				return "WEEK";
+			case SDMSInterval.MONTH:
+				return "MONTH";
+			case SDMSInterval.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -392,18 +392,18 @@ public class SDMSIntervalGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSInterval.MINUTE:
-			return "MINUTE";
-		case SDMSInterval.HOUR:
-			return "HOUR";
-		case SDMSInterval.DAY:
-			return "DAY";
-		case SDMSInterval.WEEK:
-			return "WEEK";
-		case SDMSInterval.MONTH:
-			return "MONTH";
-		case SDMSInterval.YEAR:
-			return "YEAR";
+			case SDMSInterval.MINUTE:
+				return "MINUTE";
+			case SDMSInterval.HOUR:
+				return "HOUR";
+			case SDMSInterval.DAY:
+				return "DAY";
+			case SDMSInterval.WEEK:
+				return "WEEK";
+			case SDMSInterval.MONTH:
+				return "MONTH";
+			case SDMSInterval.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -963,13 +963,13 @@ public class SDMSIntervalGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSInterval.MINUTE:
-		case SDMSInterval.HOUR:
-		case SDMSInterval.DAY:
-		case SDMSInterval.WEEK:
-		case SDMSInterval.MONTH:
-		case SDMSInterval.YEAR:
-			return true;
+			case SDMSInterval.MINUTE:
+			case SDMSInterval.HOUR:
+			case SDMSInterval.DAY:
+			case SDMSInterval.WEEK:
+			case SDMSInterval.MONTH:
+			case SDMSInterval.YEAR:
+				return true;
 		}
 		return false;
 	}
@@ -977,13 +977,13 @@ public class SDMSIntervalGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSInterval.MINUTE:
-		case SDMSInterval.HOUR:
-		case SDMSInterval.DAY:
-		case SDMSInterval.WEEK:
-		case SDMSInterval.MONTH:
-		case SDMSInterval.YEAR:
-			return true;
+			case SDMSInterval.MINUTE:
+			case SDMSInterval.HOUR:
+			case SDMSInterval.DAY:
+			case SDMSInterval.WEEK:
+			case SDMSInterval.MONTH:
+			case SDMSInterval.YEAR:
+				return true;
 		}
 		return false;
 	}

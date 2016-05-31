@@ -97,9 +97,9 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSScheduledEventGeneric(
 	        SystemEnvironment env,
@@ -472,12 +472,12 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 	{
 		final Integer v = getBacklogHandling (env);
 		switch (v.intValue()) {
-		case SDMSScheduledEvent.NONE:
-			return "NONE";
-		case SDMSScheduledEvent.LAST:
-			return "LAST";
-		case SDMSScheduledEvent.ALL:
-			return "ALL";
+			case SDMSScheduledEvent.NONE:
+				return "NONE";
+			case SDMSScheduledEvent.LAST:
+				return "LAST";
+			case SDMSScheduledEvent.ALL:
+				return "ALL";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -516,18 +516,18 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSScheduledEvent.MINUTE:
-			return "MINUTE";
-		case SDMSScheduledEvent.HOUR:
-			return "HOUR";
-		case SDMSScheduledEvent.DAY:
-			return "DAY";
-		case SDMSScheduledEvent.WEEK:
-			return "WEEK";
-		case SDMSScheduledEvent.MONTH:
-			return "MONTH";
-		case SDMSScheduledEvent.YEAR:
-			return "YEAR";
+			case SDMSScheduledEvent.MINUTE:
+				return "MINUTE";
+			case SDMSScheduledEvent.HOUR:
+				return "HOUR";
+			case SDMSScheduledEvent.DAY:
+				return "DAY";
+			case SDMSScheduledEvent.WEEK:
+				return "WEEK";
+			case SDMSScheduledEvent.MONTH:
+				return "MONTH";
+			case SDMSScheduledEvent.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1053,10 +1053,10 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 	static public boolean checkBacklogHandling(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSScheduledEvent.NONE:
-		case SDMSScheduledEvent.LAST:
-		case SDMSScheduledEvent.ALL:
-			return true;
+			case SDMSScheduledEvent.NONE:
+			case SDMSScheduledEvent.LAST:
+			case SDMSScheduledEvent.ALL:
+				return true;
 		}
 		return false;
 	}
@@ -1064,13 +1064,13 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSScheduledEvent.MINUTE:
-		case SDMSScheduledEvent.HOUR:
-		case SDMSScheduledEvent.DAY:
-		case SDMSScheduledEvent.WEEK:
-		case SDMSScheduledEvent.MONTH:
-		case SDMSScheduledEvent.YEAR:
-			return true;
+			case SDMSScheduledEvent.MINUTE:
+			case SDMSScheduledEvent.HOUR:
+			case SDMSScheduledEvent.DAY:
+			case SDMSScheduledEvent.WEEK:
+			case SDMSScheduledEvent.MONTH:
+			case SDMSScheduledEvent.YEAR:
+				return true;
 		}
 		return false;
 	}

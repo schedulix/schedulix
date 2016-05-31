@@ -97,9 +97,9 @@ public class SDMSScopeGeneric extends SDMSObject
 	protected Long changeTs;
 	protected Long inheritPrivs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSScopeGeneric(
 	        SystemEnvironment env,
@@ -292,10 +292,10 @@ public class SDMSScopeGeneric extends SDMSObject
 	{
 		final Integer v = getType (env);
 		switch (v.intValue()) {
-		case SDMSScope.SCOPE:
-			return "SCOPE";
-		case SDMSScope.SERVER:
-			return "SERVER";
+			case SDMSScope.SCOPE:
+				return "SCOPE";
+			case SDMSScope.SERVER:
+				return "SERVER";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -466,12 +466,12 @@ public class SDMSScopeGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSScope.NOMINAL:
-			return "NOMINAL";
-		case SDMSScope.NONFATAL:
-			return "NONFATAL";
-		case SDMSScope.FATAL:
-			return "FATAL";
+			case SDMSScope.NOMINAL:
+				return "NOMINAL";
+			case SDMSScope.NONFATAL:
+				return "NONFATAL";
+			case SDMSScope.FATAL:
+				return "FATAL";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -571,10 +571,10 @@ public class SDMSScopeGeneric extends SDMSObject
 	{
 		final Integer v = getMethod (env);
 		switch (v.intValue()) {
-		case SDMSScope.MD5:
-			return "MD5";
-		case SDMSScope.SHA256:
-			return "SHA256";
+			case SDMSScope.MD5:
+				return "MD5";
+			case SDMSScope.SHA256:
+				return "SHA256";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1201,9 +1201,9 @@ public class SDMSScopeGeneric extends SDMSObject
 	static public boolean checkType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSScope.SCOPE:
-		case SDMSScope.SERVER:
-			return true;
+			case SDMSScope.SCOPE:
+			case SDMSScope.SERVER:
+				return true;
 		}
 		return false;
 	}
@@ -1211,19 +1211,19 @@ public class SDMSScopeGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSScope.NOMINAL:
-		case SDMSScope.NONFATAL:
-		case SDMSScope.FATAL:
-			return true;
+			case SDMSScope.NOMINAL:
+			case SDMSScope.NONFATAL:
+			case SDMSScope.FATAL:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkMethod(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSScope.MD5:
-		case SDMSScope.SHA256:
-			return true;
+			case SDMSScope.MD5:
+			case SDMSScope.SHA256:
+				return true;
 		}
 		return false;
 	}

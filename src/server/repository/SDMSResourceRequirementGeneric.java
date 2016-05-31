@@ -92,9 +92,9 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSResourceRequirementGeneric(
 	        SystemEnvironment env,
@@ -246,12 +246,12 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	{
 		final Integer v = getKeepMode (env);
 		switch (v.intValue()) {
-		case SDMSResourceRequirement.NOKEEP:
-			return "NOKEEP";
-		case SDMSResourceRequirement.KEEP:
-			return "KEEP";
-		case SDMSResourceRequirement.KEEP_FINAL:
-			return "KEEP_FINAL";
+			case SDMSResourceRequirement.NOKEEP:
+				return "NOKEEP";
+			case SDMSResourceRequirement.KEEP:
+				return "KEEP";
+			case SDMSResourceRequirement.KEEP_FINAL:
+				return "KEEP_FINAL";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -427,18 +427,18 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSResourceRequirement.MINUTE:
-			return "MINUTE";
-		case SDMSResourceRequirement.HOUR:
-			return "HOUR";
-		case SDMSResourceRequirement.DAY:
-			return "DAY";
-		case SDMSResourceRequirement.WEEK:
-			return "WEEK";
-		case SDMSResourceRequirement.MONTH:
-			return "MONTH";
-		case SDMSResourceRequirement.YEAR:
-			return "YEAR";
+			case SDMSResourceRequirement.MINUTE:
+				return "MINUTE";
+			case SDMSResourceRequirement.HOUR:
+				return "HOUR";
+			case SDMSResourceRequirement.DAY:
+				return "DAY";
+			case SDMSResourceRequirement.WEEK:
+				return "WEEK";
+			case SDMSResourceRequirement.MONTH:
+				return "MONTH";
+			case SDMSResourceRequirement.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -478,16 +478,16 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSResourceRequirement.N:
-			return "N";
-		case SDMSResourceRequirement.X:
-			return "X";
-		case SDMSResourceRequirement.SX:
-			return "SX";
-		case SDMSResourceRequirement.S:
-			return "S";
-		case SDMSResourceRequirement.SC:
-			return "SC";
+			case SDMSResourceRequirement.N:
+				return "N";
+			case SDMSResourceRequirement.X:
+				return "X";
+			case SDMSResourceRequirement.SX:
+				return "SX";
+			case SDMSResourceRequirement.S:
+				return "S";
+			case SDMSResourceRequirement.SC:
+				return "SC";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -866,10 +866,10 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	static public boolean checkKeepMode(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSResourceRequirement.NOKEEP:
-		case SDMSResourceRequirement.KEEP:
-		case SDMSResourceRequirement.KEEP_FINAL:
-			return true;
+			case SDMSResourceRequirement.NOKEEP:
+			case SDMSResourceRequirement.KEEP:
+			case SDMSResourceRequirement.KEEP_FINAL:
+				return true;
 		}
 		return false;
 	}
@@ -877,13 +877,13 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSResourceRequirement.MINUTE:
-		case SDMSResourceRequirement.HOUR:
-		case SDMSResourceRequirement.DAY:
-		case SDMSResourceRequirement.WEEK:
-		case SDMSResourceRequirement.MONTH:
-		case SDMSResourceRequirement.YEAR:
-			return true;
+			case SDMSResourceRequirement.MINUTE:
+			case SDMSResourceRequirement.HOUR:
+			case SDMSResourceRequirement.DAY:
+			case SDMSResourceRequirement.WEEK:
+			case SDMSResourceRequirement.MONTH:
+			case SDMSResourceRequirement.YEAR:
+				return true;
 		}
 		return false;
 	}
@@ -891,12 +891,12 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSResourceRequirement.N:
-		case SDMSResourceRequirement.X:
-		case SDMSResourceRequirement.SX:
-		case SDMSResourceRequirement.S:
-		case SDMSResourceRequirement.SC:
-			return true;
+			case SDMSResourceRequirement.N:
+			case SDMSResourceRequirement.X:
+			case SDMSResourceRequirement.SX:
+			case SDMSResourceRequirement.S:
+			case SDMSResourceRequirement.SC:
+				return true;
 		}
 		return false;
 	}

@@ -73,9 +73,9 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 	protected Long changeTs;
 	protected Long inheritPrivs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSNamedResourceGeneric(
 	        SystemEnvironment env,
@@ -224,16 +224,16 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 	{
 		final Integer v = getUsage (env);
 		switch (v.intValue()) {
-		case SDMSNamedResource.STATIC:
-			return "STATIC";
-		case SDMSNamedResource.SYSTEM:
-			return "SYSTEM";
-		case SDMSNamedResource.SYNCHRONIZING:
-			return "SYNCHRONIZING";
-		case SDMSNamedResource.CATEGORY:
-			return "CATEGORY";
-		case SDMSNamedResource.POOL:
-			return "POOL";
+			case SDMSNamedResource.STATIC:
+				return "STATIC";
+			case SDMSNamedResource.SYSTEM:
+				return "SYSTEM";
+			case SDMSNamedResource.SYNCHRONIZING:
+				return "SYNCHRONIZING";
+			case SDMSNamedResource.CATEGORY:
+				return "CATEGORY";
+			case SDMSNamedResource.POOL:
+				return "POOL";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -658,12 +658,12 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 	static public boolean checkUsage(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSNamedResource.STATIC:
-		case SDMSNamedResource.SYSTEM:
-		case SDMSNamedResource.SYNCHRONIZING:
-		case SDMSNamedResource.CATEGORY:
-		case SDMSNamedResource.POOL:
-			return true;
+			case SDMSNamedResource.STATIC:
+			case SDMSNamedResource.SYSTEM:
+			case SDMSNamedResource.SYNCHRONIZING:
+			case SDMSNamedResource.CATEGORY:
+			case SDMSNamedResource.POOL:
+				return true;
 		}
 		return false;
 	}

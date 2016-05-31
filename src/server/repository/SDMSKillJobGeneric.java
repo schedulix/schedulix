@@ -92,9 +92,9 @@ public class SDMSKillJobGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSKillJobGeneric(
 	        SystemEnvironment env,
@@ -294,22 +294,22 @@ public class SDMSKillJobGeneric extends SDMSObject
 	{
 		final Integer v = getState (env);
 		switch (v.intValue()) {
-		case SDMSKillJob.RUNNABLE:
-			return "RUNNABLE";
-		case SDMSKillJob.STARTING:
-			return "STARTING";
-		case SDMSKillJob.STARTED:
-			return "STARTED";
-		case SDMSKillJob.RUNNING:
-			return "RUNNING";
-		case SDMSKillJob.FINISHED:
-			return "FINISHED";
-		case SDMSKillJob.BROKEN_ACTIVE:
-			return "BROKEN_ACTIVE";
-		case SDMSKillJob.BROKEN_FINISHED:
-			return "BROKEN_FINISHED";
-		case SDMSKillJob.ERROR:
-			return "ERROR";
+			case SDMSKillJob.RUNNABLE:
+				return "RUNNABLE";
+			case SDMSKillJob.STARTING:
+				return "STARTING";
+			case SDMSKillJob.STARTED:
+				return "STARTED";
+			case SDMSKillJob.RUNNING:
+				return "RUNNING";
+			case SDMSKillJob.FINISHED:
+				return "FINISHED";
+			case SDMSKillJob.BROKEN_ACTIVE:
+				return "BROKEN_ACTIVE";
+			case SDMSKillJob.BROKEN_FINISHED:
+				return "BROKEN_FINISHED";
+			case SDMSKillJob.ERROR:
+				return "ERROR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1000,15 +1000,15 @@ public class SDMSKillJobGeneric extends SDMSObject
 	static public boolean checkState(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSKillJob.RUNNABLE:
-		case SDMSKillJob.STARTING:
-		case SDMSKillJob.STARTED:
-		case SDMSKillJob.RUNNING:
-		case SDMSKillJob.FINISHED:
-		case SDMSKillJob.BROKEN_ACTIVE:
-		case SDMSKillJob.BROKEN_FINISHED:
-		case SDMSKillJob.ERROR:
-			return true;
+			case SDMSKillJob.RUNNABLE:
+			case SDMSKillJob.STARTING:
+			case SDMSKillJob.STARTED:
+			case SDMSKillJob.RUNNING:
+			case SDMSKillJob.FINISHED:
+			case SDMSKillJob.BROKEN_ACTIVE:
+			case SDMSKillJob.BROKEN_FINISHED:
+			case SDMSKillJob.ERROR:
+				return true;
 		}
 		return false;
 	}

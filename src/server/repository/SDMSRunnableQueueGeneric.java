@@ -65,9 +65,9 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSRunnableQueueGeneric(
 	        SystemEnvironment env,
@@ -165,16 +165,16 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 	{
 		final Integer v = getState (env);
 		switch (v.intValue()) {
-		case SDMSRunnableQueue.DEPENDENCY_WAIT:
-			return "DEPENDENCY_WAIT";
-		case SDMSRunnableQueue.SYNCHRONIZE_WAIT:
-			return "SYNCHRONIZE_WAIT";
-		case SDMSRunnableQueue.RESOURCE_WAIT:
-			return "RESOURCE_WAIT";
-		case SDMSRunnableQueue.RUNNABLE:
-			return "RUNNABLE";
-		case SDMSRunnableQueue.STARTING:
-			return "STARTING";
+			case SDMSRunnableQueue.DEPENDENCY_WAIT:
+				return "DEPENDENCY_WAIT";
+			case SDMSRunnableQueue.SYNCHRONIZE_WAIT:
+				return "SYNCHRONIZE_WAIT";
+			case SDMSRunnableQueue.RESOURCE_WAIT:
+				return "RESOURCE_WAIT";
+			case SDMSRunnableQueue.RUNNABLE:
+				return "RUNNABLE";
+			case SDMSRunnableQueue.STARTING:
+				return "STARTING";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -505,12 +505,12 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 	static public boolean checkState(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSRunnableQueue.DEPENDENCY_WAIT:
-		case SDMSRunnableQueue.SYNCHRONIZE_WAIT:
-		case SDMSRunnableQueue.RESOURCE_WAIT:
-		case SDMSRunnableQueue.RUNNABLE:
-		case SDMSRunnableQueue.STARTING:
-			return true;
+			case SDMSRunnableQueue.DEPENDENCY_WAIT:
+			case SDMSRunnableQueue.SYNCHRONIZE_WAIT:
+			case SDMSRunnableQueue.RESOURCE_WAIT:
+			case SDMSRunnableQueue.RUNNABLE:
+			case SDMSRunnableQueue.STARTING:
+				return true;
 		}
 		return false;
 	}

@@ -87,9 +87,9 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSParameterDefinitionGeneric(
 	        SystemEnvironment env,
@@ -220,28 +220,28 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	{
 		final Integer v = getType (env);
 		switch (v.intValue()) {
-		case SDMSParameterDefinition.REFERENCE:
-			return "REFERENCE";
-		case SDMSParameterDefinition.CHILDREFERENCE:
-			return "CHILDREFERENCE";
-		case SDMSParameterDefinition.CONSTANT:
-			return "CONSTANT";
-		case SDMSParameterDefinition.RESULT:
-			return "RESULT";
-		case SDMSParameterDefinition.PARAMETER:
-			return "PARAMETER";
-		case SDMSParameterDefinition.EXPRESSION:
-			return "EXPRESSION";
-		case SDMSParameterDefinition.IMPORT:
-			return "IMPORT";
-		case SDMSParameterDefinition.DYNAMIC:
-			return "DYNAMIC";
-		case SDMSParameterDefinition.DYNAMICVALUE:
-			return "DYNAMICVALUE";
-		case SDMSParameterDefinition.LOCAL_CONSTANT:
-			return "LOCAL_CONSTANT";
-		case SDMSParameterDefinition.RESOURCEREFERENCE:
-			return "RESOURCEREFERENCE";
+			case SDMSParameterDefinition.REFERENCE:
+				return "REFERENCE";
+			case SDMSParameterDefinition.CHILDREFERENCE:
+				return "CHILDREFERENCE";
+			case SDMSParameterDefinition.CONSTANT:
+				return "CONSTANT";
+			case SDMSParameterDefinition.RESULT:
+				return "RESULT";
+			case SDMSParameterDefinition.PARAMETER:
+				return "PARAMETER";
+			case SDMSParameterDefinition.EXPRESSION:
+				return "EXPRESSION";
+			case SDMSParameterDefinition.IMPORT:
+				return "IMPORT";
+			case SDMSParameterDefinition.DYNAMIC:
+				return "DYNAMIC";
+			case SDMSParameterDefinition.DYNAMICVALUE:
+				return "DYNAMICVALUE";
+			case SDMSParameterDefinition.LOCAL_CONSTANT:
+				return "LOCAL_CONSTANT";
+			case SDMSParameterDefinition.RESOURCEREFERENCE:
+				return "RESOURCEREFERENCE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -278,18 +278,18 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	{
 		final Integer v = getAggFunction (env);
 		switch (v.intValue()) {
-		case SDMSParameterDefinition.NONE:
-			return "NONE";
-		case SDMSParameterDefinition.AVG:
-			return "AVG";
-		case SDMSParameterDefinition.COUNT:
-			return "COUNT";
-		case SDMSParameterDefinition.MIN:
-			return "MIN";
-		case SDMSParameterDefinition.MAX:
-			return "MAX";
-		case SDMSParameterDefinition.SUM:
-			return "SUM";
+			case SDMSParameterDefinition.NONE:
+				return "NONE";
+			case SDMSParameterDefinition.AVG:
+				return "AVG";
+			case SDMSParameterDefinition.COUNT:
+				return "COUNT";
+			case SDMSParameterDefinition.MIN:
+				return "MIN";
+			case SDMSParameterDefinition.MAX:
+				return "MAX";
+			case SDMSParameterDefinition.SUM:
+				return "SUM";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -725,31 +725,31 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	static public boolean checkType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSParameterDefinition.REFERENCE:
-		case SDMSParameterDefinition.CHILDREFERENCE:
-		case SDMSParameterDefinition.CONSTANT:
-		case SDMSParameterDefinition.RESULT:
-		case SDMSParameterDefinition.PARAMETER:
-		case SDMSParameterDefinition.EXPRESSION:
-		case SDMSParameterDefinition.IMPORT:
-		case SDMSParameterDefinition.DYNAMIC:
-		case SDMSParameterDefinition.DYNAMICVALUE:
-		case SDMSParameterDefinition.LOCAL_CONSTANT:
-		case SDMSParameterDefinition.RESOURCEREFERENCE:
-			return true;
+			case SDMSParameterDefinition.REFERENCE:
+			case SDMSParameterDefinition.CHILDREFERENCE:
+			case SDMSParameterDefinition.CONSTANT:
+			case SDMSParameterDefinition.RESULT:
+			case SDMSParameterDefinition.PARAMETER:
+			case SDMSParameterDefinition.EXPRESSION:
+			case SDMSParameterDefinition.IMPORT:
+			case SDMSParameterDefinition.DYNAMIC:
+			case SDMSParameterDefinition.DYNAMICVALUE:
+			case SDMSParameterDefinition.LOCAL_CONSTANT:
+			case SDMSParameterDefinition.RESOURCEREFERENCE:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkAggFunction(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSParameterDefinition.NONE:
-		case SDMSParameterDefinition.AVG:
-		case SDMSParameterDefinition.COUNT:
-		case SDMSParameterDefinition.MIN:
-		case SDMSParameterDefinition.MAX:
-		case SDMSParameterDefinition.SUM:
-			return true;
+			case SDMSParameterDefinition.NONE:
+			case SDMSParameterDefinition.AVG:
+			case SDMSParameterDefinition.COUNT:
+			case SDMSParameterDefinition.MIN:
+			case SDMSParameterDefinition.MAX:
+			case SDMSParameterDefinition.SUM:
+				return true;
 		}
 		return false;
 	}

@@ -69,9 +69,9 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	protected Long changerUId;
 	protected Long changeTs;
 
-	private static PreparedStatement pUpdate[] = new PreparedStatement[50];
-	private static PreparedStatement pDelete[] = new PreparedStatement[50];
-	private static PreparedStatement pInsert[] = new PreparedStatement[50];
+	private static PreparedStatement pUpdate[] = new PreparedStatement[128];
+	private static PreparedStatement pDelete[] = new PreparedStatement[128];
+	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSNiceProfileEntryGeneric(
 	        SystemEnvironment env,
@@ -199,12 +199,12 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	{
 		final Integer v = getIsSuspended (env);
 		switch (v.intValue()) {
-		case SDMSNiceProfileEntry.NOSUSPEND:
-			return "NOSUSPEND";
-		case SDMSNiceProfileEntry.SUSPEND:
-			return "SUSPEND";
-		case SDMSNiceProfileEntry.ADMINSUSPEND:
-			return "ADMINSUSPEND";
+			case SDMSNiceProfileEntry.NOSUSPEND:
+				return "NOSUSPEND";
+			case SDMSNiceProfileEntry.SUSPEND:
+				return "SUSPEND";
+			case SDMSNiceProfileEntry.ADMINSUSPEND:
+				return "ADMINSUSPEND";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -545,10 +545,10 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	static public boolean checkIsSuspended(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSNiceProfileEntry.NOSUSPEND:
-		case SDMSNiceProfileEntry.SUSPEND:
-		case SDMSNiceProfileEntry.ADMINSUSPEND:
-			return true;
+			case SDMSNiceProfileEntry.NOSUSPEND:
+			case SDMSNiceProfileEntry.SUSPEND:
+			case SDMSNiceProfileEntry.ADMINSUSPEND:
+				return true;
 		}
 		return false;
 	}
