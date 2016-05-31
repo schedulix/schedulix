@@ -320,7 +320,7 @@ public class SDMSVersions
 		SDMSObject obj;
 		obj = (SDMSObject)(versions.elementAt(s - 1));
 
-		if (obj.validTo <= versionId && versionId != Long.MAX_VALUE) {
+		if (obj.validTo <= versionId && obj.validTo != Long.MAX_VALUE) {
 			if (SystemEnvironment.maxWriter > 1 && env.tx.mode == SDMSTransaction.READONLY) {
 				int i;
 				for (i = 0; i < env.tx.commitingTx.length; ++i) {
@@ -388,8 +388,8 @@ public class SDMSVersions
 				o = (SDMSObject)(i.next());
 				if (o == null) {
 					result.append(
-					        "\n==========================\n" +
-					        "o is null\n" );
+						"\n==========================\n" +
+						"o is null\n" );
 				} else {
 					result.append(
 						"\n==========================\n" +
@@ -397,11 +397,11 @@ public class SDMSVersions
 						"validTo : " + o.validTo + "\n" +
 						"subTxId : " + o.subTxId + "\n" +
 						"isDeleted : " + o.isDeleted + "\n" +
-					        "isCurrent : " + o.isCurrent + "\n" +
+						"isCurrent : " + o.isCurrent + "\n" +
 						"memOnly : " + o.memOnly + "\n" +
 						"--------------------------\n" +
-				        	o.toString(indent) +
-				        	"- - - - - - - - - - - - - \n" +
+						o.toString(indent) +
+						"- - - - - - - - - - - - - \n" +
 						table.checkIndex(o));
 				}
 			}
@@ -413,12 +413,12 @@ public class SDMSVersions
 				while (i.hasNext()) {
 					o = (SDMSObject)(i.next());
 					result.append(o.toString(indent) +
-					              "- - - - - - - - - - - - - \n" +
-					              table.checkIndex(o) +
+						"- - - - - - - - - - - - - \n" +
+						table.checkIndex(o) +
 						"----------------------------\n" +
 						"subTxId : " + o.subTxId + "\n" +
 						"isDeleted : " + o.isDeleted + "\n" +
-					              "isCurrent : " + o.isCurrent + "\n" +
+						"isCurrent : " + o.isCurrent + "\n" +
 						"memOnly : " + o.memOnly + "\n" +
 						"============================\n");
 				}
