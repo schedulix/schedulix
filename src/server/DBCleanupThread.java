@@ -54,14 +54,12 @@ public class DBCleanupThread extends SDMSThread
 
 	private PreparedStatement deleteMaster = null;
 	private PreparedStatement deleteKillJob = null;
-	private PreparedStatement deleteAuditTrail = null;
 	private PreparedStatement deleteEntityVariable = null;
 	private PreparedStatement deleteDependencyInstance = null;
 	private PreparedStatement deleteHierarchyInstance = null;
 
 	private PreparedStatement archiveMaster = null;
 	private PreparedStatement archiveKillJob = null;
-	private PreparedStatement archiveAuditTrail = null;
 	private PreparedStatement archiveEntityVariable = null;
 	private PreparedStatement archiveDependencyInstance = null;
 	private PreparedStatement archiveHierarchyInstance = null;
@@ -157,14 +155,12 @@ public class DBCleanupThread extends SDMSThread
 				loadSmeForMaster         = sysEnv.dbConnection.prepareStatement("SELECT ID FROM SUBMITTED_ENTITY WHERE MASTER_ID = ?");
 				deleteMaster             = sysEnv.dbConnection.prepareStatement("DELETE FROM SUBMITTED_ENTITY WHERE MASTER_ID = ?");
 				deleteKillJob            = sysEnv.dbConnection.prepareStatement("DELETE FROM KILL_JOB WHERE SME_ID = ?");
-				deleteAuditTrail         = sysEnv.dbConnection.prepareStatement("DELETE FROM AUDIT_TRAIL WHERE OBJECT_ID = ?");
 				deleteEntityVariable     = sysEnv.dbConnection.prepareStatement("DELETE FROM ENTITY_VARIABLE WHERE SME_ID = ?");
 				deleteDependencyInstance = sysEnv.dbConnection.prepareStatement("DELETE FROM DEPENDENCY_INSTANCE WHERE DEPENDENT_ID = ?");
 				deleteHierarchyInstance  = sysEnv.dbConnection.prepareStatement("DELETE FROM HIERARCHY_INSTANCE WHERE CHILD_ID = ?");
 				if (sysEnv.archive) {
 					archiveMaster = prepareArchive(SDMSSubmittedEntityTable.table, sysEnv.smeColumns, "MASTER_ID");
 					archiveKillJob = prepareArchive(SDMSKillJobTable.table, sysEnv.kjColumns, "SME_ID");
-					archiveAuditTrail = prepareArchive(SDMSAuditTrailTable.table, sysEnv.atColumns, "OBJECT_ID");
 					archiveEntityVariable = prepareArchive(SDMSEntityVariableTable.table, sysEnv.evColumns, "SME_ID");
 					archiveDependencyInstance = prepareArchive(SDMSDependencyInstanceTable.table, sysEnv.diColumns, "DEPENDENT_ID");
 					archiveHierarchyInstance = prepareArchive(SDMSHierarchyInstanceTable.table, sysEnv.hiColumns, "CHILD_ID");
@@ -317,8 +313,6 @@ public class DBCleanupThread extends SDMSThread
 	{
 		archiveForSme(archiveKillJob, id, "KILL_JOB");
 		deleteForSme(deleteKillJob, id, "KILL_JOB");
-		archiveForSme(archiveAuditTrail, id, "AUDIT_TRAIL");
-		deleteForSme(deleteAuditTrail, id, "AUDIT_TRAIL");
 		archiveForSme(archiveEntityVariable, id, "ENTITY_VARIABLE");
 		deleteForSme(deleteEntityVariable, id, "ENTITY_VARIABLE");
 		archiveForSme(archiveDependencyInstance, id, "DEPENDENCY_INSTANCE");
