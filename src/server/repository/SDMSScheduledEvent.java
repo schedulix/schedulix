@@ -49,7 +49,7 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 	}
 
 	public String getName(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Long sceId = getSceId (sysEnv);
 		final SDMSSchedule sce = SDMSScheduleTable.getObject (sysEnv, sceId);
@@ -63,7 +63,7 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 	}
 
 	public final boolean isReallyActive (final SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		boolean reallyActive = getIsActive (sysEnv).booleanValue();
 
@@ -77,7 +77,7 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final SDMSSchedule sce = SDMSScheduleTable.getObject(sysEnv, getSceId(sysEnv));
 		final Long seId = sce.getSeId(sysEnv);
@@ -89,20 +89,20 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 	}
 
 	public String getURL(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return "scheduled event " + getURLName(sysEnv);
 	}
 
 	public void delete(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		clearCalendar(sysEnv);
 		super.delete(sysEnv);
 	}
 
 	public void clearCalendar(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Long scevId = getId(sysEnv);
 		Vector v = SDMSCalendarTable.idx_scevId.getVector(sysEnv, scevId);
@@ -113,7 +113,7 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 	}
 
 	private void deleteCalendarItemsOutOfWindow(SystemEnvironment sysEnv, Vector calVec, TimerDate nextTime, TimerDate lastTime)
-	throws SDMSException
+		throws SDMSException
 	{
 		Iterator i = calVec.iterator();
 		while (i.hasNext()) {
@@ -129,7 +129,7 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 	}
 
 	public Integer getEffectiveCalendarHorizon(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Integer horizon = getCalendarHorizon(sysEnv);
 		if (horizon == null) {
@@ -139,7 +139,7 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 	}
 
 	public TimerUnit getEffectiveSuspendLimit(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final TimerUnit suspendLimit = new TimerUnit (getSuspendLimitMultiplier (sysEnv), getSuspendLimit (sysEnv));
 		if (suspendLimit.isINF())
@@ -149,14 +149,14 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 	}
 
 	public void updateCalendar(SystemEnvironment sysEnv, Long nextTime, SDMSSchedule sce)
-	throws SDMSException
+		throws SDMSException
 	{
 		TimerDate next = nextTime == null ? null : new TimerDate(new DateTime(nextTime).toDate());
 		updateCalendar(sysEnv, next, sce);
 	}
 
 	public void updateCalendar(SystemEnvironment sysEnv, TimerDate nextTime, SDMSSchedule sce)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (!getIsCalendar(sysEnv).booleanValue()) return;
 		if (!getIsActive(sysEnv).booleanValue()) return;
@@ -206,5 +206,32 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 			}
 			baseDate.set (trigDate.plus (1));
 		}
+	}
+
+	public long getPrivileges(SystemEnvironment sysEnv, long checkPrivs, boolean fastFail, Vector checkGroups)
+		throws SDMSException
+	{
+		long p, sceP, evtP;
+		Long sceId;
+		Long evtId;
+		SDMSSchedule sce;
+		SDMSEvent evt;
+
+		p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
+		if ((p & checkPrivs) == checkPrivs) return checkPrivs;
+
+		sceId = getSceId(sysEnv);
+		sce = SDMSScheduleTable.getObject(sysEnv, sceId);
+		sceP = sce.getPrivileges(sysEnv, checkPrivs, false, checkGroups);
+
+		evtId = getEvtId(sysEnv);
+		evt = SDMSEventTable.getObject(sysEnv, evtId);
+		evtP = evt.getPrivileges(sysEnv, checkPrivs, false, checkGroups);
+
+		p |= evtP;
+		p |= sceP;
+
+		p = addImplicitPrivs(p) & checkPrivs;
+		return p;
 	}
 }

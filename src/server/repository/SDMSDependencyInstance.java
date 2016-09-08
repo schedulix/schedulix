@@ -80,6 +80,7 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 				esdId = sme.getJobEsdId(sysEnv);
 				break;
 		}
+		if (esdId == null) return SDMSDependencyInstance.OPEN;
 
 		Long ddId = getDdId(sysEnv);
 		SDMSDependencyDefinition dd = SDMSDependencyDefinitionTable.getObject(sysEnv, ddId, actVersion);

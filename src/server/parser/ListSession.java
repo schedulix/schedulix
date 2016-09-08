@@ -84,45 +84,28 @@ public class ListSession extends Node
 		Vector desc = new Vector();
 
 		desc.add("THIS");
-
 		desc.add("SESSIONID");
-
 		desc.add("PORT");
-
 		desc.add("START");
-
 		desc.add("TYPE");
-
 		desc.add("USER");
-
 		desc.add("UID");
-
 		desc.add("IP");
-
 		desc.add("TXID");
-
 		desc.add("IDLE");
-
 		desc.add("STATE");
-
 		desc.add("TIMEOUT");
-
 		desc.add("INFORMATION");
-
 		desc.add("STATEMENT");
 		desc.add("WAIT");
 
 		tg = env.getMe().getThreadGroup();
 		list = new SDMSThread[tg.activeCount() + 5];
 		nt = tg.enumerate(list);
-		list[nt] = SystemEnvironment.sched;
-		nt++;
-		list[nt] = SystemEnvironment.tt;
-		nt++;
-		list[nt] = SystemEnvironment.garb;
-		nt++;
-		list[nt] = SystemEnvironment.timer;
-		nt++;
+		list[nt] = SystemEnvironment.sched; nt++;
+		list[nt] = SystemEnvironment.tt; nt++;
+		list[nt] = SystemEnvironment.garb; nt++;
+		list[nt] = SystemEnvironment.timer; nt++;
 
 		d_container = new SDMSOutputContainer(sysEnv, "List of Sessions", desc);
 		sessionCtr = 0;

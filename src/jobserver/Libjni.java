@@ -157,10 +157,7 @@ class Libjni
 		return null;
 	}
 
-	public String chdir(String path)
-	{
-		return null;
-	}
+	public String chdir(String path) { return null; }
 
 	public boolean setBoottimeHow(char how)
 	{

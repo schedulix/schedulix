@@ -47,11 +47,11 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 	public static final String S_SDMSPORT	= "SDMSPORT";
 
 	public static final HashSet specialNames = new HashSet( Arrays.asList(new String[] {
-	                        S_JOBID,
-	                        S_KILLJOBID,
-	                        S_SDMSHOST,
-	                        S_SDMSPORT
-	                }) );
+				S_JOBID,
+				S_KILLJOBID,
+				S_SDMSHOST,
+				S_SDMSPORT
+	}) );
 
 	protected SDMSKillJob(SDMSObject p_object)
 	{
@@ -59,7 +59,7 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 	}
 
 	public String getVariableValue(SystemEnvironment sysEnv, String key)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(specialNames.contains(key)) return getSpecialValue(sysEnv, key);
 		SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, getSmeId(sysEnv));
@@ -67,7 +67,7 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 	}
 
 	private String getSpecialValue(SystemEnvironment sysEnv, String key)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(key.equals(S_JOBID)) 	return getId(sysEnv).toString();
 		if(key.equals(S_KILLJOBID)) 	return getSmeId(sysEnv).toString();
@@ -77,14 +77,14 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 	}
 
 	public void setToError(SystemEnvironment sysEnv, String msg)
-	throws SDMSException
+		throws SDMSException
 	{
 		setState(sysEnv, new Integer(ERROR));
 		setErrorMsg(sysEnv, msg);
 	}
 
 	public void setState(SystemEnvironment sysEnv, Integer state)
-	throws SDMSException
+		throws SDMSException
 	{
 		int oldState = getState(sysEnv).intValue();
 		int newState = state.intValue();
@@ -93,13 +93,9 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 		Long ts = new Long (dts.getTime());
 
 		if (newState == STARTING)
-			synchronized(sysEnv.jidsStarting) {
-				sysEnv.jidsStarting.put(getId(sysEnv), ts);
-			}
+			synchronized(sysEnv.jidsStarting) { sysEnv.jidsStarting.put(getId(sysEnv), ts); }
 		else if (oldState == STARTING)
-			synchronized(sysEnv.jidsStarting) {
-				sysEnv.jidsStarting.remove(getId(sysEnv));
-			}
+			synchronized(sysEnv.jidsStarting) { sysEnv.jidsStarting.remove(getId(sysEnv)); }
 
 		super.setState(sysEnv, state);
 	}

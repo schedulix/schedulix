@@ -125,18 +125,16 @@ public class GetNextJob extends JobDistribution
 		while (i_sj.hasNext()) {
 
 			rq = (SDMSRunnableQueue) i_sj.next();
-				rqState = rq.getState(sysEnv).intValue();
-				smeId = rq.getSmeId(sysEnv);
-				try {
-					sme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
-				} catch (NotFoundException nfe) {
+			rqState = rq.getState(sysEnv).intValue();
+			smeId = rq.getSmeId(sysEnv);
+			try {
+				sme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
+			} catch (NotFoundException nfe) {
 
-					kj = SDMSKillJobTable.getObjectForUpdate(sysEnv, smeId);
-				}
-			Long startingTs;
-			synchronized (SystemEnvironment.jidsStarting) {
-				startingTs = SystemEnvironment.jidsStarting.get(smeId);
+				kj = SDMSKillJobTable.getObjectForUpdate(sysEnv, smeId);
 			}
+			Long startingTs;
+			synchronized (SystemEnvironment.jidsStarting) { startingTs = SystemEnvironment.jidsStarting.get(smeId); }
 			if (startingTs != null) {
 				long sTs = startingTs.longValue();
 				if (sTs + SystemEnvironment.startingResendDelay > now)
@@ -144,9 +142,7 @@ public class GetNextJob extends JobDistribution
 					continue;
 			}
 
-			synchronized (SystemEnvironment.jidsStarting) {
-				SystemEnvironment.jidsStarting.put(smeId, new Long(now));
-			}
+			synchronized (SystemEnvironment.jidsStarting) { SystemEnvironment.jidsStarting.put(smeId, new Long(now)); }
 			break;
 		}
 
@@ -192,24 +188,6 @@ public class GetNextJob extends JobDistribution
 						smeId = rq.getSmeId(sysEnv);
 
 						SDMSSubmittedEntity tmpsme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
-						if (tmpsme == null) {
-							System.out.println("tmpsme is null!");
-						}
-						if (tmpsme.getRunnableTs(sysEnv) == null) {
-							System.out.println("Happens on sme " + tmpsme.getId(sysEnv).toString());
-							System.out.println("tmpsme.getRunnableTs() is null!");
-						}
-						if (tmpsme == null || tmpsme.getRunnableTs(sysEnv) == null) {
-							if (sysEnv.setStateThread != null)
-								System.out.println("setStateThread = " + sysEnv.setStateThread);
-							else
-								System.out.println("setStateThread = null");
-							System.out.println("I am Thread" + Thread.currentThread().getName());
-							System.out.println(tmpsme.object.versions.toString());
-							ObjectLock lock = LockingSystemSynchronized.getObjectLocks(tmpsme.object.versions);
-							System.out.println(lock.dumpLockList());
-
-						}
 						if (tmpsme.getRunnableTs(sysEnv) > minRunnableTs) continue;
 						candidates++;
 						sme = tmpsme;

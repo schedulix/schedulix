@@ -51,12 +51,12 @@ public class SSLListenThread extends ListenThread
 	}
 
 	ServerSocket getServerSocket(int port)
-	throws IOException
+		throws IOException
 	{
 		SSLServerSocketFactory sslserversocketfactory =
-		        (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+			(SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
 		SSLServerSocket sslserversocket =
-		        (SSLServerSocket) sslserversocketfactory.createServerSocket(port);
+			(SSLServerSocket) sslserversocketfactory.createServerSocket(port);
 
 		sslserversocket.setNeedClientAuth(SystemEnvironment.clientAuthentication);
 
@@ -66,7 +66,7 @@ public class SSLListenThread extends ListenThread
 	}
 
 	protected Socket accept()
-	throws InterruptedIOException, IOException
+		throws InterruptedIOException, IOException
 	{
 		return (SSLSocket) serv.accept();
 	}

@@ -263,6 +263,7 @@ public abstract class JobDistribution extends Node
 		desc.add(RepoIface.STARTJOB_ARGS);
 		desc.add(RepoIface.STARTJOB_ENV);
 		desc.add(RepoIface.STARTJOB_RUN);
+		desc.add(RepoIface.STARTJOB_JOBENV);
 
 		kjId = kj.getId(sysEnv);
 
@@ -333,6 +334,20 @@ public abstract class JobDistribution extends Node
 		kj.setState(sysEnv, new Integer(SDMSSubmittedEntity.STARTING));
 		kj.setScopeId(sysEnv, sId);
 
+		Vector jobenv = new Vector();
+		Vector jpv = SDMSParameterDefinitionTable.idx_seId.getVector(sysEnv, se.getId(sysEnv));
+		Iterator jpi = jpv.iterator();
+		while(jpi.hasNext()) {
+			SDMSParameterDefinition pd = (SDMSParameterDefinition)jpi.next();
+
+			String exportName = pd.getExportName(sysEnv);
+			if (exportName != null) {
+				jobenv.add(exportName);
+				jobenv.add(sme.getVariableValue(sysEnv, pd.getName(sysEnv), false, ParseStr.S_DEFAULT));
+			}
+		}
+
+		data.add(jobenv);
 		Vector jsv = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, kjId);
 		for(int i = 0; i < jsv.size(); i++) {
 			rq = (SDMSRunnableQueue) jsv.get(i);

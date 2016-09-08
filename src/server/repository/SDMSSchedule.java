@@ -188,10 +188,46 @@ public class SDMSSchedule
 	public long getPrivileges(SystemEnvironment sysEnv, long checkPrivs, boolean fastFail, Vector checkGroups)
 		throws SDMSException
 	{
-		long p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
-		if(sysEnv.cEnv.isUser())
-			if (getParentId(sysEnv) == null)
-				p = p | SDMSPrivilege.VIEW | SDMSPrivilege.CREATE_CONTENT;
+		long p = SDMSPrivilege.NOPRIVS;
+		long seP;
+		Long seId;
+		SDMSSchedulingEntity se;
+		Vector myGroups;
+
+		seId = getSeId(sysEnv);
+		if (seId == null) {
+			p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
+			if(sysEnv.cEnv.isUser())
+				if (getParentId(sysEnv) == null)
+					p = p | SDMSPrivilege.VIEW | SDMSPrivilege.CREATE_CONTENT;
+
+			return p & checkPrivs;
+		}
+
+		if (checkGroups == null) {
+			myGroups = new Vector();
+			if(sysEnv.cEnv.isUser()) {
+				myGroups.addAll(sysEnv.cEnv.gid());
+			}
+		} else
+			myGroups = checkGroups;
+
+		p = SDMSPrivilege.NOPRIVS;
+		se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
+		seP = se.getPrivileges(sysEnv, SDMSPrivilege.VIEW|SDMSPrivilege.SUBMIT, false, myGroups);
+		if ((seP & SDMSPrivilege.SUBMIT) == SDMSPrivilege.SUBMIT) {
+			Long submitGId = getOwnerId(sysEnv);
+			if (myGroups.contains(submitGId) || myGroups.contains(SDMSObject.adminGId)) {
+				p = checkPrivs;
+			} else {
+				p = SDMSPrivilege.VIEW;
+			}
+		} else
+		if ((seP & SDMSPrivilege.VIEW) == SDMSPrivilege.VIEW) {
+			p |= SDMSPrivilege.VIEW;
+		}
+		p = addImplicitPrivs(p) & checkPrivs;
+
 		return p & checkPrivs;
 	}
 }

@@ -48,7 +48,7 @@ public class SDMSEvent extends SDMSEventProxyGeneric
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long seId = getSeId(sysEnv);
 		String se = null;
@@ -59,22 +59,60 @@ public class SDMSEvent extends SDMSEventProxyGeneric
 	}
 
 	public String getURL(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		return "event " + getURLName(sysEnv);
 	}
 
 	public void delete(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		final Long id = getId(sysEnv);
 
 		Vector v = SDMSScheduledEventTable.idx_evtId.getVector(sysEnv, id);
 		if (v.size() != 0) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03710161540",
-			                               "Cannot drop, scheduled events present"));
+				"Cannot drop, scheduled events present"));
 		}
 		super.delete(sysEnv);
 	}
 
+	public long getPrivileges(SystemEnvironment sysEnv, long checkPrivs, boolean fastFail, Vector checkGroups)
+		throws SDMSException
+	{
+		long p, seP;
+		Long seId;
+		SDMSSchedulingEntity se;
+		Vector myGroups;
+
+		seId = getSeId(sysEnv);
+		if (seId == null) {
+			p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
+			return p & checkPrivs;
+		}
+
+		if (checkGroups == null) {
+			myGroups = new Vector();
+			if(sysEnv.cEnv.isUser()) {
+				myGroups.addAll(sysEnv.cEnv.gid());
+			}
+		} else
+			myGroups = checkGroups;
+
+		p = SDMSPrivilege.NOPRIVS;
+		se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
+		seP = se.getPrivileges(sysEnv, SDMSPrivilege.VIEW|SDMSPrivilege.SUBMIT, false, myGroups);
+		if ((seP & SDMSPrivilege.SUBMIT) == SDMSPrivilege.SUBMIT) {
+			Long submitGId = getOwnerId(sysEnv);
+			if (myGroups.contains(submitGId) || myGroups.contains(SDMSObject.adminGId)) {
+				p = checkPrivs;
+			} else {
+				p = SDMSPrivilege.VIEW;
+			}
+		} else if ((seP & SDMSPrivilege.VIEW) == SDMSPrivilege.VIEW) {
+			p |= SDMSPrivilege.VIEW;
+		}
+		p = addImplicitPrivs(p) & checkPrivs;
+		return p;
+	}
 }

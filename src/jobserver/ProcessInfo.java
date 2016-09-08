@@ -195,14 +195,12 @@ public class ProcessInfo
 		final File job_file_prefix = (File) cfg.get (Config.JOB_FILE_PREFIX);
 		final File tmp_file = new File(job_file_prefix.getParent() + "/starttimes." + cfg.get(Config.REPO_USER));
 		String tmpfilename = null;
-		try {
-			tmpfilename = tmp_file.getCanonicalPath();
-		} catch (Exception e) {}
+		try { tmpfilename = tmp_file.getCanonicalPath(); } catch (Exception e) {}
 
 		String os = System.getProperty("os.name").toLowerCase();
 		if(   os.contains("mac")
 		   || os.contains("nix")
-		      || os.contains("nux")
+		   || os.contains("nux")
 		   || os.contains("aix")
 		  ) {
 			try {
@@ -211,9 +209,7 @@ public class ProcessInfo
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
 				p.getOutputStream().close();
-				try {
-					p.waitFor();
-				} catch (InterruptedException ie) {  }
+				try { p.waitFor(); } catch (InterruptedException ie) {  }
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename)));
 				String line;
 				String pattern = "MMM d HH:mm:ss yyyy";
@@ -245,9 +241,7 @@ public class ProcessInfo
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
 				p.getOutputStream().close();
-				try {
-					p.waitFor();
-				} catch (InterruptedException ie) {  }
+				try { p.waitFor(); } catch (InterruptedException ie) {  }
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename), "UTF-16"));
 				String line;
 				String pattern = "yyyyMMddHHmmss";
@@ -339,12 +333,8 @@ public class ProcessInfo
 		if (! bootTimes.containsKey("" + how)) {
 			String bootTime = "0";
 			switch (how) {
-				case 'S':
-					bootTime = getBootTimeSystem();
-					break;
-				case 'F':
-					bootTime = getBootTimeFile();
-					break;
+				case 'S': bootTime = getBootTimeSystem(); break;
+				case 'F': bootTime = getBootTimeFile(); break;
 			}
 			bootTimes.put("" + how, new Long(bootTime));
 		}

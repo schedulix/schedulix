@@ -46,6 +46,7 @@ BICSUITEJAVAFLAGS_BS="$MEMCONF"
 # java flags used for BICsuite Jobserver
 BICSUITEJAVAFLAGS_JS="-client -XX:ParallelGCThreads=2"
 # java flags used for BICsuite Tools
-BICSUITEJAVAFLAGS_TL="-client"
+# used to be "-client", but OpenJDK doesn't understand that
+BICSUITEJAVAFLAGS_TL=""
 # java flags used for BICsuite Proxy
 BICSUITEJAVAFLAGS_PX=""

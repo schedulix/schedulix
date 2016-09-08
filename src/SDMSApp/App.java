@@ -172,44 +172,17 @@ public class App
 	}
 
 	public void    addOptions()				{ }
-	public int     go() throws RetryException
-	{
-		return 0;
-	}
-	public String  getName()
-	{
-		return "?";
-	}
-	public String  getUsageArguments()
-	{
-		return "";
-	}
-	public boolean validateOptions()
-	{
-		return true;
-	}
-	public boolean canRetry()
-	{
-		return false;
-	}
-	public boolean userOnly()
-	{
-		return false;
-	}
-	public boolean specificParse()
-	{
-		return true;
-	}
+	public int     go() throws RetryException		{ return 0; }
+	public String  getName()				{ return "?"; }
+	public String  getUsageArguments()			{ return ""; }
+	public boolean validateOptions()			{ return true; }
+	public boolean canRetry()				{ return false; }
+	public boolean userOnly()				{ return false; }
+	public boolean specificParse()				{ return true; }
 
-	public void render(SDMSOutput o) throws SDMSException
-	{
-		return;
-	}
+	public void render(SDMSOutput o) throws SDMSException	{ return; }
 
-	public boolean setupApp()
-	{
-		return true;
-	}
+	public boolean setupApp()				{ return true; }
 
 	private String getUsage()
 	{
@@ -298,9 +271,7 @@ public class App
 		int r = 1;
 		if (connect()) {
 			r = this.go();
-			try {
-				serverConnection.finish();
-			} catch (IOException ie) {}
+			try { serverConnection.finish(); } catch (IOException ie) {}
 		}
 		return r;
 	}
@@ -313,13 +284,9 @@ public class App
 		if (this.canRetry()) {
 			if (options.isSet(TIMEOUT)) {
 				stime_ms = new Date().getTime();
-				try {
-					timeout_min = Integer.parseInt (options.getValue(TIMEOUT));
-				} catch (Exception e) {}
+				try { timeout_min = Integer.parseInt (options.getValue(TIMEOUT)); } catch (Exception e) {}
 			}
-			try {
-				cycle_min = Integer.parseInt (options.getValue(CYCLE));
-			} catch (Exception e) {}
+			try { cycle_min = Integer.parseInt (options.getValue(CYCLE)); } catch (Exception e) {}
 		}
 		executions = 0;
 		boolean retry = true;
@@ -338,9 +305,7 @@ public class App
 							retry = false;
 						}
 					}
-					if (retry) try {
-							Thread.sleep (cycle_min * 60 * 1000);
-						} catch (InterruptedException ie) {}
+					if (retry) try { Thread.sleep (cycle_min * 60 * 1000); } catch (InterruptedException ie) {}
 				}
 			}
 		}

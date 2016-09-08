@@ -149,7 +149,6 @@ public class SystemEnvironment implements Cloneable
 	public static int maxNumCalEntries;
 	public static int defCalHorizon;
 	public static boolean fatalIsError;
-
 	public static String selectGroup;
 	public static String auditFile;
 
@@ -224,7 +223,6 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_USEREXPORTVARIABLES   = "UserExportVariables";
 	public static final String S_WORKERTHREADS         = "WorkerThreads";
 	public static final String S_WRITERTHREADS         = "WriterThreads";
-
 	public static final String S_KEYSTORE              = "KeyStore";
 	public static final String S_KEYSTOREPASSWORD      = "KeyStorePassword";
 	public static final String S_KEYSTOREPROVIDER      = "KeyStoreProvider";
@@ -283,11 +281,9 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_POOL		      = "POOL";
 	public static final String S_OBJECT_MONITOR	      = "OBJECT_MONITOR";
 	public static final String S_NICE_PROFILE	      = "NICE_PROFILE";
-
 	private HashMap featureLevels;
 
 	public final static HashMap<Long, Long> jidsStarting = new HashMap<Long, Long>();
-
 	public final static int startingResendDelay = 5000;
 
 	public SDMSThread thread;
@@ -326,7 +322,6 @@ public class SystemEnvironment implements Cloneable
 	public long lowestActiveDate;
 
 	private MutableInteger  connectState;
-
 	private static boolean  protectMode = false;
 
 	private static Random random = new Random();
@@ -415,7 +410,6 @@ public class SystemEnvironment implements Cloneable
 		getSSLproperties();
 
 		if ((port == 0) && (service_port == 0) && (sslport == 0)) {
-
 			port = 2506;
 		}
 
@@ -476,7 +470,6 @@ public class SystemEnvironment implements Cloneable
 				System.setProperty(J_KEYSTORE, keystore);
 				props.setProperty(S_KEYSTORE, keystore);
 			} else {
-
 				sslport = 0;
 				return;
 			}
@@ -683,7 +676,6 @@ public class SystemEnvironment implements Cloneable
 	private void getWriterThreads()
 	{
 		String s_maxWriter = props.getProperty(S_WRITERTHREADS, "1");
-
 		maxWriter = checkIntProperty(s_maxWriter, S_WRITERTHREADS, 1, 1, 128, "Invalid number of RW Worker : ");
 		props.setProperty(S_WRITERTHREADS, "" + maxWriter);
 	}
@@ -985,18 +977,9 @@ public class SystemEnvironment implements Cloneable
 		return rc;
 	}
 
-	public static synchronized void incrCntRwTx ()
-	{
-		cntRwTx ++;
-	}
-	public static synchronized void incrCntDl ()
-	{
-		cntDl   ++;
-	}
-	public static synchronized void incrCntWl ()
-	{
-		cntWl   ++;
-	}
+	public static synchronized void incrCntRwTx () { cntRwTx ++; }
+	public static synchronized void incrCntDl ()   { cntDl   ++; }
+	public static synchronized void incrCntWl ()   { cntWl   ++; }
 
 	public Object clone()
 		throws CloneNotSupportedException
@@ -1007,48 +990,18 @@ public class SystemEnvironment implements Cloneable
 		return sysEnv;
 	}
 
-	public void enableConnect()
-	{
-		connectState.setValue(connectState.getValue() & 2);
-	}
-	public void disableConnect()
-	{
-		connectState.setValue(connectState.getValue() | 1);
-	}
-	public void setConnectShutdown()
-	{
-		connectState.setValue(connectState.getValue() | 2);
-	}
-	public int getConnectState()
-	{
-		return connectState.getValue();
-	}
-	public static void setProtectMode()
-	{
-		protectMode = true;
-	}
-	public static void resetProtectMode()
-	{
-		protectMode = false;
-	}
-	public static boolean getProtectMode()
-	{
-		return protectMode;
-	}
+	public void enableConnect()		{ connectState.setValue(connectState.getValue() & 2); }
+	public void disableConnect()		{ connectState.setValue(connectState.getValue() | 1); }
+	public void setConnectShutdown()	{ connectState.setValue(connectState.getValue() | 2); }
+	public int getConnectState()		{ return connectState.getValue(); }
+	public static void setProtectMode()	{ protectMode = true; }
+	public static void resetProtectMode()	{ protectMode = false; }
+	public static boolean getProtectMode()	{ return protectMode; }
 
-	public Long randomLong()
-	{
-		return new Long(java.lang.Math.abs(random.nextLong()));
-	}
+	public Long randomLong()		{ return new Long(java.lang.Math.abs(random.nextLong())); }
 
-	public static synchronized int getTraceLevel()
-	{
-		return traceLevel;
-	}
-	public static synchronized void setTraceLevel(int t)
-	{
-		traceLevel = t;
-	}
+	public static synchronized int getTraceLevel()	{ return traceLevel; }
+	public static synchronized void setTraceLevel(int t) { traceLevel = t; }
 
 	public static void getSharedLock()
 	{
@@ -1090,18 +1043,9 @@ class MutableInteger
 
 	int value;
 
-	public MutableInteger(int v)
-	{
-		value = v;
-	}
-	public void setValue(int v)
-	{
-		value = v;
-	}
-	public int  getValue()
-	{
-		return value;
-	}
+	public MutableInteger(int v) { value = v; }
+	public void setValue(int v)  { value = v; }
+	public int  getValue()       { return value; }
 }
 
 class ExecuteLock

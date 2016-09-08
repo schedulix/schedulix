@@ -222,11 +222,11 @@ public class WorkerThread extends SDMSThread
 							} catch (DeadlockException de) {
 
 								throw new FatalException(
-								        new SDMSMessage(env, "03110181515", "Deadlock at Rollback"));
+									new SDMSMessage(env, "03110181515", "Deadlock at Rollback"));
 							} catch (SQLException sqle) {
 
 								throw new FatalException(
-								        new SDMSMessage(env, "03110181516", "Rollback failed"));
+									new SDMSMessage(env, "03110181516", "Rollback failed"));
 							}
 					}
 				} while(i < retryCount);

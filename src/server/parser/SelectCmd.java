@@ -166,14 +166,10 @@ public class SelectCmd extends Node
 	{
 		if(o == null) return null;
 		switch(ctype[idx]) {
-			case CATEGORYTYPE:
-				return convert_category(sysEnv, o);
-			case FOLDERTYPE:
-				return convert_folder(sysEnv, o);
-			case SCOPETYPE:	
-				return convert_scope(sysEnv, o);
-			case JOBTYPE:
-				return convert_job(sysEnv, o);
+			case CATEGORYTYPE:	return convert_category(sysEnv, o);
+			case FOLDERTYPE:	return convert_folder(sysEnv, o);
+			case SCOPETYPE:		return convert_scope(sysEnv, o);
+			case JOBTYPE:		return convert_job(sysEnv, o);
 		}
 		return null;
 	}

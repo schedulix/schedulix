@@ -186,12 +186,12 @@ public class ObjectLock
 		if (object != null) {
 
 			return "ObjectLock[" + id + "] on " + objectToShortString() + "[" +
-			       "mode=" + modeToString() +
-			       ", wait=" + wait +
-			       ", waiting=" + waiting +
-			       ", escalated=" + escalated +
-			       ", notify=" + notify +
-			       "]";
+				"mode=" + modeToString() +
+				", wait=" + wait +
+				", waiting=" + waiting +
+				", escalated=" + escalated +
+				", notify=" + notify +
+				"]";
 		} else
 			return "ObjectLock[" + id + "] uninitialized";
 	}
@@ -209,22 +209,22 @@ public class ObjectLock
 			if (lock.thread != null) threadName = lock.thread.getName();
 			if (lock == this)
 				out = out + sep + "{Thread " + threadName +
-				      ", " + lock.modeToString() +
+					", " + lock.modeToString() +
 
-				      ", wait=" + lock.wait +
-				      ", waiting=" + lock.waiting +
-				      ", escalated=" + lock.escalated +
-				      ", notify=" + lock.notify +
-				      "}";
+					", wait=" + lock.wait +
+					", waiting=" + lock.waiting +
+					", escalated=" + lock.escalated +
+					", notify=" + lock.notify +
+					"}";
 			else
 				out = out + sep + "[Thread " + threadName +
-				      ", " + lock.modeToString() +
+					", " + lock.modeToString() +
 
-				      ", wait=" + lock.wait +
-				      ", waiting=" + lock.waiting +
-				      ", escalated=" + lock.escalated +
-				      ", notify=" + lock.notify +
-				      "]";
+					", wait=" + lock.wait +
+					", waiting=" + lock.waiting +
+					", escalated=" + lock.escalated +
+					", notify=" + lock.notify +
+					"]";
 			sep = " -> ";
 			lock = lock.next;
 		}

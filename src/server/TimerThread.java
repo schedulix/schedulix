@@ -201,7 +201,7 @@ public class TimerThread
 		final Boolean doSuspend = (forceSuspend || submitSuspended) ? Boolean.TRUE : Boolean.FALSE;
 
 		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, parmList, new Integer(doSuspend.booleanValue() ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
-		                                null ,
+								null ,
 								ownerId, null , "Event " + evt.getName (sysEnv));
 
 		if (forceSuspend) {
@@ -353,7 +353,7 @@ public class TimerThread
 			throw e;
 		} finally {
 			if (setLastStartTime)
-			scev.setLastStartTime (sysEnv, nowLong);
+				scev.setLastStartTime (sysEnv, nowLong);
 
 		}
 	}

@@ -74,15 +74,9 @@ public class RepoIface
 	private static final String[] REPO_HOST_REPO_PORT = {Config.REPO_HOST, Config.REPO_PORT};
 
 	private String currentHost;
-	public final synchronized String getHost()
-	{
-		return currentHost;
-	}
+	public final synchronized String getHost() { return currentHost; }
 	private int    currentPort;
-	public final synchronized int getPort()
-	{
-		return currentPort;
-	}
+	public final synchronized int getPort() { return currentPort; }
 
 	private final String mypid = Utils.getMyPid();
 

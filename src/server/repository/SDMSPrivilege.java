@@ -87,7 +87,7 @@ public class SDMSPrivilege
 							  EDIT|MONITOR|OPERATE|SUBMIT|USE|VIEW|GRANT|RESOURCE|
 							  EXECUTE|MANAGE_USER|MANAGE_GROUP|MANAGE_ESD|MANAGE_ESP|
 							  MANAGE_ESM|MANAGE_EST|MANAGE_RSD|MANAGE_RSP|MANAGE_RSM|
-	                MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL|MANAGE_NP;
+							  MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL|MANAGE_NP;
 
 	private final static long INVALID_BITS		= ~VALID_BITS;
 
@@ -96,11 +96,11 @@ public class SDMSPrivilege
 
 	public final static long MANAGE_ALL		= MANAGE_USER|MANAGE_GROUP|MANAGE_ESD|MANAGE_ESP|
 							  MANAGE_ESM|MANAGE_EST|MANAGE_RSD|MANAGE_RSP|MANAGE_RSM|
-	                MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL|MANAGE_NP;
+							  MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL|MANAGE_NP;
 
 	public final static long MANAGE_PRIVS[] = 	{ MANAGE_USER, MANAGE_GROUP, MANAGE_ESD, MANAGE_ESP,
 							  MANAGE_ESM, MANAGE_EST, MANAGE_RSD, MANAGE_RSP, MANAGE_RSM,
-	                                                  MANAGE_FP, MANAGE_ENV, MANAGE_SYS, MANAGE_SEL, MANAGE_NP
+							  MANAGE_FP, MANAGE_ENV, MANAGE_SYS, MANAGE_SEL, MANAGE_NP
 							};
 
 	public final static long NOPRIVS		= 0x0000000000000000L;
@@ -111,8 +111,7 @@ public class SDMSPrivilege
 
 	private final static HashMap mapper = new HashMap();
 
-	static
-	{
+	static {
 		mapper.put(new Integer(Parser.VIEW),		new Long(SDMSPrivilege.VIEW));
 		mapper.put(new Integer(Parser.USE),		new Long(SDMSPrivilege.USE));
 		mapper.put(new Integer(Parser.EDIT),		new Long(SDMSPrivilege.EDIT));

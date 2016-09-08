@@ -139,20 +139,14 @@ public class PathVector extends Vector implements Comparable
 
 		if (testv.size() > 0) {
 			for(int i = 0; i < testv.size(); i++) {
-				if (i != 0) {
-					s.append(sep);
-					s.append('\'');
-				}
+				if (i != 0) { s.append(sep); s.append('\''); }
 				s.append(testv.get(i).toString());
 				if (i != 0) s.append('\'');
 			}
 		}
 
 		for (int i = tvs; i < sz; ++i) {
-			if (i != 0) {
-				s.append(sep);
-				s.append('\'');
-			}
+			if (i != 0) { s.append(sep); s.append('\''); }
 			s.append(get(i).toString());
 			if (i != 0) s.append('\'');
 		}

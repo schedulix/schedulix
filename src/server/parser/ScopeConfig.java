@@ -48,8 +48,7 @@ public class ScopeConfig
 
 	private static final HashSet ADMIN_GID = new HashSet();
 
-	static
-	{
+	static {
 		ADMIN_GID.add (SDMSObject.adminGId);
 	}
 

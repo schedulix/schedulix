@@ -63,11 +63,8 @@ public class SmeVariableResolver extends VariableResolver
 	public final static String S_TRORIGINID	= SDMSSubmittedEntity.S_TRORIGINID;
 	public final static String S_TRORIGINJOBID = SDMSSubmittedEntity.S_TRORIGINJOBID;
 	public final static String S_TRREASON	= SDMSSubmittedEntity.S_TRREASON;
-
 	public final static String S_TRREASONID	= SDMSSubmittedEntity.S_TRREASONID;
-
 	public final static String S_TRREASONJOBID = SDMSSubmittedEntity.S_TRREASONJOBID;
-
 	public final static String S_TRSEQ	= SDMSSubmittedEntity.S_TRSEQ;
 	public final static String S_TROSTATE	= SDMSSubmittedEntity.S_TROSTATE;
 	public final static String S_TRNSTATE	= SDMSSubmittedEntity.S_TRNSTATE;
@@ -160,8 +157,7 @@ public class SmeVariableResolver extends VariableResolver
 
 	private final static HashMap specialNames = new HashMap();
 
-	static
-	{
+	static {
 		specialNames.put(S_JOBID,	new Integer(I_JOBID));
 		specialNames.put(S_SEID,	new Integer(I_SEID));
 		specialNames.put(S_MASTERID,	new Integer(I_MASTERID));
@@ -715,15 +711,15 @@ public class SmeVariableResolver extends VariableResolver
 					endTs = (int)((sysEnv.cEnv.last() - thisSme.getSubmitTs(sysEnv).longValue()) / 1000);
 				int processTime = endTs - dwTime.intValue();
 				switch(varno) {
-				case I_PROCESS_TIME:
-					return new Integer(processTime).toString();
-				case I_ACTIVE_TIME:
-				case I_IDLE_PCT:
-					Integer idleTime = thisSme.evaluateTime(sysEnv, thisSme.getIdleTime(sysEnv), thisSme.getIdleTs(sysEnv), -1);
-					if (varno == I_ACTIVE_TIME)
-						return new Integer(processTime  - idleTime.intValue()).toString();
-					else if (processTime == 0) return emptyString;
-					return new Integer(idleTime.intValue() * 100 / processTime).toString();
+					case I_PROCESS_TIME:
+						return new Integer(processTime).toString();
+					case I_ACTIVE_TIME:
+					case I_IDLE_PCT:
+						Integer idleTime = thisSme.evaluateTime(sysEnv, thisSme.getIdleTime(sysEnv), thisSme.getIdleTs(sysEnv), -1);
+						if (varno == I_ACTIVE_TIME)
+							return new Integer(processTime  - idleTime.intValue()).toString();
+						else if (processTime == 0) return emptyString;
+							return new Integer(idleTime.intValue() * 100 / processTime).toString();
 				}
 			}
 
@@ -890,8 +886,8 @@ public class SmeVariableResolver extends VariableResolver
 					Long rId = (Long) sfp.get(nrId);
 					if (rId == null) {
 						throw new NotFoundException(new SDMSMessage(sysEnv, "03711091158",
-									"Couldn't resolve reference $1 unambigiously",
-									SDMSNamedResourceTable.getObject(sysEnv, nrId, seVersion).pathString(sysEnv)));
+							"Couldn't resolve reference $1 unambigiously",
+							SDMSNamedResourceTable.getObject(sysEnv, nrId, seVersion).pathString(sysEnv)));
 					}
 					r = SDMSResourceTable.getObject(sysEnv, rId);
 				}
@@ -916,7 +912,7 @@ public class SmeVariableResolver extends VariableResolver
 							long vers =  baseSme.getSeVersion(sysEnv).longValue();
 							SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, seId, vers);
 							throw new CommonErrorException(new SDMSMessage(sysEnv, "03805140836",
-											"Run into a loop while trying to resolve variable $1 of job $2", newKey, se.pathString(sysEnv, vers)));
+										"Run into a loop while trying to resolve variable $1 of job $2", newKey, se.pathString(sysEnv, vers)));
 						} else {
 							if (baseSmeId != null && baseSmeId.equals(tsmeId) && pd != null) {
 
@@ -943,16 +939,11 @@ public class SmeVariableResolver extends VariableResolver
 				sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, Boolean.FALSE);
 				int f = pd.getAggFunction(sysEnv).intValue();
 				switch(f) {
-					case SDMSParameterDefinition.AVG:
-						return (tmpcnt == 0 ? emptyString : new Double(tmpsum/tmpcnt).toString());
-					case SDMSParameterDefinition.COUNT:
-						return new Integer(tmpcnt).toString();
-					case SDMSParameterDefinition.MIN:
-						return new Double(tmpmin).toString();
-					case SDMSParameterDefinition.MAX:
-						return new Double(tmpmax).toString();
-					case SDMSParameterDefinition.SUM:
-						return new Double(tmpsum).toString();
+					case SDMSParameterDefinition.AVG:	return (tmpcnt == 0 ? emptyString : new Double(tmpsum/tmpcnt).toString());
+					case SDMSParameterDefinition.COUNT:	return new Integer(tmpcnt).toString();
+					case SDMSParameterDefinition.MIN:	return new Double(tmpmin).toString();
+					case SDMSParameterDefinition.MAX:	return new Double(tmpmax).toString();
+					case SDMSParameterDefinition.SUM:	return new Double(tmpsum).toString();
 				}
 				break;
 		}

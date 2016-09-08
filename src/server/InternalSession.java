@@ -110,10 +110,7 @@ public abstract class InternalSession extends SDMSThread
 
 	protected abstract Node getNode(int m);
 
-	public ConnectionEnvironment getEnv()
-	{
-		return cEnv;
-	}
+	public ConnectionEnvironment getEnv() { return cEnv; }
 
 	public void wakeUp()
 	{
@@ -139,9 +136,7 @@ public abstract class InternalSession extends SDMSThread
 				long now = new java.util.Date().getTime();
 				while (doWait) {
 					if (now - lastRun < wakeupInterval)
-						try {
-							sleep(spinDelay);
-						} catch (InterruptedException e) {}
+						try { sleep(spinDelay); } catch (InterruptedException e) {}
 					else
 						break;
 					now = new java.util.Date().getTime();

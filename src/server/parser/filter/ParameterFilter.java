@@ -75,44 +75,23 @@ public class ParameterFilter extends Filter
 
 		cst = null;
 
-		if(cmpop.equals("=="))				{
-			c = new EQComparer(sysEnv, value);
-		} else if(cmpop.equals("!="))			{
-			c = new NQComparer(sysEnv, value);
-		} else if(cmpop.equals("<>"))			{
-			c = new NQComparer(sysEnv, value);
-		} else if(cmpop.equals(">"))			{
-			c = new GTComparer(sysEnv, value);
-		} else if(cmpop.equals(">="))			{
-			c = new GEComparer(sysEnv, value);
-		} else if(cmpop.equals("<"))			{
-			c = new LTComparer(sysEnv, value);
-		} else if(cmpop.equals("<="))			{
-			c = new LEComparer(sysEnv, value);
-		} else if(cmpop.equals("=~"))			{
-			c = new LikeComparer(sysEnv, value != null ? value.toString() : null);
-			cst = new StringCaster();
-		} else if(cmpop.equals(ParseStr.S_LIKE))		{
-			c = new LikeComparer(sysEnv, value != null ? value.toString() : null);
-			cst = new StringCaster();
-		} else if(cmpop.equals("!~"))			{
-			c = new NotLikeComparer(sysEnv, value != null ? value.toString() : null);
-			cst = new StringCaster();
-		} else if(cmpop.equals(ParseStr.S_NOTLIKE))	{
-			c = new NotLikeComparer(sysEnv, value != null ? value.toString() : null);
-			cst = new StringCaster();
-		} else throw new CommonErrorException(new SDMSMessage(sysEnv, "03511031050", "Unknown comparison operator: " + cmpop));
+		if(cmpop.equals("=="))				{ c = new EQComparer(sysEnv, value); }
+		else if(cmpop.equals("!="))			{ c = new NQComparer(sysEnv, value); }
+		else if(cmpop.equals("<>"))			{ c = new NQComparer(sysEnv, value); }
+		else if(cmpop.equals(">"))			{ c = new GTComparer(sysEnv, value); }
+		else if(cmpop.equals(">="))			{ c = new GEComparer(sysEnv, value); }
+		else if(cmpop.equals("<"))			{ c = new LTComparer(sysEnv, value); }
+		else if(cmpop.equals("<="))			{ c = new LEComparer(sysEnv, value); }
+		else if(cmpop.equals("=~"))			{ c = new LikeComparer(sysEnv, value != null ? value.toString() : null); cst = new StringCaster(); }
+		else if(cmpop.equals(ParseStr.S_LIKE))		{ c = new LikeComparer(sysEnv, value != null ? value.toString() : null); cst = new StringCaster(); }
+		else if(cmpop.equals("!~"))			{ c = new NotLikeComparer(sysEnv, value != null ? value.toString() : null); cst = new StringCaster(); }
+		else if(cmpop.equals(ParseStr.S_NOTLIKE))	{ c = new NotLikeComparer(sysEnv, value != null ? value.toString() : null); cst = new StringCaster(); }
+		else throw new CommonErrorException(new SDMSMessage(sysEnv, "03511031050", "Unknown comparison operator: " + cmpop));
 
 		if(cst == null) {
-			if(value instanceof String)	{
-				cst = strCaster;
-			}
-			if(value instanceof Integer)	{
-				cst = intCaster;
-			}
-			if(value instanceof Double)	{
-				cst = dblCaster;
-			}
+			if(value instanceof String)	{ cst = strCaster; }
+			if(value instanceof Integer)	{ cst = intCaster; }
+			if(value instanceof Double)	{ cst = dblCaster; }
 		}
 	}
 

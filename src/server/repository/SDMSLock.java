@@ -46,14 +46,8 @@ public class SDMSLock
 	public static final int O   = 0x05;
 	public static final int N   = 0xFF;
 
-	public SDMSLock()
-	{
-		mode = N;
-	}
-	protected SDMSLock(int m)
-	{
-		mode = m;
-	}
+	public SDMSLock() { mode = N; }
+	protected SDMSLock(int m) { mode = m; }
 	public SDMSLock(SystemEnvironment env, int m) throws SDMSException
 	{
 		if (m != X    &&
@@ -65,9 +59,6 @@ public class SDMSLock
 		}
 		mode = m;
 	}
-	public int getLockmode()
-	{	
-		return mode;
-	}
+	public int getLockmode() { return mode; }
 }
 

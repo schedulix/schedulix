@@ -44,14 +44,8 @@ class set_warning extends App
 		addOption("j", "jid",     null, JID,     null, "jobid",   true, "Id of job to set warning for");
 		addOption("m", "warning", null, WARNING, null, "warning", true, "Warning text to set");
 	}
-	public String getName()
-	{
-		return "set_warning";
-	}
-	public boolean canRetry()
-	{
-		return true;
-	}
+	public String getName() { return "set_warning"; }
+	public boolean canRetry() { return true; }
 	public int go()
 		throws RetryException
 	{
@@ -68,8 +62,5 @@ class set_warning extends App
 			return 1;
 		} else return 0;
 	}
-	public static void main (String[] argv)
-	{
-		System.exit(new set_warning().run(argv));
-	}
+	public static void main (String[] argv) { System.exit(new set_warning().run(argv)); }
 }

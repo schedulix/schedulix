@@ -57,7 +57,7 @@ public class SDMSIndex
 	private static final Comparator objectIdComparator = new ObjectIdComparator();
 
 	public SDMSIndex (SystemEnvironment env, int t, boolean versioned, SDMSTable table, String indexName)
-	throws SDMSException
+		throws SDMSException
 	{
 		if(t != ORDINARY &&
 		   t != UNIQUE   &&
@@ -87,25 +87,16 @@ public class SDMSIndex
 			v = (SDMSIndexBucket) hashMap.get(key);
 			if(v == null) {
 				v = new SDMSIndexBucket(this, key);
-				synchronized(v) {
-					v.modCnt ++;
-				}
+				synchronized(v) { v.modCnt ++; }
 				hashMap.put(key, v);
 			} else
-				synchronized(v) {
-					v.modCnt ++;
-				}
+				synchronized(v) { v.modCnt ++; }
 		}
 
 		if (env.maxWriter > 1 && doLockBucket) {
 			try {
 				LockingSystem.lock(env, v, ObjectLock.EXCLUSIVE);
-			} catch (Exception e) {
-				synchronized(v) {
-					v.modCnt --;
-				}
-				throw e;
-			}
+			} catch (Exception e) { synchronized(v) { v.modCnt --; } throw e; }
 		}
 
 		boolean newBucket = false;
@@ -164,9 +155,7 @@ public class SDMSIndex
 
 				if (old != null && old.isCurrent && o.isCurrent) {
 
-					synchronized (v) {
-						v.modCnt --;
-					}
+					synchronized (v) { v.modCnt --; }
 					throw new DuplicateKeyException(new SDMSMessage(env, "03110181528",
 						"Duplicate Key $1: Second object exists", key));
 				}
@@ -254,7 +243,7 @@ public class SDMSIndex
 	}
 
 	public boolean containsKey(SystemEnvironment env, Object key)
-	throws SerializationException, SDMSException
+		throws SerializationException, SDMSException
 	{
 		int readLock = env.thread.readLock;
 		env.thread.readLock = ObjectLock.SHARED;
@@ -341,7 +330,7 @@ public class SDMSIndex
 		return getVector(env, key, null, 0);
 	}
 	public Vector getVectorForUpdate(SystemEnvironment env, Object key)
-	throws SerializationException, SDMSException
+		throws SerializationException, SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return getVector(env, key, null, 0);
@@ -353,7 +342,7 @@ public class SDMSIndex
 		return getVector(env, key, filter, 0);
 	}
 	public Vector getVectorForUpdate(SystemEnvironment env, Object key, SDMSFilter filter)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return getVector(env, key, filter, 0);
@@ -365,14 +354,14 @@ public class SDMSIndex
 		return getVector(env, key, null, limit);
 	}
 	public Vector getVectorForUpdate(SystemEnvironment env, Object key, int limit)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return getVector(env, key, null, limit);
 	}
 
 	public Vector getVectorForUpdate(SystemEnvironment env, Object key, SDMSFilter filter, int limit)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return getVector(env, key, filter, limit);
@@ -463,7 +452,7 @@ public class SDMSIndex
 	}
 
 	public Vector getSortedVectorForUpdate(SystemEnvironment env, Object key)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v = getVectorForUpdate(env, key);
 		Collections.sort(v);
@@ -528,7 +517,7 @@ public class SDMSIndex
 	}
 
 	public SDMSProxy getUniqueForUpdate(SystemEnvironment env, Object key)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return getUnique(env, key);
@@ -666,7 +655,7 @@ public class SDMSIndex
 class ObjectIdComparator implements Comparator
 {
 	public int compare(Object o1, Object o2)
-	throws ClassCastException
+		throws ClassCastException
 	{
 		long id1 = ((SDMSObject)o1).id;
 		long id2 = ((SDMSObject)o2).id;
@@ -678,7 +667,7 @@ class ObjectIdComparator implements Comparator
 			return 0;
 	}
 	public boolean equals(Object o1, Object o2)
-	throws ClassCastException
+		throws ClassCastException
 	{
 		long id1 = ((SDMSObject)o1).id;
 		long id2 = ((SDMSObject)o2).id;

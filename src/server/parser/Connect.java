@@ -270,10 +270,7 @@ public class Connect extends Node
 		sysEnv.cEnv.setJob();
 	}
 
-	public Node getNode()
-	{
-		return cmd;
-	}
+	public Node getNode() { return cmd; }
 
 	public String getName()
 	{

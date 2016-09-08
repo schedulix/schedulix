@@ -61,21 +61,15 @@ public abstract class TreeLister implements Comparator
 
 	public abstract Vector getChildren(SystemEnvironment sysEnv, SDMSProxy o) throws SDMSException;
 
-	public int compare(Object o1, Object o2)
-	{
-		return 0;
-	}
+	public int compare(Object o1, Object o2) { return 0; }
 
 	public SDMSOutputContainer list(SystemEnvironment sysEnv, Vector rootObjects, HashSet expandList)
 		throws SDMSException
 	{
 
 		Vector objs = (Vector)rootObjects.clone();
-
 		Collections.sort(objs, this);
-
 		SDMSOutputContainer container = new SDMSOutputContainer(sysEnv, title, getDesc());
-
 		Iterator i = objs.iterator();
 		while (i.hasNext()) {
 			SDMSProxy o = (SDMSProxy)i.next();
@@ -87,9 +81,7 @@ public abstract class TreeLister implements Comparator
 	protected void render(SystemEnvironment sysEnv, SDMSOutputContainer container, SDMSProxy o, HashSet expandList)
 		throws SDMSException
 	{
-
 		container.addData(sysEnv, format(sysEnv, o));
-
 		Long id = o.getId(sysEnv);
 		if (expandList == null || expandList.contains(id)) {
 			Vector children = getChildren(sysEnv, o);

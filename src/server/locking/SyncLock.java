@@ -39,7 +39,7 @@ public class SyncLock
 	}
 
 	protected void doWait(SystemEnvironment sysEnv)
-	throws DeadlockException, InterruptedException
+		throws DeadlockException, InterruptedException
 	{
 
 		if (lock.wait) {
@@ -119,25 +119,25 @@ public class SyncLock
 
 		if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_WAIT_AND_NOTIFY)) != 0)
 			System.out.println(Thread.currentThread().getName() +
-			                   ":Entering doNotify() Thread " + lock.thread.getName() + toString());
+				":Entering doNotify() Thread " + lock.thread.getName() + toString());
 
 		if (lock.notify) {
 
 			if (lock.waiting) {
 				if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_WAIT_AND_NOTIFY)) != 0)
 					System.out.println(Thread.currentThread().getName() +
-					                   ":doNotify() on " + toString() + "]");
+						":doNotify() on " + toString() + "]");
 				notify();
 				if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_WAIT_AND_NOTIFY)) != 0)
 					System.out.println(Thread.currentThread().getName() +
-					                   ":Leaving doNotify() after notify()");
+						":Leaving doNotify() after notify()");
 			} else {
 
 				if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_WAIT_AND_NOTIFY)) != 0)
 					System.out.println(Thread.currentThread().getName() +
-					                   ":Leaving doNotify() on waiting = false");
+						":Leaving doNotify() on waiting = false");
 			}
-		lock.notify = false;
+			lock.notify = false;
 
 		}
 	}

@@ -51,8 +51,7 @@ public class ResourceVariableResolver extends VariableResolver
 
 	private static final HashSet internalVars;
 
-	static
-	{
+	static {
 		internalVars = new HashSet();
 		internalVars.add(S_STATE);
 		internalVars.add(S_AMOUNT);

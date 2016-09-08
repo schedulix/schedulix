@@ -354,7 +354,7 @@ public class AlterJob extends Node
 
 					if(sme.getJobIsFinal(sysEnv).booleanValue()) {
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03207082044",
-										"you can only set a state for a job in a nonfinal state"));
+												"you can only set a state for a job in a nonfinal state"));
 					}
 					oldExitState = SDMSExitStateDefinitionTable.getObject(sysEnv, sme.getJobEsdId(sysEnv), actVersion).getName(sysEnv);
 				} else {

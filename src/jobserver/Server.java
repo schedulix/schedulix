@@ -191,9 +191,7 @@ public class Server
 				switch (ri.reassureJob (feil)) {
 				case RepoIface.START_JOB:
 					feil.close();
-					synchronized (jidsWithEiThread) {
-						jidsWithEiThread.add(jid[i]);
-					}
+					synchronized (jidsWithEiThread) { jidsWithEiThread.add(jid[i]); }
 					new EiThread (ri, cfg, jid [i]).start();
 					break;
 
@@ -275,9 +273,7 @@ public class Server
 
 					if (!feil.getStatus().equals(Feil.STATUS_STARTED)) {
 						Trace.debug("Server:removing jid " + jid + " from jidsAwaitRunning, state = " + feil.getStatus());
-						synchronized (jidsAwaitRunning) {
-							jidsAwaitRunning.remove(jid);
-						}
+						synchronized (jidsAwaitRunning) { jidsAwaitRunning.remove(jid); }
 					}
 
 					if (Utils.isOneOf (feil.getStatus_Tx(), FINAL_STATES))
@@ -290,9 +286,7 @@ public class Server
 			} finally {
 				if (feil_expired) {
 					Trace.debug("Server:removing jid " + jid + " from jidsAwaitRunning, state = " + feil.getStatus());
-					synchronized (jidsAwaitRunning) {
-						jidsAwaitRunning.remove(jid);
-					}
+					synchronized (jidsAwaitRunning) { jidsAwaitRunning.remove(jid); }
 					Server.removeFeil(jid);
 				} else
 					feil.close();
@@ -334,12 +328,8 @@ public class Server
 			}
 		}
 		Trace.debug("Server:adding jid " + jd.id + " to jidsWithEiThread and jidsAwaitRunning");
-		synchronized (jidsWithEiThread) {
-			jidsWithEiThread.add(jd.id);
-		}
-		synchronized (jidsAwaitRunning) {
-			jidsAwaitRunning.add(jd.id);
-		}
+		synchronized (jidsWithEiThread) { jidsWithEiThread.add(jd.id); }
+		synchronized (jidsAwaitRunning) { jidsAwaitRunning.add(jd.id); }
 		final EiThread ei = new EiThread (ri, cfg, jd.id, jd.env, jd.dir, jd.jobenv);
 		ei.start();
 
@@ -419,23 +409,23 @@ public class Server
 					gotJob = false;
 					now = System.currentTimeMillis();
 					switch (ri.getNextCmd()) {
-					case RepoIface.NOP:
-						delayLoop = true;
-						ts = now;
-						break;
+						case RepoIface.NOP:
+							delayLoop = true;
+							ts = now;
+							break;
 
-					case RepoIface.START_JOB:
-						Descr jd = ri.getJobData();
-						Trace.debug("Server:starting job " + jd.id);
-						createNewEi (jd);
+						case RepoIface.START_JOB:
+							Descr jd = ri.getJobData();
+							Trace.debug("Server:starting job " + jd.id);
+							createNewEi (jd);
 							gotJob = true;
-						break;
+							break;
 
-					case RepoIface.SHUTDOWN_SERVER:
-						active = false;
-						break;
-					default:
-						Utils.abortProgram (ri, "(04504112210) Unexpected response");
+						case RepoIface.SHUTDOWN_SERVER:
+							active = false;
+							break;
+						default:
+							Utils.abortProgram (ri, "(04504112210) Unexpected response");
 					}
 					if (now - bts - breed_delay > 0) {
 						break;
@@ -443,9 +433,7 @@ public class Server
 				}
 			} else
 				delayLoop = true;
-			synchronized (jidsToBreed) {
-				if (jidsToBreed.size() > 0) delayLoop = false;
-			}
+			synchronized (jidsToBreed) { if (jidsToBreed.size() > 0) delayLoop = false; }
 			if (delayLoop) {
 				try {
 					Notifier.register(id, currentThread);

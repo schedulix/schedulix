@@ -94,8 +94,7 @@ public class Options
 		} else {
 			b.append("<true|false>");
 		}
-		do b.append(" ");
-		while (b.length() < OPT_WIDTH);
+		do b.append(" "); while (b.length() < OPT_WIDTH);
 		b.append(formatDoc(o.doc));
 		b.append("\n");
 		return b;
@@ -195,10 +194,7 @@ public class Options
 		return true;
 	}
 
-	public Vector getRest()
-	{
-		return rest;
-	}
+	public Vector getRest() { return rest; }
 
 	public String getValue(String key)
 	{

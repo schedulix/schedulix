@@ -56,8 +56,7 @@ public class ObjectURL
 	public WithItem triggerInverse;
 
 	private final static HashMap typeFromURL = new HashMap();
-	static
-	{
+	static {
 		typeFromURL.put(new Integer(Parser.DISTRIBUTION),		new Integer(SDMSObjectComment.DISTRIBUTION));
 		typeFromURL.put(new Integer(Parser.ENVIRONMENT),		new Integer(SDMSObjectComment.ENVIRONMENT));
 		typeFromURL.put(new Integer(Parser.EVENT),			new Integer(SDMSObjectComment.EVENT));
@@ -202,21 +201,11 @@ public class ObjectURL
 	{
 		SDMSProxy p = null;
 		switch (objType.intValue()) {
-			case SDMSObjectComment.ENVIRONMENT:
-				p = SDMSNamedEnvironmentTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.EVENT:
-				p = SDMSEventTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.EXIT_STATE_DEFINITION:
-				p = SDMSExitStateDefinitionTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.EXIT_STATE_PROFILE:
-				p = SDMSExitStateProfileTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.EXIT_STATE_MAPPING:
-				p = SDMSExitStateMappingProfileTable.getObject(sysEnv, objId);
-				break;
+			case SDMSObjectComment.ENVIRONMENT:		p = SDMSNamedEnvironmentTable.getObject(sysEnv, objId);		break;
+			case SDMSObjectComment.EVENT:			p = SDMSEventTable.getObject(sysEnv, objId);			break;
+			case SDMSObjectComment.EXIT_STATE_DEFINITION:	p = SDMSExitStateDefinitionTable.getObject(sysEnv, objId);	break;
+			case SDMSObjectComment.EXIT_STATE_PROFILE:	p = SDMSExitStateProfileTable.getObject(sysEnv, objId);		break;
+			case SDMSObjectComment.EXIT_STATE_MAPPING:	p = SDMSExitStateMappingProfileTable.getObject(sysEnv, objId);	break;
 			case SDMSObjectComment.FOLDER:
 			case SDMSObjectComment.JOB_DEFINITION:
 				try {
@@ -227,55 +216,26 @@ public class ObjectURL
 					objType = new Integer(SDMSObjectComment.JOB_DEFINITION);
 				}
 				break;
-			case SDMSObjectComment.FOOTPRINT:
-				p = SDMSFootprintTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.GROUP:
-				p = SDMSGroupTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.INTERVAL:
-				p = SDMSIntervalTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.JOB:
-				p = SDMSSubmittedEntityTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.NAMED_RESOURCE:
-				p = SDMSNamedResourceTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.PARAMETER:
-				p = SDMSParameterDefinitionTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.RESOURCE:
-				p = SDMSResourceTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
-				p = SDMSResourceStateDefinitionTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.RESOURCE_STATE_PROFILE:
-				p = SDMSResourceStateProfileTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.RESOURCE_STATE_MAPPING:
-				p = SDMSResourceStateMappingProfileTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.SCHEDULE:
-				p = SDMSScheduleTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.SCHEDULED_EVENT:
-				p = SDMSScheduledEventTable.getObject(sysEnv, objId);
-				break;
+			case SDMSObjectComment.FOOTPRINT:		p = SDMSFootprintTable.getObject(sysEnv, objId);		break;
+			case SDMSObjectComment.GROUP:			p = SDMSGroupTable.getObject(sysEnv, objId);			break;
+			case SDMSObjectComment.INTERVAL:		p = SDMSIntervalTable.getObject(sysEnv, objId);			break;
+			case SDMSObjectComment.JOB:			p = SDMSSubmittedEntityTable.getObject(sysEnv, objId);		break;
+			case SDMSObjectComment.NAMED_RESOURCE:		p = SDMSNamedResourceTable.getObject(sysEnv, objId);		break;
+			case SDMSObjectComment.PARAMETER:		p = SDMSParameterDefinitionTable.getObject(sysEnv, objId);	break;
+			case SDMSObjectComment.RESOURCE:		p = SDMSResourceTable.getObject(sysEnv, objId);			break;
+			case SDMSObjectComment.RESOURCE_STATE_DEFINITION: p = SDMSResourceStateDefinitionTable.getObject(sysEnv, objId); break;
+			case SDMSObjectComment.RESOURCE_STATE_PROFILE:	p = SDMSResourceStateProfileTable.getObject(sysEnv, objId);	break;
+			case SDMSObjectComment.RESOURCE_STATE_MAPPING:	p = SDMSResourceStateMappingProfileTable.getObject(sysEnv, objId); break;
+			case SDMSObjectComment.SCHEDULE:		p = SDMSScheduleTable.getObject(sysEnv, objId);			break;
+			case SDMSObjectComment.SCHEDULED_EVENT:		p = SDMSScheduledEventTable.getObject(sysEnv, objId);		break;
 			case SDMSObjectComment.SCOPE:
 				p = SDMSScopeTable.getObject(sysEnv, objId);
 				if (((SDMSScope) p).getType(sysEnv).intValue() == SDMSScope.SERVER)
 					parserType = new Integer(Parser.JOB_SERVER);
 				break;
-			case SDMSObjectComment.TRIGGER:
-				p = SDMSTriggerTable.getObject(sysEnv, objId);
-				break;
-			case SDMSObjectComment.USER:
-				p = SDMSUserTable.getObject(sysEnv, objId);
-				break;
-			default:
-				break;
+			case SDMSObjectComment.TRIGGER:			p = SDMSTriggerTable.getObject(sysEnv, objId);			break;
+			case SDMSObjectComment.USER:			p = SDMSUserTable.getObject(sysEnv, objId);			break;
+			default: break;
 		}
 		return p;
 	}
@@ -285,73 +245,32 @@ public class ObjectURL
 	{
 		SDMSProxy p = null;
 		switch (objType.intValue()) {
-			case SDMSObjectComment.ENVIRONMENT:
-				p = getEnvironment(sysEnv);
-				break;
-			case SDMSObjectComment.EVENT:
-				p = getEvent(sysEnv);
-				break;
-			case SDMSObjectComment.EXIT_STATE_DEFINITION:
-				p = getExitStateDefinition(sysEnv);
-				break;
-			case SDMSObjectComment.EXIT_STATE_PROFILE:
-				p = getExitStateProfile(sysEnv);
-				break;
-			case SDMSObjectComment.EXIT_STATE_MAPPING:
-				p = getExitStateMapping(sysEnv);
-				break;
-			case SDMSObjectComment.FOLDER:
-				p = getFolder(sysEnv);
-				break;
-			case SDMSObjectComment.FOOTPRINT:
-				p = getFootprint(sysEnv);
-				break;
-			case SDMSObjectComment.GROUP:
-				p = getGroup(sysEnv);
-				break;
-			case SDMSObjectComment.INTERVAL:
-				p = getInterval(sysEnv);
-				break;
-			case SDMSObjectComment.JOB_DEFINITION:
-				p = getSchedulingEntity(sysEnv);
-				break;
-			case SDMSObjectComment.NAMED_RESOURCE:
-				p = getNamedResource(sysEnv);
-				break;
-			case SDMSObjectComment.PARAMETER:
-				p = getParameterDefinition(sysEnv);
-				break;
-			case SDMSObjectComment.RESOURCE:
-				p = getResource(sysEnv);
-				break;
-			case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
-				p = getResourceStateDefinition(sysEnv);
-				break;
-			case SDMSObjectComment.RESOURCE_STATE_PROFILE:
-				p = getResourceStateProfile(sysEnv);
-				break;
-			case SDMSObjectComment.RESOURCE_STATE_MAPPING:
-				p = getResourceStateMapping(sysEnv);
-				break;
-			case SDMSObjectComment.SCHEDULE:
-				p = getSchedule(sysEnv);
-				break;
-			case SDMSObjectComment.SCHEDULED_EVENT:
-				p = getScheduledEvent(sysEnv);
-				break;
+			case SDMSObjectComment.ENVIRONMENT:		p = getEnvironment(sysEnv);		break;
+			case SDMSObjectComment.EVENT:			p = getEvent(sysEnv);			break;
+			case SDMSObjectComment.EXIT_STATE_DEFINITION:	p = getExitStateDefinition(sysEnv);	break;
+			case SDMSObjectComment.EXIT_STATE_PROFILE:	p = getExitStateProfile(sysEnv);	break;
+			case SDMSObjectComment.EXIT_STATE_MAPPING:	p = getExitStateMapping(sysEnv);	break;
+			case SDMSObjectComment.FOLDER:			p = getFolder(sysEnv);			break;
+			case SDMSObjectComment.FOOTPRINT:		p = getFootprint(sysEnv);		break;
+			case SDMSObjectComment.GROUP:			p = getGroup(sysEnv);			break;
+			case SDMSObjectComment.INTERVAL:		p = getInterval(sysEnv);		break;
+			case SDMSObjectComment.JOB_DEFINITION:		p = getSchedulingEntity(sysEnv);	break;
+			case SDMSObjectComment.NAMED_RESOURCE:		p = getNamedResource(sysEnv);		break;
+			case SDMSObjectComment.PARAMETER:		p = getParameterDefinition(sysEnv);	break;
+			case SDMSObjectComment.RESOURCE:		p = getResource(sysEnv);		break;
+			case SDMSObjectComment.RESOURCE_STATE_DEFINITION: p = getResourceStateDefinition(sysEnv); break;
+			case SDMSObjectComment.RESOURCE_STATE_PROFILE:	p = getResourceStateProfile(sysEnv);	break;
+			case SDMSObjectComment.RESOURCE_STATE_MAPPING:	p = getResourceStateMapping(sysEnv);	break;
+			case SDMSObjectComment.SCHEDULE:		p = getSchedule(sysEnv);		break;
+			case SDMSObjectComment.SCHEDULED_EVENT:		p = getScheduledEvent(sysEnv);		break;
 			case SDMSObjectComment.SCOPE:
 				p = getScope(sysEnv);
 				if (((SDMSScope) p).getType(sysEnv).intValue() == SDMSScope.SERVER)
 					parserType = new Integer(Parser.JOB_SERVER);
 				break;
-			case SDMSObjectComment.TRIGGER:
-				p = getTrigger(sysEnv);
-				break;
-			case SDMSObjectComment.USER:
-				p = getUser(sysEnv);
-				break;
-			default:
-				break;
+			case SDMSObjectComment.TRIGGER:			p = getTrigger(sysEnv);			break;
+			case SDMSObjectComment.USER:			p = getUser(sysEnv);			break;
+			default: break;
 		}
 		if (p != null) objId = p.getId(sysEnv);
 		return p;

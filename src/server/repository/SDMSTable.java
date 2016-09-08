@@ -46,9 +46,7 @@ public abstract class SDMSTable
 	{
 		if (hashMapTrace)
 			System.out.println (tableName() + ":hashMapRemove(" + id + ")");
-		synchronized(hashMap) {
-			hashMap.remove(id);
-		}
+		synchronized(hashMap) { hashMap.remove(id); }
 	}
 
 	protected boolean isVersioned;
@@ -70,13 +68,13 @@ public abstract class SDMSTable
 	}
 
 	public Iterator iterator (SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		return iterator (env, null, false );
 	}
 	public Iterator iteratorForUpdate (SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 
@@ -84,13 +82,13 @@ public abstract class SDMSTable
 	}
 
 	public Iterator iterator (SystemEnvironment env, boolean unlocked)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		return iterator (env, null, unlocked);
 	}
 	public Iterator iteratorForUpdate (SystemEnvironment env, boolean unlocked)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 
@@ -98,26 +96,26 @@ public abstract class SDMSTable
 	}
 
 	public Iterator iterator (SystemEnvironment env, SDMSFilter f)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		return iterator (env, f, false);
 	}
 	public Iterator iteratorForUpdate (SystemEnvironment env, SDMSFilter f)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 
 		return iterator (env, f, false);
 	}
 	public Iterator iteratorForUpdate (SystemEnvironment env, SDMSFilter f, boolean unlocked)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return iterator(env, f, unlocked);
 	}
 	public Iterator iterator (SystemEnvironment env, SDMSFilter f, boolean unlocked)
-	throws SDMSException
+		throws SDMSException
 	{
 		int readLock = env.thread.readLock;
 		env.thread.readLock = ObjectLock.SHARED;
@@ -126,9 +124,7 @@ public abstract class SDMSTable
 		SDMSVersions v;
 		SDMSProxy p = null;
 		Object va[];
-		synchronized(hashMap) {
-		va = hashMap.values().toArray();
-		}
+		synchronized(hashMap) { va = hashMap.values().toArray(); }
 		for (int i = 0; i < va.length; ++i) {
 			v = (SDMSVersions) va[i];
 			if (env.tx.mode == SDMSTransaction.READWRITE && env.maxWriter > 1 && !unlocked)
@@ -150,9 +146,7 @@ public abstract class SDMSTable
 
 	public int rawSize()
 	{
-		synchronized(hashMap) {
-			return hashMap.size();
-		}
+		synchronized(hashMap) { return hashMap.size(); }
 	}
 
 	public void clearTableUnlocked(SystemEnvironment env)
@@ -181,14 +175,10 @@ public abstract class SDMSTable
 
 		o = rowToObject (env, r);
 		if(o == null) return false;
-		synchronized(hashMap) {
-			versions = (SDMSVersions)hashMap.get(o.id);
-		}
+		synchronized(hashMap) { versions = (SDMSVersions)hashMap.get(o.id); }
 		if (versions == null) {
 			versions = new SDMSVersions(this, o.id);
-			synchronized(hashMap) {
-				hashMap.put(o.id, versions);
-			}
+			synchronized(hashMap) { hashMap.put(o.id, versions); }
 		}
 		o.versions = versions;
 		versions.add(env, o);
@@ -222,11 +212,11 @@ public abstract class SDMSTable
 	public abstract String[] columnNames();
 
 	public abstract String checkIndex(SDMSObject o)
-	throws SDMSException;
+		throws SDMSException;
 	protected abstract void index(SystemEnvironment env, SDMSObject o)
 		throws SDMSException;
 	protected abstract void index(SystemEnvironment env, SDMSObject o, long indexMember)
-	throws SDMSException;
+		throws SDMSException;
 
 	protected abstract void unIndex(SystemEnvironment env, SDMSObject o)
 		throws SDMSException;
@@ -240,9 +230,7 @@ public abstract class SDMSTable
 		SDMSProxy p;
 		SDMSVersions versions;
 
-		synchronized (hashMap) {
-			versions = (SDMSVersions)hashMap.get (id);
-		}
+		synchronized (hashMap) { versions = (SDMSVersions)hashMap.get (id); }
 		if(versions == null) {
 			throw new NotFoundException (new SDMSMessage(env, "03110251037", "Key $1 not found (" + this.getClass().getName() + ")", id));
 		}
@@ -254,7 +242,7 @@ public abstract class SDMSTable
 
 	}
 	public SDMSProxy getForUpdate (SystemEnvironment env, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return get(env, id);
@@ -262,25 +250,19 @@ public abstract class SDMSTable
 
 	public SDMSVersions getVersions(Long id)
 	{
-		synchronized (hashMap) {
-			return (SDMSVersions)hashMap.get (id);
-		}
+		synchronized (hashMap) { return (SDMSVersions)hashMap.get (id); }
 	}
 
 	public boolean contains(Long id)
 	{
-		synchronized (hashMap) {
-			return hashMap.containsKey (id);
-		}
+		synchronized (hashMap) { return hashMap.containsKey (id); }
 	}
 
 	public SDMSProxy get (SystemEnvironment env, Long id, long version)
 		throws SDMSException
 	{
 		SDMSVersions versions;
-		synchronized (hashMap) {
-			versions = (SDMSVersions)(hashMap.get (id));
-		}
+		synchronized (hashMap) { versions = (SDMSVersions)(hashMap.get (id)); }
 		if(versions == null) {
 			throw new NotFoundException (new SDMSMessage(env, "03110251039", "Key $1 not found", id));
 		}
@@ -295,9 +277,7 @@ public abstract class SDMSTable
 
 		SDMSVersions versions;
 
-		synchronized (hashMap) {
-			versions = (SDMSVersions)hashMap.get (id);
-		}
+		synchronized (hashMap) { versions = (SDMSVersions)hashMap.get (id); }
 		if(versions == null) {
 			return false;
 		}
@@ -308,7 +288,7 @@ public abstract class SDMSTable
 
 	}
 	public boolean existsForUpdate (SystemEnvironment env, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return exists(env, id);
@@ -325,9 +305,7 @@ public abstract class SDMSTable
 		try {
 			index(env, (SDMSObject)(versions.o_v.getLast()));
 		} catch(SDMSException e) {
-			synchronized (hashMap) {
-				hashMapRemove(id);
-			}
+			synchronized (hashMap) { hashMapRemove(id); }
 			throw e;
 		}
 	}

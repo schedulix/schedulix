@@ -46,7 +46,7 @@ public class ListNiceProfile extends Node
 	}
 
 	public void go(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSOutputContainer d_container = null;
 		Vector desc = new Vector();
@@ -65,7 +65,7 @@ public class ListNiceProfile extends Node
 		desc.add("PRIVS");
 
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage (sysEnv, "03408110804", "List of Nice Profiles"), desc);
+			new SDMSMessage (sysEnv, "03408110804", "List of Nice Profiles"), desc);
 
 		Iterator i = SDMSNiceProfileTable.table.iterator(sysEnv);
 		SDMSNiceProfile np;

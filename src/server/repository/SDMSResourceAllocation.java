@@ -142,7 +142,15 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 							new SDMSKey(getStickyParent(sysEnv), getRId(sysEnv), stickyName));
 		for (int i = 0; i < rargv.size(); ++i) {
 			SDMSResourceAllocation ra = (SDMSResourceAllocation) rargv.get(i);
-			if (getId(sysEnv).equals(ra.getId(sysEnv)))
+			Long raId;
+
+			try {
+				raId = ra.getId(sysEnv);
+			}
+			catch (NotFoundException e) {
+				continue;
+			}
+			if (getId(sysEnv).equals(raId))
 				continue;
 			Long smeId = ra.getSmeId(sysEnv);
 

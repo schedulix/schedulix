@@ -116,14 +116,8 @@ public class SDMSTransaction
 		return nextId.next(env, READONLY, false);
 	}
 
-	public long txId()
-	{
-		return txId;
-	}
-	public int  mode()
-	{
-		return mode;
-	}
+	public long txId()	{ return txId; }
+	public int  mode()	{ return mode; }
 	public long versionId(SystemEnvironment env)	throws SDMSException
 	{
 		if (versionId == UNDEFINED) {
@@ -422,10 +416,10 @@ public class SDMSTransaction
 			"  txId      : " + txId + "\n" +
 			"  mode      : " + (mode == READONLY ? "READONLY" : "READWRITE") + "\n" +
 			"  versionId : " + (versionId == UNDEFINED ? "UNDEFINED" : "" + versionId) + "\n" +
-		        "  Changes   : " + (touchList == null ? "0" : touchList.size()) + "\n" +
-		        "  StartTime : " + startTime + "\n" +
-		        "  EndTime   : " + endTime + "\n" +
-		        "  Thread    : " + thread.getName() + "\n" +
+			"  Changes   : " + (touchList == null ? "0" : touchList.size()) + "\n" +
+			"  StartTime : " + startTime + "\n" +
+			"  EndTime   : " + endTime + "\n" +
+			"  Thread    : " + thread.getName() + "\n" +
 			"-- End Transaction Data --\n"
 		);
 		return rc;

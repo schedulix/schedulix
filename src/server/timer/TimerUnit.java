@@ -55,10 +55,7 @@ public class TimerUnit
 	private int mult;
 	private int unit;
 
-	public final boolean isINF()
-	{
-		return isINF;
-	}
+	public final boolean isINF() { return isINF; }
 
 	public final int mult()
 	{
@@ -137,18 +134,12 @@ public class TimerUnit
 			return "INF";
 
 		switch (unit) {
-		case YEAR:
-			return mult + "Y";
-		case MONTH:
-			return mult + "M";
-		case DAY:
-			return mult + "D";
-		case HOUR:
-			return mult + "h";
-		case MINUTE:
-			return mult + "m";
-		case WEEK:
-			return mult + "W";
+			case YEAR:   return mult + "Y";
+			case MONTH:  return mult + "M";
+			case DAY:    return mult + "D";
+			case HOUR:   return mult + "h";
+			case MINUTE: return mult + "m";
+			case WEEK:   return mult + "W";
 		}
 
 		return mult + "?(" + unit + ")";
@@ -162,18 +153,12 @@ public class TimerUnit
 		final String suffix = mult == 1 ? "" : "S";
 
 		switch (unit) {
-		case YEAR:
-			return mult + " YEAR"   + suffix;
-		case MONTH:
-			return mult + " MONTH"  + suffix;
-		case DAY:
-			return mult + " DAY"    + suffix;
-		case HOUR:
-			return mult + " HOUR"   + suffix;
-		case MINUTE:
-			return mult + " MINUTE" + suffix;
-		case WEEK:
-			return mult + " WEEK"   + suffix;
+			case YEAR:   return mult + " YEAR"   + suffix;
+			case MONTH:  return mult + " MONTH"  + suffix;
+			case DAY:    return mult + " DAY"    + suffix;
+			case HOUR:   return mult + " HOUR"   + suffix;
+			case MINUTE: return mult + " MINUTE" + suffix;
+			case WEEK:   return mult + " WEEK"   + suffix;
 		}
 
 		return mult + " ???(" + unit + ")";

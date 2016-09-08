@@ -49,25 +49,13 @@ public class Utils
 
 	private static final Libjni jni;
 
-	static
-	{
-		jni = new Libjni();
-	}
+	static { jni = new Libjni(); }
 
-	public static final String getVersion()
-	{
-		return Libjni.getVersion();
-	}
+	public static final String getVersion() { return Libjni.getVersion(); }
 
-	public static final String getCopyright()
-	{
-		return Libjni.getCopyright();
-	}
+	public static final String getCopyright() { return Libjni.getCopyright(); }
 
-	public static final String getCompany()
-	{
-		return Libjni.getCompany();
-	}
+	public static final String getCompany() { return Libjni.getCompany(); }
 
 	public static final void abortProgram (final String msg)
 	{
@@ -109,8 +97,7 @@ public class Utils
 		for (int i = buf.length() - 1; i >= 0; --i)
 			switch (buf.charAt (i)) {
 				case '\'':
-				case '\\':
-					buf.insert (i, '\\');
+				case '\\': buf.insert (i, '\\');
 			}
 
 		return buf.toString();
@@ -138,37 +125,25 @@ public class Utils
 		return String.valueOf (getPid());
 	}
 
-	private static final int getPid()
-	{
-		return jni.getPid();
-	}
+	private static final int getPid() { return jni.getPid(); }
 
 	//-------------------------------------------------------------------------
 	/** Find out, if the specified pid is (still) active. */
 	//-------------------------------------------------------------------------
 
-	public static final boolean isAlive (final RepoIface ri, final String pid)
-	{
-		return jni.isAlive(pid);
-	}
+	public static final boolean isAlive (final RepoIface ri, final String pid) { return jni.isAlive(pid); }
 
 	//-------------------------------------------------------------------------
 	/** Return command that writes the system environment to standard output. */
 	//-------------------------------------------------------------------------
 
-	public static final String getEnvCmd()
-	{
-		return jni.getEnvCmd();
-	}
+	public static final String getEnvCmd() { return jni.getEnvCmd(); }
 
 	//-------------------------------------------------------------------------
 	/** chdir() to the specified path and return null if that was possible, else an error message is returned. */
 	//-------------------------------------------------------------------------
 
-	public static final String chdir (final String path)
-	{
-		return jni.chdir(path);
-	}
+	public static final String chdir (final String path) { return jni.chdir(path); }
 
 	//-------------------------------------------------------------------------
 	/** Set how to determine time of last boot and return null if that was possible, else an error message is returned. */
@@ -184,19 +159,13 @@ public class Utils
 	/** Return how the time of the last boot is determined. */
 	//-------------------------------------------------------------------------
 
-	public static final char getBoottimeHow()
-	{
-		return jni.getBoottimeHow();
-	}
+	public static final char getBoottimeHow() { return jni.getBoottimeHow(); }
 
 	//-------------------------------------------------------------------------
 	/** Return a string representing a starting time of a propcess */
 	//-------------------------------------------------------------------------
 
-	public static final String getProcessStartTime(long pid)
-	{
-		return jni.getProcessStartTime(pid);
-	}
+	public static final String getProcessStartTime(long pid) { return jni.getProcessStartTime(pid); }
 
 	//-------------------------------------------------------------------------
 	// Don't instantiate!

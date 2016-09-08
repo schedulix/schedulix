@@ -224,12 +224,6 @@ public class AlterTrigger extends ManipTrigger
 					sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXTENDED_TRIGGERS);
 				}
 
-				if(itt == SDMSTrigger.UNTIL_FINISHED || itt == SDMSTrigger.UNTIL_FINAL) {
-					if(!with.containsKey(ParseStr.S_CHECK)) {
-						throw new CommonErrorException(new SDMSMessage(sysEnv, "03508030807", "Asynchroneous triggers must define a check interval"));
-					}
-				}
-
 				if (itt != SDMSTrigger.IMMEDIATE_LOCAL && iaction == SDMSTrigger.RERUN)
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03108111248", "Only immediate local triggers can be used for automatic restarts"));
 			}

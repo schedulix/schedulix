@@ -81,7 +81,7 @@ public class DropFolder extends Node
 
 					if(parentId == null) {
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03704102211",
-						                               "Folder SYSTEM cannot be dropped"));
+							"Folder SYSTEM cannot be dropped"));
 					}
 					f.collectSeIds(sysEnv, seIds, null);
 				}

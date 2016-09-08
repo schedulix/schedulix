@@ -68,11 +68,11 @@ public class SDMSVersions
 	{
 		if (env.tx.versionId == SDMSTransaction.UNDEFINED) {
 			throw new FatalException (new SDMSMessage(env, "03110181544",
-						  "Cannot flush without transaction versionId"));
+				"Cannot flush without transaction versionId"));
 		}
 		if (o_v == null) {
 			throw new FatalException (new SDMSMessage(env, "02110261539",
-						  "Cannot flush an unchanged versions"));
+				"Cannot flush an unchanged versions"));
 		}
 		if (o_v.size() == 0) {
 
@@ -179,8 +179,8 @@ public class SDMSVersions
 		if (!id.equals(p_o.id)) {
 
 			throw new FatalException (new SDMSMessage(env, "03110181546",
-						  "versions id ( $1 ) does not match objects id ( $2 )",
-						  id, p_o.id));
+				"versions id ( $1 ) does not match objects id ( $2 )",
+				id, p_o.id));
 		}
 		s = versions.size() - 1;
 		while (s >= 0) {

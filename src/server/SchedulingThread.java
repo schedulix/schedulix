@@ -181,7 +181,7 @@ public class SchedulingThread extends InternalSession
 	}
 
 	private void processRequestList(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector<Long> v = getRequestList();
 		actualRequestList = v;
@@ -920,7 +920,7 @@ public class SchedulingThread extends InternalSession
 	}
 
 	private boolean isVisible(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Long folderId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long seVersion = sme.getSeVersion(sysEnv);
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), seVersion);
@@ -1283,24 +1283,12 @@ public class SchedulingThread extends InternalSession
 		if(toBase != null) {
 			long toTime = se.getTimeoutAmount(sysEnv).longValue();
 			switch(toBase.intValue()) {
-				case SDMSInterval.MINUTE:
-					toTime *= SDMSInterval.MINUTE_DUR;
-					break;
-				case SDMSInterval.HOUR:
-					toTime *= SDMSInterval.HOUR_DUR;
-					break;
-				case SDMSInterval.DAY:
-					toTime *= SDMSInterval.DAY_DUR;
-					break;
-				case SDMSInterval.WEEK:
-					toTime *= SDMSInterval.WEEK_DUR;
-					break;
-				case SDMSInterval.MONTH:
-					toTime *= SDMSInterval.MONTH_DUR;
-					break;
-				case SDMSInterval.YEAR:
-					toTime *= SDMSInterval.YEAR_DUR;
-					break;
+				case SDMSInterval.MINUTE: toTime *= SDMSInterval.MINUTE_DUR; break;
+				case SDMSInterval.HOUR:   toTime *= SDMSInterval.HOUR_DUR;   break;
+				case SDMSInterval.DAY:    toTime *= SDMSInterval.DAY_DUR;    break;
+				case SDMSInterval.WEEK:   toTime *= SDMSInterval.WEEK_DUR;   break;
+				case SDMSInterval.MONTH:  toTime *= SDMSInterval.MONTH_DUR;  break;
+				case SDMSInterval.YEAR:   toTime *= SDMSInterval.YEAR_DUR;   break;
 			}
 			java.util.Date ldts = new java.util.Date();
 			long ts = ldts.getTime();

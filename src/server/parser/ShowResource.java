@@ -64,66 +64,37 @@ public class ShowResource extends ShowCommented
 		throws SDMSException
 	{
 		Vector desc = new Vector();
-
 		desc.add("ID");
-
 		desc.add("NAME");
-
 		desc.add("SCOPENAME");
 		desc.add("OWNER");
-
 		desc.add("LINK_ID");
-
 		desc.add("LINK_SCOPE");
-
 		desc.add("BASE_ID");
-
 		desc.add("BASE_SCOPE");
-
 		desc.add("MANAGER_ID");
-
 		desc.add("MANAGER_NAME");
-
 		desc.add("MANAGER_SCOPENAME");
-
 		desc.add("USAGE");
-
 		desc.add("RESOURCE_STATE_PROFILE");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
-
 		desc.add("TAG");
-
 		desc.add("STATE");
-
 		desc.add("TIMESTAMP");
-
 		desc.add("REQUESTABLE_AMOUNT");
-
 		desc.add("DEFINED_AMOUNT");
-
 		desc.add("AMOUNT");
-
 		desc.add("FREE_AMOUNT");
-
 		desc.add("IS_ONLINE");
-
 		desc.add("FACTOR");
-
 		desc.add("TRACE_INTERVAL");
-
 		desc.add("TRACE_BASE");
-
 		desc.add("TRACE_BASE_MULTIPLIER");
-
 		desc.add("TD0_AVG");
-
 		desc.add("TD1_AVG");
-
 		desc.add("TD2_AVG");
-
 		desc.add("LW_AVG");
-
 		desc.add("LAST_WRITE");
 
 		desc.add("CREATOR");
@@ -131,11 +102,8 @@ public class ShowResource extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("ALLOCATIONS");
-
 		desc.add("PARAMETERS");
-
 		return desc;
 	}
 
@@ -432,39 +400,22 @@ public class ShowResource extends ShowCommented
 		throws SDMSException
 	{
 		Vector rdesc = new Vector();
-
 		rdesc.add("ID");
-
 		rdesc.add("JOBID");
-
 		rdesc.add("MASTERID");
-
 		rdesc.add("JOBTYPE");
-
 		rdesc.add("JOBNAME");
-
 		rdesc.add("AMOUNT");
-
 		rdesc.add("KEEP_MODE");
-
 		rdesc.add("IS_STICKY");
-
 		rdesc.add("STICKY_NAME");
-
 		rdesc.add("STICKY_PARENT");
-
 		rdesc.add("STICKY_PARENT_TYPE");
-
 		rdesc.add("LOCKMODE");
-
 		rdesc.add("RSM_NAME");
-
 		rdesc.add("TYPE");
-
 		rdesc.add("TYPESORT");
-
 		rdesc.add("P");
-
 		rdesc.add("EP");
 		rdesc.add("PRIVS");
 
@@ -556,18 +507,10 @@ public class ShowResource extends ShowCommented
 			} else {
 				v.add(ra.getAllocationTypeAsString(sysEnv));
 				switch(allocType) {
-					case SDMSResourceAllocation.ALLOCATION:
-						v.add(ALLOCATION);
-						break;
-					case SDMSResourceAllocation.MASTER_RESERVATION:
-						v.add(MASTER_RESERVATION);
-						break;
-					case SDMSResourceAllocation.RESERVATION:
-						v.add(RESERVATION);
-						break;
-					case SDMSResourceAllocation.IGNORE:
-						v.add(IGNORED);
-						break;
+					case SDMSResourceAllocation.ALLOCATION:		v.add(ALLOCATION);		break;
+					case SDMSResourceAllocation.MASTER_RESERVATION: v.add(MASTER_RESERVATION);	break;
+					case SDMSResourceAllocation.RESERVATION:	v.add(RESERVATION);		break;
+					case SDMSResourceAllocation.IGNORE:		v.add(IGNORED);			break;
 				}
 			}
 		}

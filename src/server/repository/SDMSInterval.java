@@ -127,24 +127,12 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		int gcUnit = Calendar.YEAR;
 		switch (SystemEnvironment.timerHorizon.unit()) {
-			case YEAR:
-				gcUnit = Calendar.YEAR;
-				break;
-			case MONTH:
-				gcUnit = Calendar.MONTH;
-				break;
-			case WEEK:
-				gcUnit = Calendar.WEEK_OF_YEAR;
-				break;
-			case DAY:
-				gcUnit = Calendar.DAY_OF_MONTH;
-				break;
-			case HOUR:
-				gcUnit = Calendar.HOUR_OF_DAY;
-				break;
-			case MINUTE:
-				gcUnit = Calendar.MINUTE;
-				break;
+			case YEAR:	gcUnit = Calendar.YEAR;		break;
+			case MONTH:	gcUnit = Calendar.MONTH;	break;
+			case WEEK:	gcUnit = Calendar.WEEK_OF_YEAR;	break;
+			case DAY:	gcUnit = Calendar.DAY_OF_MONTH;	break;
+			case HOUR:	gcUnit = Calendar.HOUR_OF_DAY;	break;
+			case MINUTE:	gcUnit = Calendar.MINUTE;	break;
 		}
 
 		GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
@@ -835,24 +823,12 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			baseMultiplier = baseMult.intValue();
 
 			switch (bi) {
-				case YEAR:
-					gcBaseInterval = Calendar.YEAR;
-					break;
-				case MONTH:
-					gcBaseInterval = Calendar.MONTH;
-					break;
-				case WEEK:
-					gcBaseInterval = Calendar.WEEK_OF_YEAR;
-					break;
-				case DAY:
-					gcBaseInterval = Calendar.DAY_OF_MONTH;
-					break;
-				case HOUR:
-					gcBaseInterval = Calendar.HOUR_OF_DAY;
-					break;
-				case MINUTE:
-					gcBaseInterval = Calendar.MINUTE;
-					break;
+				case YEAR:	gcBaseInterval = Calendar.YEAR;		break;
+				case MONTH:	gcBaseInterval = Calendar.MONTH;	break;
+				case WEEK:	gcBaseInterval = Calendar.WEEK_OF_YEAR;	break;
+				case DAY:	gcBaseInterval = Calendar.DAY_OF_MONTH;	break;
+				case HOUR:	gcBaseInterval = Calendar.HOUR_OF_DAY;	break;
+				case MINUTE:	gcBaseInterval = Calendar.MINUTE;	break;
 			}
 		} else {
 			baseMultiplier = 0;
@@ -865,24 +841,12 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			durationMultiplier = durationMult.intValue();
 
 			switch (di) {
-				case YEAR:
-					gcDurationInterval = Calendar.YEAR;
-					break;
-				case MONTH:
-					gcDurationInterval = Calendar.MONTH;
-					break;
-				case WEEK:
-					gcDurationInterval = Calendar.WEEK_OF_YEAR;
-					break;
-				case DAY:
-					gcDurationInterval = Calendar.DAY_OF_MONTH;
-					break;
-				case HOUR:
-					gcDurationInterval = Calendar.HOUR_OF_DAY;
-					break;
-				case MINUTE:
-					gcDurationInterval = Calendar.MINUTE;
-					break;
+				case YEAR:	gcDurationInterval = Calendar.YEAR;	break;
+				case MONTH:	gcDurationInterval = Calendar.MONTH;	break;
+				case WEEK:	gcDurationInterval = Calendar.WEEK_OF_YEAR;	break;
+				case DAY:	gcDurationInterval = Calendar.DAY_OF_MONTH;	break;
+				case HOUR:	gcDurationInterval = Calendar.HOUR_OF_DAY;	break;
+				case MINUTE:	gcDurationInterval = Calendar.MINUTE;	break;
 			}
 		} else {
 			durationMultiplier = 0;
@@ -902,24 +866,12 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				gcBaseInterval = gcDurationInterval;
 			}
 			switch (gcBaseInterval) {
-				case Calendar.YEAR:
-					maxBaseLength = YEAR_MAX;
-					break;
-				case Calendar.MONTH:
-					maxBaseLength = MONTH_MAX;
-					break;
-				case Calendar.WEEK_OF_YEAR:
-					maxBaseLength = WEEK_MAX;
-					break;
-				case Calendar.DAY_OF_MONTH:
-					maxBaseLength = DAY_MAX;
-					break;
-				case Calendar.HOUR_OF_DAY:
-					maxBaseLength = HOUR_MAX;
-					break;
-				case Calendar.MINUTE:
-					maxBaseLength = MINUTE_MAX;
-					break;
+				case Calendar.YEAR:		maxBaseLength = YEAR_MAX;	break;
+				case Calendar.MONTH:		maxBaseLength = MONTH_MAX;	break;
+				case Calendar.WEEK_OF_YEAR:	maxBaseLength = WEEK_MAX;	break;
+				case Calendar.DAY_OF_MONTH:	maxBaseLength = DAY_MAX;	break;
+				case Calendar.HOUR_OF_DAY:	maxBaseLength = HOUR_MAX;	break;
+				case Calendar.MINUTE:		maxBaseLength = MINUTE_MAX;	break;
 			}
 		}
 	}
@@ -1331,6 +1283,46 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		return retval;
 	}
 
+	public long getPrivileges(SystemEnvironment sysEnv, long checkPrivs, boolean fastFail, Vector checkGroups)
+		throws SDMSException
+	{
+		long p, seP;
+		Long seId;
+		SDMSSchedulingEntity se;
+		Vector myGroups;
+
+		p = SDMSPrivilege.NOPRIVS;
+		seId = getSeId(sysEnv);
+		if (seId == null) {
+			p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
+			return p & checkPrivs;
+		}
+
+		if (checkGroups == null) {
+			myGroups = new Vector();
+			if(sysEnv.cEnv.isUser()) {
+				myGroups.addAll(sysEnv.cEnv.gid());
+			}
+		} else
+			myGroups = checkGroups;
+
+		se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
+		seP = se.getPrivileges(sysEnv, SDMSPrivilege.VIEW|SDMSPrivilege.SUBMIT, false, myGroups);
+		if ((seP & SDMSPrivilege.SUBMIT) == SDMSPrivilege.SUBMIT) {
+
+			Long submitGId = getOwnerId(sysEnv);
+			if (myGroups.contains(submitGId) || myGroups.contains(SDMSObject.adminGId)) {
+				p = checkPrivs;
+			} else {
+				p = SDMSPrivilege.VIEW;
+			}
+		} else
+		if ((seP & SDMSPrivilege.VIEW) == SDMSPrivilege.VIEW) {
+			p |= SDMSPrivilege.VIEW;
+		}
+		p = addImplicitPrivs(p) & checkPrivs;
+		return p;
+	}
 }
 
 class BlockState implements Cloneable

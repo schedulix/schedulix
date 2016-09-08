@@ -79,17 +79,11 @@ public class ListGrant extends Node
 		Vector desc = new Vector();
 
 		desc.add("ID");
-
 		desc.add("GROUP");
-
 		desc.add("PRIVS");
-
 		desc.add("INHERITED_PRIVS");
-
 		desc.add("EFFECTIVE_PRIVS");
-
 		desc.add("ORIGIN");
-
 		desc.add("OWNER");
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv, "03302111221", "List of Grants"), desc);
@@ -130,7 +124,6 @@ public class ListGrant extends Node
 				SDMSGrant grant = (SDMSGrant) gv.get(i);
 				long privs = grant.getPrivs(sysEnv).longValue();
 				if ((privs & remainingInheritPrivs) != 0) {
-
 					groups.add(grant.getGId(sysEnv));
 				}
 			}
@@ -178,7 +171,6 @@ public class ListGrant extends Node
 					privs = 0;
 				}
 				if (grantObj != obj) {
-
 					privs = privs & remainingInheritPrivs;
 				}
 				if ((effectivePrivs & remainingInheritPrivs) != 0 &&
@@ -228,7 +220,6 @@ public class ListGrant extends Node
 				if (ownerId != null && ownerId.equals(gId))
 					remainingInheritPrivs = 0;
 				else
-
 					remainingInheritPrivs = remainingInheritPrivs & inheritPrivs & (~privs) & effectivePrivs;
 				if (remainingInheritPrivs == 0)
 					grantObj = null;
@@ -254,21 +245,11 @@ public class ListGrant extends Node
 		SDMSProxy p = null;
 		try {
 			switch (objType.intValue()) {
-				case SDMSObjectComment.ENVIRONMENT:
-					p = SDMSNamedEnvironmentTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.EVENT:
-					p = SDMSEventTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.EXIT_STATE_DEFINITION:
-					p = SDMSExitStateDefinitionTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.EXIT_STATE_PROFILE:
-					p = SDMSExitStateProfileTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.EXIT_STATE_MAPPING:
-					p = SDMSExitStateMappingProfileTable.getObject(sysEnv, objId);
-					break;
+				case SDMSObjectComment.ENVIRONMENT:		p = SDMSNamedEnvironmentTable.getObject(sysEnv, objId);		break;
+				case SDMSObjectComment.EVENT:			p = SDMSEventTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.EXIT_STATE_DEFINITION:	p = SDMSExitStateDefinitionTable.getObject(sysEnv, objId);	break;
+				case SDMSObjectComment.EXIT_STATE_PROFILE:	p = SDMSExitStateProfileTable.getObject(sysEnv, objId);		break;
+				case SDMSObjectComment.EXIT_STATE_MAPPING:	p = SDMSExitStateMappingProfileTable.getObject(sysEnv, objId);	break;
 				case SDMSObjectComment.FOLDER:
 				case SDMSObjectComment.JOB_DEFINITION:
 					try {
@@ -279,53 +260,22 @@ public class ListGrant extends Node
 						objType = new Integer(SDMSObjectComment.JOB_DEFINITION);
 					}
 					break;
-				case SDMSObjectComment.FOOTPRINT:
-					p = SDMSFootprintTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.GROUP:
-					p = SDMSGroupTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.INTERVAL:
-					p = SDMSIntervalTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.JOB:
-					p = SDMSSubmittedEntityTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.NAMED_RESOURCE:
-					p = SDMSNamedResourceTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.PARAMETER:
-					p = SDMSParameterDefinitionTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.RESOURCE:
-					p = SDMSResourceTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
-					p = SDMSResourceStateDefinitionTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.RESOURCE_STATE_PROFILE:
-					p = SDMSResourceStateProfileTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.RESOURCE_STATE_MAPPING:
-					p = SDMSResourceStateMappingProfileTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.SCHEDULE:
-					p = SDMSScheduleTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.SCHEDULED_EVENT:
-					p = SDMSScheduledEventTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.SCOPE:
-					p = SDMSScopeTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.TRIGGER:
-					p = SDMSTriggerTable.getObject(sysEnv, objId);
-					break;
-				case SDMSObjectComment.USER:
-					p = SDMSUserTable.getObject(sysEnv, objId);
-					break;
-				default:
-					break;
+				case SDMSObjectComment.FOOTPRINT:		p = SDMSFootprintTable.getObject(sysEnv, objId);		break;
+				case SDMSObjectComment.GROUP:			p = SDMSGroupTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.INTERVAL:		p = SDMSIntervalTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.JOB:			p = SDMSSubmittedEntityTable.getObject(sysEnv, objId);		break;
+				case SDMSObjectComment.NAMED_RESOURCE:		p = SDMSNamedResourceTable.getObject(sysEnv, objId);		break;
+				case SDMSObjectComment.PARAMETER:		p = SDMSParameterDefinitionTable.getObject(sysEnv, objId);	break;
+				case SDMSObjectComment.RESOURCE:		p = SDMSResourceTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.RESOURCE_STATE_DEFINITION: p = SDMSResourceStateDefinitionTable.getObject(sysEnv, objId); break;
+				case SDMSObjectComment.RESOURCE_STATE_PROFILE:	p = SDMSResourceStateProfileTable.getObject(sysEnv, objId);	break;
+				case SDMSObjectComment.RESOURCE_STATE_MAPPING:	p = SDMSResourceStateMappingProfileTable.getObject(sysEnv, objId); break;
+				case SDMSObjectComment.SCHEDULE:		p = SDMSScheduleTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.SCHEDULED_EVENT:		p = SDMSScheduledEventTable.getObject(sysEnv, objId);		break;
+				case SDMSObjectComment.SCOPE:			p = SDMSScopeTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.TRIGGER:			p = SDMSTriggerTable.getObject(sysEnv, objId);			break;
+				case SDMSObjectComment.USER:			p = SDMSUserTable.getObject(sysEnv, objId);			break;
+				default: break;
 			}
 		} catch (NotFoundException nfe) {
 
@@ -346,13 +296,9 @@ public class ListGrant extends Node
 		Vector desc = new Vector();
 
 		desc.add("ID");
-
 		desc.add("TYPE");
-
 		desc.add("SUBTYPE");
-
 		desc.add("NAME");
-
 		desc.add("PRIVS");
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv, "03302111221", "List of Grants"), desc);
@@ -362,7 +308,6 @@ public class ListGrant extends Node
 			prox = resolveById(sysEnv, gr.getObjectType(sysEnv), gr.getObjectId(sysEnv));
 			long pr = gr.getPrivs(sysEnv).longValue();
 			if (prox == null) {
-
 				for (int j = 0; j < SDMSPrivilege.MANAGE_PRIVS.length; ++j) {
 					if ((SDMSPrivilege.MANAGE_PRIVS[j] & pr) != SDMSPrivilege.NOPRIVS) {
 						Vector v = new Vector();

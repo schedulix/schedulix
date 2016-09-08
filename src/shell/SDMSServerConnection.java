@@ -223,17 +223,8 @@ public class SDMSServerConnection
 		}
 	}
 
-	public String getUser()
-	{
-		return user;
-	}
-	public String getHost()
-	{
-		return host;
-	}
-	public int getPort()
-	{
-		return port;
-	}
+	public String getUser() { return user; }
+	public String getHost() { return host; }
+	public int getPort()	{ return port; }
 }
 

@@ -51,18 +51,9 @@ class rerun extends App
 		addOption("A", "at"     , null, AT     , null, "at"   , false, "Timestamp (YYYY-MM-DDTHH:MM) when job should be resumed (only valid with suspend option)");
 
 	}
-	public String getName()
-	{
-		return "rerun";
-	}
-	public boolean userOnly()
-	{
-		return true;
-	}
-	public boolean canRetry()
-	{
-		return true;
-	}
+	public String getName() { return "rerun"; }
+	public boolean userOnly() { return true; }
+	public boolean canRetry() { return true; }
 	public boolean validateOptions()
 	{
 		if (!options.isSet(SUSPEND) || !options.getOption(SUSPEND).getBValue()) {
@@ -103,18 +94,10 @@ class rerun extends App
 		throws RetryException
 	{
 		String cmd = "ALTER JOB " + options.getValue(JID) + " WITH RERUN";
-		if (options.isSet(SUSPEND) && options.getOption(SUSPEND).getBValue()) {
-			cmd = cmd + ",\n    " + "SUSPEND";
-		}
-		if (options.isSet(DELAY) || options.isSet(AT) ) {
-			cmd = cmd + ",\n    " + "RESUME";
-		}
-		if (options.isSet(DELAY)) {
-			cmd = cmd + " IN " + options.getValue(DELAY) + " " + options.getValue(UNIT);
-		}
-		if (options.isSet(AT)) {
-			cmd = cmd + " AT '" + options.getValue(AT) + "'";
-		}
+		if (options.isSet(SUSPEND) && options.getOption(SUSPEND).getBValue()) { cmd = cmd + ",\n    " + "SUSPEND"; }
+		if (options.isSet(DELAY) || options.isSet(AT) ) { cmd = cmd + ",\n    " + "RESUME"; }
+		if (options.isSet(DELAY)) { cmd = cmd + " IN " + options.getValue(DELAY) + " " + options.getValue(UNIT); }
+		if (options.isSet(AT)) { cmd = cmd + " AT '" + options.getValue(AT) + "'"; }
 
 		SDMSOutput o = execute(cmd);
 		if (o.error != null) {
@@ -124,8 +107,5 @@ class rerun extends App
 			return 1;
 		} else return 0;
 	}
-	public static void main (String[] argv)
-	{
-		System.exit(new rerun().run(argv));
-	}
+	public static void main (String[] argv) { System.exit(new rerun().run(argv)); }
 }

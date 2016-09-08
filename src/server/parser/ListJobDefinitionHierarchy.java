@@ -80,71 +80,38 @@ public class ListJobDefinitionHierarchy extends Node
 		desc.add("ID");
 		desc.add("NAME");
 		desc.add("OWNER");
-
 		desc.add("TYPE");
-
 		desc.add("RUN_PROGRAM");
-
 		desc.add("RERUN_PROGRAM");
-
 		desc.add("KILL_PROGRAM");
-
 		desc.add("WORKDIR");
-
 		desc.add("LOGFILE");
-
 		desc.add("TRUNC_LOG");
-
 		desc.add("ERRLOGFILE");
-
 		desc.add("TRUNC_ERRLOG");
-
 		desc.add("EXPECTED_RUNTIME");
-
 		desc.add("GET_EXPECTED_RUNTIME");
-
 		desc.add("PRIORITY");
-
 		desc.add("SUBMIT_SUSPENDED");
-
 		desc.add("MASTER_SUBMITTABLE");
-
 		desc.add("SAME_NODE");
-
 		desc.add("GANG_SCHEDULE");
-
 		desc.add("DEPENDENCY_MODE");
-
 		desc.add("ESP_NAME");
-
 		desc.add("ESM_NAME");
-
 		desc.add("ENV_NAME");
-
 		desc.add("FP_NAME");
-
 		desc.add("CHILDREN");
-
 		desc.add("SH_ID");
-
 		desc.add("IS_STATIC");
-
 		desc.add("IS_DISABLED");
-
 		desc.add("SH_PRIORITY");
-
 		desc.add("SH_SUSPEND");
-
 		desc.add("SH_ALIAS_NAME");
-
 		desc.add("MERGE_MODE");
-
 		desc.add("EST_NAME");
-
 		desc.add("IGNORED_DEPENDENCIES");
-
 		desc.add("HIERARCHY_PATH");
-
 		desc.add("STATES");
 		desc.add("PRIVS");
 
@@ -215,15 +182,8 @@ public class ListJobDefinitionHierarchy extends Node
 		v.add(new Integer(v1.size()));
 
 		String empty = "";
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
+		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
+		v.add(empty); v.add(empty); v.add(empty); v.add(empty);
 
 		v.add(sePath);
 
@@ -373,12 +333,10 @@ public class ListJobDefinitionHierarchy extends Node
 		Long esmpId = p_esmpId;
 		HashSet mappedExitStates = new HashSet();
 		if (p_seType == SDMSSchedulingEntity.JOB) {
-
 			if (esmpId == null) {
 				SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, p_espId);
 				esmpId = esp.getDefaultEsmpId(sysEnv);
 			}
-
 			Vector v_esm = SDMSExitStateMappingTable.idx_esmpId.getVector(sysEnv, esmpId);
 			Iterator i_esm = v_esm.iterator();
 			while (i_esm.hasNext()) {

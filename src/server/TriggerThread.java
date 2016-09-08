@@ -82,22 +82,23 @@ public class TriggerThread extends InternalSession
 			LockingSystem.lock(sysEnv, jobsToResume, ObjectLock.EXCLUSIVE);
 		if (firstTime) {
 
-		i = SDMSSubmittedEntityTable.table.iterator(sysEnv,
-			new SDMSFilter() {
-				public boolean isValid(SystemEnvironment sysEnv, SDMSProxy p)
-				throws SDMSException {
-					SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
-					if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) return false;
-					if (sme.getResumeTs(sysEnv) == null) return false;
-					return true;
+			i = SDMSSubmittedEntityTable.table.iterator(sysEnv,
+				new SDMSFilter() {
+					public boolean isValid(SystemEnvironment sysEnv, SDMSProxy p)
+						throws SDMSException
+					{
+						SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
+						if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) return false;
+						if (sme.getResumeTs(sysEnv) == null) return false;
+						return true;
+					}
 				}
-			}
-		);
-		while (i.hasNext()) {
-			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) i.next();
-			if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) continue;
-			Long resumeTs = sme.getResumeTs(sysEnv);
-			if (resumeTs != null) {
+			);
+			while (i.hasNext()) {
+				SDMSSubmittedEntity sme = (SDMSSubmittedEntity) i.next();
+				if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) continue;
+				Long resumeTs = sme.getResumeTs(sysEnv);
+				if (resumeTs != null) {
 					jobsToResume.add(sme.getId(sysEnv));
 				}
 			}

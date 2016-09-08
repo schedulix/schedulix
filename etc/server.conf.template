@@ -152,14 +152,14 @@ MaxHistoryCount=0
 
 #
 # ParameterHandling:  Parameter handling - Parameters can be handled in either of three ways:
-# 
+#
 #          1. Strict  "GetParameter()" returns an error if the parameter is not
 #                     defined in the direct scope of the job.
-# 
+#
 #          2. Warn    A warning is written to the logfile if a parameter is not
 #                      defined in the direct scope of the job.
 #                      The parameter is resolved normally.
-# 
+#
 #          3. Liberal The parameter is just resolved (the default)
 #
 ParameterHandling=liberal
@@ -178,7 +178,7 @@ PriorityDelay=1
 #
 # PriorityLowerBound: The minimum priority number a job can reach by aging
 #                     (lower numbers are higher priorities)
-#                     Priorities below the PriorityLowerBound can be assigned by 
+#                     Priorities below the PriorityLowerBound can be assigned by
 #                     an administrator.
 #
 PriorityLowerBound=10
@@ -298,7 +298,7 @@ TriggerSoftLimit=50
 TxRetryCount=3
 
 #
-# UserExportVariables define the variables/parameters which are set in the 
+# UserExportVariables define the variables/parameters which are set in the
 # environment of the executed process. These variables are added to the list
 # of variables defined by "ExportVariables". The names of the variables are
 # comma separated as in the example below.

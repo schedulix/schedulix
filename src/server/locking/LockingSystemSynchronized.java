@@ -58,7 +58,7 @@ public class LockingSystemSynchronized
 	}
 
 	protected static synchronized Vector<ObjectLock> release(SystemEnvironment sysEnv)
-	throws FatalException
+		throws FatalException
 	{
 		HashMap<Object, ObjectLock> locksHeld = threads.get(sysEnv.thread);
 		if (locksHeld == null)
@@ -112,7 +112,7 @@ public class LockingSystemSynchronized
 	}
 
 	protected static synchronized Vector<ObjectLock> releaseSubTxLocks(SystemEnvironment sysEnv, long checkPoint)
-	throws FatalException
+		throws FatalException
 	{
 
 		@SuppressWarnings("unchecked")
@@ -129,7 +129,7 @@ public class LockingSystemSynchronized
 			ObjectLock lock = locks[i];
 			if (lock.createCp <= checkPoint)
 				throw new FatalException(new SDMSMessage(sysEnv, "03511100813", "bad lock in subTxLocks with createCp (" + lock.createCp +
-				                         ") <= checkPoint (" + checkPoint + "):" + lock.objectToShortString()));
+						") <= checkPoint (" + checkPoint + "):" + lock.objectToShortString()));
 
 			if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_RELEASE)) != 0) {
 				out = out + sep + lock.objectToShortString();
@@ -163,7 +163,7 @@ public class LockingSystemSynchronized
 	}
 
 	protected static synchronized Vector<ObjectLock> release(SystemEnvironment sysEnv, Object object)
-	throws FatalException
+		throws FatalException
 	{
 
 		ObjectLock lock = getLockForThread(sysEnv.thread, object);
@@ -176,7 +176,7 @@ public class LockingSystemSynchronized
 		return locksToNotify;
 	}
 	protected static synchronized Vector<ObjectLock> releaseToCheckPoint(SystemEnvironment sysEnv, Object object, long checkPoint)
-	throws FatalException
+		throws FatalException
 	{
 
 		ObjectLock lock = getLockForThread(sysEnv.thread, object);
@@ -227,7 +227,7 @@ public class LockingSystemSynchronized
 	}
 
 	protected static synchronized ObjectLock getLock(SystemEnvironment sysEnv, Object object, int mode)
-	throws DeadlockException
+		throws DeadlockException
 	{
 
 		if (object == null) throw new RuntimeException();
@@ -247,7 +247,7 @@ public class LockingSystemSynchronized
 						ObjectLock ol = objectLocks.get(object);
 						while (ol != null) {
 							System.out.println("    Thread[" + ol.thread.getName() + "] mode = " +
-							                   ol.mode + " wait = " + ol.wait);
+								ol.mode + " wait = " + ol.wait);
 							ol = ol.next;
 						}
 
@@ -260,7 +260,7 @@ public class LockingSystemSynchronized
 			if (mode == ObjectLock.EXCLUSIVE && lock.mode == ObjectLock.SHARED) {
 				if ((LockingSystem.debug & LockingSystem.DEBUG_ALL) != 0)
 					System.out.println(Thread.currentThread().getName() +
-					                   ":Lock Escalation on Object[" +  ObjectLock.objectToShortString(object) + "]");
+						":Lock Escalation on Object[" +  ObjectLock.objectToShortString(object) + "]");
 
 				if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_STACK_TRACES)) != 0)
 
@@ -279,7 +279,7 @@ public class LockingSystemSynchronized
 						if (p.next.escalated) {
 							if ((LockingSystem.debug & LockingSystem.DEBUG_ALL) != 0)
 								System.out.println(Thread.currentThread().getName() +
-								                   ":Escalate Deadlock Detected on Object[" +  ObjectLock.objectToShortString(object) + "]");
+									":Escalate Deadlock Detected on Object[" +  ObjectLock.objectToShortString(object) + "]");
 
 							escalateDeadlock = true;
 						}
@@ -356,7 +356,7 @@ public class LockingSystemSynchronized
 
 		if ((LockingSystem.debug & LockingSystem.DEBUG_ALL) != 0)
 			System.out.println(Thread.currentThread().getName() +
-			                   ":getLock() returned " +  lock.toString());
+				":getLock() returned " +  lock.toString());
 
 		if (escalateDeadlock) {
 			if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_STACK_TRACES)) != 0)
@@ -372,7 +372,7 @@ public class LockingSystemSynchronized
 	}
 
 	private static synchronized Vector<ObjectLock> releaseLock(SystemEnvironment sysEnv, ObjectLock lock, boolean removeFromThreadLocks)
-	throws FatalException
+		throws FatalException
 	{
 		if (!lock.releaseAllowed(sysEnv)) {
 			SDMSThread.doTrace (null, "Invalid attempt to release lock:" + lock.objectToShortString() + "\n" + lock.getStackTrace(), SDMSThread.SEVERITY_FATAL);
@@ -381,13 +381,13 @@ public class LockingSystemSynchronized
 
 		Vector<ObjectLock> locksToNotify = null;
 		if (lock.next != null &&
-		    lock.next.wait &&
-		    (lock.prev == null ||
-		     (lock.prev.mode == ObjectLock.SHARED &&
-		      !lock.prev.wait &&
-		      lock.next.mode == ObjectLock.SHARED
-		     )
-		    )
+			lock.next.wait &&
+			(lock.prev == null ||
+			 (lock.prev.mode == ObjectLock.SHARED &&
+			  !lock.prev.wait &&
+			  lock.next.mode == ObjectLock.SHARED
+			 )
+			)
 		   ) {
 			ObjectLock p = lock.next;
 
@@ -434,7 +434,7 @@ public class LockingSystemSynchronized
 
 		if (removeFromThreadLocks) {
 			clearLockForThread(sysEnv.thread, lock);
-			}
+		}
 
 		lock.syncLock.freeObjectLock(sysEnv);
 
@@ -447,7 +447,7 @@ public class LockingSystemSynchronized
 	}
 
 	protected static synchronized void deadlockDetection(SystemEnvironment sysEnv, SDMSThread thread, HashSet<SDMSThread> waiters)
-	throws DeadlockException, NotMyDeadlockException
+		throws DeadlockException, NotMyDeadlockException
 	{
 		ObjectLock lock = waits.get(thread);
 		if (lock == null)
@@ -466,7 +466,7 @@ public class LockingSystemSynchronized
 	}
 
 	private static synchronized void deadlockDetection(SystemEnvironment sysEnv, Object object, HashSet<SDMSThread> waiters)
-	throws DeadlockException, NotMyDeadlockException
+		throws DeadlockException, NotMyDeadlockException
 	{
 		ObjectLock lock = objectLocks.get(object);
 
@@ -536,11 +536,11 @@ public class LockingSystemSynchronized
 					else
 						os = "Oops! lock.object == null!";
 					tmp.append("    Object[" + os + "] mode = " + lock.mode +
-					           ", wait = " + lock.wait +
-					           ", waiting = " + lock.waiting +
-					           ", escalated=" + lock.escalated +
-					           ", notify=" + lock.notify
-					          );
+						", wait = " + lock.wait +
+						", waiting = " + lock.waiting +
+						", escalated=" + lock.escalated +
+						", notify=" + lock.notify
+						);
 					tmp.append("\n");
 					numlocks++;
 				}
@@ -575,11 +575,11 @@ public class LockingSystemSynchronized
 			b.append("\n");
 			while (lock != null) {
 				b.append("    Thread[" + lock.thread.getName() + "] id = " + lock.id + ", mode = " + lock.mode +
-				         ", wait = " + lock.wait +
-				         ", waiting = " + lock.waiting +
-				         ", escalated=" + lock.escalated +
-				         ", notify=" + lock.notify
-				        );
+					", wait = " + lock.wait +
+					", waiting = " + lock.waiting +
+					", escalated=" + lock.escalated +
+					", notify=" + lock.notify
+				);
 				b.append("\n");
 				lock = lock.next;
 			}

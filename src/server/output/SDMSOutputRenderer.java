@@ -46,14 +46,8 @@ public abstract class SDMSOutputRenderer
 	{
 	}
 
-	public void setSilent(boolean silent)
-	{
-		this.silent = silent;
-	}
-	public void setVerbose(boolean verbose)
-	{
-		this.verbose = verbose;
-	}
+	public void setSilent(boolean silent) { this.silent = silent; }
+	public void setVerbose(boolean verbose) { this.verbose = verbose; }
 
 	public abstract void render(SystemEnvironment env, SDMSOutput p_output) throws FatalException;
 	public abstract void render(PrintStream ostream, SDMSOutput p_output) throws FatalException;

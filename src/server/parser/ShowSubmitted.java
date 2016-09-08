@@ -123,245 +123,131 @@ public class ShowSubmitted extends Node
 		Vector data = new Vector();
 
 		desc.add("ID");
-
 		desc.add("SE_NAME");
-
 		desc.add("SE_OWNER");
-
 		desc.add("SE_TYPE");
-
 		desc.add("SE_RUN_PROGRAM");
-
 		desc.add("SE_RERUN_PROGRAM");
-
 		desc.add("SE_KILL_PROGRAM");
-
 		desc.add("SE_WORKDIR");
-
 		desc.add("SE_LOGFILE");
-
 		desc.add("SE_TRUNC_LOG");
-
 		desc.add("SE_ERRLOGFILE");
-
 		desc.add("SE_TRUNC_ERRLOG");
-
 		desc.add("SE_EXPECTED_RUNTIME");
-
 		desc.add("SE_PRIORITY");
-
 		desc.add("SE_SUBMIT_SUSPENDED");
-
 		desc.add("SE_MASTER_SUBMITTABLE");
-
 		desc.add("SE_DEPENDENCY_MODE");
-
 		desc.add("SE_ESP_NAME");
-
 		desc.add("SE_ESM_NAME");
-
 		desc.add("SE_ENV_NAME");
-
 		desc.add("SE_FP_NAME");
 
 		desc.add("MASTER_ID");
-
 		desc.add("CHILD_TAG");
-
 		desc.add("SE_VERSION");
 		desc.add("OWNER");
-
 		desc.add("PARENT_ID");
-
 		desc.add("SCOPE_ID");
-
 		desc.add("HTTPHOST");
-
 		desc.add("HTTPPORT");
-
 		desc.add("IS_STATIC");
-
 		desc.add("MERGE_MODE");
-
 		desc.add("STATE");
-
 		desc.add("IS_DISABLED");
-
 		desc.add("IS_CANCELLED");
-
 		desc.add("JOB_ESD_ID");
-
 		desc.add("JOB_ESD_PREF");
-
 		desc.add("JOB_IS_FINAL");
-
 		desc.add("JOB_IS_RESTARTABLE");
-
 		desc.add("FINAL_ESD_ID");
-
 		desc.add("EXIT_CODE");
-
 		desc.add("COMMANDLINE");
-
 		desc.add("RR_COMMANDLINE");
-
 		desc.add("WORKDIR");
-
 		desc.add("LOGFILE");
-
 		desc.add("ERRLOGFILE");
-
 		desc.add("PID");
-
 		desc.add("EXT_PID");
-
 		desc.add("ERROR_MSG");
-
 		desc.add("KILL_ID");
-
 		desc.add("KILL_EXIT_CODE");
-
 		desc.add("IS_SUSPENDED");
-
 		desc.add("IS_SUSPENDED_LOCAL");
-
 		desc.add("PRIORITY");
-
 		desc.add("RAW_PRIORITY");
-
 		desc.add("NICEVALUE");
-
 		desc.add("NP_NICEVALUE");
-
 		desc.add("MIN_PRIORITY");
-
 		desc.add("AGING_AMOUNT");
-
 		desc.add("AGING_BASE");
-
 		desc.add("DYNAMIC_PRIORITY");
-
 		desc.add("PARENT_SUSPENDED");
-
 		desc.add("SUBMIT_TS");
-
 		desc.add("RESUME_TS");
-
 		desc.add("SYNC_TS");
-
 		desc.add("RESOURCE_TS");
-
 		desc.add("RUNNABLE_TS");
-
 		desc.add("START_TS");
-
 		desc.add("FINISH_TS");
-
 		desc.add("FINAL_TS");
-
 		desc.add("CNT_SUBMITTED");
-
 		desc.add("CNT_DEPENDENCY_WAIT");
-
 		desc.add("CNT_SYNCHRONIZE_WAIT");
-
 		desc.add("CNT_RESOURCE_WAIT");
-
 		desc.add("CNT_RUNNABLE");
-
 		desc.add("CNT_STARTING");
-
 		desc.add("CNT_STARTED");
-
 		desc.add("CNT_RUNNING");
-
 		desc.add("CNT_TO_KILL");
-
 		desc.add("CNT_KILLED");
-
 		desc.add("CNT_CANCELLED");
-
 		desc.add("CNT_FINISHED");
-
 		desc.add("CNT_FINAL");
-
 		desc.add("CNT_BROKEN_ACTIVE");
-
 		desc.add("CNT_BROKEN_FINISHED");
-
 		desc.add("CNT_ERROR");
-
 		desc.add("CNT_RESTARTABLE");
-
 		desc.add("CNT_UNREACHABLE");
-
 		desc.add("CNT_WARN");
-
 		desc.add("WARN_COUNT");
 
 		desc.add("IDLE_TIME");
-
 		desc.add("DEPENDENCY_WAIT_TIME");
-
 		desc.add("SUSPEND_TIME");
-
 		desc.add("SYNC_TIME");
-
 		desc.add("RESOURCE_TIME");
-
 		desc.add("JOBSERVER_TIME");
-
 		desc.add("RESTARTABLE_TIME");
-
 		desc.add("CHILD_WAIT_TIME");
-
 		desc.add("PROCESS_TIME");
-
 		desc.add("ACTIVE_TIME");
-
 		desc.add("IDLE_PCT");
 
 		desc.add("CHILDREN");
-
 		desc.add("PARENTS");
-
 		desc.add("PARAMETER");
-
 		desc.add("REQUIRED_JOBS");
-
 		desc.add("DEPENDENT_JOBS");
-
 		desc.add("REQUIRED_RESOURCES");
-
 		desc.add("SUBMIT_PATH");
-
 		desc.add("IS_REPLACED");
-
 		desc.add("TIMEOUT_AMOUNT");
-
 		desc.add("TIMEOUT_BASE");
-
 		desc.add("TIMEOUT_STATE");
-
 		desc.add("RERUN_SEQ");
-
 		desc.add("AUDIT_TRAIL");
-
 		desc.add("CHILD_SUSPENDED");
-
 		desc.add("CNT_PENDING");
 		desc.add("CREATOR");
 		desc.add("CREATE_TIME");
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("SE_PRIVS");
-
 		desc.add("SUBMITTAG");
-
 		desc.add("UNRESOLVED_HANDLING");
-
 		desc.add("DEFINED_RESOURCES");
 
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion);
@@ -397,7 +283,6 @@ public class ShowSubmitted extends Node
 		data.add(se.getErrlogfile(sysEnv));
 		data.add(se.getTruncErrlog(sysEnv));
 		data.add(se.getExpectedRuntime(sysEnv));
-
 		data.add(se.getPriority(sysEnv));
 		data.add(se.getSubmitSuspended(sysEnv));
 		data.add(se.getMasterSubmittable(sysEnv));
@@ -678,37 +563,21 @@ public class ShowSubmitted extends Node
 		throws SDMSException
 	{
 		Vector c_desc = new Vector();
-
 		c_desc.add("CHILDID");
-
 		c_desc.add("CHILDPRIVS");
-
 		c_desc.add("CHILDSENAME");
-
 		c_desc.add("CHILDSETYPE");
-
 		c_desc.add("CHILDSEPRIVS");
-
 		c_desc.add("PARENTID");
-
 		c_desc.add("PARENTPRIVS");
-
 		c_desc.add("PARENTSENAME");
-
 		c_desc.add("PARENTSETYPE");
-
 		c_desc.add("PARENTSEPRIVS");
-
 		c_desc.add("IS_STATIC");
-
 		c_desc.add("PRIORITY");
-
 		c_desc.add("SUSPEND");
-
 		c_desc.add("MERGE_MODE");
-
 		c_desc.add("EST_NAME");
-
 		c_desc.add("IGNORED_DEPENDENCIES");
 
 		SDMSOutputContainer c_container = new SDMSOutputContainer(sysEnv, null, c_desc);
@@ -774,13 +643,9 @@ public class ShowSubmitted extends Node
 		HashSet names = new HashSet();
 
 		Vector c_desc = new Vector();
-
 		c_desc.add("ID");
-
 		c_desc.add("NAME");
-
 		c_desc.add("TYPE");
-
 		c_desc.add("VALUE");
 
 		SDMSOutputContainer c_container = new SDMSOutputContainer(sysEnv, null, c_desc);
@@ -838,7 +703,6 @@ public class ShowSubmitted extends Node
 	{
 		Long smeId = sme.getId(sysEnv);
 		Vector di_v = SDMSDependencyInstanceTable.idx_requiredId.getVector(sysEnv, smeId);
-
 		Vector v_di_out = new Vector();
 		Iterator i_di = di_v.iterator();
 		while (i_di.hasNext()) {
@@ -860,109 +724,58 @@ public class ShowSubmitted extends Node
 		SDMSDependencyDefinition dd;
 
 		Vector c_desc = new Vector();
-
 		c_desc.add("ID");
-
 		c_desc.add("DEPENDENT_ID");
-
 		c_desc.add("DEPENDENT_PATH");
-
 		c_desc.add("DEPENDENT_PRIVS");
-
 		c_desc.add("DEPENDENT_ID_ORIG");
-
 		c_desc.add("DEPENDENT_PATH_ORIG");
-
 		c_desc.add("DEPENDENT_PRIVS_ORIG");
-
 		c_desc.add("DEPENDENCY_OPERATION");
-
 		c_desc.add("REQUIRED_ID");
-
 		c_desc.add("REQUIRED_PATH");
-
 		c_desc.add("REQUIRED_PRIVS");
-
 		c_desc.add("STATE");
 
 		c_desc.add("DD_ID");
-
 		c_desc.add("DD_NAME");
-
 		c_desc.add("DD_DEPENDENTNAME");
-
 		c_desc.add("DD_DEPENDENTTYPE");
-
 		c_desc.add("DD_DEPENDENTPRIVS");
-
 		c_desc.add("DD_REQUIREDNAME");
-
 		c_desc.add("DD_REQUIREDTYPE");
-
 		c_desc.add("DD_REQUIREDPRIVS");
-
 		c_desc.add("DD_UNRESOLVED_HANDLING");
-
 		c_desc.add("DD_MODE");
-
 		c_desc.add("DD_STATES");
-
 		c_desc.add("JOB_STATE");
-
 		c_desc.add("IS_SUSPENDED");
-
 		c_desc.add("PARENT_SUSPENDED");
-
 		c_desc.add("CNT_SUBMITTED");
-
 		c_desc.add("CNT_DEPENDENCY_WAIT");
-
 		c_desc.add("CNT_SYNCHRONIZE_WAIT");
-
 		c_desc.add("CNT_RESOURCE_WAIT");
-
 		c_desc.add("CNT_RUNNABLE");
-
 		c_desc.add("CNT_STARTING");
-
 		c_desc.add("CNT_STARTED");
-
 		c_desc.add("CNT_RUNNING");
-
 		c_desc.add("CNT_TO_KILL");
-
 		c_desc.add("CNT_KILLED");
-
 		c_desc.add("CNT_CANCELLED");
-
 		c_desc.add("CNT_FINISHED");
-
 		c_desc.add("CNT_FINAL");
-
 		c_desc.add("CNT_BROKEN_ACTIVE");
-
 		c_desc.add("CNT_BROKEN_FINISHED");
-
 		c_desc.add("CNT_ERROR");
-
 		c_desc.add("CNT_RESTARTABLE");
-
 		c_desc.add("CNT_UNREACHABLE");
-
 		c_desc.add("JOB_IS_FINAL");
-
 		c_desc.add("CHILD_TAG");
-
 		c_desc.add("FINAL_STATE");
-
 		c_desc.add("CHILDREN");
-
 		c_desc.add("IGNORE");
-
 		c_desc.add("CHILD_SUSPENDED");
-
 		c_desc.add("CNT_PENDING");
-
 		c_desc.add("DD_CONDITION");
 
 		SDMSOutputContainer c_container = new SDMSOutputContainer(sysEnv, null, c_desc);
@@ -994,11 +807,9 @@ public class ShowSubmitted extends Node
 			c_data.add(di.getRequiredId(sysEnv));
 
 			if (mode == REQUIRED)
-
 				try {
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getRequiredId(sysEnv));
 				} catch(NotFoundException nfe) {
-
 					sme = null;
 				}
 			else
@@ -1136,7 +947,6 @@ public class ShowSubmitted extends Node
 			fpFolder = (HashMap) footprints.get(SchedulingThread.FP_FOLDER);
 			fpLocal = (HashMap) footprints.get(SchedulingThread.FP_LOCAL);
 		} catch (NotFoundException nfe) {
-
 			jobFp = new HashMap();
 			fpFolder = new HashMap();
 			fpLocal = new HashMap();
@@ -1190,7 +1000,6 @@ public class ShowSubmitted extends Node
 							resources.add(s.getId(sysEnv));
 					}
 				}
-
 				ri = fpFolder.values().iterator();
 				while(ri.hasNext()) {
 					Vector rv = (Vector) ri.next();
@@ -1221,7 +1030,6 @@ public class ShowSubmitted extends Node
 					Long L = (Long) ri.next();
 					resources.add((Long) sfp.get(L));
 				}
-
 				ri = fpFolder.values().iterator();
 				while(ri.hasNext()) {
 					Vector rv = (Vector) ri.next();
@@ -1248,7 +1056,6 @@ public class ShowSubmitted extends Node
 				for(int i = 0; i < size; i++) {
 					resourceList.add(((SDMSResourceAllocation) rav.get(i)).getRId(sysEnv));
 				}
-
 				rav = SDMSResourceAllocationTable.idx_smeId.getVector(sysEnv, new Long(- smeId.longValue()));
 				size = rav.size();
 				for(int i = 0; i < size; i++) {
@@ -1268,27 +1075,16 @@ public class ShowSubmitted extends Node
 		throws SDMSException
 	{
 		Vector c_desc = new Vector();
-
 		c_desc.add("ID");
-
 		c_desc.add("RESOURCE_NAME");
-
 		c_desc.add("RESOURCE_USAGE");
-
 		c_desc.add("RESOURCE_OWNER");
-
 		c_desc.add("RESOURCE_PRIVS");
-
 		c_desc.add("RESOURCE_STATE");
-
 		c_desc.add("RESOURCE_TIMESTAMP");
-
 		c_desc.add("REQUESTABLE_AMOUNT");
-
 		c_desc.add("TOTAL_AMOUNT");
-
 		c_desc.add("FREE_AMOUNT");
-
 		c_desc.add("ONLINE");
 
 		SDMSOutputContainer c_container = new SDMSOutputContainer(sysEnv, null, c_desc);
@@ -1312,7 +1108,6 @@ public class ShowSubmitted extends Node
 			} else	c_data.add(null);
 
 			final Long ots = r.getRsdTime(sysEnv);
-
 			if(ots != null &&
 			   nr.getUsage(sysEnv).intValue() == SDMSNamedResource.SYNCHRONIZING &&
 			   nr.getRspId(sysEnv) != null) {
@@ -1344,25 +1139,15 @@ public class ShowSubmitted extends Node
 	{
 		Date d = new Date();
 		Vector c_desc = new Vector();
-
 		c_desc.add("ID");
-
 		c_desc.add("USERNAME");
-
 		c_desc.add("TIME");
-
 		c_desc.add("TXID");
-
 		c_desc.add("ACTION");
-
 		c_desc.add("ORIGINID");
-
 		c_desc.add("JOBID");
-
 		c_desc.add("JOBNAME");
-
 		c_desc.add("COMMENT");
-
 		c_desc.add("INFO");
 
 		Vector filter = null;
@@ -1424,65 +1209,35 @@ class SsResourceScopeFormatter implements Formatter
 	public Vector fillHeadInfo()
 	{
 		Vector c_desc = new Vector();
-
 		c_desc.add("SCOPE_ID");
-
 		c_desc.add("SCOPE_NAME");
-
 		c_desc.add("SCOPE_TYPE");
-
 		c_desc.add("SCOPE_PRIVS");
-
 		c_desc.add("RESOURCE_ID");
-
 		c_desc.add("RESOURCE_NAME");
-
 		c_desc.add("RESOURCE_USAGE");
-
 		c_desc.add("RESOURCE_OWNER");
-
 		c_desc.add("RESOURCE_PRIVS");
-
 		c_desc.add("RESOURCE_STATE");
-
 		c_desc.add("RESOURCE_TIMESTAMP");
-
 		c_desc.add("REQUESTABLE_AMOUNT");
-
 		c_desc.add("TOTAL_AMOUNT");
-
 		c_desc.add("FREE_AMOUNT");
-
 		c_desc.add("REQUESTED_AMOUNT");
-
 		c_desc.add("REQUESTED_LOCKMODE");
-
 		c_desc.add("REQUESTED_STATES");
-
 		c_desc.add("RESERVED_AMOUNT");
-
 		c_desc.add("ALLOCATED_AMOUNT");
-
 		c_desc.add("ALLOCATED_LOCKMODE");
-
 		c_desc.add("IGNORE");
-
 		c_desc.add("STICKY");
-
 		c_desc.add("STICKY_NAME");
-
 		c_desc.add("STICKY_PARENT");
-
 		c_desc.add("STICKY_PARENT_TYPE");
-
 		c_desc.add("ONLINE");
-
 		c_desc.add("ALLOCATE_STATE");
-
 		c_desc.add("EXPIRE");
-
 		c_desc.add("EXPIRE_SIGN");
-
 		c_desc.add("DEFINITION");
 
 		return c_desc;
@@ -1592,7 +1347,6 @@ class SsResourceScopeFormatter implements Formatter
 		v.add(r.getPrivileges(sysEnv).toString());
 		v.add(rsd == null ? null : rsd.getName(sysEnv));
 		Long ots = r.getRsdTime(sysEnv);
-
 		if(ots != null &&
 		   nr.getUsage(sysEnv).intValue() == SDMSNamedResource.SYNCHRONIZING &&
 		   nr.getRspId(sysEnv) != null) {
@@ -1612,11 +1366,9 @@ class SsResourceScopeFormatter implements Formatter
 		try {
 			switch(nr.getUsage(sysEnv).intValue()) {
 				case SDMSNamedResource.STATIC:
-
 					rr = null;
 					break;
 				case SDMSNamedResource.SYSTEM:
-
 					try {
 						rr = SDMSResourceRequirementTable.idx_seId_nrId_getUnique(sysEnv, new SDMSKey(seId, nrId), actVersion);
 					} catch (NotFoundException nfe) {
@@ -1624,7 +1376,6 @@ class SsResourceScopeFormatter implements Formatter
 					}
 					break;
 				case SDMSNamedResource.SYNCHRONIZING:
-
 					rr = SDMSResourceRequirementTable.idx_seId_nrId_getUnique(sysEnv, new SDMSKey(seId, nrId), actVersion);
 					break;
 			}
@@ -1724,7 +1475,6 @@ class SsResourceScopeFormatter implements Formatter
 				} else if (ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.MASTER_RESERVATION) {
 					v.add(ALLOCATED);
 				} else {
-
 					if(r.checkAllocate(sysEnv, rr, sme, ra) == SDMSResource.REASON_AVAILABLE) {
 						if(SystemEnvironment.sched.isBlocked(sysEnv, smeId, r.getId(sysEnv))) {
 							v.add(BLOCKED);
@@ -1754,24 +1504,12 @@ class SsResourceScopeFormatter implements Formatter
 				if(nr.getRspId(sysEnv) != null) {
 					long expTime = rr.getExpiredAmount(sysEnv).longValue();
 					switch(expBase.intValue()) {
-						case SDMSInterval.MINUTE:
-							expTime *= SDMSInterval.MINUTE_DUR;
-							break;
-						case SDMSInterval.HOUR:
-							expTime *= SDMSInterval.HOUR_DUR;
-							break;
-						case SDMSInterval.DAY:
-							expTime *= SDMSInterval.DAY_DUR;
-							break;
-						case SDMSInterval.WEEK:
-							expTime *= SDMSInterval.WEEK_DUR;
-							break;
-						case SDMSInterval.MONTH:
-							expTime *= SDMSInterval.MONTH_DUR;
-							break;
-						case SDMSInterval.YEAR:
-							expTime *= SDMSInterval.YEAR_DUR;
-							break;
+						case SDMSInterval.MINUTE: expTime *= SDMSInterval.MINUTE_DUR; break;
+						case SDMSInterval.HOUR:   expTime *= SDMSInterval.HOUR_DUR;   break;
+						case SDMSInterval.DAY:    expTime *= SDMSInterval.DAY_DUR;    break;
+						case SDMSInterval.WEEK:   expTime *= SDMSInterval.WEEK_DUR;   break;
+						case SDMSInterval.MONTH:  expTime *= SDMSInterval.MONTH_DUR;  break;
+						case SDMSInterval.YEAR:   expTime *= SDMSInterval.YEAR_DUR;   break;
 					}
 					dts = new java.util.Date();
 					String expSign;

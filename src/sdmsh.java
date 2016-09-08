@@ -87,18 +87,9 @@ public class sdmsh extends App
 		return null;
 	}
 
-	public String getName()
-	{
-		return "sdmsh";
-	}
-	public boolean canRetry()
-	{
-		return false;
-	}
-	public String getUsageArguments()
-	{
-		return "user password host port";
-	}
+	public String getName() { return "sdmsh"; }
+	public boolean canRetry() { return false; }
+	public String getUsageArguments() { return "user password host port"; }
 
 	public boolean specificParse()
 	{
@@ -235,9 +226,6 @@ public class sdmsh extends App
 		return 0;
 	}
 
-	public static void main (String[] argv)
-	{
-		System.exit(new sdmsh().run(argv));
-	}
+	public static void main (String[] argv) { System.exit(new sdmsh().run(argv)); }
 
 }
