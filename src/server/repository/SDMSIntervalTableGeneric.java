@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -73,7 +72,6 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 	{
 		super(env);
 		if (table != null) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182009", "Interval"));
 		}
 		table = (SDMSIntervalTable) this;
@@ -106,9 +104,7 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		Long p_createTs = env.txTime();
 		Long p_changerUId = env.cEnv.uid();
 		Long p_changeTs = env.txTime();
-
 		if(env.tx.mode == SDMSTransaction.READONLY) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182049", "Interval"));
 		}
 		validate(env
@@ -156,14 +152,13 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 
 		SDMSInterval p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
-			p = (SDMSInterval)(o.toProxy());
+			p = (SDMSInterval)(o.toProxy(env));
 			p.current = true;
 		} catch(SDMSException e) {
-			p = (SDMSInterval)(o.toProxy());
+			p = (SDMSInterval)(o.toProxy(env));
 			p.current = true;
 			env.tx.rollbackSubTransaction(env);
 			throw e;
@@ -204,12 +199,9 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		if (!SDMSIntervalGeneric.checkBaseInterval(p_baseInterval))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Interval: $1 $2", "baseInterval", p_baseInterval));
 		if (!SDMSIntervalGeneric.checkDuration(p_duration))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Interval: $1 $2", "duration", p_duration));
-
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -270,7 +262,6 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-
 			throw new FatalException(new SDMSMessage(env, "01110182045", "Interval: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
@@ -306,7 +297,6 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		String squote = SystemEnvironment.SQUOTE;
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
-
 		ResultSet rset = stmt.executeQuery("SELECT " +
 		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NAME" + equote +

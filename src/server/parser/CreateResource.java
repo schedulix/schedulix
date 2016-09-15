@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -63,6 +61,7 @@ public class CreateResource extends ManipResource
 
 		SDMSNamedResource nr;
 		SDMSResource r;
+		SDMSResourceTemplate rt;
 		SDMSScope s;
 		SDMSFolder f;
 		SDMSSchedulingEntity se;
@@ -73,6 +72,7 @@ public class CreateResource extends ManipResource
 		Long nrId;
 		Long sId = null;
 		Long gId;
+		boolean createTemplate = false;
 		boolean scopeResource = true;
 
 		status = (String) with.get(ParseStr.S_STATUS);
@@ -102,7 +102,17 @@ public class CreateResource extends ManipResource
 			s = SDMSScopeTable.getScope(sysEnv, path);
 			sId = s.getId(sysEnv);
 		} catch (NotFoundException nfe) {
-			sysEnv.checkFeatureAvailability(SystemEnvironment.S_FOLDER_RESOURCES);
+			scopeResource = false;
+			try {
+				f = SDMSFolderTable.getFolder(sysEnv, path);
+				sysEnv.checkFeatureAvailability(SystemEnvironment.S_FOLDER_RESOURCES);
+				sId = f.getId(sysEnv);
+			} catch (NotFoundException nfe2) {
+				sysEnv.checkFeatureAvailability(SystemEnvironment.S_SE_RESOURCES);
+				createTemplate = true;
+				se = SDMSSchedulingEntityTable.get(sysEnv, path, null);
+				sId = se.getId(sysEnv);
+			}
 		}
 
 		if (baseMultiplier == null) baseMultiplier = new Integer(10 * 60);
@@ -110,8 +120,8 @@ public class CreateResource extends ManipResource
 		if(replace) {
 			SDMSKey k = new SDMSKey(nrId, sId);
 			if(SDMSResourceTable.idx_nrId_scopeId.containsKey(sysEnv, k)
+			    || SDMSResourceTemplateTable.idx_nrId_seId.containsKey(sysEnv, k)
 			  ) {
-
 				SDMSProxy p = null;
 				try {
 					p = SDMSResourceTable.idx_nrId_scopeId_getUnique(sysEnv, k);
@@ -132,15 +142,12 @@ public class CreateResource extends ManipResource
 		}
 
 		if ((requestableAmount == null) && (amount == null)) {
-
 			requestableAmount = new Integer(-1);
 		}
 		if(requestableAmount == null) {
-
 			requestableAmount = amount;
 		}
 		if(amount == null) {
-
 			amount = requestableAmount;
 		}
 		rsdId = check_resource(sysEnv, nr, rsdId, requestableAmount, amount, scopeResource);
@@ -149,19 +156,23 @@ public class CreateResource extends ManipResource
 		Long ts = new Long (dts.getTime());
 
 		if (requestableAmount.intValue() == -1) {
-
 			requestableAmount = null;
 		}
 		if (amount.intValue() == -1) {
-
 			amount = null;
 		}
-		r = SDMSResourceTable.table.create(sysEnv, nrId, sId, null,  gId, null, null, null, rsdId, ts, amount, requestableAmount,
-						amount, amount, online, factor, traceInterval, traceBase, baseMultiplier,
-						fzero, fzero, fzero, fzero, new Long(0), new Long(0));
-		r.createVariables(sysEnv, parms);
+		if(createTemplate) {
+			rt = SDMSResourceTemplateTable.table.create(sysEnv, nrId, sId, gId, rsdId, requestableAmount, amount, online);
 
-		SystemEnvironment.sched.notifyChange(sysEnv, r, sId, SchedulingThread.CREATE);
+			rt.createVariables(sysEnv, parms);
+		} else {
+			r = SDMSResourceTable.table.create(sysEnv, nrId, sId, null,  gId, null, null, null, rsdId, ts, amount, requestableAmount,
+			                                   amount, amount, online, factor, traceInterval, traceBase, baseMultiplier,
+			                                   fzero, fzero, fzero, fzero, new Long(0), new Long(0));
+			r.createVariables(sysEnv, parms);
+
+			SystemEnvironment.sched.notifyChange(sysEnv, r, sId, SchedulingThread.CREATE);
+		}
 		result.setFeedback(new SDMSMessage(sysEnv, "03202211126", "Resource created"));
 	}
 
@@ -179,14 +190,12 @@ public class CreateResource extends ManipResource
 		} else {
 			rsp = SDMSResourceStateProfileTable.getObject(sysEnv, rspId);
 			if(rsdId == null) {
-
 				if(rsp.getInitialRsdId(sysEnv) == null) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03202211217", "Resource must have an initial state"));
 				} else {
 					rsdId = rsp.getInitialRsdId(sysEnv);
 				}
 			} else {
-
 				if(!SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(rsdId, rspId))) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03202211221", "Resource state is not defined in the profile $1",
 						rsp.getName(sysEnv)));

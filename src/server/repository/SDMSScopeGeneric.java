@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -466,12 +465,12 @@ public class SDMSScopeGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSScope.NOMINAL:
-			return "NOMINAL";
-		case SDMSScope.NONFATAL:
-			return "NONFATAL";
-		case SDMSScope.FATAL:
-			return "FATAL";
+			case SDMSScope.NOMINAL:
+				return "NOMINAL";
+			case SDMSScope.NONFATAL:
+				return "NONFATAL";
+			case SDMSScope.FATAL:
+				return "FATAL";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -571,10 +570,10 @@ public class SDMSScopeGeneric extends SDMSObject
 	{
 		final Integer v = getMethod (env);
 		switch (v.intValue()) {
-		case SDMSScope.MD5:
-			return "MD5";
-		case SDMSScope.SHA256:
-			return "SHA256";
+			case SDMSScope.MD5:
+				return "MD5";
+			case SDMSScope.SHA256:
+				return "SHA256";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -861,9 +860,9 @@ public class SDMSScopeGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSScope(this);
+		return SDMSScope.getProxy(sysEnv, this);
 	}
 
 	protected SDMSScopeGeneric(Long p_id,
@@ -983,12 +982,10 @@ public class SDMSScopeGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "Scope: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -1055,7 +1052,6 @@ public class SDMSScopeGeneric extends SDMSObject
 			myInsert.setLong (23, inheritPrivs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "Scope: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -1071,7 +1067,6 @@ public class SDMSScopeGeneric extends SDMSObject
 				        "DELETE FROM SCOPE WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Scope: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -1081,7 +1076,6 @@ public class SDMSScopeGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "Scope: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -1122,7 +1116,6 @@ public class SDMSScopeGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "Scope: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -1193,7 +1186,6 @@ public class SDMSScopeGeneric extends SDMSObject
 			myUpdate.setLong(23, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "Scope: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -1201,9 +1193,9 @@ public class SDMSScopeGeneric extends SDMSObject
 	static public boolean checkType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSScope.SCOPE:
-		case SDMSScope.SERVER:
-			return true;
+			case SDMSScope.SCOPE:
+			case SDMSScope.SERVER:
+				return true;
 		}
 		return false;
 	}
@@ -1211,19 +1203,19 @@ public class SDMSScopeGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSScope.NOMINAL:
-		case SDMSScope.NONFATAL:
-		case SDMSScope.FATAL:
-			return true;
+			case SDMSScope.NOMINAL:
+			case SDMSScope.NONFATAL:
+			case SDMSScope.FATAL:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkMethod(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSScope.MD5:
-		case SDMSScope.SHA256:
-			return true;
+			case SDMSScope.MD5:
+			case SDMSScope.SHA256:
+				return true;
 		}
 		return false;
 	}

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -302,14 +301,14 @@ public class SDMSTriggerGeneric extends SDMSObject
 	{
 		final Integer v = getObjectType (env);
 		switch (v.intValue()) {
-		case SDMSTrigger.JOB_DEFINITION:
-			return "JOB_DEFINITION";
-		case SDMSTrigger.RESOURCE:
-			return "RESOURCE";
-		case SDMSTrigger.NAMED_RESOURCE:
-			return "NAMED_RESOURCE";
-		case SDMSTrigger.OBJECT_MONITOR:
-			return "OBJECT_MONITOR";
+			case SDMSTrigger.JOB_DEFINITION:
+				return "JOB_DEFINITION";
+			case SDMSTrigger.RESOURCE:
+				return "RESOURCE";
+			case SDMSTrigger.NAMED_RESOURCE:
+				return "NAMED_RESOURCE";
+			case SDMSTrigger.OBJECT_MONITOR:
+				return "OBJECT_MONITOR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -496,10 +495,10 @@ public class SDMSTriggerGeneric extends SDMSObject
 	{
 		final Integer v = getAction (env);
 		switch (v.intValue()) {
-		case SDMSTrigger.SUBMIT:
-			return "SUBMIT";
-		case SDMSTrigger.RERUN:
-			return "RERUN";
+			case SDMSTrigger.SUBMIT:
+				return "SUBMIT";
+			case SDMSTrigger.RERUN:
+				return "RERUN";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -536,22 +535,22 @@ public class SDMSTriggerGeneric extends SDMSObject
 	{
 		final Integer v = getType (env);
 		switch (v.intValue()) {
-		case SDMSTrigger.IMMEDIATE_LOCAL:
-			return "IMMEDIATE_LOCAL";
-		case SDMSTrigger.BEFORE_FINAL:
-			return "BEFORE_FINAL";
-		case SDMSTrigger.AFTER_FINAL:
-			return "AFTER_FINAL";
-		case SDMSTrigger.IMMEDIATE_MERGE:
-			return "IMMEDIATE_MERGE";
-		case SDMSTrigger.FINISH_CHILD:
-			return "FINISH_CHILD";
-		case SDMSTrigger.UNTIL_FINISHED:
-			return "UNTIL_FINISHED";
-		case SDMSTrigger.UNTIL_FINAL:
-			return "UNTIL_FINAL";
-		case SDMSTrigger.WARNING:
-			return "WARNING";
+			case SDMSTrigger.IMMEDIATE_LOCAL:
+				return "IMMEDIATE_LOCAL";
+			case SDMSTrigger.BEFORE_FINAL:
+				return "BEFORE_FINAL";
+			case SDMSTrigger.AFTER_FINAL:
+				return "AFTER_FINAL";
+			case SDMSTrigger.IMMEDIATE_MERGE:
+				return "IMMEDIATE_MERGE";
+			case SDMSTrigger.FINISH_CHILD:
+				return "FINISH_CHILD";
+			case SDMSTrigger.UNTIL_FINISHED:
+				return "UNTIL_FINISHED";
+			case SDMSTrigger.UNTIL_FINAL:
+				return "UNTIL_FINAL";
+			case SDMSTrigger.WARNING:
+				return "WARNING";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -831,18 +830,18 @@ public class SDMSTriggerGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSTrigger.MINUTE:
-			return "MINUTE";
-		case SDMSTrigger.HOUR:
-			return "HOUR";
-		case SDMSTrigger.DAY:
-			return "DAY";
-		case SDMSTrigger.WEEK:
-			return "WEEK";
-		case SDMSTrigger.MONTH:
-			return "MONTH";
-		case SDMSTrigger.YEAR:
-			return "YEAR";
+			case SDMSTrigger.MINUTE:
+				return "MINUTE";
+			case SDMSTrigger.HOUR:
+				return "HOUR";
+			case SDMSTrigger.DAY:
+				return "DAY";
+			case SDMSTrigger.WEEK:
+				return "WEEK";
+			case SDMSTrigger.MONTH:
+				return "MONTH";
+			case SDMSTrigger.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1043,18 +1042,18 @@ public class SDMSTriggerGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSTrigger.MINUTE:
-			return "MINUTE";
-		case SDMSTrigger.HOUR:
-			return "HOUR";
-		case SDMSTrigger.DAY:
-			return "DAY";
-		case SDMSTrigger.WEEK:
-			return "WEEK";
-		case SDMSTrigger.MONTH:
-			return "MONTH";
-		case SDMSTrigger.YEAR:
-			return "YEAR";
+			case SDMSTrigger.MINUTE:
+				return "MINUTE";
+			case SDMSTrigger.HOUR:
+				return "HOUR";
+			case SDMSTrigger.DAY:
+				return "DAY";
+			case SDMSTrigger.WEEK:
+				return "WEEK";
+			case SDMSTrigger.MONTH:
+				return "MONTH";
+			case SDMSTrigger.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1288,9 +1287,9 @@ public class SDMSTriggerGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSTrigger(this);
+		return SDMSTrigger.getProxy(sysEnv, this);
 	}
 
 	protected SDMSTriggerGeneric(Long p_id,
@@ -1444,12 +1443,10 @@ public class SDMSTriggerGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "Trigger: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -1529,7 +1526,6 @@ public class SDMSTriggerGeneric extends SDMSObject
 			myInsert.setLong(33, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "Trigger: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -1580,7 +1576,6 @@ public class SDMSTriggerGeneric extends SDMSObject
 			myUpdate.setLong(4, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "Trigger: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -1588,35 +1583,35 @@ public class SDMSTriggerGeneric extends SDMSObject
 	static public boolean checkObjectType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSTrigger.JOB_DEFINITION:
-		case SDMSTrigger.RESOURCE:
-		case SDMSTrigger.NAMED_RESOURCE:
-		case SDMSTrigger.OBJECT_MONITOR:
-			return true;
+			case SDMSTrigger.JOB_DEFINITION:
+			case SDMSTrigger.RESOURCE:
+			case SDMSTrigger.NAMED_RESOURCE:
+			case SDMSTrigger.OBJECT_MONITOR:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkAction(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSTrigger.SUBMIT:
-		case SDMSTrigger.RERUN:
-			return true;
+			case SDMSTrigger.SUBMIT:
+			case SDMSTrigger.RERUN:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSTrigger.IMMEDIATE_LOCAL:
-		case SDMSTrigger.BEFORE_FINAL:
-		case SDMSTrigger.AFTER_FINAL:
-		case SDMSTrigger.IMMEDIATE_MERGE:
-		case SDMSTrigger.FINISH_CHILD:
-		case SDMSTrigger.UNTIL_FINISHED:
-		case SDMSTrigger.UNTIL_FINAL:
-		case SDMSTrigger.WARNING:
-			return true;
+			case SDMSTrigger.IMMEDIATE_LOCAL:
+			case SDMSTrigger.BEFORE_FINAL:
+			case SDMSTrigger.AFTER_FINAL:
+			case SDMSTrigger.IMMEDIATE_MERGE:
+			case SDMSTrigger.FINISH_CHILD:
+			case SDMSTrigger.UNTIL_FINISHED:
+			case SDMSTrigger.UNTIL_FINAL:
+			case SDMSTrigger.WARNING:
+				return true;
 		}
 		return false;
 	}
@@ -1636,13 +1631,13 @@ public class SDMSTriggerGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSTrigger.MINUTE:
-		case SDMSTrigger.HOUR:
-		case SDMSTrigger.DAY:
-		case SDMSTrigger.WEEK:
-		case SDMSTrigger.MONTH:
-		case SDMSTrigger.YEAR:
-			return true;
+			case SDMSTrigger.MINUTE:
+			case SDMSTrigger.HOUR:
+			case SDMSTrigger.DAY:
+			case SDMSTrigger.WEEK:
+			case SDMSTrigger.MONTH:
+			case SDMSTrigger.YEAR:
+				return true;
 		}
 		return false;
 	}
@@ -1650,13 +1645,13 @@ public class SDMSTriggerGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSTrigger.MINUTE:
-		case SDMSTrigger.HOUR:
-		case SDMSTrigger.DAY:
-		case SDMSTrigger.WEEK:
-		case SDMSTrigger.MONTH:
-		case SDMSTrigger.YEAR:
-			return true;
+			case SDMSTrigger.MINUTE:
+			case SDMSTrigger.HOUR:
+			case SDMSTrigger.DAY:
+			case SDMSTrigger.WEEK:
+			case SDMSTrigger.MONTH:
+			case SDMSTrigger.YEAR:
+				return true;
 		}
 		return false;
 	}

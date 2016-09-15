@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -72,7 +71,6 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 	{
 		super(env);
 		if (table != null) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182009", "SchedulingHierarchy"));
 		}
 		table = (SDMSSchedulingHierarchyTable) this;
@@ -104,9 +102,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		Long p_createTs = env.txTime();
 		Long p_changerUId = env.cEnv.uid();
 		Long p_changeTs = env.txTime();
-
 		if(env.tx.mode == SDMSTransaction.READONLY) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182049", "SchedulingHierarchy"));
 		}
 		validate(env
@@ -150,14 +146,13 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 
 		SDMSSchedulingHierarchy p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
-			p = (SDMSSchedulingHierarchy)(o.toProxy());
+			p = (SDMSSchedulingHierarchy)(o.toProxy(env));
 			p.current = true;
 		} catch(SDMSException e) {
-			p = (SDMSSchedulingHierarchy)(o.toProxy());
+			p = (SDMSSchedulingHierarchy)(o.toProxy(env));
 			p.current = true;
 			env.tx.rollbackSubTransaction(env);
 			throw e;
@@ -200,21 +195,15 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		if (!SDMSSchedulingHierarchyGeneric.checkIsStatic(p_isStatic))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingHierarchy: $1 $2", "isStatic", p_isStatic));
 		if (!SDMSSchedulingHierarchyGeneric.checkIsDisabled(p_isDisabled))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingHierarchy: $1 $2", "isDisabled", p_isDisabled));
 		if (!SDMSSchedulingHierarchyGeneric.checkSuspend(p_suspend))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingHierarchy: $1 $2", "suspend", p_suspend));
 		if (!SDMSSchedulingHierarchyGeneric.checkResumeBase(p_resumeBase))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingHierarchy: $1 $2", "resumeBase", p_resumeBase));
 		if (!SDMSSchedulingHierarchyGeneric.checkMergeMode(p_mergeMode))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingHierarchy: $1 $2", "mergeMode", p_mergeMode));
-
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -269,7 +258,6 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 			validTo = r.getLong(19);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-
 			throw new FatalException(new SDMSMessage(env, "01110182045", "SchedulingHierarchy: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
@@ -303,7 +291,6 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		String squote = SystemEnvironment.SQUOTE;
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
-
 		ResultSet rset = stmt.executeQuery("SELECT " +
 		                                   tableName() + ".ID" +
 		                                   ", " + squote + "SE_PARENT_ID" + equote +

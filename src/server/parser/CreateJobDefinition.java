@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -52,7 +50,6 @@ public class CreateJobDefinition extends ManipJobDefinition
 	{
 		evaluateWith(sysEnv);
 		if(otype == null) {
-
 			type = SDMSSchedulingEntity.JOB;
 		} else {
 			type = otype.intValue();
@@ -63,8 +60,8 @@ public class CreateJobDefinition extends ManipJobDefinition
 			if(type == SDMSSchedulingEntity.BATCH) {
 				checkBatch(sysEnv);
 			} else {
-
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_MILESTONES);
+				checkMilestone(sysEnv);
 			}
 		}
 		if (!submitSuspended.booleanValue()) {
@@ -135,7 +132,6 @@ public class CreateJobDefinition extends ManipJobDefinition
 		if((se.getPrivilegeMask() & lpriv) != lpriv) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061440", "Incompatible grant"));
 		}
-
 		se.setInheritPrivs(sysEnv, new Long(lpriv));
 
 		if(dependencydeflist != null) {

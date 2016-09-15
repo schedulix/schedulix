@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -84,6 +82,11 @@ public class DropNamedResource extends Node
 			for(int i = 0; i < rv.size(); i++) {
 				SDMSResource r = (SDMSResource) rv.get(i);
 				r.delete(sysEnv);
+			}
+			rv = SDMSResourceTemplateTable.idx_nrId.getVector(sysEnv, nrId);
+			for(int i = 0; i < rv.size(); i++) {
+				SDMSResourceTemplate rt = (SDMSResourceTemplate) rv.get(i);
+				rt.delete(sysEnv);
 			}
 		}
 

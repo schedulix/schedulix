@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -64,66 +62,37 @@ public class ShowResource extends ShowCommented
 		throws SDMSException
 	{
 		Vector desc = new Vector();
-
 		desc.add("ID");
-
 		desc.add("NAME");
-
 		desc.add("SCOPENAME");
 		desc.add("OWNER");
-
 		desc.add("LINK_ID");
-
 		desc.add("LINK_SCOPE");
-
 		desc.add("BASE_ID");
-
 		desc.add("BASE_SCOPE");
-
 		desc.add("MANAGER_ID");
-
 		desc.add("MANAGER_NAME");
-
 		desc.add("MANAGER_SCOPENAME");
-
 		desc.add("USAGE");
-
 		desc.add("RESOURCE_STATE_PROFILE");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
-
 		desc.add("TAG");
-
 		desc.add("STATE");
-
 		desc.add("TIMESTAMP");
-
 		desc.add("REQUESTABLE_AMOUNT");
-
 		desc.add("DEFINED_AMOUNT");
-
 		desc.add("AMOUNT");
-
 		desc.add("FREE_AMOUNT");
-
 		desc.add("IS_ONLINE");
-
 		desc.add("FACTOR");
-
 		desc.add("TRACE_INTERVAL");
-
 		desc.add("TRACE_BASE");
-
 		desc.add("TRACE_BASE_MULTIPLIER");
-
 		desc.add("TD0_AVG");
-
 		desc.add("TD1_AVG");
-
 		desc.add("TD2_AVG");
-
 		desc.add("LW_AVG");
-
 		desc.add("LAST_WRITE");
 
 		desc.add("CREATOR");
@@ -131,11 +100,8 @@ public class ShowResource extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("ALLOCATIONS");
-
 		desc.add("PARAMETERS");
-
 		return desc;
 	}
 
@@ -289,6 +255,8 @@ public class ShowResource extends ShowCommented
 		SDMSOutputContainer vars = null;
 		if (r != null)
 			vars = r.getVariables(sysEnv);
+		else if (rt != null)
+			vars = rt.getVariables(sysEnv);
 		return vars;
 	}
 
@@ -297,7 +265,11 @@ public class ShowResource extends ShowCommented
 	{
 		SDMSResource r = null;
 		SDMSResourceTemplate rt = null;
-		r = (SDMSResource) prox;
+		try {
+			r = (SDMSResource) prox;
+		} catch (ClassCastException cce) {
+			rt = (SDMSResourceTemplate) prox;
+		}
 
 		Vector v = new Vector();
 		Long id = getId(sysEnv, r, rt);
@@ -357,7 +329,6 @@ public class ShowResource extends ShowCommented
 			v.add(null);
 		}
 		Long ts = getRsdTime(sysEnv, r, rt);
-
 		final Date d = new Date();
 		if(ts != null &&
 		   nr.getUsage(sysEnv).intValue() == SDMSNamedResource.SYNCHRONIZING &&
@@ -432,39 +403,22 @@ public class ShowResource extends ShowCommented
 		throws SDMSException
 	{
 		Vector rdesc = new Vector();
-
 		rdesc.add("ID");
-
 		rdesc.add("JOBID");
-
 		rdesc.add("MASTERID");
-
 		rdesc.add("JOBTYPE");
-
 		rdesc.add("JOBNAME");
-
 		rdesc.add("AMOUNT");
-
 		rdesc.add("KEEP_MODE");
-
 		rdesc.add("IS_STICKY");
-
 		rdesc.add("STICKY_NAME");
-
 		rdesc.add("STICKY_PARENT");
-
 		rdesc.add("STICKY_PARENT_TYPE");
-
 		rdesc.add("LOCKMODE");
-
 		rdesc.add("RSM_NAME");
-
 		rdesc.add("TYPE");
-
 		rdesc.add("TYPESORT");
-
 		rdesc.add("P");
-
 		rdesc.add("EP");
 		rdesc.add("PRIVS");
 
@@ -517,7 +471,6 @@ public class ShowResource extends ShowCommented
 		} else v.add(null);
 		int allocType = ra.getAllocationType(sysEnv).intValue();
 		if (allocType == SDMSResourceAllocation.REQUEST) {
-
 			Long nrId = nr.getId(sysEnv);
 			try {
 				rr = SDMSResourceRequirementTable.idx_seId_nrId_getUnique(sysEnv, new SDMSKey(seId, nrId), actVersion);
@@ -550,7 +503,6 @@ public class ShowResource extends ShowCommented
 			}
 		} else {
 			if (allocType == SDMSResourceAllocation.MASTER_REQUEST) {
-
 				v.add(ra.getAllocationTypeAsString(sysEnv));
 				v.add(MASTER_REQUEST);
 			} else {
@@ -586,28 +538,38 @@ public class ShowResource extends ShowCommented
 		SDMSNamedResource nr;
 		SDMSScope s;
 		SDMSFolder f;
-		String containerPath;
+		String containerPath = null;
 		SDMSSchedulingEntity se;
 		SDMSSubmittedEntity sme;
 		SDMSOutputContainer d_container = null;
 
 		SDMSProxy p = resource.resolve(sysEnv);
-		r = (SDMSResource) p;
-		if (!r.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
-			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411719", "Insufficient privileges"));
-		nr = SDMSNamedResourceTable.getObject(sysEnv, r.getNrId(sysEnv));
-		Long scopeId = r.getScopeId(sysEnv);
-		try {
-			s = SDMSScopeTable.getObject(sysEnv, scopeId);
-			containerPath = s.pathString(sysEnv);
-		} catch (NotFoundException nfe) {
+		if (p instanceof SDMSResource) {
+			r = (SDMSResource) p;
+			if (!r.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
+				throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411719", "Insufficient privileges"));
+			nr = SDMSNamedResourceTable.getObject(sysEnv, r.getNrId(sysEnv));
+			Long scopeId = r.getScopeId(sysEnv);
 			try {
-				f = SDMSFolderTable.getObject(sysEnv, scopeId);
-				containerPath = f.pathString(sysEnv);
-			} catch (NotFoundException nfe2) {
-				sme = SDMSSubmittedEntityTable.getObject(sysEnv, scopeId);
-				containerPath = sme.getSubmitPathString(sysEnv, true);
+				s = SDMSScopeTable.getObject(sysEnv, scopeId);
+				containerPath = s.pathString(sysEnv);
+			} catch (NotFoundException nfe) {
+				try {
+					f = SDMSFolderTable.getObject(sysEnv, scopeId);
+					containerPath = f.pathString(sysEnv);
+				} catch (NotFoundException nfe2) {
+					sme = SDMSSubmittedEntityTable.getObject(sysEnv, scopeId);
+					containerPath = sme.getSubmitPathString(sysEnv, true);
+				}
 			}
+		} else {
+			rt = (SDMSResourceTemplate) p;
+			if (!rt.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
+				throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411719", "Insufficient privileges"));
+			nr = SDMSNamedResourceTable.getObject(sysEnv, rt.getNrId(sysEnv));
+			Long seId = rt.getSeId(sysEnv);
+			se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
+			containerPath = se.pathString(sysEnv);
 		}
 
 		d_container = new SDMSOutputContainer(sysEnv, "Resource", fill_desc(sysEnv),

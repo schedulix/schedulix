@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -66,7 +64,6 @@ public class ShowSystem extends Node
 		"os.name",
 		"os.arch",
 		"os.version"
-
 	};
 
 	private boolean withLocks;
@@ -90,42 +87,29 @@ public class ShowSystem extends Node
 		Set s = SystemEnvironment.props.keySet();
 
 		desc.add("VERSION");
-
 		desc.add("MAX_LEVEL");
-
 		desc.add("NUM_CPU");
-
 		desc.add("MEM_USED");
-
 		desc.add("MEM_FREE");
-
 		desc.add("MEM_MAX");
-
 		desc.add("STARTTIME");
-
 		desc.add("UPTIME");
-
 		desc.add("HITRATE");
-
 		desc.add("LOCK_HWM");
-
 		desc.add("LOCKS_REQUESTED");
-
 		desc.add("LOCKS_USED");
-
 		desc.add("LOCKS_DISCARDED");
-
 		desc.add("CNT_RW_TX");
-
 		desc.add("CNT_DL");
-
 		desc.add("CNT_WL");
 		Iterator i = s.iterator();
 		Vector conf = new Vector();
 		while(i.hasNext()) {
 			String str = (String) i.next();
 			if(!str.equals(SystemEnvironment.S_DBPASSWD) &&
-			   !str.equals(SystemEnvironment.S_SYSPASSWD))
+			    !str.equals(SystemEnvironment.S_KEYSTOREPASSWORD) &&
+			    !str.equals(SystemEnvironment.S_TRUSTSTOREPASSWORD) &&
+			    !str.equals(SystemEnvironment.S_SYSPASSWD))
 				conf.add(str);
 		}
 		Collections.sort(conf);
@@ -133,7 +117,6 @@ public class ShowSystem extends Node
 		for(int j = 0; j < props.length; j++) {
 			desc.add(props[j].toUpperCase());
 		}
-
 		desc.add("WORKER");
 		if (withLocks)
 			desc.add("LOCKING STATUS");
@@ -173,7 +156,9 @@ public class ShowSystem extends Node
 		while(i.hasNext()) {
 			String str = (String) i.next();
 			if(!str.equals(SystemEnvironment.S_DBPASSWD) &&
-			   !str.equals(SystemEnvironment.S_SYSPASSWD)
+			    !str.equals(SystemEnvironment.S_KEYSTOREPASSWORD) &&
+			    !str.equals(SystemEnvironment.S_TRUSTSTOREPASSWORD) &&
+			    !str.equals(SystemEnvironment.S_SYSPASSWD)
 			  )
 				data.add(SystemEnvironment.props.get(str));
 		}
@@ -182,15 +167,11 @@ public class ShowSystem extends Node
 		}
 
 		w_desc = new Vector();
-
 		w_desc.add("ID");
 		w_desc.add("TYPE");
 		w_desc.add("NAME");
-
 		w_desc.add("STATE");
-
 		w_desc.add("TIME");
-
 		w_container = new SDMSOutputContainer(sysEnv, "worker", w_desc);
 
 		add_worker(sysEnv, w_container);

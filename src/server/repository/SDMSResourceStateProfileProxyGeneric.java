@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -46,6 +45,19 @@ public class SDMSResourceStateProfileProxyGeneric extends SDMSProxy
 	protected SDMSResourceStateProfileProxyGeneric(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	protected static SDMSResourceStateProfile getProxy (SystemEnvironment sysEnv, SDMSObject p_object)
+	{
+		int i = SDMSResourceStateProfileTable.table.tableIndex;
+		SDMSProxy p = SDMSRepository.getProxy(i);
+		if (p == null)
+			p = new SDMSResourceStateProfile (p_object);
+		else {
+			p.initProxy(p_object);
+		}
+		sysEnv.tx.addUsedProxy(i, p);
+		return (SDMSResourceStateProfile)p;
 	}
 
 	public String getName (SystemEnvironment env)
@@ -207,22 +219,22 @@ public class SDMSResourceStateProfileProxyGeneric extends SDMSProxy
 		else groups = checkGroups;
 
 		long p = 0;
-			if(env.cEnv.isUser() || env.cEnv.isJob()) {
-				if (env.cEnv.isJob()) {
-					HashSet hg = new HashSet();
-					SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(env, env.cEnv.uid());
-					Long smeOwner = sme.getOwnerId(env);
-					hg.add(smeOwner);
-					hg.add(SDMSObject.publicGId);
-					env.cEnv.pushGid(env, hg);
-				}
-				if(checkGroups == null)
-					groups.addAll(env.cEnv.gid());
-				if(groups.contains(SDMSObject.adminGId)) p = checkPrivs;
-				else {
-					p = p | SDMSPrivilege.VIEW & checkPrivs;
-				}
-			} else p = checkPrivs;
+		if(env.cEnv.isUser() || env.cEnv.isJob()) {
+			if (env.cEnv.isJob()) {
+				HashSet hg = new HashSet();
+				SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(env, env.cEnv.uid());
+				Long smeOwner = sme.getOwnerId(env);
+				hg.add(smeOwner);
+				hg.add(SDMSObject.publicGId);
+				env.cEnv.pushGid(env, hg);
+			}
+			if(checkGroups == null)
+				groups.addAll(env.cEnv.gid());
+			if(groups.contains(SDMSObject.adminGId)) p = checkPrivs;
+			else {
+				p = p | SDMSPrivilege.VIEW & checkPrivs;
+			}
+		} else p = checkPrivs;
 		return p;
 	}
 

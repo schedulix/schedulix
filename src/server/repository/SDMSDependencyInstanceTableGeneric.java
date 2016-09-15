@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -70,7 +69,6 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 	{
 		super(env);
 		if (table != null) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182009", "DependencyInstance"));
 		}
 		table = (SDMSDependencyInstanceTable) this;
@@ -100,9 +98,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		Long p_createTs = env.txTime();
 		Long p_changerUId = env.cEnv.uid();
 		Long p_changeTs = env.txTime();
-
 		if(env.tx.mode == SDMSTransaction.READONLY) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182049", "DependencyInstance"));
 		}
 		validate(env
@@ -140,14 +136,13 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 
 		SDMSDependencyInstance p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
-			p = (SDMSDependencyInstance)(o.toProxy());
+			p = (SDMSDependencyInstance)(o.toProxy(env));
 			p.current = true;
 		} catch(SDMSException e) {
-			p = (SDMSDependencyInstance)(o.toProxy());
+			p = (SDMSDependencyInstance)(o.toProxy(env));
 			p.current = true;
 			env.tx.rollbackSubTransaction(env);
 			throw e;
@@ -187,15 +182,11 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		if (!SDMSDependencyInstanceGeneric.checkDependencyOperation(p_dependencyOperation))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "DependencyInstance: $1 $2", "dependencyOperation", p_dependencyOperation));
 		if (!SDMSDependencyInstanceGeneric.checkState(p_state))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "DependencyInstance: $1 $2", "state", p_state));
 		if (!SDMSDependencyInstanceGeneric.checkIgnore(p_ignore))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "DependencyInstance: $1 $2", "ignore", p_ignore));
-
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -237,7 +228,6 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-
 			throw new FatalException(new SDMSMessage(env, "01110182045", "DependencyInstance: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;

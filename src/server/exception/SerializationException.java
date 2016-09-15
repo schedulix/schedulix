@@ -28,6 +28,8 @@ package de.independit.scheduler.server.exception;
 public class SerializationException extends RecoverableException
 {
 
+	private static final long serialVersionUID = 1L;
+
 	public SerializationException ()
 	{
 		super();
@@ -43,6 +45,8 @@ public class SerializationException extends RecoverableException
 		super(msg);
 	}
 
-	private static final long serialVersionUID = 1L;
-
+	public int getExceptionNumber()
+	{
+		return 8192;
+	}
 }

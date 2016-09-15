@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -62,6 +60,25 @@ public class ListExitStateTranslation extends Node
 			new SDMSMessage (sysEnv, "02111281855", "List of Exit State Translations"), desc);
 
 		Vector estp_v = new Vector();
+		Iterator i = SDMSExitStateTranslationProfileTable.table.iterator(sysEnv);
+		while(i.hasNext()) {
+			estp_v.add(i.next());
+		}
+
+		SDMSExitStateTranslationProfile estp;
+
+		i = estp_v.iterator();
+
+		Vector v;
+		while(i.hasNext()) {
+			estp = (SDMSExitStateTranslationProfile)(i.next());
+
+			v = new Vector();
+			v.add(estp.getId(sysEnv));
+			v.add(estp.getName(sysEnv));
+			v.add(estp.getPrivileges(sysEnv).toString());
+			d_container.addData(sysEnv, v);
+		}
 
 		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, 1));
 

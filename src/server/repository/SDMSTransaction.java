@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -70,13 +68,14 @@ public class SDMSTransaction
 	public    long    versionId;
 	public final long startTime;
 	public long endTime = 0;
-
 	private   HashSet touchList;
 	public    HashSet subTxLocks;
 	public long[] commitingTx;
 
 	public HashMap rscCache = null;
 	public HashMap envJSMap = null;
+
+	private SDMSProxy[] usedProxies = null;
 
 	public boolean traceSubTx = false;
 
@@ -91,7 +90,6 @@ public class SDMSTransaction
 		}
 		mode = m;
 		txId = nextId.next(env, m, false);
-
 		touchList = null;
 		subTxLocks = null;
 		if(m == READONLY) {
@@ -104,6 +102,14 @@ public class SDMSTransaction
 		startTime = System.currentTimeMillis();
 		subTxCheckPoints = new Stack();
 		thread = env.thread;
+		usedProxies = new SDMSProxy[SDMSRepository.getTableCount()];
+	}
+
+	public void addUsedProxy (int i, SDMSProxy p)
+	{
+		SDMSProxy fp = usedProxies[i];
+		usedProxies[i] = p;
+		p.next = fp;
 	}
 
 	public static long drawVersion(SystemEnvironment env) throws SDMSException
@@ -154,12 +160,10 @@ public class SDMSTransaction
 	public void setContextVersionId(SystemEnvironment env, Long version)
 		throws SDMSException
 	{
-
 		if (versionId == UNDEFINED || mode == READWRITE) {
 			throw new FatalException(new SDMSMessage(env,
 				"03212191505", "VersionId cannot be set within a writing transaction"));
 		} else {
-
 			synchronized(env.roTxList) {
 				env.roTxList.add(env, version);
 				env.roTxList.remove(env, versionId);
@@ -174,7 +178,6 @@ public class SDMSTransaction
 		if (traceSubTx)
 			SDMSThread.doTrace(null, "Commiting or rolling back Transaction", SDMSThread.SEVERITY_ERROR);
 		if (isCommit) {
-
 			if(subTxId != 0) {
 				throw new FatalException (new SDMSMessage (env, "02110301918",
 					"Unclosed subtransaction in transaction commit or rollback"));
@@ -196,7 +199,6 @@ public class SDMSTransaction
 				}
 			}
 		} else {
-
 			while(subTxId > 0) {
 				rollbackSubTransaction(env);
 			}
@@ -206,12 +208,12 @@ public class SDMSTransaction
 			if(mode != READONLY)
 				nextId.releaseVersion(env);
 			else {
-
 				env.roTxList.remove(env, versionId);
 			}
-			endTime = System.currentTimeMillis();
 			if (env.maxWriter > 1 && mode == READWRITE)
 				LockingSystem.release(env);
+			SDMSRepository.releaseProxies(usedProxies);
+			endTime = System.currentTimeMillis();
 			return;
 		}
 
@@ -231,15 +233,12 @@ public class SDMSTransaction
 					LockingSystem.lock(env, commitLock, lockmode);
 				try {
 					i = touchList.iterator();
-
 					while(i.hasNext()) {
 						ce = (SDMSChangeListElement) i.next();
-
 						ce.versions.flush(env, ce.isNew);
 					}
 				} catch (SDMSSQLException sqle) {
 					if (lockmode == ObjectLock.EXCLUSIVE) {
-
 						throw sqle;
 					}
 					again = true;
@@ -254,7 +253,6 @@ public class SDMSTransaction
 				}
 
 				SystemEnvironment.ticketThread.renewTicket(env);
-
 				env.dbConnection.commit();
 
 				if (env.maxWriter > 1)
@@ -266,16 +264,13 @@ public class SDMSTransaction
 
 		i = touchList.iterator();
 		while(i.hasNext()) {
-
 			ce = (SDMSChangeListElement) i.next();
-
 			ce.versions.commitOrRollback(env, versionId, ce.isNew, isCommit);
-
 		}
-
 		if (env.maxWriter > 1)
 			LockingSystem.release(env);
 		nextId.releaseVersion(env);
+		SDMSRepository.releaseProxies(usedProxies);
 		endTime = System.currentTimeMillis();
 	}
 
@@ -307,7 +302,6 @@ public class SDMSTransaction
 
 		HashSet oldList = touchList;
 		touchList = (HashSet) clStack.pop();
-
 		if (oldList != null) {
 			if (touchList == null) touchList = new HashSet();
 			touchList.addAll(oldList);
@@ -354,19 +348,15 @@ public class SDMSTransaction
 
 			s = ce.versions.o_v.size();
 			if (s == 0) {
-
 				continue;
 			}
 			SDMSObject o = (SDMSObject)(ce.versions.o_v.getLast());
-
 			if (o.subTxId != subTxId + 1) {
 				continue;
 			}
 			if (isCommit) {
-
 				o.subTxId = subTxId;
 				if (s > 1) {
-
 					o = (SDMSObject)(ce.versions.o_v.get(s - 2));
 					if (o.subTxId == subTxId) {
 						ce.versions.o_v.remove(s - 2);
@@ -374,20 +364,14 @@ public class SDMSTransaction
 					}
 				}
 			} else {
-
 				o.versions.table.unIndex(env, o);
-
 				o.isCurrent = false;
-
 				ce.versions.o_v.remove(s - 1);
-
 				if (s > 1) {
-
 					o = (SDMSObject)(ce.versions.o_v.getLast());
 					o.isCurrent = true;
 				} else {
 					if(! ce.isNew) {
-
 						o = (SDMSObject)(ce.versions.versions.lastElement());
 						if (o != null && o.validTo == Long.MAX_VALUE) {
 							o.isCurrent = true;
@@ -396,7 +380,6 @@ public class SDMSTransaction
 					o.versions.tx = null;
 				}
 			}
-
 		}
 
 		if (!isCommit && env.maxWriter > 1) {
@@ -438,7 +421,6 @@ class TxCounter
 	private static final int QUANTUM = 1000;
 	private static long nextId = 0;
 	private static long lastId;
-
 	private static long lastRoId;
 
 	private long commitingTx[];

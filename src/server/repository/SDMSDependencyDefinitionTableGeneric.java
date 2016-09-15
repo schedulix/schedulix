@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -66,7 +65,6 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 	{
 		super(env);
 		if (table != null) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182009", "DependencyDefinition"));
 		}
 		table = (SDMSDependencyDefinitionTable) this;
@@ -92,9 +90,7 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 		Long p_createTs = env.txTime();
 		Long p_changerUId = env.cEnv.uid();
 		Long p_changeTs = env.txTime();
-
 		if(env.tx.mode == SDMSTransaction.READONLY) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182049", "DependencyDefinition"));
 		}
 		validate(env
@@ -128,14 +124,13 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 
 		SDMSDependencyDefinition p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
-			p = (SDMSDependencyDefinition)(o.toProxy());
+			p = (SDMSDependencyDefinition)(o.toProxy(env));
 			p.current = true;
 		} catch(SDMSException e) {
-			p = (SDMSDependencyDefinition)(o.toProxy());
+			p = (SDMSDependencyDefinition)(o.toProxy(env));
 			p.current = true;
 			env.tx.rollbackSubTransaction(env);
 			throw e;
@@ -173,15 +168,11 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		if (!SDMSDependencyDefinitionGeneric.checkUnresolvedHandling(p_unresolvedHandling))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "DependencyDefinition: $1 $2", "unresolvedHandling", p_unresolvedHandling));
 		if (!SDMSDependencyDefinitionGeneric.checkMode(p_mode))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "DependencyDefinition: $1 $2", "mode", p_mode));
 		if (!SDMSDependencyDefinitionGeneric.checkStateSelection(p_stateSelection))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "DependencyDefinition: $1 $2", "stateSelection", p_stateSelection));
-
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -221,7 +212,6 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 			validTo = r.getLong(14);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-
 			throw new FatalException(new SDMSMessage(env, "01110182045", "DependencyDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
@@ -250,7 +240,6 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 		String squote = SystemEnvironment.SQUOTE;
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
-
 		ResultSet rset = stmt.executeQuery("SELECT " +
 		                                   tableName() + ".ID" +
 		                                   ", " + squote + "SE_DEPENDENT_ID" + equote +

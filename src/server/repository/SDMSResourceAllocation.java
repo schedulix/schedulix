@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -57,7 +56,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 	public void delete(SystemEnvironment sysEnv, boolean stickyCleanup, boolean deleteAll)
 		throws SDMSException
 	{
-
 		int refcount = getRefcount(sysEnv).intValue();
 		if (refcount > 1 && !deleteAll) {
 			setRefcount(sysEnv, new Integer(refcount -1));
@@ -76,7 +74,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 						new SDMSKey(new Long(-getStickyParent(sysEnv).longValue()),getRId(sysEnv), getStickyName(sysEnv)));
 
 				} catch(NotFoundException nfe) {
-
 					SDMSThread.doTrace(sysEnv.cEnv, ": No master reservation found for sticky allocation", SDMSThread.SEVERITY_ERROR);
 				}
 			}
@@ -87,7 +84,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 			int iraAmount = raAmount.intValue();
 			if (iraAmount != 0) {
 				if (smeId.longValue() > 0) {
-
 					if (getIsSticky(sysEnv).booleanValue()) {
 						final Long nParentId = new Long(-getStickyParent(sysEnv).longValue());
 						try {
@@ -98,7 +94,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 							int diff = mra.getOrigAmount(sysEnv).intValue() - mraAmount;
 							if (diff > 0) {
 								if (diff >= iraAmount) {
-
 									mra.setMyAmount(sysEnv, new Integer(mraAmount + iraAmount));
 									iraAmount = 0;
 								} else {
@@ -107,7 +102,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 								}
 							}
 						} catch (NotFoundException nfe) {
-
 						}
 					}
 				}
@@ -115,14 +109,12 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 					SDMSResource r = SDMSResourceTable.getObjectForUpdate(sysEnv, rId);
 					r.releaseAmount(sysEnv, iraAmount);
 				} catch(NotFoundException nfe) {
-
 				}
 			}
 		}
 		super.delete(sysEnv);
 
 		if (masterra != null) {
-
 			if (stickyCleanup) {
 					masterra.cleanupStickyGroup(sysEnv);
 			}
@@ -142,10 +134,15 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 							new SDMSKey(getStickyParent(sysEnv), getRId(sysEnv), stickyName));
 		for (int i = 0; i < rargv.size(); ++i) {
 			SDMSResourceAllocation ra = (SDMSResourceAllocation) rargv.get(i);
-			if (getId(sysEnv).equals(ra.getId(sysEnv)))
+			Long raId;
+			try {
+				raId = ra.getId(sysEnv);
+			} catch (NotFoundException e) {
+				continue;
+			}
+			if (getId(sysEnv).equals(raId))
 				continue;
 			Long smeId = ra.getSmeId(sysEnv);
-
 			Vector smerqv = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, smeId);
 			for (int j = 0; j < smerqv.size(); ++j) {
 				SDMSRunnableQueue rq = (SDMSRunnableQueue) smerqv.get(j);
@@ -153,7 +150,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 				SDMSnpSrvrSRFootprint npsfp = SDMSnpSrvrSRFootprintTable.idx_sId_getUnique(sysEnv, scopeId);
 				HashMap sfp = npsfp.getFp(sysEnv);
 				if (rId.equals(sfp.get(nrId))) {
-
 					Iterator nrit = sfp.keySet().iterator();
 					while (nrit.hasNext()) {
 						Long sfpNRId = (Long) nrit.next();
@@ -162,12 +158,10 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 						for (int k = 0; k < riv.size(); ++k) {
 							SDMSResourceAllocation ra2d = (SDMSResourceAllocation) riv.get(k);
 							if (sfpRId.equals(ra2d.getRId(sysEnv))) {
-
 								ra2d.delete(sysEnv, true, false);
 							}
 						}
 					}
-
 					rq.delete(sysEnv);
 				}
 			}
@@ -195,7 +189,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 		try {
 			r = SDMSResourceTable.getObject(sysEnv, getRId(sysEnv));
 		} catch (NotFoundException nfe) {
-
 			SDMSThread.doTrace(sysEnv.cEnv, "Cannot set allocation type of a Named Resource IGNORE Resource Allocation", SDMSThread.SEVERITY_ERROR);
 			return;
 		}
@@ -206,7 +199,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 			   p_allocType == MASTER_RESERVATION) {
 				Integer rAmount = r.getFreeAmount(sysEnv);
 				if (rAmount != null ) {
-
 					rAmount = new Integer(rAmount.intValue() - Math.max (getAmount(sysEnv).intValue(), 0));
 					r.setFreeAmount(sysEnv, rAmount);
 				}
@@ -214,7 +206,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 		}
 		super.setAllocationType(sysEnv, p_allocationType);
 		if(p_allocType == IGNORE) {
-
 			if(allocType == ALLOCATION || allocType == RESERVATION) {
 				Integer raAmount = getAmount(sysEnv);
 				if (raAmount.intValue() > 0) {
@@ -252,7 +243,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 							int diff = mra.getOrigAmount(sysEnv).intValue() - mraAmount;
 							if (diff > 0) {
 								if (diff >= iraAmount) {
-
 									mra.setMyAmount(sysEnv, new Integer(mraAmount + iraAmount));
 									iraAmount = 0;
 								} else {
@@ -261,7 +251,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 								}
 							}
 						} catch (NotFoundException nfe) {
-
 						}
 					}
 					r.releaseAmount(sysEnv, iraAmount);
@@ -276,7 +265,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 	public void setAmount (SystemEnvironment sysEnv, Integer p_amount)
 		throws SDMSException
 	{
-
 		int allocationType = getAllocationType(sysEnv);
 		if (allocationType == REQUEST || allocationType == MASTER_REQUEST) {
 			super.setAmount(sysEnv, new Integer(Math.max(p_amount, 0)));
@@ -295,7 +283,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 			if (fAmount != null) {
 				int rAmount = fAmount.intValue();
 				dAmount = nAmount - oAmount;
-
 				if (dAmount < 0 && nAmount < 0) {
 					dAmount -= nAmount;
 				}
@@ -319,7 +306,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 	public void setRefcount(SystemEnvironment sysEnv, Integer p_count)
 		throws SDMSException
 	{
-
 		super.setRefcount(sysEnv, p_count);
 	}
 }

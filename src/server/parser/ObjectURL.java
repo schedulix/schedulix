@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -104,7 +102,6 @@ public class ObjectURL
 		objId = id;
 		objType = (Integer) typeFromURL.get(t);
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, String n)
@@ -112,7 +109,6 @@ public class ObjectURL
 		name = n;
 		objType = (Integer) typeFromURL.get(t);
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, String n, WithItem s)
@@ -122,7 +118,6 @@ public class ObjectURL
 		objType = (Integer) typeFromURL.get(t);
 		seSpec = s;
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, PathVector p)
@@ -134,7 +129,6 @@ public class ObjectURL
 			path.remove(path.size() - 1);
 		}
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, PathVector p, WithItem s)
@@ -148,7 +142,6 @@ public class ObjectURL
 			path.remove(path.size() - 1);
 		}
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, PathVector p, ObjectURL o)
@@ -161,7 +154,6 @@ public class ObjectURL
 			path.remove(path.size() - 1);
 		}
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, String s, ObjectURL o)
@@ -170,7 +162,6 @@ public class ObjectURL
 		master = o;
 		name = s;
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, String s, ObjectURL o, WithItem inverse)
@@ -180,7 +171,6 @@ public class ObjectURL
 		name = s;
 		parserType = t;
 		triggerInverse = inverse;
-
 	}
 
 	public SDMSProxy resolve(SystemEnvironment sysEnv)
@@ -216,6 +206,9 @@ public class ObjectURL
 				break;
 			case SDMSObjectComment.EXIT_STATE_MAPPING:
 				p = SDMSExitStateMappingProfileTable.getObject(sysEnv, objId);
+				break;
+			case SDMSObjectComment.EXIT_STATE_TRANSLATION:
+				p = SDMSExitStateTranslationProfileTable.getObject(sysEnv, objId);
 				break;
 			case SDMSObjectComment.FOLDER:
 			case SDMSObjectComment.JOB_DEFINITION:
@@ -299,6 +292,9 @@ public class ObjectURL
 				break;
 			case SDMSObjectComment.EXIT_STATE_MAPPING:
 				p = getExitStateMapping(sysEnv);
+				break;
+			case SDMSObjectComment.EXIT_STATE_TRANSLATION:
+				p = getExitStateTranslation(sysEnv);
 				break;
 			case SDMSObjectComment.FOLDER:
 				p = getFolder(sysEnv);
@@ -408,6 +404,14 @@ public class ObjectURL
 		return p;
 	}
 
+	private SDMSExitStateTranslationProfile getExitStateTranslation(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSExitStateTranslationProfile p = null;
+		p = SDMSExitStateTranslationProfileTable.idx_name_getUnique(sysEnv, name);
+		return p;
+	}
+
 	private SDMSProxy getFolder(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
@@ -479,7 +483,12 @@ public class ObjectURL
 		final SDMSNamedResource nr = SDMSNamedResourceTable.getNamedResource(sysEnv, path);
 		final Long nrId = nr.getId(sysEnv);
 		final SDMSKey key = new SDMSKey(nrId, master.objId);
-		p = SDMSResourceTable.idx_nrId_scopeId_getUnique(sysEnv, key);
+		try {
+			p = SDMSResourceTable.idx_nrId_scopeId_getUnique(sysEnv, key);
+		} catch (NotFoundException nfe) {
+			objType = new Integer(SDMSObjectComment.RESOURCE_TEMPLATE);
+			p = SDMSResourceTemplateTable.idx_nrId_seId_getUnique(sysEnv, key);
+		}
 		return p;
 	}
 
@@ -612,6 +621,9 @@ public class ObjectURL
 				break;
 			case SDMSObjectComment.EXIT_STATE_MAPPING:
 				s = "EXIT STATE MAPPING " + (name != null ? name : objId.toString());
+				break;
+			case SDMSObjectComment.EXIT_STATE_TRANSLATION:
+				s = "EXIT STATE TRANSLATION " + (name != null ? name : objId.toString());
 				break;
 			case SDMSObjectComment.FOLDER:
 				s = "FOLDER " + (path != null ? path.toString() : objId.toString());

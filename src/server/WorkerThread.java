@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server;
 
 import java.io.*;
@@ -115,6 +113,7 @@ public class WorkerThread extends SDMSThread
 			state = null;
 			cEnv = n.getEnv();
 			n.getLock();
+			exceptionsToTrace = n.exceptionsToTrace;
 			commiting = false;
 			cEnv.setState(ConnectionEnvironment.ACTIVE);
 			cEnv.setLast();
@@ -124,13 +123,10 @@ public class WorkerThread extends SDMSThread
 			try {
 				int i = 0;
 				succeeded = false;
-
 				sav = cEnv.ostream;
 				cEnv.ostream = System.out;
 				SystemEnvironment.incrCntRwTx();
-
 				do {
-
 					cEnv.tx = new SDMSTransaction(env, n.txMode, n.contextVersion);
 					state_ts.setTime(cEnv.tx.startTime);
 					env.tx = cEnv.tx;
@@ -151,7 +147,6 @@ public class WorkerThread extends SDMSThread
 						if(n.txMode == SDMSTransaction.READWRITE) {
 							SDMSSmeCounterTable.updateCounter(env);
 						}
-
 						LockingSystem.release(env, workerLock);
 
 						env.inExecution = false;
@@ -161,7 +156,6 @@ public class WorkerThread extends SDMSThread
 							doTrace(cEnv, "Server Execution time for " + n.getClass() + " : " + (System.currentTimeMillis() - cEnv.tx.startTime) +
 								" ms -- Start Committing", SEVERITY_MESSAGE);
 						cEnv.tx.commit(env);
-
 						env.sched.publishRequestList(env);
 						i = retryCount;
 						succeeded = true;
@@ -176,39 +170,32 @@ public class WorkerThread extends SDMSThread
 						String msg = re.toString();
 						doTrace(cEnv, "RecoverableException: " + msg + " in Try " + (i + 1) + " of " + retryCount, SEVERITY_MESSAGE);
 						if (msg.contains("Connection lost")) {
-
 							env.dbConnection = Server.connectToDB(env);
 						}
 						i++;
 						if(i == retryCount) {
-
 							n.result.setError(new SDMSOutputError(re.errNumber(), re.toString()));
 						}
 					} catch (SQLException sqle) {
-
 						throw new FatalException(new SDMSMessage(env, "03110181514", "Error at Commit: $1", sqle.toString()));
 					} catch (FatalException fe) {
 						throw fe;
 					} catch (SDMSException se) {
 						i = retryCount;
-
 						n.result.setError(new SDMSOutputError(se.errNumber(), se.toString()));
 					} catch (StackOverflowError soe) {
 						i = retryCount;
 						doTrace(null, soe.toString(), soe.getStackTrace(), SEVERITY_ERROR);
 						n.result.setError(new SDMSOutputError("03805150911", "Stack Overflow ! Contact your System Administrator !"));
 					} catch(Exception fe) {
-
 						if (SystemEnvironment.fatalIsError) {
 							i = retryCount;
 							doTrace(null, fe.toString(), fe.getStackTrace(), SEVERITY_ERROR);
 							n.result.setError(new SDMSOutputError("03909211556", "Internal Error ! Contact your System Administrator !"));
 						} else throw fe;
 					} catch(OutOfMemoryError ome) {
-
 						throw ome;
 					} catch(Error fe) {
-
 						if (SystemEnvironment.fatalIsError) {
 							i = retryCount;
 							doTrace(null, fe.toString(), fe.getStackTrace(), SEVERITY_ERROR);
@@ -220,35 +207,28 @@ public class WorkerThread extends SDMSThread
 								cEnv.tx.rollback(env);
 								cEnv.ostream.flush();
 							} catch (DeadlockException de) {
-
 								throw new FatalException(
 								        new SDMSMessage(env, "03110181515", "Deadlock at Rollback"));
 							} catch (SQLException sqle) {
-
 								throw new FatalException(
 								        new SDMSMessage(env, "03110181516", "Rollback failed"));
 							}
 					}
 				} while(i < retryCount);
 				if (SystemEnvironment.auditFile != null && n.auditFlag) {
-
 					if (cEnv.actstmt != null)
 						AuditWriter.write(env, cEnv.tx.versionId, cEnv.actstmt);
 				}
 
 				cEnv.emptyGid(env);
-
 				cEnv.ostream = sav;
 				cEnv.lock().do_notify();
 
 			} catch(SDMSException fe) {
-
 				doTrace(null, fe.toString(), fe.getStackTrace(), SEVERITY_FATAL);
 			} catch(Exception fe) {
-
 				doTrace(null, fe.toString(), fe.getStackTrace(), SEVERITY_FATAL);
 			} catch(Error fe) {
-
 				doTrace(null, fe.toString(), fe.getStackTrace(), SEVERITY_FATAL);
 			} finally {
 				cEnv.worker = null;
@@ -262,7 +242,6 @@ public class WorkerThread extends SDMSThread
 		try {
 			env.dbConnection.close();
 		} catch(Throwable sqle) {
-
 		}
 		return;
 	}

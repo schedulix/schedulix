@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -54,6 +52,11 @@ public class RenameExitStateTranslation extends Node
 		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXIT_STATE_TRANSLATION);
+		SDMSExitStateTranslationProfile estp;
+
+		estp = (SDMSExitStateTranslationProfile) url.resolve(sysEnv);
+		estp.setName(sysEnv, name2);
+
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "02111281901", "Exit State Translation renamed"));
 	}

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server;
 
 import java.io.*;
@@ -147,7 +145,6 @@ public class SchedulingThread extends InternalSession
 
 	public void addToRequestList(SystemEnvironment sysEnv, Long smeId)
 	{
-
 		synchronized (resourceRequestLock) {
 			if (sysEnv.tx.resourceRequestList == null)
 				sysEnv.tx.resourceRequestList = new Vector<Long>();
@@ -185,30 +182,24 @@ public class SchedulingThread extends InternalSession
 	{
 		Vector<Long> v = getRequestList();
 		actualRequestList = v;
-
 		try {
-
 			for (int i = 0; i < v.size(); ++i) {
 				SDMSSubmittedEntity sme;
 				Long smeId = v.get(i);
 				Integer oldState;
 				int os;
-
 				try {
 					sme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
 					oldState = sme.getOldState(sysEnv);
 					if (oldState == null) {
-
 						continue;
 					}
 					os = oldState.intValue();
 				} catch (NotFoundException nfe) {
-
 					continue;
 				}
 				int state = sme.getState(sysEnv).intValue();
 				if (state == SDMSSubmittedEntity.DEPENDENCY_WAIT) {
-
 					requestSyncSme(sysEnv, sme, oldState.intValue());
 
 					if (sme.getState(sysEnv).intValue() != SDMSSubmittedEntity.ERROR) {
@@ -222,18 +213,14 @@ public class SchedulingThread extends InternalSession
 					}
 				} else {
 					if (state == SDMSSubmittedEntity.SYNCHRONIZE_WAIT) {
-
 						reevaluateJSAssignment(sysEnv, sme);
 						requestSysSme(sysEnv, sme);
-
 					} else {
-
 					}
 				}
 				needSched = true;
 			}
 		} catch (SDMSException e) {
-
 			throw e;
 		}
 	}
@@ -252,7 +239,6 @@ public class SchedulingThread extends InternalSession
 				SDMSScope s = SDMSScopeTable.getObject(sysEnv, id);
 				s.notify(sysEnv);
 			} catch (NotFoundException nfe) {
-
 				synchronized (jsToNotify) {
 					jsToNotify.remove(id);
 				}
@@ -268,7 +254,6 @@ public class SchedulingThread extends InternalSession
 		} catch (Throwable e) {
 
 			if (e instanceof SerializationException) {
-
 				if (actualRequestList != null) {
 					addToRequestList(actualRequestList);
 				}
@@ -296,7 +281,6 @@ public class SchedulingThread extends InternalSession
 
 		if(needReSched) {
 			doTrace(cEnv, "==============> Start Resource Rescheduling <=================\nStartTime = 0", SEVERITY_MESSAGE);
-
 			SDMSnpJobFootprintTable.table.clearTableUnlocked(sysEnv);
 			reschedule(sysEnv);
 			doTrace(cEnv, "==============> End Resource Rescheduling   <=================\nEndTime = " + (dts.getTime() - timer), SEVERITY_MESSAGE);
@@ -324,7 +308,6 @@ public class SchedulingThread extends InternalSession
 		notifyJobservers(sysEnv);
 
 		doTrace(cEnv, "---------------> Start Cleanup LifeTables   <-------------------\nStartTime = " + (dts.getTime() - timer), SEVERITY_MESSAGE);
-
 		long purgeLow = sysEnv.roTxList.first(sysEnv);
 		doTrace(cEnv, "purgeLow = " + purgeLow, SEVERITY_MESSAGE);
 		doTrace(cEnv, "purgeSetSize = " + sysEnv.nvPurgeSet.size(), SEVERITY_MESSAGE);
@@ -353,7 +336,6 @@ public class SchedulingThread extends InternalSession
 		try {
 			scheduleProtected(sysEnv);
 		} finally {
-
 			sysEnv.cEnv.popGid(sysEnv);
 			sysEnv.cEnv.setJobServer();
 		}
@@ -442,7 +424,6 @@ public class SchedulingThread extends InternalSession
 			v = SDMSResourceAllocationTable.idx_smeId.getVectorForUpdate(sysEnv, smeId);
 			for(int j = 0; j < v.size(); j++) {
 				ra = (SDMSResourceAllocation) v.get(j);
-
 				int allocType = ra.getAllocationType(sysEnv).intValue();
 				if(allocType != SDMSResourceAllocation.ALLOCATION &&
 				   allocType != SDMSResourceAllocation.IGNORE &&
@@ -506,7 +487,6 @@ public class SchedulingThread extends InternalSession
 			   sme.getParentSuspended(sysEnv).intValue() > 0			  ||
 			   sme.getOldState(sysEnv) != null)
 				continue;
-
 			syncScheduleSme(sysEnv, sme, resourceChain);
 		}
 	}
@@ -570,7 +550,6 @@ public class SchedulingThread extends InternalSession
 				}
 			}
 		}
-
 		if (cacheEntry == null || result == null) {
 			++envmiss;
 			Vector envv = SDMSEnvironmentTable.idx_neId.getVector(sysEnv, envId, actVersion);
@@ -578,32 +557,27 @@ public class SchedulingThread extends InternalSession
 			validFrom = new Long(ne.getValidFrom(sysEnv));
 			validTo = new Long(ne.getValidTo(sysEnv));
 			result = SDMSScopeTable.idx_type.getVectorForUpdate(sysEnv, new Integer(SDMSScope.SERVER));
-
 			Iterator i = result.iterator();
 			while (i.hasNext()) {
 				SDMSScope s = (SDMSScope) i.next();
 				if (!s.getIsRegistered(sysEnv).booleanValue()) {
 					i.remove();
-
 					continue;
 				}
 
 				Long sId = s.getId(sysEnv);
 				SDMSnpSrvrSRFootprint npsfp = SDMSnpSrvrSRFootprintTable.idx_sId_getUniqueForUpdate(sysEnv, sId);
 				HashMap sfp = npsfp.getFp(sysEnv);
-
 				for (int j = 0; j < envv.size(); ++j) {
 					SDMSEnvironment env = (SDMSEnvironment) envv.get(j);
 					Long nrId = env.getNrId(sysEnv);
 					if(!sfp.containsKey(nrId)) {
 						i.remove();
-
 						break;
 					}
 					SDMSResource r = SDMSResourceTable.getObjectForUpdate(sysEnv, (Long) sfp.get(nrId));
 					if(!r.getIsOnline(sysEnv).booleanValue()) {
 						i.remove();
-
 						break;
 					}
 				}
@@ -636,7 +610,6 @@ public class SchedulingThread extends InternalSession
 			npjfp = SDMSnpJobFootprintTable.idx_smeId_getUnique(sysEnv, sme.getId(sysEnv));
 		} catch (NotFoundException nfe) {
 			getJobFootprint(sysEnv, sme);
-
 			npjfp = SDMSnpJobFootprintTable.idx_smeId_getUnique(sysEnv, sme.getId(sysEnv));
 		}
 
@@ -659,15 +632,12 @@ public class SchedulingThread extends InternalSession
 					srId = (Long) sfp.get(nrId);
 					sr = SDMSResourceTable.getObjectForUpdate(sysEnv, srId);
 					if(sr.getId(sysEnv).equals(rId)) {
-
 						ra.setAllocationType(sysEnv, new Integer(SDMSResourceAllocation.ALLOCATION));
 					}
 				}
 				if (ra.getIsSticky(sysEnv).booleanValue()) {
-
 				}
 			}
-
 			if (ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.ALLOCATION) ra.delete(sysEnv, true, true);
 		}
 
@@ -729,7 +699,6 @@ public class SchedulingThread extends InternalSession
 					fitsSomewhere = true;
 				}
 			} catch (SDMSEscape e) {
-
 				sysEnv.tx.rollbackSubTransaction(sysEnv);
 				continue;
 			} catch (Exception e) {
@@ -748,7 +717,6 @@ public class SchedulingThread extends InternalSession
 					Vector rab = (Vector) rabv.get(vi);
 					if (((Boolean) rab.get(1)).booleanValue())
 						continue;
-
 					((SDMSResourceAllocation) rab.get(0)).cleanupStickyGroup(sysEnv);
 				}
 			}
@@ -784,7 +752,6 @@ public class SchedulingThread extends InternalSession
 		HashMap smefp = (HashMap) getJobFootprint(sysEnv, sme).get(FP_SCOPE);
 
 		doTrace(cEnv, ": Job " + sme.getId(sysEnv) + " is re-evaluated", SEVERITY_DEBUG);
-
 		long actVersion = sme.getSeVersion(sysEnv).longValue();
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion);
 		if(se.getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) return;
@@ -825,7 +792,6 @@ public class SchedulingThread extends InternalSession
 						}
 					}
 				}
-
 				SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUnique(sysEnv, new SDMSKey(smeId, sId));
 				rq.delete(sysEnv);
 			}
@@ -846,7 +812,6 @@ public class SchedulingThread extends InternalSession
 			HashMap fpFolder = jfp.getFpFolder(sysEnv);
 			requestLocalFolderResources(sysEnv, sme, smeId, fpFolder, type, masterMap, oldState);
 		} catch(NotFoundException nfe) {
-
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03501142150", "No footprint found for job $1", smeId));
 		}
 	}
@@ -862,7 +827,6 @@ public class SchedulingThread extends InternalSession
 			HashMap fpLocal = jfp.getFpLocal(sysEnv);
 			requestLocalFolderResources(sysEnv, sme, smeId, fpLocal, type, masterMap, oldState);
 		} catch(NotFoundException nfe) {
-
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03501142151", "No footprint found for job $1", smeId));
 		}
 	}
@@ -952,9 +916,7 @@ public class SchedulingThread extends InternalSession
 			ra.setRefcount(sysEnv, new Integer(ra.getRefcount(sysEnv).intValue() + 1));
 			return;
 		} catch (NotFoundException nfe) {
-
 		}
-
 		if(SDMSResourceAllocationTable.idx_smeId_rId_stickyName.containsKey(sysEnv, new SDMSKey(smeId, nrId, rr.getStickyName(sysEnv)))) return;
 
 		if(type == SDMSNamedResource.SYNCHRONIZING) {
@@ -1035,7 +997,6 @@ public class SchedulingThread extends InternalSession
 					if (ra.getRId(sysEnv).equals(rId)) {
 						raOK = true;
 						entry.set(1, Boolean.TRUE);
-
 						int raReqAmount = ra.getOrigAmount(sysEnv).intValue();
 						int raLockMode = ra.getLockmode(sysEnv).intValue();
 
@@ -1074,7 +1035,6 @@ public class SchedulingThread extends InternalSession
 					throw new SDMSEscape();
 				}
 			} else {
-
 				try {
 					SDMSResourceAllocationTable.table.create(sysEnv,
 							rId, nStickyParentId, nrId,
@@ -1089,7 +1049,6 @@ public class SchedulingThread extends InternalSession
 							lock,
 							ONE);
 				} catch (DuplicateKeyException dke) {
-
 				}
 			}
 		}
@@ -1145,7 +1104,6 @@ public class SchedulingThread extends InternalSession
 		resourcesReserved = reserveFp(sysEnv, sme, se, resourceChain, fpFolder, SDMSNamedResource.SYNCHRONIZING) &&
 					reserveFp(sysEnv, sme, se, resourceChain, fpLocal, SDMSNamedResource.SYNCHRONIZING);
 		if(!resourcesReserved) {
-
 			checkTimeout(sysEnv, sme, se, actVersion);
 			return;
 		}
@@ -1165,14 +1123,12 @@ public class SchedulingThread extends InternalSession
 
 			if(reserveSyncResources(sysEnv, sme, se, actVersion, sfp, resourceChain, rrvi)) {
 				resourcesReserved = true;
-
 				SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUniqueForUpdate(sysEnv, new SDMSKey(smeId, sId));
 				rq.setState(sysEnv, new Integer(SDMSSubmittedEntity.RESOURCE_WAIT));
 			}
 		}
 
 		if(resourcesReserved) {
-
 			Vector rv = SDMSResourceAllocationTable.idx_smeId.getVectorForUpdate(sysEnv, smeId);
 			for(int i = 0; i < rv.size(); i++) {
 				SDMSResourceAllocation ra = (SDMSResourceAllocation) rv.get(i);
@@ -1183,12 +1139,10 @@ public class SchedulingThread extends InternalSession
 					ra.delete(sysEnv, true, true);
 				}
 			}
-
 			rqv = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, smeId);
 			for(int i = 0; i < rqv.size(); i++) {
 				SDMSRunnableQueue rq = (SDMSRunnableQueue) rqv.get(i);
 				if(rq.getState(sysEnv).intValue() != SDMSSubmittedEntity.RESOURCE_WAIT) {
-
 					rq.delete(sysEnv);
 				}
 			}
@@ -1208,9 +1162,7 @@ public class SchedulingThread extends InternalSession
 		for(int j = 0; j < rav.size(); j++) {
 			SDMSResourceAllocation ra = (SDMSResourceAllocation) rav.get(j);
 			int raAllocationType = ra.getAllocationType(sysEnv).intValue();
-
 			if(raAllocationType == SDMSResourceAllocation.ALLOCATION) {
-
 				if(!jsv_used) {
 					for(int i = 0; i < sv.size(); i++) {
 						s = (SDMSScope) sv.get(i);
@@ -1220,7 +1172,6 @@ public class SchedulingThread extends InternalSession
 							jsv.addElement(s);
 							jsv_used = true;
 						}
-
 					}
 				} else {
 					Iterator jsi = jsv.iterator();
@@ -1229,7 +1180,6 @@ public class SchedulingThread extends InternalSession
 						SDMSnpSrvrSRFootprint npsfp = SDMSnpSrvrSRFootprintTable.idx_sId_getUnique(sysEnv, s.getId(sysEnv));
 						HashMap sfp = npsfp.getFp(sysEnv);
 						if(!sfp.containsValue(ra.getRId(sysEnv))) {
-
 							jsi.remove();
 						}
 					}
@@ -1307,7 +1257,6 @@ public class SchedulingThread extends InternalSession
 			long nextTimeout = sme.getSyncTs(sysEnv).longValue() + toTime;
 			if(nextTimeout < ts) {
 				doTrace(cEnv, ": Job " + sme.getId(sysEnv) + " run into timeout", SEVERITY_MESSAGE);
-
 				Long esdId, espId;
 				esdId = se.getTimeoutStateId(sysEnv);
 				espId = se.getEspId(sysEnv);
@@ -1339,7 +1288,6 @@ public class SchedulingThread extends InternalSession
 			sme = (SDMSSubmittedEntity) sv.get(i);
 			if(sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND || sme.getParentSuspended(sysEnv).intValue() > 0)
 				continue;
-
 			resourceScheduleSme(sysEnv, sme, resourceChain);
 		}
 	}
@@ -1361,7 +1309,6 @@ public class SchedulingThread extends InternalSession
 		if(resourcesReserved)
 			resourcesReserved = reserveFp(sysEnv, sme, se, resourceChain, fpFolder, SDMSNamedResource.SYSTEM);
 		if(!resourcesReserved) {
-
 			checkTimeout(sysEnv, sme, se, actVersion);
 			return;
 		}
@@ -1389,7 +1336,6 @@ public class SchedulingThread extends InternalSession
 		}
 		if(resourcesReserved) {
 			doTrace(cEnv, ": Job " + smeId + " added to Runnable Queue " + s.getId(sysEnv), SEVERITY_DEBUG);
-
 			Vector rv = SDMSResourceAllocationTable.idx_smeId.getVector(sysEnv, smeId);
 			for(int i = 0; i < rv.size(); i++) {
 				SDMSResourceAllocation ra = (SDMSResourceAllocation) rv.get(i);
@@ -1400,12 +1346,10 @@ public class SchedulingThread extends InternalSession
 					ra.delete(sysEnv, true, true);
 				}
 			}
-
 			Vector rqv = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, smeId);
 			for(int i = 0; i < rqv.size(); i++) {
 				rq = (SDMSRunnableQueue) rqv.get(i);
 				if(rq.getState(sysEnv).intValue() != SDMSSubmittedEntity.RUNNABLE) {
-
 					rq.delete(sysEnv);
 				}
 			}
@@ -1442,7 +1386,6 @@ public class SchedulingThread extends InternalSession
 				e = (SDMSEnvironment) p;
 				rr = null;
 			}
-
 			if(checkCondition) {
 				String condition = (rr == null ? e.getCondition(sysEnv) : rr.getCondition(sysEnv));
 				if (condition != null) {
@@ -1452,7 +1395,6 @@ public class SchedulingThread extends InternalSession
 							return false;
 						}
 					} catch (CommonErrorException cee) {
-
 						if (sysEnv.tx.mode == SDMSTransaction.READWRITE) {
 							SDMSNamedResource nr;
 							if (rr != null) {
@@ -1499,7 +1441,6 @@ public class SchedulingThread extends InternalSession
 				e = (SDMSEnvironment) p;
 				rr = null;
 			}
-
 			if(checkCondition) {
 				String condition = (rr == null ? e.getCondition(sysEnv) : rr.getCondition(sysEnv));
 				if (condition != null) {
@@ -1507,7 +1448,6 @@ public class SchedulingThread extends InternalSession
 					try {
 						if (! be.checkCondition(sysEnv, r, sme, null, null, evalScope)) return false;
 					} catch (CommonErrorException cee) {
-
 						SDMSNamedResource nr;
 						if (rr != null) {
 							nr = SDMSNamedResourceTable.getObject(sysEnv, rr.getNrId(sysEnv));
@@ -1587,7 +1527,6 @@ public class SchedulingThread extends InternalSession
 				} catch (NotFoundException nfe) {
 					if(SDMSResourceAllocationTable.idx_smeId_rId_stickyName.containsKey(sysEnv, new SDMSKey(smeId, nrId, rr.getStickyName(sysEnv))))
 						continue;
-
 					doTrace(cEnv, ": Job " +  smeId + " needs a resource " + nrId + "/" + rId +
 								" which is neither requested/reserved/allocated nor ignored", SEVERITY_ERROR);
 					continue;
@@ -1597,7 +1536,6 @@ public class SchedulingThread extends InternalSession
 				if(allocType == SDMSResourceAllocation.IGNORE) continue;
 				if(allocType == SDMSResourceAllocation.RESERVATION) continue;
 				if(allocType == SDMSResourceAllocation.ALLOCATION) continue;
-
 				if(SDMSResourceAllocationTable.idx_smeId_rId_stickyName.containsKey(sysEnv, new SDMSKey(smeId, nrId, rr.getStickyName(sysEnv))))
 					continue;
 
@@ -1617,12 +1555,10 @@ public class SchedulingThread extends InternalSession
 						mra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(sysEnv,
 												new SDMSKey(nStickyParent, rId, rrStickyName));
 					} catch (NotFoundException nfe) {
-
 						mra = createUpgradeMasterRequest(sysEnv, sme, rr, r, actVersion);
 					}
 
 					MasterReservationInfo mri = checkMasterReservation(sysEnv, sme, rr, stickyParent, r, rsrv);
-
 					if(mri.mustAllocate && (resourceChain != null)) {
 						resourceChain.set(new Reservator(rId, nStickyParent, mri.amount, mri.lockmode));
 						srv.add(mra);
@@ -1635,7 +1571,6 @@ public class SchedulingThread extends InternalSession
 						throw new SDMSEscape();
 					}
 					if(mri.mustAllocate) {
-
 						mra.setAllocationType(sysEnv, new Integer(SDMSResourceAllocation.MASTER_RESERVATION));
 					}
 				}
@@ -1647,9 +1582,7 @@ public class SchedulingThread extends InternalSession
 					resourceChain.set(new Reservator(rId, smeId, rr.getAmount(sysEnv).intValue(), rr.getLockmode(sysEnv).intValue()));
 				if(reason != SDMSResource.REASON_AVAILABLE) {
 					if(resourceChain == null) throw new SDMSEscape();
-
 					if((reason & (SDMSResource.REASON_STATE|SDMSResource.REASON_EXPIRE|SDMSResource.REASON_OFFLINE)) != 0) {
-
 						resourceChain.removeSme(smeId);
 						throw new SDMSEscape();
 					}
@@ -1660,7 +1593,6 @@ public class SchedulingThread extends InternalSession
 				ra.setAllocationType(sysEnv, new Integer(SDMSResourceAllocation.RESERVATION));
 
 				if(isSticky) {
-
 					int mAmount = mra.getAmount(sysEnv).intValue();
 					int raAmount = ra.getAmount(sysEnv).intValue();
 
@@ -1669,12 +1601,9 @@ public class SchedulingThread extends InternalSession
 			}
 			if(!allocSucceeded) throw new SDMSEscape();
 			if(resourceChain != null) {
-
 				resourceChain.removeSme(smeId);
-
 				for(int j = 0; j < srv.size(); j++) {
 					mra = (SDMSResourceAllocation) srv.get(j);
-
 					resourceChain.remove(mra.getRId(sysEnv), mra.getSmeId(sysEnv));
 				}
 			}
@@ -1739,7 +1668,6 @@ public class SchedulingThread extends InternalSession
 
 			seId = tsme.getSeId(sysEnv);
 			try {
-
 				trr = SDMSResourceRequirementTable.idx_seId_nrId_getUnique(sysEnv, new SDMSKey(seId, nrId), actVersion);
 			} catch (NotFoundException nfe) {
 				continue;
@@ -1813,7 +1741,6 @@ public class SchedulingThread extends InternalSession
 			mri.amount = ra.getAmount(sysEnv).intValue();
 			mri.lockmode = ra.getLockmode(sysEnv).intValue();
 		} catch (NotFoundException nfe) {
-
 			return mri;
 		}
 
@@ -1870,10 +1797,9 @@ public class SchedulingThread extends InternalSession
 
 				SDMSResourceAllocation ra = null;
 				try {
-					 ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUniqueForUpdate(sysEnv, new SDMSKey(smeId, rId, null));
+					ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUniqueForUpdate(sysEnv, new SDMSKey(smeId, rId, null));
 				} catch (NotFoundException nfe) {
 					if(SDMSResourceAllocationTable.idx_smeId_rId_stickyName.containsKey(sysEnv, new SDMSKey(smeId, nrId, null))) continue;
-
 					doTrace(cEnv, ": Job " +  smeId + " needs a resource " + nrId + "/" + rId +
 								" which is neither requested/reserved/allocated nor ignored", SEVERITY_ERROR);
 					continue;
@@ -1904,7 +1830,6 @@ public class SchedulingThread extends InternalSession
 			}
 			if(!allocSucceeded) throw new SDMSEscape();
 			if(resourceChain != null) {
-
 				resourceChain.removeSme(smeId);
 			}
 		} catch(SDMSEscape e) {
@@ -1993,6 +1918,21 @@ public class SchedulingThread extends InternalSession
 			fp.put(e.getNrId(sysEnv), e);
 		}
 
+		Long parentId = se.getFolderId(sysEnv);
+		do {
+			SDMSFolder f = SDMSFolderTable.getObject(sysEnv, parentId, version);
+			Long id = f.getEnvId(sysEnv);
+			if(id != null) {
+				v = SDMSEnvironmentTable.idx_neId.getVector(sysEnv, id, version);
+
+				for(int i = 0; i < v.size(); i++) {
+					e = (SDMSEnvironment) v.get(i);
+					fp.put(e.getNrId(sysEnv), e);
+				}
+			}
+			parentId = f.getParentId(sysEnv);
+		} while(parentId != null);
+
 		v = SDMSResourceRequirementTable.idx_seId.getVector(sysEnv, se.getFpId(sysEnv), version);
 
 		for(int i = 0; i < v.size(); i++) {
@@ -2051,11 +1991,13 @@ public class SchedulingThread extends InternalSession
 				rr = null;
 			}
 			if(rr == null) {
+				proxy.fix();
 				fpScope.put(nrId, proxy);
 				continue;
 			}
 			nr = SDMSNamedResourceTable.getObject(sysEnv, nrId);
 			if(nr.getUsage(sysEnv).intValue() == SDMSNamedResource.STATIC) {
+				rr.fix();
 				fpScope.put(nrId, rr);
 				continue;
 			}
@@ -2088,6 +2030,7 @@ public class SchedulingThread extends InternalSession
 							bestFit = r;
 							bestFitFId = fId;
 							Vector e = new Vector();
+							r.fix();
 							e.add(r);
 							e.add(fId);
 							myRscCache.put(k, e);
@@ -2102,7 +2045,6 @@ public class SchedulingThread extends InternalSession
 					}
 				}
 				if(bestFitFId != null) break;
-
 				doTrace(cEnv, "No folder Resource found for " + k, SEVERITY_DEBUG);
 				if (!hit) {
 					for (int kvi = 0; kvi < kv.size(); ++kvi) {
@@ -2138,6 +2080,7 @@ public class SchedulingThread extends InternalSession
 						bestFit = r;
 						bestFitSmeId = pSmeId;
 						Vector e = new Vector();
+						r.fix();
 						e.add(r);
 						e.add(pSmeId);
 						myRscCache.put(k, e);
@@ -2151,26 +2094,24 @@ public class SchedulingThread extends InternalSession
 					}
 				}
 			}
-
 			if(bestFitSmeId == null && !hit) {
 				doTrace(cEnv, "No sme Resource found for " + k, SEVERITY_DEBUG);
 				for (int kvi = 0; kvi < kv.size(); ++kvi) {
 					myRscCache.put(kv.get(kvi), null);
 				}
 			}
-
 			if(bestFitSmeId != null || bestFitFId != null) {
 				Integer requestableAmount = bestFit.getRequestableAmount(sysEnv);
 				Integer requestedAmount = rr.getAmount(sysEnv);
-
 				if(requestableAmount != null) {
 					if(requestableAmount.compareTo(requestedAmount) < 0 && sysEnv.tx.mode == SDMSTransaction.READWRITE) {
-
 						sme.setToError(sysEnv, "Job cannot run because of resource shortage on resource " + nr.pathString(sysEnv));
 					}
 				}
 				Vector v = new Vector();
+				rr.fix();
 				v.add(rr);
+				bestFit.fix();
 				v.add(bestFit);
 				if(bestFitSmeId != null) {
 					fpLocal.put(nrId, v);
@@ -2178,6 +2119,7 @@ public class SchedulingThread extends InternalSession
 					fpFolder.put(nrId, v);
 				}
 			} else {
+				rr.fix();
 				fpScope.put(nrId, rr);
 			}
 		}
@@ -2280,7 +2222,6 @@ public class SchedulingThread extends InternalSession
 				needReSched = true;
 				break;
 			case ALTER:
-
 				break;
 			case ALTER_REQAMOUNT:
 				needReSched = true;
@@ -2300,7 +2241,6 @@ public class SchedulingThread extends InternalSession
 	public void notifyChange(SystemEnvironment sysEnv, SDMSNamedResource nr, int change)
 		throws SDMSException
 	{
-
 		switch(change) {
 			case CREATE:
 				break;
@@ -2317,20 +2257,17 @@ public class SchedulingThread extends InternalSession
 	public void notifyChange(SystemEnvironment sysEnv, SDMSScope s, int change)
 		throws SDMSException
 	{
-
 		switch(change) {
 			case CREATE:
-			if (sysEnv.maxWriter > 1)
-				LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
+				if (sysEnv.maxWriter > 1)
+					LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 				SDMSnpSrvrSRFootprintTable.table.create(sysEnv, s.getId(sysEnv), null, getScopeFootprint(sysEnv, s));
-
 				break;
 			case ALTER:
-
 				break;
 			case DELETE:
-			if (sysEnv.maxWriter > 1)
-				LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
+				if (sysEnv.maxWriter > 1)
+					LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 				SDMSnpSrvrSRFootprint f = SDMSnpSrvrSRFootprintTable.idx_sId_getUnique(sysEnv, s.getId(sysEnv));
 				f.delete(sysEnv);
 				needReSched = true;
@@ -2344,13 +2281,12 @@ public class SchedulingThread extends InternalSession
 			case RESUME:
 				break;
 			case SHUTDOWN:
-
 				needSched = true;
 				break;
 			case MOVE:
 			case COPY:
-			if (sysEnv.maxWriter > 1)
-				LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
+				if (sysEnv.maxWriter > 1)
+					LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 				destroyEnvironment(sysEnv);
 				buildEnvironment(sysEnv, true);
 				needSched = true;
@@ -2512,7 +2448,6 @@ class prioComparator implements Comparator
 			if(l1 < l2) return -1;
 			if(l1 > l2) return 1;
 		} catch (SDMSException e) {
-
 			throw new RuntimeException("Error while comparing : " + e.toString());
 		}
 		return 0;

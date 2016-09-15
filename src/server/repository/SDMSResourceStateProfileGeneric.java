@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -239,9 +238,9 @@ public class SDMSResourceStateProfileGeneric extends SDMSObject
 		return;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSResourceStateProfile(this);
+		return SDMSResourceStateProfile.getProxy(sysEnv, this);
 	}
 
 	protected SDMSResourceStateProfileGeneric(Long p_id,
@@ -297,12 +296,10 @@ public class SDMSResourceStateProfileGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ResourceStateProfile: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -317,7 +314,6 @@ public class SDMSResourceStateProfileGeneric extends SDMSObject
 			myInsert.setLong (7, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ResourceStateProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -333,7 +329,6 @@ public class SDMSResourceStateProfileGeneric extends SDMSObject
 				        "DELETE FROM RESOURCE_STATE_PROFILE WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "ResourceStateProfile: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -343,7 +338,6 @@ public class SDMSResourceStateProfileGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "ResourceStateProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -368,7 +362,6 @@ public class SDMSResourceStateProfileGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "ResourceStateProfile: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -387,7 +380,6 @@ public class SDMSResourceStateProfileGeneric extends SDMSObject
 			myUpdate.setLong(7, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "ResourceStateProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

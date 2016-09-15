@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -187,62 +186,62 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	{
 		final Integer v = getObjectType (env);
 		switch (v.intValue()) {
-		case SDMSObjectComment.JOB_DEFINITION:
-			return "JOB_DEFINITION";
-		case SDMSObjectComment.EXIT_STATE_DEFINITION:
-			return "EXIT_STATE_DEFINITION";
-		case SDMSObjectComment.EXIT_STATE_PROFILE:
-			return "EXIT_STATE_PROFILE";
-		case SDMSObjectComment.EXIT_STATE_MAPPING:
-			return "EXIT_STATE_MAPPING";
-		case SDMSObjectComment.EXIT_STATE_TRANSLATION:
-			return "EXIT_STATE_TRANSLATION";
-		case SDMSObjectComment.FOLDER:
-			return "FOLDER";
-		case SDMSObjectComment.SCOPE:
-			return "SCOPE";
-		case SDMSObjectComment.NAMED_RESOURCE:
-			return "NAMED_RESOURCE";
-		case SDMSObjectComment.NICE_PROFILE:
-			return "NICE_PROFILE";
-		case SDMSObjectComment.RESOURCE:
-			return "RESOURCE";
-		case SDMSObjectComment.ENVIRONMENT:
-			return "ENVIRONMENT";
-		case SDMSObjectComment.FOOTPRINT:
-			return "FOOTPRINT";
-		case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
-			return "RESOURCE_STATE_DEFINITION";
-		case SDMSObjectComment.RESOURCE_STATE_PROFILE:
-			return "RESOURCE_STATE_PROFILE";
-		case SDMSObjectComment.RESOURCE_STATE_MAPPING:
-			return "RESOURCE_STATE_MAPPING";
-		case SDMSObjectComment.USER:
-			return "USER";
-		case SDMSObjectComment.TRIGGER:
-			return "TRIGGER";
-		case SDMSObjectComment.JOB:
-			return "JOB";
-		case SDMSObjectComment.EVENT:
-			return "EVENT";
-		case SDMSObjectComment.INTERVAL:
-			return "INTERVAL";
-		case SDMSObjectComment.SCHEDULE:
-			return "SCHEDULE";
-		case SDMSObjectComment.SCHEDULED_EVENT:
-			return "SCHEDULED_EVENT";
-		case SDMSObjectComment.GROUP:
-			return "GROUP";
-		case SDMSObjectComment.PARAMETER:
-			return "PARAMETER";
-		case SDMSObjectComment.POOL:
-			return "POOL";
-		case SDMSObjectComment.DISTRIBUTION:
-			return "DISTRIBUTION";
-		case SDMSObjectComment.WATCH_TYPE:
-			return "WATCH_TYPE";
-		case SDMSObjectComment.OBJECT_MONITOR:
-			return "OBJECT_MONITOR";
+			case SDMSObjectComment.JOB_DEFINITION:
+				return "JOB_DEFINITION";
+			case SDMSObjectComment.EXIT_STATE_DEFINITION:
+				return "EXIT_STATE_DEFINITION";
+			case SDMSObjectComment.EXIT_STATE_PROFILE:
+				return "EXIT_STATE_PROFILE";
+			case SDMSObjectComment.EXIT_STATE_MAPPING:
+				return "EXIT_STATE_MAPPING";
+			case SDMSObjectComment.EXIT_STATE_TRANSLATION:
+				return "EXIT_STATE_TRANSLATION";
+			case SDMSObjectComment.FOLDER:
+				return "FOLDER";
+			case SDMSObjectComment.SCOPE:
+				return "SCOPE";
+			case SDMSObjectComment.NAMED_RESOURCE:
+				return "NAMED_RESOURCE";
+			case SDMSObjectComment.NICE_PROFILE:
+				return "NICE_PROFILE";
+			case SDMSObjectComment.RESOURCE:
+				return "RESOURCE";
+			case SDMSObjectComment.ENVIRONMENT:
+				return "ENVIRONMENT";
+			case SDMSObjectComment.FOOTPRINT:
+				return "FOOTPRINT";
+			case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
+				return "RESOURCE_STATE_DEFINITION";
+			case SDMSObjectComment.RESOURCE_STATE_PROFILE:
+				return "RESOURCE_STATE_PROFILE";
+			case SDMSObjectComment.RESOURCE_STATE_MAPPING:
+				return "RESOURCE_STATE_MAPPING";
+			case SDMSObjectComment.USER:
+				return "USER";
+			case SDMSObjectComment.TRIGGER:
+				return "TRIGGER";
+			case SDMSObjectComment.JOB:
+				return "JOB";
+			case SDMSObjectComment.EVENT:
+				return "EVENT";
+			case SDMSObjectComment.INTERVAL:
+				return "INTERVAL";
+			case SDMSObjectComment.SCHEDULE:
+				return "SCHEDULE";
+			case SDMSObjectComment.SCHEDULED_EVENT:
+				return "SCHEDULED_EVENT";
+			case SDMSObjectComment.GROUP:
+				return "GROUP";
+			case SDMSObjectComment.PARAMETER:
+				return "PARAMETER";
+			case SDMSObjectComment.POOL:
+				return "POOL";
+			case SDMSObjectComment.DISTRIBUTION:
+				return "DISTRIBUTION";
+			case SDMSObjectComment.WATCH_TYPE:
+				return "WATCH_TYPE";
+			case SDMSObjectComment.OBJECT_MONITOR:
+				return "OBJECT_MONITOR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -286,10 +285,10 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	{
 		final Integer v = getInfoType (env);
 		switch (v.intValue()) {
-		case SDMSObjectComment.TEXT:
-			return "TEXT";
-		case SDMSObjectComment.URL:
-			return "URL";
+			case SDMSObjectComment.TEXT:
+				return "TEXT";
+			case SDMSObjectComment.URL:
+				return "URL";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -483,9 +482,9 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 		return;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSObjectComment(this);
+		return SDMSObjectComment.getProxy(sysEnv, this);
 	}
 
 	protected SDMSObjectCommentGeneric(Long p_id,
@@ -559,12 +558,10 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ObjectComment: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -585,7 +582,6 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 			myInsert.setLong(13, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ObjectComment: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -636,7 +632,6 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 			myUpdate.setLong(4, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ObjectComment: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -644,44 +639,44 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	static public boolean checkObjectType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSObjectComment.JOB_DEFINITION:
-		case SDMSObjectComment.EXIT_STATE_DEFINITION:
-		case SDMSObjectComment.EXIT_STATE_PROFILE:
-		case SDMSObjectComment.EXIT_STATE_MAPPING:
-		case SDMSObjectComment.EXIT_STATE_TRANSLATION:
-		case SDMSObjectComment.FOLDER:
-		case SDMSObjectComment.SCOPE:
-		case SDMSObjectComment.NAMED_RESOURCE:
-		case SDMSObjectComment.NICE_PROFILE:
-		case SDMSObjectComment.RESOURCE:
-		case SDMSObjectComment.ENVIRONMENT:
-		case SDMSObjectComment.FOOTPRINT:
-		case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
-		case SDMSObjectComment.RESOURCE_STATE_PROFILE:
-		case SDMSObjectComment.RESOURCE_STATE_MAPPING:
-		case SDMSObjectComment.USER:
-		case SDMSObjectComment.TRIGGER:
-		case SDMSObjectComment.JOB:
-		case SDMSObjectComment.EVENT:
-		case SDMSObjectComment.INTERVAL:
-		case SDMSObjectComment.SCHEDULE:
-		case SDMSObjectComment.SCHEDULED_EVENT:
-		case SDMSObjectComment.GROUP:
-		case SDMSObjectComment.PARAMETER:
-		case SDMSObjectComment.POOL:
-		case SDMSObjectComment.DISTRIBUTION:
-		case SDMSObjectComment.WATCH_TYPE:
-		case SDMSObjectComment.OBJECT_MONITOR:
-			return true;
+			case SDMSObjectComment.JOB_DEFINITION:
+			case SDMSObjectComment.EXIT_STATE_DEFINITION:
+			case SDMSObjectComment.EXIT_STATE_PROFILE:
+			case SDMSObjectComment.EXIT_STATE_MAPPING:
+			case SDMSObjectComment.EXIT_STATE_TRANSLATION:
+			case SDMSObjectComment.FOLDER:
+			case SDMSObjectComment.SCOPE:
+			case SDMSObjectComment.NAMED_RESOURCE:
+			case SDMSObjectComment.NICE_PROFILE:
+			case SDMSObjectComment.RESOURCE:
+			case SDMSObjectComment.ENVIRONMENT:
+			case SDMSObjectComment.FOOTPRINT:
+			case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
+			case SDMSObjectComment.RESOURCE_STATE_PROFILE:
+			case SDMSObjectComment.RESOURCE_STATE_MAPPING:
+			case SDMSObjectComment.USER:
+			case SDMSObjectComment.TRIGGER:
+			case SDMSObjectComment.JOB:
+			case SDMSObjectComment.EVENT:
+			case SDMSObjectComment.INTERVAL:
+			case SDMSObjectComment.SCHEDULE:
+			case SDMSObjectComment.SCHEDULED_EVENT:
+			case SDMSObjectComment.GROUP:
+			case SDMSObjectComment.PARAMETER:
+			case SDMSObjectComment.POOL:
+			case SDMSObjectComment.DISTRIBUTION:
+			case SDMSObjectComment.WATCH_TYPE:
+			case SDMSObjectComment.OBJECT_MONITOR:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkInfoType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSObjectComment.TEXT:
-		case SDMSObjectComment.URL:
-			return true;
+			case SDMSObjectComment.TEXT:
+			case SDMSObjectComment.URL:
+				return true;
 		}
 		return false;
 	}

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -108,7 +106,6 @@ public class AlterResource extends ManipResource
 		if(amount != null) {
 			if(amount.intValue() == -1) amount = null;
 			Integer oam = r.getDefinedAmount(sysEnv);
-
 			if (oam != null && amount != null && oam.intValue() > amount.intValue())
 				notify = SchedulingThread.ALTER_REQAMOUNT;
 			r.setDefinedAmount(sysEnv, amount);
@@ -122,7 +119,6 @@ public class AlterResource extends ManipResource
 			if(dt != null) {
 				if(dt.year == -1) {
 					dt.setMissingFieldsFromNow();
-
 				} else
 					dt.fixToMinDate();
 				rsdTime = new Long(dt.toDate().getTime());
@@ -145,22 +141,69 @@ public class AlterResource extends ManipResource
 		SystemEnvironment.sched.notifyChange(sysEnv, r, sId, notify);
 	}
 
+	private void alterResourceTemplate(SystemEnvironment sysEnv, SDMSResourceTemplate rt)
+	throws SDMSException
+	{
+		if(online != null) {
+			rt.setIsOnline(sysEnv, online);
+		}
+
+		if(status != null) {
+			final SDMSResourceStateDefinition rsd = SDMSResourceStateDefinitionTable.idx_name_getUnique(sysEnv, status);
+			final Long rsdId = rsd.getId(sysEnv);
+			final SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, rt.getNrId(sysEnv));
+			final Long rspId = nr.getRspId(sysEnv);
+			if (rspId == null) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03604041545", "Resource does not have a profile"));
+			}
+			if(!SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(rsdId, rspId)))
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03604041633", "Resource state is not contained within the resource state profile"));
+			rt.setRsdId(sysEnv, rsdId);
+		}
+
+		if(requestableAmount != null) {
+			if(requestableAmount.intValue() == -1) requestableAmount = null;
+			rt.setRequestableAmount(sysEnv, requestableAmount);
+		}
+
+		if(amount != null) {
+			if(amount.intValue() == -1) amount = null;
+			rt.setAmount(sysEnv, amount);
+		}
+
+		if(groupname != null) {
+			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(groupname, new Long(0))).getId(sysEnv);
+			ChownChecker.check(sysEnv, gId);
+			rt.setOwnerId(sysEnv, gId);
+		}
+
+		if(with.containsKey(ParseStr.S_PARAMETERS)) {
+			rt.alterVariables(sysEnv, parms, Long.MAX_VALUE);
+		}
+	}
+
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
 		SDMSResource r;
+		SDMSResourceTemplate rt;
 
 		collectWith(sysEnv);
 		if (resource != null)
 			pp = resource.resolve(sysEnv);
 
-		r = (SDMSResource) pp;
-		Long linkId = r.getLinkId(sysEnv);
-		while (linkId != null) {
-			r = SDMSResourceTable.getObject(sysEnv, linkId);
-			linkId = r.getLinkId(sysEnv);
+		if (pp instanceof SDMSResource) {
+			r = (SDMSResource) pp;
+			Long linkId = r.getLinkId(sysEnv);
+			while (linkId != null) {
+				r = SDMSResourceTable.getObject(sysEnv, linkId);
+				linkId = r.getLinkId(sysEnv);
+			}
+			alterResource(sysEnv, r);
+		} else {
+			rt = (SDMSResourceTemplate) pp;
+			alterResourceTemplate(sysEnv, rt);
 		}
-		alterResource(sysEnv, r);
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03202220027", "Resource altered"));
 	}

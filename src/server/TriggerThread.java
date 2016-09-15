@@ -76,13 +76,30 @@ public class TriggerThread extends InternalSession
 		nextTime = Long.MAX_VALUE;
 		Iterator i;
 		int ctr = 0;
+		doTrace(cEnv, "Start Trigger Check", SEVERITY_MESSAGE);
+		i = SDMSTriggerQueueTable.table.iterator(sysEnv, false );
+		while(i.hasNext()) {
+			SDMSTriggerQueue tq = (SDMSTriggerQueue) i.next();
+			++ctr;
+			try {
+				checkSingleTrigger(sysEnv, tq, now);
+			} catch (SerializationException e) {
+				throw e;
+			} catch (SDMSException e) {
+				Long trId = tq.getTrId(sysEnv);
+				Long smeId = tq.getSmeId(sysEnv);
+				doTrace (cEnv, "Error while processing Trigger " + trId +
+				         " for Submitted Entity " + smeId + " : " + e.toString(), SEVERITY_ERROR);
+			}
+		}
+		doTrace(cEnv, "End Trigger Check (" + ctr + " triggers checked)", SEVERITY_MESSAGE);
 		doTrace(cEnv, "Start Resuming Jobs", SEVERITY_MESSAGE);
+		ctr = 0;
 
 		if (sysEnv.maxWriter > 1)
 			LockingSystem.lock(sysEnv, jobsToResume, ObjectLock.EXCLUSIVE);
 		if (firstTime) {
-
-		i = SDMSSubmittedEntityTable.table.iterator(sysEnv,
+			i = SDMSSubmittedEntityTable.table.iterator(sysEnv,
 			new SDMSFilter() {
 				public boolean isValid(SystemEnvironment sysEnv, SDMSProxy p)
 				throws SDMSException {
@@ -112,7 +129,6 @@ public class TriggerThread extends InternalSession
 				try {
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
 				} catch (NotFoundException nfe) {
-
 					i.remove();
 					doTrace(cEnv, "Submitted Entity " + smeId + "not found (" + nfe.toString() + ")", SEVERITY_ERROR);
 					continue;
@@ -131,7 +147,6 @@ public class TriggerThread extends InternalSession
 						if (rts < nextTime) nextTime = rts;
 					}
 				} else {
-
 					doTrace(cEnv, "Submitted Entity " + smeId + " has resumeTs == null", SEVERITY_WARNING);
 				}
 			}
@@ -170,6 +185,30 @@ public class TriggerThread extends InternalSession
 			LockingSystem.release(sysEnv, jobsToResume);
 	}
 
+	public void checkSingleTrigger(SystemEnvironment sysEnv, SDMSTriggerQueue tq, long now)
+	throws SDMSException
+	{
+		long ntt = tq.getNextTriggerTime(sysEnv).longValue();
+		if(ntt <= now) {
+			Long trId = tq.getTrId(sysEnv);
+			SDMSTrigger t = SDMSTriggerTable.getObject(sysEnv, trId);
+			Long smeId = tq.getSmeId(sysEnv);
+			SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
+
+			int type = t.getType(sysEnv).intValue();
+			if(type == SDMSTrigger.UNTIL_FINISHED) {
+				int smeState = sme.getState(sysEnv).intValue();
+				if(smeState == SDMSSubmittedEntity.FINISHED || smeState == SDMSSubmittedEntity.BROKEN_FINISHED) {
+					return;
+				}
+			}
+			Long esdId = sme.getFinalEsdId(sysEnv);
+
+			t.trigger(sysEnv, esdId, smeId, tq, sme);
+		} else {
+			if (ntt < nextTime) nextTime = ntt;
+		}
+	}
 }
 
 class DoCheckTrigger extends Node
@@ -202,7 +241,6 @@ class DoCheckTrigger extends Node
 				SystemEnvironment.tt.checkTrigger(sysEnv);
 				break;
 			case INITIALIZE:
-
 				break;
 		}
 	}

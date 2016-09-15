@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -90,7 +89,6 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 	{
 		super(env);
 		if (table != null) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182009", "Trigger"));
 		}
 		table = (SDMSTriggerTable) this;
@@ -140,9 +138,7 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		Long p_createTs = env.txTime();
 		Long p_changerUId = env.cEnv.uid();
 		Long p_changeTs = env.txTime();
-
 		if(env.tx.mode == SDMSTransaction.READONLY) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182049", "Trigger"));
 		}
 		validate(env
@@ -214,14 +210,13 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 
 		SDMSTrigger p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
-			p = (SDMSTrigger)(o.toProxy());
+			p = (SDMSTrigger)(o.toProxy(env));
 			p.current = true;
 		} catch(SDMSException e) {
-			p = (SDMSTrigger)(o.toProxy());
+			p = (SDMSTrigger)(o.toProxy(env));
 			p.current = true;
 			env.tx.rollbackSubTransaction(env);
 			throw e;
@@ -278,27 +273,19 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		if (!SDMSTriggerGeneric.checkObjectType(p_objectType))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Trigger: $1 $2", "objectType", p_objectType));
 		if (!SDMSTriggerGeneric.checkAction(p_action))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Trigger: $1 $2", "action", p_action));
 		if (!SDMSTriggerGeneric.checkType(p_type))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Trigger: $1 $2", "type", p_type));
 		if (!SDMSTriggerGeneric.checkIsMaster(p_isMaster))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Trigger: $1 $2", "isMaster", p_isMaster));
 		if (!SDMSTriggerGeneric.checkIsSuspend(p_isSuspend))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Trigger: $1 $2", "isSuspend", p_isSuspend));
 		if (!SDMSTriggerGeneric.checkResumeBase(p_resumeBase))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Trigger: $1 $2", "resumeBase", p_resumeBase));
 		if (!SDMSTriggerGeneric.checkCheckBase(p_checkBase))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Trigger: $1 $2", "checkBase", p_checkBase));
-
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -388,7 +375,6 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 			validTo = r.getLong(33);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-
 			throw new FatalException(new SDMSMessage(env, "01110182045", "Trigger: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
@@ -436,7 +422,6 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		String squote = SystemEnvironment.SQUOTE;
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
-
 		ResultSet rset = stmt.executeQuery("SELECT " +
 		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NAME" + equote +

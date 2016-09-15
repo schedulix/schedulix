@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -196,15 +194,40 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 			if (trigDate == null) break;
 			if (trigDate.isNaD()) break;
 			if (trigDate.lt(finalDate)) {
-
 				try {
 					SDMSCalendarTable.table.create (sysEnv, scevId, TimerThread.dateToDateTimeLong(trigDate));
 				} catch (DuplicateKeyException dke) {
-
 				}
 				++nrEntries;
 			}
 			baseDate.set (trigDate.plus (1));
 		}
+	}
+
+	public long getPrivileges(SystemEnvironment sysEnv, long checkPrivs, boolean fastFail, Vector checkGroups)
+	throws SDMSException
+	{
+		long p, sceP, evtP;
+		Long sceId;
+		Long evtId;
+		SDMSSchedule sce;
+		SDMSEvent evt;
+
+		p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
+		if ((p & checkPrivs) == checkPrivs) return checkPrivs;
+
+		sceId = getSceId(sysEnv);
+		sce = SDMSScheduleTable.getObject(sysEnv, sceId);
+		sceP = sce.getPrivileges(sysEnv, checkPrivs, false, checkGroups);
+
+		evtId = getEvtId(sysEnv);
+		evt = SDMSEventTable.getObject(sysEnv, evtId);
+		evtP = evt.getPrivileges(sysEnv, checkPrivs, false, checkGroups);
+
+		p |= evtP;
+		p |= sceP;
+
+		p = addImplicitPrivs(p) & checkPrivs;
+		return p;
 	}
 }

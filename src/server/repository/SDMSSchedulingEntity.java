@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -169,7 +168,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 	{
 		Long seId = getId(sysEnv);
 		Long submitTs;
-
 		Date ts = new Date();
 		submitTs = ts.getTime();
 
@@ -179,14 +177,11 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                        "$1 $2 cannot be submitted as master", getTypeAsString(sysEnv), getName(sysEnv))
 			);
 		}
-
 		Long espId = getEspId(sysEnv);
 		SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject (sysEnv, espId);
 		if (esp.getIsValid(sysEnv).booleanValue() == false) {
-
 			esp.checkProfile(sysEnv);
 		}
-
 		if (suspended == null) {
 			suspended = new Integer(getSubmitSuspended(sysEnv) ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND);
 			if (suspended.intValue() == SDMSSubmittedEntity.SUSPEND) {
@@ -203,30 +198,30 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		Integer rawPrio = zero;
 		Integer nice = (niceValue == null ? new Integer(0) : niceValue);
 		switch(getType(sysEnv).intValue() ) {
-		case JOB:
-			if(prio == null) {
-				prio = new Integer(SchedulingThread.DEFAULT_PRIORITY + nice.intValue());
-			} else {
-				if(prio.intValue() >= SystemEnvironment.priorityLowerBound) {
-					prio = new Integer(prio.intValue() + nice.intValue());
-					if(prio.intValue() < SystemEnvironment.priorityLowerBound) {
-						prio = new Integer(SystemEnvironment.priorityLowerBound);
+			case JOB:
+				if(prio == null) {
+					prio = new Integer(SchedulingThread.DEFAULT_PRIORITY + nice.intValue());
+				} else {
+					if(prio.intValue() >= SystemEnvironment.priorityLowerBound) {
+						prio = new Integer(prio.intValue() + nice.intValue());
+						if(prio.intValue() < SystemEnvironment.priorityLowerBound) {
+							prio = new Integer(SystemEnvironment.priorityLowerBound);
+						}
 					}
+					rawPrio = new Integer(prio.intValue() * 100);
 				}
-				rawPrio = new Integer(prio.intValue() * 100);
-			}
-			break;
-		case BATCH:
-			if(prio != null) {
-				nice = new Integer(prio.intValue() + nice.intValue());
+				break;
+			case BATCH:
+				if(prio != null) {
+					nice = new Integer(prio.intValue() + nice.intValue());
+					prio = new Integer(SchedulingThread.DEFAULT_PRIORITY);
+				}
+				break;
+			case MILESTONE:
 				prio = new Integer(SchedulingThread.DEFAULT_PRIORITY);
-			}
-			break;
-		case MILESTONE:
-			prio = new Integer(SchedulingThread.DEFAULT_PRIORITY);
-			if (nice == null)
-				nice = new Integer(0);
-			break;
+				if (nice == null)
+					nice = new Integer(0);
+				break;
 		}
 		Integer minEP = null;
 		minEP = new Integer(SystemEnvironment.priorityLowerBound);
@@ -234,25 +229,24 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		Integer agingBase = null;
 		agingAmount = new Integer(SystemEnvironment.priorityDelay);
 		agingBase = new Integer(SDMSInterval.MINUTE);
-
 		switch(agingBase.intValue()) {
-		case SDMSInterval.MINUTE:
-			break;
-		case SDMSInterval.HOUR:
-			agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.HOUR_DUR_M));
-			break;
-		case SDMSInterval.DAY:
-			agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.DAY_DUR_M));
-			break;
-		case SDMSInterval.WEEK:
-			agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.WEEK_DUR_M));
-			break;
-		case SDMSInterval.MONTH:
-			agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.MONTH_DUR_M));
-			break;
-		case SDMSInterval.YEAR:
-			agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.YEAR_DUR_M));
-			break;
+			case SDMSInterval.MINUTE:
+				break;
+			case SDMSInterval.HOUR:
+				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.HOUR_DUR_M));
+				break;
+			case SDMSInterval.DAY:
+				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.DAY_DUR_M));
+				break;
+			case SDMSInterval.WEEK:
+				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.WEEK_DUR_M));
+				break;
+			case SDMSInterval.MONTH:
+				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.MONTH_DUR_M));
+				break;
+			case SDMSInterval.YEAR:
+				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.YEAR_DUR_M));
+				break;
 		}
 		agingBase = new Integer(SDMSInterval.MINUTE);
 		final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.table.create(sysEnv,
@@ -349,10 +343,9 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 						zero,
 		                                opSusresTs,
 						null
-		                                                                     );
+		);
 
 		Long smeId = sme.getId(sysEnv);
-
 		if (params != null) {
 			Iterator i = params.iterator();
 			while (i.hasNext()) {
@@ -372,7 +365,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			SDMSTrigger t = (SDMSTrigger) trv.get(i);
 			int trType = t.getType(sysEnv).intValue();
 			if(trType == SDMSTrigger.UNTIL_FINISHED || trType == SDMSTrigger.UNTIL_FINAL) {
-
 				SDMSTriggerQueueTable.table.create(sysEnv, sme.getId(sysEnv), t.getId(sysEnv), lzero, zero, zero);
 			}
 		}
@@ -395,7 +387,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		Long seId = getId(sysEnv);
 
 		Date ts = new Date();
-
 		long seVersion = SDMSTransaction.drawVersion(sysEnv);
 
 		Integer prio = new Integer(SchedulingThread.DEFAULT_PRIORITY);
@@ -445,7 +436,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 	public SDMSSchedulingEntity copy(SystemEnvironment sysEnv, Long targetFolderId, String name, HashMap relocationTable)
 	throws SDMSException
 	{
-
 		Long id = getId(sysEnv);
 		SDMSUser u = SDMSUserTable.getObject(sysEnv, sysEnv.cEnv.uid());
 
@@ -501,7 +491,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                          getInheritPrivs(sysEnv)
 		                                                                );
 		Long seId = se.getId(sysEnv);
-
 		Vector v_rr = SDMSResourceRequirementTable.idx_seId.getVector(sysEnv, id);
 		Iterator i_rr = v_rr.iterator();
 		while (i_rr.hasNext()) {
@@ -524,7 +513,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                               rr_o.getLockmode(sysEnv),
 			                               rr_o.getCondition(sysEnv)
 			                                                                        );
-
 			Vector v_rrs = SDMSResourceReqStatesTable.idx_rrId.getVector(sysEnv, rr_o.getId(sysEnv));
 			Iterator i_rrs = v_rrs.iterator();
 			while (i_rrs.hasNext()) {
@@ -536,7 +524,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			}
 
 		}
-
 		Vector v_pd = SDMSParameterDefinitionTable.idx_seId.getVector(sysEnv, id);
 		Iterator i_pd = v_pd.iterator();
 		while (i_pd.hasNext()) {
@@ -555,7 +542,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 				relocationTable.put(pd.getId(sysEnv), npd.getId(sysEnv));
 			}
 		}
-
 		Vector v_dd = SDMSDependencyDefinitionTable.idx_seDependentId.getVector(sysEnv, id);
 		Iterator i_dd = v_dd.iterator();
 		while (i_dd.hasNext()) {
@@ -569,7 +555,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                                dd_o.getStateSelection(sysEnv),
 			                                dd_o.getCondition(sysEnv)
 			                                                                          );
-
 			Vector v_ds = SDMSDependencyStateTable.idx_ddId.getVector(sysEnv, dd_o.getId(sysEnv));
 			Iterator i_ds = v_ds.iterator();
 			while (i_ds.hasNext()) {
@@ -582,7 +567,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			}
 
 		}
-
 		Vector v_sh = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, id);
 		Iterator i_sh = v_sh.iterator();
 		while (i_sh.hasNext()) {
@@ -605,9 +589,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                sh.getEstpId(sysEnv)
 			                                         );
 		}
-
 		boolean testInverse = false;
-
 		Vector v_tr = SDMSTriggerTable.idx_fireId.getVector(sysEnv, id);
 		do {
 			Iterator i_tr = v_tr.iterator();
@@ -643,7 +625,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 					                   tr_o.getCheckAmount(sysEnv),
 					                   tr_o.getCheckBase(sysEnv)
 					                                                );
-
 					Vector v_trs = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, tr_o.getId(sysEnv));
 					Iterator i_trs = v_trs.iterator();
 					while (i_trs.hasNext()) {
@@ -660,6 +641,21 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 				v_tr = SDMSTriggerTable.idx_seId.getVector(sysEnv, id);
 			testInverse = !testInverse;
 		} while(testInverse);
+		Vector v_rt = SDMSResourceTemplateTable.idx_seId.getVector(sysEnv, id);
+		Iterator i_rt = v_rt.iterator();
+		while(i_rt.hasNext()) {
+			SDMSResourceTemplate rt_o = (SDMSResourceTemplate) i_rt.next();
+			SDMSResourceTemplate rt_n = SDMSResourceTemplateTable.table.create(sysEnv,
+			                            rt_o.getNrId(sysEnv),
+			                            seId,
+			                            rt_o.getOwnerId(sysEnv),
+			                            rt_o.getRsdId(sysEnv),
+			                            rt_o.getRequestableAmount(sysEnv),
+			                            rt_o.getAmount(sysEnv),
+			                            rt_o.getIsOnline(sysEnv)
+			                                                                  );
+			rt_o.copyVariables(sysEnv, rt_n.getId(sysEnv));
+		}
 
 		Vector ocv = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, id);
 		for (int ii = 0; ii < ocv.size(); ++ii) {
@@ -680,7 +676,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 	throws SDMSException
 	{
 		Long id = getId(sysEnv);
-
 		Vector v_dd = SDMSDependencyDefinitionTable.idx_seDependentId.getVector(sysEnv, id);
 		Iterator i_dd = v_dd.iterator();
 		while (i_dd.hasNext()) {
@@ -690,7 +685,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 				dd.setSeRequiredId(sysEnv, requiredId);
 			}
 		}
-
 		Vector v_sh = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, id);
 		Iterator i_sh = v_sh.iterator();
 		while (i_sh.hasNext()) {
@@ -709,7 +703,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 				pd.setLinkPdId(sysEnv, linkId);
 			}
 		}
-
 		Vector v_tr = SDMSTriggerTable.idx_fireId.getVector(sysEnv, id);
 		Iterator i_tr = v_tr.iterator();
 		while (i_tr.hasNext()) {
@@ -719,7 +712,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 				tr.setSeId(sysEnv, seId);
 			}
 		}
-
 		v_tr = SDMSTriggerTable.idx_seId.getVector(sysEnv, id);
 		i_tr = v_tr.iterator();
 		while (i_tr.hasNext()) {
@@ -729,7 +721,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 				tr.setFireId(sysEnv, fireId);
 			}
 		}
-
 		Vector v_rr = SDMSResourceRequirementTable.idx_seId.getVector(sysEnv, id);
 		Iterator i_rr = v_rr.iterator();
 		while (i_rr.hasNext()) {
@@ -749,23 +740,17 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 	{
 		long p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
 		if(sysEnv.cEnv.isUser() && p != checkPrivs) {
-
 			long inheritPrivs = getInheritPrivs(sysEnv).longValue();
-
 			if ((checkPrivs & SDMSPrivilege.CREATE_PARENT_CONTENT) != 0) inheritPrivs = inheritPrivs | SDMSPrivilege.CREATE_PARENT_CONTENT;
 			long missingPrivs = checkPrivs & (~p) & inheritPrivs;
-
 			if ((p | missingPrivs) != checkPrivs && fastFail) return 0L;
 
 			Long parentId = getFolderId(sysEnv);
-
 			if(parentId != null && missingPrivs != 0) {
 				SDMSFolder po = SDMSFolderTable.getObject(sysEnv, parentId);
-
 				long parentPrivs = ((missingPrivs & SDMSPrivilege.CREATE_PARENT_CONTENT) != 0) ?
 				                   (missingPrivs & (~SDMSPrivilege.CREATE_PARENT_CONTENT)) | SDMSPrivilege.CREATE_CONTENT : missingPrivs;
 				parentPrivs = po.getPrivileges(sysEnv, parentPrivs, fastFail, checkGroups);
-
 				if ((parentPrivs & SDMSPrivilege.CREATE_CONTENT) != 0)
 					parentPrivs = parentPrivs | SDMSPrivilege.CREATE_PARENT_CONTENT;
 				p = p | parentPrivs & inheritPrivs;
@@ -780,7 +765,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 	{
 		long p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups, version);
 		if(sysEnv.cEnv.isUser() && p != checkPrivs) {
-
 			long inheritPrivs = 0;
 			try {
 				SDMSSchedulingEntity act = SDMSSchedulingEntityTable.getObject(sysEnv, getId(sysEnv));
@@ -788,21 +772,16 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			} catch (NotFoundException nfe) {
 
 			}
-
 			if ((checkPrivs & SDMSPrivilege.CREATE_PARENT_CONTENT) != 0) inheritPrivs = inheritPrivs | SDMSPrivilege.CREATE_PARENT_CONTENT;
 			long missingPrivs = checkPrivs & (~p) & inheritPrivs;
-
 			if ((p | missingPrivs) != checkPrivs && fastFail) return 0L;
 
 			Long parentId = getFolderId(sysEnv);
-
 			if(parentId != null && missingPrivs != 0) {
 				SDMSFolder po = SDMSFolderTable.getObject(sysEnv, parentId, version);
-
 				long parentPrivs = ((missingPrivs & SDMSPrivilege.CREATE_PARENT_CONTENT) != 0) ?
 				                   (missingPrivs & (~SDMSPrivilege.CREATE_PARENT_CONTENT)) | SDMSPrivilege.CREATE_CONTENT : missingPrivs;
 				parentPrivs = po.getPrivileges(sysEnv, parentPrivs, fastFail, checkGroups, version);
-
 				if ((parentPrivs & SDMSPrivilege.CREATE_CONTENT) != 0)
 					parentPrivs = parentPrivs | SDMSPrivilege.CREATE_PARENT_CONTENT;
 				p = p | parentPrivs & inheritPrivs;
@@ -817,18 +796,14 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 	public void checkSubmitForGroup (SystemEnvironment sysEnv, Long gId)
 	throws SDMSException
 	{
-
 		final Long uId = sysEnv.cEnv.uid();
-
 		if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
-
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId))) {
 				final SDMSUser  u = SDMSUserTable.getObject(sysEnv, uId);
 				final SDMSGroup g = SDMSGroupTable.getObject(sysEnv, gId);
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "02402180823",
 				                               "User $1 does not belong to Group $2", u.getName(sysEnv), g.getName(sysEnv)));
 			}
-
 			final Long oId = getOwnerId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(oId, uId))) {
 				Vector checkGroups = new Vector();
@@ -860,7 +835,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			}
 			e.delete(sysEnv);
 		}
-
 		Vector sv = null;
 		boolean done = false;
 		while (!done) {
@@ -869,23 +843,18 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			for(int i = 0; i < sv.size(); i++) {
 				SDMSSchedule s = (SDMSSchedule) sv.get(i);
 				Long sId = s.getId(sysEnv);
-
 				if (SDMSScheduledEventTable.idx_sceId.containsKey (sysEnv, sId)) continue;
-
 				if (SDMSScheduleTable.idx_parentId.containsKey (sysEnv, sId)) continue;
-
 				s.delete(sysEnv);
 				done = false;
 			}
 		}
-
 		if (sv != null) {
 			for(int i = 0; i < sv.size(); i++) {
 				SDMSSchedule s = (SDMSSchedule) sv.get(i);
 				s.setSeId(sysEnv, null);
 			}
 		}
-
 		Vector iv = null;
 		done = false;
 		while (!done) {
@@ -894,23 +863,18 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			for(int j = 0; j < iv.size(); j++) {
 				SDMSInterval i = (SDMSInterval) iv.get(j);
 				Long iId = i.getId(sysEnv);
-
 				if (SDMSIntervalTable.idx_embeddedIntervalId.containsKey (sysEnv, iId)) continue;
-
 				if (SDMSScheduleTable.idx_intId.containsKey (sysEnv, iId)) {
 					i.setSeId(sysEnv, null);
 					continue;
 				}
-
 				if (SDMSIntervalHierarchyTable.idx_childId.containsKey (sysEnv, iId)) continue;
-
 				IntervalUtil.killFilter (sysEnv, iId);
 				IntervalUtil.killSelections (sysEnv, iId);
 				i.delete(sysEnv);
 				done = false;
 			}
 		}
-
 		if (iv != null) {
 			for(int j = 0; j < iv.size(); j++) {
 				SDMSInterval i = (SDMSInterval) iv.get(j);
@@ -1036,6 +1000,12 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			for(int i = 0; i < ptv.size(); i++) {
 				final SDMSTrigger t = (SDMSTrigger) ptv.get(i);
 				t.delete(sysEnv);
+			}
+
+			final Vector rtv = SDMSResourceTemplateTable.idx_seId.getVector(sysEnv, seId);
+			for(int i = 0; i < rtv.size(); i++) {
+				final SDMSResourceTemplate rt = (SDMSResourceTemplate) rtv.get(i);
+				rt.delete(sysEnv);
 			}
 
 			se.removeFromTimeScheduling(sysEnv);

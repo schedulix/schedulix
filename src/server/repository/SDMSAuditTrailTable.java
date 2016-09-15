@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -60,8 +59,7 @@ public class SDMSAuditTrailTable extends SDMSAuditTrailTableGeneric
 	)
 		throws SDMSException
 	{
-
-		if (env.checkCompatLevel(SystemEnvironment.S_PROFESSIONAL)) {
+		if (env.checkFeature(SystemEnvironment.S_AUDITTRAIL)) {
 			return super.create(env ,p_userId ,p_ts , new Long(env.tx.txId), p_action ,p_objectType ,p_objectId ,p_originId ,p_isSetWarning ,p_actionInfo ,p_actionComment);
 		} else return null;
 	}

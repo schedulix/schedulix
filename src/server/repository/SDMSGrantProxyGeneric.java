@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -73,6 +72,19 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 	protected SDMSGrantProxyGeneric(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	protected static SDMSGrant getProxy (SystemEnvironment sysEnv, SDMSObject p_object)
+	{
+		int i = SDMSGrantTable.table.tableIndex;
+		SDMSProxy p = SDMSRepository.getProxy(i);
+		if (p == null)
+			p = new SDMSGrant (p_object);
+		else {
+			p.initProxy(p_object);
+		}
+		sysEnv.tx.addUsedProxy(i, p);
+		return (SDMSGrant)p;
 	}
 
 	public Long getObjectId (SystemEnvironment env)
@@ -322,7 +334,6 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFolderTable.tableName);
 		try {
@@ -333,7 +344,6 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSGroupTable.tableName);
 		try {
@@ -344,7 +354,6 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSIntervalTable.tableName);
 		try {
@@ -355,7 +364,6 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedEnvironmentTable.tableName);
 		try {
@@ -366,7 +374,6 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
 		try {
@@ -377,7 +384,6 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
 		try {
@@ -388,7 +394,6 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
 		try {
@@ -399,7 +404,6 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScheduleTable.tableName);
 		try {
@@ -410,7 +414,6 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScheduledEventTable.tableName);
 		try {
@@ -421,7 +424,6 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScopeTable.tableName);
 		try {
@@ -432,7 +434,6 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSSubmittedEntityTable.tableName);
 		try {
@@ -443,7 +444,6 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}

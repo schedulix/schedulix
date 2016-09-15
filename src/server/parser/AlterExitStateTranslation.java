@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -56,6 +54,80 @@ public class AlterExitStateTranslation extends Node
 		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXIT_STATE_TRANSLATION);
+		SDMSExitStateTranslationProfile estp;
+		try {
+			estp = (SDMSExitStateTranslationProfile) url.resolve(sysEnv);
+		} catch (NotFoundException nfe) {
+			if(noerr) {
+				result.setFeedback(new SDMSMessage(sysEnv, "03311130023", "No Exit State Translation altered"));
+				return;
+			}
+			throw nfe;
+		}
+		Long estpId = estp.getId(sysEnv);
+
+		Vector est_v = SDMSExitStateTranslationTable.idx_estpId.getVector(sysEnv, estpId);
+		SDMSExitStateTranslation est;
+		Iterator i = est_v.iterator();
+		while (i.hasNext()) {
+			est = (SDMSExitStateTranslation)(i.next());
+			est.delete(sysEnv);
+		}
+
+		Long esdIdFrom;
+		Long esdIdTo;
+		i = trans.iterator();
+		StatusTranslation st;
+		while (i.hasNext()) {
+			st = (StatusTranslation)i.next();
+			esdIdFrom = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, st.sfrom).getId(sysEnv);
+			esdIdTo = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, st.sto).getId(sysEnv);
+			try {
+				SDMSExitStateTranslationTable.table.create (sysEnv, estpId, esdIdFrom, esdIdTo);
+			} catch (DuplicateKeyException dke) {
+				throw new CommonErrorException(new SDMSMessage (sysEnv, "03110101310",
+				                               "Exit State $1 is translated twice", st.sfrom));
+			}
+		}
+
+		Vector se_v = SDMSSchedulingHierarchyTable.idx_estpId.getVector(sysEnv, estpId);
+		i = se_v.iterator();
+		SDMSSchedulingHierarchy sh;
+		Long seIdChild;
+		Long seIdParent;
+		Long espIdChild;
+		Long espIdParent;
+		SDMSSchedulingEntity seChild;
+		SDMSSchedulingEntity seParent;
+		while (i.hasNext()) {
+			sh = (SDMSSchedulingHierarchy)i.next();
+			seIdChild  = sh.getSeChildId(sysEnv);
+			seChild = SDMSSchedulingEntityTable.getObject(sysEnv, seIdChild);
+			espIdChild = seChild.getEspId(sysEnv);
+			seIdParent = sh.getSeParentId(sysEnv);
+			seParent = SDMSSchedulingEntityTable.getObject(sysEnv, seIdParent);
+			espIdParent = seParent.getEspId(sysEnv);
+			Vector v_childEsd = SDMSExitStateTable.idx_espId.getVector(sysEnv, espIdChild);
+			Iterator icesd = v_childEsd.iterator();
+			Long esdIdChild;
+			SDMSKey k;
+			while (icesd.hasNext()) {
+				Long esdIdChildOrig = ((SDMSExitState)(icesd.next())).getEsdId(sysEnv);
+				esdIdChild = estp.translate(sysEnv, esdIdChildOrig, false);
+				if (esdIdChild == null) continue;
+				k = new SDMSKey (espIdParent, esdIdChild);
+				if (!SDMSExitStateTable.idx_espId_esdId.containsKey(sysEnv, k)) {
+					Object[] p = new Object[5];
+					p[0] = SDMSExitStateDefinitionTable.getObject(sysEnv, esdIdChild).getName(sysEnv);
+					p[1] = SDMSExitStateProfileTable.getObject(sysEnv, espIdChild).getName(sysEnv);
+					p[2] = seChild.pathString(sysEnv);
+					p[3] = seParent.pathString(sysEnv);
+					p[4] = SDMSExitStateDefinitionTable.getObject(sysEnv, esdIdChildOrig).getName(sysEnv);
+					throw new CommonErrorException(new SDMSMessage (sysEnv, "02112172122",
+					                               "Parent Profile $2 of $4 does not contain translated State $1 <- $5 of $3", p));
+				}
+			}
+		}
 		result.setFeedback(new SDMSMessage(sysEnv, "03204112158", "Exit State Translation altered"));
 	}
 }

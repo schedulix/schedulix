@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -74,77 +72,42 @@ public class ListJobDefinitionHierarchy extends Node
 		Vector desc = new Vector();
 		SDMSKey key;
 		String	states;
-
 		stateStrings = new HashMap ();
-
 		desc.add("ID");
 		desc.add("NAME");
 		desc.add("OWNER");
-
 		desc.add("TYPE");
-
 		desc.add("RUN_PROGRAM");
-
 		desc.add("RERUN_PROGRAM");
-
 		desc.add("KILL_PROGRAM");
-
 		desc.add("WORKDIR");
-
 		desc.add("LOGFILE");
-
 		desc.add("TRUNC_LOG");
-
 		desc.add("ERRLOGFILE");
-
 		desc.add("TRUNC_ERRLOG");
-
 		desc.add("EXPECTED_RUNTIME");
-
 		desc.add("GET_EXPECTED_RUNTIME");
-
 		desc.add("PRIORITY");
-
 		desc.add("SUBMIT_SUSPENDED");
-
 		desc.add("MASTER_SUBMITTABLE");
-
 		desc.add("SAME_NODE");
-
 		desc.add("GANG_SCHEDULE");
-
 		desc.add("DEPENDENCY_MODE");
-
 		desc.add("ESP_NAME");
-
 		desc.add("ESM_NAME");
-
 		desc.add("ENV_NAME");
-
 		desc.add("FP_NAME");
-
 		desc.add("CHILDREN");
-
 		desc.add("SH_ID");
-
 		desc.add("IS_STATIC");
-
 		desc.add("IS_DISABLED");
-
 		desc.add("SH_PRIORITY");
-
 		desc.add("SH_SUSPEND");
-
 		desc.add("SH_ALIAS_NAME");
-
 		desc.add("MERGE_MODE");
-
 		desc.add("EST_NAME");
-
 		desc.add("IGNORED_DEPENDENCIES");
-
 		desc.add("HIERARCHY_PATH");
-
 		desc.add("STATES");
 		desc.add("PRIVS");
 
@@ -329,7 +292,12 @@ public class ListJobDefinitionHierarchy extends Node
 			v.add(sh.getMergeModeAsString(sysEnv));
 
 			Long estpId = sh.getEstpId(sysEnv);
-			v.add(SystemEnvironment.nullString);
+			if (estpId != null) {
+				SDMSExitStateTranslationProfile estp = SDMSExitStateTranslationProfileTable.getObject(sysEnv, estpId);
+				v.add(estp.getName(sysEnv));
+			} else {
+				v.add(SystemEnvironment.nullString);
+			}
 
 			Vector ids_v = SDMSIgnoredDependencyTable.idx_shId.getVector(sysEnv, shId);
 			String sep = "";
@@ -373,12 +341,10 @@ public class ListJobDefinitionHierarchy extends Node
 		Long esmpId = p_esmpId;
 		HashSet mappedExitStates = new HashSet();
 		if (p_seType == SDMSSchedulingEntity.JOB) {
-
 			if (esmpId == null) {
 				SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, p_espId);
 				esmpId = esp.getDefaultEsmpId(sysEnv);
 			}
-
 			Vector v_esm = SDMSExitStateMappingTable.idx_esmpId.getVector(sysEnv, esmpId);
 			Iterator i_esm = v_esm.iterator();
 			while (i_esm.hasNext()) {
@@ -386,10 +352,13 @@ public class ListJobDefinitionHierarchy extends Node
 				mappedExitStates.add (esm.getEsdId(sysEnv));
 			}
 		}
-
 		Vector v_es = SDMSExitStateTable.idx_espId.getVector(sysEnv, p_espId);
 		Vector v_resultStates = new Vector();
 		String unreachableState = null;
+		SDMSExitStateTranslationProfile estp = null;
+		if (p_estpId != null) {
+			estp = SDMSExitStateTranslationProfileTable.getObject(sysEnv, p_estpId);
+		}
 		Iterator i_es = v_es.iterator();
 		while (i_es.hasNext()) {
 			SDMSExitState es = (SDMSExitState)i_es.next();
@@ -402,6 +371,14 @@ public class ListJobDefinitionHierarchy extends Node
 			if (es.getIsFinal(sysEnv).booleanValue()) {
 				esd = SDMSExitStateDefinitionTable.getObject(sysEnv, esdId);
 				state = esd.getName(sysEnv);
+				if (estp != null) {
+					pesdId = estp.translate(sysEnv, esdId);
+					pesd = SDMSExitStateDefinitionTable.getObject(sysEnv, pesdId);
+					pstate = pesd.getName(sysEnv);
+					if (!pstate.equals(state)) {
+						state = state + ">" + pstate;
+					}
+				}
 				if (!mappedExitStates.contains(esdId)) {
 					state = "(" + state + ")";
 				}

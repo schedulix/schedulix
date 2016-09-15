@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -252,9 +251,9 @@ public class SDMSMemberGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSMember(this);
+		return SDMSMember.getProxy(sysEnv, this);
 	}
 
 	protected SDMSMemberGeneric(Long p_id,
@@ -310,12 +309,10 @@ public class SDMSMemberGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "Member: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -327,7 +324,6 @@ public class SDMSMemberGeneric extends SDMSObject
 			myInsert.setLong (7, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "Member: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -343,7 +339,6 @@ public class SDMSMemberGeneric extends SDMSObject
 				        "DELETE FROM MEMBER WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Member: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -353,7 +348,6 @@ public class SDMSMemberGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "Member: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -378,7 +372,6 @@ public class SDMSMemberGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "Member: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -394,7 +387,6 @@ public class SDMSMemberGeneric extends SDMSObject
 			myUpdate.setLong(7, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "Member: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

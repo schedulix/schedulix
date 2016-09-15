@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -260,9 +259,9 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 		return;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSNiceProfile(this);
+		return SDMSNiceProfile.getProxy(sysEnv, this);
 	}
 
 	protected SDMSNiceProfileGeneric(Long p_id,
@@ -322,12 +321,10 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "NiceProfile: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -343,7 +340,6 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 			myInsert.setLong (8, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "NiceProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -359,7 +355,6 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 				        "DELETE FROM NICE_PROFILE WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "NiceProfile: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -369,7 +364,6 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "NiceProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -395,7 +389,6 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "NiceProfile: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -415,7 +408,6 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 			myUpdate.setLong(8, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "NiceProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

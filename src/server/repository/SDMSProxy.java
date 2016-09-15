@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -46,9 +46,30 @@ public abstract class SDMSProxy implements Comparable
 
 	protected boolean     current;
 
+	protected SDMSProxy   next = null;
+
+	protected boolean fixed = false;
+
 	protected SDMSProxy(SDMSObject p_object)
 	{
 		object = p_object;
+		current = false;
+		lockedExclusive = false;
+	}
+
+	protected void initProxy(SDMSObject p_object)
+	{
+		object = p_object;
+	}
+
+	public void fix()
+	{
+		fixed = true;
+	}
+
+	protected void cleanupProxy()
+	{
+		object = null;
 		current = false;
 		lockedExclusive = false;
 	}
@@ -57,11 +78,9 @@ public abstract class SDMSProxy implements Comparable
 		throws SDMSException
 	{
 		if (current) {
-
 			if (!object.isCurrent) {
 				object = object.versions.get (env);
 			}
-
 			if (object.isDeleted) {
 				throw new FatalException (new SDMSMessage (env, "02110292004",
 							"Accessing a previously deleted object"));
@@ -80,13 +99,11 @@ public abstract class SDMSProxy implements Comparable
 			throw new FatalException (new SDMSMessage (env, "02110292014",
 						  "Trying to change object via readonly object reference"));
 		}
-
 		if (!lockedExclusive) {
 			if (env.maxWriter > 1)
 				LockingSystem.lock(env, object.versions, ObjectLock.EXCLUSIVE);
 			lockedExclusive = true;
 		}
-
 		checkRead(env);
 	}
 
@@ -105,13 +122,11 @@ public abstract class SDMSProxy implements Comparable
 	private void objectDelete(SystemEnvironment env, boolean memOnly)
 		throws SDMSException
 	{
-
 		if (!lockedExclusive) {
 			if (env.maxWriter > 1)
 				LockingSystem.lock(env, object.versions, ObjectLock.EXCLUSIVE);
 			lockedExclusive = true;
 		}
-
 		checkRead(env);
 		if(!checkPrivileges(env, SDMSPrivilege.DROP)) {
 			throw new AccessViolationException(accessViolationMessage(env, "03312191407"));
@@ -162,7 +177,6 @@ public abstract class SDMSProxy implements Comparable
 	public Vector getContent(SystemEnvironment env)
 		throws SDMSException
 	{
-
 		return null;
 	}
 

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -59,70 +57,39 @@ public class SsRFormatter implements Formatter
 	public Vector fillHeadInfo()
 	{
 		Vector desc = new Vector();
-
 		desc.add("ID");
-
 		desc.add("NR_ID");
-
 		desc.add("NAME");
-
 		desc.add("USAGE");
-
 		desc.add("NR_PRIVS");
-
 		desc.add("TAG");
 		desc.add("OWNER");
-
 		desc.add("LINK_ID");
-
 		desc.add("LINK_SCOPE");
-
 		desc.add("STATE");
-
 		desc.add("REQUESTABLE_AMOUNT");
-
 		desc.add("AMOUNT");
-
 		desc.add("FREE_AMOUNT");
-
 		desc.add("TOTAL_FREE_AMOUNT");
-
 		desc.add("IS_ONLINE");
-
 		desc.add("FACTOR");
-
 		desc.add("TIMESTAMP");
-
 		desc.add("SCOPE");
-
 		desc.add("MANAGER_ID");
-
 		desc.add("MANAGER_NAME");
-
 		desc.add("MANAGER_SCOPENAME");
-
 		desc.add("HAS_CHILDREN");
-
 		desc.add("POOL_CHILD");
-
 		desc.add("TRACE_INTERVAL");
-
 		desc.add("TRACE_BASE");
-
 		desc.add("TRACE_BASE_MULTIPLIER");
-
 		desc.add("TD0_AVG");
-
 		desc.add("TD1_AVG");
-
 		desc.add("TD2_AVG");
-
 		desc.add("LW_AVG");
-
 		desc.add("LAST_WRITE");
 
 		desc.add("PRIVS");
-
 		return desc;
 	}
 
@@ -134,9 +101,7 @@ public class SsRFormatter implements Formatter
 		SDMSNamedResource nr;
 		Long nrId;
 		boolean pool_child = false;
-
 		try {
-
 			nr = (SDMSNamedResource) co;
 			nrId = nr.getId(sysEnv);
 			if (namedResources != null)
@@ -145,7 +110,6 @@ public class SsRFormatter implements Formatter
 				scopeId = folderId;
 			pool_child = false;
 		} catch ( ClassCastException cce) {
-
 			SDMSResource r = (SDMSResource) co;
 			nrId = r.getNrId(sysEnv);
 			scopeId = r.getScopeId(sysEnv);
@@ -191,7 +155,6 @@ public class SsRFormatter implements Formatter
 			v.add(r.getIsOnline(sysEnv));
 			v.add(r.getFactor(sysEnv));
 			Long ts = r.getRsdTime(sysEnv);
-
 			Date d = new Date();
 			if(ts != null &&
 			   nr.getUsage(sysEnv).intValue() == SDMSNamedResource.SYNCHRONIZING &&
@@ -199,7 +162,6 @@ public class SsRFormatter implements Formatter
 				d.setTime(ts.longValue());
 				v.add(sysEnv.systemDateFormat.format(d));
 			} else v.add(null);
-
 			String scope;
 			try {
 				scope = SDMSScopeTable.getObject(sysEnv, scopeId).pathString(sysEnv);
@@ -234,39 +196,82 @@ public class SsRFormatter implements Formatter
 
 			v.add(r.getPrivileges(sysEnv).toString());
 		} catch (NotFoundException nfe) {
-
-			v.add(nr.getId(sysEnv));
-			v.add(nr.getId(sysEnv));
-			v.add(nr.pathVector(sysEnv));
-			v.add(nr.getUsageAsString(sysEnv));
-			v.add(nr.getPrivileges(sysEnv).toString());
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(Boolean.TRUE);
-			v.add(Boolean.FALSE);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add(null);
-			v.add("");
+			try {
+				SDMSResourceTemplate rt = SDMSResourceTemplateTable.idx_nrId_seId_getUnique(sysEnv, new SDMSKey(nr.getId(sysEnv), scopeId));
+				v.add(rt.getId(sysEnv));
+				v.add(nr.getId(sysEnv));
+				v.add(nr.pathVector(sysEnv));
+				v.add(nr.getUsageAsString(sysEnv));
+				v.add(nr.getPrivileges(sysEnv).toString());
+				v.add(null);
+				v.add(SDMSGroupTable.getObject(sysEnv, rt.getOwnerId(sysEnv)).getName(sysEnv));
+				v.add(null);
+				v.add(null);
+				if(rt.getRsdId(sysEnv) != null) {
+					v.add(SDMSResourceStateDefinitionTable.getObject(sysEnv, rt.getRsdId(sysEnv)).getName(sysEnv));
+				} else {
+					v.add(null);
+				}
+				Integer someAmount;
+				someAmount = rt.getRequestableAmount(sysEnv);
+				v.add(someAmount == null ? (Object)"INFINITE" : (Object)someAmount);
+				someAmount = rt.getAmount(sysEnv);
+				v.add(someAmount == null ? (Object)"INFINITE" : (Object)someAmount);
+				v.add(null);
+				v.add(null);
+				v.add(rt.getIsOnline(sysEnv));
+				v.add(null);
+				v.add(null);
+				SDMSSchedulingEntity sse = SDMSSchedulingEntityTable.getObject(sysEnv, scopeId);
+				v.add(sse.pathString(sysEnv));
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(Boolean.FALSE);
+				v.add(Boolean.FALSE);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(rt.getPrivileges(sysEnv).toString());
+			} catch (NotFoundException nfe2) {
+				v.add(nr.getId(sysEnv));
+				v.add(nr.getId(sysEnv));
+				v.add(nr.pathVector(sysEnv));
+				v.add(nr.getUsageAsString(sysEnv));
+				v.add(nr.getPrivileges(sysEnv).toString());
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(Boolean.TRUE);
+				v.add(Boolean.FALSE);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add(null);
+				v.add("");
+			}
 		}
 		return v;
 	}

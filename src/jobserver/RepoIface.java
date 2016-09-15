@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,7 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 package de.independit.scheduler.jobserver;
 
@@ -112,7 +111,6 @@ public class RepoIface
 
 			TimeoutThread timeoutThread = new TimeoutThread(5*60);
 			try {
-
 				timeoutThread.setExecuting(true);
 				timeoutThread.start();
 
@@ -232,15 +230,37 @@ public class RepoIface
 		final String repoUser = (String) cfg.get (Config.REPO_USER);
 		final String repoPass = (String) cfg.get (Config.REPO_PASS);
 
+		if (use_ssl) {
+			final String keyFile = (String) cfg.get (Config.KEYSTORE);
+			final String trustFile = (String) cfg.get (Config.TRUSTSTORE);
+			final String keyFilePw = (String) cfg.get (Config.KEYSTOREPW);
+			final String trustFilePw = (String) cfg.get (Config.TRUSTSTOREPW);
+			if (keyFile != null)
+				System.setProperty(SystemEnvironment.J_KEYSTORE, keyFile);
+			if (trustFile != null)
+				System.setProperty(SystemEnvironment.J_TRUSTSTORE, trustFile);
+
+			if (keyFilePw != null)
+				System.setProperty(SystemEnvironment.J_KEYSTOREPASSWORD, keyFilePw);
+			if (trustFilePw != null)
+				System.setProperty(SystemEnvironment.J_TRUSTSTOREPASSWORD, trustFilePw);
+		}
+
 		Trace.debug ("Trying " + repoUser + "/" + "********" + "@" + currentHost + ":" + currentPort + (use_ssl ? " (ssl) " : "") + "...");
 
 		request_reconnect = false;
 
 		try {
-			repoSock = new Socket();
-			repoSock.setPerformancePreferences(0, 1, 0);
-			repoSock.setTcpNoDelay(true);
-			repoSock.connect(new InetSocketAddress(InetAddress.getByName(currentHost), currentPort));
+			if (use_ssl) {
+				final SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+				final SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(InetAddress.getByName(currentHost), currentPort);
+				repoSock = sslsocket;
+			} else {
+				repoSock = new Socket();
+				repoSock.setPerformancePreferences(0, 1, 0);
+				repoSock.setTcpNoDelay(true);
+				repoSock.connect(new InetSocketAddress(InetAddress.getByName(currentHost), currentPort));
+			}
 		} catch (final UnknownHostException uhe) {
 			Trace.error ("(04301271454) " + currentHost + ": Host unknown");
 			isConnected = false;
@@ -258,7 +278,6 @@ public class RepoIface
 			try {
 				repoSock.close();
 			} catch (IOException ioe ) {
-				// ignore
 			}
 			isConnected = false;
 			return false;
@@ -300,9 +319,10 @@ public class RepoIface
 		boolean failed = false;
 
 		while (true) {
-
 			Boolean useSSL;
-			useSSL = Boolean.FALSE;
+			useSSL = (Boolean) cfg.get (Config.USE_SSL);
+			if (useSSL == null)
+				useSSL = Boolean.FALSE;
 			if (connect (((String) cfg.get (Config.REPO_HOST)),
 				     ((Long) cfg.get (Config.REPO_PORT)).intValue(),
 				     useSSL.booleanValue()
@@ -511,12 +531,10 @@ public class RepoIface
 		final SDMSOutput res = sdmsExec (command);
 		if (res.error != null) {
 			if (res.error.code.equals("03110251037")) {
-
 				Trace.error("Server responded with a not found error for job " + feil.getId());
 				Trace.error("The issued command was:");
 				Trace.error(command);
 				if(!feil.emergency_rename()) {
-
 				}
 			} else {
 				Utils.abortProgram (this, "(04301271504) Unexpected response: (" + res.error.code + ") " + res.error.message);
@@ -643,12 +661,10 @@ public class RepoIface
 		res = sdmsExec (cmd.toString());
 		if (res.error != null) {
 			if (res.error.code.equals("03110251037")) {
-
 				Trace.error("Server responded with a not found error for job " + jobId);
 				Trace.error("The issued command was:");
 				Trace.error(cmd.toString());
 				if(!feil.emergency_rename()) {
-
 				}
 			} else {
 				Utils.abortProgram (this, "(04301271507) Unexpected response: (" + res.error.code + ") " + res.error.message);
@@ -683,18 +699,15 @@ class TimeoutThread extends Thread
 			try {
 				sleep(timeoutLeft);
 			} catch (InterruptedException ie) {
-
 				long now = System.currentTimeMillis();
 				if (executing && (now - startTime < timeout)) {
 					timeoutLeft = timeout - (now - startTime);
 					continue;
 				}
 			}
-
 			if (executing) {
 				Utils.abortProgram ("(04407171144) Timeout on Command execution");
 			}
-
 		}
 	}
 }

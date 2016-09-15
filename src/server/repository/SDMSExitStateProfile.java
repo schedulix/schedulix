@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,7 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 package de.independit.scheduler.server.repository;
 
@@ -50,11 +49,8 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 		throws SDMSException
 	{
 		Long espId = getId(env);
-
 		Vector esm_v = SDMSExitStateMappingTable.idx_esmpId.getVector(env, esmpId);
-
 		Vector es_v = SDMSExitStateTable.idx_espId.getVector(env, espId);
-
 		Iterator i;
 		Iterator j;
 		i = esm_v.iterator();
@@ -86,7 +82,6 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 
 		Long defaultEsmpId = getDefaultEsmpId(sysEnv);
 		if (defaultEsmpId != null) {
-
 			validateMappingProfile(sysEnv, defaultEsmpId);
 		}
 
@@ -95,12 +90,10 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 		Long se_esmpId;
 		Iterator i = se_v.iterator();
 		while (i.hasNext()) {
-
 			se = (SDMSSchedulingEntity)i.next();
 
 			se_esmpId = se.getEsmpId(sysEnv);
 			if (se_esmpId != null) {
-
 				try {
 					validateMappingProfile(sysEnv, se_esmpId);
 				} catch (CommonErrorException ce) {
@@ -120,10 +113,158 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 					se.pathString(sysEnv)));
 			}
 
+			checkChildTranslations(sysEnv, espId, se);
+
+			checkParentTranslations(sysEnv, espId, se);
+
 			checkDependencies(sysEnv, espId, se);
 		}
-
 		setIsValid(sysEnv, Boolean.TRUE);
+	}
+
+	private void checkChildTranslations(
+	        SystemEnvironment sysEnv,
+	        Long espId,
+	        SDMSSchedulingEntity se
+	)
+	throws SDMSException
+	{
+		Vector sec_v = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, se.getId(sysEnv));
+
+		SDMSSchedulingHierarchy sh;
+		SDMSSchedulingEntity seChild;
+		Long espIdChild;
+		SDMSExitStateTranslationProfile estp;
+
+		Long estpId;
+		Iterator ic = sec_v.iterator();
+		while (ic.hasNext()) {
+			sh = (SDMSSchedulingHierarchy)ic.next();
+			seChild = SDMSSchedulingEntityTable.getObject(sysEnv, sh.getSeChildId(sysEnv));
+			estpId = sh.getEstpId(sysEnv);
+			if(estpId == null) {
+				estp = null;
+			} else {
+				estp = SDMSExitStateTranslationProfileTable.getObject(sysEnv, estpId);
+			}
+			espIdChild = seChild.getEspId(sysEnv);
+
+			if(estp == null) {
+				continue;
+			}
+
+			Vector v_childEs = SDMSExitStateTable.idx_espId.getVector(sysEnv, espIdChild);
+			Long esdIdChild;
+			Long esdIdParent;
+			SDMSKey k;
+			Iterator ices = v_childEs.iterator();
+			while (ices.hasNext()) {
+				SDMSExitState ces = (SDMSExitState)ices.next();
+				esdIdChild = ces.getEsdId(sysEnv);
+				esdIdParent = esdIdChild;
+
+				if(estp != null) {
+					esdIdParent = estp.translate(sysEnv, esdIdChild, false);
+					if (esdIdParent == null) continue;
+				}
+
+				k = new SDMSKey (espId, esdIdParent);
+				if (!SDMSExitStateTable.idx_espId_esdId.containsKey(sysEnv, k)) {
+					Object[] p = new Object[5];
+					p[0] = SDMSExitStateDefinitionTable.getObject(sysEnv, esdIdChild).getName(sysEnv);
+					p[1] = seChild.pathString(sysEnv);
+					p[2] = SDMSExitStateDefinitionTable.getObject(sysEnv, esdIdParent).getName(sysEnv);
+					p[3] = se.pathString(sysEnv);
+					p[4] = ( estp == null ?  "NONE" : estp.getName(sysEnv));
+					throw new CommonErrorException(new SDMSMessage (sysEnv, "02112172235",
+					                               "Profile doesn't contain state $3 of $4 translated from child state $1 of $2, Translation = [$5]", p));
+				} else {
+					SDMSExitState pes = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, k);
+					if (pes.getIsFinal(sysEnv).equals(Boolean.FALSE)) {
+						if (ces.getIsFinal(sysEnv).equals(Boolean.TRUE)) {
+							Object[] p = new Object[5];
+							p[0] = SDMSExitStateDefinitionTable.getObject(sysEnv, esdIdChild).getName(sysEnv);
+							p[1] = seChild.pathString(sysEnv);
+							p[2] = SDMSExitStateDefinitionTable.getObject(sysEnv, esdIdParent).getName(sysEnv);
+							p[3] = se.pathString(sysEnv);
+							p[4] = ( estp == null ?  "NONE" : estp.getName(sysEnv));
+							throw new CommonErrorException(new SDMSMessage (sysEnv, "02205061627",
+							                               "Invalid trasnlation from final child state $1 of $2 to non final state $3 of $4, Translation = [$5]", p));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void checkParentTranslations(
+	        SystemEnvironment sysEnv,
+	        Long espId,
+	        SDMSSchedulingEntity se
+	)
+	throws SDMSException
+	{
+		Vector v_es = SDMSExitStateTable.idx_espId.getVector(sysEnv, espId);
+		Vector v_sep = SDMSSchedulingHierarchyTable.idx_seChildId.getVector(sysEnv, se.getId(sysEnv));
+		SDMSSchedulingHierarchy sh;
+		SDMSSchedulingEntity seParent;
+		Long espIdParent;
+		Long estpId;
+		SDMSExitStateTranslationProfile estp;
+		Iterator ip = v_sep.iterator();
+		while (ip.hasNext()) {
+			sh = (SDMSSchedulingHierarchy)ip.next();
+			seParent = SDMSSchedulingEntityTable.getObject(sysEnv, sh.getSeParentId(sysEnv));
+			estpId = sh.getEstpId(sysEnv);
+
+			if(estpId == null) {
+				continue;
+			} else {
+				estp = SDMSExitStateTranslationProfileTable.getObject(sysEnv, estpId);
+			}
+
+			espIdParent = seParent.getEspId(sysEnv);
+			if (espIdParent.equals(espId)) {
+				continue;
+			}
+			Long esdIdChild;
+			Long esdIdParent;
+			SDMSKey k;
+			Iterator ipes = v_es.iterator();
+			while (ipes.hasNext()) {
+				SDMSExitState ces = (SDMSExitState)ipes.next();
+				esdIdChild = ces.getEsdId(sysEnv);
+				esdIdParent = esdIdChild;
+
+				esdIdParent = estp.translate(sysEnv, esdIdChild, false);
+				if (esdIdParent == null) continue;
+				k = new SDMSKey (espIdParent, esdIdParent);
+				if (!SDMSExitStateTable.idx_espId_esdId.containsKey(sysEnv, k)) {
+					SDMSSchedulingEntity seChild = SDMSSchedulingEntityTable.getObject(sysEnv, sh.getSeChildId(sysEnv));
+					Object[] p = new Object[4];
+					p[0] = SDMSExitStateDefinitionTable.getObject(sysEnv, esdIdChild).getName(sysEnv);
+					p[1] = seChild.pathString(sysEnv);
+					p[2] = seParent.pathString(sysEnv);
+					p[3] = estp.getName(sysEnv);
+					throw new CommonErrorException(new SDMSMessage (sysEnv, "03201292033",
+					                               "Profile contains state $1 not translating from $2 to $3 Translation $4", p));
+				} else {
+					SDMSExitState pes = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, k);
+					if (pes.getIsFinal(sysEnv).equals(Boolean.FALSE)) {
+						if (ces.getIsFinal(sysEnv).equals(Boolean.TRUE)) {
+							Object[] p = new Object[5];
+							p[0] = SDMSExitStateDefinitionTable.getObject(sysEnv, esdIdChild).getName(sysEnv);
+							p[1] = se.pathString(sysEnv);
+							p[2] = SDMSExitStateDefinitionTable.getObject(sysEnv, esdIdParent).getName(sysEnv);
+							p[3] = seParent.pathString(sysEnv);
+							p[4] = (estp == null ? "NONE" : estp.getName(sysEnv));
+							throw new CommonErrorException(new SDMSMessage (sysEnv, "02205061726",
+							                               "Invalid translation from final child state $1 of $2 to non final state $3 of $4, Translation = [$5]", p));
+						}
+					}
+				}
+			}
+		}
 	}
 
 	private void checkDependencies(
@@ -133,33 +274,25 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 		)
 		throws SDMSException
 	{
-
 		Vector v_es = SDMSExitStateTable.idx_espId.getVector(sysEnv, espId);
-
 		Vector v_dd = SDMSDependencyDefinitionTable.idx_seRequiredId.getVector(sysEnv, se.getId(sysEnv));
 		SDMSDependencyDefinition dd;
 		Iterator idd = v_dd.iterator();
 		while (idd.hasNext()) {
-
 			dd = (SDMSDependencyDefinition)idd.next();
-
 			Vector v_ds = SDMSDependencyStateTable.idx_ddId.getVector(sysEnv, dd.getId(sysEnv));
 			Iterator ids = v_ds.iterator();
 			dependencyStateLoop:
 			while (ids.hasNext()) {
-
 				SDMSDependencyState ds = (SDMSDependencyState)ids.next();
 				Long esdId = ds.getEsdId(sysEnv);
-
 				Iterator ies = v_es.iterator();
 				while (ies.hasNext()) {
 					SDMSExitState es = (SDMSExitState)ies.next();
 					if (esdId.equals(es.getEsdId(sysEnv)) && es.getIsFinal(sysEnv).booleanValue()) {
-
 						continue dependencyStateLoop;
 					}
 				}
-
 				SDMSSchedulingEntity se_dep = SDMSSchedulingEntityTable.getObject(sysEnv, dd.getSeDependentId(sysEnv));
 				SDMSExitStateDefinition esd = SDMSExitStateDefinitionTable.getObject(sysEnv, esdId);
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "02112201408",
@@ -173,13 +306,10 @@ public class SDMSExitStateProfile extends SDMSExitStateProfileProxyGeneric
 	public boolean isPendingState(SystemEnvironment sysEnv, Long esdId, long seVersion)
 		throws SDMSException
 	{
-
 		if (esdId == null) return false;
-
 		Long id = getId(sysEnv);
 		SDMSExitState es;
 		es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey (id, esdId), seVersion);
-
 		return !es.getIsFinal(sysEnv).booleanValue() && !es.getIsRestartable(sysEnv).booleanValue();
 	}
 

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -64,7 +63,6 @@ public class SDMSResourceStateMappingTableGeneric extends SDMSTable
 	{
 		super(env);
 		if (table != null) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182009", "ResourceStateMapping"));
 		}
 		table = (SDMSResourceStateMappingTable) this;
@@ -88,9 +86,7 @@ public class SDMSResourceStateMappingTableGeneric extends SDMSTable
 		Long p_createTs = env.txTime();
 		Long p_changerUId = env.cEnv.uid();
 		Long p_changeTs = env.txTime();
-
 		if(env.tx.mode == SDMSTransaction.READONLY) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182049", "ResourceStateMapping"));
 		}
 		validate(env
@@ -118,14 +114,13 @@ public class SDMSResourceStateMappingTableGeneric extends SDMSTable
 
 		SDMSResourceStateMapping p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
-			p = (SDMSResourceStateMapping)(o.toProxy());
+			p = (SDMSResourceStateMapping)(o.toProxy(env));
 			p.current = true;
 		} catch(SDMSException e) {
-			p = (SDMSResourceStateMapping)(o.toProxy());
+			p = (SDMSResourceStateMapping)(o.toProxy(env));
 			p.current = true;
 			env.tx.rollbackSubTransaction(env);
 			throw e;
@@ -159,7 +154,6 @@ public class SDMSResourceStateMappingTableGeneric extends SDMSTable
 	                       )
 	throws SDMSException
 	{
-
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -192,7 +186,6 @@ public class SDMSResourceStateMappingTableGeneric extends SDMSTable
 			validTo = r.getLong(11);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-
 			throw new FatalException(new SDMSMessage(env, "01110182045", "ResourceStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
@@ -218,7 +211,6 @@ public class SDMSResourceStateMappingTableGeneric extends SDMSTable
 		String squote = SystemEnvironment.SQUOTE;
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
-
 		ResultSet rset = stmt.executeQuery("SELECT " +
 		                                   tableName() + ".ID" +
 		                                   ", " + squote + "RSMP_ID" + equote +

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -79,17 +77,11 @@ public class ListGrant extends Node
 		Vector desc = new Vector();
 
 		desc.add("ID");
-
 		desc.add("GROUP");
-
 		desc.add("PRIVS");
-
 		desc.add("INHERITED_PRIVS");
-
 		desc.add("EFFECTIVE_PRIVS");
-
 		desc.add("ORIGIN");
-
 		desc.add("OWNER");
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv, "03302111221", "List of Grants"), desc);
@@ -130,7 +122,6 @@ public class ListGrant extends Node
 				SDMSGrant grant = (SDMSGrant) gv.get(i);
 				long privs = grant.getPrivs(sysEnv).longValue();
 				if ((privs & remainingInheritPrivs) != 0) {
-
 					groups.add(grant.getGId(sysEnv));
 				}
 			}
@@ -178,7 +169,6 @@ public class ListGrant extends Node
 					privs = 0;
 				}
 				if (grantObj != obj) {
-
 					privs = privs & remainingInheritPrivs;
 				}
 				if ((effectivePrivs & remainingInheritPrivs) != 0 &&
@@ -224,11 +214,9 @@ public class ListGrant extends Node
 
 					d_container.addData(sysEnv, v);
 				}
-
 				if (ownerId != null && ownerId.equals(gId))
 					remainingInheritPrivs = 0;
 				else
-
 					remainingInheritPrivs = remainingInheritPrivs & inheritPrivs & (~privs) & effectivePrivs;
 				if (remainingInheritPrivs == 0)
 					grantObj = null;
@@ -268,6 +256,9 @@ public class ListGrant extends Node
 					break;
 				case SDMSObjectComment.EXIT_STATE_MAPPING:
 					p = SDMSExitStateMappingProfileTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.EXIT_STATE_TRANSLATION:
+					p = SDMSExitStateTranslationProfileTable.getObject(sysEnv, objId);
 					break;
 				case SDMSObjectComment.FOLDER:
 				case SDMSObjectComment.JOB_DEFINITION:
@@ -328,7 +319,6 @@ public class ListGrant extends Node
 					break;
 			}
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -346,13 +336,9 @@ public class ListGrant extends Node
 		Vector desc = new Vector();
 
 		desc.add("ID");
-
 		desc.add("TYPE");
-
 		desc.add("SUBTYPE");
-
 		desc.add("NAME");
-
 		desc.add("PRIVS");
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv, "03302111221", "List of Grants"), desc);
@@ -362,7 +348,6 @@ public class ListGrant extends Node
 			prox = resolveById(sysEnv, gr.getObjectType(sysEnv), gr.getObjectId(sysEnv));
 			long pr = gr.getPrivs(sysEnv).longValue();
 			if (prox == null) {
-
 				for (int j = 0; j < SDMSPrivilege.MANAGE_PRIVS.length; ++j) {
 					if ((SDMSPrivilege.MANAGE_PRIVS[j] & pr) != SDMSPrivilege.NOPRIVS) {
 						Vector v = new Vector();
@@ -383,6 +368,9 @@ public class ListGrant extends Node
 						} else if (SDMSPrivilege.MANAGE_PRIVS[j] ==  SDMSPrivilege.MANAGE_ESM) {
 							v.add("exit state mapping");
 							p.setPriv(sysEnv, SDMSExitStateMappingProfile.privilegeMask);
+						} else if (SDMSPrivilege.MANAGE_PRIVS[j] ==  SDMSPrivilege.MANAGE_EST) {
+							v.add("exit state translation");
+							p.setPriv(sysEnv, SDMSExitStateTranslationProfile.privilegeMask);
 						} else if (SDMSPrivilege.MANAGE_PRIVS[j] ==  SDMSPrivilege.MANAGE_RSD) {
 							v.add("resource state definition");
 							p.setPriv(sysEnv, SDMSResourceStateDefinition.privilegeMask);
@@ -455,7 +443,6 @@ public class ListGrant extends Node
 						SDMSGrant g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSProxy.ZERO, gId));
 						p.addPriv(sysEnv, g.getPrivs(sysEnv).longValue());
 					} catch (NotFoundException nfe) {
-
 					}
 				}
 				if (!p.can(SDMSPrivilege.MANAGE_GROUP))

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -199,12 +198,12 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	{
 		final Integer v = getIsSuspended (env);
 		switch (v.intValue()) {
-		case SDMSNiceProfileEntry.NOSUSPEND:
-			return "NOSUSPEND";
-		case SDMSNiceProfileEntry.SUSPEND:
-			return "SUSPEND";
-		case SDMSNiceProfileEntry.ADMINSUSPEND:
-			return "ADMINSUSPEND";
+			case SDMSNiceProfileEntry.NOSUSPEND:
+				return "NOSUSPEND";
+			case SDMSNiceProfileEntry.SUSPEND:
+				return "SUSPEND";
+			case SDMSNiceProfileEntry.ADMINSUSPEND:
+				return "ADMINSUSPEND";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -361,9 +360,9 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		return;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSNiceProfileEntry(this);
+		return SDMSNiceProfileEntry.getProxy(sysEnv, this);
 	}
 
 	protected SDMSNiceProfileEntryGeneric(Long p_id,
@@ -435,12 +434,10 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "NiceProfileEntry: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -459,7 +456,6 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			myInsert.setLong (11, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "NiceProfileEntry: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -475,7 +471,6 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 				        "DELETE FROM NICE_PROFILE_ENTRY WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "NiceProfileEntry: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -485,7 +480,6 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "NiceProfileEntry: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -514,7 +508,6 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "NiceProfileEntry: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -537,7 +530,6 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			myUpdate.setLong(11, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "NiceProfileEntry: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -545,10 +537,10 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	static public boolean checkIsSuspended(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSNiceProfileEntry.NOSUSPEND:
-		case SDMSNiceProfileEntry.SUSPEND:
-		case SDMSNiceProfileEntry.ADMINSUSPEND:
-			return true;
+			case SDMSNiceProfileEntry.NOSUSPEND:
+			case SDMSNiceProfileEntry.SUSPEND:
+			case SDMSNiceProfileEntry.ADMINSUSPEND:
+				return true;
 		}
 		return false;
 	}

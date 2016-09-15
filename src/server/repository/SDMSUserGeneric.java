@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -225,10 +224,10 @@ public class SDMSUserGeneric extends SDMSObject
 	{
 		final Integer v = getMethod (env);
 		switch (v.intValue()) {
-		case SDMSUser.MD5:
-			return "MD5";
-		case SDMSUser.SHA256:
-			return "SHA256";
+			case SDMSUser.MD5:
+				return "MD5";
+			case SDMSUser.SHA256:
+				return "SHA256";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -438,9 +437,9 @@ public class SDMSUserGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSUser(this);
+		return SDMSUser.getProxy(sysEnv, this);
 	}
 
 	protected SDMSUserGeneric(Long p_id,
@@ -516,12 +515,10 @@ public class SDMSUserGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "User: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -541,7 +538,6 @@ public class SDMSUserGeneric extends SDMSObject
 			myInsert.setLong (12, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -557,7 +553,6 @@ public class SDMSUserGeneric extends SDMSObject
 				        "DELETE FROM USERS WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "User: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -567,7 +562,6 @@ public class SDMSUserGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -597,7 +591,6 @@ public class SDMSUserGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "User: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -621,7 +614,6 @@ public class SDMSUserGeneric extends SDMSObject
 			myUpdate.setLong(12, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -629,9 +621,9 @@ public class SDMSUserGeneric extends SDMSObject
 	static public boolean checkMethod(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSUser.MD5:
-		case SDMSUser.SHA256:
-			return true;
+			case SDMSUser.MD5:
+			case SDMSUser.SHA256:
+				return true;
 		}
 		return false;
 	}

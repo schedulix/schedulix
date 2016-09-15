@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.shell;
 
 import java.io.*;
@@ -66,7 +65,6 @@ public class SDMSServerConnection
 			Long.parseLong(u);
 			isJob = true;
 		} catch(NumberFormatException nfe) {
-
 		}
 		passwd = pwd;
 	}
@@ -80,7 +78,6 @@ public class SDMSServerConnection
 			Long.parseLong(u);
 			isJob = true;
 		} catch(NumberFormatException nfe) {
-
 		}
 		passwd = pwd;
 		this.timeout = timeout;
@@ -96,7 +93,6 @@ public class SDMSServerConnection
 			Long.parseLong(u);
 			isJob = true;
 		} catch(NumberFormatException nfe) {
-
 		}
 		passwd = pwd;
 		this.timeout = timeout;
@@ -109,13 +105,13 @@ public class SDMSServerConnection
 			port = Integer.parseInt(options.getValue(App.PORT));
 			timeout = options.isSet(App.CONNTIMEOUT) ? Integer.parseInt(options.getValue(App.CONNTIMEOUT)) : -1;
 		} catch (NumberFormatException nfe) {
-
 			timeout = -1;
 		}
 		user = options.getValue(App.USER);
 		passwd = options.getValue(App.PASS);
 		use_ssl =
-			false;
+		        options.isSet(App.TLS) ? options.getOption(App.TLS).getBValue() :
+		        false;
 		info = options.isSet(App.INFO) ? options.getValue(App.INFO) : null;
 		if (info != null) {
 			info = info.replace("\\\\","\\\\");
@@ -157,7 +153,6 @@ public class SDMSServerConnection
 			System.out.println(tCmd);
 
 		try {
-
 			out.print(tCmd);
 			if(!(tCmd.endsWith(";"))) {
 				out.print(";");
@@ -181,7 +176,6 @@ public class SDMSServerConnection
 			input = new SDMSOutput();
 			input.setError(new SDMSOutputError("Desktop-0003", "Connection closed by Server"));
 		} catch (Exception e) {
-
 			input = new SDMSOutput();
 			input.setError(new SDMSOutputError("Desktop-0001", "Server Error executing command"));
 		}

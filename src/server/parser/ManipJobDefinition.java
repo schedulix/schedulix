@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -43,7 +41,6 @@ public abstract class ManipJobDefinition extends Node
 
 	Vector path;
 	WithHash withs;
-
 	String name;
 	Long folderId;
 	Integer otype;
@@ -230,7 +227,6 @@ public abstract class ManipJobDefinition extends Node
 	protected void checkJob(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-
 		if(runProgram == null || runProgram.equals("")) {
 			throw new CommonErrorException(
 				new SDMSMessage(sysEnv, "02112141002", "Job needs a Run Program"));
@@ -275,7 +271,6 @@ public abstract class ManipJobDefinition extends Node
 
 		if(masterSubmittable == null) masterSubmittable = Boolean.FALSE;
 		if(dependencyOperation == null) dependencyOperation = new Integer (SDMSSchedulingEntity.AND);
-
 		if(esp == null) {
 			throw new CommonErrorException(
 				new SDMSMessage(sysEnv, "02112140955",
@@ -283,13 +278,11 @@ public abstract class ManipJobDefinition extends Node
 				)
 			);
 		}
-
 		if(esmpId == null) {
 			if(esp.getDefaultEsmpId(sysEnv) == null) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "02112140957", "Exit State Profile doesn't define a Default Exit State Mapping"));
 			}
 		} else {
-
 			esp.validateMappingProfile(sysEnv, esmpId);
 		}
 
@@ -366,7 +359,6 @@ public abstract class ManipJobDefinition extends Node
 	protected void checkBatch(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-
 		runProgram = null;
 		rerunProgram = null;
 		killProgram = null;
@@ -389,37 +381,40 @@ public abstract class ManipJobDefinition extends Node
 		} else  priority = new Integer(0);
 		minPriority = null;
 		if(submitSuspended == null) submitSuspended = Boolean.FALSE;
-
 		if(esp == null) {
 			throw new CommonErrorException( new SDMSMessage(sysEnv, "02112140956", "Missing Exit State Profile"));
 		}
-
 		esmpId = null;
 
 		neId = null;
-
 		fpId = null;
 		getExpectedRuntime = null;
-
 		resourcedeflist = null;
 		sameNode = null;
 		gangSchedule = null;
-
 		to_mult = null;
 		to_interval = null;
 		to_state = null;
 		to_esdId = null;
 	}
 
+	protected void checkMilestone(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		checkBatch(sysEnv);
+		masterSubmittable = Boolean.FALSE;
+		minPriority = null;
+		resourcedeflist = null;
+		parameters = null;
+	}
+
 	protected String checkChildDependencies (SystemEnvironment sysEnv, Long checkId, Long childId)
 		throws SDMSException
 	{
-
 		SDMSKey k = new SDMSKey(checkId, childId);
 		if (SDMSDependencyDefinitionTable.idx_DependentId_RequiredId.containsKey(sysEnv, k)) {
 			return childId.toString();
 		}
-
 		Vector sh_v = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, childId);
 		Iterator i = sh_v.iterator();
 		while (i.hasNext()) {
@@ -430,6 +425,49 @@ public abstract class ManipJobDefinition extends Node
 			}
 		}
 		return null;
+	}
+
+	protected void checkTranslation(SystemEnvironment sysEnv, SDMSSchedulingEntity seChild, SDMSSchedulingEntity seParent, SDMSExitStateTranslationProfile estp)
+	throws SDMSException
+	{
+		Vector es_v = SDMSExitStateTable.idx_espId.getVector(sysEnv, seChild.getEspId(sysEnv));
+		Iterator ies = es_v.iterator();
+		Long espId = seParent.getEspId(sysEnv);
+		while (ies.hasNext()) {
+			SDMSExitState esChild = (SDMSExitState)ies.next();
+			Long esdIdChild = esChild.getEsdId(sysEnv);
+			Long esdIdParent = esdIdChild;
+			if (estp != null) {
+				esdIdParent = estp.translate(sysEnv, esdIdChild, false);
+				if (esdIdParent == null)
+					continue;
+			} else {
+				continue;
+			}
+			SDMSKey k = new SDMSKey (espId, esdIdParent);
+			if (!SDMSExitStateTable.idx_espId_esdId.containsKey(sysEnv, k)) {
+				Object[] p = new Object[3];
+				p[0] = SDMSExitStateDefinitionTable.getObject(sysEnv, esdIdChild).getName(sysEnv);
+				p[1] = seChild.pathString(sysEnv);
+				p[2] = (estp == null ? "NONE" : estp.getName(sysEnv));
+				throw new CommonErrorException(new SDMSMessage (sysEnv, "02112201828",
+				                               "Profile doesn't contain translated child state $1 of $2 Translation $3", p));
+			} else {
+				SDMSExitState esParent = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, k);
+				if (esParent.getIsFinal(sysEnv).equals(Boolean.FALSE)) {
+					if (esChild.getIsFinal(sysEnv).equals(Boolean.TRUE)) {
+						Object[] p = new Object[5];
+						p[0] = SDMSExitStateDefinitionTable.getObject(sysEnv, esdIdChild).getName(sysEnv);
+						p[1] = seChild.pathString(sysEnv);
+						p[2] = SDMSExitStateDefinitionTable.getObject(sysEnv, esdIdParent).getName(sysEnv);
+						p[3] = seParent.pathString(sysEnv);
+						p[4] = (estp == null ? "NONE" : estp.getName(sysEnv));
+						throw new CommonErrorException(new SDMSMessage (sysEnv, "02205061803",
+						                               "Invalid translation from final child state $1 of $2 to non final state $3 of $4, Translation = [$5]", p));
+					}
+				}
+			}
+		}
 	}
 
 	public void addOrAlterChild(SystemEnvironment sysEnv, WithHash wh, SDMSSchedulingEntity seParent, boolean isAdd, boolean processError)
@@ -527,6 +565,14 @@ public abstract class ManipJobDefinition extends Node
 		childId = seChild.getId(sysEnv);
 
 		estpId = null;
+		if(estpName != null) {
+			SDMSExitStateTranslationProfile estp = null;
+			sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXIT_STATE_TRANSLATION);
+			estp = SDMSExitStateTranslationProfileTable.idx_name_getUnique(sysEnv, estpName);
+			estpId = estp.getId(sysEnv);
+
+			checkTranslation(sysEnv, seChild, seParent, estp);
+		}
 
 		if (parentId.equals(childId)) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "02112201726", "Cannot have itself as child"));
@@ -606,7 +652,6 @@ public abstract class ManipJobDefinition extends Node
 		throws SDMSException
 	{
 		resourceList = new HashSet();
-
 		Vector v = SDMSResourceRequirementTable.idx_seId.getVector(sysEnv, se.getId(sysEnv));
 		for(int i = 0; i < v.size(); i++) {
 			final SDMSResourceRequirement rr = (SDMSResourceRequirement) v.get(i);
@@ -690,7 +735,6 @@ public abstract class ManipJobDefinition extends Node
 					PathVector lnrv = (PathVector) pt.value;
 					lpn = (String) lnrv.remove(lnrv.size() - 1);
 					Long lnrId = SDMSNamedResourceTable.getNamedResource(sysEnv, lnrv).getId(sysEnv);
-
 					if(!checkResourceRequirement(sysEnv, lnrId, se))
 						throw new CommonErrorException(
 							new SDMSMessage(sysEnv, "03409281727", "Resource $2 for parameter $1 not required", pn, lnrv)
@@ -716,7 +760,6 @@ public abstract class ManipJobDefinition extends Node
 					}
 				}
 			} else {
-
 				try {
 					SDMSParameterDefinition pd =
 						SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(se.getId(sysEnv), pn));
@@ -913,6 +956,7 @@ public abstract class ManipJobDefinition extends Node
 		rName = (String) rwh.get(ParseStr.S_NAME);
 		rPath = (Vector) rwh.get(ParseStr.S_PATH);
 		rdName = (String) wh.get(ParseStr.S_DEPENDENCY);
+		condition = canonizeCondition(sysEnv, (String) wh.get(ParseStr.S_CONDITION));
 
 		if (condition != null) sysEnv.checkFeatureAvailability(SystemEnvironment.S_CONDITIONAL_DEPENDENCIES);
 
@@ -955,7 +999,6 @@ public abstract class ManipJobDefinition extends Node
 
 		SDMSDependencyState ds;
 		if(isAdd) {
-
 			try {
 				dd = SDMSDependencyDefinitionTable.table.create(sysEnv,
 					seDependent.getId(sysEnv),
@@ -1013,7 +1056,6 @@ public abstract class ManipJobDefinition extends Node
 
 		if (rStateNames != null) {
 			Long ddId = dd.getId(sysEnv);
-
 			Long rEspId = rSe.getEspId(sysEnv);
 			Iterator i = rStateNames.iterator();
 			while (i.hasNext()) {

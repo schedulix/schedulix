@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -203,9 +202,9 @@ public class SDMSFootprintGeneric extends SDMSObject
 		return;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSFootprint(this);
+		return SDMSFootprint.getProxy(sysEnv, this);
 	}
 
 	protected SDMSFootprintGeneric(Long p_id,
@@ -257,12 +256,10 @@ public class SDMSFootprintGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "Footprint: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -273,7 +270,6 @@ public class SDMSFootprintGeneric extends SDMSObject
 			myInsert.setLong (6, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "Footprint: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -289,7 +285,6 @@ public class SDMSFootprintGeneric extends SDMSObject
 				        "DELETE FROM FOOTPRINT WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Footprint: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -299,7 +294,6 @@ public class SDMSFootprintGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "Footprint: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -323,7 +317,6 @@ public class SDMSFootprintGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "Footprint: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -338,7 +331,6 @@ public class SDMSFootprintGeneric extends SDMSObject
 			myUpdate.setLong(6, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "Footprint: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

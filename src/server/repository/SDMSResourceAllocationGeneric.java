@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -300,12 +299,12 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	{
 		final Integer v = getKeepMode (env);
 		switch (v.intValue()) {
-		case SDMSResourceAllocation.NOKEEP:
-			return "NOKEEP";
-		case SDMSResourceAllocation.KEEP:
-			return "KEEP";
-		case SDMSResourceAllocation.KEEP_FINAL:
-			return "KEEP_FINAL";
+			case SDMSResourceAllocation.NOKEEP:
+				return "NOKEEP";
+			case SDMSResourceAllocation.KEEP:
+				return "KEEP";
+			case SDMSResourceAllocation.KEEP_FINAL:
+				return "KEEP_FINAL";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -436,18 +435,18 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	{
 		final Integer v = getAllocationType (env);
 		switch (v.intValue()) {
-		case SDMSResourceAllocation.REQUEST:
-			return "REQUEST";
-		case SDMSResourceAllocation.MASTER_REQUEST:
-			return "MASTER_REQUEST";
-		case SDMSResourceAllocation.RESERVATION:
-			return "RESERVATION";
-		case SDMSResourceAllocation.MASTER_RESERVATION:
-			return "MASTER_RESERVATION";
-		case SDMSResourceAllocation.ALLOCATION:
-			return "ALLOCATION";
-		case SDMSResourceAllocation.IGNORE:
-			return "IGNORE";
+			case SDMSResourceAllocation.REQUEST:
+				return "REQUEST";
+			case SDMSResourceAllocation.MASTER_REQUEST:
+				return "MASTER_REQUEST";
+			case SDMSResourceAllocation.RESERVATION:
+				return "RESERVATION";
+			case SDMSResourceAllocation.MASTER_RESERVATION:
+				return "MASTER_RESERVATION";
+			case SDMSResourceAllocation.ALLOCATION:
+				return "ALLOCATION";
+			case SDMSResourceAllocation.IGNORE:
+				return "IGNORE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -511,16 +510,16 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSResourceAllocation.N:
-			return "N";
-		case SDMSResourceAllocation.X:
-			return "X";
-		case SDMSResourceAllocation.SX:
-			return "SX";
-		case SDMSResourceAllocation.S:
-			return "S";
-		case SDMSResourceAllocation.SC:
-			return "SC";
+			case SDMSResourceAllocation.N:
+				return "N";
+			case SDMSResourceAllocation.X:
+				return "X";
+			case SDMSResourceAllocation.SX:
+				return "SX";
+			case SDMSResourceAllocation.S:
+				return "S";
+			case SDMSResourceAllocation.SC:
+				return "SC";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -746,9 +745,9 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSResourceAllocation(this);
+		return SDMSResourceAllocation.getProxy(sysEnv, this);
 	}
 
 	protected SDMSResourceAllocationGeneric(Long p_id,
@@ -848,12 +847,10 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ResourceAllocation: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -894,7 +891,6 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 			myInsert.setLong (18, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ResourceAllocation: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -910,7 +906,6 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 				        "DELETE FROM RESOURCE_ALLOCATION WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "ResourceAllocation: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -920,7 +915,6 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "ResourceAllocation: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -956,7 +950,6 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "ResourceAllocation: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -1001,7 +994,6 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 			myUpdate.setLong(18, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "ResourceAllocation: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -1009,23 +1001,23 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	static public boolean checkKeepMode(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSResourceAllocation.NOKEEP:
-		case SDMSResourceAllocation.KEEP:
-		case SDMSResourceAllocation.KEEP_FINAL:
-			return true;
+			case SDMSResourceAllocation.NOKEEP:
+			case SDMSResourceAllocation.KEEP:
+			case SDMSResourceAllocation.KEEP_FINAL:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkAllocationType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSResourceAllocation.REQUEST:
-		case SDMSResourceAllocation.MASTER_REQUEST:
-		case SDMSResourceAllocation.RESERVATION:
-		case SDMSResourceAllocation.MASTER_RESERVATION:
-		case SDMSResourceAllocation.ALLOCATION:
-		case SDMSResourceAllocation.IGNORE:
-			return true;
+			case SDMSResourceAllocation.REQUEST:
+			case SDMSResourceAllocation.MASTER_REQUEST:
+			case SDMSResourceAllocation.RESERVATION:
+			case SDMSResourceAllocation.MASTER_RESERVATION:
+			case SDMSResourceAllocation.ALLOCATION:
+			case SDMSResourceAllocation.IGNORE:
+				return true;
 		}
 		return false;
 	}
@@ -1033,12 +1025,12 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSResourceAllocation.N:
-		case SDMSResourceAllocation.X:
-		case SDMSResourceAllocation.SX:
-		case SDMSResourceAllocation.S:
-		case SDMSResourceAllocation.SC:
-			return true;
+			case SDMSResourceAllocation.N:
+			case SDMSResourceAllocation.X:
+			case SDMSResourceAllocation.SX:
+			case SDMSResourceAllocation.S:
+			case SDMSResourceAllocation.SC:
+				return true;
 		}
 		return false;
 	}

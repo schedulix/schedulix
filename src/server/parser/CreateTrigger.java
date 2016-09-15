@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -69,7 +67,6 @@ public class CreateTrigger extends ManipTrigger
 	{
 		oType = SDMSTrigger.JOB_DEFINITION;
 		objpath = (Vector) objType.value;
-
 		objectType = new Integer(oType);
 		SDMSSchedulingEntity fireJob = SDMSSchedulingEntityTable.get(sysEnv, objpath, null);
 		fireId = fireJob.getId(sysEnv);
@@ -123,7 +120,6 @@ public class CreateTrigger extends ManipTrigger
 		isInverse = (Boolean) with.get(ParseStr.S_INVERSE);
 		if (isInverse == null) isInverse = Boolean.FALSE;
 		if (isInverse.booleanValue()) {
-
 			SDMSSchedulingEntity tmpSe = fireJob;
 			fireJob = triggerJob;
 			triggerJob = tmpSe;
@@ -195,10 +191,8 @@ public class CreateTrigger extends ManipTrigger
 			if(!with.containsKey(ParseStr.S_GROUP))
 				throw new CommonErrorException(
 						new SDMSMessage(sysEnv, "02402180658", "Group clause is mandatory for master triggers"));
-
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
-
 			if (mainJob != null) mainJob.checkSubmitForGroup(sysEnv, gId);
 			else triggerJob.checkSubmitForGroup(sysEnv, gId);
 		} else {
@@ -266,6 +260,121 @@ public class CreateTrigger extends ManipTrigger
 		}
 	}
 
+	private void checkResourceCommonWith(SystemEnvironment sysEnv, SDMSNamedResource nr)
+	throws SDMSException
+	{
+		SDMSSchedulingEntity triggerJob;
+		if(nr.getUsage(sysEnv).intValue() != SDMSNamedResource.SYNCHRONIZING) {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03206250058", "Trigger can only be defined for synchronizing resources"));
+		}
+
+		objectType = new Integer(oType);
+
+		if (with.containsKey(ParseStr.S_ACTIVE)) {
+			active = (Boolean) with.get(ParseStr.S_ACTIVE);
+		} else {
+			active = Boolean.TRUE;
+		}
+
+		mainSeId = null;
+		parentSeId = null;
+		if (with.containsKey(ParseStr.S_MAIN) && with.get(ParseStr.S_MAIN) != null)
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03109081537", "Main Scheduling Entity option is only valid for Object Monitor Triggers"));
+		if (with.containsKey(ParseStr.S_PARENT) && with.get(ParseStr.S_PARENT) != null)
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03109081538", "Parent Scheduling Entity option is only valid for Object Monitor Triggers"));
+
+		action = new Integer(SDMSTrigger.SUBMIT);
+		iaction = SDMSTrigger.SUBMIT;
+
+		folderpath = (Vector) with.get(ParseStr.S_SUBMIT);
+		if(folderpath != null) {
+			triggerJob = SDMSSchedulingEntityTable.get(sysEnv, folderpath, null);
+			if(!triggerJob.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
+				throw new AccessViolationException(
+				        new SDMSMessage(sysEnv, "03402131546", "Submit privilege on $1 missing", triggerJob.pathString(sysEnv))
+				);
+			seId = triggerJob.getId(sysEnv);
+		} else	{
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03206210035", "Submit is mandatory"));
+		}
+
+		triggertype = (Integer) with.get(ParseStr.S_TRIGGERTYPE);
+		if(triggertype != null) {
+			if(triggertype.intValue() != SDMSTrigger.IMMEDIATE_LOCAL) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03206210043", "Triggertype must be Immediate local for resource triggers"));
+			}
+		} else {
+			triggertype = new Integer(SDMSTrigger.IMMEDIATE_LOCAL);
+		}
+		isMaster = (Boolean) with.get(ParseStr.S_MASTER);
+		if(isMaster != null) {
+			if(! isMaster.booleanValue()) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03206210044", "Only master submits allowed for resource triggers"));
+			}
+		} else {
+			isMaster = Boolean.TRUE;
+		}
+		if(!triggerJob.getMasterSubmittable(sysEnv).booleanValue())
+			throw new CommonErrorException(
+			        new SDMSMessage(sysEnv, "03104261631", "Master trigger defined for non master submittable job"));
+		if(!with.containsKey(ParseStr.S_GROUP))
+			throw new CommonErrorException(
+			        new SDMSMessage(sysEnv, "03602082122", "Group clause is mandatory for resource triggers"));
+
+		isSuspend = (Boolean) with.get(ParseStr.S_SUSPEND);
+		if(isSuspend == null) isSuspend = Boolean.FALSE;
+
+		resumeObj = with.get(ParseStr.S_RESUME);
+		if (!isSuspend.booleanValue() && (resumeObj != null))
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03108091752", "Resume clause without suspend clause doesn't make sense"));
+		analyzeResumeObj(sysEnv);
+
+		maxRetry = (Integer) with.get(ParseStr.S_SUBMITCOUNT);
+		if(maxRetry != null) {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03206210045", "Retry Count not allowed for resource triggers"));
+		} else {
+			maxRetry = new Integer(0);
+			isWarnOnLimit = Boolean.FALSE;
+		}
+
+		state = null;
+		rscstate = (Vector) with.get(ParseStr.S_RSCSTATUS);
+		if(with.containsKey(ParseStr.S_STATUS) && with.get(ParseStr.S_STATUS) != null) {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03206210047", "Only resource states are allowed for resource triggers"));
+		}
+
+		if(with.containsKey(ParseStr.S_CONDITION)) {
+			condition = (String) with.get(ParseStr.S_CONDITION);
+		} else condition = null;
+
+		if(with.containsKey(ParseStr.S_CHECK)) {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03407271555", "Asynchroneous triggers are only valid for jobs"));
+		} else	check = null;
+
+		isInverse = (Boolean) with.get(ParseStr.S_INVERSE);
+		if (isInverse != null && isInverse.booleanValue())
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "036231306", "Inverse option is invalid for resource triggers"));
+	}
+
+	private void checkResourceWith(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		oType = SDMSTrigger.RESOURCE;
+		objpath = (Vector) objType.value;
+		resourcepath = (Vector) objpath.remove(objpath.size() - 1);
+		Long scopeId;
+		try {
+			scopeId = SDMSScopeTable.pathToId(sysEnv, objpath);
+		} catch (NotFoundException nfe) {
+			scopeId = SDMSFolderTable.pathToId(sysEnv, objpath);
+		}
+		SDMSNamedResource nr = SDMSNamedResourceTable.getNamedResource(sysEnv, resourcepath);
+		Long nrId = nr.getId(sysEnv);
+		fireId = SDMSResourceTable.idx_nrId_scopeId_getUnique(sysEnv, new SDMSKey(nrId, scopeId)).getId(sysEnv);
+
+		checkResourceCommonWith(sysEnv, nr);
+	}
+
 	private void checkWith(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
@@ -273,20 +382,17 @@ public class CreateTrigger extends ManipTrigger
 			checkJobWith(sysEnv);
 		} else {
 			if(objType.key.equals(ParseStr.S_OBJECT)) {
-
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_OBJECTMONITOR_TRIGGER);
 			} else {
-
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_RESOURCE_TRIGGER);
+				checkResourceWith(sysEnv);
 			}
 		}
-
 		if (triggertype != null) {
 			int tt = triggertype.intValue();
 			if (tt == SDMSTrigger.UNTIL_FINISHED ||
 			    tt == SDMSTrigger.UNTIL_FINAL
 			   ) {
-
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_ASYNC_TRIGGERS);
 			}
 			if (!(tt == SDMSTrigger.BEFORE_FINAL ||
@@ -354,6 +460,24 @@ public class CreateTrigger extends ManipTrigger
 
 			if ((triggertype.intValue() != SDMSTrigger.AFTER_FINAL) && (iaction != SDMSTrigger.RERUN))
 				SDMSSchedulingHierarchyTable.checkHierarchyCycles(sysEnv, fireId);
+		} else {
+			if (t.getObjectType(sysEnv).intValue() != SDMSTrigger.OBJECT_MONITOR) {
+				if(rscstate != null) {
+					for(int i = 0; i < rscstate.size(); i++) {
+						WithItem w = (WithItem) rscstate.get(i);
+						Long frsdId;
+						if(w.key != null) {
+							frsdId = SDMSResourceStateDefinitionTable.idx_name_getUnique(sysEnv, w.key).getId(sysEnv);
+						} else	frsdId = null;
+						Long trsdId;
+						if(w.value != null) {
+							trsdId = SDMSResourceStateDefinitionTable.idx_name_getUnique(sysEnv, w.value).getId(sysEnv);
+						} else  trsdId = null;
+
+						SDMSTriggerStateTable.table.create(sysEnv, tId, frsdId, trsdId);
+					}
+				}
+			}
 		}
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03206191306", "Trigger created"));

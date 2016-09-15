@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -48,6 +47,19 @@ public class SDMSDependencyStateProxyGeneric extends SDMSProxy
 	protected SDMSDependencyStateProxyGeneric(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	protected static SDMSDependencyState getProxy (SystemEnvironment sysEnv, SDMSObject p_object)
+	{
+		int i = SDMSDependencyStateTable.table.tableIndex;
+		SDMSProxy p = SDMSRepository.getProxy(i);
+		if (p == null)
+			p = new SDMSDependencyState (p_object);
+		else {
+			p.initProxy(p_object);
+		}
+		sysEnv.tx.addUsedProxy(i, p);
+		return (SDMSDependencyState)p;
 	}
 
 	public Long getDdId (SystemEnvironment env)
@@ -260,7 +272,6 @@ public class SDMSDependencyStateProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -298,7 +309,6 @@ public class SDMSDependencyStateProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -321,7 +331,6 @@ public class SDMSDependencyStateProxyGeneric extends SDMSProxy
 			SDMSProxy p = t.get(env, getDdId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 	}
 

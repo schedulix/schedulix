@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.exception;
 
 import de.independit.scheduler.server.util.*;
@@ -33,7 +31,6 @@ public class SDMSException extends Exception
 {
 
 	public final static String __version = "@(#) $Id: SDMSException.java,v 2.2.18.1 2013/03/14 10:24:17 ronald Exp $";
-
 	public static boolean debug = false;
 
 	protected SDMSMessage m;
@@ -43,6 +40,7 @@ public class SDMSException extends Exception
 		super();
 		if(debug)
 			SDMSThread.doTrace(null, toString(), getStackTrace(), SDMSThread.SEVERITY_DEBUG);
+		if (checkTrace()) printStackTrace();
 	}
 
 	public SDMSException(String msg)
@@ -50,6 +48,7 @@ public class SDMSException extends Exception
 		super(msg);
 		if(debug)
 			SDMSThread.doTrace(null, msg, getStackTrace(), SDMSThread.SEVERITY_DEBUG);
+		if (checkTrace()) printStackTrace();
 	}
 
 	public SDMSException(SDMSMessage msg)
@@ -57,6 +56,20 @@ public class SDMSException extends Exception
 		m = msg;
 		if(debug)
 			SDMSThread.doTrace(null, msg.toString(), getStackTrace(), SDMSThread.SEVERITY_DEBUG);
+		if (checkTrace()) printStackTrace();
+	}
+
+	private boolean checkTrace()
+	{
+		long exceptionNumber = getExceptionNumber();
+		try {
+			SDMSThread t = (SDMSThread) Thread.currentThread();
+			if ((t.exceptionsToTrace & exceptionNumber) != 0) return true;
+
+		} catch (ClassCastException cce) {
+
+		}
+		return false;
 	}
 
 	public static void toggleDebug()
@@ -96,6 +109,11 @@ public class SDMSException extends Exception
 	public void setMessage(SDMSMessage m)
 	{
 		this.m = m;
+	}
+
+	public int getExceptionNumber()
+	{
+		return 2048;
 	}
 }
 

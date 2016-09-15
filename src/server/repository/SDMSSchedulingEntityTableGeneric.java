@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -99,7 +98,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 	{
 		super(env);
 		if (table != null) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182009", "SchedulingEntity"));
 		}
 		table = (SDMSSchedulingEntityTable) this;
@@ -158,9 +156,7 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		Long p_createTs = env.txTime();
 		Long p_changerUId = env.cEnv.uid();
 		Long p_changeTs = env.txTime();
-
 		if(env.tx.mode == SDMSTransaction.READONLY) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182049", "SchedulingEntity"));
 		}
 		validate(env
@@ -252,14 +248,13 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 
 		SDMSSchedulingEntity p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
-			p = (SDMSSchedulingEntity)(o.toProxy());
+			p = (SDMSSchedulingEntity)(o.toProxy(env));
 			p.current = true;
 		} catch(SDMSException e) {
-			p = (SDMSSchedulingEntity)(o.toProxy());
+			p = (SDMSSchedulingEntity)(o.toProxy(env));
 			p.current = true;
 			env.tx.rollbackSubTransaction(env);
 			throw e;
@@ -322,39 +317,27 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		if (!SDMSSchedulingEntityGeneric.checkType(p_type))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "type", p_type));
 		if (!SDMSSchedulingEntityGeneric.checkTruncLog(p_truncLog))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "truncLog", p_truncLog));
 		if (!SDMSSchedulingEntityGeneric.checkTruncErrlog(p_truncErrlog))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "truncErrlog", p_truncErrlog));
 		if (!SDMSSchedulingEntityGeneric.checkAgingBase(p_agingBase))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "agingBase", p_agingBase));
 		if (!SDMSSchedulingEntityGeneric.checkSubmitSuspended(p_submitSuspended))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "submitSuspended", p_submitSuspended));
 		if (!SDMSSchedulingEntityGeneric.checkResumeBase(p_resumeBase))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "resumeBase", p_resumeBase));
 		if (!SDMSSchedulingEntityGeneric.checkMasterSubmittable(p_masterSubmittable))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "masterSubmittable", p_masterSubmittable));
 		if (!SDMSSchedulingEntityGeneric.checkTimeoutBase(p_timeoutBase))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "timeoutBase", p_timeoutBase));
 		if (!SDMSSchedulingEntityGeneric.checkSameNode(p_sameNode))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "sameNode", p_sameNode));
 		if (!SDMSSchedulingEntityGeneric.checkGangSchedule(p_gangSchedule))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "gangSchedule", p_gangSchedule));
 		if (!SDMSSchedulingEntityGeneric.checkDependencyOperation(p_dependencyOperation))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "dependencyOperation", p_dependencyOperation));
-
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -477,7 +460,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 			validTo = r.getLong(43);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-
 			throw new FatalException(new SDMSMessage(env, "01110182045", "SchedulingEntity: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
@@ -535,7 +517,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		String squote = SystemEnvironment.SQUOTE;
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
-
 		ResultSet rset = stmt.executeQuery("SELECT " +
 		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NAME" + equote +

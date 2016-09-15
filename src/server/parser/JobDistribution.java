@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -100,7 +98,6 @@ public abstract class JobDistribution extends Node
 		} else {
 			runProgram = se.getRunProgram(sysEnv);
 			if(runProgram == null) {
-
 				sysEnv.tx.rollbackSubTransaction(sysEnv);
 				sme.setToError(sysEnv, "Missing run program");
 				delFromQueue(sysEnv, smeId);
@@ -121,13 +118,11 @@ public abstract class JobDistribution extends Node
 		Boolean tmpb;
 
 		try {
-
 			if(workdir != null) {
 				sr = new StringReader(workdir);
 				args = cmdlineScan(sysEnv, sr, sme, sme, smeId, "Working Directory", "Working Directory Name is empty");
 				workdir = (String) args.get(0);
 			} else {
-
 				Long cfgScopeId = sId;
 				while(true) {
 					try {
@@ -174,7 +169,6 @@ public abstract class JobDistribution extends Node
 			if(rerun)	data.add(new Boolean(! SDMSSchedulingEntity.NOTRUNC));
 			else		data.add(tmpb == null ? new Boolean(! SDMSSchedulingEntity.NOTRUNC) : new Boolean(! tmpb.booleanValue()));
 		} catch (CommonErrorException cce) {
-
 			return false;
 		}
 
@@ -208,7 +202,6 @@ public abstract class JobDistribution extends Node
 			}
 			rq.delete(sysEnv);
 		}
-
 		data.add(sme.getRerunSeq(sysEnv));
 
 		Vector jobenv = new Vector();
@@ -216,7 +209,6 @@ public abstract class JobDistribution extends Node
 		Iterator jpi = jpv.iterator();
 		while(jpi.hasNext()) {
 			SDMSParameterDefinition pd = (SDMSParameterDefinition)jpi.next();
-
 			String exportName = pd.getExportName(sysEnv);
 			if (exportName != null) {
 				jobenv.add(exportName);
@@ -228,10 +220,8 @@ public abstract class JobDistribution extends Node
 		try {
 			int exitcode = Integer.parseInt(cmd);
 			sme.finishJob(sysEnv, exitcode, null, null );
-
 			rc = false;
 		} catch (NumberFormatException nfe) {
-
 			rc = true;
 		}
 
@@ -263,6 +253,7 @@ public abstract class JobDistribution extends Node
 		desc.add(RepoIface.STARTJOB_ARGS);
 		desc.add(RepoIface.STARTJOB_ENV);
 		desc.add(RepoIface.STARTJOB_RUN);
+		desc.add(RepoIface.STARTJOB_JOBENV);
 
 		kjId = kj.getId(sysEnv);
 
@@ -276,7 +267,6 @@ public abstract class JobDistribution extends Node
 		String runProgram = kj.getCommandline(sysEnv);
 
 		if(runProgram == null) {
-
 			sysEnv.tx.rollbackSubTransaction(sysEnv);
 			kj.setErrorMsg(sysEnv, "Missing run program");
 			delFromQueue(sysEnv, kjId);
@@ -291,7 +281,6 @@ public abstract class JobDistribution extends Node
 		if(logfile != null) logfile = logfile.trim();
 		String errlogfile = kj.getErrlogfile(sysEnv);
 		if(errlogfile != null) errlogfile = errlogfile.trim();
-
 		if(workdir != null) {
 			sr = new StringReader(workdir);
 			try {
@@ -333,6 +322,19 @@ public abstract class JobDistribution extends Node
 		kj.setState(sysEnv, new Integer(SDMSSubmittedEntity.STARTING));
 		kj.setScopeId(sysEnv, sId);
 
+		Vector jobenv = new Vector();
+		Vector jpv = SDMSParameterDefinitionTable.idx_seId.getVector(sysEnv, se.getId(sysEnv));
+		Iterator jpi = jpv.iterator();
+		while(jpi.hasNext()) {
+			SDMSParameterDefinition pd = (SDMSParameterDefinition)jpi.next();
+			String exportName = pd.getExportName(sysEnv);
+			if (exportName != null) {
+				jobenv.add(exportName);
+				jobenv.add(sme.getVariableValue(sysEnv, pd.getName(sysEnv), false, ParseStr.S_DEFAULT));
+			}
+		}
+
+		data.add(jobenv);
 		Vector jsv = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, kjId);
 		for(int i = 0; i < jsv.size(); i++) {
 			rq = (SDMSRunnableQueue) jsv.get(i);

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -162,7 +161,6 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	{
 		super(env);
 		if (table != null) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182009", "SubmittedEntity"));
 		}
 		table = (SDMSSubmittedEntityTable) this;
@@ -284,9 +282,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		Long p_createTs = env.txTime();
 		Long p_changerUId = env.cEnv.uid();
 		Long p_changeTs = env.txTime();
-
 		if(env.tx.mode == SDMSTransaction.READONLY) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182049", "SubmittedEntity"));
 		}
 		validate(env
@@ -494,14 +490,13 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 
 		SDMSSubmittedEntity p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
-			p = (SDMSSubmittedEntity)(o.toProxy());
+			p = (SDMSSubmittedEntity)(o.toProxy(env));
 			p.current = true;
 		} catch(SDMSException e) {
-			p = (SDMSSubmittedEntity)(o.toProxy());
+			p = (SDMSSubmittedEntity)(o.toProxy(env));
 			p.current = true;
 			env.tx.rollbackSubTransaction(env);
 			throw e;
@@ -622,18 +617,13 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		if (!SDMSSubmittedEntityGeneric.checkUnresolvedHandling(p_unresolvedHandling))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SubmittedEntity: $1 $2", "unresolvedHandling", p_unresolvedHandling));
 		if (!SDMSSubmittedEntityGeneric.checkMergeMode(p_mergeMode))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SubmittedEntity: $1 $2", "mergeMode", p_mergeMode));
 		if (!SDMSSubmittedEntityGeneric.checkState(p_state))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SubmittedEntity: $1 $2", "state", p_state));
 		if (!SDMSSubmittedEntityGeneric.checkIsSuspended(p_isSuspended))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SubmittedEntity: $1 $2", "isSuspended", p_isSuspended));
-
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -894,7 +884,6 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-
 			throw new FatalException(new SDMSMessage(env, "01110182045", "SubmittedEntity: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;

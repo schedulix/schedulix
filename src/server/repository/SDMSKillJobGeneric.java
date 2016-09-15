@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -294,22 +293,22 @@ public class SDMSKillJobGeneric extends SDMSObject
 	{
 		final Integer v = getState (env);
 		switch (v.intValue()) {
-		case SDMSKillJob.RUNNABLE:
-			return "RUNNABLE";
-		case SDMSKillJob.STARTING:
-			return "STARTING";
-		case SDMSKillJob.STARTED:
-			return "STARTED";
-		case SDMSKillJob.RUNNING:
-			return "RUNNING";
-		case SDMSKillJob.FINISHED:
-			return "FINISHED";
-		case SDMSKillJob.BROKEN_ACTIVE:
-			return "BROKEN_ACTIVE";
-		case SDMSKillJob.BROKEN_FINISHED:
-			return "BROKEN_FINISHED";
-		case SDMSKillJob.ERROR:
-			return "ERROR";
+			case SDMSKillJob.RUNNABLE:
+				return "RUNNABLE";
+			case SDMSKillJob.STARTING:
+				return "STARTING";
+			case SDMSKillJob.STARTED:
+				return "STARTED";
+			case SDMSKillJob.RUNNING:
+				return "RUNNING";
+			case SDMSKillJob.FINISHED:
+				return "FINISHED";
+			case SDMSKillJob.BROKEN_ACTIVE:
+				return "BROKEN_ACTIVE";
+			case SDMSKillJob.BROKEN_FINISHED:
+				return "BROKEN_FINISHED";
+			case SDMSKillJob.ERROR:
+				return "ERROR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -699,9 +698,9 @@ public class SDMSKillJobGeneric extends SDMSObject
 		return;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSKillJob(this);
+		return SDMSKillJob.getProxy(sysEnv, this);
 	}
 
 	protected SDMSKillJobGeneric(Long p_id,
@@ -809,12 +808,10 @@ public class SDMSKillJobGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "KillJob: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -869,7 +866,6 @@ public class SDMSKillJobGeneric extends SDMSObject
 			myInsert.setLong (20, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -885,7 +881,6 @@ public class SDMSKillJobGeneric extends SDMSObject
 				        "DELETE FROM KILL_JOB WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "KillJob: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -895,7 +890,6 @@ public class SDMSKillJobGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -933,7 +927,6 @@ public class SDMSKillJobGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "KillJob: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -992,7 +985,6 @@ public class SDMSKillJobGeneric extends SDMSObject
 			myUpdate.setLong(20, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -1000,15 +992,15 @@ public class SDMSKillJobGeneric extends SDMSObject
 	static public boolean checkState(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSKillJob.RUNNABLE:
-		case SDMSKillJob.STARTING:
-		case SDMSKillJob.STARTED:
-		case SDMSKillJob.RUNNING:
-		case SDMSKillJob.FINISHED:
-		case SDMSKillJob.BROKEN_ACTIVE:
-		case SDMSKillJob.BROKEN_FINISHED:
-		case SDMSKillJob.ERROR:
-			return true;
+			case SDMSKillJob.RUNNABLE:
+			case SDMSKillJob.STARTING:
+			case SDMSKillJob.STARTED:
+			case SDMSKillJob.RUNNING:
+			case SDMSKillJob.FINISHED:
+			case SDMSKillJob.BROKEN_ACTIVE:
+			case SDMSKillJob.BROKEN_FINISHED:
+			case SDMSKillJob.ERROR:
+				return true;
 		}
 		return false;
 	}

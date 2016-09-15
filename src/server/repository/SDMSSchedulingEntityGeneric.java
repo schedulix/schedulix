@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -403,12 +402,12 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	{
 		final Integer v = getType (env);
 		switch (v.intValue()) {
-		case SDMSSchedulingEntity.JOB:
-			return "JOB";
-		case SDMSSchedulingEntity.BATCH:
-			return "BATCH";
-		case SDMSSchedulingEntity.MILESTONE:
-			return "MILESTONE";
+			case SDMSSchedulingEntity.JOB:
+				return "JOB";
+			case SDMSSchedulingEntity.BATCH:
+				return "BATCH";
+			case SDMSSchedulingEntity.MILESTONE:
+				return "MILESTONE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -872,18 +871,18 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSSchedulingEntity.MINUTE:
-			return "MINUTE";
-		case SDMSSchedulingEntity.HOUR:
-			return "HOUR";
-		case SDMSSchedulingEntity.DAY:
-			return "DAY";
-		case SDMSSchedulingEntity.WEEK:
-			return "WEEK";
-		case SDMSSchedulingEntity.MONTH:
-			return "MONTH";
-		case SDMSSchedulingEntity.YEAR:
-			return "YEAR";
+			case SDMSSchedulingEntity.MINUTE:
+				return "MINUTE";
+			case SDMSSchedulingEntity.HOUR:
+				return "HOUR";
+			case SDMSSchedulingEntity.DAY:
+				return "DAY";
+			case SDMSSchedulingEntity.WEEK:
+				return "WEEK";
+			case SDMSSchedulingEntity.MONTH:
+				return "MONTH";
+			case SDMSSchedulingEntity.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1018,18 +1017,18 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSSchedulingEntity.MINUTE:
-			return "MINUTE";
-		case SDMSSchedulingEntity.HOUR:
-			return "HOUR";
-		case SDMSSchedulingEntity.DAY:
-			return "DAY";
-		case SDMSSchedulingEntity.WEEK:
-			return "WEEK";
-		case SDMSSchedulingEntity.MONTH:
-			return "MONTH";
-		case SDMSSchedulingEntity.YEAR:
-			return "YEAR";
+			case SDMSSchedulingEntity.MINUTE:
+				return "MINUTE";
+			case SDMSSchedulingEntity.HOUR:
+				return "HOUR";
+			case SDMSSchedulingEntity.DAY:
+				return "DAY";
+			case SDMSSchedulingEntity.WEEK:
+				return "WEEK";
+			case SDMSSchedulingEntity.MONTH:
+				return "MONTH";
+			case SDMSSchedulingEntity.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1140,18 +1139,18 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSSchedulingEntity.MINUTE:
-			return "MINUTE";
-		case SDMSSchedulingEntity.HOUR:
-			return "HOUR";
-		case SDMSSchedulingEntity.DAY:
-			return "DAY";
-		case SDMSSchedulingEntity.WEEK:
-			return "WEEK";
-		case SDMSSchedulingEntity.MONTH:
-			return "MONTH";
-		case SDMSSchedulingEntity.YEAR:
-			return "YEAR";
+			case SDMSSchedulingEntity.MINUTE:
+				return "MINUTE";
+			case SDMSSchedulingEntity.HOUR:
+				return "HOUR";
+			case SDMSSchedulingEntity.DAY:
+				return "DAY";
+			case SDMSSchedulingEntity.WEEK:
+				return "WEEK";
+			case SDMSSchedulingEntity.MONTH:
+				return "MONTH";
+			case SDMSSchedulingEntity.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1298,10 +1297,10 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	{
 		final Integer v = getDependencyOperation (env);
 		switch (v.intValue()) {
-		case SDMSSchedulingEntity.AND:
-			return "AND";
-		case SDMSSchedulingEntity.OR:
-			return "OR";
+			case SDMSSchedulingEntity.AND:
+				return "AND";
+			case SDMSSchedulingEntity.OR:
+				return "OR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1645,9 +1644,9 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSSchedulingEntity(this);
+		return SDMSSchedulingEntity.getProxy(sysEnv, this);
 	}
 
 	protected SDMSSchedulingEntityGeneric(Long p_id,
@@ -1841,12 +1840,10 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "SchedulingEntity: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -1975,7 +1972,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			myInsert.setLong(43, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "SchedulingEntity: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -2026,7 +2022,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			myUpdate.setLong(4, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "SchedulingEntity: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -2034,10 +2029,10 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	static public boolean checkType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSSchedulingEntity.JOB:
-		case SDMSSchedulingEntity.BATCH:
-		case SDMSSchedulingEntity.MILESTONE:
-			return true;
+			case SDMSSchedulingEntity.JOB:
+			case SDMSSchedulingEntity.BATCH:
+			case SDMSSchedulingEntity.MILESTONE:
+				return true;
 		}
 		return false;
 	}
@@ -2059,13 +2054,13 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSSchedulingEntity.MINUTE:
-		case SDMSSchedulingEntity.HOUR:
-		case SDMSSchedulingEntity.DAY:
-		case SDMSSchedulingEntity.WEEK:
-		case SDMSSchedulingEntity.MONTH:
-		case SDMSSchedulingEntity.YEAR:
-			return true;
+			case SDMSSchedulingEntity.MINUTE:
+			case SDMSSchedulingEntity.HOUR:
+			case SDMSSchedulingEntity.DAY:
+			case SDMSSchedulingEntity.WEEK:
+			case SDMSSchedulingEntity.MONTH:
+			case SDMSSchedulingEntity.YEAR:
+				return true;
 		}
 		return false;
 	}
@@ -2079,13 +2074,13 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSSchedulingEntity.MINUTE:
-		case SDMSSchedulingEntity.HOUR:
-		case SDMSSchedulingEntity.DAY:
-		case SDMSSchedulingEntity.WEEK:
-		case SDMSSchedulingEntity.MONTH:
-		case SDMSSchedulingEntity.YEAR:
-			return true;
+			case SDMSSchedulingEntity.MINUTE:
+			case SDMSSchedulingEntity.HOUR:
+			case SDMSSchedulingEntity.DAY:
+			case SDMSSchedulingEntity.WEEK:
+			case SDMSSchedulingEntity.MONTH:
+			case SDMSSchedulingEntity.YEAR:
+				return true;
 		}
 		return false;
 	}
@@ -2099,13 +2094,13 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSSchedulingEntity.MINUTE:
-		case SDMSSchedulingEntity.HOUR:
-		case SDMSSchedulingEntity.DAY:
-		case SDMSSchedulingEntity.WEEK:
-		case SDMSSchedulingEntity.MONTH:
-		case SDMSSchedulingEntity.YEAR:
-			return true;
+			case SDMSSchedulingEntity.MINUTE:
+			case SDMSSchedulingEntity.HOUR:
+			case SDMSSchedulingEntity.DAY:
+			case SDMSSchedulingEntity.WEEK:
+			case SDMSSchedulingEntity.MONTH:
+			case SDMSSchedulingEntity.YEAR:
+				return true;
 		}
 		return false;
 	}
@@ -2126,9 +2121,9 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	static public boolean checkDependencyOperation(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSSchedulingEntity.AND:
-		case SDMSSchedulingEntity.OR:
-			return true;
+			case SDMSSchedulingEntity.AND:
+			case SDMSSchedulingEntity.OR:
+				return true;
 		}
 		return false;
 	}

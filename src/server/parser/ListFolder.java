@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -46,7 +44,6 @@ public class ListFolder extends Node
 	HashSet expandIds;
 	HashMap mseCache = new HashMap();
 	WithHash with;
-
 	FolderLister fl;
 
 	public ListFolder(Vector p)
@@ -83,70 +80,39 @@ public class ListFolder extends Node
 	public Vector fillHeadInfo()
 	{
 		Vector desc = new Vector();
-
 		desc.add("ID");
 		desc.add("NAME");
 		desc.add("OWNER");
-
 		desc.add("TYPE");
-
 		desc.add("RUN_PROGRAM");
-
 		desc.add("RERUN_PROGRAM");
-
 		desc.add("KILL_PROGRAM");
-
 		desc.add("WORKDIR");
-
 		desc.add("LOGFILE");
-
 		desc.add("TRUNC_LOG");
-
 		desc.add("ERRLOGFILE");
-
 		desc.add("TRUNC_ERRLOG");
-
 		desc.add("EXPECTED_RUNTIME");
-
 		desc.add("EXPECTED_FINALTIME");
-
 		desc.add("GET_EXPECTED_RUNTIME");
-
 		desc.add("PRIORITY");
-
 		desc.add("MIN_PRIORITY");
-
 		desc.add("AGING_AMOUNT");
-
 		desc.add("AGING_BASE");
-
 		desc.add("SUBMIT_SUSPENDED");
-
 		desc.add("MASTER_SUBMITTABLE");
-
 		desc.add("SAME_NODE");
-
 		desc.add("GANG_SCHEDULE");
-
 		desc.add("DEPENDENCY_MODE");
-
 		desc.add("ESP_NAME");
-
 		desc.add("ESM_NAME");
-
 		desc.add("ENV_NAME");
-
 		desc.add("FP_NAME");
-
 		desc.add("SUBFOLDERS");
-
 		desc.add("ENTITIES");
-
 		desc.add("HAS_MSE");
 		desc.add("PRIVS");
-
 		desc.add("IDPATH");
-
 		desc.add("HIT");
 
 		return desc;
@@ -189,14 +155,11 @@ public class ListFolder extends Node
 	private Boolean checkMse(SystemEnvironment sysEnv, SDMSFolder f, HashMap cache)
 		throws SDMSException
 	{
-
 		Long id = f.getId(sysEnv);
 		Boolean hasMse = (Boolean)cache.get(id);
 		if (hasMse != null) {
-
 			return hasMse;
 		}
-
 		Vector myKey = new Vector();
 		myKey.add(id);
 		myKey.add(Boolean.TRUE);
@@ -209,11 +172,9 @@ public class ListFolder extends Node
 				i.remove();
 		}
 		if (msv.size() > 0) {
-
 			cache.put(id, Boolean.TRUE);
 			return Boolean.TRUE;
 		} else {
-
 			Vector v_sf = SDMSFolderTable.idx_parentId.getVector(sysEnv, f.getId(sysEnv));
 			Iterator i_sf = v_sf.iterator();
 			while (i_sf.hasNext()) {
@@ -280,23 +241,20 @@ public class ListFolder extends Node
 		v.add(checkMse(sysEnv, f, mseCache));
 		v.add(f.getPrivileges(sysEnv).toString());
 		v.add(f.idPathVector(sysEnv));
-
 		if (!fl.useFilter)
 			v.add(' ');
-		else
-
-			if (fl.objectsToList.contains(f)) {
-				if (f.getId(sysEnv).equals(SDMSObject.systemFId)) {
-					if (fl.checkValid(sysEnv, f))
-						v.add('Y');
-					else
-						v.add('N');
-				} else {
+		else if (fl.objectsToList.contains(f)) {
+			if (f.getId(sysEnv).equals(SDMSObject.systemFId)) {
+				if (fl.checkValid(sysEnv, f))
 					v.add('Y');
-				}
+				else
+					v.add('N');
 			} else {
-				v.add('N');
+				v.add('Y');
 			}
+		} else {
+			v.add('N');
+		}
 	}
 
 	private void fillSeVector(SystemEnvironment sysEnv, SDMSSchedulingEntity se, Vector v)
@@ -370,15 +328,12 @@ public class ListFolder extends Node
 		v.add("");
 		v.add(se.getPrivileges(sysEnv).toString());
 		v.add(se.idPathVector(sysEnv));
-
 		if (!fl.useFilter)
 			v.add(' ');
+		else if (fl.objectsToList.contains(se))
+			v.add('Y');
 		else
-
-			if (fl.objectsToList.contains(se))
-				v.add('Y');
-			else
-				v.add('N');
+			v.add('N');
 	}
 }
 

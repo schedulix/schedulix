@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -84,6 +83,19 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 	protected SDMSObjectCommentProxyGeneric(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	protected static SDMSObjectComment getProxy (SystemEnvironment sysEnv, SDMSObject p_object)
+	{
+		int i = SDMSObjectCommentTable.table.tableIndex;
+		SDMSProxy p = SDMSRepository.getProxy(i);
+		if (p == null)
+			p = new SDMSObjectComment (p_object);
+		else {
+			p.initProxy(p_object);
+		}
+		sysEnv.tx.addUsedProxy(i, p);
+		return (SDMSObjectComment)p;
 	}
 
 	public Long getObjectId (SystemEnvironment env)
@@ -352,7 +364,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSEventTable.tableName);
 		try {
@@ -363,7 +374,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSExitStateDefinitionTable.tableName);
 		try {
@@ -374,7 +384,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSExitStateProfileTable.tableName);
 		try {
@@ -385,7 +394,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSExitStateMappingProfileTable.tableName);
 		try {
@@ -396,7 +404,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFolderTable.tableName);
 		try {
@@ -407,7 +414,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFootprintTable.tableName);
 		try {
@@ -418,7 +424,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSGroupTable.tableName);
 		try {
@@ -429,7 +434,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSIntervalTable.tableName);
 		try {
@@ -440,7 +444,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSSubmittedEntityTable.tableName);
 		try {
@@ -451,7 +454,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
 		try {
@@ -462,7 +464,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
 		try {
@@ -473,7 +474,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSParameterDefinitionTable.tableName);
 		try {
@@ -484,7 +484,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceStateDefinitionTable.tableName);
 		try {
@@ -495,7 +494,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceStateMappingProfileTable.tableName);
 		try {
@@ -506,7 +504,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceStateProfileTable.tableName);
 		try {
@@ -517,7 +514,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScheduledEventTable.tableName);
 		try {
@@ -528,7 +524,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScheduleTable.tableName);
 		try {
@@ -539,7 +534,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScopeTable.tableName);
 		try {
@@ -550,7 +544,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSTriggerTable.tableName);
 		try {
@@ -561,7 +554,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSUserTable.tableName);
 		try {
@@ -572,7 +564,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -610,7 +601,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSEventTable.tableName);
 		try {
@@ -622,7 +612,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSExitStateDefinitionTable.tableName);
 		try {
@@ -634,7 +623,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSExitStateProfileTable.tableName);
 		try {
@@ -646,7 +634,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSExitStateMappingProfileTable.tableName);
 		try {
@@ -658,7 +645,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFolderTable.tableName);
 		try {
@@ -670,7 +656,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFootprintTable.tableName);
 		try {
@@ -682,7 +667,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSGroupTable.tableName);
 		try {
@@ -694,7 +678,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSIntervalTable.tableName);
 		try {
@@ -706,7 +689,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSSubmittedEntityTable.tableName);
 		try {
@@ -718,7 +700,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
 		try {
@@ -730,7 +711,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
 		try {
@@ -742,7 +722,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSParameterDefinitionTable.tableName);
 		try {
@@ -754,7 +733,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceStateDefinitionTable.tableName);
 		try {
@@ -766,7 +744,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceStateMappingProfileTable.tableName);
 		try {
@@ -778,7 +755,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceStateProfileTable.tableName);
 		try {
@@ -790,7 +766,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScheduledEventTable.tableName);
 		try {
@@ -802,7 +777,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScheduleTable.tableName);
 		try {
@@ -814,7 +788,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScopeTable.tableName);
 		try {
@@ -826,7 +799,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSTriggerTable.tableName);
 		try {
@@ -838,7 +810,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSUserTable.tableName);
 		try {
@@ -850,7 +821,6 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -873,147 +843,126 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSEventTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSExitStateDefinitionTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSExitStateProfileTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSExitStateMappingProfileTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFolderTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFootprintTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSGroupTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSIntervalTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSSubmittedEntityTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSParameterDefinitionTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceStateDefinitionTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceStateMappingProfileTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceStateProfileTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScheduledEventTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScheduleTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScopeTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSTriggerTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSUserTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 	}
 

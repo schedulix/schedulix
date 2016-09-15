@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,7 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 package de.independit.scheduler.server.repository;
 
@@ -75,7 +74,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 	public void delete(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-
 		Vector act_ts = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, getId(sysEnv));
 		for(int i = 0; i < act_ts.size(); i++) {
 			SDMSTriggerState ts = (SDMSTriggerState) act_ts.get(i);
@@ -143,13 +141,10 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			ths = new HashSet();
 			sysEnv.tx.txData.put(SystemEnvironment.S_TRIGGER_HASHSET, ths);
 		}
-
 		boolean isMasterTrigger = getIsMaster(sysEnv).booleanValue();
 
 		Long warnLink = null;
-
 		Vector v_trs = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, trId, seVersion);
-
 		if (v_trs.size() > 0) {
 			Iterator i_trs = v_trs.iterator();
 			boolean found = false;
@@ -162,16 +157,66 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			}
 			if (!found) return fired;
 		}
+		if (trigger_type == SDMSTrigger.FINISH_CHILD) {
+			SDMSKey thskey = new SDMSKey(reasonSmeId, id, trId);
+			if (!ths.add(thskey)) {
+				return fired;
+			}
+		}
 
+		if (trigger_type == SDMSTrigger.UNTIL_FINISHED || trigger_type == SDMSTrigger.UNTIL_FINAL) {
+			if(tq == null) {
+				tq = SDMSTriggerQueueTable.idx_smeId_trId_getUnique(sysEnv, new SDMSKey(id, trId));
+			}
+			long checkAmount = getCheckAmount(sysEnv).longValue();
+			int checkBase = getCheckBase(sysEnv).intValue();
+			switch(checkBase) {
+				case SDMSInterval.MINUTE:
+					checkAmount *= SDMSInterval.MINUTE_DUR;
+					break;
+				case SDMSInterval.HOUR:
+					checkAmount *= SDMSInterval.HOUR_DUR;
+					break;
+				case SDMSInterval.DAY:
+					checkAmount *= SDMSInterval.DAY_DUR;
+					break;
+				case SDMSInterval.WEEK:
+					checkAmount *= SDMSInterval.WEEK_DUR;
+					break;
+			}
+
+			tq.setNextTriggerTime(sysEnv, new Long(now + checkAmount));
+
+		}
 		int maxTrSeq = 0;
 		Vector v_f_sme;
-		if (action != RERUN) {
-
-			v_f_sme = SDMSSubmittedEntityTable.idx_fireSmeId_trId.getVector(sysEnv,
-					new SDMSKey(id, trId));
-			maxTrSeq = v_f_sme.size();
+		if (trigger_type != SDMSTrigger.AFTER_FINAL) {
+			if (trigger_type == SDMSTrigger.UNTIL_FINISHED || trigger_type == SDMSTrigger.UNTIL_FINAL) {
+				maxTrSeq = tq.getTimesTriggered(sysEnv).intValue();
+			} else {
+				if (action != RERUN) {
+					v_f_sme = SDMSSubmittedEntityTable.idx_fireSmeId_trId.getVector(sysEnv,
+					                new SDMSKey(id, trId));
+					maxTrSeq = v_f_sme.size();
+				} else {
+					maxTrSeq = thisSme.getRerunSeq(sysEnv);
+				}
+			}
 		} else {
-			maxTrSeq = thisSme.getRerunSeq(sysEnv);
+			if (!isMasterTrigger) {
+
+				SDMSSubmittedEntity tmpSme = thisSme;
+				Long replSmeId = tmpSme.getFireSmeId(sysEnv);
+				Long replTrId = tmpSme.getTrId(sysEnv);
+				while (replSmeId != null && trId.equals(replTrId)) {
+					maxTrSeq++;
+					tmpSme = SDMSSubmittedEntityTable.getObject(sysEnv, replSmeId);
+					replSmeId = tmpSme.getFireSmeId(sysEnv);
+					replTrId = tmpSme.getTrId(sysEnv);
+				}
+			} else {
+				maxTrSeq = 0;
+			}
 		}
 
 		int maxRetry = getMaxRetry(sysEnv).intValue();
@@ -183,7 +228,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		}
 
 		if (maxTrSeq >= maxRetry && maxRetry != 0) {
-
 			Long limitState = getLimitState(sysEnv);
 			if (limitState != null) {
 				Long seId = thisSme.getSeId(sysEnv);
@@ -193,7 +237,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				try {
 					es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, limitState), seVersion);
 				} catch (NotFoundException nfe) {
-
 					throw new FatalException(new SDMSMessage(sysEnv, "03602151332",
 					                         "Invalid limitState $1 not in exit state profile $2",
 					                         limitState, espId));
@@ -206,7 +249,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 
 		boolean conditionOK = false;
 		try {
-
 			conditionOK = checkCondition(sysEnv, thisSme, tq);
 		} catch(CommonErrorException cee) {
 			java.util.Date dts = new java.util.Date();
@@ -278,7 +320,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		}
 
 		if(isMasterTrigger) {
-
 			try {
 				se = SDMSSchedulingEntityTable.getObject(sysEnv, submitSeId);
 			} catch (NotFoundException nfe) {
@@ -287,20 +328,29 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		} else {
 			se = SDMSSchedulingEntityTable.getObject(sysEnv, submitSeId, seVersion);
 
-			psme = thisSme;
+			boolean isAft = false;
+			isAft = true;
+			if (trigger_type == SDMSTrigger.AFTER_FINAL) {
+				Long parentId = thisSme.getParentId(sysEnv);
+				if (parentId == null) {
+					return null;
+				}
+
+				psme = SDMSSubmittedEntityTable.getObject(sysEnv, thisSme.getParentId(sysEnv));
+			} else {
+				psme = thisSme;
+			}
 
 			childTag = thisSme.getId(sysEnv).toString() + '.' + getId(sysEnv).toString() + ':' + trSeq.toString();
 		}
 
 		sysEnv.tx.beginSubTransaction(sysEnv);
 		try {
-
 			if (!mths.add(trId)) {
 				throw new CommonErrorException (new SDMSMessage(sysEnv, "03305141915",
 					"Cannot fire Trigger $1 recursively in same Transaction",
 					getName(sysEnv)));
 			}
-
 			Boolean suspend = getIsSuspend(sysEnv);
 			Integer doSuspend;
 			if (suspend.booleanValue() == false) doSuspend = null;
@@ -317,7 +367,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			} else {
 				Long replaceId = null;
 				if (submitSeId.equals(fireSeId)) {
-
 					replaceId = thisSme.getId(sysEnv);
 				}
 				boolean forceChildDef;
@@ -336,11 +385,9 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			}
 			sme.setBaseSmeId(sysEnv, (Long)(sysEnv.tx.txData.get(SystemEnvironment.S_BASE_SME_ID)));
 		} catch (NonRecoverableException nre) {
-
 			sysEnv.tx.rollbackSubTransaction(sysEnv);
 
 			if(!nre.errNumber().equals("03305141915")) {
-
 				if(isMasterTrigger) {
 					se.createErrorMaster (
 							sysEnv,
@@ -354,7 +401,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			sme =  null;
 		}
 		if (sme != null) {
-
 			sysEnv.tx.commitSubTransaction(sysEnv);
 		}
 
@@ -394,7 +440,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		}
 
 		if(fire) {
-
 			try {
 				fire = checkCondition(sysEnv, r);
 			} catch (CommonErrorException cee) {
@@ -415,11 +460,9 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 					"Triggered by Resource " + r.getId(sysEnv).toString() + "(" + getName(sysEnv) + ")");
 
 			} catch (NonRecoverableException nre) {
-
 				sysEnv.tx.rollbackSubTransaction(sysEnv);
 			}
 			if (sme != null) {
-
 				sysEnv.tx.commitSubTransaction(sysEnv);
 				sme.setBaseSmeId(sysEnv, causeSmeId);
 				sme.setReasonSmeId(sysEnv, causeSmeId);
@@ -502,46 +545,46 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		SDMSTable t;
 
 		switch (objectType) {
-		case JOB_DEFINITION:
-			boolean isInverse = getIsInverse(env).booleanValue();
-			t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, (isInverse ? getSeId(env) : getFireId(env)));
-				long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+			case JOB_DEFINITION:
+				boolean isInverse = getIsInverse(env).booleanValue();
+				t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
+				try {
+					SDMSProxy o = t.get(env, (isInverse ? getSeId(env) : getFireId(env)));
+					long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
+					if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+						sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+					}
+					p = p & sp;
+				} catch (NotFoundException nfe) {
+					p = 0;
 				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
-				p = 0;
-			}
-			break;
-		case RESOURCE:
-			t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getFireId(env));
-				long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+				break;
+			case RESOURCE:
+				t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
+				try {
+					SDMSProxy o = t.get(env, getFireId(env));
+					long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
+					if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+						sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+					}
+					p = p & sp;
+				} catch (NotFoundException nfe) {
+					p = 0;
 				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
-				p = 0;
-			}
-			break;
-		case NAMED_RESOURCE:
-			t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
-			try {
-				SDMSProxy o = t.get(env, getFireId(env));
-				long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+				break;
+			case NAMED_RESOURCE:
+				t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
+				try {
+					SDMSProxy o = t.get(env, getFireId(env));
+					long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
+					if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+						sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+					}
+					p = p & sp;
+				} catch (NotFoundException nfe) {
+					p = 0;
 				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
-				p = 0;
-			}
-			break;
+				break;
 		}
 		return p;
 	}
@@ -559,49 +602,49 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		SDMSTable t;
 
 		switch (objectType) {
-		case JOB_DEFINITION:
-			boolean isInverse = getIsInverse(env).booleanValue();
-			t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
-			try {
+			case JOB_DEFINITION:
+				boolean isInverse = getIsInverse(env).booleanValue();
+				t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
+				try {
 
-				SDMSProxy o = t.get(env, (isInverse ? getSeId(env) : getFireId(env)), version);
-				long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+					SDMSProxy o = t.get(env, (isInverse ? getSeId(env) : getFireId(env)), version);
+					long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
+					if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+						sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+					}
+					p = p & sp;
+				} catch (NotFoundException nfe) {
+					p = 0;
 				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
-				p = 0;
-			}
-			break;
-		case RESOURCE:
-			t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
-			try {
+				break;
+			case RESOURCE:
+				t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
+				try {
 
-				SDMSProxy o = t.get(env, getFireId(env), version);
-				long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+					SDMSProxy o = t.get(env, getFireId(env), version);
+					long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
+					if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+						sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+					}
+					p = p & sp;
+				} catch (NotFoundException nfe) {
+					p = 0;
 				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
-				p = 0;
-			}
-			break;
-		case NAMED_RESOURCE:
-			t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
-			try {
+				break;
+			case NAMED_RESOURCE:
+				t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
+				try {
 
-				SDMSProxy o = t.get(env, getFireId(env), version);
-				long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
-				if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
-					sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+					SDMSProxy o = t.get(env, getFireId(env), version);
+					long sp = o.getPrivileges(env, privilegeMask, false, checkGroups);
+					if ((sp & SDMSPrivilege.EDIT) == SDMSPrivilege.EDIT) {
+						sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
+					}
+					p = p & sp;
+				} catch (NotFoundException nfe) {
+					p = 0;
 				}
-				p = p & sp;
-			} catch (NotFoundException nfe) {
-				p = 0;
-			}
-			break;
+				break;
 		}
 		return p;
 	}
@@ -613,33 +656,30 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		int objectType = getObjectType(env).intValue();
 
 		switch (objectType) {
-		case JOB_DEFINITION:
-			boolean isInverse = getIsInverse(env).booleanValue();
-			t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
-			try {
-				SDMSProxy p = t.get(env, (isInverse ? getSeId(env) : getFireId(env)));
-				p.touch(env);
-			} catch (NotFoundException nfe) {
-
-			}
-			break;
-		case RESOURCE:
-			t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
-			try {
-				SDMSProxy p = t.get(env, getFireId(env));
-				p.touch(env);
-			} catch (NotFoundException nfe) {
-
-			}
-			break;
-		case NAMED_RESOURCE:
-			t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
-			try {
-				SDMSProxy p = t.get(env, getFireId(env));
-				p.touch(env);
-			} catch (NotFoundException nfe) {
-
-			}
+			case JOB_DEFINITION:
+				boolean isInverse = getIsInverse(env).booleanValue();
+				t = SystemEnvironment.repository.getTable(env, SDMSSchedulingEntityTable.tableName);
+				try {
+					SDMSProxy p = t.get(env, (isInverse ? getSeId(env) : getFireId(env)));
+					p.touch(env);
+				} catch (NotFoundException nfe) {
+				}
+				break;
+			case RESOURCE:
+				t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
+				try {
+					SDMSProxy p = t.get(env, getFireId(env));
+					p.touch(env);
+				} catch (NotFoundException nfe) {
+				}
+				break;
+			case NAMED_RESOURCE:
+				t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
+				try {
+					SDMSProxy p = t.get(env, getFireId(env));
+					p.touch(env);
+				} catch (NotFoundException nfe) {
+				}
 		}
 	}
 }

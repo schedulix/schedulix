@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -64,6 +63,11 @@ public class SDMSNamedResource extends SDMSNamedResourceProxyGeneric
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03206242216",
 			                               "Cannot drop, depending resources still exist"));
 		}
+		rv = SDMSResourceTemplateTable.idx_nrId.getVector(sysEnv, nrId);
+		if(rv.size() > 0) {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03501171034",
+			                               "Cannot drop, depending job resources still exist"));
+		}
 		rv = SDMSEnvironmentTable.idx_nrId.getVector(sysEnv, nrId);
 		if(rv.size() > 0) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03301050057",
@@ -87,7 +91,6 @@ public class SDMSNamedResource extends SDMSNamedResourceProxyGeneric
 	private SDMSNamedResource copy(SystemEnvironment sysEnv, Long parentId, String name, Long pgId)
 	throws SDMSException
 	{
-
 		Long id = getId(sysEnv);
 
 		Long gId;
@@ -218,14 +221,12 @@ public class SDMSNamedResource extends SDMSNamedResourceProxyGeneric
 					if(oldnm.equals(pn)) {
 						act_parms.removeElementAt(idx);
 						idx = -1;
-
 						pd.setType(sysEnv, t);
 						pd.setDefaultValue(sysEnv, pdef);
 						break;
 					}
 				}
 				if(idx >= act_parms.size()) {
-
 					SDMSParameterDefinitionTable.table.create(sysEnv, id, pn, t, aggFunction, pdef, Boolean.FALSE, linkPdId, null);
 				}
 			}
@@ -248,7 +249,6 @@ public class SDMSNamedResource extends SDMSNamedResourceProxyGeneric
 		for (int i = 0; i < size; ++i) {
 			final SDMSParameterDefinition pd = (SDMSParameterDefinition) list.get (i);
 			checkReferences(sysEnv, pd.getId(sysEnv));
-
 			final Vector rv = SDMSResourceVariableTable.idx_pdId.getVector (sysEnv, pd.getId(sysEnv));
 			for(int j = 0; j < rv.size(); j++) {
 				SDMSResourceVariable resv = (SDMSResourceVariable) rv.get(j);

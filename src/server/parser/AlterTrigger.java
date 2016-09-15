@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -199,7 +197,6 @@ public class AlterTrigger extends ManipTrigger
 		if(triggertype != null) {
 			itt = triggertype.intValue();
 			if(objType != SDMSTrigger.JOB_DEFINITION) {
-
 				if (objType == SDMSTrigger.OBJECT_MONITOR) {
 					sysEnv.checkFeatureAvailability(SystemEnvironment.S_OBJECTMONITOR_TRIGGER);
 				} else {
@@ -211,7 +208,6 @@ public class AlterTrigger extends ManipTrigger
 				}
 
 			} else {
-
 				if (itt == SDMSTrigger.UNTIL_FINISHED ||
 				    itt == SDMSTrigger.UNTIL_FINAL
 				   ) {
@@ -223,6 +219,14 @@ public class AlterTrigger extends ManipTrigger
 				   )) {
 					sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXTENDED_TRIGGERS);
 				}
+
+				if(fireSe.getType(sysEnv).intValue() == SDMSSchedulingEntity.MILESTONE)
+					if(itt != SDMSTrigger.AFTER_FINAL) {
+						if(!checkIsMaster.booleanValue())
+							throw new CommonErrorException(
+							        new SDMSMessage(sysEnv, "03209201516",
+							                        "Triggertype must be AFTER FINAL for non-master triggers on milestones"));
+					}
 
 				if(itt == SDMSTrigger.UNTIL_FINISHED || itt == SDMSTrigger.UNTIL_FINAL) {
 					if(!with.containsKey(ParseStr.S_CHECK)) {
@@ -273,12 +277,33 @@ public class AlterTrigger extends ManipTrigger
 				throw new CommonErrorException(
 					new SDMSMessage(sysEnv, "03206200920", "Only job states are allowed for job triggers"));
 			}
+		} else if(objType != SDMSTrigger.OBJECT_MONITOR) {
+			state = null;
+			rscstate = (Vector) with.get(ParseStr.S_RSCSTATUS);
+			if(with.containsKey(ParseStr.S_STATUS) && with.get(ParseStr.S_STATUS) != null) {
+				throw new CommonErrorException(
+				        new SDMSMessage(sysEnv, "03206202332", "Only resource states are allowed for resource triggers"));
+			}
+		}
+
+		if(with.containsKey(ParseStr.S_CHECK)) {
+			check = (WithHash) with.get(ParseStr.S_CHECK);
+			if(condition == null)
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03508030809",
+				                               "Asynchroneous triggers are only valid in combination with a condition"));
+			if(itt != SDMSTrigger.UNTIL_FINISHED && itt != SDMSTrigger.UNTIL_FINAL)
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03508030810",
+				                               "Check periods are only valid for asynchroneous triggers"));
+			checkAmount = (Integer) check.get(ParseStr.S_MULT);
+			checkBase = (Integer) check.get(ParseStr.S_INTERVAL);
+		} else	{
+			checkAmount = null;
+			checkBase = null;
 		}
 
 		SDMSSchedulingEntity mainSe = null;
 
 		if (checkIsMaster.booleanValue()) {
-
 			if (isMaster != null || seId != null) {
 				if (se == null)
 					se = SDMSSchedulingEntityTable.getObject(sysEnv, checkSeId);
@@ -287,9 +312,7 @@ public class AlterTrigger extends ManipTrigger
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "02402180838",
 							"Master trigger defined for non master submittable job"));
 			}
-
 			if (isMaster != null || submitOwnerId != null || seId != null) {
-
 				if (se == null)
 					se = SDMSSchedulingEntityTable.getObject(sysEnv, checkSeId);
 				se.checkSubmitForGroup(sysEnv, checkSubmitOwnerId);
@@ -322,6 +345,21 @@ public class AlterTrigger extends ManipTrigger
 			objname = (String) objpath.remove(objpath.size() - 1);
 			fireSe = SDMSSchedulingEntityTable.get(sysEnv, objpath, objname);
 			fireId = fireSe.getId(sysEnv);
+		} else if(fireObj.key.equals(ParseStr.S_RESOURCE)) {
+			objpath = (Vector) fireObj.value;
+			SDMSThread.doTrace(sysEnv.cEnv, "Objectpath : " + objpath.toString(), SDMSThread.SEVERITY_DEBUG);
+			final Object tmp = objpath.remove(objpath.size() - 1 );
+			SDMSThread.doTrace(sysEnv.cEnv, "Object in doubt : " + tmp.toString(), SDMSThread.SEVERITY_DEBUG);
+			resourcepath = (Vector) tmp;
+			Long scopeId;
+			try {
+				scopeId = SDMSScopeTable.pathToId(sysEnv, objpath);
+			} catch (NotFoundException nfe) {
+				scopeId = SDMSFolderTable.pathToId(sysEnv, objpath);
+			}
+			Long nrId = SDMSNamedResourceTable.getNamedResource(sysEnv, resourcepath).getId(sysEnv);
+			fireR = SDMSResourceTable.idx_nrId_scopeId_getUnique(sysEnv, new SDMSKey(nrId, scopeId));
+			fireId = fireR.getId(sysEnv);
 		}
 	}
 
@@ -387,6 +425,11 @@ public class AlterTrigger extends ManipTrigger
 		if (with.containsKey(ParseStr.S_LIMIT)) t.setLimitState(sysEnv, limitState);
 		if(maxRetry != null)		t.setMaxRetry(sysEnv, maxRetry);
 		if(with.containsKey(ParseStr.S_CONDITION))		t.setCondition(sysEnv, condition);
+		t.checkConditionSyntax(sysEnv);
+		if(with.containsKey(ParseStr.S_CHECK)) {
+			t.setCheckAmount(sysEnv, checkAmount);
+			t.setCheckBase(sysEnv, checkBase);
+		}
 
 		checkUniqueness(sysEnv, name, fireId, seId, (isInverse == null ? t.getIsInverse(sysEnv) : isInverse));
 		if(isInverse != null) t.setIsInverse(sysEnv, isInverse);
@@ -400,7 +443,6 @@ public class AlterTrigger extends ManipTrigger
 
 		if(t.getObjectType(sysEnv).intValue() == SDMSTrigger.JOB_DEFINITION) {
 			if(state != null || (state == null && with.containsKey(ParseStr.S_STATUS))) {
-
 				Vector v = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, tId);
 				for(int i = 0; i < v.size(); i++) {
 					SDMSTriggerState ts = (SDMSTriggerState) v.get(i);
@@ -408,7 +450,6 @@ public class AlterTrigger extends ManipTrigger
 				}
 			}
 			if(state != null) {
-
 				for(int i = 0; i < state.size(); i++) {
 					String s = (String) state.get(i);
 					Long esdId = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, s).getId(sysEnv);
@@ -419,6 +460,29 @@ public class AlterTrigger extends ManipTrigger
 
 			if (t.getType(sysEnv).intValue() != SDMSTrigger.AFTER_FINAL)
 				SDMSSchedulingHierarchyTable.checkHierarchyCycles(sysEnv, t.getFireId(sysEnv));
+		} else if (t.getObjectType(sysEnv).intValue() == SDMSTrigger.RESOURCE || t.getObjectType(sysEnv).intValue() == SDMSTrigger.NAMED_RESOURCE) {
+			if(rscstate != null || (rscstate == null && with.containsKey(ParseStr.S_STATUS))) {
+				Vector v = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, tId);
+				for(int i = 0; i < v.size(); i++) {
+					SDMSTriggerState ts = (SDMSTriggerState) v.get(i);
+					ts.delete(sysEnv);
+				}
+			}
+			if(rscstate != null) {
+				for(int i = 0; i < rscstate.size(); i++) {
+					WithItem w = (WithItem) rscstate.get(i);
+					Long frsdId;
+					Long trsdId;
+					if(w.key != null) {
+						frsdId = SDMSResourceStateDefinitionTable.idx_name_getUnique(sysEnv, w.key).getId(sysEnv);
+					} else	frsdId = null;
+					if(w.value != null) {
+						trsdId = SDMSResourceStateDefinitionTable.idx_name_getUnique(sysEnv, w.value).getId(sysEnv);
+					} else  trsdId = null;
+
+					SDMSTriggerStateTable.table.create(sysEnv, tId, frsdId, trsdId);
+				}
+			}
 		}
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03206191441", "Trigger altered"));

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -267,9 +266,9 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 		return;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSExitStateProfile(this);
+		return SDMSExitStateProfile.getProxy(sysEnv, this);
 	}
 
 	protected SDMSExitStateProfileGeneric(Long p_id,
@@ -331,12 +330,10 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ExitStateProfile: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -354,7 +351,6 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 			myInsert.setLong(10, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ExitStateProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -405,7 +401,6 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 			myUpdate.setLong(4, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ExitStateProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

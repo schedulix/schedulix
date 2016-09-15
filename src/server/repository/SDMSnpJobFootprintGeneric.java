@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -270,9 +269,9 @@ public class SDMSnpJobFootprintGeneric extends SDMSObject
 		return;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSnpJobFootprint(this);
+		return SDMSnpJobFootprint.getProxy(sysEnv, this);
 	}
 
 	protected SDMSnpJobFootprintGeneric(Long p_id,

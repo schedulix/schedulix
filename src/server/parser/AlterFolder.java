@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -76,9 +74,7 @@ public class AlterFolder extends Node
 			if(envName == null) {
 				f.setEnvId(sysEnv, null);
 			} else {
-
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_FOLDER_ENVIRONMENTS);
-
 				envId = SDMSNamedEnvironmentTable.idx_name_getUnique(sysEnv, envName).getId(sysEnv);
 				f.setEnvId(sysEnv, envId);
 			}
@@ -91,7 +87,6 @@ public class AlterFolder extends Node
 			if((f.getPrivilegeMask() & lpriv) != lpriv) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061132", "Incompatible grant"));
 			}
-
 			f.setInheritPrivs(sysEnv, inheritPrivs);
 		}
 
@@ -130,11 +125,9 @@ public class AlterFolder extends Node
 			try {
 				f.setOwnerId(sysEnv, gId);
 			} catch (AccessViolationException ave) {
-
 			}
 			setChildOwner(sysEnv, f.getId(sysEnv), gId);
 		}
-
 		Vector v_se =SDMSSchedulingEntityTable.idx_folderId.getVector(sysEnv, pId);
 		Iterator i_se = v_se.iterator();
 		while (i_se.hasNext()) {
@@ -142,7 +135,6 @@ public class AlterFolder extends Node
 			try {
 				se.setOwnerId(sysEnv, gId);
 			} catch (AccessViolationException ave) {
-
 			}
 		}
 	}

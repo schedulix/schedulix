@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -63,6 +62,19 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 	protected SDMSResourceRequirementProxyGeneric(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	protected static SDMSResourceRequirement getProxy (SystemEnvironment sysEnv, SDMSObject p_object)
+	{
+		int i = SDMSResourceRequirementTable.table.tableIndex;
+		SDMSProxy p = SDMSRepository.getProxy(i);
+		if (p == null)
+			p = new SDMSResourceRequirement (p_object);
+		else {
+			p.initProxy(p_object);
+		}
+		sysEnv.tx.addUsedProxy(i, p);
+		return (SDMSResourceRequirement)p;
 	}
 
 	public Long getNrId (SystemEnvironment env)
@@ -458,7 +470,6 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFootprintTable.tableName);
 		try {
@@ -469,7 +480,6 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -507,7 +517,6 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFootprintTable.tableName);
 		try {
@@ -519,7 +528,6 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -542,14 +550,12 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 			SDMSProxy p = t.get(env, getSeId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFootprintTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getSeId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 	}
 

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -472,12 +471,12 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 	{
 		final Integer v = getBacklogHandling (env);
 		switch (v.intValue()) {
-		case SDMSScheduledEvent.NONE:
-			return "NONE";
-		case SDMSScheduledEvent.LAST:
-			return "LAST";
-		case SDMSScheduledEvent.ALL:
-			return "ALL";
+			case SDMSScheduledEvent.NONE:
+				return "NONE";
+			case SDMSScheduledEvent.LAST:
+				return "LAST";
+			case SDMSScheduledEvent.ALL:
+				return "ALL";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -516,18 +515,18 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSScheduledEvent.MINUTE:
-			return "MINUTE";
-		case SDMSScheduledEvent.HOUR:
-			return "HOUR";
-		case SDMSScheduledEvent.DAY:
-			return "DAY";
-		case SDMSScheduledEvent.WEEK:
-			return "WEEK";
-		case SDMSScheduledEvent.MONTH:
-			return "MONTH";
-		case SDMSScheduledEvent.YEAR:
-			return "YEAR";
+			case SDMSScheduledEvent.MINUTE:
+				return "MINUTE";
+			case SDMSScheduledEvent.HOUR:
+				return "HOUR";
+			case SDMSScheduledEvent.DAY:
+				return "DAY";
+			case SDMSScheduledEvent.WEEK:
+				return "WEEK";
+			case SDMSScheduledEvent.MONTH:
+				return "MONTH";
+			case SDMSScheduledEvent.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -752,9 +751,9 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSScheduledEvent(this);
+		return SDMSScheduledEvent.getProxy(sysEnv, this);
 	}
 
 	protected SDMSScheduledEventGeneric(Long p_id,
@@ -862,12 +861,10 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ScheduledEvent: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -916,7 +913,6 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 			myInsert.setLong (20, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ScheduledEvent: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -932,7 +928,6 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 				        "DELETE FROM SCHEDULED_EVENT WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "ScheduledEvent: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -942,7 +937,6 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "ScheduledEvent: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -980,7 +974,6 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "ScheduledEvent: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -1033,7 +1026,6 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 			myUpdate.setLong(20, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "ScheduledEvent: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -1053,10 +1045,10 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 	static public boolean checkBacklogHandling(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSScheduledEvent.NONE:
-		case SDMSScheduledEvent.LAST:
-		case SDMSScheduledEvent.ALL:
-			return true;
+			case SDMSScheduledEvent.NONE:
+			case SDMSScheduledEvent.LAST:
+			case SDMSScheduledEvent.ALL:
+				return true;
 		}
 		return false;
 	}
@@ -1064,13 +1056,13 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSScheduledEvent.MINUTE:
-		case SDMSScheduledEvent.HOUR:
-		case SDMSScheduledEvent.DAY:
-		case SDMSScheduledEvent.WEEK:
-		case SDMSScheduledEvent.MONTH:
-		case SDMSScheduledEvent.YEAR:
-			return true;
+			case SDMSScheduledEvent.MINUTE:
+			case SDMSScheduledEvent.HOUR:
+			case SDMSScheduledEvent.DAY:
+			case SDMSScheduledEvent.WEEK:
+			case SDMSScheduledEvent.MONTH:
+			case SDMSScheduledEvent.YEAR:
+				return true;
 		}
 		return false;
 	}

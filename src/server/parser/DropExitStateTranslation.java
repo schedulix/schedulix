@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -54,6 +52,39 @@ public class DropExitStateTranslation extends Node
 		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXIT_STATE_TRANSLATION);
+		SDMSExitStateTranslationProfile estp;
+		try {
+			estp = (SDMSExitStateTranslationProfile) url.resolve(sysEnv);
+		} catch (NotFoundException nfe) {
+			if(noerr) {
+				result.setFeedback(new SDMSMessage(sysEnv, "03311130025", "No Exit State Translation dropped"));
+				return;
+			}
+			throw nfe;
+		}
+		Long estpId = estp.getId(sysEnv);
+
+		Vector sh_v = SDMSSchedulingHierarchyTable.idx_estpId.getVector(sysEnv, estpId);
+		if (sh_v.size() != 0) {
+			SDMSSchedulingHierarchy sh = (SDMSSchedulingHierarchy)(sh_v.elementAt(0));
+			SDMSSchedulingEntity se_p = SDMSSchedulingEntityTable.getObject(sysEnv, sh.getSeParentId (sysEnv));
+			SDMSSchedulingEntity se_c = SDMSSchedulingEntityTable.getObject(sysEnv, sh.getSeChildId (sysEnv));
+			throw new CommonErrorException (new SDMSMessage (sysEnv, "02112171840",
+			                                "Exit State Translation in use between parent $1 and child $2",
+			                                se_p.pathString(sysEnv),
+			                                se_c.pathString(sysEnv)
+			                                                ));
+		}
+
+		Vector est_v = SDMSExitStateTranslationTable.idx_estpId.getVector(sysEnv, estpId);
+		SDMSExitStateTranslation est;
+		Iterator i = est_v.iterator();
+		while (i.hasNext()) {
+			est = (SDMSExitStateTranslation)(i.next());
+			est.delete(sysEnv);
+		}
+		estp.delete(sysEnv);
+
 		result.setFeedback(new SDMSMessage(sysEnv, "03204112215", "Exit State Translation dropped"));
 	}
 }

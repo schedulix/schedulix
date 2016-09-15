@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -85,8 +83,10 @@ public class CreateFolder extends Node
 		}
 		envName = (String) with.get(ParseStr.S_ENVIRONMENT);
 		if(envName != null) {
-
 			sysEnv.checkFeatureAvailability(SystemEnvironment.S_FOLDER_ENVIRONMENTS);
+			envId = SDMSNamedEnvironmentTable.idx_name_getUnique(sysEnv, envName).getId(sysEnv);
+		} else {
+			envId = null;
 		}
 
 		final Long uId = env.uid();
@@ -114,7 +114,6 @@ public class CreateFolder extends Node
 		if((parent.getPrivilegeMask() & lpriv) != lpriv) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061110", "Incompatible grant"));
 		}
-
 		Long inheritPrivs = new Long(lpriv);
 
 		try {

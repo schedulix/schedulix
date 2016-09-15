@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -140,80 +138,43 @@ public class ListTrigger extends Node
 		}
 
 		desc = new Vector();
-
 		desc.add("ID");
 		desc.add("NAME");
-
 		desc.add("OBJECT_TYPE");
-
 		desc.add("OBJECT_SUBTYPE");
-
 		desc.add("OBJECT_NAME");
-
 		desc.add("ACTIVE");
-
 		desc.add("ACTION");
-
 		desc.add("STATES");
-
 		desc.add("SUBMIT_TYPE");
-
 		desc.add("SUBMIT_NAME");
-
 		desc.add("SUBMIT_SE_OWNER");
-
 		desc.add("SUBMIT_PRIVS");
-
 		desc.add("MAIN_TYPE");
-
 		desc.add("MAIN_NAME");
-
 		desc.add("MAIN_SE_OWNER");
-
 		desc.add("MAIN_PRIVS");
-
 		desc.add("PARENT_TYPE");
-
 		desc.add("PARENT_NAME");
-
 		desc.add("PARENT_SE_OWNER");
-
 		desc.add("PARENT_PRIVS");
-
 		desc.add("TRIGGER_TYPE");
-
 		desc.add("MASTER");
-
 		desc.add("IS_INVERSE");
-
 		desc.add("SUBMIT_OWNER");
-
 		desc.add("IS_CREATE");
-
 		desc.add("IS_CHANGE");
-
 		desc.add("IS_DELETE");
-
 		desc.add("IS_GROUP");
-
 		desc.add("MAX_RETRY");
-
 		desc.add("SUSPEND");
-
 		desc.add("RESUME_AT");
-
 		desc.add("RESUME_IN");
-
 		desc.add("RESUME_BASE");
-
 		desc.add("WARN");
-
 		desc.add("LIMIT_STATE");
-
 		desc.add("CONDITION");
-
 		desc.add("CHECK_AMOUNT");
-
 		desc.add("CHECK_BASE");
 		desc.add("PRIVS");
 		desc.add("TAG");

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -245,7 +244,6 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                      );
 
 		final Long smeId = sme.getId(env);
-
 		long seVersion = p_seVersion.longValue();
 		if (p_masterId.longValue() == 0) {
 			env.seVersionList.add(env, seVersion);
@@ -255,6 +253,26 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 
 		int cnt = env.tx.smeCtr.intValue() + 1;
 		env.tx.smeCtr = new Integer(cnt);
+		Vector v = SDMSResourceTemplateTable.idx_seId.getVector(env, p_seId, seVersion);
+		final java.util.Date dts = new java.util.Date();
+		final Long ts = new Long (dts.getTime());
+		for(int i = 0; i < v.size(); i++) {
+			final SDMSResourceTemplate rt = (SDMSResourceTemplate) v.get(i);
+			final Long nrId = rt.getNrId(env);
+			final SDMSNamedResource nr = SDMSNamedResourceTable.getObject(env, nrId);
+			final SDMSResource r = SDMSResourceTable.table.create(env, rt.getNrId(env), smeId, p_masterId, p_ownerId, null, null,
+			                       null, rt.getRsdId(env), ts, rt.getAmount(env), rt.getRequestableAmount(env),
+			                       rt.getAmount(env), rt.getAmount(env), rt.getIsOnline(env), nr.getFactor(env),
+			                       null, null, new Integer(10), fzero, fzero, fzero, fzero, lzero, lzero);
+			Vector tv = SDMSTemplateVariableTable.idx_rtId.getVector(env, rt.getId(env), seVersion);
+			for(int j = 0; j < tv.size(); j++) {
+				final SDMSTemplateVariable t = (SDMSTemplateVariable) tv.get(j);
+				SDMSResourceVariableTable.table.create(env, t.getPdId(env), r.getId(env), t.getValue(env));
+			}
+		}
+		if (p_resumeTs != null) {
+			env.tt.addToJobsToResume(env, sme.getId(env));
+		}
 
 		return sme;
 	}
@@ -360,7 +378,6 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 	throws SDMSException
 	{
 		SDMSSubmittedEntityGeneric smeg = (SDMSSubmittedEntityGeneric)(super.rowToObject(env, r));
-
 		if (smeg.getId(env).longValue() == smeg.getMasterId(env).longValue()) {
 			env.seVersionList.add(env, smeg.getSeVersion(env).longValue());
 		}

@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -64,7 +64,6 @@ public class SDMSIndex
 		   t != IDUNIQUE) {
 			throw new FatalException(new SDMSMessage(env,
 						"03110181526", "Invalid Indextype $1", new Integer(t)));
-
 		}
 		this.table = table;
 		this.indexName = indexName;
@@ -96,7 +95,6 @@ public class SDMSIndex
 					v.modCnt ++;
 				}
 		}
-
 		if (env.maxWriter > 1 && doLockBucket) {
 			try {
 				LockingSystem.lock(env, v, ObjectLock.EXCLUSIVE);
@@ -148,12 +146,9 @@ public class SDMSIndex
 				}
 
 				if (!old.isCurrent) {
-
 					if (env.maxWriter > 1) {
-
 						old = ov.getRaw(env, true);
 						if (old != null) {
-
 							synchronized(v) {
 								if (! v.contains(old))
 									old = null;
@@ -193,7 +188,6 @@ public class SDMSIndex
 			v.add(o);
 			v.modCnt --;
 		}
-
 		if (env.maxWriter > 1 && doLockBucket)
 			LockingSystem.release(env, v);
 	}
@@ -281,7 +275,6 @@ public class SDMSIndex
 
 				if (versionsChecked.contains(ov))
 					continue;
-
 				versionsChecked.add(ov);
 
 				if (env.maxWriter > 1) {
@@ -289,10 +282,8 @@ public class SDMSIndex
 				}
 
 				if (!o.isCurrent) {
-
 					o = ov.getRaw(env, true);
 					if (o != null) {
-
 						synchronized(v) {
 							if (! v.contains(o))
 								o = null;
@@ -312,7 +303,6 @@ public class SDMSIndex
 		} else {
 			return containsKey(env, key, env.tx.versionId);
 		}
-
 	}
 
 	public boolean containsKey(SystemEnvironment env, Object key, long version)
@@ -328,8 +318,19 @@ public class SDMSIndex
 			SDMSObject o;
 			while (i.hasNext()) {
 				o = (SDMSObject) i.next();
-				if(o.validFrom <= version && version < o.validTo)
-					return true;
+				if(o.validFrom <= version && version < o.validTo) {
+					if (SystemEnvironment.maxWriter > 1 && env.tx.mode == SDMSTransaction.READONLY) {
+						int cti;
+						for (cti = 0; cti < env.tx.commitingTx.length; ++cti) {
+							if (env.tx.commitingTx[cti] > o.validFrom)
+								return true;
+							if (env.tx.commitingTx[cti] == o.validFrom) {
+								break;
+							}
+						}
+					} else
+						return true;
+				}
 			}
 		}
 		return false;
@@ -397,7 +398,6 @@ public class SDMSIndex
 			synchronized(v) {
 				va = v.toArray();
 			}
-
 			if (env.maxWriter > 1) {
 				Arrays.sort(va, objectIdComparator);
 			}
@@ -411,7 +411,6 @@ public class SDMSIndex
 
 				if (versionsChecked.contains(ov))
 					continue;
-
 				versionsChecked.add(ov);
 
 				if (env.maxWriter > 1) {
@@ -419,10 +418,8 @@ public class SDMSIndex
 				}
 
 				if (!o.isCurrent) {
-
 					o = ov.getRaw(env, true);
 					if (o != null) {
-
 						synchronized(v) {
 							if (! v.contains(o))
 								o = null;
@@ -432,11 +429,10 @@ public class SDMSIndex
 
 				if (o != null)  {
 					if (p == null) {
-						p = o.toProxy();
+						p = o.toProxy(env);
 						p.current = true;
 					} else
 						p.object = o;
-
 					if (filter == null || filter.isValid(env, p)) {
 						r.add(p);
 						p = null;
@@ -446,18 +442,15 @@ public class SDMSIndex
 					} else
 						o = null;
 				}
-
 				if (o == null) {
 					if (env.maxWriter > 1)
 						LockingSystem.releaseToCheckPoint(env, ov, checkPoint);
 				}
 			}
-
 			if (env.maxWriter > 1)
 				LockingSystem.release(env, v);
 			return r;
 		} else {
-
 			return getVector(env, key, env.tx.versionId, filter);
 		}
 	}
@@ -482,7 +475,6 @@ public class SDMSIndex
 	{
 		return getVector(env, key, version, null);
 	}
-
 	private Vector getVector(SystemEnvironment env, Object key, long version, SDMSFilter filter)
 		throws SDMSException
 	{
@@ -506,13 +498,26 @@ public class SDMSIndex
 		for (int i = 0; i < va.length; ++i) {
 			o = (SDMSObject) va[i];
 			if(o.validFrom <= version && version < o.validTo) {
-				if (p == null) {
-					p = o.toProxy();
-				} else
-					p.object = o;
-				if (filter == null || filter.isValid(env, p)) {
-					r.add(p);
-					p = null;
+				if (SystemEnvironment.maxWriter > 1 && env.tx.mode == SDMSTransaction.READONLY) {
+					int cti;
+					for (cti = 0; cti < env.tx.commitingTx.length; ++cti) {
+						if (env.tx.commitingTx[cti] > o.validFrom)
+							break;
+						if (env.tx.commitingTx[cti] == o.validFrom) {
+							o = null;
+							break;
+						}
+					}
+				}
+				if (o != null) {
+					if (p == null) {
+						p = o.toProxy(env);
+					} else
+						p.object = o;
+					if (filter == null || filter.isValid(env, p)) {
+						r.add(p);
+						p = null;
+					}
 				}
 			}
 		}
@@ -559,7 +564,6 @@ public class SDMSIndex
 			synchronized(v) {
 				va = v.toArray();
 			}
-
 			for (int i = 0; i < va.length; ++i) {
 				o = (SDMSObject) va[i];
 				SDMSVersions ov = o.versions;
@@ -570,10 +574,8 @@ public class SDMSIndex
 
 				if (!o.isCurrent) {
 					if (env.maxWriter > 1) {
-
 						o = ov.getRaw(env, true);
 						if (o != null) {
-
 							synchronized(v) {
 								if (! v.contains(o))
 									o = null;
@@ -589,13 +591,12 @@ public class SDMSIndex
 					continue;
 				}
 
-				p = o.toProxy();
+				p = o.toProxy(env);
 				p.current = true;
 				return p;
 			}
 			throw new NotFoundException(new SDMSMessage(env, "03110181533", "$1 not found", key));
 		}
-
 		return getUnique(env, key, env.tx.versionId);
 	}
 
@@ -619,8 +620,21 @@ public class SDMSIndex
 			SDMSObject o;
 			while (i.hasNext()) {
 				o = (SDMSObject) i.next();
-				if(o.validFrom <= version && version < o.validTo)
-					return o.toProxy();
+				if(o.validFrom <= version && version < o.validTo) {
+					if (SystemEnvironment.maxWriter > 1 && env.tx.mode == SDMSTransaction.READONLY) {
+						int cti;
+						for (cti = 0; cti < env.tx.commitingTx.length; ++cti) {
+							if (env.tx.commitingTx[cti] > o.validFrom)
+								break;
+							if (env.tx.commitingTx[cti] == o.validFrom) {
+								o = null;
+								break;
+							}
+						}
+					}
+					if (o != null)
+						return o.toProxy(env);
+				}
 			}
 		}
 		throw new NotFoundException(new SDMSMessage(env, "03201292041", "$1 not found", key));

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -194,52 +193,52 @@ public class SDMSGrantGeneric extends SDMSObject
 	{
 		final Integer v = getObjectType (env);
 		switch (v.intValue()) {
-		case SDMSGrant.ENVIRONMENT:
-			return "ENVIRONMENT";
-		case SDMSGrant.EVENT:
-			return "EVENT";
-		case SDMSGrant.FOLDER:
-			return "FOLDER";
-		case SDMSGrant.INTERVAL:
-			return "INTERVAL";
-		case SDMSGrant.JOB:
-			return "JOB";
-		case SDMSGrant.JOB_DEFINITION:
-			return "JOB_DEFINITION";
-		case SDMSGrant.NAMED_RESOURCE:
-			return "NAMED_RESOURCE";
-		case SDMSGrant.SCHEDULE:
-			return "SCHEDULE";
-		case SDMSGrant.SCHEDULED_EVENT:
-			return "SCHEDULED_EVENT";
-		case SDMSGrant.SCOPE:
-			return "SCOPE";
-		case SDMSGrant.GROUP:
-			return "GROUP";
-		case SDMSGrant.RESOURCE:
-			return "RESOURCE";
-		case SDMSGrant.EXIT_STATE_DEFINITION:
-			return "EXIT_STATE_DEFINITION";
-		case SDMSGrant.EXIT_STATE_PROFILE:
-			return "EXIT_STATE_PROFILE";
-		case SDMSGrant.EXIT_STATE_MAPPING:
-			return "EXIT_STATE_MAPPING";
-		case SDMSGrant.EXIT_STATE_TRANSLATION:
-			return "EXIT_STATE_TRANSLATION";
-		case SDMSGrant.RESOURCE_STATE_DEFINITION:
-			return "RESOURCE_STATE_DEFINITION";
-		case SDMSGrant.RESOURCE_STATE_PROFILE:
-			return "RESOURCE_STATE_PROFILE";
-		case SDMSGrant.RESOURCE_STATE_MAPPING:
-			return "RESOURCE_STATE_MAPPING";
-		case SDMSGrant.FOOTPRINT:
-			return "FOOTPRINT";
-		case SDMSGrant.USER:
-			return "USER";
-		case SDMSGrant.OBJECT_MONITOR:
-			return "OBJECT_MONITOR";
-		case SDMSGrant.SYSTEM:
-			return "SYSTEM";
+			case SDMSGrant.ENVIRONMENT:
+				return "ENVIRONMENT";
+			case SDMSGrant.EVENT:
+				return "EVENT";
+			case SDMSGrant.FOLDER:
+				return "FOLDER";
+			case SDMSGrant.INTERVAL:
+				return "INTERVAL";
+			case SDMSGrant.JOB:
+				return "JOB";
+			case SDMSGrant.JOB_DEFINITION:
+				return "JOB_DEFINITION";
+			case SDMSGrant.NAMED_RESOURCE:
+				return "NAMED_RESOURCE";
+			case SDMSGrant.SCHEDULE:
+				return "SCHEDULE";
+			case SDMSGrant.SCHEDULED_EVENT:
+				return "SCHEDULED_EVENT";
+			case SDMSGrant.SCOPE:
+				return "SCOPE";
+			case SDMSGrant.GROUP:
+				return "GROUP";
+			case SDMSGrant.RESOURCE:
+				return "RESOURCE";
+			case SDMSGrant.EXIT_STATE_DEFINITION:
+				return "EXIT_STATE_DEFINITION";
+			case SDMSGrant.EXIT_STATE_PROFILE:
+				return "EXIT_STATE_PROFILE";
+			case SDMSGrant.EXIT_STATE_MAPPING:
+				return "EXIT_STATE_MAPPING";
+			case SDMSGrant.EXIT_STATE_TRANSLATION:
+				return "EXIT_STATE_TRANSLATION";
+			case SDMSGrant.RESOURCE_STATE_DEFINITION:
+				return "RESOURCE_STATE_DEFINITION";
+			case SDMSGrant.RESOURCE_STATE_PROFILE:
+				return "RESOURCE_STATE_PROFILE";
+			case SDMSGrant.RESOURCE_STATE_MAPPING:
+				return "RESOURCE_STATE_MAPPING";
+			case SDMSGrant.FOOTPRINT:
+				return "FOOTPRINT";
+			case SDMSGrant.USER:
+				return "USER";
+			case SDMSGrant.OBJECT_MONITOR:
+				return "OBJECT_MONITOR";
+			case SDMSGrant.SYSTEM:
+				return "SYSTEM";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -423,9 +422,9 @@ public class SDMSGrantGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSGrant(this);
+		return SDMSGrant.getProxy(sysEnv, this);
 	}
 
 	protected SDMSGrantGeneric(Long p_id,
@@ -493,12 +492,10 @@ public class SDMSGrantGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "Grant: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -516,7 +513,6 @@ public class SDMSGrantGeneric extends SDMSObject
 			myInsert.setLong (10, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "Grant: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -532,7 +528,6 @@ public class SDMSGrantGeneric extends SDMSObject
 				        "DELETE FROM GRANTS WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Grant: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -542,7 +537,6 @@ public class SDMSGrantGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "Grant: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -570,7 +564,6 @@ public class SDMSGrantGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "Grant: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -592,7 +585,6 @@ public class SDMSGrantGeneric extends SDMSObject
 			myUpdate.setLong(10, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "Grant: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -600,30 +592,30 @@ public class SDMSGrantGeneric extends SDMSObject
 	static public boolean checkObjectType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSGrant.ENVIRONMENT:
-		case SDMSGrant.EVENT:
-		case SDMSGrant.FOLDER:
-		case SDMSGrant.INTERVAL:
-		case SDMSGrant.JOB:
-		case SDMSGrant.JOB_DEFINITION:
-		case SDMSGrant.NAMED_RESOURCE:
-		case SDMSGrant.SCHEDULE:
-		case SDMSGrant.SCHEDULED_EVENT:
-		case SDMSGrant.SCOPE:
-		case SDMSGrant.GROUP:
-		case SDMSGrant.RESOURCE:
-		case SDMSGrant.EXIT_STATE_DEFINITION:
-		case SDMSGrant.EXIT_STATE_PROFILE:
-		case SDMSGrant.EXIT_STATE_MAPPING:
-		case SDMSGrant.EXIT_STATE_TRANSLATION:
-		case SDMSGrant.RESOURCE_STATE_DEFINITION:
-		case SDMSGrant.RESOURCE_STATE_PROFILE:
-		case SDMSGrant.RESOURCE_STATE_MAPPING:
-		case SDMSGrant.FOOTPRINT:
-		case SDMSGrant.USER:
-		case SDMSGrant.OBJECT_MONITOR:
-		case SDMSGrant.SYSTEM:
-			return true;
+			case SDMSGrant.ENVIRONMENT:
+			case SDMSGrant.EVENT:
+			case SDMSGrant.FOLDER:
+			case SDMSGrant.INTERVAL:
+			case SDMSGrant.JOB:
+			case SDMSGrant.JOB_DEFINITION:
+			case SDMSGrant.NAMED_RESOURCE:
+			case SDMSGrant.SCHEDULE:
+			case SDMSGrant.SCHEDULED_EVENT:
+			case SDMSGrant.SCOPE:
+			case SDMSGrant.GROUP:
+			case SDMSGrant.RESOURCE:
+			case SDMSGrant.EXIT_STATE_DEFINITION:
+			case SDMSGrant.EXIT_STATE_PROFILE:
+			case SDMSGrant.EXIT_STATE_MAPPING:
+			case SDMSGrant.EXIT_STATE_TRANSLATION:
+			case SDMSGrant.RESOURCE_STATE_DEFINITION:
+			case SDMSGrant.RESOURCE_STATE_PROFILE:
+			case SDMSGrant.RESOURCE_STATE_MAPPING:
+			case SDMSGrant.FOOTPRINT:
+			case SDMSGrant.USER:
+			case SDMSGrant.OBJECT_MONITOR:
+			case SDMSGrant.SYSTEM:
+				return true;
 		}
 		return false;
 	}

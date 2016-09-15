@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -80,14 +78,10 @@ public class ShowFolder extends ShowCommented
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411709", "Insufficient privileges"));
 
 		desc.add("ID");
-
 		desc.add("NAME");
 		desc.add("OWNER");
-
 		desc.add("TYPE");
-
 		desc.add("ENVIRONMENT");
-
 		desc.add("INHERIT_PRIVS");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
@@ -96,9 +90,7 @@ public class ShowFolder extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("PARAMETERS");
-
 		desc.add("DEFINED_RESOURCES");
 
 		id = f.getId(sysEnv);
@@ -151,66 +143,36 @@ public class ShowFolder extends ShowCommented
 		Vector data = new Vector();
 
 		desc.add("ID");
-
 		desc.add("NAME");
 		desc.add("OWNER");
-
 		desc.add("TYPE");
-
 		desc.add("INHERIT_PRIVS");
-
 		desc.add("RUN_PROGRAM");
-
 		desc.add("RERUN_PROGRAM");
-
 		desc.add("KILL_PROGRAM");
-
 		desc.add("WORKDIR");
-
 		desc.add("LOGFILE");
-
 		desc.add("TRUNC_LOG");
-
 		desc.add("ERRLOGFILE");
-
 		desc.add("TRUNC_ERRLOG");
-
 		desc.add("EXPECTED_RUNTIME");
-
 		desc.add("EXPECTED_FINALTIME");
-
 		desc.add("PRIORITY");
-
 		desc.add("MIN_PRIORITY");
-
 		desc.add("AGING_AMOUNT");
-
 		desc.add("AGING_BASE");
-
 		desc.add("SUBMIT_SUSPENDED");
-
 		desc.add("RESUME_AT");
-
 		desc.add("RESUME_IN");
-
 		desc.add("RESUME_BASE");
-
 		desc.add("MASTER_SUBMITTABLE");
-
 		desc.add("TIMEOUT_AMOUNT");
-
 		desc.add("TIMEOUT_BASE");
-
 		desc.add("TIMEOUT_STATE");
-
 		desc.add("DEPENDENCY_MODE");
-
 		desc.add("ESP_NAME");
-
 		desc.add("ESM_NAME");
-
 		desc.add("ENV_NAME");
-
 		desc.add("FP_NAME");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
@@ -219,21 +181,13 @@ public class ShowFolder extends ShowCommented
 		desc.add("CREATE_TIME");
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
-
 		desc.add("CHILDREN");
-
 		desc.add("PARENTS");
-
 		desc.add("PARAMETER");
-
 		desc.add("REFERENCES");
-
 		desc.add("REQUIRED_JOBS");
-
 		desc.add("DEPENDENT_JOBS");
-
 		desc.add("REQUIRED_RESOURCES");
-
 		desc.add("DEFINED_RESOURCES");
 
 		if(!se.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
@@ -283,7 +237,6 @@ public class ShowFolder extends ShowCommented
 		} else {
 			data.add(null);
 		}
-
 		data.add(se.getDependencyOperationAsString(sysEnv));
 		espId = se.getEspId(sysEnv);
 		esp = SDMSExitStateProfileTable.getObject(sysEnv, espId);
@@ -364,47 +317,31 @@ public class ShowFolder extends ShowCommented
 		throws SDMSException
 	{
 		Vector c_desc = new Vector();
-
 		c_desc.add("ID");
-
 		c_desc.add("CHILDNAME");
-
 		c_desc.add("CHILDTYPE");
-
 		c_desc.add("CHILDPRIVS");
-
 		c_desc.add("PARENTNAME");
-
 		c_desc.add("PARENTTYPE");
-
 		c_desc.add("PARENTPRIVS");
-
 		c_desc.add("ALIAS_NAME");
-
 		c_desc.add("IS_STATIC");
-
 		c_desc.add("IS_DISABLED");
-
 		c_desc.add("PRIORITY");
-
 		c_desc.add("SUSPEND");
-
 		c_desc.add("RESUME_AT");
-
 		c_desc.add("RESUME_IN");
-
 		c_desc.add("RESUME_BASE");
-
 		c_desc.add("MERGE_MODE");
-
 		c_desc.add("EST_NAME");
-
 		c_desc.add("IGNORED_DEPENDENCIES");
 
 		SDMSOutputContainer c_container = new SDMSOutputContainer(sysEnv, null, c_desc);
 
 		SDMSSchedulingHierarchy sh;
 		SDMSSchedulingEntity cse;
+		Long estpId;
+		SDMSExitStateTranslationProfile estp;
 
 		Vector c_data;
 		Iterator i = sh_v.iterator();
@@ -430,7 +367,13 @@ public class ShowFolder extends ShowCommented
 			c_data.add(sh.getResumeIn(sysEnv));
 			c_data.add(sh.getResumeBaseAsString(sysEnv));
 			c_data.add(sh.getMergeModeAsString(sysEnv));
-			c_data.add(null);
+			estpId = sh.getEstpId(sysEnv);
+			if (estpId != null) {
+				estp = SDMSExitStateTranslationProfileTable.getObject(sysEnv, estpId);
+				c_data.add(estp.getName(sysEnv));
+			} else {
+				c_data.add(null);
+			}
 
 			Vector ids_v = SDMSIgnoredDependencyTable.idx_shId.getVector(sysEnv, sh.getId(sysEnv));
 			String sep = "";
@@ -470,30 +413,18 @@ public class ShowFolder extends ShowCommented
 		SDMSDependencyDefinition dd;
 
 		Vector c_desc = new Vector();
-
 		c_desc.add("ID");
 		c_desc.add("NAME");
-
 		c_desc.add("DEPENDENTNAME");
-
 		c_desc.add("DEPENDENTTYPE");
-
 		c_desc.add("DEPENDENTPRIVS");
-
 		c_desc.add("REQUIREDNAME");
-
 		c_desc.add("REQUIREDTYPE");
-
 		c_desc.add("REQUIREDPRIVS");
-
 		c_desc.add("UNRESOLVED_HANDLING");
-
 		c_desc.add("MODE");
-
 		c_desc.add("STATE_SELECTION");
-
 		c_desc.add("CONDITION");
-
 		c_desc.add("STATES");
 
 		SDMSOutputContainer c_container = new SDMSOutputContainer(sysEnv, null, c_desc);
@@ -550,39 +481,22 @@ public class ShowFolder extends ShowCommented
 		HashSet nrset = new HashSet();
 
 		Vector c_desc = new Vector();
-
 		c_desc.add("ID");
-
 		c_desc.add("RESOURCE_NAME");
-
 		c_desc.add("RESOURCE_USAGE");
-
 		c_desc.add("RESOURCE_PRIVS");
-
 		c_desc.add("AMOUNT");
-
 		c_desc.add("KEEP_MODE");
-
 		c_desc.add("IS_STICKY");
-
 		c_desc.add("STICKY_NAME");
-
 		c_desc.add("STICKY_PARENT");
-
 		c_desc.add("RESOURCE_STATE_MAPPING");
-
 		c_desc.add("EXPIRED_AMOUNT");
-
 		c_desc.add("EXPIRED_BASE");
-
 		c_desc.add("LOCKMODE");
-
 		c_desc.add("STATES");
-
 		c_desc.add("DEFINITION");
-
 		c_desc.add("ORIGIN");
-
 		c_desc.add("CONDITION");
 
 		SDMSOutputContainer c_container = new SDMSOutputContainer(sysEnv, null, c_desc);
@@ -636,7 +550,6 @@ public class ShowFolder extends ShowCommented
 				c_container.addData(sysEnv, c_data);
 			}
 		}
-
 		Long folderId = se.getFolderId(sysEnv);
 		while (folderId != null) {
 			SDMSFolder f = SDMSFolderTable.getObject(sysEnv, folderId);
@@ -764,6 +677,22 @@ public class ShowFolder extends ShowCommented
 		sc[0] = 1;
 		nrl.setSortColumns(sc);
 		Vector nrv = new Vector();
+		Vector rv;
+
+		if(p instanceof SDMSFolder) {
+			rv = SDMSResourceTable.idx_scopeId.getVector(sysEnv, cId);
+			for(int i = 0; i < rv.size(); ++i) {
+				SDMSResource r = (SDMSResource) rv.get(i);
+				nrv.add(r.getNrId(sysEnv));
+			}
+		}
+		if(!(p instanceof SDMSFolder)) {
+			rv = SDMSResourceTemplateTable.idx_seId.getVector(sysEnv, cId);
+			for(int i = 0; i < rv.size(); ++i) {
+				SDMSResourceTemplate rt = (SDMSResourceTemplate) rv.get(i);
+				nrv.add(rt.getNrId(sysEnv));
+			}
+		}
 		nrl.setObjectsToList(nrv);
 		nrl.setExpandIds(null);
 		SDMSOutputContainer r_container = nrl.list(sysEnv);

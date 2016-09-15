@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -224,16 +223,16 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 	{
 		final Integer v = getUsage (env);
 		switch (v.intValue()) {
-		case SDMSNamedResource.STATIC:
-			return "STATIC";
-		case SDMSNamedResource.SYSTEM:
-			return "SYSTEM";
-		case SDMSNamedResource.SYNCHRONIZING:
-			return "SYNCHRONIZING";
-		case SDMSNamedResource.CATEGORY:
-			return "CATEGORY";
-		case SDMSNamedResource.POOL:
-			return "POOL";
+			case SDMSNamedResource.STATIC:
+				return "STATIC";
+			case SDMSNamedResource.SYSTEM:
+				return "SYSTEM";
+			case SDMSNamedResource.SYNCHRONIZING:
+				return "SYNCHRONIZING";
+			case SDMSNamedResource.CATEGORY:
+				return "CATEGORY";
+			case SDMSNamedResource.POOL:
+				return "POOL";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -455,9 +454,9 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSNamedResource(this);
+		return SDMSNamedResource.getProxy(sysEnv, this);
 	}
 
 	protected SDMSNamedResourceGeneric(Long p_id,
@@ -533,12 +532,10 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "NamedResource: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -564,7 +561,6 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 			myInsert.setLong (12, inheritPrivs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "NamedResource: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -580,7 +576,6 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 				        "DELETE FROM NAMED_RESOURCE WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "NamedResource: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -590,7 +585,6 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "NamedResource: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -620,7 +614,6 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "NamedResource: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -650,7 +643,6 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 			myUpdate.setLong(12, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "NamedResource: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -658,12 +650,12 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 	static public boolean checkUsage(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSNamedResource.STATIC:
-		case SDMSNamedResource.SYSTEM:
-		case SDMSNamedResource.SYNCHRONIZING:
-		case SDMSNamedResource.CATEGORY:
-		case SDMSNamedResource.POOL:
-			return true;
+			case SDMSNamedResource.STATIC:
+			case SDMSNamedResource.SYSTEM:
+			case SDMSNamedResource.SYNCHRONIZING:
+			case SDMSNamedResource.CATEGORY:
+			case SDMSNamedResource.POOL:
+				return true;
 		}
 		return false;
 	}

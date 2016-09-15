@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -74,7 +73,6 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 	{
 		super(env);
 		if (table != null) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182009", "KillJob"));
 		}
 		table = (SDMSKillJobTable) this;
@@ -108,9 +106,7 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 		Long p_createTs = env.txTime();
 		Long p_changerUId = env.cEnv.uid();
 		Long p_changeTs = env.txTime();
-
 		if(env.tx.mode == SDMSTransaction.READONLY) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182049", "KillJob"));
 		}
 		validate(env
@@ -160,14 +156,13 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 
 		SDMSKillJob p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
-			p = (SDMSKillJob)(o.toProxy());
+			p = (SDMSKillJob)(o.toProxy(env));
 			p.current = true;
 		} catch(SDMSException e) {
-			p = (SDMSKillJob)(o.toProxy());
+			p = (SDMSKillJob)(o.toProxy(env));
 			p.current = true;
 			env.tx.rollbackSubTransaction(env);
 			throw e;
@@ -213,9 +208,7 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		if (!SDMSKillJobGeneric.checkState(p_state))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "KillJob: $1 $2", "state", p_state));
-
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -279,7 +272,6 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-
 			throw new FatalException(new SDMSMessage(env, "01110182045", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;

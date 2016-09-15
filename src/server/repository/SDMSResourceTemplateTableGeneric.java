@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -67,7 +66,6 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 	{
 		super(env);
 		if (table != null) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182009", "ResourceTemplate"));
 		}
 		table = (SDMSResourceTemplateTable) this;
@@ -94,9 +92,7 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 		Long p_createTs = env.txTime();
 		Long p_changerUId = env.cEnv.uid();
 		Long p_changeTs = env.txTime();
-
 		if(env.tx.mode == SDMSTransaction.READONLY) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182049", "ResourceTemplate"));
 		}
 		validate(env
@@ -130,14 +126,13 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 
 		SDMSResourceTemplate p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
-			p = (SDMSResourceTemplate)(o.toProxy());
+			p = (SDMSResourceTemplate)(o.toProxy(env));
 			p.current = true;
 		} catch(SDMSException e) {
-			p = (SDMSResourceTemplate)(o.toProxy());
+			p = (SDMSResourceTemplate)(o.toProxy(env));
 			p.current = true;
 			env.tx.rollbackSubTransaction(env);
 			throw e;
@@ -170,7 +165,6 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 	                       )
 	throws SDMSException
 	{
-
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -211,7 +205,6 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 			validTo = r.getLong(14);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-
 			throw new FatalException(new SDMSMessage(env, "01110182045", "ResourceTemplate: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
@@ -240,7 +233,6 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 		String squote = SystemEnvironment.SQUOTE;
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
-
 		ResultSet rset = stmt.executeQuery("SELECT " +
 		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NR_ID" + equote +

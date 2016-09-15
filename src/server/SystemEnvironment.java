@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server;
 
 import java.io.*;
@@ -101,9 +99,7 @@ public class SystemEnvironment implements Cloneable
 	public SDMSROTxList roTxList;
 	public SDMSSeVersionList seVersionList;
 	public SDMSPurgeSet nvPurgeSet;
-
 	public SDMSPurgeSet vPurgeSet;
-
 	public static DatagramSocket notifySocket;
 
 	public static String runMode;
@@ -149,7 +145,6 @@ public class SystemEnvironment implements Cloneable
 	public static int maxNumCalEntries;
 	public static int defCalHorizon;
 	public static boolean fatalIsError;
-
 	public static String selectGroup;
 	public static String auditFile;
 
@@ -164,6 +159,7 @@ public class SystemEnvironment implements Cloneable
 	public static Vector kjColumns;
 
 	public static int dumpLangLevel;
+	public static HashMap<String,Long> showStackTrace;
 
 	public static String keystore;
 	public static String keystorepassword;
@@ -207,6 +203,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_SELECTGROUP           = "SelectGroup";
 	public static final String S_SERVICEPORT           = "ServicePort";
 	public static final String S_SESSIONTIMEOUT        = "SessionTimeout";
+	public static final String S_SHOWSTACKTRACE        = "ShowStackTrace";
 	public static final String S_SINGLESERVER          = "SingleServer";
 	public static final String S_SSLPORT               = "SSLPort";
 	public static final String S_SYSPASSWD             = "SysPasswd";
@@ -224,7 +221,6 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_USEREXPORTVARIABLES   = "UserExportVariables";
 	public static final String S_WORKERTHREADS         = "WorkerThreads";
 	public static final String S_WRITERTHREADS         = "WriterThreads";
-
 	public static final String S_KEYSTORE              = "KeyStore";
 	public static final String S_KEYSTOREPASSWORD      = "KeyStorePassword";
 	public static final String S_KEYSTOREPROVIDER      = "KeyStoreProvider";
@@ -263,6 +259,7 @@ public class SystemEnvironment implements Cloneable
 	public SimpleDateFormat systemDateFormat = (SimpleDateFormat) staticSystemDateFormat.clone();
 	public SimpleDateFormat jsCommDateFormat = (SimpleDateFormat) staticJSCommDateFormat.clone();
 
+	public static final String S_AUDITTRAIL               = "AUDITTRAIL";
 	public static final String S_GRANTS                   = "GRANTS";
 	public static final String S_CONDITIONAL_DEPENDENCIES = "CONDITIONAL_DEPENDENCIES";
 	public static final String S_MILESTONES               = "MILESTONES";
@@ -283,11 +280,10 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_POOL		      = "POOL";
 	public static final String S_OBJECT_MONITOR	      = "OBJECT_MONITOR";
 	public static final String S_NICE_PROFILE	      = "NICE_PROFILE";
-
+	public static final String S_WARNINGS	              = "WARNINGS";
 	private HashMap featureLevels;
 
 	public final static HashMap<Long, Long> jidsStarting = new HashMap<Long, Long>();
-
 	public final static int startingResendDelay = 5000;
 
 	public SDMSThread thread;
@@ -326,7 +322,6 @@ public class SystemEnvironment implements Cloneable
 	public long lowestActiveDate;
 
 	private MutableInteger  connectState;
-
 	private static boolean  protectMode = false;
 
 	private static Random random = new Random();
@@ -344,34 +339,36 @@ public class SystemEnvironment implements Cloneable
 		vPurgeSet = new SDMSPurgeSet();
 		connectState = new MutableInteger(NORMAL);
 		startTime = System.currentTimeMillis();
-
 		featureLevels = new HashMap();
+		featureLevels.put(S_AUDITTRAIL,               new Feature(S_PROFESSIONAL, "Auditing of Operator Actions"));
 		featureLevels.put(S_GRANTS,                   new Feature(S_PROFESSIONAL, "The GRANT/REVOKE Commands"));
-		featureLevels.put(S_CONDITIONAL_DEPENDENCIES, new Feature(S_ENTERPRISE,   "Conditional Dependencies"));
-		featureLevels.put(S_MILESTONES,               new Feature(S_PROFESSIONAL, "Scheduling Entity Type MILESTONE"));
-		featureLevels.put(S_EXTENDED_TRIGGERS,        new Feature(S_PROFESSIONAL, "Using Trigger Types other than IMMEDIATE_..., FINISH_CHILD or BEFORE_FINAL"));
-		featureLevels.put(S_ASYNC_TRIGGERS,           new Feature(S_ENTERPRISE  , "Asynchronous Trigger Types"));
-		featureLevels.put(S_FOLDER_ENVIRONMENTS,      new Feature(S_PROFESSIONAL, "Use of Folder Environments"));
-		featureLevels.put(S_FOLDER_RESOURCES,         new Feature(S_PROFESSIONAL, "Use of Folder Resources"));
-		featureLevels.put(S_SE_RESOURCES,             new Feature(S_PROFESSIONAL, "Use of Job or Batch Resources"));
+		featureLevels.put(S_CONDITIONAL_DEPENDENCIES, new Feature(S_BASIC,        "Conditional Dependencies"));
+		featureLevels.put(S_MILESTONES,               new Feature(S_BASIC,        "Scheduling Entity Type MILESTONE"));
+		featureLevels.put(S_EXTENDED_TRIGGERS,        new Feature(S_BASIC,        "Using Trigger Types other than IMMEDIATE_..., FINISH_CHILD or BEFORE_FINAL"));
+		featureLevels.put(S_ASYNC_TRIGGERS,           new Feature(S_BASIC,        "Asynchronous Trigger Types"));
+		featureLevels.put(S_FOLDER_ENVIRONMENTS,      new Feature(S_BASIC,        "Use of Folder Environments"));
+		featureLevels.put(S_FOLDER_RESOURCES,         new Feature(S_BASIC,        "Use of Folder Resources"));
+		featureLevels.put(S_SE_RESOURCES,             new Feature(S_BASIC,        "Use of Job or Batch Resources"));
 		featureLevels.put(S_JOB_LEVEL_AGING_CONTROL,  new Feature(S_PROFESSIONAL, "Job Level Priority Aging Control"));
-		featureLevels.put(S_RESOURCE_TRIGGER,         new Feature(S_PROFESSIONAL, "Use of Resource Triggers"));
+		featureLevels.put(S_RESOURCE_TRIGGER,         new Feature(S_BASIC,        "Use of Resource Triggers"));
 		featureLevels.put(S_OBJECTMONITOR_TRIGGER,    new Feature(S_PROFESSIONAL, "Use of Object Monitor Triggers"));
-		featureLevels.put(S_WRITABLE_RESOURCE_PARAMS, new Feature(S_PROFESSIONAL, "Writing to Resource Parameters"));
+		featureLevels.put(S_WRITABLE_RESOURCE_PARAMS, new Feature(S_BASIC,        "Writing to Resource Parameters"));
 		featureLevels.put(S_DUMP_COMMAND,             new Feature(S_PROFESSIONAL, "The Dump Command"));
 		featureLevels.put(S_EXTENDED_DUMP_COMMAND,    new Feature(S_PROFESSIONAL, "Use of Extended Dump Command Options DEPLOY, MAPPING, HEADER and CLEANUP"));
 		featureLevels.put(S_RESOURCE_POOLS,           new Feature(S_ENTERPRISE,   "Use of Resource Pools"));
 		featureLevels.put(S_RESOURCE_TRACING,         new Feature(S_ENTERPRISE,   "Resource Tracing"));
-		featureLevels.put(S_EXIT_STATE_TRANSLATION,   new Feature(S_PROFESSIONAL, "Use of Exit State Translations"));
+		featureLevels.put(S_EXIT_STATE_TRANSLATION,   new Feature(S_BASIC,        "Use of Exit State Translations"));
 		featureLevels.put(S_POOL,		      new Feature(S_ENTERPRISE,   "Use of Pools and Distributions"));
 		featureLevels.put(S_OBJECT_MONITOR,	      new Feature(S_PROFESSIONAL, "Use of Object Monitors"));
 		featureLevels.put(S_NICE_PROFILE,	      new Feature(S_ENTERPRISE,   "Use of Nice Profiles"));
+		featureLevels.put(S_WARNINGS,	              new Feature(S_PROFESSIONAL, "Warnings on Submitted Entities"));
 	}
 
 	private void setProperties()
 	{
 		getSimpleValues();
 		getPropsTraceLevel();
+		getShowStackTrace();
 		getArchive();
 		getArchiveCols();
 		getParameterHandling();
@@ -415,7 +412,6 @@ public class SystemEnvironment implements Cloneable
 		getSSLproperties();
 
 		if ((port == 0) && (service_port == 0) && (sslport == 0)) {
-
 			port = 2506;
 		}
 
@@ -476,7 +472,6 @@ public class SystemEnvironment implements Cloneable
 				System.setProperty(J_KEYSTORE, keystore);
 				props.setProperty(S_KEYSTORE, keystore);
 			} else {
-
 				sslport = 0;
 				return;
 			}
@@ -555,6 +550,150 @@ public class SystemEnvironment implements Cloneable
 		String s_archive = props.getProperty(S_ARCHIVE, "false");
 		archive = Boolean.parseBoolean(s_archive.trim());
 		props.setProperty(S_ARCHIVE, archive ? "true" : "false" );
+	}
+
+	private void getShowStackTrace()
+	{
+		String s_showStackTrace = props.getProperty(S_SHOWSTACKTRACE, null);
+		showStackTrace = new HashMap<String, Long>();
+		if (s_showStackTrace == null || s_showStackTrace.equals("NONE")) {
+			props.setProperty(S_SHOWSTACKTRACE, "NONE");
+			return;
+		}
+		try {
+			parseSSTParameter(s_showStackTrace);
+		} catch (SDMSException e) {
+			props.setProperty(S_SHOWSTACKTRACE, "NONE");
+			showStackTrace.clear();
+		}
+	}
+
+	private Vector<String> tokenizeSST(String sst)
+	{
+		int strl = sst.length();
+		char chr[] = new char[strl];
+		Vector<String> result = new Vector<String>();
+		StringBuffer tmp = new StringBuffer();
+		boolean inIdentifier = false;
+
+		sst.getChars(0, strl, chr, 0);
+		for (int i = 0; i < strl; ++i) {
+			if (Character.isWhitespace(chr[i])) {
+				if (inIdentifier) {
+					inIdentifier = false;
+					result.add(tmp.toString());
+					tmp.delete(0, tmp.length());
+				}
+			} else if (chr[i] == ',' || chr[i] == '(' || chr[i] == ')') {
+				if (inIdentifier) {
+					inIdentifier = false;
+					result.add(tmp.toString());
+					tmp.delete(0, tmp.length());
+				}
+				result.add(new String("" + chr[i]));
+			} else {
+				inIdentifier = true;
+				tmp.append(chr[i]);
+			}
+		}
+		return result;
+	}
+
+	private void parseSSTParameter(String sst)
+	throws SDMSException
+	{
+
+		Vector<String> v = tokenizeSST(sst);
+		int pos = 0;
+		while (pos < v.size()) {
+			pos = parseSSTEntry(v, pos);
+		}
+	}
+
+	static final String OBRACKET = "(";
+	static final String CBRACKET = ")";
+	static final String COMMA = ",";
+	private int parseSSTEntry(Vector<String> v, int pos)
+	throws SDMSException
+	{
+
+		String tmp;
+		boolean entryOK;
+		long exceptionMask;
+		Long tmpEM;
+		int vl = v.size();
+		String nodeName = v.get(pos);
+		++pos;
+		String exceptionName;
+
+		if (pos >= vl) {
+			SDMSThread.doTrace(null, "Invalid syntax in " + props.getProperty(S_SHOWSTACKTRACE), SDMSThread.SEVERITY_WARNING);
+			throw new SDMSException();
+		}
+		tmp = v.get(pos);
+		++pos;
+
+		if (!tmp.equals(OBRACKET)) {
+			SDMSThread.doTrace(null, "Invalid syntax in " + props.getProperty(S_SHOWSTACKTRACE) + ": missing opening bracket", SDMSThread.SEVERITY_WARNING);
+			throw new SDMSException();
+		}
+
+		tmp = v.get(pos);
+		++pos;
+
+		entryOK = false;
+		tmpEM = showStackTrace.get(nodeName);
+		if (tmpEM != null)
+			exceptionMask = tmpEM.longValue();
+		else
+			exceptionMask = 0;
+
+		while (pos < vl && !tmp.equals(CBRACKET)) {
+
+			if (!tmp.startsWith("de.independit"))
+				exceptionName = "de.independit.scheduler.server.exception." + tmp;
+			else
+				exceptionName = tmp;
+			try {
+				Class c = Class.forName(exceptionName);
+				SDMSException e = (SDMSException) c.newInstance();
+				exceptionMask += e.getExceptionNumber();
+			} catch (Exception ee) {
+				SDMSThread.doTrace(null, "Invalid exception name " + tmp + ": class not found or no subclass of SDMSException (entry ignored)", SDMSThread.SEVERITY_WARNING);
+			}
+
+			if (pos >= vl) {
+				SDMSThread.doTrace(null, "Invalid syntax in " + props.getProperty(S_SHOWSTACKTRACE) + ": missing closing bracket", SDMSThread.SEVERITY_WARNING);
+				throw new SDMSException();
+			}
+			tmp = v.get(pos);
+			++pos;
+
+			if (tmp.equals(COMMA)) {
+				if (pos >= vl) {
+					SDMSThread.doTrace(null, "Invalid syntax in " + props.getProperty(S_SHOWSTACKTRACE) + ": missing name after comma", SDMSThread.SEVERITY_WARNING);
+					throw new SDMSException();
+				}
+				tmp = v.get(pos);
+				++pos;
+				if (tmp.equals(CBRACKET)) {
+					SDMSThread.doTrace(null, "Invalid syntax in " + props.getProperty(S_SHOWSTACKTRACE) + ": superfluous comma", SDMSThread.SEVERITY_WARNING);
+					throw new SDMSException();
+				}
+				continue;
+			}
+			if (!tmp.equals(CBRACKET)) {
+				SDMSThread.doTrace(null, "Invalid syntax in " + props.getProperty(S_SHOWSTACKTRACE) + ": missing comma", SDMSThread.SEVERITY_WARNING);
+				throw new SDMSException();
+			}
+		}
+		if (!tmp.equals(CBRACKET)) {
+			SDMSThread.doTrace(null, "Invalid syntax in " + props.getProperty(S_SHOWSTACKTRACE) + ": missing closing bracket", SDMSThread.SEVERITY_WARNING);
+			throw new SDMSException();
+		}
+		showStackTrace.put(nodeName, new Long(exceptionMask));
+
+		return pos;
 	}
 
 	private void getPropsTraceLevel()
@@ -683,7 +822,6 @@ public class SystemEnvironment implements Cloneable
 	private void getWriterThreads()
 	{
 		String s_maxWriter = props.getProperty(S_WRITERTHREADS, "1");
-
 		maxWriter = checkIntProperty(s_maxWriter, S_WRITERTHREADS, 1, 1, 128, "Invalid number of RW Worker : ");
 		props.setProperty(S_WRITERTHREADS, "" + maxWriter);
 	}
@@ -794,7 +932,6 @@ public class SystemEnvironment implements Cloneable
 
 	private void getParameterHandling()
 	{
-
 		String pb = props.getProperty(S_PARAMETERHANDLING, "LIBERAL").toUpperCase();
 		if(pb.startsWith("S")) {
 			strict_variables = true;
@@ -832,7 +969,6 @@ public class SystemEnvironment implements Cloneable
 				}
 			}
 		} catch(java.io.IOException ioe) {
-
 		}
 		return vars;
 	}
@@ -894,7 +1030,6 @@ public class SystemEnvironment implements Cloneable
 
 	private void getExportVariables()
 	{
-
 		final String defaultVars =
 			SDMSSubmittedEntity.S_ERRORLOG		+ "," +
 			SDMSSubmittedEntity.S_EXPFINALTIME	+ "," +
@@ -1078,7 +1213,6 @@ public class SystemEnvironment implements Cloneable
 
 		gc.setFirstDayOfWeek (Calendar.MONDAY);
 		gc.setMinimalDaysInFirstWeek (4);
-
 		gc.clear();
 
 		return gc;

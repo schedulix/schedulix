@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -64,7 +63,6 @@ public class SDMSFolderTableGeneric extends SDMSTable
 	{
 		super(env);
 		if (table != null) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182009", "Folder"));
 		}
 		table = (SDMSFolderTable) this;
@@ -88,9 +86,7 @@ public class SDMSFolderTableGeneric extends SDMSTable
 		Long p_createTs = env.txTime();
 		Long p_changerUId = env.cEnv.uid();
 		Long p_changeTs = env.txTime();
-
 		if(env.tx.mode == SDMSTransaction.READONLY) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182049", "Folder"));
 		}
 		validate(env
@@ -120,14 +116,13 @@ public class SDMSFolderTableGeneric extends SDMSTable
 
 		SDMSFolder p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
-			p = (SDMSFolder)(o.toProxy());
+			p = (SDMSFolder)(o.toProxy(env));
 			p.current = true;
 		} catch(SDMSException e) {
-			p = (SDMSFolder)(o.toProxy());
+			p = (SDMSFolder)(o.toProxy(env));
 			p.current = true;
 			env.tx.rollbackSubTransaction(env);
 			throw e;
@@ -142,7 +137,6 @@ public class SDMSFolderTableGeneric extends SDMSTable
 	protected boolean checkCreatePrivs(SystemEnvironment env, SDMSFolder p)
 	throws SDMSException
 	{
-
 		final Long parentId = p.getParentId(env);
 		final SDMSFolder parent = SDMSFolderTable.getObject(env, parentId);
 		if(!parent.checkPrivileges(env, SDMSPrivilege.CREATE_CONTENT))
@@ -163,7 +157,6 @@ public class SDMSFolderTableGeneric extends SDMSTable
 	                       )
 	throws SDMSException
 	{
-
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -199,7 +192,6 @@ public class SDMSFolderTableGeneric extends SDMSTable
 			validTo = r.getLong(12);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-
 			throw new FatalException(new SDMSMessage(env, "01110182045", "Folder: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
@@ -226,7 +218,6 @@ public class SDMSFolderTableGeneric extends SDMSTable
 		String squote = SystemEnvironment.SQUOTE;
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
-
 		ResultSet rset = stmt.executeQuery("SELECT " +
 		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NAME" + equote +

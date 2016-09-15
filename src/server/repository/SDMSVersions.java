@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -75,19 +75,16 @@ public class SDMSVersions
 						  "Cannot flush an unchanged versions"));
 		}
 		if (o_v.size() == 0) {
-
 			return;
 		}
 		SDMSObject o = (SDMSObject)(o_v.getFirst());
 		if (isNew) {
 			if (! o.isCurrent) {
-
 				return;
 			}
 			if (! o.isDeleted) {
 				o.insertDBObject (env);
 			}
-
 		} else {
 			if (! o.isDeleted) {
 				o.updateDBObject(env, (SDMSObject)(versions.lastElement()));
@@ -105,14 +102,12 @@ public class SDMSVersions
 		SDMSPurgeSet purgeSet;
 
 		if (o_v == null) {
-
 			return;
 		}
 
 		long purgeLow;
 		purgeLow = env.roTxList.first(env);
 		if (table.getIsVersioned()) {
-
 			long lowSeVersion = env.seVersionList.first(env);
 			if (lowSeVersion < purgeLow)
 				purgeLow = lowSeVersion;
@@ -122,10 +117,8 @@ public class SDMSVersions
 		}
 
 		if (o_v.size() == 0) {
-
 			tx  = null;
 			o_v = null;
-
 			purgeSet.add(env, this);
 			return;
 		}
@@ -144,7 +137,6 @@ public class SDMSVersions
 				o.validTo   = Long.MAX_VALUE;
 				versions.addElement(o);
 			}
-
 			s = versions.size();
 			if( s > 1 ||
 			   (s == 1 && ((SDMSObject)(versions.lastElement())).validTo != Long.MAX_VALUE)
@@ -152,7 +144,6 @@ public class SDMSVersions
 				purgeSet.add(env, this);
 			}
 		} else {
-
 			o.isCurrent = false;
 			if (! o.isDeleted) {
 				table.unIndex(env, o);
@@ -164,7 +155,6 @@ public class SDMSVersions
 				}
 				((SDMSObject)(versions.lastElement())).isCurrent = true;
 			}
-
 			purgeSet.add(env, this);
 		}
 		tx  = null;
@@ -177,7 +167,6 @@ public class SDMSVersions
 		int s;
 
 		if (!id.equals(p_o.id)) {
-
 			throw new FatalException (new SDMSMessage(env, "03110181546",
 						  "versions id ( $1 ) does not match objects id ( $2 )",
 						  id, p_o.id));
@@ -192,7 +181,6 @@ public class SDMSVersions
 		versions.insertElementAt(p_o, s+1);
 		p_o.versions = this;
 		if (p_o.validTo == Long.MAX_VALUE) {
-
 			p_o.isCurrent = true;
 		}
 
@@ -221,11 +209,9 @@ public class SDMSVersions
 
 		if (s == 0)
 			table.hashMapRemove(id);
-		else
-
-			if (!table.isVersioned) {
-				((SDMSObject)(versions.elementAt(0))).validFrom = startVersion;
-			}
+		else if (!table.isVersioned) {
+			((SDMSObject)(versions.elementAt(0))).validFrom = startVersion;
+		}
 		return remove;
 	}
 
@@ -246,7 +232,6 @@ public class SDMSVersions
 		SDMSObject o;
 		if (tx == env.tx) {
 			if (o_v.size() == 0) {
-
 				o = (SDMSObject) getRaw(env, Long.MAX_VALUE);
 				if (o == null) return null;
 				if (!o.isCurrent) {
@@ -256,7 +241,6 @@ public class SDMSVersions
 				}
 				return o;
 			} else {
-
 				o = (SDMSObject)(o_v.getLast());
 				if (! o.isDeleted) {
 					if (!o.isCurrent) {

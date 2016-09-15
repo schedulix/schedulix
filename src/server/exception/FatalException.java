@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.exception;
 
 import de.independit.scheduler.server.util.*;
@@ -50,6 +48,11 @@ public class FatalException extends SDMSException
 	{
 		super(msg);
 		SDMSThread.doTrace(null, msg.toString(), SDMSThread.SEVERITY_ERROR);
+	}
+
+	public int getExceptionNumber()
+	{
+		return 16;
 	}
 }
 

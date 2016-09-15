@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -88,6 +87,7 @@ public class SDMSAuditTrailProxyGeneric extends SDMSProxy
 	public static final int CLEAR_WARNING = 26;
 	public static final int SET_WARNING = 27;
 	public static final int JOB_UNREACHABLE = 28;
+	public static final int SET_PARAMETERS = 29;
 	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW;
 
 	static final public int actionInfo_size = 1024;
@@ -98,6 +98,19 @@ public class SDMSAuditTrailProxyGeneric extends SDMSProxy
 	protected SDMSAuditTrailProxyGeneric(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	protected static SDMSAuditTrail getProxy (SystemEnvironment sysEnv, SDMSObject p_object)
+	{
+		int i = SDMSAuditTrailTable.table.tableIndex;
+		SDMSProxy p = SDMSRepository.getProxy(i);
+		if (p == null)
+			p = new SDMSAuditTrail (p_object);
+		else {
+			p.initProxy(p_object);
+		}
+		sysEnv.tx.addUsedProxy(i, p);
+		return (SDMSAuditTrail)p;
 	}
 
 	public Long getUserId (SystemEnvironment env)
@@ -432,7 +445,6 @@ public class SDMSAuditTrailProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -455,7 +467,6 @@ public class SDMSAuditTrailProxyGeneric extends SDMSProxy
 			SDMSProxy p = t.get(env, getObjectId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 	}
 

@@ -23,13 +23,10 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.exception;
 
 public class AccessViolationException extends CommonErrorException
 {
-
 	public final static String __version = "@(#) $Id: AccessViolationException.java,v 2.0.20.1 2013/03/14 10:24:16 ronald Exp $";
 
 	public AccessViolationException()
@@ -45,6 +42,11 @@ public class AccessViolationException extends CommonErrorException
 	public AccessViolationException(SDMSMessage msg)
 	{
 		super(msg);
+	}
+
+	public int getExceptionNumber()
+	{
+		return 1;
 	}
 }
 

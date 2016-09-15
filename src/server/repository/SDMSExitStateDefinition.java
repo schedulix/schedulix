@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -66,7 +65,20 @@ public class SDMSExitStateDefinition extends SDMSExitStateDefinitionProxyGeneric
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "02111090001",
 			                               "Exit State Definition used by Exit State Profile $1", esp.getName(sysEnv)));
 		}
-
+		v = SDMSExitStateTranslationTable.idx_fromEsdId.getVector(sysEnv, esdId);
+		if (v.size() > 0) {
+			SDMSExitStateTranslation est = (SDMSExitStateTranslation)v.elementAt(0);
+			SDMSExitStateTranslationProfile estp = SDMSExitStateTranslationProfileTable.getObject(sysEnv, est.getEstpId(sysEnv));
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "02112202054",
+			                               "Exit State Definition is from State in Exit State Translation $1", estp.getName(sysEnv)));
+		}
+		v = SDMSExitStateTranslationTable.idx_toEsdId.getVector(sysEnv, esdId);
+		if (v.size() > 0) {
+			SDMSExitStateTranslation est = (SDMSExitStateTranslation)v.elementAt(0);
+			SDMSExitStateTranslationProfile estp = SDMSExitStateTranslationProfileTable.getObject(sysEnv, est.getEstpId(sysEnv));
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "02112202055",
+			                               "Exit State Definition is to State in Exit State Translation $1", estp.getName(sysEnv)));
+		}
 		v = SDMSTriggerStateTable.idx_fromStateId.getVector(sysEnv, esdId);
 		if (v.size() > 0) {
 			SDMSTriggerState ts = (SDMSTriggerState)v.elementAt(0);
@@ -75,7 +87,6 @@ public class SDMSExitStateDefinition extends SDMSExitStateDefinitionProxyGeneric
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "02305130933",
 			                               "Exit State Definition is Trigger State in $1 of $2", t.getName(sysEnv), se.pathString(sysEnv)));
 		}
-
 		v = SDMSResourceStateMappingTable.idx_esdId.getVector(sysEnv, esdId);
 		if (v.size() > 0) {
 			SDMSResourceStateMapping rsm = (SDMSResourceStateMapping)v.elementAt(0);

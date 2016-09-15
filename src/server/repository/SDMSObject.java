@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -104,27 +104,21 @@ public abstract class SDMSObject implements Cloneable, Comparable
 				throw new FatalException (new SDMSMessage(env,
 					"03110181612", "Already touched versions without vector o_v"));
 			}
-
 			if (versions.o_v.size() != 0) {
-
 				if (subTxId == env.tx.subTxId) {
 					throw new FatalException (new SDMSMessage(env,
 						"03111021044", "No two changes within the same subtx permitted"));
 				}
 			}
 		} else {
-
 			versions.o_v = new LinkedList();
 			versions.tx = env.tx;
-
 		}
 
 		SDMSObject o;
 		try {
-
 			o = (SDMSObject)clone();
 			o.subTxId = env.tx.subTxId;
-
 			isCurrent = false;
 			o.isCurrent = true;
 		} catch (CloneNotSupportedException exception) {
@@ -164,7 +158,6 @@ public abstract class SDMSObject implements Cloneable, Comparable
 			throw new FatalException (new SDMSMessage(env,
 				"03204260808", "Trying to do a memOnly delete on a versioned table"));
 		}
-
 		if (versions.tx != null) {
 			if (env.tx != versions.tx) {
 				throw new FatalException (new SDMSMessage(env,
@@ -175,9 +168,7 @@ public abstract class SDMSObject implements Cloneable, Comparable
 					"03110261614", "Already touched versions without vector o_v"));
 			}
 			if (versions.o_v.size() != 0) {
-
 				if (subTxId == env.tx.subTxId) {
-
 					versions.table.unIndex(env, this);
 					isDeleted = true;
 					isCurrent = false;
@@ -185,20 +176,15 @@ public abstract class SDMSObject implements Cloneable, Comparable
 				}
 			}
 		} else {
-
 			versions.tx = env.tx;
 			versions.o_v = new LinkedList();
-
 		}
 		try {
-
 			o = (SDMSObject)clone();
 			o.subTxId = env.tx.subTxId;
 			o.isDeleted = true;
 			o.memOnly = memOnly;
-
 			isCurrent = false;
-
 			o.isCurrent = false;
 		} catch (CloneNotSupportedException exception) {
 			throw new FatalException (new SDMSMessage(env,
@@ -208,7 +194,7 @@ public abstract class SDMSObject implements Cloneable, Comparable
 		env.tx.addToTouchSet(env, versions, false);
 	}
 
-	protected abstract SDMSProxy toProxy();
+	protected abstract SDMSProxy toProxy(SystemEnvironment sysEnv);
 
 	protected abstract void insertDBObject(SystemEnvironment env)
 		throws SDMSException;

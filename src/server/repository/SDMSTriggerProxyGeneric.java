@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -77,6 +76,19 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 	protected SDMSTriggerProxyGeneric(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	protected static SDMSTrigger getProxy (SystemEnvironment sysEnv, SDMSObject p_object)
+	{
+		int i = SDMSTriggerTable.table.tableIndex;
+		SDMSProxy p = SDMSRepository.getProxy(i);
+		if (p == null)
+			p = new SDMSTrigger (p_object);
+		else {
+			p.initProxy(p_object);
+		}
+		sysEnv.tx.addUsedProxy(i, p);
+		return (SDMSTrigger)p;
 	}
 
 	public String getName (SystemEnvironment env)
@@ -789,7 +801,6 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
 		try {
@@ -800,7 +811,6 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
 		try {
@@ -811,7 +821,6 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -849,7 +858,6 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
 		try {
@@ -861,7 +869,6 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
 		try {
@@ -873,7 +880,6 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -896,21 +902,18 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 			SDMSProxy p = t.get(env, getFireId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSResourceTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getFireId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getFireId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 	}
 

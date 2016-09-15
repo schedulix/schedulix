@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -273,9 +272,9 @@ public class SDMSGroupGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSGroup(this);
+		return SDMSGroup.getProxy(sysEnv, this);
 	}
 
 	protected SDMSGroupGeneric(Long p_id,
@@ -331,12 +330,10 @@ public class SDMSGroupGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "Group: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -348,7 +345,6 @@ public class SDMSGroupGeneric extends SDMSObject
 			myInsert.setLong (7, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "Group: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -364,7 +360,6 @@ public class SDMSGroupGeneric extends SDMSObject
 				        "DELETE FROM GROUPS WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Group: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -374,7 +369,6 @@ public class SDMSGroupGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "Group: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -399,7 +393,6 @@ public class SDMSGroupGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "Group: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -415,7 +408,6 @@ public class SDMSGroupGeneric extends SDMSObject
 			myUpdate.setLong(7, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "Group: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

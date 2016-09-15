@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -120,7 +118,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 					if(ddReqId.equals(rId)) {
 						act_deps.removeElementAt(idx);
 						idx = -1;
-
 						dd.setName(sysEnv, rdName);
 						if(wh.containsKey(ParseStr.S_UNRESOLVED))	dd.setUnresolvedHandling(sysEnv, unresolved);
 						if(wh.containsKey(ParseStr.S_MODE))		dd.setMode(sysEnv, mode);
@@ -137,7 +134,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 				if(wh.containsKey(ParseStr.S_STATUS)) {
 					diffDependencyState(sysEnv, dd, rStateNames, rSe);
 				} else {
-
 					Vector v_ds = SDMSDependencyStateTable.idx_ddId.getVector(sysEnv,dd.getId(sysEnv));
 					Iterator i_ds = v_ds.iterator();
 					while (i_ds.hasNext()) {
@@ -219,6 +215,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 		throws SDMSException
 	{
 		SDMSSchedulingHierarchy sh;
+		SDMSExitStateTranslationProfile estp;
 		int idx;
 		WithHash cwh;
 		String cName;
@@ -244,7 +241,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 		if(childdeflist != null) {
 			Iterator i = childdeflist.iterator();
 			while(i.hasNext()) {
-
 				WithHash wh = (WithHash) i.next();
 
 				cwh = (WithHash) wh.get(ParseStr.S_FULLNAME);
@@ -281,13 +277,11 @@ public class AlterJobDefinition extends ManipJobDefinition
 				estpId = null;
 
 				sh = null;
-
 				for(idx = 0; idx < act_childs.size(); idx++) {
 					sh = (SDMSSchedulingHierarchy) act_childs.get(idx);
 					if(newChildId.equals(sh.getSeChildId(sysEnv))) {
 						act_childs.removeElementAt(idx);
 						idx = -1;
-
 						if(wh.containsKey(ParseStr.S_ALIAS))		sh.setAliasName(sysEnv, aliasName);
 						if(wh.containsKey(ParseStr.S_STATIC))		sh.setIsStatic(sysEnv, isStatic);
 						if(wh.containsKey(ParseStr.S_ENABLE))		sh.setIsDisabled(sysEnv, isDisabled);
@@ -311,11 +305,27 @@ public class AlterJobDefinition extends ManipJobDefinition
 							sh.setResumeBase(sysEnv, shResumeBase);
 						}
 						if(wh.containsKey(ParseStr.S_MERGE_MODE))	sh.setMergeMode(sysEnv, mergeMode);
+						if(wh.containsKey(ParseStr.S_TRANSLATION)) {
+							if(estpName != null) {
+								sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXIT_STATE_TRANSLATION);
+								estp = SDMSExitStateTranslationProfileTable.idx_name_getUnique(sysEnv, estpName);
+								estpId = estp.getId(sysEnv);
+							} else {
+								estp = null;
+								estpId = null;
+							}
+							sh.setEstpId(sysEnv, estpId);
+						} else {
+							estpId = sh.getEstpId(sysEnv);
+							if(estpId != null)
+								estp = SDMSExitStateTranslationProfileTable.getObject(sysEnv, estpId);
+							else	estp = null;
+						}
+						checkTranslation(sysEnv, seChild, se, estp);
 						break;
 					}
 				}
 				if(idx >= act_childs.size()) {
-
 					if(isStatic == null) {
 						if(se.getType(sysEnv).intValue() != SDMSSchedulingEntity.BATCH)
 							isStatic = Boolean.FALSE;
@@ -345,6 +355,12 @@ public class AlterJobDefinition extends ManipJobDefinition
 					} else prio = new Integer(0);
 
 					estpId = null;
+					if(estpName != null) {
+						estp = SDMSExitStateTranslationProfileTable.idx_name_getUnique(sysEnv, estpName);
+						estpId = estp.getId(sysEnv);
+					} else {
+						estp = null;
+					}
 					if (parentId.equals(newChildId)) {
 						throw new CommonErrorException (new SDMSMessage(sysEnv, "03204292208",
 							"A job or batch cannot have itself as child"));
@@ -352,8 +368,8 @@ public class AlterJobDefinition extends ManipJobDefinition
 
 					sh = SDMSSchedulingHierarchyTable.table.create(sysEnv, parentId, newChildId, aliasName, isStatic, isDisabled, prio,
 							suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId);
+					checkTranslation(sysEnv, seChild, se, estp);
 				}
-
 				if(aliasName != null) {
 					Vector av = SDMSSchedulingHierarchyTable.idx_parentId_aliasName.getVector(sysEnv, new SDMSKey(parentId, aliasName));
 					if(av.size() > 1) {
@@ -464,7 +480,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 						PathVector lnrv = (PathVector) pt.value;
 						lpn = (String) lnrv.remove(lnrv.size() - 1);
 						Long lnrId = SDMSNamedResourceTable.getNamedResource(sysEnv, lnrv).getId(sysEnv);
-
 						if(!checkResourceRequirement(sysEnv, lnrId, se))
 							throw new CommonErrorException(
 								new SDMSMessage(sysEnv, "03409290926", "Resource $2 for parameter $1 not required", pn, lnrv)
@@ -480,7 +495,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 					if(oldnm.equals(pn)) {
 						act_parms.removeElementAt(idx);
 						idx = -1;
-
 						pd.setType(sysEnv, type);
 						pd.setAggFunction(sysEnv, aggFunction);
 						pd.setDefaultValue(sysEnv, pdef);
@@ -491,7 +505,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 					}
 				}
 				if(idx >= act_parms.size()) {
-
 					SDMSParameterDefinitionTable.table.create(sysEnv, seId, pn, type, aggFunction, pdef, isLocal, linkPdId, exportName);
 				}
 			}
@@ -499,7 +512,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 
 		for(idx = 0; idx < act_parms.size(); idx++) {
 			pd = (SDMSParameterDefinition) act_parms.get(idx);
-
 			if(SDMSParameterDefinitionTable.idx_linkPdId.containsKey(sysEnv, pd.getId(sysEnv))) {
 				SDMSParameterDefinition rpd;
 				SDMSSchedulingEntity rpdse;
@@ -543,7 +555,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 			Iterator i = resourcedeflist.iterator();
 			while(i.hasNext()) {
 				WithHash wh = (WithHash) i.next();
-
 				newnm = (Vector) wh.get(ParseStr.S_NAME);
 				if(newnm == null)
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03204301100", "No resourcename specified"));
@@ -569,7 +580,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 					if(nrId.equals(newNrId)) {
 						act_resrc.removeElementAt(idx);
 						idx = -1;
-
 						if(wh.containsKey(ParseStr.S_AMOUNT))	rr.setAmount(sysEnv, amount);
 						if(wh.containsKey(ParseStr.S_LOCKMODE))	rr.setLockmode(sysEnv, lockmode);
 						if(wh.containsKey(ParseStr.S_MAP_STATUS)) {
@@ -625,7 +635,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 					}
 				}
 				if(idx >= act_resrc.size()) {
-
 					if(amount == null)	amount = new Integer(0);
 					if(lockmode == null)	lockmode = new Integer(SDMSResourceRequirement.N);
 					if(rsmpname == null) {
@@ -689,7 +698,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 		Vector v = SDMSTriggerTable.idx_fireId.getVector(sysEnv, seId);
 		for(int i = 0; i < v.size(); i++) {
 			SDMSTrigger t = (SDMSTrigger) v.get(i);
-
 			if(t.getType(sysEnv).intValue() != SDMSTrigger.AFTER_FINAL && t.getAction(sysEnv).intValue() != SDMSTrigger.RERUN)
 				if(!t.getIsMaster(sysEnv).booleanValue())
 					throw new CommonErrorException(
@@ -808,7 +816,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 			to_mult = se.getTimeoutAmount(sysEnv);
 			to_interval = se.getTimeoutBase(sysEnv);
 			to_esdId = se.getTimeoutStateId(sysEnv);
-
 			if(to_esdId != null && !SDMSExitStateTable.idx_espId_esdId.containsKey(sysEnv, new SDMSKey(espId, to_esdId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03311041003",
 						"Timeoutstate $1 is not defined by the exit state profile $2",
@@ -828,15 +835,16 @@ public class AlterJobDefinition extends ManipJobDefinition
 				break;
 			case SDMSSchedulingEntity.MILESTONE:
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_MILESTONES);
+				checkMilestone(sysEnv);
+				checkNonAfterFinalTrigger(sysEnv, seId);
+				break;
 			default:
 				throw new FatalException(new SDMSMessage(sysEnv, "03204291141", "Unknown Job Definition Type $1", otype));
 		}
 
 		if(oldType.intValue() == SDMSSchedulingEntity.JOB &&
 		   otype.intValue()   != SDMSSchedulingEntity.JOB)	{
-
 			checkDependents(sysEnv, seId);
-
 			Vector tv = SDMSTriggerTable.idx_fireId.getVector(sysEnv, seId);
 			Iterator i = tv.iterator();
 			while (i.hasNext()) {
@@ -853,7 +861,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 			if((se.getPrivilegeMask() & lpriv) != lpriv) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061132", "Incompatible grant"));
 			}
-
 		} else
 			inheritPrivs = null;
 
@@ -907,7 +914,6 @@ public class AlterJobDefinition extends ManipJobDefinition
 						se.pathString(sysEnv)));
 				}
 			}
-
 			tv = SDMSTriggerTable.idx_mainSeId.getVector(sysEnv, seId);
 			for(int tvi = 0; tvi < tv.size(); ++tvi) {
 				final SDMSTrigger tt = (SDMSTrigger) tv.get(tvi);
@@ -935,6 +941,31 @@ public class AlterJobDefinition extends ManipJobDefinition
 
 		if(withs.containsKey(ParseStr.S_CHILDREN))
 			diffChildren(sysEnv, se, childdeflist);
+
+		if (espChanged) {
+			Vector v_sh = SDMSSchedulingHierarchyTable.idx_seChildId.getVector(sysEnv, seId);
+			Iterator i_sh = v_sh.iterator();
+			while (i_sh.hasNext()) {
+				SDMSSchedulingHierarchy sh = (SDMSSchedulingHierarchy)i_sh.next();
+				SDMSSchedulingEntity seParent = SDMSSchedulingEntityTable.getObject(sysEnv,sh.getSeParentId(sysEnv));
+				SDMSExitStateTranslationProfile estp;
+				if (sh.getEstpId(sysEnv) != null) {
+					estp = SDMSExitStateTranslationProfileTable.getObject(sysEnv, sh.getEstpId(sysEnv));
+					checkTranslation(sysEnv, se, seParent, estp);
+				}
+			}
+			v_sh = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, seId);
+			i_sh = v_sh.iterator();
+			while (i_sh.hasNext()) {
+				SDMSSchedulingHierarchy sh = (SDMSSchedulingHierarchy)i_sh.next();
+				SDMSSchedulingEntity seChild = SDMSSchedulingEntityTable.getObject(sysEnv,sh.getSeChildId(sysEnv));
+				SDMSExitStateTranslationProfile estp;
+				if (sh.getEstpId(sysEnv) != null) {
+					estp = SDMSExitStateTranslationProfileTable.getObject(sysEnv, sh.getEstpId(sysEnv));
+					checkTranslation(sysEnv, seChild, se, estp);
+				}
+			}
+		}
 
 		if(withs.containsKey(ParseStr.S_RESOURCE) ||
 		   (oldType.intValue() == SDMSSchedulingEntity.JOB && otype.intValue() != SDMSSchedulingEntity.JOB)

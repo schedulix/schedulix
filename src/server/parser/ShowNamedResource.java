@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -74,17 +72,11 @@ public class ShowNamedResource extends ShowCommented
 		Long nrId = nr.getId(sysEnv);
 
 		desc.add("ID");
-
 		desc.add("NAME");
-
 		desc.add("OWNER");
-
 		desc.add("USAGE");
-
 		desc.add("INHERIT_PRIVS");
-
 		desc.add("RESOURCE_STATE_PROFILE");
-
 		desc.add("FACTOR");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
@@ -93,11 +85,8 @@ public class ShowNamedResource extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("RESOURCES");
-
 		desc.add("PARAMETERS");
-
 		desc.add("JOB_DEFINITIONS");
 
 		Vector data = new Vector();
@@ -167,20 +156,13 @@ public class ShowNamedResource extends ShowCommented
 		SDMSResourceTemplate rt;
 
 		desc.add("ID");
-
 		desc.add("SCOPE");
-
 		desc.add("TYPE");
 		desc.add("OWNER");
-
 		desc.add("STATE");
-
 		desc.add("REQUESTABLE_AMOUNT");
-
 		desc.add("AMOUNT");
-
 		desc.add("FREE_AMOUNT");
-
 		desc.add("IS_ONLINE");
 		desc.add("PRIVS");
 
@@ -231,6 +213,36 @@ public class ShowNamedResource extends ShowCommented
 
 			r_container.addData(sysEnv, data);
 		}
+		rv = SDMSResourceTemplateTable.idx_nrId.getVector(sysEnv, nrId);
+		for(int i = 0; i < rv.size(); ++i) {
+			rt = (SDMSResourceTemplate) rv.get(i);
+			data = new Vector();
+
+			data.add(rt.getId(sysEnv));
+
+			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, rt.getSeId(sysEnv));
+			data.add(se.pathVector(sysEnv));
+			data.add("JOB");
+
+			g = SDMSGroupTable.getObject(sysEnv, rt.getOwnerId(sysEnv));
+			data.add(g.getName(sysEnv));
+
+			if(rt.getRsdId(sysEnv) != null) {
+				data.add(SDMSResourceStateDefinitionTable.getObject(sysEnv, rt.getRsdId(sysEnv)).getName(sysEnv));
+			} else {
+				data.add(null);
+			}
+			Integer someAmount;
+			someAmount = rt.getRequestableAmount(sysEnv);
+			data.add(someAmount == null ? (Object)"INFINITE" : (Object)someAmount);
+			someAmount = rt.getAmount(sysEnv);
+			data.add(someAmount == null ? (Object)"INFINITE" : (Object)someAmount);
+			data.add(someAmount == null ? (Object)"INFINITE" : (Object)someAmount);
+			data.add(rt.getIsOnline(sysEnv));
+			data.add(rt.getPrivileges(sysEnv).toString());
+
+			r_container.addData(sysEnv, data);
+		}
 		Collections.sort(r_container.dataset, r_container.getComparator(sysEnv, 2, 1));
 
 		v.add(r_container);
@@ -242,11 +254,8 @@ public class ShowNamedResource extends ShowCommented
 		final Vector c_desc = new Vector();
 
 		c_desc.add("ID");
-
 		c_desc.add ("NAME");
-
 		c_desc.add ("TYPE");
-
 		c_desc.add ("DEFAULT_VALUE");
 		c_desc.add ("TAG");
 		c_desc.add ("COMMENT");
@@ -302,34 +311,20 @@ public class ShowNamedResource extends ShowCommented
 	public Vector fillHeadInfo()
 	{
 		Vector c_desc = new Vector();
-
 		c_desc.add("ID");
-
 		c_desc.add("NAME");
-
 		c_desc.add("AMOUNT");
-
 		c_desc.add("KEEP_MODE");
-
 		c_desc.add("IS_STICKY");
-
 		c_desc.add("STICKY_NAME");
-
 		c_desc.add("STICKY_PARENT");
-
 		c_desc.add("RESOURCE_STATE_MAPPING");
-
 		c_desc.add("EXPIRED_AMOUNT");
-
 		c_desc.add("EXPIRED_BASE");
-
 		c_desc.add("LOCKMODE");
-
 		c_desc.add("STATES");
-
 		c_desc.add("CONDITION");
 		c_desc.add("PRIVS");
-
 		return c_desc;
 	}
 
@@ -407,7 +402,6 @@ public class ShowNamedResource extends ShowCommented
 			try {
 				se = SDMSSchedulingEntityTable.getObject(sysEnv, rr.getSeId(sysEnv));
 			} catch(NotFoundException nfe) {
-
 				fpv.add(rr);
 				continue;
 			}

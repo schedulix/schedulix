@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -46,6 +45,19 @@ public class SDMSNiceProfileProxyGeneric extends SDMSProxy
 	protected SDMSNiceProfileProxyGeneric(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	protected static SDMSNiceProfile getProxy (SystemEnvironment sysEnv, SDMSObject p_object)
+	{
+		int i = SDMSNiceProfileTable.table.tableIndex;
+		SDMSProxy p = SDMSRepository.getProxy(i);
+		if (p == null)
+			p = new SDMSNiceProfile (p_object);
+		else {
+			p.initProxy(p_object);
+		}
+		sysEnv.tx.addUsedProxy(i, p);
+		return (SDMSNiceProfile)p;
 	}
 
 	public String getName (SystemEnvironment env)

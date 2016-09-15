@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -278,9 +277,9 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		return;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSIntervalSelection(this);
+		return SDMSIntervalSelection.getProxy(sysEnv, this);
 	}
 
 	protected SDMSIntervalSelectionGeneric(Long p_id,
@@ -344,12 +343,10 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "IntervalSelection: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -372,7 +369,6 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 			myInsert.setLong (9, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "IntervalSelection: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -388,7 +384,6 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 				        "DELETE FROM INTERVAL_SELECTION WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "IntervalSelection: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -398,7 +393,6 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "IntervalSelection: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -425,7 +419,6 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "IntervalSelection: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -452,7 +445,6 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 			myUpdate.setLong(9, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "IntervalSelection: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

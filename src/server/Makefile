@@ -26,9 +26,10 @@ CLASSES = UserConnection.class ListenThread.class WorkerThread.class \
 	Server.class SchedulingThread.class TimerThread.class \
 	SystemEnvironment.class ShutdownThread.class RenewTicketThread.class \
 	ConnectionEnvironment.class GarbageThread.class InternalSession.class \
-	OrdinaryListenThread.class
+	OrdinaryListenThread.class \
+	DBCleanupThread.class
 
-SUBDIRS = parser util repository exception output dump timer
+SUBDIRS = parser util repository exception output locking dump timer
 
 all: generate subdirs $(CLASSES)
 

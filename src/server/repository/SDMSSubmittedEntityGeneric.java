@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -632,12 +631,12 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSSubmittedEntity.UH_IGNORE:
-			return "UH_IGNORE";
-		case SDMSSubmittedEntity.UH_SUSPEND:
-			return "UH_SUSPEND";
-		case SDMSSubmittedEntity.UH_ERROR:
-			return "UH_ERROR";
+			case SDMSSubmittedEntity.UH_IGNORE:
+				return "UH_IGNORE";
+			case SDMSSubmittedEntity.UH_SUSPEND:
+				return "UH_SUSPEND";
+			case SDMSSubmittedEntity.UH_ERROR:
+				return "UH_ERROR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -936,14 +935,14 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	{
 		final Integer v = getMergeMode (env);
 		switch (v.intValue()) {
-		case SDMSSubmittedEntity.MERGE_LOCAL:
-			return "MERGE_LOCAL";
-		case SDMSSubmittedEntity.MERGE_GLOBAL:
-			return "MERGE_GLOBAL";
-		case SDMSSubmittedEntity.NOMERGE:
-			return "NOMERGE";
-		case SDMSSubmittedEntity.FAILURE:
-			return "FAILURE";
+			case SDMSSubmittedEntity.MERGE_LOCAL:
+				return "MERGE_LOCAL";
+			case SDMSSubmittedEntity.MERGE_GLOBAL:
+				return "MERGE_GLOBAL";
+			case SDMSSubmittedEntity.NOMERGE:
+				return "NOMERGE";
+			case SDMSSubmittedEntity.FAILURE:
+				return "FAILURE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -987,40 +986,40 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	{
 		final Integer v = getState (env);
 		switch (v.intValue()) {
-		case SDMSSubmittedEntity.SUBMITTED:
-			return "SUBMITTED";
-		case SDMSSubmittedEntity.DEPENDENCY_WAIT:
-			return "DEPENDENCY_WAIT";
-		case SDMSSubmittedEntity.SYNCHRONIZE_WAIT:
-			return "SYNCHRONIZE_WAIT";
-		case SDMSSubmittedEntity.RESOURCE_WAIT:
-			return "RESOURCE_WAIT";
-		case SDMSSubmittedEntity.RUNNABLE:
-			return "RUNNABLE";
-		case SDMSSubmittedEntity.STARTING:
-			return "STARTING";
-		case SDMSSubmittedEntity.STARTED:
-			return "STARTED";
-		case SDMSSubmittedEntity.RUNNING:
-			return "RUNNING";
-		case SDMSSubmittedEntity.TO_KILL:
-			return "TO_KILL";
-		case SDMSSubmittedEntity.KILLED:
-			return "KILLED";
-		case SDMSSubmittedEntity.CANCELLED:
-			return "CANCELLED";
-		case SDMSSubmittedEntity.FINISHED:
-			return "FINISHED";
-		case SDMSSubmittedEntity.FINAL:
-			return "FINAL";
-		case SDMSSubmittedEntity.BROKEN_ACTIVE:
-			return "BROKEN_ACTIVE";
-		case SDMSSubmittedEntity.BROKEN_FINISHED:
-			return "BROKEN_FINISHED";
-		case SDMSSubmittedEntity.ERROR:
-			return "ERROR";
-		case SDMSSubmittedEntity.UNREACHABLE:
-			return "UNREACHABLE";
+			case SDMSSubmittedEntity.SUBMITTED:
+				return "SUBMITTED";
+			case SDMSSubmittedEntity.DEPENDENCY_WAIT:
+				return "DEPENDENCY_WAIT";
+			case SDMSSubmittedEntity.SYNCHRONIZE_WAIT:
+				return "SYNCHRONIZE_WAIT";
+			case SDMSSubmittedEntity.RESOURCE_WAIT:
+				return "RESOURCE_WAIT";
+			case SDMSSubmittedEntity.RUNNABLE:
+				return "RUNNABLE";
+			case SDMSSubmittedEntity.STARTING:
+				return "STARTING";
+			case SDMSSubmittedEntity.STARTED:
+				return "STARTED";
+			case SDMSSubmittedEntity.RUNNING:
+				return "RUNNING";
+			case SDMSSubmittedEntity.TO_KILL:
+				return "TO_KILL";
+			case SDMSSubmittedEntity.KILLED:
+				return "KILLED";
+			case SDMSSubmittedEntity.CANCELLED:
+				return "CANCELLED";
+			case SDMSSubmittedEntity.FINISHED:
+				return "FINISHED";
+			case SDMSSubmittedEntity.FINAL:
+				return "FINAL";
+			case SDMSSubmittedEntity.BROKEN_ACTIVE:
+				return "BROKEN_ACTIVE";
+			case SDMSSubmittedEntity.BROKEN_FINISHED:
+				return "BROKEN_FINISHED";
+			case SDMSSubmittedEntity.ERROR:
+				return "ERROR";
+			case SDMSSubmittedEntity.UNREACHABLE:
+				return "UNREACHABLE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1778,12 +1777,12 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	{
 		final Integer v = getIsSuspended (env);
 		switch (v.intValue()) {
-		case SDMSSubmittedEntity.ADMINSUSPEND:
-			return "ADMINSUSPEND";
-		case SDMSSubmittedEntity.SUSPEND:
-			return "SUSPEND";
-		case SDMSSubmittedEntity.NOSUSPEND:
-			return "NOSUSPEND";
+			case SDMSSubmittedEntity.ADMINSUSPEND:
+				return "ADMINSUSPEND";
+			case SDMSSubmittedEntity.SUSPEND:
+				return "SUSPEND";
+			case SDMSSubmittedEntity.NOSUSPEND:
+				return "NOSUSPEND";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -3302,9 +3301,9 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSSubmittedEntity(this);
+		return SDMSSubmittedEntity.getProxy(sysEnv, this);
 	}
 
 	protected SDMSSubmittedEntityGeneric(Long p_id,
@@ -3728,12 +3727,10 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "SubmittedEntity: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -3984,7 +3981,6 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 			myInsert.setLong (99, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "SubmittedEntity: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -4000,7 +3996,6 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        "DELETE FROM SUBMITTED_ENTITY WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "SubmittedEntity: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -4010,7 +4005,6 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "SubmittedEntity: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -4127,7 +4121,6 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "SubmittedEntity: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -4382,7 +4375,6 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 			myUpdate.setLong(99, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "SubmittedEntity: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -4391,55 +4383,55 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSSubmittedEntity.UH_IGNORE:
-		case SDMSSubmittedEntity.UH_SUSPEND:
-		case SDMSSubmittedEntity.UH_ERROR:
-			return true;
+			case SDMSSubmittedEntity.UH_IGNORE:
+			case SDMSSubmittedEntity.UH_SUSPEND:
+			case SDMSSubmittedEntity.UH_ERROR:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkMergeMode(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSSubmittedEntity.MERGE_LOCAL:
-		case SDMSSubmittedEntity.MERGE_GLOBAL:
-		case SDMSSubmittedEntity.NOMERGE:
-		case SDMSSubmittedEntity.FAILURE:
-			return true;
+			case SDMSSubmittedEntity.MERGE_LOCAL:
+			case SDMSSubmittedEntity.MERGE_GLOBAL:
+			case SDMSSubmittedEntity.NOMERGE:
+			case SDMSSubmittedEntity.FAILURE:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkState(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSSubmittedEntity.SUBMITTED:
-		case SDMSSubmittedEntity.DEPENDENCY_WAIT:
-		case SDMSSubmittedEntity.SYNCHRONIZE_WAIT:
-		case SDMSSubmittedEntity.RESOURCE_WAIT:
-		case SDMSSubmittedEntity.RUNNABLE:
-		case SDMSSubmittedEntity.STARTING:
-		case SDMSSubmittedEntity.STARTED:
-		case SDMSSubmittedEntity.RUNNING:
-		case SDMSSubmittedEntity.TO_KILL:
-		case SDMSSubmittedEntity.KILLED:
-		case SDMSSubmittedEntity.CANCELLED:
-		case SDMSSubmittedEntity.FINISHED:
-		case SDMSSubmittedEntity.FINAL:
-		case SDMSSubmittedEntity.BROKEN_ACTIVE:
-		case SDMSSubmittedEntity.BROKEN_FINISHED:
-		case SDMSSubmittedEntity.ERROR:
-		case SDMSSubmittedEntity.UNREACHABLE:
-			return true;
+			case SDMSSubmittedEntity.SUBMITTED:
+			case SDMSSubmittedEntity.DEPENDENCY_WAIT:
+			case SDMSSubmittedEntity.SYNCHRONIZE_WAIT:
+			case SDMSSubmittedEntity.RESOURCE_WAIT:
+			case SDMSSubmittedEntity.RUNNABLE:
+			case SDMSSubmittedEntity.STARTING:
+			case SDMSSubmittedEntity.STARTED:
+			case SDMSSubmittedEntity.RUNNING:
+			case SDMSSubmittedEntity.TO_KILL:
+			case SDMSSubmittedEntity.KILLED:
+			case SDMSSubmittedEntity.CANCELLED:
+			case SDMSSubmittedEntity.FINISHED:
+			case SDMSSubmittedEntity.FINAL:
+			case SDMSSubmittedEntity.BROKEN_ACTIVE:
+			case SDMSSubmittedEntity.BROKEN_FINISHED:
+			case SDMSSubmittedEntity.ERROR:
+			case SDMSSubmittedEntity.UNREACHABLE:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkIsSuspended(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSSubmittedEntity.ADMINSUSPEND:
-		case SDMSSubmittedEntity.SUSPEND:
-		case SDMSSubmittedEntity.NOSUSPEND:
-			return true;
+			case SDMSSubmittedEntity.ADMINSUSPEND:
+			case SDMSSubmittedEntity.SUSPEND:
+			case SDMSSubmittedEntity.NOSUSPEND:
+				return true;
 		}
 		return false;
 	}

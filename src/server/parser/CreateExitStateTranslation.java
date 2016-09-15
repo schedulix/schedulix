@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -55,8 +53,39 @@ public class CreateExitStateTranslation extends Node
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXIT_STATE_TRANSLATION);
+		SDMSExitStateTranslationProfile estp;
+		try {
+			estp = SDMSExitStateTranslationProfileTable.table.create (sysEnv, name);
+		} catch(DuplicateKeyException dke) {
+			if(replace) {
+				AlterExitStateTranslation aest = new AlterExitStateTranslation(new ObjectURL(new Integer(Parser.EXIT_STATUS_TRANSLATION), name), trans, Boolean.FALSE);
+				aest.setEnv(env);
+				aest.go(sysEnv);
+				result = aest.result;
+				return;
+			} else {
+				throw dke;
+			}
+		}
+
+		Long estpId = estp.getId(sysEnv);
+		Long esdIdFrom;
+		Long esdIdTo;
+
+		Iterator i;
+		i = trans.iterator();
+		while (i.hasNext()) {
+			StatusTranslation est = (StatusTranslation)i.next();
+			esdIdFrom = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, est.sfrom).getId(sysEnv);
+			esdIdTo = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, est.sto).getId(sysEnv);
+			try {
+				SDMSExitStateTranslationTable.table.create (sysEnv, estpId, esdIdFrom, esdIdTo);
+			} catch (DuplicateKeyException dke) {
+				throw new CommonErrorException(new SDMSMessage (sysEnv, "03110101313",
+				                               "Exit State $1 is translated twice", est.sfrom));
+			}
+		}
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03204112202", "Exit State Translation created"));
 	}

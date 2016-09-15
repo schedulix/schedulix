@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -44,6 +42,7 @@ public class SetParameter extends Node
 	private WithHash parms;
 	private Long jobid;
 	private String key;
+	private String auditComment;
 
 	public SetParameter(WithHash w)
 	{
@@ -51,9 +50,10 @@ public class SetParameter extends Node
 		cmdtype = Node.JOB_COMMAND;
 		parms = w;
 		jobid = null;
+		auditComment = null;
 	}
 
-	public SetParameter(WithHash w, Long j, String k)
+	public SetParameter(WithHash w, Long j, String k, WithHash ac)
 	{
 		super();
 		cmdtype = Node.USER_COMMAND;
@@ -67,7 +67,6 @@ public class SetParameter extends Node
 	{
 		if (jobid == null) jobid = sysEnv.cEnv.uid();
 		if (key != null) {
-
 			Connect.validateJobConnect(sysEnv, jobid, key, true);
 		}
 

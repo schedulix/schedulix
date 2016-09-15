@@ -34,4 +34,8 @@ public class NotMyDeadlockException extends SerializationException
 
 	private static final long serialVersionUID = 1L;
 
+	public int getExceptionNumber()
+	{
+		return 256;
+	}
 }

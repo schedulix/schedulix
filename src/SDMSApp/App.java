@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.SDMSApp;
 
 import java.lang.*;
@@ -51,8 +50,13 @@ public class App
 	public static final String TIMEOUT = "TIMEOUT";
 	public static final String CONNTIMEOUT = "CONNTIMEOUT";
 	public static final String CYCLE = "CYCLE";
+	public static final String TLS = "TLS";
 	public static final String INI = "INI";
 	public static final String HELP = "HELP";
+	public static final String KEYSTORE = "KEYSTORE";
+	public static final String TRUSTSTORE = "TRUSTSTORE";
+	public static final String KEYSTOREPW = "KEYSTOREPW";
+	public static final String TRUSTSTOREPW = "TRUSTSTOREPW";
 	public static final String SUSPEND = "SUSPEND";
 	public static final String DELAY = "DELAY";
 	public static final String UNIT = "UNIT";
@@ -106,9 +110,14 @@ public class App
 				  "Number of minutes to wait between retries." +
 				  " Minimal value and default is 1 minute");
 		}
-		addOption("ini",   "ini"  , null,		INI     , null, "inifile", false, "Use inifile for configuration of standard options");
-		addOption(null,    "help" , null,		HELP    , null, null, false, "Displays this help");
-		addOption(null,    "info" , "Info",		INFO,     null, "sessioninfo", false, "Additional information for identifying the session");
+		addOption("ini",   "ini"  , null,		 INI     , null, "inifile", false, "Use inifile for configuration of standard options");
+		addOption("tls",   "tls"  , "TLS",		TLS     , null, null, false, "Use SSL/TLS Connection");
+		addOption(null,    "help" , null,		 HELP    , null, null, false, "Displays this help");
+		addOption(null,     null  , "KeyStore",	   KEYSTORE, null, "keystore", false, "Keystore to use for TLS/SSL encrypted communication");
+		addOption(null,     null  , "TrustStore",	 TRUSTSTORE, null, "truststore", false, "Truststore to use for TLS/SSL encrypted communication");
+		addOption(null,     null  , "KeyStorePassword",   KEYSTOREPW, null, "keystorepw", false, "Keystore password to use for TLS/SSL encrypted communication");
+		addOption(null,     null  , "TrustStorePassword", TRUSTSTOREPW, null, "truststorepw", false, "Truststore password to use for TLS/SSL encrypted communication");
+		addOption(null,    "info" , "Info",	       INFO,     null, "sessioninfo", false, "Additional information for identifying the session");
 	}
 
 	private boolean validateStandardOptions()
@@ -166,6 +175,42 @@ public class App
 		if (silent && verbose) {
 			System.err.println("silent and verbose options cannot be used together !");
 			return false;
+		}
+		if (options.isSet(KEYSTORE)) {
+			String keystore = options.getValue(KEYSTORE);
+			if (keystore == null) {
+				keystore = System.getProperty(SystemEnvironment.J_KEYSTORE);
+			}
+			if (keystore != null) {
+				System.setProperty(SystemEnvironment.J_KEYSTORE, keystore);
+			}
+		}
+		if (options.isSet(TRUSTSTORE)) {
+			String truststore = options.getValue(TRUSTSTORE);
+			if (truststore == null) {
+				truststore = System.getProperty(SystemEnvironment.J_TRUSTSTORE);
+			}
+			if (truststore != null) {
+				System.setProperty(SystemEnvironment.J_TRUSTSTORE, truststore);
+			}
+		}
+		if (options.isSet(KEYSTOREPW)) {
+			String keystorepw = options.getValue(KEYSTOREPW);
+			if (keystorepw == null) {
+				keystorepw = System.getProperty(SystemEnvironment.J_KEYSTOREPASSWORD);
+			}
+			if (keystorepw != null) {
+				System.setProperty(SystemEnvironment.J_KEYSTOREPASSWORD, keystorepw);
+			}
+		}
+		if (options.isSet(TRUSTSTOREPW)) {
+			String truststorepw = options.getValue(TRUSTSTOREPW);
+			if (truststorepw == null) {
+				truststorepw = System.getProperty(SystemEnvironment.J_TRUSTSTOREPASSWORD);
+			}
+			if (truststorepw != null) {
+				System.setProperty(SystemEnvironment.J_TRUSTSTOREPASSWORD, truststorepw);
+			}
 		}
 
 		return true;
@@ -243,6 +288,7 @@ public class App
 				options.getValue(JID),
 				options.getValue(KEY),
 				0,
+				options.isSet(TLS) ? options.getOption(TLS).getBValue() :
 				false
 			);
 		}
@@ -361,17 +407,14 @@ public class App
 			ignoreKeys[0] = options.getOption(USER).iniopt;
 			ignoreKeys[1] = options.getOption(PASS).iniopt;
 		}
-
 		if (options.isSet(INI)) {
 			inifile = options.getValue(INI);
 			options.evaluateInifile(inifile, false , ignoreKeys);
 		}
-
 		inifile = System.getenv("HOME");
 		if (inifile  != null) {
 			options.evaluateInifile(inifile + "/.sdmshrc", true , ignoreKeys);
 		}
-
 		inifile = System.getenv("BICSUITECONFIG");
 		if (inifile != null) {
 			options.evaluateInifile(inifile + "/sdmshrc", true , ignoreKeys);
@@ -391,7 +434,6 @@ public class App
 			if (!silent) System.err.println(this.getUsage());
 			return 1;
 		}
-
 		silent = (options.getOption(SILENT)).bvalue;
 		verbose = (options.getOption(VERBOSE)).bvalue;
 

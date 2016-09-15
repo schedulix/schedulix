@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -67,6 +66,19 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 	protected SDMSParameterDefinitionProxyGeneric(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	protected static SDMSParameterDefinition getProxy (SystemEnvironment sysEnv, SDMSObject p_object)
+	{
+		int i = SDMSParameterDefinitionTable.table.tableIndex;
+		SDMSProxy p = SDMSRepository.getProxy(i);
+		if (p == null)
+			p = new SDMSParameterDefinition (p_object);
+		else {
+			p.initProxy(p_object);
+		}
+		sysEnv.tx.addUsedProxy(i, p);
+		return (SDMSParameterDefinition)p;
 	}
 
 	public Long getSeId (SystemEnvironment env)
@@ -384,7 +396,6 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFolderTable.tableName);
 		try {
@@ -395,7 +406,6 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScopeTable.tableName);
 		try {
@@ -406,7 +416,6 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
 		try {
@@ -417,7 +426,6 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -455,7 +463,6 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFolderTable.tableName);
 		try {
@@ -467,7 +474,6 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScopeTable.tableName);
 		try {
@@ -479,7 +485,6 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
 		try {
@@ -491,7 +496,6 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -514,28 +518,24 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 			SDMSProxy p = t.get(env, getSeId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFolderTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getSeId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSScopeTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getSeId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSNamedResourceTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getSeId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 	}
 

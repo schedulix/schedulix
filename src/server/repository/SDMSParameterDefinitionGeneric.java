@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -220,28 +219,28 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	{
 		final Integer v = getType (env);
 		switch (v.intValue()) {
-		case SDMSParameterDefinition.REFERENCE:
-			return "REFERENCE";
-		case SDMSParameterDefinition.CHILDREFERENCE:
-			return "CHILDREFERENCE";
-		case SDMSParameterDefinition.CONSTANT:
-			return "CONSTANT";
-		case SDMSParameterDefinition.RESULT:
-			return "RESULT";
-		case SDMSParameterDefinition.PARAMETER:
-			return "PARAMETER";
-		case SDMSParameterDefinition.EXPRESSION:
-			return "EXPRESSION";
-		case SDMSParameterDefinition.IMPORT:
-			return "IMPORT";
-		case SDMSParameterDefinition.DYNAMIC:
-			return "DYNAMIC";
-		case SDMSParameterDefinition.DYNAMICVALUE:
-			return "DYNAMICVALUE";
-		case SDMSParameterDefinition.LOCAL_CONSTANT:
-			return "LOCAL_CONSTANT";
-		case SDMSParameterDefinition.RESOURCEREFERENCE:
-			return "RESOURCEREFERENCE";
+			case SDMSParameterDefinition.REFERENCE:
+				return "REFERENCE";
+			case SDMSParameterDefinition.CHILDREFERENCE:
+				return "CHILDREFERENCE";
+			case SDMSParameterDefinition.CONSTANT:
+				return "CONSTANT";
+			case SDMSParameterDefinition.RESULT:
+				return "RESULT";
+			case SDMSParameterDefinition.PARAMETER:
+				return "PARAMETER";
+			case SDMSParameterDefinition.EXPRESSION:
+				return "EXPRESSION";
+			case SDMSParameterDefinition.IMPORT:
+				return "IMPORT";
+			case SDMSParameterDefinition.DYNAMIC:
+				return "DYNAMIC";
+			case SDMSParameterDefinition.DYNAMICVALUE:
+				return "DYNAMICVALUE";
+			case SDMSParameterDefinition.LOCAL_CONSTANT:
+				return "LOCAL_CONSTANT";
+			case SDMSParameterDefinition.RESOURCEREFERENCE:
+				return "RESOURCEREFERENCE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -278,18 +277,18 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	{
 		final Integer v = getAggFunction (env);
 		switch (v.intValue()) {
-		case SDMSParameterDefinition.NONE:
-			return "NONE";
-		case SDMSParameterDefinition.AVG:
-			return "AVG";
-		case SDMSParameterDefinition.COUNT:
-			return "COUNT";
-		case SDMSParameterDefinition.MIN:
-			return "MIN";
-		case SDMSParameterDefinition.MAX:
-			return "MAX";
-		case SDMSParameterDefinition.SUM:
-			return "SUM";
+			case SDMSParameterDefinition.NONE:
+				return "NONE";
+			case SDMSParameterDefinition.AVG:
+				return "AVG";
+			case SDMSParameterDefinition.COUNT:
+				return "COUNT";
+			case SDMSParameterDefinition.MIN:
+				return "MIN";
+			case SDMSParameterDefinition.MAX:
+				return "MAX";
+			case SDMSParameterDefinition.SUM:
+				return "SUM";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -548,9 +547,9 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSParameterDefinition(this);
+		return SDMSParameterDefinition.getProxy(sysEnv, this);
 	}
 
 	protected SDMSParameterDefinitionGeneric(Long p_id,
@@ -632,12 +631,10 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ParameterDefinition: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -666,7 +663,6 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			myInsert.setLong(15, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ParameterDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -717,7 +713,6 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			myUpdate.setLong(4, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ParameterDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -725,31 +720,31 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	static public boolean checkType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSParameterDefinition.REFERENCE:
-		case SDMSParameterDefinition.CHILDREFERENCE:
-		case SDMSParameterDefinition.CONSTANT:
-		case SDMSParameterDefinition.RESULT:
-		case SDMSParameterDefinition.PARAMETER:
-		case SDMSParameterDefinition.EXPRESSION:
-		case SDMSParameterDefinition.IMPORT:
-		case SDMSParameterDefinition.DYNAMIC:
-		case SDMSParameterDefinition.DYNAMICVALUE:
-		case SDMSParameterDefinition.LOCAL_CONSTANT:
-		case SDMSParameterDefinition.RESOURCEREFERENCE:
-			return true;
+			case SDMSParameterDefinition.REFERENCE:
+			case SDMSParameterDefinition.CHILDREFERENCE:
+			case SDMSParameterDefinition.CONSTANT:
+			case SDMSParameterDefinition.RESULT:
+			case SDMSParameterDefinition.PARAMETER:
+			case SDMSParameterDefinition.EXPRESSION:
+			case SDMSParameterDefinition.IMPORT:
+			case SDMSParameterDefinition.DYNAMIC:
+			case SDMSParameterDefinition.DYNAMICVALUE:
+			case SDMSParameterDefinition.LOCAL_CONSTANT:
+			case SDMSParameterDefinition.RESOURCEREFERENCE:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkAggFunction(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSParameterDefinition.NONE:
-		case SDMSParameterDefinition.AVG:
-		case SDMSParameterDefinition.COUNT:
-		case SDMSParameterDefinition.MIN:
-		case SDMSParameterDefinition.MAX:
-		case SDMSParameterDefinition.SUM:
-			return true;
+			case SDMSParameterDefinition.NONE:
+			case SDMSParameterDefinition.AVG:
+			case SDMSParameterDefinition.COUNT:
+			case SDMSParameterDefinition.MIN:
+			case SDMSParameterDefinition.MAX:
+			case SDMSParameterDefinition.SUM:
+				return true;
 		}
 		return false;
 	}

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -226,9 +225,9 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 		return;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSIntervalHierarchy(this);
+		return SDMSIntervalHierarchy.getProxy(sysEnv, this);
 	}
 
 	protected SDMSIntervalHierarchyGeneric(Long p_id,
@@ -284,12 +283,10 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "IntervalHierarchy: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -301,7 +298,6 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 			myInsert.setLong (7, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "IntervalHierarchy: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -317,7 +313,6 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 				        "DELETE FROM INTERVAL_HIERARCHY WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "IntervalHierarchy: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -327,7 +322,6 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "IntervalHierarchy: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -352,7 +346,6 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "IntervalHierarchy: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -368,7 +361,6 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 			myUpdate.setLong(7, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "IntervalHierarchy: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

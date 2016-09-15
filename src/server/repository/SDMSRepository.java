@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.repository;
 
 import java.lang.*;
@@ -46,6 +44,9 @@ public class SDMSRepository
 	private Integer lockObject = new Integer(0);
 	private long lowestActiveVersion = Long.MAX_VALUE;
 
+	private static int tableCount = 0;
+	private static SDMSProxy[] freeProxies = null;
+
 	public SDMSRepository(SystemEnvironment env) throws SDMSException
 	{
 		SystemEnvironment.repository = this;
@@ -63,7 +64,6 @@ public class SDMSRepository
 		} catch(SQLException sqle) {
 			throw new FatalException(new SDMSMessage(env, "03110181535",
 						"SQL Error : $1", sqle.getMessage()));
-
 		}
 	}
 
@@ -190,80 +190,86 @@ public class SDMSRepository
 
 		// For each table
 		// C
-		tables.put(SDMSCalendarTableGeneric.tableName,                    new SDMSCalendarTable(env));
+		tables.put(SDMSCalendarTableGeneric.tableName,				new SDMSCalendarTable(env));
 		// D
-		tables.put(SDMSDependencyDefinitionTableGeneric.tableName,        new SDMSDependencyDefinitionTable(env));
-		tables.put(SDMSDependencyInstanceTableGeneric.tableName,          new SDMSDependencyInstanceTable(env));
-		tables.put(SDMSDependencyStateTableGeneric.tableName,             new SDMSDependencyStateTable(env));
+		tables.put(SDMSDependencyDefinitionTableGeneric.tableName,		new SDMSDependencyDefinitionTable(env));
+		tables.put(SDMSDependencyInstanceTableGeneric.tableName,		new SDMSDependencyInstanceTable(env));
+		tables.put(SDMSDependencyStateTableGeneric.tableName,			new SDMSDependencyStateTable(env));
 		// E
-		tables.put(SDMSEntityVariableTableGeneric.tableName,              new SDMSEntityVariableTable(env));
-		tables.put(SDMSEnvironmentTableGeneric.tableName,                 new SDMSEnvironmentTable(env));
-		tables.put(SDMSEventParameterTableGeneric.tableName,              new SDMSEventParameterTable(env));
-		tables.put(SDMSEventTableGeneric.tableName,                       new SDMSEventTable(env));
-		tables.put(SDMSExitStateDefinitionTableGeneric.tableName,         new SDMSExitStateDefinitionTable(env));
-		tables.put(SDMSExitStateGeneric.tableName,                        new SDMSExitStateTable(env));
-		tables.put(SDMSExitStateMappingGeneric.tableName,                 new SDMSExitStateMappingTable(env));
-		tables.put(SDMSExitStateMappingProfileGeneric.tableName,          new SDMSExitStateMappingProfileTable(env));
-		tables.put(SDMSExitStateProfileGeneric.tableName,                 new SDMSExitStateProfileTable(env));
+		tables.put(SDMSEntityVariableTableGeneric.tableName,			new SDMSEntityVariableTable(env));
+		tables.put(SDMSEnvironmentTableGeneric.tableName,			new SDMSEnvironmentTable(env));
+		tables.put(SDMSEventParameterTableGeneric.tableName,			new SDMSEventParameterTable(env));
+		tables.put(SDMSEventTableGeneric.tableName,				new SDMSEventTable(env));
+		tables.put(SDMSExitStateDefinitionTableGeneric.tableName,		new SDMSExitStateDefinitionTable(env));
+		tables.put(SDMSExitStateGeneric.tableName,				new SDMSExitStateTable(env));
+		tables.put(SDMSExitStateMappingGeneric.tableName,			new SDMSExitStateMappingTable(env));
+		tables.put(SDMSExitStateMappingProfileGeneric.tableName,		new SDMSExitStateMappingProfileTable(env));
+		tables.put(SDMSExitStateProfileGeneric.tableName,			new SDMSExitStateProfileTable(env));
+		tables.put(SDMSExitStateTranslationTableGeneric.tableName,		new SDMSExitStateTranslationTable(env));
+		tables.put(SDMSExitStateTranslationProfileTableGeneric.tableName,	new SDMSExitStateTranslationProfileTable(env));
 		// F
-		tables.put(SDMSFolderTableGeneric.tableName,                      new SDMSFolderTable(env));
-		tables.put(SDMSFootprintTableGeneric.tableName,                   new SDMSFootprintTable(env));
+		tables.put(SDMSFolderTableGeneric.tableName,				new SDMSFolderTable(env));
+		tables.put(SDMSFootprintTableGeneric.tableName,				new SDMSFootprintTable(env));
 		// G
-		tables.put(SDMSGrantTableGeneric.tableName,                       new SDMSGrantTable(env));
-		tables.put(SDMSGroupTableGeneric.tableName,                       new SDMSGroupTable(env));
+		tables.put(SDMSGrantTableGeneric.tableName,				new SDMSGrantTable(env));
+		tables.put(SDMSGroupTableGeneric.tableName,				new SDMSGroupTable(env));
 		// H
-		tables.put(SDMSHierarchyInstanceTableGeneric.tableName,           new SDMSHierarchyInstanceTable(env));
+		tables.put(SDMSHierarchyInstanceTableGeneric.tableName,			new SDMSHierarchyInstanceTable(env));
 		// I
-		tables.put(SDMSIgnoredDependencyTableGeneric.tableName,           new SDMSIgnoredDependencyTable(env));
-		tables.put(SDMSIntervalHierarchyTableGeneric.tableName,           new SDMSIntervalHierarchyTable(env));
-		tables.put(SDMSIntervalSelectionTableGeneric.tableName,           new SDMSIntervalSelectionTable(env));
-		tables.put(SDMSIntervalTableGeneric.tableName,                    new SDMSIntervalTable(env));
+		tables.put(SDMSIgnoredDependencyTableGeneric.tableName,			new SDMSIgnoredDependencyTable(env));
+		tables.put(SDMSIntervalHierarchyTableGeneric.tableName,			new SDMSIntervalHierarchyTable(env));
+		tables.put(SDMSIntervalSelectionTableGeneric.tableName,			new SDMSIntervalSelectionTable(env));
+		tables.put(SDMSIntervalTableGeneric.tableName,				new SDMSIntervalTable(env));
 		// K
-		tables.put(SDMSKillJobTableGeneric.tableName,                     new SDMSKillJobTable(env));
+		tables.put(SDMSKillJobTableGeneric.tableName,				new SDMSKillJobTable(env));
 		// N
-		tables.put(SDMSNamedEnvironmentTableGeneric.tableName,            new SDMSNamedEnvironmentTable(env));
-		tables.put(SDMSNamedResourceTableGeneric.tableName,               new SDMSNamedResourceTable(env));
-		tables.put(SDMSNiceProfileTableGeneric.tableName,	       new SDMSNiceProfileTable(env));
-		tables.put(SDMSNiceProfileEntryTableGeneric.tableName,	       new SDMSNiceProfileEntryTable(env));
+		tables.put(SDMSNamedEnvironmentTableGeneric.tableName,			new SDMSNamedEnvironmentTable(env));
+		tables.put(SDMSNamedResourceTableGeneric.tableName,			new SDMSNamedResourceTable(env));
+		tables.put(SDMSNiceProfileTableGeneric.tableName,			new SDMSNiceProfileTable(env));
+		tables.put(SDMSNiceProfileEntryTableGeneric.tableName,			new SDMSNiceProfileEntryTable(env));
 		// M
-		tables.put(SDMSMemberTableGeneric.tableName,                      new SDMSMemberTable(env));
+		tables.put(SDMSMemberTableGeneric.tableName,				new SDMSMemberTable(env));
 		// O
-		tables.put(SDMSObjectCommentTableGeneric.tableName,               new SDMSObjectCommentTable(env));
+		tables.put(SDMSObjectCommentTableGeneric.tableName,			new SDMSObjectCommentTable(env));
 		// P
-		tables.put(SDMSParameterDefinitionTableGeneric.tableName,         new SDMSParameterDefinitionTable(env));
-		tables.put(SDMSPersistentValueTableGeneric.tableName,             new SDMSPersistentValueTable(env));
+		tables.put(SDMSParameterDefinitionTableGeneric.tableName,		new SDMSParameterDefinitionTable(env));
+		tables.put(SDMSPersistentValueTableGeneric.tableName,			new SDMSPersistentValueTable(env));
 		// R
-		tables.put(SDMSResourceAllocationTableGeneric.tableName,          new SDMSResourceAllocationTable(env));
-		tables.put(SDMSResourceReqStatesTableGeneric.tableName,           new SDMSResourceReqStatesTable(env));
-		tables.put(SDMSResourceRequirementTableGeneric.tableName,         new SDMSResourceRequirementTable(env));
-		tables.put(SDMSResourceStateDefinitionTableGeneric.tableName,     new SDMSResourceStateDefinitionTable(env));
-		tables.put(SDMSResourceStateMappingTableGeneric.tableName,        new SDMSResourceStateMappingTable(env));
-		tables.put(SDMSResourceStateMappingProfileTableGeneric.tableName, new SDMSResourceStateMappingProfileTable(env));
-		tables.put(SDMSResourceStateProfileTableGeneric.tableName,        new SDMSResourceStateProfileTable(env));
-		tables.put(SDMSResourceStateTableGeneric.tableName,               new SDMSResourceStateTable(env));
-		tables.put(SDMSResourceVariableTableGeneric.tableName,            new SDMSResourceVariableTable(env));
-		tables.put(SDMSResourceTableGeneric.tableName,                    new SDMSResourceTable(env));
-		tables.put(SDMSRunnableQueueTableGeneric.tableName,               new SDMSRunnableQueueTable(env));
+		tables.put(SDMSResourceAllocationTableGeneric.tableName,		new SDMSResourceAllocationTable(env));
+		tables.put(SDMSResourceReqStatesTableGeneric.tableName,			new SDMSResourceReqStatesTable(env));
+		tables.put(SDMSResourceRequirementTableGeneric.tableName,		new SDMSResourceRequirementTable(env));
+		tables.put(SDMSResourceStateDefinitionTableGeneric.tableName,		new SDMSResourceStateDefinitionTable(env));
+		tables.put(SDMSResourceStateMappingTableGeneric.tableName,		new SDMSResourceStateMappingTable(env));
+		tables.put(SDMSResourceStateMappingProfileTableGeneric.tableName,	new SDMSResourceStateMappingProfileTable(env));
+		tables.put(SDMSResourceStateProfileTableGeneric.tableName,		new SDMSResourceStateProfileTable(env));
+		tables.put(SDMSResourceStateTableGeneric.tableName,			new SDMSResourceStateTable(env));
+		tables.put(SDMSResourceVariableTableGeneric.tableName,			new SDMSResourceVariableTable(env));
+		tables.put(SDMSResourceTableGeneric.tableName,				new SDMSResourceTable(env));
+		tables.put(SDMSResourceTemplateTableGeneric.tableName,			new SDMSResourceTemplateTable(env));
+		tables.put(SDMSRunnableQueueTableGeneric.tableName,			new SDMSRunnableQueueTable(env));
 		// S
-		tables.put(SDMSScheduledEventTableGeneric.tableName,              new SDMSScheduledEventTable(env));
-		tables.put(SDMSScheduleTableGeneric.tableName,                    new SDMSScheduleTable(env));
-		tables.put(SDMSSchedulingEntityTableGeneric.tableName,            new SDMSSchedulingEntityTable(env));
-		tables.put(SDMSSchedulingHierarchyTableGeneric.tableName,         new SDMSSchedulingHierarchyTable(env));
-		tables.put(SDMSScopeTableGeneric.tableName,                       new SDMSScopeTable(env));
-		tables.put(SDMSScopeConfigTableGeneric.tableName,                 new SDMSScopeConfigTable(env));
-		tables.put(SDMSScopeConfigEnvMappingTableGeneric.tableName,       new SDMSScopeConfigEnvMappingTable(env));
-		tables.put(SDMSSmeCounterTableGeneric.tableName,                  new SDMSSmeCounterTable(env));
-		tables.put(SDMSSubmittedEntityTableGeneric.tableName,             new SDMSSubmittedEntityTable(env));
+		tables.put(SDMSScheduledEventTableGeneric.tableName,			new SDMSScheduledEventTable(env));
+		tables.put(SDMSScheduleTableGeneric.tableName,				new SDMSScheduleTable(env));
+		tables.put(SDMSSchedulingEntityTableGeneric.tableName,			new SDMSSchedulingEntityTable(env));
+		tables.put(SDMSSchedulingHierarchyTableGeneric.tableName,		new SDMSSchedulingHierarchyTable(env));
+		tables.put(SDMSScopeTableGeneric.tableName,				new SDMSScopeTable(env));
+		tables.put(SDMSScopeConfigTableGeneric.tableName,			new SDMSScopeConfigTable(env));
+		tables.put(SDMSScopeConfigEnvMappingTableGeneric.tableName,		new SDMSScopeConfigEnvMappingTable(env));
+		tables.put(SDMSSmeCounterTableGeneric.tableName,			new SDMSSmeCounterTable(env));
+		tables.put(SDMSSubmittedEntityTableGeneric.tableName,			new SDMSSubmittedEntityTable(env));
 		// T
-		tables.put(SDMSTriggerTableGeneric.tableName,                     new SDMSTriggerTable(env));
-		tables.put(SDMSTriggerQueueTableGeneric.tableName,                new SDMSTriggerQueueTable(env));
-		tables.put(SDMSTriggerStateTableGeneric.tableName,                new SDMSTriggerStateTable(env));
+		tables.put(SDMSTemplateVariableTableGeneric.tableName,			new SDMSTemplateVariableTable(env));
+		tables.put(SDMSTriggerTableGeneric.tableName,				new SDMSTriggerTable(env));
+		tables.put(SDMSTriggerQueueTableGeneric.tableName,			new SDMSTriggerQueueTable(env));
+		tables.put(SDMSTriggerStateTableGeneric.tableName,			new SDMSTriggerStateTable(env));
 		// U
-		tables.put(SDMSUserTableGeneric.tableName,                        new SDMSUserTable(env));
+		tables.put(SDMSUserTableGeneric.tableName,				new SDMSUserTable(env));
 
 		// non persistent tables
-		tables.put(SDMSnpJobFootprintTableGeneric.tableName,              new SDMSnpJobFootprintTable(env));
-		tables.put(SDMSnpSrvrSRFootprintTableGeneric.tableName,           new SDMSnpSrvrSRFootprintTable(env));
+		tables.put(SDMSnpJobFootprintTableGeneric.tableName,			new SDMSnpJobFootprintTable(env));
+		tables.put(SDMSnpSrvrSRFootprintTableGeneric.tableName,			new SDMSnpSrvrSRFootprintTable(env));
+
+		freeProxies = new SDMSProxy[tableCount];
 	}
 
 	private void loadTables(SystemEnvironment env) throws SDMSException
@@ -342,6 +348,65 @@ public class SDMSRepository
 		return retVal;
 	}
 
+	public static int getTableIndex ()
+	{
+		tableCount ++;
+		return tableCount - 1;
+	}
+
+	public static int getTableCount()
+	{
+		return tableCount;
+	}
+
+	public static SDMSProxy getProxy(int tableIndex)
+	{
+		synchronized (freeProxies) {
+			if (freeProxies[tableIndex] != null) {
+				SDMSProxy p = freeProxies[tableIndex];
+				freeProxies[tableIndex] = p.next;
+				p.next = null;
+				return p;
+			} else
+				return null;
+		}
+	}
+
+	private static void releaseProxies (int i, SDMSProxy p, SDMSProxy lp)
+	{
+		synchronized (freeProxies) {
+			SDMSProxy fp = freeProxies[i];
+			freeProxies[i] = p;
+			lp.next = fp;
+		}
+	}
+
+	public static void releaseProxies(SDMSProxy[] proxies)
+	{
+		for (int i = 0; i < tableCount; ++ i) {
+			SDMSProxy p = proxies[i];
+			SDMSProxy pp = null;
+			while (p != null && p.fixed) {
+				proxies[i] = p.next;
+				p.next = null;
+				p = proxies[i];
+
+			}
+			if (p == null) continue;
+			do {
+				if (p.fixed) {
+					pp.next = p.next;
+					p.next = null;
+				} else {
+					p.cleanupProxy();
+					pp = p;
+				}
+				if (pp.next == null) break;
+				p = pp.next;
+			} while (true);
+			releaseProxies(i, proxies[i], p);
+		}
+	}
 }
 
 class TableLoader extends SDMSThread
@@ -397,6 +462,5 @@ class TableLoader extends SDMSThread
 			}
 		}
 	}
-
 }
 

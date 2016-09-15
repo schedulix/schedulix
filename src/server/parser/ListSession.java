@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -72,7 +70,6 @@ public class ListSession extends Node
 					SDMSGrant g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSProxy.ZERO, gId));
 					p.addPriv(sysEnv, g.getPrivs(sysEnv).longValue());
 				} catch (NotFoundException nfe) {
-
 				}
 			}
 			if (!p.can(SDMSPrivilege.MANAGE_SYS))
@@ -84,31 +81,18 @@ public class ListSession extends Node
 		Vector desc = new Vector();
 
 		desc.add("THIS");
-
 		desc.add("SESSIONID");
-
 		desc.add("PORT");
-
 		desc.add("START");
-
 		desc.add("TYPE");
-
 		desc.add("USER");
-
 		desc.add("UID");
-
 		desc.add("IP");
-
 		desc.add("TXID");
-
 		desc.add("IDLE");
-
 		desc.add("STATE");
-
 		desc.add("TIMEOUT");
-
 		desc.add("INFORMATION");
-
 		desc.add("STATEMENT");
 		desc.add("WAIT");
 
@@ -191,7 +175,6 @@ public class ListSession extends Node
 			data.add(new Long(cEnv.txId()));
 			data.add(new Long(cEnv.idle()));
 			String state = (cEnv.getState()).toString();
-
 			String waitInfo = "";
 			if (sysEnv.maxWriter > 1 && cEnv.worker != null) {
 				waitInfo = LockingSystemSynchronized.waitInfo(cEnv.worker);
@@ -203,8 +186,12 @@ public class ListSession extends Node
 			data.add(new Integer(cEnv.getMe().getTimeout()));
 			data.add(cEnv.getInfo());
 			try {
-				if(fullView)	data.add(new String(cEnv.actstmt == null ? "" : cEnv.actstmt));
-				else		data.add("");
+				if(fullView) {
+					if (cEnv.firstToken != null)
+						data.add(cEnv.firstToken);
+					else
+						data.add(new String(cEnv.actstmt == null ? "" : cEnv.actstmt));
+				} else		data.add("");
 			} catch (Exception e) {
 
 				data.add("");

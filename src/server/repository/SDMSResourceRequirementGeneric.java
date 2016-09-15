@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -246,12 +245,12 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	{
 		final Integer v = getKeepMode (env);
 		switch (v.intValue()) {
-		case SDMSResourceRequirement.NOKEEP:
-			return "NOKEEP";
-		case SDMSResourceRequirement.KEEP:
-			return "KEEP";
-		case SDMSResourceRequirement.KEEP_FINAL:
-			return "KEEP_FINAL";
+			case SDMSResourceRequirement.NOKEEP:
+				return "NOKEEP";
+			case SDMSResourceRequirement.KEEP:
+				return "KEEP";
+			case SDMSResourceRequirement.KEEP_FINAL:
+				return "KEEP_FINAL";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -427,18 +426,18 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSResourceRequirement.MINUTE:
-			return "MINUTE";
-		case SDMSResourceRequirement.HOUR:
-			return "HOUR";
-		case SDMSResourceRequirement.DAY:
-			return "DAY";
-		case SDMSResourceRequirement.WEEK:
-			return "WEEK";
-		case SDMSResourceRequirement.MONTH:
-			return "MONTH";
-		case SDMSResourceRequirement.YEAR:
-			return "YEAR";
+			case SDMSResourceRequirement.MINUTE:
+				return "MINUTE";
+			case SDMSResourceRequirement.HOUR:
+				return "HOUR";
+			case SDMSResourceRequirement.DAY:
+				return "DAY";
+			case SDMSResourceRequirement.WEEK:
+				return "WEEK";
+			case SDMSResourceRequirement.MONTH:
+				return "MONTH";
+			case SDMSResourceRequirement.YEAR:
+				return "YEAR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -478,16 +477,16 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 		if (v == null)
 			return null;
 		switch (v.intValue()) {
-		case SDMSResourceRequirement.N:
-			return "N";
-		case SDMSResourceRequirement.X:
-			return "X";
-		case SDMSResourceRequirement.SX:
-			return "SX";
-		case SDMSResourceRequirement.S:
-			return "S";
-		case SDMSResourceRequirement.SC:
-			return "SC";
+			case SDMSResourceRequirement.N:
+				return "N";
+			case SDMSResourceRequirement.X:
+				return "X";
+			case SDMSResourceRequirement.SX:
+				return "SX";
+			case SDMSResourceRequirement.S:
+				return "S";
+			case SDMSResourceRequirement.SC:
+				return "SC";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -654,9 +653,9 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 		return o;
 	}
 
-	protected SDMSProxy toProxy()
+	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return new SDMSResourceRequirement(this);
+		return SDMSResourceRequirement.getProxy(sysEnv, this);
 	}
 
 	protected SDMSResourceRequirementGeneric(Long p_id,
@@ -754,12 +753,10 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ResourceRequirement: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -807,7 +804,6 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 			myInsert.setLong(19, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ResourceRequirement: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -858,7 +854,6 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 			myUpdate.setLong(4, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ResourceRequirement: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -866,10 +861,10 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	static public boolean checkKeepMode(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSResourceRequirement.NOKEEP:
-		case SDMSResourceRequirement.KEEP:
-		case SDMSResourceRequirement.KEEP_FINAL:
-			return true;
+			case SDMSResourceRequirement.NOKEEP:
+			case SDMSResourceRequirement.KEEP:
+			case SDMSResourceRequirement.KEEP_FINAL:
+				return true;
 		}
 		return false;
 	}
@@ -877,13 +872,13 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSResourceRequirement.MINUTE:
-		case SDMSResourceRequirement.HOUR:
-		case SDMSResourceRequirement.DAY:
-		case SDMSResourceRequirement.WEEK:
-		case SDMSResourceRequirement.MONTH:
-		case SDMSResourceRequirement.YEAR:
-			return true;
+			case SDMSResourceRequirement.MINUTE:
+			case SDMSResourceRequirement.HOUR:
+			case SDMSResourceRequirement.DAY:
+			case SDMSResourceRequirement.WEEK:
+			case SDMSResourceRequirement.MONTH:
+			case SDMSResourceRequirement.YEAR:
+				return true;
 		}
 		return false;
 	}
@@ -891,12 +886,12 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 	{
 		if(p == null) return true;
 		switch (p.intValue()) {
-		case SDMSResourceRequirement.N:
-		case SDMSResourceRequirement.X:
-		case SDMSResourceRequirement.SX:
-		case SDMSResourceRequirement.S:
-		case SDMSResourceRequirement.SC:
-			return true;
+			case SDMSResourceRequirement.N:
+			case SDMSResourceRequirement.X:
+			case SDMSResourceRequirement.SX:
+			case SDMSResourceRequirement.S:
+			case SDMSResourceRequirement.SC:
+				return true;
 		}
 		return false;
 	}

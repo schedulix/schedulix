@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,7 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 package de.independit.scheduler.server.repository;
 
@@ -51,6 +50,8 @@ public abstract class SDMSTable
 		}
 	}
 
+	protected int tableIndex;
+
 	protected boolean isVersioned;
 
 	public final static String STAT_ID_COUNT      = "ID_COUNT";
@@ -67,47 +68,42 @@ public abstract class SDMSTable
 		}
 		hashMap = new HashMap();
 		isVersioned = true;
+		tableIndex = SDMSRepository.getTableIndex();
 	}
 
 	public Iterator iterator (SystemEnvironment env)
 	throws SDMSException
 	{
-
 		return iterator (env, null, false );
 	}
 	public Iterator iteratorForUpdate (SystemEnvironment env)
 	throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
-
 		return iterator (env, null, false );
 	}
 
 	public Iterator iterator (SystemEnvironment env, boolean unlocked)
 	throws SDMSException
 	{
-
 		return iterator (env, null, unlocked);
 	}
 	public Iterator iteratorForUpdate (SystemEnvironment env, boolean unlocked)
 	throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
-
 		return iterator (env, null, unlocked);
 	}
 
 	public Iterator iterator (SystemEnvironment env, SDMSFilter f)
 	throws SDMSException
 	{
-
 		return iterator (env, f, false);
 	}
 	public Iterator iteratorForUpdate (SystemEnvironment env, SDMSFilter f)
 	throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
-
 		return iterator (env, f, false);
 	}
 	public Iterator iteratorForUpdate (SystemEnvironment env, SDMSFilter f, boolean unlocked)
@@ -136,7 +132,7 @@ public abstract class SDMSTable
 			SDMSObject o = v.getRaw(env, unlocked);
 			if (o == null) continue;
 			if (p == null) {
-				p = o.toProxy();
+				p = o.toProxy(env);
 				p.current = true;
 			} else
 				p.object = o;
@@ -214,7 +210,6 @@ public abstract class SDMSTable
 	{
 		throw new FatalException(new SDMSMessage(env,
 				"02110271229", "cannot remove id from an SDMSTables hashMap"));
-
 	}
 
 	public abstract String tableName();
@@ -248,7 +243,7 @@ public abstract class SDMSTable
 		}
 		if (env.tx.mode == SDMSTransaction.READWRITE && env.maxWriter > 1)
 			LockingSystem.lock(env, versions, readLock);
-		p = (versions.get(env)).toProxy();
+		p = (versions.get(env)).toProxy(env);
 		p.current = true;
 		return p;
 
@@ -284,7 +279,7 @@ public abstract class SDMSTable
 		if(versions == null) {
 			throw new NotFoundException (new SDMSMessage(env, "03110251039", "Key $1 not found", id));
 		}
-		return (versions.get(env, version)).toProxy();
+		return (versions.get(env, version)).toProxy(env);
 	}
 
 	public boolean exists (SystemEnvironment env, Long id)

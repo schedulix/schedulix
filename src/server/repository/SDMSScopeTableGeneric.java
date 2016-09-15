@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -78,7 +77,6 @@ public class SDMSScopeTableGeneric extends SDMSTable
 	{
 		super(env);
 		if (table != null) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182009", "Scope"));
 		}
 		table = (SDMSScopeTable) this;
@@ -116,9 +114,7 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		Long p_createTs = env.txTime();
 		Long p_changerUId = env.cEnv.uid();
 		Long p_changeTs = env.txTime();
-
 		if(env.tx.mode == SDMSTransaction.READONLY) {
-
 			throw new FatalException(new SDMSMessage(env, "01110182049", "Scope"));
 		}
 		validate(env
@@ -174,14 +170,13 @@ public class SDMSScopeTableGeneric extends SDMSTable
 
 		SDMSScope p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
-			p = (SDMSScope)(o.toProxy());
+			p = (SDMSScope)(o.toProxy(env));
 			p.current = true;
 		} catch(SDMSException e) {
-			p = (SDMSScope)(o.toProxy());
+			p = (SDMSScope)(o.toProxy(env));
 			p.current = true;
 			env.tx.rollbackSubTransaction(env);
 			throw e;
@@ -196,7 +191,6 @@ public class SDMSScopeTableGeneric extends SDMSTable
 	protected boolean checkCreatePrivs(SystemEnvironment env, SDMSScope p)
 	throws SDMSException
 	{
-
 		final Long parentId = p.getParentId(env);
 		final SDMSScope parent = SDMSScopeTable.getObject(env, parentId);
 		if(!parent.checkPrivileges(env, SDMSPrivilege.CREATE_CONTENT))
@@ -231,15 +225,11 @@ public class SDMSScopeTableGeneric extends SDMSTable
 	throws SDMSException
 	{
 		if (!SDMSScopeGeneric.checkType(p_type))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Scope: $1 $2", "type", p_type));
 		if (!SDMSScopeGeneric.checkState(p_state))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Scope: $1 $2", "state", p_state));
 		if (!SDMSScopeGeneric.checkMethod(p_method))
-
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Scope: $1 $2", "method", p_method));
-
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -312,7 +302,6 @@ public class SDMSScopeTableGeneric extends SDMSTable
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-
 			throw new FatalException(new SDMSMessage(env, "01110182045", "Scope: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
@@ -352,7 +341,6 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		String squote = SystemEnvironment.SQUOTE;
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
-
 		ResultSet rset = stmt.executeQuery("SELECT " +
 		                                   tableName() + ".ID" +
 		                                   ", " + squote + "NAME" + equote +

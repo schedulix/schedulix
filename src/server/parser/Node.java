@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -52,6 +50,7 @@ public abstract class Node
 	public int cmdtype;
 	public Long contextVersion;
 	public boolean auditFlag;
+	public long exceptionsToTrace;
 
 	public Node()
 	{
@@ -60,6 +59,10 @@ public abstract class Node
 		cmdtype = USER_COMMAND;
 		result = new SDMSOutput();
 		contextVersion = null;
+
+		Long ett = SystemEnvironment.showStackTrace.get(this.getClass().getSimpleName());
+		if (ett == null) exceptionsToTrace = 0;
+		else		 exceptionsToTrace = ett.longValue();
 	}
 
 	public String getName()

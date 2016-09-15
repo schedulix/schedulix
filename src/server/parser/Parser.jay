@@ -207,12 +207,12 @@ public class Parser
 %type <WithHash>	lc_withlist, lf_withlist, lj_withlist, lnr_withlist, lnr_withwith
 %type <WithHash>	npwith, npentry
 %type <WithHash>	opt_connect_with, opt_dump_with, opt_event_submit_with, opt_ival_with, opt_gr_with, opt_lc_withlist, opt_lf_withlist, opt_lj_withlist, opt_lnr_withwith
-%type <WithHash>	opt_npwith, opt_om_instancelist, opt_period, opt_schevwith, opt_show_with, opt_schedwith, opt_sel_with, opt_sj_with, opt_stickyspec, opt_submit_with,
+%type <WithHash>	opt_npwith, opt_om_instancelist, opt_period, opt_schevwith, opt_show_with, opt_schedwith, opt_sel_with, opt_sj_with, opt_sp_with, opt_stickyspec, opt_submit_with,
 %type <WithHash>	om_parameterlist, om_period, om_with_clause, om_withitemlist, om_instancelist
 %type <WithHash>	period
 %type <WithHash>	system_resource_req, rsp_with_clause, rsp_withitemlist
 %type <WithHash>	schedwithlist, schedwithwith, schevwithlist, schevwithwith, scope_cfg, scope_cfg_list, scope_cfg_envlist, scope_parm, scope_parmlist, select_with
-%type <WithHash>	selwithlist, show_with_item, signed_period, sj_withlist, stickyspec, submit_with, submit_withlist
+%type <WithHash>	selwithlist, show_with_item, signed_period, sj_withlist, stickyspec, submit_with, submit_withlist, sp_with
 %type <WithHash>	us_add_dellist, us_with, us_withlist, wt_with_clause, wt_withitemlist
 
 %type <WithItem>	aj_suspend, aj_withitem, ajd_add_del_item, anr_with_item, aom_withitem, ar_parm, ar_with_item
@@ -859,7 +859,7 @@ create_folder:	create FOLDER folderpath cf_optwith				{ if ($3.size() == 1 && !$
 drop_folder:	drop url_list opt_cascade opt_force				{ $$ = new DropFolder($2, $3, $4, $1); }
 
 //D:MASTER
-//D:LEVEL enterprise
+//D:LEVEL professional
 //D:NT-ALIAS = cleanup folder
 //D:PURPOSE P167
 //D:DESCRIPTION cleanup_folder.tex
@@ -1684,7 +1684,6 @@ env_resourcelist:	env_resource						{ $$ = new Vector(); $<Vector>$.addElement($
 	|		env_resourcelist ',' env_resource			{ $1.addElement($3); }
 
 env_resource:		resourcepath						{ $$ = new WithItem($1, null); }
-			//D:LEVEL enterprise
 	|		resourcepath CONDITION '=' STRING			{ $$ = new WithItem($1, $4.textValue); }
 	|		resourcepath CONDITION '=' NONE				{ $$ = new WithItem($1, null); }
 
@@ -1939,7 +1938,6 @@ cfp_delwith:		DELETE RESOURCE '=' '(' resourcelist ')'		{ $$ = $5; }
 //--------------------------------------------------------------------------
 
 //D:MASTER
-//D:LEVEL professional
 //D:NT-ALIAS = create exit state translation
 //D:PURPOSE P107
 //D:DESCRIPTION create_exit_state_translation.tex
@@ -1948,7 +1946,6 @@ create_exit_status_trans:	create EXIT_STATUS_TRANSLATION transname est_withwith
 										{ $$ = new CreateExitStateTranslation($3, $4, $1); }
 
 //D:MASTER
-//D:LEVEL professional
 //D:NT-ALIAS = alter exit state translation
 //D:NODEFAULTS
 //D:PURPOSE P108
@@ -1956,28 +1953,24 @@ create_exit_status_trans:	create EXIT_STATUS_TRANSLATION transname est_withwith
 alter_exit_status_trans:	alter est_url est_withwith			{ $$ = new AlterExitStateTranslation($2, $3, $1); }
 
 //D:MASTER
-//D:LEVEL professional
 //D:NT-ALIAS = drop exit state translation
 //D:PURPOSE P109
 //D:DESCRIPTION drop_exit_state_translation.tex
 drop_exit_status_trans:		drop est_url					{ $$ = new DropExitStateTranslation($2, $1); }
 
 //D:MASTER
-//D:LEVEL professional
 //D:NT-ALIAS = rename exit state translation
 //D:PURPOSE P110
 //D:DESCRIPTION rename_exit_state_translation.tex
 rename_exit_status_trans:	RENAME est_url TO transname			{ $$ = new RenameExitStateTranslation($2, $4); }
 
 //D:MASTER
-//D:LEVEL professional
 //D:NT-ALIAS = list exit state translation
 //D:DESCRIPTION list_exit_state_translation.tex
 //D:PURPOSE P111
 list_exit_status_trans:		LIST EXIT_STATUS_TRANSLATION			{ $$ = new ListExitStateTranslation(); }
 
 //D:MASTER
-//D:LEVEL professional
 //D:NT-ALIAS = show exit state translation
 //D:DESCRIPTION show_exit_state_translation.tex
 //D:PURPOSE P112
@@ -2288,7 +2281,6 @@ jcd_item:		folderpath '.' jobname					{ final WithHash w = new WithHash();
 	|		NICEVALUE '=' opt_signed_integer			{ $$ = new WithItem(ParseStr.S_PRIORITY, $3); }
 	|		job_childdef_suspend					{ $$ = new WithItem(ParseStr.S_SUSPEND, $1); }
 	|		resume							{ $$ = $1; }
-			//D:LEVEL professional
 	|		TRANSLATION '=' jw_transname				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|		MERGE_MODE '=' mergemode				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|		IGNORE_DEPENDENCY '=' '(' depnamelist ')'		{ $$ = new WithItem(ParseStr.S_IGNORE, $4); }
@@ -2339,10 +2331,8 @@ jrq_item:		DEPENDENCY dependencyname				{ $$ = new WithItem(ParseStr.map($1.toke
 	|		STATUS '=' ALL REACHABLE				{ $$ = new WithItem(ParseStr.map($1.token), ParseStr.map($4.token)); }
 	|		STATUS '=' DEFAULT					{ $$ = new WithItem(ParseStr.map($1.token), ParseStr.map($3.token)); }
 	|		MODE '=' jrq_mode					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
-			//D:LEVEL enterprise
 	|		CONDITION '=' STRING					{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 			//D:DEFAULT
-			//D:LEVEL enterprise
 	|		CONDITION '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
 
 			//D:DEFAULT
@@ -2360,7 +2350,6 @@ jrq_statelist:		jrq_req_state						{ $$ = new Vector(); $<Vector>$.addElement($1
 	|		jrq_statelist ',' jrq_req_state				{ $1.addElement($3); }
 
 jrq_req_state:		statusname						{ $$ = new WithItem($1, null); }
-			//D:LEVEL enterprise
 	|		statusname CONDITION '=' STRING				{ $$ = new WithItem($1, $4.textValue); }
 			//D:DEFAULT
 	|		statusname CONDITION '=' NONE				{ $$ = new WithItem($1, null); }
@@ -2384,7 +2373,6 @@ system_resource_req:	jrd_system_item						{ $$ = new WithHash(); $<WithHash>$.ad
 
 jrd_item:		jrd_sync_item						{ $$ = $1; }
 	|		jrd_system_item						{ $$ = $1; }
-			//D:LEVEL enterprise
 	|		jrd_static_item						{ $$ = $1; }
 
 			//D:OPTION lockmode
@@ -2408,9 +2396,7 @@ jrd_system_item:	resourcepath						{ $$ = new WithItem(ParseStr.S_NAME, $1); }
 	|		jrd_keep						{ $$ = new WithItem(ParseStr.S_KEEP, $1); }
 
 			//D:OPTION condition
-			//D:LEVEL enterprise
 jrd_static_item:	CONDITION '=' STRING					{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
-			//D:LEVEL enterprise
 			//D:DEFAULT
 	|		CONDITION '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
 
@@ -2947,6 +2933,7 @@ sj_filteritem:  RERUN								{ $$ = SDMSAuditTrail.convert($1); }
 	|	JOB IN ERROR_TOKEN						{ $$ = SDMSAuditTrail.convert($1, $2, $3); }
 	|	CLEAR WARNING							{ $$ = SDMSAuditTrail.convert($1, $2); }
 	|	SET WARNING							{ $$ = SDMSAuditTrail.convert($1, $2); }
+	|	SET PARAMETERS							{ $$ = SDMSAuditTrail.convert($1, $2); }
 	|	UNREACHABLE							{ $$ = SDMSAuditTrail.convert($1); }
 
 
@@ -2977,11 +2964,16 @@ gpmode:			STRICT							{ $$ = ParseStr.map($1.token); }
 //D:DESCRIPTION set_parameter.tex
 //D:PURPOSE P123
 set_parm_cmd:		SET PARAMETERS cf_parmlist				{ $$ = new SetParameter($3); }
-	|		SET PARAMETERS on_of jobid cf_parmlist			{ $$ = new SetParameter($5, $4, null); }
-	|		SET PARAMETERS on_of jobid cf_parmlist identified_by	{ $$ = new SetParameter($5, $4, $6); }
+	|		SET PARAMETERS on_of jobid cf_parmlist opt_sp_with	{ $$ = new SetParameter($5, $4, null, $6); }
+	|		SET PARAMETERS on_of jobid cf_parmlist identified_by opt_sp_with	{ $$ = new SetParameter($5, $4, $6, $7); }
 
 on_of:			ON							{ /* do nothing */ }
 	|		OF							{ /* do nothing */ }
+
+opt_sp_with:									{ $$ = null; }
+	|		sp_with							{ $$ = $1; }
+
+sp_with:		WITH COMMENT '=' STRING					{ $$ = new WithHash(); $<WithHash>$.addItem(new WithItem(ParseStr.S_COMMENT, $4.textValue)); }
 
 
 
@@ -3317,11 +3309,8 @@ schevbacklog:		LAST							{ $$ = new Integer(SDMSScheduledEvent.LAST); }
 create_trigger:		create TRIGGER triggername ON ct_object opt_ival_inverse ct_withwith	{ $<WithHash>7.addItem($6); $$ = new CreateTrigger($3, $5, $7, $1); }
 
 ct_object:		JOB_DEFINITION folderpath				{ $$ = new WithItem(ParseStr.S_JOB, $2); }
-			//D:LEVEL professional
 	|		RESOURCE resourcepath IN serverpath			{ $4.add($2); $$ = new WithItem(ParseStr.map($1.token), $4); }
-			//D:LEVEL professional
 	|		RESOURCE resourcepath IN folderpath			{ $4.add($2); $$ = new WithItem(ParseStr.map($1.token), $4); }
-			//D:LEVEL professional
 	|		OBJECT MONITOR objecttypename				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 
 ct_withlist:		ct_withitem						{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
@@ -3329,7 +3318,6 @@ ct_withlist:		ct_withitem						{ $$ = new WithHash(); $<WithHash>$.addItem($1); 
 
 //D:NT-ALIAS = withitem
 ct_withitem:		STATUS '=' '(' ct_jobstatuslist ')'			{ $$ = new WithItem(ParseStr.map($1.token), $4); }
-			//D:LEVEL professional
 	|		STATUS '=' '(' ct_rscstatuslist ')'			{ $$ = new WithItem(ParseStr.S_RSCSTATUS, $4); }
 			//D:DEFAULT
 	|		STATUS '=' NONE						{ $$ = new WithItem(ParseStr.map($1.token), null); }
@@ -3342,30 +3330,20 @@ ct_withitem:		STATUS '=' '(' ct_jobstatuslist ')'			{ $$ = new WithItem(ParseStr
 	|		resume							{ $$ = $1; }
 	|		SUBMITCOUNT '=' integer					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|		with_group						{ $$ = $1; }
-			//D:LEVEL professional
 	|		CONDITION '=' STRING					{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 	|		ct_warn_nowarn						{ $$ = $1; }
 			//D:DEFAULT
-			//D:LEVEL professional
 	|		CONDITION '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
-			//D:LEVEL enterprise
 	|		CHECK '=' period					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
-			//D:LEVEL professional
 	|		EVENT '=' '(' ct_eventlist ')'				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
-			//D:LEVEL professional
 	|		GROUP EVENT						{ $$ = new WithItem(ParseStr.S_ISGROUPED, Boolean.TRUE); }
 			//D:DEFAULT
-			//D:LEVEL professional
 	|		SINGLE EVENT						{ $$ = new WithItem(ParseStr.S_ISGROUPED, Boolean.FALSE); }
 	|		active							{ $$ = new WithItem(ParseStr.S_ACTIVE, $1); }
-			//D:LEVEL professional
 	|		PARENT folderpath					{ $$ = new WithItem(ParseStr.map($1.token), $2); }
-			//D:LEVEL professional
 			//D:DEFAULT
 	|		PARENT NONE						{ $$ = new WithItem(ParseStr.map($1.token), null); }
-			//D:LEVEL professional
 	|		MAIN folderpath						{ $$ = new WithItem(ParseStr.map($1.token), $2); }
-			//D:LEVEL professional
 			//D:DEFAULT
 	|		MAIN NONE						{ $$ = new WithItem(ParseStr.map($1.token), null); }
 	|		LIMIT STATUS '=' statusname				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
@@ -3387,7 +3365,6 @@ ct_jobstatuslist:	statusname						{ $$ = new Vector(); $<Vector>$.addElement($1)
 ct_rscstatuslist: 	ct_rscstatusitem 					{ $$ = new Vector(); $<Vector>$.addElement($1); }
 	|		ct_rscstatuslist ',' ct_rscstatusitem 			{ $1.addElement($3); }
 
-//D:LEVEL professional
 ct_rscstatusitem:	statusname ANY						{ $$ = new WithItem($1,null); }
 	|		statusname statusname					{ $$ = new WithItem($1, $2); }
 	|		ANY statusname						{ $$ = new WithItem(null, $2); }
@@ -3395,13 +3372,9 @@ ct_rscstatusitem:	statusname ANY						{ $$ = new WithItem($1,null); }
 ct_triggertype:		IMMEDIATE_LOCAL						{ $$ = SDMSTrigger.map($1.token); }
 	|		IMMEDIATE_MERGE						{ $$ = SDMSTrigger.map($1.token); }
 	|		BEFORE_FINAL						{ $$ = SDMSTrigger.map($1.token); }
-			//D:LEVEL professional
 	|		AFTER_FINAL						{ $$ = SDMSTrigger.map($1.token); }
-			//D:LEVEL professional
 	|		FINISH_CHILD						{ $$ = SDMSTrigger.map($1.token); }
-			//D:LEVEL enterprise
 	|		UNTIL_FINISHED						{ $$ = SDMSTrigger.map($1.token); }
-			//D:LEVEL enterprise
 	|		UNTIL_FINAL						{ $$ = SDMSTrigger.map($1.token); }
 	|		WARNING							{ $$ = SDMSTrigger.map($1.token); }
 
@@ -3882,7 +3855,6 @@ restrict_url:	dist_url							{ $$ = $1; }
 	|	esd_url								{ $$ = $1; }
 	|	esm_url								{ $$ = $1; }
 	|	esp_url								{ $$ = $1; }
-		//D:LEVEL professional
 	|	est_url								{ $$ = $1; }
 	|	event_url							{ $$ = $1; }
 	|	folder_url							{ $$ = $1; }
@@ -3923,7 +3895,6 @@ objecttype:	DISTRIBUTION							{ $$ = $1; }
 	|	EXIT_STATUS_DEFINITION						{ $$ = $1; }
 	|	EXIT_STATUS_MAPPING						{ $$ = $1; }
 	|	EXIT_STATUS_PROFILE						{ $$ = $1; }
-		//D:LEVEL professional
 	|	EXIT_STATUS_TRANSLATION						{ $$ = $1; }
 	|	EVENT								{ $$ = $1; }
 	|	FOLDER								{ $$ = $1; }
@@ -3957,7 +3928,6 @@ sys_object:	ENVIRONMENT							{ $$ = $1; }
 	|	EXIT_STATUS_DEFINITION						{ $$ = $1; }
 	|	EXIT_STATUS_MAPPING						{ $$ = $1; }
 	|	EXIT_STATUS_PROFILE						{ $$ = $1; }
-		//D:LEVEL professional
 	|	EXIT_STATUS_TRANSLATION						{ $$ = $1; }
 	|	FOOTPRINT							{ $$ = $1; }
 	|	GROUP								{ $$ = $1; }
@@ -4042,7 +4012,6 @@ parameter_url:	PARAMETERS parametername OF param_loc				{ $$ = new ObjectURL($1.
 param_loc:	jobdef_url							{ $$ = $1; }
 	|	folder_url							{ $$ = $1; }
 	|	scope_url							{ $$ = $1; }
-		//D:LEVEL professional
 	|	nr_url								{ $$ = $1; }
 
 pool_url:	POOL resourcepath IN serverpath					{ $$ = new ObjectURL($1.token, $2, new ObjectURL(new Integer(SCOPE), $4)); }
@@ -4095,9 +4064,7 @@ trigger_url:	TRIGGER triggername ON t_url opt_ival_inverse			{ $$ = new ObjectUR
 
 //D:NT-ALIAS = triggerobject
 t_url:		jobdef_url							{ $$ = $1; }
-		//D:LEVEL enterprise
 	|	nr_url								{ $$ = $1; }
-		//D:LEVEL enterprise
 	|	resource_url							{ $$ = $1; }
 	|	om_url								{ $$ = $1; }
 
