@@ -14,7 +14,7 @@ Source0:	file://localhost/%{_topdir}/SOURCES/schedulix-%{version}.tgz
 Vendor:		independIT Integrative Technologies GmbH
 Packager:	Ronald Jeninga <ronald.jeninga@schedulix.org>
 
-BuildRequires:	jflex jna gcc-c++ java-1.7.0-openjdk-devel rpm-build rpm-libs rpmdevtools rpm-sign
+BuildRequires:	jna gcc-c++ java-1.7.0-openjdk-devel rpm-build rpm-libs rpmdevtools rpm-sign
 
 # disable debug package
 %global debug_package %{nil}
