@@ -98,34 +98,68 @@ public class CmdLineParser
 %token <String> PARAM CHAR SQSTRING
 %token	SEPARATOR DQSTRING_START DQSTRING_END PARAMSTART PARAMEND DOT
 
-%type <Vector> parameterlist, param, dottedparam
-%type <String> executablename, charlist, dqstring, dqlist, parameter, optdqlist
+%type <Vector> parameterlist, param, dottedparam, parameter, charlist, executablename
+%type <String> dqstring, dqlist, optdqlist
 
 %start cmdline
 
 %%
 
 cmdline:					{ if(stop == 0) return null; }
-	|	executablename			{ Vector v = new Vector(); v.add($1); if(stop == 0) return v; }
-	|	executablename SEPARATOR parameterlist	{ $3.add(0, $1); if(stop == 0) return $3; }
-	|	executablename SEPARATOR 	{ Vector v = new Vector(); v.add($1); if(stop == 0) return v; }
+	|	executablename			{ Vector v = new Vector(); v.addAll($1); if(stop == 0) return v; }
+	|	executablename SEPARATOR parameterlist	{ $1.addAll($3); if(stop == 0) return $1; }
+	|	executablename SEPARATOR 	{ Vector v = new Vector(); v.addAll($1); if(stop == 0) return v; }
 
 executablename:	charlist			{ $$ = $1; }
 
-parameterlist:	parameter 			{ $$ = new Vector(); $<Vector>$.add($1); }
-	|	parameterlist SEPARATOR parameter	{ $1.add($3); }
+parameterlist:	parameter 			{ $$ = new Vector(); $<Vector>$.addAll($1); }
+	|	parameterlist SEPARATOR parameter	{ $1.addAll($3); }
 	|	parameterlist SEPARATOR 	{ /* do nothing */ }
 
 parameter:	charlist			{ $$ = $1; }
 
-charlist:	CHAR				{ $$ = $1; }
-	|	SQSTRING			{ $$ = $1; }
-	|	dqstring			{ $$ = $1; }
-	|	param				{ $$ = resolve($1); }
-	|	charlist CHAR			{ $$ = $1.concat($2); }
-	|	charlist SQSTRING		{ $$ = $1.concat($2); }
-	|	charlist dqstring		{ $$ = $1.concat($2); }
-	|	charlist param			{ $$ = $1.concat(resolve($2)); }
+charlist:	CHAR				{ $$ = new Vector(); $<Vector>$.add($1); }
+	|	SQSTRING			{ $$ = new Vector(); $<Vector>$.add($1); }
+	|	dqstring			{ $$ = new Vector(); $<Vector>$.add($1); }
+	|	param				{ $$ = new Vector(); String s = resolve($1); $<Vector>$.addAll(split(s)); }
+	|	charlist CHAR			{ String t = null;
+						  Vector v = $<Vector>$;
+						  if ( v.size() != 0)
+							t = (String) v.remove(v.size() -1);
+						  if (t != null) t = t.concat($2);
+						  else t = $2;
+						  v.add(t);
+						}
+	|	charlist SQSTRING		{ String t = null;
+						  Vector v = $<Vector>$;
+						  if ( v.size() != 0)
+							t = (String) v.remove(v.size() -1);
+						  if (t != null) t = t.concat($2);
+						  else t = $2;
+						  v.add(t);
+						}
+	|	charlist dqstring		{ String t = null;
+						  Vector v = $<Vector>$;
+						  if ( v.size() != 0)
+							t = (String) v.remove(v.size() -1);
+						  if (t != null) t = t.concat($2);
+						  else t = $2;
+						  v.add(t);
+						}
+	|	charlist param			{ String s = resolve($2);
+						  String t = null;
+						  Vector v = $<Vector>$;
+						  Vector w;
+						  if ( v.size() != 0)
+							t = (String) v.remove(v.size() -1);
+						  w = split(s);
+						  if (t != null) {
+							s = (String) w.remove(0);
+							t = t.concat(s);
+							v.add(t);
+						  }
+						  v.addAll(w);
+						}
 
 dqstring:	DQSTRING_START optdqlist DQSTRING_END	{ $$ = $2; }
 
@@ -160,6 +194,36 @@ public void set(SystemEnvironment e, SDMSSubmittedEntity sub)
 public void setCheckOnly()
 {
 	checkOnly = true;
+}
+
+void print(Vector v)
+{
+	if (v == null) System.out.println("v = null");
+	else {
+		System.out.println("v = {");
+		for (int i = 0; i < v.size(); ++i) {
+			System.out.println("\t[" + i + "] : " + v.get(i));
+		}
+		System.out.println("}");
+	}
+}
+
+Vector split(String s)
+{
+	Vector result = new Vector();
+	String[] sArr;
+
+	if (SystemEnvironment.enhancedCmdParsing) {
+		sArr = s.split("[ \t\f\r\n]+");
+		for (int i = 0; i < sArr.length; ++i) {
+			if (!sArr[i].equals(""))
+				result.add(sArr[i]);
+		}
+	} else {
+		result.add(s);
+	}
+
+	return result;
 }
 
 String resolve(Vector pv)
