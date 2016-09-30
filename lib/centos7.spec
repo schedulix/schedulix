@@ -111,11 +111,11 @@ if [ "$1" == "1" ]; then
 
 	cp /opt/schedulix/schedulix-%{version}/etc/bicsuite.conf.template /opt/schedulix/etc/bicsuite.conf
 	echo '
-	BICSUITEHOME=/opt/schedulix/schedulix
-	BICSUITECONFIG=/opt/schedulix/etc
-	BICSUITELOGDIR=/opt/schedulix/log
-	PATH=$BICSUITEHOME/bin:$PATH
-	export BICSUITEHOME BICSUITECONFIG BICSUITELOGDIR PATH
+BICSUITEHOME=/opt/schedulix/schedulix
+BICSUITECONFIG=/opt/schedulix/etc
+BICSUITELOGDIR=/opt/schedulix/log
+PATH=$BICSUITEHOME/bin:$PATH
+export BICSUITEHOME BICSUITECONFIG BICSUITELOGDIR PATH
 	' > /opt/schedulix/etc/SETTINGS
 
 	# make the three files readable for world
@@ -127,9 +127,27 @@ if [ "$1" == "1" ]; then
 	fi
 
 	echo '
-	# source schedulix environment
-	. /opt/schedulix/etc/SETTINGS' >> ~schedulix/.bashrc
+# source schedulix environment if not done already
+if [ -z "$BICSUITEHOME" ]; then
+	. /opt/schedulix/etc/SETTINGS
+fi
+' >> ~schedulix/.bashrc
 	chown schedulix.schedulix ~schedulix/.bashrc
+
+	#
+	# as it seems, the .bashrc isn't read when doing "su - schedulix"
+	# therefor we create a .profile if it doesn't exist yet
+	#
+	if [ ! -f /opt/schedulix/.profile ]; then
+		echo '
+#!/bin/bash
+
+if [ -f $HOME/.bashrc ]; then
+	. $HOME/.bashrc
+fi
+' > /opt/schedulix/.profile
+		chown schedulix.schedulix ~schedulix/.profile
+	fi
 fi
 # link has to be created or recreated to point to the actual version
 cd /opt/schedulix
@@ -651,7 +669,7 @@ echo "executing postun client -- %version-%release"
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix zope package installs the zope application server and configures it to access a locally installed server
 Group:			Applications/System
-Requires:		schedulix-base >= %{version} python python-devel python-setuptools python-virtualenv wget
+Requires:		schedulix-base >= %{version} gcc python python-devel python-setuptools python-virtualenv wget
 
 %description zope
 %commonDescription
