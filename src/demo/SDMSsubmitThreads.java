@@ -50,25 +50,29 @@ import de.independit.scheduler.shell.SDMSServerConnection;
 
 public class SDMSsubmitThreads
 {
-
-	static String host = null;
-	static String port = null;
-	static String id = null;
-	static String key = null;
-	static String delay = "0";
+	static String host  = null;
+	static String port  = null;
+	static String id    = null;
+	static String key   = null;
 	static String child = null;
-	static String number = "3";
+	static String delay = "0";
+	static int number   = 3;
+	static boolean silent = false;
+	static boolean ignoreGuiFailure = false;
+	static Integer waitTime = null;
 
-	static Text delay_field;
-	static Text number_field;
-
-	static Label status_line;
+	static SDMSServerConnection connection = null;
+	static SDMSOutput output = null;
+	static boolean failure = false;
+	static boolean gui_failure = false;
 
 	public static void main(String[] args)
 	{
 
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("-h") || args[i].equals("--host")) {
+			if (args[i].equals("")) {
+				continue;
+			} else if (args[i].equals("-h") || args[i].equals("--host")) {
 				host = args[i + 1];
 				i++;
 			} else if (args[i].equals("-p") || args[i].equals("--port")) {
@@ -84,187 +88,47 @@ public class SDMSsubmitThreads
 				child = args[i + 1];
 				i++;
 			} else if (args[i].equals("-d") || args[i].equals("--delay")) {
-				delay = args[i + 1];
+				delay = args[i+1];
+				i++;
+			} else if (args[i].equals("-I") || args[i].equals("--ignore_gui_failure")) {
+				ignoreGuiFailure = true;
+				i++;
+			} else if (args[i].equals("-s") || args[i].equals("--silent")) {
+				silent = true;
 				i++;
 			} else if (args[i].equals("-n") || args[i].equals("--number")) {
-				number = args[i + 1];
+				number = SDMSpopup.rndConf(args[i+1]);
 				i++;
-			}
-		}
-
-		if (host == null || port == null || id == null || key == null
-		    || child == null) {
-			System.err.println("usage: SDMSsubmitThreads -h|--host host -p|--port port -i|--id jobid -k|--key jobkey -c|--child alias [-d|--delay delay] [-n|--number number]");
-			System.exit(1);
-		}
-
-		final Display display = new Display();
-
-		final Shell shell = new Shell(display);
-		shell.setBackground(new Color(display, 255, 255, 255));
-		shell.setText("SDMSsubmitThreads");
-		final Image logo = new Image(display, "Images/Logo.png");
-		final Image bullit = new Image(display,
-				"Images/Bullit.png");
-		shell.setImage(bullit);
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.marginHeight = 0;
-		gridLayout.marginWidth = 0;
-		gridLayout.verticalSpacing = 0;
-		shell.setLayout(gridLayout);
-
-		GridData data;
-		Composite compmain = new Composite(shell, SWT.NONE);
-		compmain.setBackground(new Color(display, 255, 255, 255));
-		data = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		compmain.setLayoutData(data);
-
-		gridLayout = new GridLayout(1, false);
-		gridLayout.marginHeight = 15;
-		gridLayout.marginWidth = 15;
-		gridLayout.verticalSpacing = 15;
-		compmain.setLayout(gridLayout);
-
-		Canvas canvas = new Canvas(compmain, SWT.NONE);
-		canvas.addPaintListener(new PaintListener() {
-			public void paintControl(PaintEvent e) {
-				e.gc.drawImage(logo, 0, 0);
-			}
-		});
-		data = new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1);
-		data.widthHint = logo.getBounds().width;
-		data.heightHint = logo.getBounds().height;
-		canvas.setLayoutData(data);
-
-		Composite entry = new Composite(compmain, SWT.BORDER);
-		data = new GridData(GridData.FILL_HORIZONTAL);
-		entry.setLayoutData(data);
-		entry.setBackground(new Color(display, 255, 255, 255));
-		gridLayout = new GridLayout(1, false);
-		gridLayout.marginHeight = 5;
-		gridLayout.marginWidth = 5;
-		gridLayout.verticalSpacing = 5;
-		entry.setLayout(gridLayout);
-
-		Composite number_line = new Composite(entry, SWT.NONE);
-		gridLayout = new GridLayout(2, false);
-		gridLayout.marginHeight = 0;
-		gridLayout.marginWidth = 0;
-		gridLayout.horizontalSpacing = 5;
-		number_line.setLayout(gridLayout);
-
-		data = new GridData(GridData.FILL_HORIZONTAL);
-		number_line.setLayoutData(data);
-		number_line.setBackground(new Color(display, 255, 255, 255));
-
-		final Label number_label = new Label(number_line, SWT.NONE);
-		number_label.setBackground(new Color(display, 255, 255, 255));
-		data = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
-		number_label.setText("Number of Threads to submit:");
-		number_label.pack();
-		number_label.setLayoutData(data);
-
-		number_field = new Text(number_line, SWT.BORDER | SWT.RIGHT);
-		data = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-		number_field.setText("000");
-		number_field.pack();
-		number_field.setLayoutData(data);
-
-		Composite delay_line = new Composite(entry, SWT.NONE);
-		gridLayout = new GridLayout(2, false);
-		gridLayout.marginHeight = 0;
-		gridLayout.marginWidth = 0;
-		gridLayout.horizontalSpacing = 5;
-		delay_line.setLayout(gridLayout);
-
-		data = new GridData(GridData.FILL_HORIZONTAL);
-		delay_line.setLayoutData(data);
-		delay_line.setBackground(new Color(display, 255, 255, 255));
-
-		final Label delay_label = new Label(delay_line, SWT.NONE);
-		delay_label.setBackground(new Color(display, 255, 255, 255));
-		data = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
-		delay_label.setText("Delay between submits [secs]:");
-		delay_label.pack();
-		delay_label.setLayoutData(data);
-
-		delay_field = new Text(delay_line, SWT.BORDER | SWT.RIGHT);
-		data = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
-		delay_field.setText("000");
-		delay_field.pack();
-		delay_field.setLayoutData(data);
-
-		Composite button_line = new Composite(compmain, SWT.NONE);
-		gridLayout = new GridLayout(2, false);
-		gridLayout.marginHeight = 0;
-		gridLayout.marginWidth = 0;
-		gridLayout.horizontalSpacing = 0;
-		button_line.setLayout(gridLayout);
-
-		data = new GridData(GridData.FILL_HORIZONTAL);
-		button_line.setLayoutData(data);
-		button_line.setBackground(new Color(display, 255, 255, 255));
-
-		Button ok_button = new Button(button_line, SWT.NONE);
-		ok_button.setText("Ok");
-		data = new GridData(SWT.RIGHT, SWT.TOP, true, true, 1, 1);
-		ok_button.setLayoutData(data);
-
-		ok_button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				submitThreads();
+			} else if (args[i].equals("-t") || args[i].equals("--time")) {
+				waitTime = new Integer(SDMSpopup.rndConf(args[i+1]));
+				i++;
+			} else if (args[i].equals("-?") || args[i].equals("--help")) {
+				printOptions();
 				System.exit(0);
+			} else {
+				String[] arg = args[i].split("\\s");
+				if (arg.length == 2 && (arg[0].equals("-d") || arg[0].equals("--delay"))) {
+					delay = arg[1];
+				} else if (arg.length == 2 && (arg[0].equals("-n") || arg[0].equals("--number"))) {
+					number = SDMSpopup.rndConf(arg[1]);
+				} else if (arg.length == 2 && (arg[0].equals("-t") || arg[0].equals("--time"))) {
+					waitTime = new Integer(SDMSpopup.rndConf(arg[1]));
+				} else {
+					System.err.println("Illegal option: " + args[i]);
+					printOptions();
+					System.exit(1);
+				}
 			}
-		});
-
-		shell.setDefaultButton(ok_button);
-
-		status_line = new Label(shell, SWT.BORDER);
-		status_line.setBackground(new Color(display, 200, 200, 200));
-		data = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		status_line.setText("Enter data and press Ok");
-		status_line.setLayoutData(data);
-
-		shell.pack();
-
-		number_field.setText(number);
-		number_field.selectAll();
-		number_field.setFocus();
-
-		delay_field.setText(delay);
-
-		shell.open();
-
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
 		}
-		display.dispose();
-	}
-
-	static void submitThreads()
-	{
-		int n = 0, d = 0;
-		try {
-			n = new Integer(number_field.getText()).intValue();
-		} catch (Exception evt) {
-			System.err.println("invalid -n|--number option " + number_field.getText());
+		if (host == null || port == null || id == null || key == null || child == null) {
+			printOptions();
 			System.exit(1);
 		}
-		try {
-			d = new Integer(delay_field.getText()).intValue();
-		} catch (Exception evt) {
-			System.err.println("invalid -d|--delay option " + delay_field.getText());
-			System.exit(1);
-		}
-		boolean failure = false;
-		SDMSOutput output = null;
-		SDMSServerConnection connection = new SDMSServerConnection(host, new Integer(port).intValue(),
-				id, key);
+
+		connection = new SDMSServerConnection(host, new Integer(port).intValue(), id, key);
 		try {
 			output = connection.connect();
 		} catch (IOException e) {
-
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -273,29 +137,37 @@ public class SDMSsubmitThreads
 			System.err.println("Error(" + output.error.code + "):" + output.error.message);
 			System.exit(1);
 		}
-		for (int i = 0; i < n; i++) {
-			String tag = new Integer(i+1).toString();
-			status_line.setText("Submitting thread " + tag + "...");
-			status_line.update();
 
-			output = connection.execute("SUBMIT '" + child + "' WITH CHILDTAG = '" + tag + "'");
-			if (output.error != null) {
-				System.out.println("");
-				System.err.println("Error submitting child !");
-				System.err.println("Error(" + output.error.code + "):" + output.error.message);
-				failure = true;
+		Thread guiThread = null;
+		if (!silent) {
+			try {
+				Class guiThreadClass = Class.forName("de.independit.scheduler.demo.SDMSsubmitThreadsGuiThread");
+				guiThread = (Thread)(guiThreadClass.getDeclaredConstructor().newInstance());
+				guiThread.start();
+				guiThread.join();
+			} catch (Throwable t) {
+				System.err.println("Cannot open GUI (Throwable:" + t.toString() + ")");
+				if (!ignoreGuiFailure) {
+					System.err.println("exit (1)");
+					System.exit(1);
+				} else {
+					System.err.println("ignored (-I flag is set) , running in silent mode");
+					gui_failure = true;
+				}
 			}
-			status_line.setText("Submitting thread " + tag + "...done");
-			status_line.update();
-
-			if (d > 0 && i+1 < n) {
-				status_line.setText("Submitting thread " + tag + "...done, Waiting " + d + " seconds...");
-				status_line.update();
-				try {
-					Thread.sleep(d*1000);
-				} catch (InterruptedException e1) {
-
-					e1.printStackTrace();
+		}
+		if (silent || gui_failure) {
+			for (int i = 1; i <= number; i++) {
+				System.err.println("Submit thread number " + i);
+				submitThread(i);
+				int d = SDMSpopup.rndConf(delay);
+				if (d > 0 && i < number) {
+					System.err.println("Waiting " + d + " seconds");
+					try {
+						Thread.sleep(d * 1000);
+					} catch (InterruptedException e1) {
+						System.err.println("Exception (" + e1.toString() + ") during sleep() !");
+					}
 				}
 			}
 		}
@@ -303,12 +175,52 @@ public class SDMSsubmitThreads
 		try {
 			connection.finish();
 		} catch (IOException e) {
-
-			e.printStackTrace();
+			System.err.println("Warning: Exceptiom closing server connection (" + e.toString() + ") !");
 		}
 		if (failure) {
 			System.err.println("One or more child submit failed !");
 			System.exit(1);
+		}
+	}
+
+	private static void printOptions()
+	{
+		System.err.println ("allowed options:");
+		System.err.println ("  -h, --host   <hostname>     host name of the scheduling server");
+		System.err.println ("  -p, --port   <portnumber>   port number of the scheduling server");
+		System.err.println ("  -i, --id     <jobid>        job id of the job running this command");
+		System.err.println ("  -k, --key    <jobkey>       job key of the job running this command");
+		System.err.println ("  -I, --ignore_gui_failure    ignore GUI failure");
+		System.err.println ("  -s, --silent                silent, run without GUI");
+		System.err.println ("  -c, --child  <alias>        job name or alias of the child to submit dynically");
+		System.err.println ("  -d, --delay  histogram      time between job submissions");
+		System.err.println ("  -n, --number histogram      number of jobs to submit");
+		System.err.println ("  -t, --time   histogram      time to wait for gui input before running automaticly");
+		System.err.println ("  -?, --help                  number of jobs to submit");
+		System.err.println ("histogram:");
+		System.err.println ("   histogramElement { : histogramElement }");
+		System.err.println ("   histogramElement:");
+		System.err.println ("      histogramValue | histogramValue=histogramCount");
+		System.err.println ("      histogramValue:");
+		System.err.println ("         <integer> | <integer>-<integer>");
+		System.err.println ("   if more than one histogramElement is given, all elements must have a histogramCount");
+	}
+
+	static void submitThread(int tag)
+	{
+		String strTag = new Integer(tag).toString();
+		output = connection.execute("SUBMIT '" + child + "' WITH CHILDTAG = '" + strTag + "'");
+		if (output.error != null) {
+			if (output.error.code.equals("03110181528")) {
+				System.out.println("");
+				System.err.println("Error submitting child (ignored) !");
+				System.err.println("Error(" + output.error.code + "):" + output.error.message);
+			} else {
+				System.out.println("");
+				System.err.println("Error submitting child !");
+				System.err.println("Error(" + output.error.code + "):" + output.error.message);
+				failure = true;
+			}
 		}
 	}
 }

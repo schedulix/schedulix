@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -25,189 +25,167 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package de.independit.scheduler.demo;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
+import java.util.Vector;
+import java.util.Random;
 
 public class SDMSpopup
 {
+	public static int ERRORCODE = 19;
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws InterruptedException
 	{
-		final Display display = new Display();
-		final Shell shell = new Shell(display);
-
-		final Font argsFont = new Font(display, "Courier", 10, SWT.NORMAL );
-
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.marginHeight = 15;
-		gridLayout.marginWidth = 15;
-		gridLayout.verticalSpacing = 15;
-		shell.setLayout(gridLayout);
-
-		shell.setBackground(new Color(display, 255, 255, 255));
-		shell.setText("SDMSpopup");
-
-		final Image logo = new Image(display, "Images/Logo.png");
-		final Image bullit = new Image(display,
-				"Images/Bullit.png");
-
-		shell.setImage(bullit);
-
-		Canvas canvas = new Canvas(shell, SWT.NONE);
-		canvas.addPaintListener(new PaintListener() {
-			public void paintControl(PaintEvent e) {
-				e.gc.drawImage(logo, 0, 0);
-			}
-		});
-		GridData data;
-		data = new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1);
-		data.widthHint = logo.getBounds().width;
-		data.heightHint = logo.getBounds().height;
-		canvas.setLayoutData(data);
-
-		Table table = new Table(shell, SWT.BORDER);
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-
-		TableColumn argv_column = new TableColumn(table, SWT.NONE);
-		argv_column.setText("Command Line Arguments");
-
 		String config = null;
-		TableItem item;
+		boolean silent = false;
+		boolean ignoreGuiFailure = false;
+		int exitCode = 0;
+		Integer runTimeSecs = null;
+		Vector<String> displayArgs = new Vector<String>();
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("-c") || args[i].equals("-c")) {
+			if (args[i].equals("-c") || args[i].equals("--config")) {
 				config = args[i+1];
 				i++;
+			} else if (args[i].equals("-t") || args[i].equals("--time")) {
+				runTimeSecs = new Integer(rndConf(args[i+1]));
+				i++;
+			} else if (args[i].equals("-e") || args[i].equals("--exit")) {
+				exitCode = rndConf(args[i+1]);
+				i++;
+			} else if (args[i].equals("-I") || args[i].equals("--ignore_gui_failure")) {
+				ignoreGuiFailure = true;
+			} else if (args[i].equals("-s") || args[i].equals("--silent")) {
+				silent = true;
+			} else if (args[i].equals("-?") || args[i].equals("--help")) {
+				printOptions();
+				System.exit(0);
+			} else if (args[i].startsWith("-")) {
+				String[] arg = args[i].split("\\s");
+				if (arg.length == 2 && (arg[0].equals("-c") || arg[0].equals("--config"))) {
+					config = arg[1];
+				} else if (arg.length == 2 && (arg[0].equals("-t") || arg[0].equals("--time"))) {
+					runTimeSecs = new Integer(SDMSpopup.rndConf(arg[1]));
+				} else if (arg.length == 2 && (arg[0].equals("-e") || arg[0].equals("--exit"))) {
+					exitCode = rndConf(arg[1]);
+				} else {
+					System.err.println("Illegal option: " + args[i]);
+					printOptions();
+					System.exit(ERRORCODE);
+				}
 			} else {
-				item = new TableItem(table, SWT.NONE);
-
-				item.setFont(argsFont);
-				item.setText(0, args[i]);
-				item.setBackground(new Color(display, 255, 255, 255));
+				displayArgs.add(args[i]);
 			}
 		}
 		if (config == null) {
 			config = "?:1=FAILURE:0=SUCCESS";
 		}
 
-		argv_column.pack();
-
-		data = new GridData(SWT.FILL, SWT.FILL, true, true);
-		table.setLayoutData(data);
-		table.pack();
-		data.widthHint = table.getBounds().width;
-		data.heightHint = table.getBounds().height;
-
-		Composite bottom = new Composite(shell, SWT.NONE);
-		data = new GridData(GridData.FILL_HORIZONTAL);
-		bottom.setLayoutData(data);
-		bottom.setBackground(new Color(display, 255, 255, 255));
-
-		String[] buttons = config.split(":");
-		int cols = buttons.length;
-		gridLayout = new GridLayout(cols, false);
-		gridLayout.marginHeight = 0;
-		gridLayout.marginWidth = 0;
-		gridLayout.horizontalSpacing = 15;
-		bottom.setLayout(gridLayout);
-
-		Control focusControl = null;
-		Button  defaultButton = null;
-		Button  exitCodeButton = null;
-		boolean expand = true;
-		Text exit_code_field = null;
-		for (int i = 0; i < buttons.length; i ++) {
-			final String[] button = buttons[i].split("=");
-			if (button[0].equals("?")) {
-				Composite exit_code_button = new Composite(bottom, SWT.NONE);
-				exit_code_button.setBackground(new Color(display, 255, 255, 255));
-
-				data = new GridData(SWT.RIGHT, SWT.FILL, expand, false, 1, 1);
-				exit_code_button.setLayoutData(data);
-				gridLayout = new GridLayout(2, false);
-				gridLayout.marginHeight = 0;
-				gridLayout.marginWidth = 0;
-				gridLayout.horizontalSpacing = 5;
-				exit_code_button.setLayout(gridLayout);
-
-				Button exit_button = new Button(exit_code_button, SWT.NONE);
-				exit_button.setText("Exit with Code:");
-				data = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-				exit_button.setLayoutData(data);
-
-				final Text exit_code = new Text(exit_code_button, SWT.BORDER | SWT.RIGHT);
-				exit_code_field = exit_code;
-				data = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-				exit_code.setText("000");
-				exit_code.pack();
-				exit_code.setLayoutData(data);
-
-				exit_button.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-						try {
-							int ret;
-							ret = new Integer(exit_code.getText()).intValue();
-							System.exit(ret);
-						} catch (Exception evt) {
-						}
-					}
-				});
-
-				defaultButton = exit_button;
-				exitCodeButton = exit_button;
-			} else {
-				Button exit_button = new Button(bottom, SWT.NONE);
-				data = new GridData(SWT.RIGHT, SWT.FILL, expand, false, 1, 1);
-				exit_button.setLayoutData(data);
-				exit_button.setText(button[1]);
-				exit_button.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-						System.exit(new Integer(button[0]).intValue());
-					}
-				});
-				if (defaultButton == null || new Integer(button[0]).intValue() == 0) defaultButton = exit_button;
-				if (focusControl == null || new Integer(button[0]).intValue() == 0) focusControl = exit_button;
+		Thread guiThread = null;
+		if (!silent) {
+			try {
+				Class guiThreadClass = Class.forName("de.independit.scheduler.demo.SDMSpopupGuiThread");
+				Class[] cArg = new Class[5];
+				cArg[0] = Vector.class;
+				cArg[1] = String.class;
+				cArg[2] = boolean.class;
+				cArg[3] = Integer.class;
+				cArg[4] = int.class;
+				guiThread = (Thread)(guiThreadClass.getDeclaredConstructor(cArg).newInstance(displayArgs, config, ignoreGuiFailure, runTimeSecs, exitCode));
+				guiThread.start();
+			} catch (Throwable t) {
+				System.err.println("Cannot open GUI (Throwable:" + t.toString() + ")");
+				if (!ignoreGuiFailure) {
+					System.err.println("exit (" + ERRORCODE + ")");
+					System.exit(ERRORCODE);
+				} else {
+					System.err.println("ignored (-I flag is set) , running in silent mode");
+				}
 			}
-			expand = false;
 		}
 
-		shell.pack();
+		if (runTimeSecs == null) {
+			if (guiThread != null)
+				guiThread.join();
+		} else {
+			System.err.println("auto exit in " + runTimeSecs.intValue() + " seconds with exit code " + exitCode);
+			Thread.sleep(runTimeSecs.intValue() * 1000);
+		}
+		System.exit (exitCode);
+	}
 
-		if (exit_code_field != null) {
-			exit_code_field.setText("0");
-			exit_code_field.selectAll();
-			focusControl = exit_code_field;
-			defaultButton = exitCodeButton;
+	private static void printOptions()
+	{
+		System.err.println ("allowed options:");
+		System.err.println ("  -c, --config buttonconf    exit code field and button configuration");
+		System.err.println ("  -e, --exit   histogram     exit code probability configuration");
+		System.err.println ("  -t, --time   histogram     runtime probability configuration in seconds");
+		System.err.println ("  -I, --ignore_gui_failure   ignore GUI failure");
+		System.err.println ("  -s, --silent               silent, run without GUI");
+		System.err.println ("  -?, --help                 print options");
+		System.err.println ("buttonconf:");
+		System.err.println ("   buttonconfElement { : buttonconfElement }");
+		System.err.println ("   buttonconfElement:");
+		System.err.println ("      ? | <exitcode>=<buttontext>");
+		System.err.println ("   ? will display a entry field to manually set the exit code");
+		System.err.println ("   buttonconf defaults to '?:1=FAILURE:0=SUCCESS'");
+		System.err.println ("histogram:");
+		System.err.println ("   histogramElement { : histogramElement }");
+		System.err.println ("   histogramElement:");
+		System.err.println ("      histogramValue | histogramValue=histogramCount");
+		System.err.println ("      histogramValue:");
+		System.err.println ("         <integer> | <integer>-<integer>");
+		System.err.println ("   if more than one histogramElement is given, all elements must have a histogramCount");
+	}
+
+	public static int rndConf(String conf)
+	{
+		int ret = 0;
+		try {
+			Random rnd = new Random();
+			Vector<HistogramElement> histElements = new Vector<HistogramElement>();
+			String[] strHist = conf.split(":");
+			long histTotal = 0;
+			for (int i = 0; i < strHist.length; i ++) {
+				String[] strHistElement = strHist[i].split("=");
+				String[] strValueRange = strHistElement[0].split("-");
+				int histValue;
+				if (strValueRange.length == 1)
+					histValue = Integer.parseInt(strValueRange[0].trim());
+				else {
+					int histValueMin = Integer.parseInt(strValueRange[0].trim());
+					int histValueMax = Integer.parseInt(strValueRange[1].trim());
+					histValue = (int)(rnd.nextDouble() * (histValueMax - histValueMin + 1)) + histValueMin;
+				}
+				if (strHist.length == 1)
+					return histValue;
+				int histCount = Integer.parseInt(strHistElement[1].trim());
+				histElements.add(new HistogramElement(histValue, histCount));
+				histTotal += histCount;
+			}
+			long rndTotal = (long)((new Random()).nextDouble() * histTotal) + 1;
+			for (int i = 0; i < histElements.size(); i ++) {
+				if (histElements.elementAt(i).count >= rndTotal) {
+					ret = histElements.elementAt(i).value;
+					break;
+				}
+				rndTotal -= histElements.elementAt(i).count;
+			}
+		} catch (Exception e) {
+			System.err.println ("Illegal random configuration:" + conf);
+			printOptions();
+			System.exit(ERRORCODE);
 		}
 
-		if (focusControl != null) focusControl.setFocus();
-		if (defaultButton != null) shell.setDefaultButton(defaultButton);
+		return ret;
+	}
+}
 
-		shell.open();
+class HistogramElement
+{
+	public int value;
+	public int count;
 
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		display.dispose();
+	public HistogramElement (int value, int count)
+	{
+		this.value = value;
+		this.count = count;
 	}
 }
