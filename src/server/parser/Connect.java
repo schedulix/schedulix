@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -72,12 +70,16 @@ public class Connect extends Node
 		path = null;
 		withs = wh;
 		cmd = (Node) withs.get(ParseStr.S_COMMAND);
-		if (cmd == null) {
+		auditFlag = false;
+		if (cmd == null && SystemEnvironment.auth == null) {
 			txMode = SDMSTransaction.READONLY;
-			auditFlag = false;
 		} else {
-			txMode = cmd.txMode;
-			auditFlag = cmd.auditFlag;
+			if (SystemEnvironment.auth == null) {
+				txMode = cmd.txMode;
+				auditFlag = cmd.auditFlag;
+			} else {
+				txMode = SDMSTransaction.READWRITE;
+			}
 		}
 	}
 
@@ -122,8 +124,35 @@ public class Connect extends Node
 		}
 	}
 
-	private void connect_user(SystemEnvironment sysEnv)
-		throws SDMSException
+	private void writeCredentials(SystemEnvironment sysEnv, SDMSUser u)
+	throws SDMSException
+	{
+		String pwdHash;
+		String storedHash;
+		String salt;
+		int method;
+
+		storedHash = u.getPasswd(sysEnv);
+		salt = u.getSalt(sysEnv);
+		method = u.getMethod(sysEnv).intValue();
+		if (method == SDMSUser.MD5)
+			pwdHash = CheckSum.mkstr(CheckSum.md5((txtPasswd + (salt == null ? "" : salt)).getBytes()), true);
+		else
+			pwdHash = CheckSum.mkstr(CheckSum.sha256((txtPasswd + (salt == null ? "" : salt)).getBytes()), false);
+		if (pwdHash.equals(storedHash))
+			return;
+
+		salt = ManipUser.generateSalt();
+		pwdHash = CheckSum.mkstr(CheckSum.sha256((txtPasswd + salt).getBytes()), false);
+		method = SDMSUser.SHA256;
+
+		u.setSalt(sysEnv, salt);
+		u.setMethod(sysEnv, new Integer(method));
+		u.setPasswd(sysEnv, pwdHash);
+	}
+
+	private void connect_internal_user(SystemEnvironment sysEnv)
+	throws SDMSException
 	{
 		SDMSUser u;
 		Long uId;
@@ -131,7 +160,6 @@ public class Connect extends Node
 		int method;
 
 		try {
-
 			u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(user, zero));
 			if (!u.getIsEnabled(sysEnv).booleanValue()) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
@@ -156,7 +184,6 @@ public class Connect extends Node
 			}
 			if(sysEnv.getConnectState() != SystemEnvironment.NORMAL) {
 				if(u.getId(sysEnv).intValue() != 0)
-
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03202081739", "Login restricted"));
 			}
 		} catch (NotFoundException nfe) {
@@ -169,6 +196,126 @@ public class Connect extends Node
 		sysEnv.cEnv.setGid(sysEnv, SDMSMemberTable.idx_uId.getVector(sysEnv, uId));
 	}
 
+	private void connect_external_user(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSUser u;
+		Long uId;
+		String[] groups = SystemEnvironment.auth.getGroupNames(user);
+		Integer method = new Integer(SDMSUser.SHA256);
+		boolean suActive = false;
+		Vector members = null;
+		boolean freshMeat = false;
+		int checkResult;
+
+		checkResult = SystemEnvironment.auth.checkCredentials(user, txtPasswd);
+		if (checkResult == Authenticator.SUCCESS) {
+			HashSet hg = new HashSet();
+			hg.add(SDMSObject.adminGId);
+			sysEnv.cEnv.pushGid(sysEnv, hg);
+			suActive = true;
+
+			try {
+				try {
+					u = SDMSUserTable.idx_name_getUnique(sysEnv, user);
+					if (u.getDeleteVersion(sysEnv).intValue() != 0) {
+						u.setDeleteVersion(sysEnv, zero);
+						try {
+							SDMSMemberTable.table.create(sysEnv, u.getId(sysEnv), SDMSObject.publicGId);
+						} catch (DuplicateKeyException dke) {
+						}
+					}
+				} catch (NotFoundException e) {
+					u = null;
+				}
+
+				if (u == null) {
+					String passwd = "Internal Authentication Disabled";
+					Boolean enable = Boolean.TRUE;
+					u = SDMSUserTable.table.create(sysEnv, user, passwd, passwd , method, enable, SDMSObject.publicGId, zero);
+					SDMSMemberTable.table.create(sysEnv, u.getId(sysEnv), SDMSObject.publicGId);
+					freshMeat = true;
+				} else {
+					if (!u.getIsEnabled(sysEnv).booleanValue()) {
+						u.setIsEnabled(sysEnv, Boolean.TRUE);
+					}
+				}
+
+				uId = u.getId(sysEnv);
+				members = SDMSMemberTable.idx_uId.getVector(sysEnv, uId);
+				if (groups == null) {
+				} else {
+					HashSet extGroups = new HashSet();
+					extGroups.add(SDMSObject.publicGId);
+					SDMSGroup g;
+					SDMSMember m;
+					for (int i = 0; i < groups.length; ++i) {
+						try {
+							Vector tmp = SDMSGroupTable.idx_name.getVector(sysEnv, groups[i]);
+							g = (SDMSGroup) tmp.get(0);
+							if (i == 0 && freshMeat) {
+								u.setDefaultGId(sysEnv, g.getId(sysEnv));
+							}
+						} catch (NotFoundException nfe) {
+							g = SDMSGroupTable.table.create(sysEnv, groups[i], zero);
+							m = SDMSMemberTable.table.create(sysEnv, g.getId(sysEnv), uId);
+							members.add(m);
+						}
+						extGroups.add(g.getId(sysEnv));
+					}
+					Iterator it = members.iterator();
+					while (it.hasNext()) {
+						m = (SDMSMember) it.next();
+						Long gId = m.getGId(sysEnv);
+						if (!extGroups.contains(gId)) {
+							it.remove();
+							m.delete(sysEnv);
+						}
+					}
+				}
+
+				if (SystemEnvironment.auth.syncCredentials(user)) {
+					writeCredentials(sysEnv, u);
+				}
+
+				sysEnv.cEnv.popGid(sysEnv);
+				suActive = false;
+			} catch (Throwable t) {
+				if (suActive) {
+					sysEnv.cEnv.popGid(sysEnv);
+					suActive = false;
+				}
+				throw t;
+			}
+
+			uId = u.getId(sysEnv);
+			sysEnv.cEnv.setUid(uId);
+			sysEnv.cEnv.setUser();
+			sysEnv.cEnv.setGid(sysEnv, members);
+		} else {
+			if (checkResult == Authenticator.ABORT && SystemEnvironment.auth.checkInternally(user)) {
+				connect_internal_user(sysEnv);
+			} else {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "02110192352", "Invalid username or password"));
+			}
+		}
+	}
+
+	private void connect_user(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSUser u;
+		Long uId;
+		String salt;
+		int method;
+
+		if (SystemEnvironment.auth == null || user.toUpperCase().equals("SYSTEM") || !SystemEnvironment.auth.checkExternally(user)) {
+			connect_internal_user(sysEnv);
+		} else {
+			connect_external_user(sysEnv);
+		}
+	}
+
 	private void connect_jobserver(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
@@ -179,7 +326,6 @@ public class Connect extends Node
 		int method;
 
 		try {
-
 			pId = SDMSScopeTable.pathToId(sysEnv, path);
 
 			s = SDMSScopeTable.idx_parentId_name_getUnique(sysEnv, new SDMSKey(pId, jsName));
@@ -219,7 +365,6 @@ public class Connect extends Node
 			timeout = Integer.parseInt(ScopeConfig.getItem(sysEnv, s, Config.NOP_DELAY));
 			sysEnv.cEnv.getMe().setTimeout(timeout * 3);
 		} catch (NumberFormatException nfe) {
-
 			sysEnv.cEnv.getMe().setTimeout(300);
 		}
 	}
@@ -253,7 +398,6 @@ public class Connect extends Node
 		}
 
 		if (!adminAccess) {
-
 			int state = sme.getState(sysEnv).intValue();
 			if (state == SDMSSubmittedEntity.CANCELLED || state == SDMSSubmittedEntity.FINAL)
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03703141511",
@@ -290,19 +434,15 @@ public class Connect extends Node
 		Vector desc = new Vector();
 		Vector data = new Vector();
 		if (isUser) {
-
 			connect_user(sysEnv);
 		} else {
 			if(sysEnv.getConnectState() != SystemEnvironment.NORMAL) {
-
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202081740", "Login restricted"));
 			}
 			if(isJobServer) {
-
 				connect_jobserver(sysEnv);
 			} else {
 				if(isJob) {
-
 					connect_job(sysEnv);
 				} else {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03406282207", "Wrong usertype"));
@@ -330,12 +470,10 @@ public class Connect extends Node
 			}
 		}
 		if(withs.containsKey(ParseStr.S_TIMEOUT)) {
-
 			sysEnv.cEnv.getMe().setTimeout(((Integer) withs.get(ParseStr.S_TIMEOUT)).intValue());
 		}
 
 		if (cmd != null) {
-
 			sysEnv.tx.beginSubTransaction(sysEnv);
 			while(true) {
 				if(env.isUser()) {

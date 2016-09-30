@@ -147,6 +147,8 @@ public class SystemEnvironment implements Cloneable
 	public static boolean fatalIsError;
 	public static String selectGroup;
 	public static String auditFile;
+	public static de.independit.scheduler.server.util.Authenticator auth;
+	public static boolean enhancedCmdParsing;
 
 	public static boolean strict_variables;
 	public static boolean warn_variables;
@@ -177,6 +179,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_ARCHICOLS             = "ArchiveHierarchyColumns";
 	public static final String S_ARCKJCOLS             = "ArchiveKillJobColumns";
 	public static final String S_AUDITFILE             = "AuditFile";
+	public static final String S_AUTHCLASS             = "AuthenticationClass";
 	public static final String S_CALHORIZON            = "CalendarHorizon";
 	public static final String S_CALENTRIES            = "CalendarEntries";
 	public static final String S_DBLOADER              = "DbLoaders";
@@ -184,6 +187,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_DBURL                 = "DbUrl";
 	public static final String S_DBUSER                = "DbUser";
 	public static final String S_DMPLANGLEVEL          = "DumpLangLevel";
+	public static final String S_ENHANCEDCMDPARSING    = "EnhancedCmdParsing";
 	public static final String S_EXPORTVARIABLES       = "ExportVariables";
 	public static final String S_GCWAKEUP              = "GCWakeup";
 	public static final String S_HISTORY               = "History";
@@ -367,6 +371,7 @@ public class SystemEnvironment implements Cloneable
 	private void setProperties()
 	{
 		getSimpleValues();
+		getAuthClass();
 		getPropsTraceLevel();
 		getShowStackTrace();
 		getArchive();
@@ -443,6 +448,12 @@ public class SystemEnvironment implements Cloneable
 		if (selectGroup != null) {
 			selectGroup = selectGroup.toUpperCase();
 		}
+
+		String ecp = props.getProperty(S_ENHANCEDCMDPARSING, "no").toUpperCase();
+		if (ecp.equals("YES") || ecp.equals("TRUE"))
+			enhancedCmdParsing = true;
+		else
+			enhancedCmdParsing = false;
 	}
 
 	private void getCompatLevel()
@@ -550,6 +561,24 @@ public class SystemEnvironment implements Cloneable
 		String s_archive = props.getProperty(S_ARCHIVE, "false");
 		archive = Boolean.parseBoolean(s_archive.trim());
 		props.setProperty(S_ARCHIVE, archive ? "true" : "false" );
+	}
+
+	private void getAuthClass()
+	{
+		String s_authClass = props.getProperty(S_AUTHCLASS, null);
+		if (s_authClass != null) {
+			try {
+				Class c = Class.forName(s_authClass);
+				auth = (de.independit.scheduler.server.util.Authenticator) c.newInstance();
+				SDMSThread.doTrace(null, "Using class " + s_authClass + " for Authentication", SDMSThread.SEVERITY_INFO);
+			} catch (Throwable t) {
+				SDMSThread.doTrace(null, "Problem loading class " + s_authClass + " : " + t.toString(), SDMSThread.SEVERITY_WARNING);
+				props.remove(S_AUTHCLASS);
+				auth = null;
+			}
+		} else {
+			SDMSThread.doTrace(null, "Using internal Authentication", SDMSThread.SEVERITY_INFO);
+		}
 	}
 
 	private void getShowStackTrace()
