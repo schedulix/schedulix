@@ -195,7 +195,9 @@ public class ProcessInfo
 		final File job_file_prefix = (File) cfg.get (Config.JOB_FILE_PREFIX);
 		final File tmp_file = new File(job_file_prefix.getParent() + "/starttimes." + cfg.get(Config.REPO_USER));
 		String tmpfilename = null;
-		try { tmpfilename = tmp_file.getCanonicalPath(); } catch (Exception e) {}
+		try {
+			tmpfilename = tmp_file.getCanonicalPath();
+		} catch (Exception e) {}
 
 		String os = System.getProperty("os.name").toLowerCase();
 		if(   os.contains("mac")
@@ -204,31 +206,47 @@ public class ProcessInfo
 		   || os.contains("aix")
 		  ) {
 			try {
-				ProcessBuilder pb = new ProcessBuilder("ps", "-e", "-o", "pid=", "-o", "lstart=");
+				ProcessBuilder pb = new ProcessBuilder("ps", "-e", "-o", "pid=", "-o", "etime=");
 				pb.redirectOutput(new File(tmpfilename));
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
 				p.getOutputStream().close();
-				try { p.waitFor(); } catch (InterruptedException ie) {  }
+				try {
+					p.waitFor();
+				} catch (InterruptedException ie) {  }
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename)));
 				String line;
-				String pattern = "MMM d HH:mm:ss yyyy";
-				int patternLength = pattern.length();
-				SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.US);
+				long now = System.currentTimeMillis() / 1000;	// we want seconds
 				while ((line = in.readLine()) != null) {
-					line = line.trim();
-					int pos = line.indexOf(" ");
-					if (pos == -1) continue;
-					String strPid  = line.substring(0, pos);
-					String strDate = line.substring(pos + 5);
-					if (strDate.length() < patternLength) continue;
+					line = line.trim();	// remove leading spaces
+					String parts[] = line.split("  *");	// cut into pid and elapsed time
+					String strPid = parts[0];
+					String strDate;
+					if (parts.length < 2) 
+						strDate = "00:00:00";		// AIX shows lines without an elapsed time
+					else
+						strDate = parts[1];
+					String etimeParts[] = strDate.split("[-:]");
+					long etime = 0;
+					int idx = 0;
 					try {
-						Date startDate = format.parse(strDate);
-						Long startTime = new Long (startDate.getTime() / 1000);
-						result.put(strPid,startTime);
-					} catch (ParseException pe) {
-						continue;
+						if (etimeParts.length > 3) {
+							etime += Integer.parseInt(etimeParts[idx]) * 86400;	// number of seconds per day
+							idx++;
+						}
+						if (etimeParts.length > 2) {
+							etime += Integer.parseInt(etimeParts[idx]) * 3600;	// number of seconds per hour
+							idx++;
+						}
+						etime += Integer.parseInt(etimeParts[idx]) * 60;		// number of seconds per minute
+						idx++;
+						etime += Integer.parseInt(etimeParts[idx]);			// last but not least the seconds
+					} catch (NumberFormatException nfe) {
+						etime = 0;							// If it can't be parsed, we assume 0
+														// which is wrong, but what else do we have?
 					}
+					Long startTime = new Long(now - etime);
+					result.put(strPid,startTime);
 				}
 				in.close();
 			} catch (IOException e) {
@@ -241,7 +259,9 @@ public class ProcessInfo
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
 				p.getOutputStream().close();
-				try { p.waitFor(); } catch (InterruptedException ie) {  }
+				try {
+					p.waitFor();
+				} catch (InterruptedException ie) {  }
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename), "UTF-16"));
 				String line;
 				String pattern = "yyyyMMddHHmmss";
@@ -333,8 +353,12 @@ public class ProcessInfo
 		if (! bootTimes.containsKey("" + how)) {
 			String bootTime = "0";
 			switch (how) {
-				case 'S': bootTime = getBootTimeSystem(); break;
-				case 'F': bootTime = getBootTimeFile(); break;
+				case 'S':
+					bootTime = getBootTimeSystem();
+					break;
+				case 'F':
+					bootTime = getBootTimeFile();
+					break;
 			}
 			bootTimes.put("" + how, new Long(bootTime));
 		}

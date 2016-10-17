@@ -40,7 +40,12 @@ else
                 ifeq ($(OSTYPE),sunos)
                         SOLARIS=1
                 else
-                        $(error UNKNOWN OPERATING SYSTEM $(OSTYPE))
+                        ifeq ($(OSTYPE),aix)
+                                SOLARIS=1
+                                AIX=1
+                        else
+                                $(error UNKNOWN OPERATING SYSTEM $(OSTYPE))
+                        endif
                 endif
         endif
 endif
@@ -55,10 +60,16 @@ JAVAINC   = $(JAVAHOME)/include
 JAVAINCOS = $(JAVAINC)/solaris
 MYSTRIP   = /bin/true
 else
+ifdef AIX
+JAVAINC   = $(JAVAHOME)/include
+JAVAINCOS = $(JAVAINC)/aix
+MYSTRIP   = /bin/true
+else
 ifdef BSD
 JAVAINC   = $(JAVAHOME)/include
 JAVAINCOS = $(JAVAINC)/solaris
 MYSTRIP   = $(STRIP)
+endif
 endif
 endif
 endif
@@ -68,7 +79,7 @@ SUBDIRS = jexecutor
 CLASSES = JobServer.class \
 	Config.class Descr.class EiThread.class Environment.class Feil.class \
 	RepoIface.class Server.class Trace.class Utils.class \
-	Notifier.class \
+	Notifier.class ProcessInfo.class \
 	WakeupThread.class HttpThread.class
 
 BIN_PATH = $(SDMSHOME)/bin
