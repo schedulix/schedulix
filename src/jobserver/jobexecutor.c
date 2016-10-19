@@ -301,7 +301,7 @@ const char *getVersion()
 {
 	/* TODO: Generate this from server.SystemEnvironment.java or jobserver.jexecutor.Jexecutor.java (?)*/
 	/* First line must match with line expected from java jobserver agent !!! */
-	return  "Jobserver (executor) 2.7\n" \
+	return  "Jobserver (executor) 2.8\n" \
 		"Copyright (C) 2013 independIT Integrative Technologies GmbH\n" \
 		"All rights reserved\n";
 }
@@ -683,17 +683,14 @@ void addArgument(callstatus *status, char *value)
 
 int checkArgs(callstatus *status, int argc, char *argv[])
 {
-	int argsType = ARGS_NOTREAD;
 	status->severity = STATUS_OK;
 	status->msg = MSG_NO_ERROR;
 
 	if (argc <= 4 && argc > 1) {	/* we have the command + 1, 2 or 3 parameters */
 		if (!strcmp(argv[1], ARG_VERSION1) || !strcmp(argv[1], ARG_VERSION2)) {
-			argsType = ARGS_VERSION;
 			return ARGS_VERSION;
 		}
 		if (!strcmp(argv[1], ARG_HELP1) || !strcmp(argv[1], ARG_HELP2)) {
-			argsType = ARGS_HELP;
 			return ARGS_HELP;
 		}
 		if (argc < 3) {
