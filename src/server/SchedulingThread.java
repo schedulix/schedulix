@@ -2310,6 +2310,7 @@ public class SchedulingThread extends InternalSession
 				int s = sme.getState(sysEnv).intValue();
 				switch(s) {
 					case SDMSSubmittedEntity.FINISHED:
+					case SDMSSubmittedEntity.FINAL:
 					case SDMSSubmittedEntity.ERROR:
 					case SDMSSubmittedEntity.CANCELLED:
 					case SDMSSubmittedEntity.BROKEN_ACTIVE:
