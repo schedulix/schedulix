@@ -41,7 +41,7 @@ else
                         SOLARIS=1
                 else
                         ifeq ($(OSTYPE),aix)
-                                SOLARIS=1
+                                AIX=1
                         else
                                 $(error UNKNOWN OPERATING SYSTEM $(OSTYPE))
                         endif
@@ -89,6 +89,10 @@ CXXFLAGS += -DBSD -Winline
 else
 ifdef SOLARIS
 CXXFLAGS += -DSOLARIS
+else
+ifdef AIX
+CXXFLAGS += -DAIX
+endif
 endif
 endif
 endif
