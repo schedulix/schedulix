@@ -62,7 +62,7 @@ static int status = 0;
 static FILE *paip;
 static int fnout;
 
-static char *ANALYZER = "SCROLLLOGANALYZER";
+static char const *ANALYZER = "SCROLLLOGANALYZER";
 static char *analyzer = NULL;
 
 void usage(char *argv[], char *msg)
@@ -290,6 +290,10 @@ int mylock(int fd)
 {
 	int rc;
 
+#ifdef AIX
+	/* for now no locking. TODO Add locking */
+	rc = 0;
+#endif
 #ifdef SOLARIS
 	fshare_t denyread;
 
@@ -389,6 +393,9 @@ int process()
 			if (analyzer != NULL) {
 				snprintf(analyzeline, PATH_MAX*3, "%s %s", analyzer, filename);
 				dummy = system(analyzeline);
+				if (dummy != 0) {
+					fprintf(stderr, "Error executing '%s %s' (%d)\n", analyzer, filename, dummy);
+				}
 			}
 			unlink(filename);
 			first_logno++;
