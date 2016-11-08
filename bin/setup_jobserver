@@ -52,7 +52,9 @@ usage()
 {
 	PRG=`which $0`
 	(
+	echo ""
 	echo "Usage: $0 [--help] [-n JSNAME] [-w JSPWD] [-o OWNER] [-H SDMSHOST] [-P SDMSPORT] [-h HTTPPORT] [-w JSWD] [-c] [-u SDMSUSER] [-p SDMSPWD]"
+	echo ""
 	echo "JSNAME   is the name of the jobserver to create"
 	echo "JSPWD    is the password of the jobserver to create"
 	echo "OWNER    is the owner group of the jobserver to create"
@@ -228,6 +230,7 @@ OWNERGRP=""
 DEFGRP=""
 JSWD=$HOME
 HOSTNAME=`hostname | tr [a-z.] [A-Z_]`
+HOSTNM=`hostname`
 CREATEWD=0
 
 # collect cmdline arguments
@@ -368,14 +371,14 @@ create or alter scope $FQSCOPE1
 with
 	group = 'ADMIN',
 	config = (
-		'REPOHOST' = '$HOSTNAME',
+		'REPOHOST' = '$SDMSHOST',
 		'REPOPORT' = '2506',
 		'BOOTTIME' = 'NONE',
 		'USEPATH' = 'true',
 		'JOBEXECUTOR' = '$BICSUITEHOME/bin/jobexecutor',
 		'DEFAULTWORKDIR' = '$JSWD',
 		'VERBOSELOGS' = 'true',
-		'HTTPHOST' = '$HOSTNAME',
+		'HTTPHOST' = '$HOSTNM',
 		'NAME_PATTERN_LOGFILES' = '.*\\.log',
 		'ENV' = (
 			'SDMSHOST' = 'SDMSHOST',
@@ -393,7 +396,7 @@ create or alter job server $FQJSNAME
 with
 	group = '$OWNER',
 	password = '$JSPWD',
-	node = '$HOSTNAME',
+	node = '$HOSTNM',
 	config = (
 		'JOBFILEPREFIX' = '${TFDIR}/${JSNAME}-'
 		$HTTPOPTION
