@@ -50,7 +50,9 @@
 
 usage()
 {
-	echo "Usage: $0 [-h] [-n JSNAME] [-w JSPWD] [-o OWNER] [-H SDMSHOST] [-P SDMSPORT] [-h HTTPPORT] [-w JSWD] [-c] [-u SDMSUSER] [-p SDMSPWD]"
+	PRG=`which $0`
+	(
+	echo "Usage: $0 [--help] [-n JSNAME] [-w JSPWD] [-o OWNER] [-H SDMSHOST] [-P SDMSPORT] [-h HTTPPORT] [-w JSWD] [-c] [-u SDMSUSER] [-p SDMSPWD]"
 	echo "JSNAME   is the name of the jobserver to create"
 	echo "JSPWD    is the password of the jobserver to create"
 	echo "OWNER    is the owner group of the jobserver to create"
@@ -61,7 +63,10 @@ usage()
 	echo "SDMSPWD  is the password of SDMSUSER"
 	echo "HTTPPORT is the port that is used for logfile display"
 	echo "-c       this flag tries to create the jobserver's working directory if it doesn't exist"
-	echo "-h       gives this message"
+	echo "--help   gives this message"
+	echo ""
+	head -47 $PRG | tail -45
+	) | more
 }
 
 outputConfig()
@@ -222,13 +227,13 @@ fi
 OWNERGRP=""
 DEFGRP=""
 JSWD=$HOME
-HOSTNAME=`hostname | tr [a-z] [A-Z]`
+HOSTNAME=`hostname | tr [a-z.] [A-Z_]`
 CREATEWD=0
 
 # collect cmdline arguments
 while [ -n "$1" ]; do
 	case $1 in
-	-h)	usage ;
+	--help)	usage ;
 		exit 0 ;;
 	-c)	CREATEWD=1 ;;
 	-n)	JSNAME=$2 ;
