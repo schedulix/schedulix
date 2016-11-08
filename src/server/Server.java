@@ -362,7 +362,7 @@ public class Server
 		}
 	}
 
-	public static Connection connectToDB(SystemEnvironment env) throws FatalException
+	public static synchronized Connection connectToDB(SystemEnvironment env) throws FatalException
 	{
 		String jdbcDriver = SystemEnvironment.jdbcDriver;
 		String dbUrl = SystemEnvironment.dbUrl;
@@ -398,7 +398,8 @@ public class Server
 		if (SystemEnvironment.SQUOTE == null) {
 			try {
 				final String driverName = c.getMetaData().getDriverName();
-				if (driverName.startsWith("MySQL")) {
+				SDMSThread.doTrace(null, "JDBC Driver used : " + driverName, SDMSThread.SEVERITY_INFO);
+				if (driverName.startsWith("MySQL") || driverName.startsWith("MariaDB")) {
 					SystemEnvironment.SQUOTE = "`";
 					SystemEnvironment.EQUOTE = "`";
 				} else if (driverName.startsWith("Microsoft")) {
@@ -411,7 +412,7 @@ public class Server
 					SystemEnvironment.EQUOTE = "";
 				}
 			} catch (SQLException sqle) {
-
+				SDMSThread.doTrace(null, "Unknown JDBC Driver used; run into an exception while trying to determine the Driver Name : " + sqle.toString(), SDMSThread.SEVERITY_FATAL);
 				SystemEnvironment.SQUOTE = "";
 				SystemEnvironment.EQUOTE = "";
 			}
