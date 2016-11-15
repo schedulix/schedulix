@@ -82,6 +82,14 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	protected SDMSInterval(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	protected void initProxy(SDMSObject p_object)
+	{
+		super.initProxy(p_object);
+
+		// due to proxy caching we'll have to initialize the member variables ourself
+		filter = null;
 
 		selectedBlocksPos = null;
 		selectedBlocksNeg = null;
