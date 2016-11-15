@@ -31,47 +31,54 @@ import java.util.Random;
 public class SDMSpopup
 {
 	public static int ERRORCODE = 19;
+	public static boolean silent = false;
 
 	public static void main(String[] args) throws InterruptedException
 	{
 		String config = null;
-		boolean silent = false;
 		boolean ignoreGuiFailure = false;
 		int exitCode = 0;
 		Integer runTimeSecs = null;
 		Vector<String> displayArgs = new Vector<String>();
+
+		Vector<String> v_args = new Vector<String>();
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("-c") || args[i].equals("--config")) {
-				config = args[i+1];
+			if (args[i].startsWith("-")) {
+				String[] arg = args[i].split("\\s+");
+				for (int j = 0; j < arg.length; j++) {
+					v_args.add(arg[j]);
+				}
+			} else
+				v_args.add(args[i]);
+		}
+
+		for (int i = 0; i < v_args.size(); i++) {
+			String arg = v_args.elementAt(i);
+			String next = null;
+			if (i + 1 < v_args.size())
+				next = v_args.elementAt(i + 1);
+
+			if (arg.equals("-c") || arg.equals("--config")) {
+				if (next == null) errorExit(arg + "option without value");
+				config = next;
 				i++;
-			} else if (args[i].equals("-t") || args[i].equals("--time")) {
-				runTimeSecs = new Integer(rndConf(args[i+1]));
+			} else if (arg.equals("-t") || arg.equals("--time")) {
+				if (next == null) errorExit(arg + "option without value");
+				runTimeSecs = new Integer(rndConf(next));
 				i++;
-			} else if (args[i].equals("-e") || args[i].equals("--exit")) {
-				exitCode = rndConf(args[i+1]);
+			} else if (arg.equals("-e") || arg.equals("--exit")) {
+				if (next == null) errorExit(arg + "option without value");
+				exitCode = rndConf(next);
 				i++;
-			} else if (args[i].equals("-I") || args[i].equals("--ignore_gui_failure")) {
+			} else if (arg.equals("-I") || arg.equals("--ignore_gui_failure")) {
 				ignoreGuiFailure = true;
-			} else if (args[i].equals("-s") || args[i].equals("--silent")) {
+			} else if (arg.equals("-s") || arg.equals("--silent")) {
 				silent = true;
-			} else if (args[i].equals("-?") || args[i].equals("--help")) {
+			} else if (arg.equals("-?") || arg.equals("--help")) {
 				printOptions();
 				System.exit(0);
-			} else if (args[i].startsWith("-")) {
-				String[] arg = args[i].split("\\s");
-				if (arg.length == 2 && (arg[0].equals("-c") || arg[0].equals("--config"))) {
-					config = arg[1];
-				} else if (arg.length == 2 && (arg[0].equals("-t") || arg[0].equals("--time"))) {
-					runTimeSecs = new Integer(SDMSpopup.rndConf(arg[1]));
-				} else if (arg.length == 2 && (arg[0].equals("-e") || arg[0].equals("--exit"))) {
-					exitCode = rndConf(arg[1]);
-				} else {
-					System.err.println("Illegal option: " + args[i]);
-					printOptions();
-					System.exit(ERRORCODE);
-				}
 			} else {
-				displayArgs.add(args[i]);
+				displayArgs.add(arg);
 			}
 		}
 		if (config == null) {
@@ -97,14 +104,15 @@ public class SDMSpopup
 					System.exit(ERRORCODE);
 				} else {
 					System.err.println("ignored (-I flag is set) , running in silent mode");
+					silent = true;
 				}
 			}
 		}
 
-		if (runTimeSecs == null) {
-			if (guiThread != null)
-				guiThread.join();
-		} else {
+		if (!silent) {
+			guiThread.join();
+		}
+		if (silent && runTimeSecs != null) {
 			System.err.println("auto exit in " + runTimeSecs.intValue() + " seconds with exit code " + exitCode);
 			Thread.sleep(runTimeSecs.intValue() * 1000);
 		}
@@ -133,6 +141,13 @@ public class SDMSpopup
 		System.err.println ("      histogramValue:");
 		System.err.println ("         <integer> | <integer>-<integer>");
 		System.err.println ("   if more than one histogramElement is given, all elements must have a histogramCount");
+	}
+
+	private static void errorExit(String msg)
+	{
+		System.err.println(msg + "!");
+		printOptions();
+		System.exit(ERRORCODE);
 	}
 
 	public static int rndConf(String conf)

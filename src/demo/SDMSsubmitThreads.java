@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -26,6 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package de.independit.scheduler.demo;
 
 import java.io.IOException;
+import java.util.Vector;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -68,57 +69,65 @@ public class SDMSsubmitThreads
 
 	public static void main(String[] args)
 	{
-
+		Vector<String> v_args = new Vector<String>();
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("")) {
+			if (args[i].startsWith("-")) {
+				String[] arg = args[i].split("\\s+");
+				for (int j = 0; j < arg.length; j++) {
+					v_args.add(arg[j]);
+				}
+			} else
+				v_args.add(args[i]);
+		}
+
+		for (int i = 0; i < v_args.size(); i++) {
+			String arg = v_args.elementAt(i);
+			String next = null;
+			if (i + 1 < v_args.size())
+				next = v_args.elementAt(i + 1);
+			if (arg.equals("")) {
 				continue;
-			} else if (args[i].equals("-h") || args[i].equals("--host")) {
-				host = args[i + 1];
+			} else if (arg.equals("-h") || arg.equals("--host")) {
+				if (next == null) errorExit(arg + "option without value");
+				host = next;
 				i++;
-			} else if (args[i].equals("-p") || args[i].equals("--port")) {
-				port = args[i + 1];
+			} else if (arg.equals("-p") || arg.equals("--port")) {
+				if (next == null) errorExit(arg + "option without value");
+				port = next;
 				i++;
-			} else if (args[i].equals("-i") || args[i].equals("--id")) {
-				id = args[i + 1];
+			} else if (arg.equals("-i") || arg.equals("--id")) {
+				if (next == null) errorExit(arg + "option without value");
+				id = next;
 				i++;
-			} else if (args[i].equals("-k") || args[i].equals("--key")) {
-				key = args[i + 1];
+			} else if (arg.equals("-k") || arg.equals("--key")) {
+				if (next == null) errorExit(arg + "option without value");
+				key = next;
 				i++;
-			} else if (args[i].equals("-c") || args[i].equals("--child")) {
-				child = args[i + 1];
+			} else if (arg.equals("-c") || arg.equals("--child")) {
+				if (next == null) errorExit(arg + "option without value");
+				child = next;
 				i++;
-			} else if (args[i].equals("-d") || args[i].equals("--delay")) {
-				delay = args[i+1];
+			} else if (arg.equals("-d") || arg.equals("--delay")) {
+				if (next == null) errorExit(arg + "option without value");
+				delay = next;
 				i++;
-			} else if (args[i].equals("-I") || args[i].equals("--ignore_gui_failure")) {
+			} else if (arg.equals("-I") || arg.equals("--ignore_gui_failure")) {
 				ignoreGuiFailure = true;
-				i++;
-			} else if (args[i].equals("-s") || args[i].equals("--silent")) {
+			} else if (arg.equals("-s") || arg.equals("--silent")) {
 				silent = true;
+			} else if (arg.equals("-n") || arg.equals("--number")) {
+				if (next == null) errorExit(arg + "option without value");
+				number = SDMSpopup.rndConf(next);
 				i++;
-			} else if (args[i].equals("-n") || args[i].equals("--number")) {
-				number = SDMSpopup.rndConf(args[i+1]);
+			} else if (arg.equals("-t") || arg.equals("--time")) {
+				if (next == null) errorExit(arg + "option without value");
+				waitTime = new Integer(SDMSpopup.rndConf(next));
 				i++;
-			} else if (args[i].equals("-t") || args[i].equals("--time")) {
-				waitTime = new Integer(SDMSpopup.rndConf(args[i+1]));
-				i++;
-			} else if (args[i].equals("-?") || args[i].equals("--help")) {
+			} else if (arg.equals("-?") || arg.equals("--help")) {
 				printOptions();
 				System.exit(0);
-			} else {
-				String[] arg = args[i].split("\\s");
-				if (arg.length == 2 && (arg[0].equals("-d") || arg[0].equals("--delay"))) {
-					delay = arg[1];
-				} else if (arg.length == 2 && (arg[0].equals("-n") || arg[0].equals("--number"))) {
-					number = SDMSpopup.rndConf(arg[1]);
-				} else if (arg.length == 2 && (arg[0].equals("-t") || arg[0].equals("--time"))) {
-					waitTime = new Integer(SDMSpopup.rndConf(arg[1]));
-				} else {
-					System.err.println("Illegal option: " + args[i]);
-					printOptions();
-					System.exit(1);
-				}
-			}
+			} else
+				errorExit("Illegal option: " + arg);
 		}
 		if (host == null || port == null || id == null || key == null || child == null) {
 			printOptions();
@@ -204,6 +213,13 @@ public class SDMSsubmitThreads
 		System.err.println ("      histogramValue:");
 		System.err.println ("         <integer> | <integer>-<integer>");
 		System.err.println ("   if more than one histogramElement is given, all elements must have a histogramCount");
+	}
+
+	private static void errorExit(String msg)
+	{
+		System.err.println(msg + "!");
+		printOptions();
+		System.exit(1);
 	}
 
 	static void submitThread(int tag)

@@ -22,7 +22,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-CLASSES = SDMSpopup.class SDMSsubmitThreads.class
+CLASSES = SDMSpopup.class SDMSpopupGuiThread.class SDMSsubmitThreads.class SDMSsubmitThreadsGuiThread.class
 
 SUBDIRS = .
 
@@ -31,7 +31,6 @@ all: subdirs $(CLASSES)
 new: clean all
 
 generate:
-	true
 
 subdirs: commonsubdirs
 
