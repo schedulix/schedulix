@@ -358,7 +358,7 @@ public class Server
 		}
 	}
 
-	public static Connection connectToDB(SystemEnvironment env) throws FatalException
+	public static synchronized Connection connectToDB(SystemEnvironment env) throws FatalException
 	{
 		String jdbcDriver = SystemEnvironment.jdbcDriver;
 		String dbUrl = SystemEnvironment.dbUrl;
