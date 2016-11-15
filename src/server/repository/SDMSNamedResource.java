@@ -78,6 +78,11 @@ public class SDMSNamedResource extends SDMSNamedResourceProxyGeneric
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03301050157",
 			                               "Cannot drop, depending Resource Requirements still exist"));
 		}
+		rv = SDMSTriggerTable.idx_fireId.getVector(sysEnv, nrId);
+		for (int i = 0; i < rv.size(); ++i) {
+			SDMSTrigger t = (SDMSTrigger) rv.get(i);
+			t.delete(sysEnv);
+		}
 
 		super.delete(sysEnv);
 	}

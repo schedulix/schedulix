@@ -22,7 +22,7 @@ public class Parser
 {
 
 	private int stop = 0;
-	private static final String patternString = "^[-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z|])?$";
+	private static final String patternString = "^[-!#%&(-,/0-9=?@A-Z_a-z|]([- !#%&(-,/0-9=?@A-Z_a-z|]*[-!#%&(-,/0-9=?@A-Z_a-z|])?$";
 	private final Pattern identifierPattern = Pattern.compile(patternString);
 
 	public Parser() { /* nothing to do */ }
@@ -3311,6 +3311,7 @@ create_trigger:		create TRIGGER triggername ON ct_object opt_ival_inverse ct_wit
 ct_object:		JOB_DEFINITION folderpath				{ $$ = new WithItem(ParseStr.S_JOB, $2); }
 	|		RESOURCE resourcepath IN serverpath			{ $4.add($2); $$ = new WithItem(ParseStr.map($1.token), $4); }
 	|		RESOURCE resourcepath IN folderpath			{ $4.add($2); $$ = new WithItem(ParseStr.map($1.token), $4); }
+	|		NAMED_RESOURCE resourcepath 				{ $$ = new WithItem(ParseStr.map($1.token), $2); }
 	|		OBJECT MONITOR objecttypename				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 
 ct_withlist:		ct_withitem						{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
@@ -3844,6 +3845,7 @@ om_instancelist:	om_instanceitem						{ $$ = new WithHash(); $<WithHash>$.addIte
 
 //D:NT-ALIAS = instanceitem
 om_instanceitem:	instancename '(' om_parameterlist ')'			{ $$ = new WithItem($1, $3); }
+	|		instancename						{ $$ = new WithItem($1, null); }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
