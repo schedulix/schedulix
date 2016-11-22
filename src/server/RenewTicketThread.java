@@ -95,16 +95,7 @@ public class RenewTicketThread extends SDMSThread
 			doTrace(null, "Error while unlocking repository (couldn't get database connection)", SEVERITY_ERROR);
 			throw e;
 		}
-		try {
-
-			if(pSysEnv.dbConnection.getMetaData().getDriverName().startsWith("PostgreSQL")) {
-				postgres = true;
-			}
-		} catch (SQLException sqle) {
-			doTrace(null, "Error collecting Driver Information", SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(pSysEnv, "03302061655",
-							"Error collecting Driver Information"));
-		}
+		postgres = pSysEnv.isPostgreSQL;
 
 		updateString = "UPDATE REPOSITORY_LOCK " +
 			(postgres ? "SET TICKET = CAST (? AS DECIMAL) WHERE TS = CAST (? AS DECIMAL)" :
