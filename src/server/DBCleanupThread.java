@@ -109,11 +109,8 @@ public class DBCleanupThread extends SDMSThread
 		columns = checkColumns(table, columns);
 		String columnList = "";
 		String sep = "";
-		String squote = "";
-		String equote = "";
-		final String driverName = sysEnv.dbConnection.getMetaData().getDriverName();
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) { squote = "`"; equote = "`"; }
-		if (driverName.startsWith("Microsoft")) { squote = "["; equote = "]"; }
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		for (int i = 0; i < columns.size(); i ++) {
 			columnList += sep + squote + columns.get(i) + equote;
 			sep = ",";
@@ -195,7 +192,9 @@ public class DBCleanupThread extends SDMSThread
 		}
 		prepareConnection();
 		sysEnv.tx = new SDMSTransaction(sysEnv, SDMSTransaction.READONLY, null);
-		synchronized(sysEnv.roTxList) { sysEnv.roTxList.remove(sysEnv, sysEnv.tx.versionId); }
+		synchronized(sysEnv.roTxList) {
+			sysEnv.roTxList.remove(sysEnv, sysEnv.tx.versionId);
+		}
 		sysEnv.thread = this;
 
 		return;
@@ -414,21 +413,28 @@ public class DBCleanupThread extends SDMSThread
 		try {
 			sleep(IDLE_SLEEP_TIME);
 			while(run) {
-
 				sysEnv.tx.versionId = sysEnv.tx.getRoVersion(sysEnv);
-				synchronized(sysEnv.roTxList) { sysEnv.roTxList.add(sysEnv, sysEnv.tx.versionId); }
+				synchronized(sysEnv.roTxList) {
+					sysEnv.roTxList.add(sysEnv, sysEnv.tx.versionId);
+				}
 				loadMasters();
 				if (masterList.size() == 0 || !processMasters() ) {
-					synchronized(sysEnv.roTxList) { sysEnv.roTxList.remove(sysEnv, sysEnv.tx.versionId); }
+					synchronized(sysEnv.roTxList) {
+						sysEnv.roTxList.remove(sysEnv, sysEnv.tx.versionId);
+					}
 					sleep(IDLE_SLEEP_TIME);
-				}
+				} else
+					synchronized(sysEnv.roTxList) {
+						sysEnv.roTxList.remove(sysEnv, sysEnv.tx.versionId);
+					}
 			}
 		} catch(SDMSException e) {
 			doTrace(null, "Error occurred : " + e.toString(), SEVERITY_FATAL);
 		} catch(InterruptedException ie) {
-
 		} finally {
-			synchronized(sysEnv.roTxList) { sysEnv.roTxList.remove(sysEnv, sysEnv.tx.versionId); }
+			synchronized(sysEnv.roTxList) {
+				sysEnv.roTxList.remove(sysEnv, sysEnv.tx.versionId);
+			}
 		}
 
 		try {
