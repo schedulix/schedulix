@@ -512,10 +512,10 @@ public class Server
 				ult.join();
 				SDMSThread.doTrace(null, "Listener terminated", SDMSThread.SEVERITY_INFO);
 				if (svt != null) {
-				SDMSThread.doTrace(null, "Waiting for ServiceThread", SDMSThread.SEVERITY_INFO);
-				svt.interrupt();
-				svt.join();
-				SDMSThread.doTrace(null, "ServiceThread terminated", SDMSThread.SEVERITY_INFO);
+					SDMSThread.doTrace(null, "Waiting for ServiceThread", SDMSThread.SEVERITY_INFO);
+					svt.interrupt();
+					svt.join();
+					SDMSThread.doTrace(null, "ServiceThread terminated", SDMSThread.SEVERITY_INFO);
 				}
 				if (dbct != null) {
 					SDMSThread.doTrace(null, "Waiting for DBCleanup", SDMSThread.SEVERITY_INFO);
