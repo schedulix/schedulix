@@ -96,6 +96,12 @@ do_disable_connect()
 				/^[ 	]*$/		{ start = 0; next; }
 				# skip "me"
 				$1 == "*"		{ next; }
+				# skip internal threads
+				$10 == "SchedulingThread"	{ next; }
+				$10 == "GarbageThread"	{ next; }
+				$10 == "TriggerThread"  { next; }
+				$10 == "PoolThread"	{ next; }
+				$10 == "TimerThread"	{ next; }
 				# skip jobserver
 				$9 == "JOBSERVER"	{ next; }
 				# count remaining sessions
@@ -145,7 +151,7 @@ parse_server_conf
 PATH=$PATH:/bin:/usr/bin:/sbin:/usr/sbin
 
 OPERATION=$1
-shift
+if [ -n "$OPERATION" ]; then shift; fi
 
 trap "rm -f $PIDFILE" 0 1 2 3
 

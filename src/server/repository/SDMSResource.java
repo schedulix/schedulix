@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,7 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 package de.independit.scheduler.server.repository;
 
@@ -473,7 +472,6 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			final int a = amount.intValue();
 			Integer fAmount;
 			if (oAmount == null) {
-
 				Vector v = SDMSResourceAllocationTable.idx_rId.getVector(sysEnv, getId(sysEnv));
 				int size = v.size();
 				int aAmount = 0;
@@ -551,7 +549,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		}
 
 		Vector v = SDMSTriggerTable.idx_fireId.getVector(sysEnv, getId(sysEnv));
-
+		v.addAll(SDMSTriggerTable.idx_fireId.getVector(sysEnv, nrId));
 		for(int i = 0; i < v.size(); i++) {
 			Long oldRsdId = getRsdId(sysEnv);
 			SDMSTrigger t = (SDMSTrigger) v.get(i);
@@ -587,7 +585,6 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 
 		killVariables(sysEnv);
 		super.delete(sysEnv);
-
 		try {
 			SDMSSubmittedEntity s = SDMSSubmittedEntityTable.getObject(sysEnv, sId);
 
@@ -646,7 +643,6 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			if((ptmp & SDMSPrivilege.RESOURCE) == SDMSPrivilege.RESOURCE) p = p | SDMSPrivilege.CREATE;
 		} else {
 			if (sysEnv.cEnv.isJob() || sysEnv.cEnv.isJobServer()) {
-
 				return checkPrivs;
 			}
 		}
@@ -761,7 +757,6 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			if(value == null) {
 				continue;
 			}
-
 			final String sic = (value == null ? value : '=' + value);
 
 			SDMSResourceVariableTable.table.create (sysEnv, pd.getId(sysEnv), id, sic);
@@ -848,7 +843,6 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 					if(pdId.equals(rv.getPdId(sysEnv))) {
 						act_parms.removeElementAt(idx);
 						idx = -1;
-
 						if(pdef == null) {
 							rv.delete(sysEnv);
 						} else {
@@ -858,7 +852,6 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 					}
 				}
 				if(idx >= act_parms.size()) {
-
 					if(pdef != null)
 						SDMSResourceVariableTable.table.create(sysEnv, pdId, id, pdef);
 				}

@@ -315,11 +315,9 @@ public class CreateTrigger extends ManipTrigger
 			isMaster = Boolean.TRUE;
 		}
 		if(!triggerJob.getMasterSubmittable(sysEnv).booleanValue())
-			throw new CommonErrorException(
-			        new SDMSMessage(sysEnv, "03104261631", "Master trigger defined for non master submittable job"));
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03104261631", "Master trigger defined for non master submittable job"));
 		if(!with.containsKey(ParseStr.S_GROUP))
-			throw new CommonErrorException(
-			        new SDMSMessage(sysEnv, "03602082122", "Group clause is mandatory for resource triggers"));
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03602082122", "Group clause is mandatory for resource triggers"));
 
 		isSuspend = (Boolean) with.get(ParseStr.S_SUSPEND);
 		if(isSuspend == null) isSuspend = Boolean.FALSE;
@@ -375,6 +373,19 @@ public class CreateTrigger extends ManipTrigger
 		checkResourceCommonWith(sysEnv, nr);
 	}
 
+	private void checkNamedResourceWith(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		oType = SDMSTrigger.NAMED_RESOURCE;
+		objpath = (Vector) objType.value;
+		resourcepath = objpath;
+		SDMSNamedResource nr = SDMSNamedResourceTable.getNamedResource(sysEnv, resourcepath);
+		Long nrId = nr.getId(sysEnv);
+		fireId = nrId;
+
+		checkResourceCommonWith(sysEnv, nr);
+	}
+
 	private void checkWith(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
@@ -385,7 +396,11 @@ public class CreateTrigger extends ManipTrigger
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_OBJECTMONITOR_TRIGGER);
 			} else {
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_RESOURCE_TRIGGER);
-				checkResourceWith(sysEnv);
+				if (objType.key.equals(ParseStr.S_RESOURCE)) {
+					checkResourceWith(sysEnv);
+				} else {
+					checkNamedResourceWith(sysEnv);
+				}
 			}
 		}
 		if (triggertype != null) {

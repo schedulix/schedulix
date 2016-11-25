@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server;
 
 import java.io.*;
@@ -152,7 +150,6 @@ public class RenewTicketThread extends SDMSThread
 			pGetTicket = sysEnv.dbConnection.prepareStatement(getTicketString);
 			pInsert = sysEnv.dbConnection.prepareStatement(insertString);
 			while(true) {
-
 				try {
 					SDMSThread.doTrace(null, "Acquire repository lock for " + SystemEnvironment.startTime, SDMSThread.SEVERITY_INFO);
 					pInsert.clearParameters();
@@ -162,7 +159,6 @@ public class RenewTicketThread extends SDMSThread
 					pInsert.close();
 					break;
 				} catch (SQLException sqle) {
-
 					try {
 						sysEnv.dbConnection.rollback();
 					} catch (SQLException sqle2) {  }
@@ -173,7 +169,6 @@ public class RenewTicketThread extends SDMSThread
 				nrRows = updateTicket(sysEnv);
 
 				if(nrRows == 0) {
-
 					ResultSet rset = pGetTicket.executeQuery();
 					while(rset.next()) {
 						ts = rset.getLong(1);
@@ -182,10 +177,8 @@ public class RenewTicketThread extends SDMSThread
 					SDMSThread.doTrace(null, "Ticket values Read: " + ts + ", " + ticket, SDMSThread.SEVERITY_INFO);
 					if(ts != 0) {
 						if(!SystemEnvironment.singleServer) {
-
 							if(oldticket != 0) {
 								SDMSThread.doTrace(null, "old/new Ticket values : " + oldticket + ", " + ticket, SDMSThread.SEVERITY_INFO);
-
 								if(ticket != oldticket) {
 									oldticket = 0;
 									continue;
@@ -193,7 +186,6 @@ public class RenewTicketThread extends SDMSThread
 							} else {
 								sysEnv.dbConnection.commit();
 								oldticket = ticket;
-
 								long now = System.currentTimeMillis() + TICKETINTERVAL * TICKET_TOO_OLD;
 								while(now > System.currentTimeMillis()) {
 									try {
@@ -203,13 +195,10 @@ public class RenewTicketThread extends SDMSThread
 								continue;
 							}
 						}
-
 						deleteTicket(sysEnv);
 						SDMSThread.doTrace(null, "ticket deleted ..... ", SDMSThread.SEVERITY_INFO);
 					}
-
 				} else {
-
 					break;
 				}
 			}
@@ -259,7 +248,6 @@ public class RenewTicketThread extends SDMSThread
 		}
 		rc = pUpdate.executeUpdate();
 		pUpdate.close();
-
 		if(postgres) {
 			pBPSelect = sysEnv.dbConnection.prepareStatement(brokenPostgresSelect);
 			pBPSelect.setString(1, "" + SystemEnvironment.startTime);
@@ -308,7 +296,6 @@ public class RenewTicketThread extends SDMSThread
 				try {
 					sleep(TICKETINTERVAL);
 				} catch(Exception e) {
-
 				}
 			}
 		} catch(SDMSException e) {

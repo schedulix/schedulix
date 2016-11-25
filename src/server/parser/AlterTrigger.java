@@ -49,6 +49,7 @@ public class AlterTrigger extends ManipTrigger
 	protected SDMSSchedulingEntity fireSe = null;
 	protected SDMSNamedResource fireNr = null;
 	protected SDMSResource fireR = null;
+	protected SDMSNamedResource fireNR = null;
 
 	private ObjectURL url;
 
@@ -336,6 +337,9 @@ public class AlterTrigger extends ManipTrigger
 				case SDMSTrigger.RESOURCE:
 					fireR = SDMSResourceTable.getObject(sysEnv, fireId);
 					break;
+				case SDMSTrigger.NAMED_RESOURCE:
+					fireNR = SDMSNamedResourceTable.getObject(sysEnv, fireId);
+					break;
 			}
 			return;
 		}
@@ -360,6 +364,10 @@ public class AlterTrigger extends ManipTrigger
 			Long nrId = SDMSNamedResourceTable.getNamedResource(sysEnv, resourcepath).getId(sysEnv);
 			fireR = SDMSResourceTable.idx_nrId_scopeId_getUnique(sysEnv, new SDMSKey(nrId, scopeId));
 			fireId = fireR.getId(sysEnv);
+		} else if(fireObj.key.equals(ParseStr.S_NAMED_RESOURCE)) {
+			objpath = (Vector) fireObj.value;
+			fireNR = SDMSNamedResourceTable.getNamedResource(sysEnv, objpath);
+			fireId = fireNr.getId(sysEnv);
 		}
 	}
 
@@ -388,7 +396,19 @@ public class AlterTrigger extends ManipTrigger
 				t = (SDMSTrigger) url.resolve(sysEnv);
 				fireId = t.getFireId(sysEnv);
 				fireType = t.getObjectType(sysEnv).intValue();
-				fireSe = SDMSSchedulingEntityTable.getObject(sysEnv, fireId);
+
+				switch(fireType) {
+					case SDMSTrigger.JOB_DEFINITION:
+						fireSe = SDMSSchedulingEntityTable.getObject(sysEnv, fireId);
+						break;
+					case SDMSTrigger.RESOURCE:
+						fireR = SDMSResourceTable.getObject(sysEnv, fireId);
+						break;
+					case SDMSTrigger.NAMED_RESOURCE:
+						fireNR = SDMSNamedResourceTable.getObject(sysEnv, fireId);
+						break;
+				}
+
 			}
 		} catch ( NotFoundException nfe) {
 			if(noerr) {

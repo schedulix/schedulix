@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server;
 
 import java.io.*;
@@ -69,7 +67,6 @@ public class Server
 		InputStream ini;
 
 		ini = Server.class.getResourceAsStream(inifile);
-
 		try {
 			if(ini == null)
 				ini = new FileInputStream(inifile);
@@ -111,7 +108,6 @@ public class Server
 		rtt = new RenewTicketThread(this);
 		SystemEnvironment.ticketThread = rtt;
 		rtt.initRenewTicketThread(env);
-
 		rtt.getTicket(rtt.pSysEnv);
 	}
 
@@ -426,7 +422,6 @@ public class Server
 			initShutdownThread();
 			initRenewTicketThread();
 			try {
-
 				startRenewTicketThread();
 			} catch(SDMSException fe1) {
 				SDMSThread.doTrace(null, (new SDMSMessage(env, "03302061700",
@@ -520,7 +515,6 @@ public class Server
 				if (dbct != null) {
 					SDMSThread.doTrace(null, "Waiting for DBCleanup", SDMSThread.SEVERITY_INFO);
 					if (dbct.isAlive()) {
-
 						dbct.join();
 					}
 					SDMSThread.doTrace(null, "DBCleanup Thread terminated", SDMSThread.SEVERITY_INFO);
