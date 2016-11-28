@@ -44,6 +44,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #endif
 
+#ifndef OPEN_MAX
+#define OPEN_MAX 256
+#endif
+
 #ifndef WINDOWS
 #define NULLDEVICE   "/dev/null"
 #define SIGNUM_MIN SIGHUP
@@ -1445,6 +1449,7 @@ void run(callstatus *status)
 	pid_t cpid;
 #ifndef WINDOWS
 	int   exitcode;
+	int fd, fds;
 #else
 	DWORD exitcode;
 #endif
@@ -1563,6 +1568,16 @@ void run(callstatus *status)
 	if (status->severity != STATUS_OK) return;
 
 	closeTaskfile(status, global.taskfile);
+
+	/* since the task file has been closed here, all filehandles other than 
+	   the standard filehandles should be closed.
+	   It is not guaranteed this is the case though. So we'll close all non standard
+	   file handles here
+	*/
+	if ((fds = getdtablesize()) == -1) fds = OPEN_MAX;
+	for (fd = 3; fd < fds; ++fd) {
+		close(fd);	// ignore errors; most fd's aren't open
+	}
 
 	/* start a new session. This way we will be in a new process group
 	   and we (and our children) can be easily killed by a "kill -PID".

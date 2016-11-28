@@ -310,8 +310,22 @@ public class Feil
 	public final void create (final Descr jd, final boolean use_path, final boolean verbose_logs)
 		throws IOException
 	{
+		boolean success = true;
+
 		rfil = new RandomAccessFile (filnam, "rws");
 		rfil.setLength (0);
+
+		// set file permissions to rw for user
+		success &= filnam.setReadable(false, false);  
+		success &= filnam.setWritable(false, false); 
+		success &= filnam.setExecutable(false, false);
+ 
+		success &= filnam.setReadable(true, true);   // Only the owner can read
+		success &= filnam.setWritable(true, true);   // Only the owner can write
+
+		if (!success) {
+			Trace.warning("Failed to set file permissions on taskfile");
+		}
 
 		try {
 			id     = jd.id;
