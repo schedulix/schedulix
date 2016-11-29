@@ -49,6 +49,7 @@ public class SchedulingThread extends InternalSession
 	private long priorityDelay;
 	private prioComparator pc;
 	private long timeoutWakeup;
+	private long lastSchedule;
 	private Locklist publl = null;
 	private Vector<Long> resourceRequestList = null;
 	private final Object resourceRequestLock = new Object();
@@ -108,6 +109,7 @@ public class SchedulingThread extends InternalSession
 		if(pc == null)
 			pc = new prioComparator(env, priorityDelay);
 		timeoutWakeup = Long.MAX_VALUE;
+		lastSchedule = 0;
 	}
 
 	protected Node getNode(int m)
@@ -288,11 +290,12 @@ public class SchedulingThread extends InternalSession
 		}
 		if(!needSched) {
 			long ts = dts.getTime() - timeoutWakeup;
-			if(ts < 0) {
+			if((ts < 0) && (timer < lastSchedule + 10000 )) {
 				notifyJobservers(sysEnv);
 				return;
 			}
 		}
+		lastSchedule = timer;
 
 		Locklist resourceChain = new Locklist();
 
