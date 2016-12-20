@@ -265,6 +265,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			setErrorMsg(sysEnv, null);
 			setJobEsdId(sysEnv, null, false);
 			setJobEsdPref(sysEnv, null);
+			setScopeId(sysEnv, null);
 
 			setState(sysEnv, new Integer(DEPENDENCY_WAIT));
 
