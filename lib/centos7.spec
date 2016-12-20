@@ -245,6 +245,7 @@ if [ "$1" == "1" ]; then
 		# PostgresPure environment?
 		if [ -f /etc/pgpure/postgres/*/data/pg_hba.conf ]; then
 			PGHBA=/etc/pgpure/postgres/*/data/pg_hba.conf
+			PGSRVNAME=postgres
 		else
 			# RedHat?
 			if [ -f /var/lib/pgsql/data/pg_hba.conf ]; then
@@ -252,6 +253,7 @@ if [ "$1" == "1" ]; then
 			else
 				PGHBA=does_not_exist
 			fi
+			PGSRVNAME=postgresql
 		fi
 	fi
 	# if this is a new postgresql installation, we'll have to do an initdb first
@@ -262,7 +264,7 @@ if [ "$1" == "1" ]; then
 		sleep 5
 		chkconfig postgresql on
 	fi
-	service postgresql start || true
+	service $PGSRVNAME start # || true
 
 else
 	service schedulix-server stop || true
@@ -273,9 +275,11 @@ echo "executing post server-pg -- %version-%release"
 if [ "$1" == "1" ]; then
 	PGHBA=$SDMS_PGHBA
 	if [ -z "$PGHBA" ]; then
-		if [ -f /etc/pgsql/pg_hba.conf ]; then
+		if [ -f /etc/pgpure/postgres/*/pgsql/pg_hba.conf ]; then
 			PGHBA=/etc/pgpure/postgres/*/data/pg_hba.conf
+			PGSRVNAME=postgres
 		else
+			PGSRVNAME=postgresql
 			if [ -f /var/lib/pgsql/data/pg_hba.conf ]; then
 				PGHBA=/var/lib/pgsql/data/pg_hba.conf
 			fi
@@ -316,10 +320,10 @@ if [ "$1" == "1" ]; then
 	' $PGHBA
 
 	# we now restart the DBMS to make our config change effective
-	service postgresql restart
+	service $PGSRVNAME restart
 
 	# since we need the DBMS, we'll enable it
-	systemctl enable postgresql
+	systemctl enable $PGSRVNAME
 
 	echo "populating database"
 	su - schedulix -c '
