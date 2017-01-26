@@ -103,7 +103,7 @@ public class AlterTrigger extends ManipTrigger
 			if(objType != SDMSTrigger.JOB_DEFINITION && objType != SDMSTrigger.OBJECT_MONITOR) {
 				if(!isMaster.booleanValue()) {
 					throw new CommonErrorException(
-					        new SDMSMessage(sysEnv, "03206202334", "Only master submits allowed for resource triggers"));
+						new SDMSMessage(sysEnv, "03206202334", "Only master submits allowed for resource triggers"));
 				}
 			}
 			if (iaction == SDMSTrigger.RERUN && isMaster.booleanValue()) {
@@ -222,6 +222,12 @@ public class AlterTrigger extends ManipTrigger
 				      itt == SDMSTrigger.IMMEDIATE_MERGE
 				   )) {
 					sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXTENDED_TRIGGERS);
+				}
+
+				if(itt == SDMSTrigger.UNTIL_FINISHED || itt == SDMSTrigger.UNTIL_FINAL) {
+					if(!with.containsKey(ParseStr.S_CHECK)) {
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03508030807", "Asynchroneous triggers must define a check interval"));
+					}
 				}
 
 				if (itt != SDMSTrigger.IMMEDIATE_LOCAL && iaction == SDMSTrigger.RERUN)

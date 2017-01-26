@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -124,7 +124,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 		if (masterra != null) {
 
 			if (stickyCleanup) {
-					masterra.cleanupStickyGroup(sysEnv);
+				masterra.cleanupStickyGroup(sysEnv);
 			}
 			masterra.delete(sysEnv, stickyCleanup, false);
 		}
@@ -146,8 +146,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 
 			try {
 				raId = ra.getId(sysEnv);
-			}
-			catch (NotFoundException e) {
+			} catch (NotFoundException e) {
 				continue;
 			}
 			if (getId(sysEnv).equals(raId))

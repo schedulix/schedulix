@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server;
 
 import java.io.*;
@@ -58,6 +56,7 @@ public class Server
 	private ShutdownThread shutt;
 	private RenewTicketThread rtt;
 	private DBCleanupThread dbct;
+	private NotifierThread notifier;
 	private String iniFile;
 
 	private SystemEnvironment env;
@@ -69,7 +68,6 @@ public class Server
 		InputStream ini;
 
 		ini = Server.class.getResourceAsStream(inifile);
-
 		try {
 			if(ini == null)
 				ini = new FileInputStream(inifile);
@@ -111,7 +109,6 @@ public class Server
 		rtt = new RenewTicketThread(this);
 		SystemEnvironment.ticketThread = rtt;
 		rtt.initRenewTicketThread(env);
-
 		rtt.getTicket(rtt.pSysEnv);
 	}
 
@@ -132,6 +129,19 @@ public class Server
 	{
 		SDMSThread.doTrace(null, "Starting Database Cleanup Thread", SDMSThread.SEVERITY_INFO);
 		dbct.start();
+	}
+
+	private void initNotifierThread() throws SDMSException
+	{
+		notifier = new NotifierThread(env, roCmdQueue);
+		SystemEnvironment.notifier = notifier;
+		notifier.initNotifierThread(env);
+	}
+
+	private void startNotifierThread() throws SDMSException
+	{
+		SDMSThread.doTrace(null, "Starting Notifier Thread", SDMSThread.SEVERITY_INFO);
+		notifier.start();
 	}
 
 	private void createRepository() throws SDMSException
@@ -298,6 +308,12 @@ public class Server
 				SDMSThread.doTrace(null, "Stopped " + wst.toString(), SDMSThread.SEVERITY_INFO);
 			}
 		}
+		if(notifier != null) {
+			if(notifier.isAlive()) {
+				notifier.do_stop();
+				SDMSThread.doTrace(null, "Stopped " + notifier.toString(), SDMSThread.SEVERITY_INFO);
+			}
+		}
 		if(tt != null) {
 			if(tt.isAlive()) {
 				tt.do_stop();
@@ -426,7 +442,6 @@ public class Server
 			initShutdownThread();
 			initRenewTicketThread();
 			try {
-
 				startRenewTicketThread();
 			} catch(SDMSException fe1) {
 				SDMSThread.doTrace(null, (new SDMSMessage(env, "03302061700",
@@ -445,6 +460,7 @@ public class Server
 			initTimeScheduling();
 			initTT();
 			initGC();
+			initNotifierThread();
 			if (env.dbPreserveTime > 0)
 				initDBCleanupThread();
 			else
@@ -484,10 +500,16 @@ public class Server
 							"Fatal exception while starting garbage collector:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
 		try {
+			startNotifierThread();
+		} catch(SDMSException fe) {
+			SDMSThread.doTrace(null, (new SDMSMessage(env, "03701031503",
+							"Fatal exception while starting notifier thread:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+		}
+		try {
 			if (dbct != null) startDBCleanupThread();
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03311141139",
-			                          "Fatal exception while starting dbCleanupThread:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+							"Fatal exception while starting dbCleanupThread:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
 		startListener();
 		SDMSMessage m = new SDMSMessage(env, "03110212341", "-- $1 -- $2 -- $3 -- ready --",
@@ -520,7 +542,6 @@ public class Server
 				if (dbct != null) {
 					SDMSThread.doTrace(null, "Waiting for DBCleanup", SDMSThread.SEVERITY_INFO);
 					if (dbct.isAlive()) {
-
 						dbct.join();
 					}
 					SDMSThread.doTrace(null, "DBCleanup Thread terminated", SDMSThread.SEVERITY_INFO);

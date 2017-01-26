@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.util;
 
 import java.lang.*;
@@ -95,7 +93,6 @@ public abstract class SDMSThread extends Thread
 
 	public void setTimeout(int newTimeout)
 	{
-
 	}
 
 	public int getTimeout()
@@ -193,7 +190,6 @@ public abstract class SDMSThread extends Thread
 	public void run()
 	{
 		if (lockThread != null) {
-
 			super.run();
 			return;
 		}
@@ -212,7 +208,6 @@ public abstract class SDMSThread extends Thread
 				} catch (Error e3) {
 
 				}
-
 				Runtime.getRuntime().halt(1);
 			}
 		} catch (Error e) {
@@ -229,7 +224,6 @@ public abstract class SDMSThread extends Thread
 
 				}
 			}
-
 			Runtime.getRuntime().halt(1);
 		}
 	}

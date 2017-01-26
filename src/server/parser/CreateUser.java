@@ -62,21 +62,24 @@ public class CreateUser extends ManipUser
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03312101400", "Either " + ParseStr.S_PASSWORD + " or " + ParseStr.S_RAWPASSWORD + " must be specified"));
 
 		try {
-
-			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+			HashSet ug = sysEnv.cEnv.gid();
+			if (!ug.contains(SDMSObject.adminGId)) {
 				boolean canCreate = true;
 				SDMSPrivilege p = new SDMSPrivilege();
 				for (int i = 0; i < grouplist.size(); i++) {
 					Long gId = (Long) grouplist.get(i);
-					if (!sysEnv.cEnv.gid().contains(gId)) {
+					if (!ug.contains(gId)) {
 						canCreate = false;
 						break;
 					}
+				}
+				Iterator it = ug.iterator();
+				while (it.hasNext()) {
+					Long gId = (Long) it.next();
 					try {
 						SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
 						p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 					} catch (NotFoundException nfe) {
-
 					}
 				}
 				if (canCreate && p.can(SDMSPrivilege.MANAGE_USER)) {
@@ -93,11 +96,9 @@ public class CreateUser extends ManipUser
 				SDMSUser u1 = (SDMSUser)i1.next();
 				if (!u1.getDeleteVersion(sysEnv).equals(new Long(0))) {
 					u1.setDeleteVersion(sysEnv, new Long(0));
-
 					try {
 						SDMSMemberTable.table.create(sysEnv, publicGId, u1.getId(sysEnv));
 					} catch (DuplicateKeyException dke) {
-
 					} catch (SDMSException e) {
 						if (suActive) {
 							sysEnv.cEnv.popGid(sysEnv);
@@ -121,8 +122,8 @@ public class CreateUser extends ManipUser
 						result = au.result;
 						if (suActive) {
 							sysEnv.cEnv.popGid(sysEnv);
-								suActive = false;
-							}
+							suActive = false;
+						}
 						return;
 					} catch (SDMSException e) {
 						if (suActive) {
@@ -139,7 +140,6 @@ public class CreateUser extends ManipUser
 					throw dke;
 				}
 			}
-
 			Long uId = u.getId(sysEnv);
 			SDMSMemberTable.table.create(sysEnv, publicGId, uId);
 
@@ -155,7 +155,7 @@ public class CreateUser extends ManipUser
 			}
 		} catch (Throwable t) {
 			if (suActive) {
-			sysEnv.cEnv.popGid(sysEnv);
+				sysEnv.cEnv.popGid(sysEnv);
 				suActive = false;
 			}
 			throw t;

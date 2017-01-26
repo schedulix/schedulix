@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,7 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 package de.independit.scheduler.jobserver;
 
@@ -166,17 +165,17 @@ public class Config
 			scanner.nextToken();
 
 		switch (scanner.ttype) {
-		case StreamTokenizer.TT_WORD:
-		case '"':
-			return scanner.sval;
+			case StreamTokenizer.TT_WORD:
+			case '"':
+				return scanner.sval;
 
-		case StreamTokenizer.TT_NUMBER:
-			return new Long ((long) scanner.nval);
+			case StreamTokenizer.TT_NUMBER:
+				return new Long ((long) scanner.nval);
 
-		case StreamTokenizer.TT_EOL:
-		case StreamTokenizer.TT_EOF:
-			if (what.equals (USE_PATH) || what.equals (VERBOSE_LOGS))
-				return Boolean.TRUE;
+			case StreamTokenizer.TT_EOL:
+			case StreamTokenizer.TT_EOF:
+				if (what.equals (USE_PATH) || what.equals (VERBOSE_LOGS))
+					return Boolean.TRUE;
 		}
 
 		throw new CommonErrorException (configFileError ("(04301271412) Missing value of " + what));
@@ -527,7 +526,6 @@ public class Config
 	public static final String quoted (final String str)
 	{
 		final String result = str.replaceAll ("\\\"", "\\\\\"");
-
 		if (result.matches (".*[^0-9].*"))
 			return "\"" + result + "\"";
 
@@ -661,7 +659,6 @@ public class Config
 		catch (final IOException ioe) {
 			Trace.error("(04301271416) Cannot launch job executor: " + ioe.getMessage());
 			System.exit(1);
-
 		}
 
 		catch (final InterruptedException ie) {

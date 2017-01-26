@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server;
 
 import java.io.*;
@@ -158,12 +156,10 @@ public class DBCleanupThread extends SDMSThread
 				}
 			} catch (SQLRecoverableException sqlre) {
 				try {
-
 					doTrace(null, "Recoverable Error Preparing Delete/Archive Statements" + sqlre.getMessage(), SEVERITY_WARNING);
 					try {
 						sysEnv.dbConnection.close();
 					} catch(SQLException sqle2) {
-
 						doTrace(null, "Error while closing connection: " + sqle2.getMessage(), SEVERITY_ERROR);
 					}
 					sleep(TX_RETRY_TIME);
@@ -174,7 +170,6 @@ public class DBCleanupThread extends SDMSThread
 			} catch (SQLException sqle) {
 				sysEnv = null;
 				doTrace(null, "Error Preparing Delete/Archive Statements" + sqle.getMessage(), SEVERITY_ERROR);
-
 				throw new FatalException(new SDMSMessage(sysEnv, "03411171211", "Error Preparing Delete/Archive Statements"));
 			}
 			break;
@@ -203,12 +198,10 @@ public class DBCleanupThread extends SDMSThread
 	private void loadMasters()
 		throws SDMSException
 	{
-
 		try {
 			if (sysEnv.dbConnection.isClosed())
 				prepareConnection();
 		} catch (SQLException sqle) {
-
 			try {
 				sysEnv.dbConnection.close();
 			} catch (SQLException sqle1) {  }
@@ -231,7 +224,6 @@ public class DBCleanupThread extends SDMSThread
 				}
 				sysEnv.dbConnection.commit();
 			} catch (SQLRecoverableException sqlre) {
-
 				doTrace(null, "Recoverable Error Preparing Delete/Archive Statements" + sqlre.getMessage(), SEVERITY_WARNING);
 				try {
 					sysEnv.dbConnection.close();
@@ -241,19 +233,15 @@ public class DBCleanupThread extends SDMSThread
 
 					}
 				} catch(SQLException sqle2) {
-
 					doTrace(null, "Error while closing connection: " + sqle2.getMessage(), SEVERITY_ERROR);
 				}
-
 				prepareConnection();
 				continue;
 			} catch (SQLException sqle) {
 				doTrace(null, "Error loading masters:" + sqle.getMessage(), SEVERITY_ERROR);
-
 				try {
 					sysEnv.dbConnection.close();
 				} catch (SQLException sqle4) {
-
 				}
 				masterList.clear();
 			}
@@ -278,11 +266,9 @@ public class DBCleanupThread extends SDMSThread
 			try {
 				sysEnv.dbConnection.rollback();
 			} catch (SQLException sqle1) {
-
 			}
 			doTrace(null, "Error loading master:" + sqle.getMessage(), SEVERITY_ERROR);
 			return null;
-
 		}
 		return sme_v;
 	}
@@ -322,7 +308,6 @@ public class DBCleanupThread extends SDMSThread
 	{
 		Vector<Long> sme_v = loadMaster(id);
 		if (sme_v == null) {
-
 			return false;
 		}
 		for (int i = 0; i < sme_v.size(); i ++) {
@@ -352,7 +337,6 @@ public class DBCleanupThread extends SDMSThread
 				sysEnv.dbConnection.rollback();
 			} catch (SQLException sqle1) {  }
 			return false;
-
 		}
 		return true;
 	}
@@ -367,7 +351,6 @@ public class DBCleanupThread extends SDMSThread
 			MasterEntry master = masterList.get(0);
 
 			doTrace(null, "DBCleanupThread: checking existence of master id " + master.id, SEVERITY_DEBUG);
-
 			if (SDMSSubmittedEntityTable.table.exists(sysEnv, master.id)) {
 				doTrace(null, "DBCleanupThread: master id " + master.id + " still in memory", SEVERITY_DEBUG);
 				masterList.remove(0);

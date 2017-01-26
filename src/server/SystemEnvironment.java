@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server;
 
 import java.io.*;
@@ -93,6 +91,7 @@ public class SystemEnvironment implements Cloneable
 	public static TimerThread timer;
 	public static ThreadGroup utg;
 	public static ThreadGroup wg;
+	public static NotifierThread notifier;
 
 	public Connection dbConnection;
 	public int dbConnectionNr;
@@ -101,9 +100,7 @@ public class SystemEnvironment implements Cloneable
 	public SDMSROTxList roTxList;
 	public SDMSSeVersionList seVersionList;
 	public SDMSPurgeSet nvPurgeSet;
-
 	public SDMSPurgeSet vPurgeSet;
-
 	public static DatagramSocket notifySocket;
 
 	public static String runMode;
@@ -133,6 +130,7 @@ public class SystemEnvironment implements Cloneable
 	public static String dbPasswd;
 	public static String sysPasswd;
 	public static int scheduleWakeupInterval;
+	public static int notifyDelay;
 	public static int priorityDelay;
 	public static int priorityLowerBound;
 	public static int timerWakeupInterval;
@@ -194,6 +192,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_HISTORYLIMIT          = "HistoryLimit";
 	public static final String S_MINHISTORYCOUNT       = "MinHistoryCount";
 	public static final String S_MAXHISTORYCOUNT       = "MaxHistoryCount";
+	public static final String S_NOTIFYDELAY           = "NotifyDelay";
 	public static final String S_HOSTNAME              = "Hostname";
 	public static final String S_JDBCDRIVER            = "JdbcDriver";
 	public static final String S_LEVEL                 = "CompatibilityLevel";
@@ -339,7 +338,6 @@ public class SystemEnvironment implements Cloneable
 		vPurgeSet = new SDMSPurgeSet();
 		connectState = new MutableInteger(NORMAL);
 		startTime = System.currentTimeMillis();
-
 		featureLevels = new HashMap();
 		featureLevels.put(S_GRANTS,                   new Feature(S_PROFESSIONAL, "The GRANT/REVOKE Commands"));
 		featureLevels.put(S_CONDITIONAL_DEPENDENCIES, new Feature(S_ENTERPRISE,   "Conditional Dependencies"));
@@ -380,6 +378,7 @@ public class SystemEnvironment implements Cloneable
 		getHistoryLimit();
 		getMinHistoryCount();
 		getMaxHistoryCount();
+		getNotifyDelay();
 		getWorkerThreads();
 		getWriterThreads();
 		getUserThreads();
@@ -555,6 +554,13 @@ public class SystemEnvironment implements Cloneable
 		String s_traceLevel = props.getProperty(S_TRACELEVEL, "1");
 		traceLevel = checkIntProperty(s_traceLevel, S_TRACELEVEL, 0, 1, 3, "Invalid trace level : ");
 		props.setProperty(S_TRACELEVEL, "" + traceLevel);
+	}
+
+	private void getNotifyDelay()
+	{
+		String s_notifyDelay = props.getProperty(S_NOTIFYDELAY, "1");
+		notifyDelay = checkIntProperty(s_notifyDelay, S_NOTIFYDELAY, 1, 1, 5, "Invalid notify delay: ");
+		props.setProperty(S_NOTIFYDELAY, "" + notifyDelay);
 	}
 
 	private void getTimerHorizon()
@@ -786,7 +792,6 @@ public class SystemEnvironment implements Cloneable
 
 	private void getParameterHandling()
 	{
-
 		String pb = props.getProperty(S_PARAMETERHANDLING, "LIBERAL").toUpperCase();
 		if(pb.startsWith("S")) {
 			strict_variables = true;
@@ -824,7 +829,6 @@ public class SystemEnvironment implements Cloneable
 				}
 			}
 		} catch(java.io.IOException ioe) {
-
 		}
 		return vars;
 	}
@@ -886,7 +890,6 @@ public class SystemEnvironment implements Cloneable
 
 	private void getExportVariables()
 	{
-
 		final String defaultVars =
 			SDMSSubmittedEntity.S_ERRORLOG		+ "," +
 			SDMSSubmittedEntity.S_EXPFINALTIME	+ "," +
@@ -1031,7 +1034,6 @@ public class SystemEnvironment implements Cloneable
 
 		gc.setFirstDayOfWeek (Calendar.MONDAY);
 		gc.setMinimalDaysInFirstWeek (4);
-
 		gc.clear();
 
 		return gc;

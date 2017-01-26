@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,7 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 package de.independit.scheduler.server.repository;
 
@@ -80,7 +79,6 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 				esdId = sme.getJobEsdId(sysEnv);
 				break;
 		}
-//		System.out.println("Resultat: " + esdId + ", finalEsdId = " + sme.getFinalEsdId(sysEnv) + ", jobEsdId = " + sme.getJobEsdId(sysEnv));
 		if ((esdId == null) && (state != SDMSSubmittedEntity.CANCELLED)) {
 			return SDMSDependencyInstance.OPEN;
 		}
@@ -101,7 +99,6 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 					diState = FULFILLED;
 					int stateSelection = dd.getStateSelection(sysEnv).intValue();
 					if (stateSelection == SDMSDependencyDefinition.FINAL) {
-
 						Vector v_ds = SDMSDependencyStateTable.idx_ddId.getVector(sysEnv, ddId, actVersion);
 						if (v_ds.size() != 0) {
 							diState = SDMSDependencyInstance.FAILED;
@@ -113,6 +110,7 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 									break;
 								}
 							}
+						} else {
 						}
 					} else {
 						Long seId = sme.getSeId(sysEnv);
@@ -139,8 +137,8 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 						}
 
 					}
-			}
-			break;
+				}
+				break;
 		}
 		if (diState != SDMSDependencyInstance.OPEN || dsme.getState(sysEnv).intValue() == SDMSSubmittedEntity.UNREACHABLE) {
 			setState(sysEnv, new Integer(diState));
@@ -167,7 +165,6 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 			for(int j = 0; j < vdi.size(); j++) {
 				SDMSDependencyInstance di = (SDMSDependencyInstance) vdi.get(j);
 				SDMSSubmittedEntity dsme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getDependentId(sysEnv));
-
 				if(SDMSHierarchyInstanceTable.idx_parentId_childId.containsKey(sysEnv,
 								new SDMSKey(sme.getId(sysEnv), dsme.getId(sysEnv)))) {
 					di.setIgnore(sysEnv, SDMSDependencyInstance.RECURSIVE, originId, comment);
