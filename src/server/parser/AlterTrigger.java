@@ -350,7 +350,7 @@ public class AlterTrigger extends ManipTrigger
 				t = (SDMSTrigger) url.resolve(sysEnv);
 				fireId = t.getFireId(sysEnv);
 				fireType = t.getObjectType(sysEnv).intValue();
-				fireSe = SDMSSchedulingEntityTable.getObject(sysEnv, fireId);
+				fireSe = SDMSSchedulingEntityTable.getObject(sysEnv, t.getSeId(sysEnv));
 			}
 		} catch ( NotFoundException nfe) {
 			if(noerr) {
