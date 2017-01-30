@@ -160,6 +160,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 				SDMSnpSrvrSRFootprint npsfp = SDMSnpSrvrSRFootprintTable.idx_sId_getUnique(sysEnv, scopeId);
 				HashMap sfp = npsfp.getFp(sysEnv);
 				if (rId.equals(sfp.get(nrId))) {
+					rq.delete(sysEnv);
 
 					Iterator nrit = sfp.keySet().iterator();
 					while (nrit.hasNext()) {
@@ -169,13 +170,10 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 						for (int k = 0; k < riv.size(); ++k) {
 							SDMSResourceAllocation ra2d = (SDMSResourceAllocation) riv.get(k);
 							if (sfpRId.equals(ra2d.getRId(sysEnv))) {
-
 								ra2d.delete(sysEnv, true, false);
 							}
 						}
 					}
-
-					rq.delete(sysEnv);
 				}
 			}
 			smerqv = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, smeId);
@@ -202,7 +200,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 		try {
 			r = SDMSResourceTable.getObject(sysEnv, getRId(sysEnv));
 		} catch (NotFoundException nfe) {
-
 			SDMSThread.doTrace(sysEnv.cEnv, "Cannot set allocation type of a Named Resource IGNORE Resource Allocation", SDMSThread.SEVERITY_ERROR);
 			return;
 		}
@@ -213,7 +210,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 			   p_allocType == MASTER_RESERVATION) {
 				Integer rAmount = r.getFreeAmount(sysEnv);
 				if (rAmount != null ) {
-
 					rAmount = new Integer(rAmount.intValue() - Math.max (getAmount(sysEnv).intValue(), 0));
 					r.setFreeAmount(sysEnv, rAmount);
 				}
@@ -221,7 +217,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 		}
 		super.setAllocationType(sysEnv, p_allocationType);
 		if(p_allocType == IGNORE) {
-
 			if(allocType == ALLOCATION || allocType == RESERVATION) {
 				Integer raAmount = getAmount(sysEnv);
 				if (raAmount.intValue() > 0) {
@@ -259,7 +254,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 							int diff = mra.getOrigAmount(sysEnv).intValue() - mraAmount;
 							if (diff > 0) {
 								if (diff >= iraAmount) {
-
 									mra.setMyAmount(sysEnv, new Integer(mraAmount + iraAmount));
 									iraAmount = 0;
 								} else {
@@ -268,7 +262,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 								}
 							}
 						} catch (NotFoundException nfe) {
-
 						}
 					}
 					r.releaseAmount(sysEnv, iraAmount);

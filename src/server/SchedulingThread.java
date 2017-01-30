@@ -729,6 +729,7 @@ public class SchedulingThread extends InternalSession
 			SDMSRunnableQueue rq = (SDMSRunnableQueue) rqv.get(j);
 			s = SDMSScopeTable.getObject(sysEnv, rq.getScopeId(sysEnv));
 			sv.add(s);
+			doTrace(cEnv, ": added scope id " + s.getId(sysEnv), SEVERITY_DEBUG);
 		}
 		doTrace(cEnv, ": we found " + sv.size() + " potential servers", SEVERITY_DEBUG);
 
@@ -745,6 +746,13 @@ public class SchedulingThread extends InternalSession
 				fitsSomewhere = true;
 			} else {
 				doTrace(cEnv, ": doesn't seem to fit -+-+-+-+-+-+-+-+-", SEVERITY_DEBUG);
+				doTrace(cEnv, ": deleting [" + s.getId(sysEnv) + ", " + smeId + "]", SEVERITY_DEBUG);
+				try {
+					SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUnique(sysEnv, new SDMSKey(smeId, sId));
+					rq.delete(sysEnv);
+				} catch (NotFoundException nfe) {
+				}
+
 				Iterator i = smefp.keySet().iterator();
 				while(i.hasNext()) {
 					Long L = (Long) i.next();
@@ -759,8 +767,6 @@ public class SchedulingThread extends InternalSession
 						}
 					}
 				}
-				SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUnique(sysEnv, new SDMSKey(smeId, sId));
-				rq.delete(sysEnv);
 			}
 		}
 		if(!fitsSomewhere) {

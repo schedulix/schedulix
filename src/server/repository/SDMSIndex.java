@@ -87,16 +87,25 @@ public class SDMSIndex
 			v = (SDMSIndexBucket) hashMap.get(key);
 			if(v == null) {
 				v = new SDMSIndexBucket(this, key);
-				synchronized(v) { v.modCnt ++; }
+				synchronized(v) {
+					v.modCnt ++;
+				}
 				hashMap.put(key, v);
 			} else
-				synchronized(v) { v.modCnt ++; }
+				synchronized(v) {
+					v.modCnt ++;
+				}
 		}
 
 		if (env.maxWriter > 1 && doLockBucket) {
 			try {
 				LockingSystem.lock(env, v, ObjectLock.EXCLUSIVE);
-			} catch (Exception e) { synchronized(v) { v.modCnt --; } throw e; }
+			} catch (Exception e) {
+				synchronized(v) {
+					v.modCnt --;
+				}
+				throw e;
+			}
 		}
 
 		boolean newBucket = false;
@@ -155,7 +164,9 @@ public class SDMSIndex
 
 				if (old != null && old.isCurrent && o.isCurrent) {
 
-					synchronized (v) { v.modCnt --; }
+					synchronized (v) {
+						v.modCnt --;
+					}
 					throw new DuplicateKeyException(new SDMSMessage(env, "03110181528",
 						"Duplicate Key $1: Second object exists", key));
 				}
