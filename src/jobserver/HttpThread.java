@@ -264,6 +264,8 @@ RUNLOOP:	while (run) {
 						do {
 							str = in.readLine();
 							Trace.message("[HttpThread] Got Request from " + remoteAddress + " : " + str);
+							if (str == null)
+								break;
 							String[] spl = str.split(" ");
 
 							if (spl[0].equals(CLGTH))	cl = Integer.parseInt(spl[1]);
