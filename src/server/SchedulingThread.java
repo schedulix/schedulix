@@ -85,8 +85,6 @@ public class SchedulingThread extends InternalSession
 
 	private final static Integer ONE = new Integer(1);
 
-	private HashSet jsToNotify = new HashSet();
-
 	public long envhit = 0;
 	public long envmiss = 0;
 
@@ -136,13 +134,6 @@ public class SchedulingThread extends InternalSession
 		}
 		if(r == null) return false;
 		return (r.seq > 1 ? true : false);
-	}
-
-	public void removeFromPingList(Long id)
-	{
-		synchronized (jsToNotify) {
-			jsToNotify.remove(id);
-		}
 	}
 
 	public void addToRequestList(SystemEnvironment sysEnv, Long smeId)
@@ -227,27 +218,6 @@ public class SchedulingThread extends InternalSession
 		}
 	}
 
-	private void notifyJobservers(SystemEnvironment sysEnv)
-		throws SDMSException
-	{
-		Object a[];
-		synchronized (jsToNotify) {
-			a = jsToNotify.toArray();
-		}
-		Long id;
-		for (int i = 0; i < a.length; ++i) {
-			id = (Long)a[i];
-			try {
-				SDMSScope s = SDMSScopeTable.getObject(sysEnv, id);
-				s.notify(sysEnv);
-			} catch (NotFoundException nfe) {
-				synchronized (jsToNotify) {
-					jsToNotify.remove(id);
-				}
-			}
-		}
-	}
-
 	protected void scheduleProtected(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
@@ -291,7 +261,6 @@ public class SchedulingThread extends InternalSession
 		if(!needSched) {
 			long ts = dts.getTime() - timeoutWakeup;
 			if((ts < 0) && (timer < lastSchedule + 10000 )) {
-				notifyJobservers(sysEnv);
 				return;
 			}
 		}
@@ -307,8 +276,6 @@ public class SchedulingThread extends InternalSession
 		synchronized(lock) {
 			publl = resourceChain;
 		}
-
-		notifyJobservers(sysEnv);
 
 		doTrace(cEnv, "---------------> Start Cleanup LifeTables   <-------------------\nStartTime = " + (dts.getTime() - timer), SEVERITY_MESSAGE);
 		long purgeLow = sysEnv.roTxList.first(sysEnv);
@@ -765,6 +732,7 @@ public class SchedulingThread extends InternalSession
 			SDMSRunnableQueue rq = (SDMSRunnableQueue) rqv.get(j);
 			s = SDMSScopeTable.getObject(sysEnv, rq.getScopeId(sysEnv));
 			sv.add(s);
+			doTrace(cEnv, ": added scope id " + s.getId(sysEnv), SEVERITY_DEBUG);
 		}
 		doTrace(cEnv, ": we found " + sv.size() + " potential servers", SEVERITY_DEBUG);
 
@@ -781,6 +749,13 @@ public class SchedulingThread extends InternalSession
 				fitsSomewhere = true;
 			} else {
 				doTrace(cEnv, ": doesn't seem to fit -+-+-+-+-+-+-+-+-", SEVERITY_DEBUG);
+				doTrace(cEnv, ": deleting [" + s.getId(sysEnv) + ", " + smeId + "]", SEVERITY_DEBUG);
+				try {
+					SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUnique(sysEnv, new SDMSKey(smeId, sId));
+					rq.delete(sysEnv);
+				} catch (NotFoundException nfe) {
+				}
+
 				Iterator i = smefp.keySet().iterator();
 				while(i.hasNext()) {
 					Long L = (Long) i.next();
@@ -795,8 +770,6 @@ public class SchedulingThread extends InternalSession
 						}
 					}
 				}
-				SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUnique(sysEnv, new SDMSKey(smeId, sId));
-				rq.delete(sysEnv);
 			}
 		}
 		if(!fitsSomewhere) {
@@ -1357,9 +1330,7 @@ public class SchedulingThread extends InternalSession
 				}
 			}
 			sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.RUNNABLE));
-			synchronized (jsToNotify) {
-				jsToNotify.add(s.getId(sysEnv));
-			}
+			sysEnv.notifier.addJobServerToNotify(s.getId(sysEnv));
 		} else {
 			checkTimeout(sysEnv, sme, se, actVersion);
 		}

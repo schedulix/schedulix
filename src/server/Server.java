@@ -56,6 +56,7 @@ public class Server
 	private ShutdownThread shutt;
 	private RenewTicketThread rtt;
 	private DBCleanupThread dbct;
+	private NotifierThread notifier;
 	private String iniFile;
 
 	private SystemEnvironment env;
@@ -128,6 +129,19 @@ public class Server
 	{
 		SDMSThread.doTrace(null, "Starting Database Cleanup Thread", SDMSThread.SEVERITY_INFO);
 		dbct.start();
+	}
+
+	private void initNotifierThread() throws SDMSException
+	{
+		notifier = new NotifierThread(env, roCmdQueue);
+		SystemEnvironment.notifier = notifier;
+		notifier.initNotifierThread(env);
+	}
+
+	private void startNotifierThread() throws SDMSException
+	{
+		SDMSThread.doTrace(null, "Starting Notifier Thread", SDMSThread.SEVERITY_INFO);
+		notifier.start();
 	}
 
 	private void createRepository() throws SDMSException
@@ -294,6 +308,12 @@ public class Server
 				SDMSThread.doTrace(null, "Stopped " + wst.toString(), SDMSThread.SEVERITY_INFO);
 			}
 		}
+		if(notifier != null) {
+			if(notifier.isAlive()) {
+				notifier.do_stop();
+				SDMSThread.doTrace(null, "Stopped " + notifier.toString(), SDMSThread.SEVERITY_INFO);
+			}
+		}
 		if(tt != null) {
 			if(tt.isAlive()) {
 				tt.do_stop();
@@ -440,6 +460,7 @@ public class Server
 			initTimeScheduling();
 			initTT();
 			initGC();
+			initNotifierThread();
 			if (env.dbPreserveTime > 0)
 				initDBCleanupThread();
 			else
@@ -477,6 +498,12 @@ public class Server
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03311120827",
 							"Fatal exception while starting garbage collector:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+		}
+		try {
+			startNotifierThread();
+		} catch(SDMSException fe) {
+			SDMSThread.doTrace(null, (new SDMSMessage(env, "03701031503",
+			                          "Fatal exception while starting notifier thread:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
 		try {
 			if (dbct != null) startDBCleanupThread();

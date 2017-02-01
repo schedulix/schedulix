@@ -91,6 +91,7 @@ public class SystemEnvironment implements Cloneable
 	public static TimerThread timer;
 	public static ThreadGroup utg;
 	public static ThreadGroup wg;
+	public static NotifierThread notifier;
 
 	public Connection dbConnection;
 	public int dbConnectionNr;
@@ -129,6 +130,7 @@ public class SystemEnvironment implements Cloneable
 	public static String dbPasswd;
 	public static String sysPasswd;
 	public static int scheduleWakeupInterval;
+	public static int notifyDelay;
 	public static int priorityDelay;
 	public static int priorityLowerBound;
 	public static int timerWakeupInterval;
@@ -195,6 +197,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_HISTORYLIMIT          = "HistoryLimit";
 	public static final String S_MINHISTORYCOUNT       = "MinHistoryCount";
 	public static final String S_MAXHISTORYCOUNT       = "MaxHistoryCount";
+	public static final String S_NOTIFYDELAY           = "NotifyDelay";
 	public static final String S_HOSTNAME              = "Hostname";
 	public static final String S_JDBCDRIVER            = "JdbcDriver";
 	public static final String S_LEVEL                 = "CompatibilityLevel";
@@ -387,6 +390,7 @@ public class SystemEnvironment implements Cloneable
 		getHistoryLimit();
 		getMinHistoryCount();
 		getMaxHistoryCount();
+		getNotifyDelay();
 		getWorkerThreads();
 		getWriterThreads();
 		getUserThreads();
@@ -730,6 +734,13 @@ public class SystemEnvironment implements Cloneable
 		String s_traceLevel = props.getProperty(S_TRACELEVEL, "1");
 		traceLevel = checkIntProperty(s_traceLevel, S_TRACELEVEL, 0, 1, 3, "Invalid trace level : ");
 		props.setProperty(S_TRACELEVEL, "" + traceLevel);
+	}
+
+	private void getNotifyDelay()
+	{
+		String s_notifyDelay = props.getProperty(S_NOTIFYDELAY, "1");
+		notifyDelay = checkIntProperty(s_notifyDelay, S_NOTIFYDELAY, 1, 1, 5, "Invalid notify delay: ");
+		props.setProperty(S_NOTIFYDELAY, "" + notifyDelay);
 	}
 
 	private void getTimerHorizon()
