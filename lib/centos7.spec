@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.8
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -230,14 +230,41 @@ in order to be able to connect by jdbc.
 %pre server-pg
 echo "executing pre server-pg -- %version-%release"
 if [ "$1" == "1" ]; then
+	PGHBA=$SDMS_PGHBA
+	# are multiple DBMS server (versions) installed?
+	if [ -z "$PGHBA" -a -d /etc/pgpure/postgres ]; then
+		NUMINST=`ls -1 /etc/pgpure/postgres/ | wc -l`
+		if [ "$NUMINST" -gt 1 ]; then
+			echo "Multiple PostgresPure installations detected; please set SDMS_PGHBA to point to the pg_hba.conf file of the installation to use" >&2
+			echo "This package assumes that the Postgres DBMS is listening on the default port (5432)" >&2
+			echo "This should be true during package install. It can be modified afterwards (see server.conf file)" >&2
+			exit 1
+		fi
+	fi
+	if [ -z "$PGHBA" ]; then
+		# PostgresPure environment?
+		if [ -f /etc/pgpure/postgres/*/data/pg_hba.conf ]; then
+			PGHBA=/etc/pgpure/postgres/*/data/pg_hba.conf
+			PGSRVNAME=postgres
+		else
+			# RedHat?
+			if [ -f /var/lib/pgsql/data/pg_hba.conf ]; then
+				PGHBA=/var/lib/pgsql/data/pg_hba.conf
+			else
+				PGHBA=does_not_exist
+			fi
+			PGSRVNAME=postgresql
+		fi
+	fi
 	# if this is a new postgresql installation, we'll have to do an initdb first
-	if [ ! -f /var/lib/pgsql/data/pg_hba.conf ]; then
+	# since PostgresPure always initializes the Postgres System, this is necessary for RedHat
+	if [ ! -f $PGHBA ]; then
 		postgresql-setup initdb
 		# this seems to take some time after finishing the initialization
 		sleep 5
 		chkconfig postgresql on
 	fi
-	service postgresql start || true
+	service $PGSRVNAME start # || true
 
 else
 	service schedulix-server stop || true
@@ -246,6 +273,18 @@ fi
 %post server-pg
 echo "executing post server-pg -- %version-%release"
 if [ "$1" == "1" ]; then
+	PGHBA=$SDMS_PGHBA
+	if [ -z "$PGHBA" ]; then
+		if [ -f /etc/pgpure/postgres/*/pgsql/pg_hba.conf ]; then
+			PGHBA=/etc/pgpure/postgres/*/data/pg_hba.conf
+			PGSRVNAME=postgres
+		else
+			PGSRVNAME=postgresql
+			if [ -f /var/lib/pgsql/data/pg_hba.conf ]; then
+				PGHBA=/var/lib/pgsql/data/pg_hba.conf
+			fi
+		fi
+	fi
 	# create a valid server.conf
 	echo "creating server.conf file"
 	HOSTNAME=`hostname`
@@ -278,13 +317,13 @@ if [ "$1" == "1" ]; then
 	sed --in-place=.save '
 	     s!^host *all * all *127.0.0.1/32 *.*!host    all             all             127.0.0.1/32            md5!
 	     s!^host *all * all *::1/128 *.*!host    all             all             ::1/128                 md5!
-	' /var/lib/pgsql/data/pg_hba.conf
+	' $PGHBA
 
 	# we now restart the DBMS to make our config change effective
-	service postgresql restart
+	service $PGSRVNAME restart
 
 	# since we need the DBMS, we'll enable it
-	systemctl enable postgresql
+	systemctl enable $PGSRVNAME
 
 	echo "populating database"
 	su - schedulix -c '
