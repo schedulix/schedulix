@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -39,28 +37,21 @@ import de.independit.scheduler.server.output.*;
 public abstract class ShowCommented extends Node
 {
 
-	private Vector ocv;
-	private SDMSObjectComment oc;
-	private boolean oc_exists;
-	private Long lastId;
+	private Vector ocv = null;
+	private Long lastId = null;
 
 	public ShowCommented()
 	{
 		super();
-		oc = null;
-		oc_exists = true;
+		ocv = null;
 		lastId = null;
 	}
 
 	private void getObjectComment(SystemEnvironment sysEnv, Long id)
 		throws SDMSException
 	{
-		if(oc != null && id.equals(lastId)) return;
-		if(oc == null && id.equals(lastId) && !oc_exists) return;
+		if (lastId != null && id.equals(lastId)) return;
 		ocv = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, id);
-		if (ocv.size() == 0) {
-			oc_exists = false;
-		}
 		lastId = id;
 		return;
 	}
@@ -69,6 +60,7 @@ public abstract class ShowCommented extends Node
 		throws SDMSException
 	{
 		SDMSOutputContainer result;
+		SDMSObjectComment oc;
 		Vector desc = new Vector();
 		Vector data;
 
@@ -101,8 +93,8 @@ public abstract class ShowCommented extends Node
 	{
 		String infoType = null;
 		getObjectComment(sysEnv, id);
-		if(oc != null)
-			infoType = oc.getInfoTypeAsString(sysEnv);
+		if(ocv != null && ocv.size() > 0)
+			infoType = ((SDMSObjectComment)(ocv.elementAt(0))).getInfoTypeAsString(sysEnv);
 		return infoType;
 	}
 

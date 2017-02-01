@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.jobserver;
 
 import java.util.*;
@@ -38,6 +37,8 @@ public class HttpThread
 	private int port = 0;
 	private final Config cfg;
 	private boolean run = true;
+	private boolean needFooter = false;
+	private boolean gotFooter = false;
 
 	private static final String CLGTH = "Content-Length:";
 	private static final String POST  = "POST";
@@ -106,7 +107,6 @@ public class HttpThread
 	private void executeQuery(String query, PrintWriter out)
 		throws java.io.UnsupportedEncodingException
 	{
-
 		HashMap qry = new HashMap();
 		String[] ql = query.split("\\&");
 		for (int i = 0; i < ql.length; i++) {
@@ -116,7 +116,6 @@ public class HttpThread
 				value = URLDecoder.decode(fl[1],"UTF-8");
 				qry.put(fl[0],value);
 			}
-
 		}
 
 		if(!authenticate(qry)) {
@@ -132,7 +131,6 @@ public class HttpThread
 					try {
 						f.close();
 					} catch (Exception e) {
-
 					}
 					printPreamble(out, 404, "Not Found");
 					out.println("ERROR: couldn't open the requested file");
@@ -165,7 +163,6 @@ public class HttpThread
 					if (qry.containsKey(LIMIT)) {
 						limit = Long.parseLong((String)(qry.get(LIMIT)));
 					} else {
-
 						limit = defaultLimit;
 					}
 
@@ -178,7 +175,6 @@ public class HttpThread
 						} else {
 							printPreamble(out, 200, "OK", fname);
 							out.print(s);
-							printFooter(out);
 						}
 					} catch (IOException ioe) {
 						printPreamble(out, 500, "Internal Server Error");
@@ -189,6 +185,7 @@ public class HttpThread
 				printPreamble(out, 400, "Bad Request");
 			}
 		}
+		printFooter(out);
 
 		out.flush();
 	}
@@ -203,7 +200,6 @@ public class HttpThread
 		out.println("HTTP/1.0 " + status + " " + message);
 		out.println("Content-Type: text/html");
 		out.println("Server: BICsuiteJobserver");
-
 		out.println("");
 		if (status == 200 || status == 404) {
 			out.println("<!DOCTYPE HTML>");
@@ -215,12 +211,14 @@ public class HttpThread
 			}
 			out.println("<body>");
 		}
+		needFooter = true;
 	}
 
 	private void printFooter(PrintWriter out)
 	{
 		out.println("</body>");
 		out.println("</html>");
+		gotFooter = true;
 	}
 
 	public final void run()
@@ -239,7 +237,6 @@ RUNLOOP:	while (run) {
 					sleep(sleepInterval);
 					if(!run) break RUNLOOP;
 				} catch (Exception e) {
-
 				}
 				p = (Long) cfg.get (Config.HTTP_PORT);
 				if (p != null)
@@ -253,18 +250,20 @@ RUNLOOP:	while (run) {
 				s = new ServerSocket(port);
 				s.setSoTimeout(timeoutInterval);
 				while(true) {
+					PrintWriter out = null;
 					try {
 						remote = s.accept();
 						String remoteAddress = remote.getInetAddress().getHostAddress();
 						BufferedReader in = new BufferedReader(new InputStreamReader(remote.getInputStream()));
-						PrintWriter out = new PrintWriter(remote.getOutputStream());
+						out = new PrintWriter(remote.getOutputStream());
 						String str = null;
-
 						int cl = 0;
 						String query = "";
 						do {
 							str = in.readLine();
 							Trace.message("[HttpThread] Got Request from " + remoteAddress + " : " + str);
+							if (str == null)
+								break;
 							String[] spl = str.split(" ");
 
 							if (spl[0].equals(CLGTH))	cl = Integer.parseInt(spl[1]);
@@ -275,28 +274,33 @@ RUNLOOP:	while (run) {
 									if (tmp.length > 1)
 										query = spl[1].split("\\?")[1];
 									else {
-
 										query = "FNAME=" + spl[1];
 									}
 								} else {
-
 									Trace.error("[HttpThread] Invalid Request : " + str);
 								}
 						} while (!str.equals(""));
 						executeQuery(query, out);
 					} catch(java.net.SocketTimeoutException ste) {
-
 					} catch(java.lang.Throwable t) {
-
 						port = 0;
 						Trace.error("[HttpThread] caught Exception (243) : " + t.toString());
+						StackTraceElement trace[] = t.getStackTrace();
+						for (int i = 0; i < trace.length; ++i) {
+							Trace.error("[HttpThread] " + trace[i].toString());
+						}
 					} finally {
 						try {
-							if (remote != null)
+							if (remote != null) {
+								if (needFooter && !gotFooter && (out != null)) printFooter(out);
 								remote.close();
+							}
 						} catch (Exception e) {
-
 							Trace.error("[HttpThread] caught Exception (250) : " + e.toString());
+							StackTraceElement trace[] = e.getStackTrace();
+							for (int i = 0; i < trace.length; ++i) {
+								Trace.error("[HttpThread] " + trace[i].toString());
+							}
 						}
 
 						p = (Long) cfg.get (Config.HTTP_PORT);
@@ -304,7 +308,6 @@ RUNLOOP:	while (run) {
 							try {
 								s.close();
 							} catch (Exception e) {
-
 							}
 							break;
 						}
@@ -318,14 +321,12 @@ RUNLOOP:	while (run) {
 					if (s != null)
 						s.close();
 				} catch (Exception eStrich) {
-
 				}
 			}
 			try {
 				if (s != null)
 					s.close();
 			} catch (Exception e) {
-
 			}
 		}
 	}

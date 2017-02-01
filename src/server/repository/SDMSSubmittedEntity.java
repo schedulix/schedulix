@@ -262,6 +262,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			setJobEsdPref(sysEnv, null);
 
 			setState(sysEnv, new Integer(DEPENDENCY_WAIT));
+			setScopeId(sysEnv, null);
 
 			SystemEnvironment.sched.notifyChange(sysEnv, this, SchedulingThread.RERUN);
 			return true;

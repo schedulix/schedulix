@@ -150,6 +150,8 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 				SDMSnpSrvrSRFootprint npsfp = SDMSnpSrvrSRFootprintTable.idx_sId_getUnique(sysEnv, scopeId);
 				HashMap sfp = npsfp.getFp(sysEnv);
 				if (rId.equals(sfp.get(nrId))) {
+					rq.delete(sysEnv);
+
 					Iterator nrit = sfp.keySet().iterator();
 					while (nrit.hasNext()) {
 						Long sfpNRId = (Long) nrit.next();
@@ -162,7 +164,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 							}
 						}
 					}
-					rq.delete(sysEnv);
 				}
 			}
 			smerqv = SDMSRunnableQueueTable.idx_smeId.getVector(sysEnv, smeId);

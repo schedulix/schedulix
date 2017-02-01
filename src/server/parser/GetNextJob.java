@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -90,7 +88,7 @@ public class GetNextJob extends JobDistribution
 			}
 		}
 
-		SystemEnvironment.sched.removeFromPingList(s.getId(sysEnv));
+		SystemEnvironment.notifier.removeFromPingList(s.getId(sysEnv));
 		long l = sysEnv.cEnv.last();
 		Long lastActive = s.getLastActive(sysEnv);
 		if (lastActive == null || l > lastActive.longValue()) {
@@ -123,16 +121,14 @@ public class GetNextJob extends JobDistribution
 		v = SDMSRunnableQueueTable.idx_scopeId_state.getVectorForUpdate(sysEnv, new SDMSKey(sId, new Integer(SDMSSubmittedEntity.STARTING)));
 		Iterator i_sj = v.iterator();
 		while (i_sj.hasNext()) {
-
 			rq = (SDMSRunnableQueue) i_sj.next();
-				rqState = rq.getState(sysEnv).intValue();
-				smeId = rq.getSmeId(sysEnv);
-				try {
-					sme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
-				} catch (NotFoundException nfe) {
-
-					kj = SDMSKillJobTable.getObjectForUpdate(sysEnv, smeId);
-				}
+			rqState = rq.getState(sysEnv).intValue();
+			smeId = rq.getSmeId(sysEnv);
+			try {
+				sme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
+			} catch (NotFoundException nfe) {
+				kj = SDMSKillJobTable.getObjectForUpdate(sysEnv, smeId);
+			}
 			Long startingTs;
 			synchronized (SystemEnvironment.jidsStarting) {
 				startingTs = SystemEnvironment.jidsStarting.get(smeId);
@@ -140,16 +136,13 @@ public class GetNextJob extends JobDistribution
 			if (startingTs != null) {
 				long sTs = startingTs.longValue();
 				if (sTs + SystemEnvironment.startingResendDelay > now)
-
 					continue;
 			}
-
 			synchronized (SystemEnvironment.jidsStarting) {
 				SystemEnvironment.jidsStarting.put(smeId, new Long(now));
 			}
 			break;
 		}
-
 		if (sme == null  && kj == null) {
 			SDMSFilter filter = new SDMSFilter() {
 				public boolean isValid(SystemEnvironment sysEnv, SDMSProxy obj) throws SDMSException {
@@ -161,22 +154,16 @@ public class GetNextJob extends JobDistribution
 						else
 							return false;
 					} catch (NotFoundException nfe) {
-
 						return true;
 					}
 				}
 			};
-
 			v = SDMSRunnableQueueTable.idx_scopeId_state.getVectorForUpdate(sysEnv, new SDMSKey(sId, new Integer(SDMSSubmittedEntity.RUNNABLE)), filter);
 			if(v.size() == 0) {
 				if (sysEnv.maxWriter == 1) {
-
 					sysEnv.tx.commitSubTransaction(sysEnv);
-
 					SystemEnvironment.sched.getNextJobSchedule(sysEnv);
-
 					sysEnv.tx.beginSubTransaction(sysEnv);
-
 					v = SDMSRunnableQueueTable.idx_scopeId_state.getVector(sysEnv, new SDMSKey(sId, new Integer(SDMSSubmittedEntity.RUNNABLE)), filter);
 				} else {
 					SystemEnvironment.sched.requestSchedule();
@@ -208,7 +195,6 @@ public class GetNextJob extends JobDistribution
 							System.out.println(tmpsme.object.versions.toString());
 							ObjectLock lock = LockingSystemSynchronized.getObjectLocks(tmpsme.object.versions);
 							System.out.println(lock.dumpLockList());
-
 						}
 						if (tmpsme.getRunnableTs(sysEnv) > minRunnableTs) continue;
 						candidates++;
@@ -216,14 +202,12 @@ public class GetNextJob extends JobDistribution
 						minRunnableTs = sme.getRunnableTs(sysEnv);
 						continue;
 					} catch (NotFoundException nfe) {
-
 						kj = SDMSKillJobTable.getObject(sysEnv, smeId);
 						if (kj.getRunnableTs(sysEnv) > minRunnableTs) continue;
 						candidates++;
 						minRunnableTs = kj.getRunnableTs(sysEnv);
 					}
 				}
-
 			}
 		}
 		if(sme == null) {
@@ -233,7 +217,6 @@ public class GetNextJob extends JobDistribution
 				} catch (SerializationException e) {
 					throw e;
 				} catch (SDMSException e) {
-
 					SDMSThread.doTrace(env, "Exception from startKillJob : " + e.toString(), e.getStackTrace(), SDMSThread.SEVERITY_ERROR);
 					setToError(sysEnv, kj, smeId, e.toSDMSMessage());
 					rc = false;
@@ -249,7 +232,6 @@ public class GetNextJob extends JobDistribution
 			} catch (SerializationException e) {
 				throw e;
 			} catch (SDMSException e) {
-
 				SDMSThread.doTrace(env, "Exception from startJob : " + e.toString(), e.getStackTrace(), SDMSThread.SEVERITY_ERROR);
 				setToError(sysEnv, sme, smeId, e.toSDMSMessage());
 				rc = false;

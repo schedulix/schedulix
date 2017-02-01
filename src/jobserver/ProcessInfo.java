@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.jobserver;
 
 import java.util.*;
@@ -243,7 +242,6 @@ public class ProcessInfo
 						etime += Integer.parseInt(etimeParts[idx]);			// last but not least the seconds
 					} catch (NumberFormatException nfe) {
 						etime = 0;							// If it can't be parsed, we assume 0
-														// which is wrong, but what else do we have?
 					}
 					Long startTime = new Long(now - etime);
 					result.put(strPid,startTime);
@@ -292,7 +290,6 @@ public class ProcessInfo
 
 	public static boolean isAlive (String processId, HashMap<String,Long> startTimes)
 	{
-
 		long pid;
 		String strPid;
 		String boottime;
@@ -321,18 +318,10 @@ public class ProcessInfo
 		s = e + 1;
 		starttime = processId.substring(s);
 
-		long bootTimeServer = Long.parseLong(getBoottime(how));
-		long bootTimePid = Long.parseLong(boottime);
-		if (Math.abs(bootTimeServer - bootTimePid) > BOOTTIME_JITTER) {
-			System.err.println("NOT ALIVE : getBoottime(how) = " + getBoottime(how) + " boottime = " + boottime);
-			return false;
-		}
-
 		long startTimeJob = 0;
 		if (!(startTimes.containsKey(strPid))) {
 			startTimeJob = getStartTime(strPid);
 			if (startTimeJob == 0) {
-
 				return false;
 			}
 		} else {
@@ -379,7 +368,7 @@ public class ProcessInfo
 
 	public static char getBoottimeHow()
 	{
-		return boottimeHow;
+		return BOOTTIME_NONE;
 	}
 
 }
