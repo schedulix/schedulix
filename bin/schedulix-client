@@ -72,7 +72,7 @@ case "${1:-''}" in
 				for SVR in *; do
 					PNAME="~$USR/log/$SVR.out"
 					PNAME=`eval "ls $PNAME"`
-					if [ -p $PNAME ]; then
+					if [ -n "$PNAME" -a -p "$PNAME" ]; then
 						if fuser -s $PNAME >/dev/null 2>&1; then
 							fuser -k $PNAME >/dev/null 2>&1;
 						fi
