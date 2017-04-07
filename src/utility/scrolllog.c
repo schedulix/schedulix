@@ -34,7 +34,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#ifdef LINUX
+#if defined(LINUX) || defined(AIX)
 #include <sys/file.h>
 #endif
 #include <limits.h>
@@ -62,7 +62,7 @@ static int status = 0;
 static FILE *paip;
 static int fnout;
 
-static char const *ANALYZER = "SCROLLLOGANALYZER";
+static const char *ANALYZER = "SCROLLLOGANALYZER";
 static char *analyzer = NULL;
 
 void usage(char *argv[], char *msg)
@@ -290,10 +290,6 @@ int mylock(int fd)
 {
 	int rc;
 
-#ifdef AIX
-	/* for now no locking. TODO Add locking */
-	rc = 0;
-#endif
 #ifdef SOLARIS
 	fshare_t denyread;
 
@@ -306,7 +302,7 @@ int mylock(int fd)
 #ifdef LINUX
 	rc = flock(fd, LOCK_EX|LOCK_NB);
 #endif
-#ifdef BSD
+#if defined(BSD) || defined(AIX)
 
 	struct stat buf;
 	static FILE *shadowfile=NULL;

@@ -41,7 +41,6 @@ else
                         SOLARIS=1
                 else
                         ifeq ($(OSTYPE),aix)
-                                SOLARIS=1
                                 AIX=1
                         else
                                 $(error UNKNOWN OPERATING SYSTEM $(OSTYPE))
@@ -108,29 +107,28 @@ include $(SDMSHOME)/src/Makefile.CommonRules
 
 CXXFLAGS += -g -fno-exceptions -Wall -Wshadow \
 	-Wpointer-arith -Wwrite-strings -Wconversion \
-	-Woverloaded-virtual \
+	-w \
 	-I$(JAVAINC) -I$(JAVAINCOS)
 
 ifdef LINUX
 CXXFLAGS   += -DLINUX -fPIC
 LDLIBFLAGS += -shared
-else
+endif
 ifdef SOLARIS
 CXXFLAGS   += -DSOLARIS
 LDLIBFLAGS += -dy -G
-else
+endif
+ifdef AIX
+CXXFLAGS   += -DAIX
+LDLIBFLAGS += -dy -G
+endif
 ifdef BSD
 CXXFLAGS   += -DBSD
 LDLIBFLAGS += -shared
 endif
-endif
-endif
 
-jobexecutor.o: jobexecutor.c
-	$(CXX) -c $(CXXFLAGS) $<
-
-$(JOBEXECUTOR): jobexecutor.o
-	$(CXX) -o $@ $<
+$(JOBEXECUTOR): jobexecutor.c
+	$(CC) $(CXXFLAGS) -o $@ $<
 
 #
 # End of File
