@@ -44,6 +44,7 @@ public abstract class ManipUser extends Node
 	protected String user;
 	protected ObjectURL url;
 	protected String passwd;
+	protected String salt;
 	protected Integer method;
 	protected String txtPasswd;
 	protected Boolean enable;
@@ -98,7 +99,7 @@ public abstract class ManipUser extends Node
 		return salt.toString();
 	}
 
-	protected void evaluate_with(SystemEnvironment sysEnv, String salt)
+	protected void evaluate_with(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
 		SDMSGroup g;

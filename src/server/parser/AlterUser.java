@@ -62,10 +62,10 @@ public class AlterUser extends ManipUser
 		boolean suActive = false;
 		boolean manageUser = false;
 		Long uId;
-		String salt = generateSalt();
+		salt = generateSalt();
 		SDMSMessage feedbackMsg = new SDMSMessage(sysEnv, "03202062029", "User altered");
 
-		evaluate_with(sysEnv, salt);
+		evaluate_with(sysEnv);
 
 		try {
 			if (url == null)
