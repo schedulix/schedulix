@@ -187,7 +187,7 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 		else
 			last = next;
 		TimerDate trigDate = new TimerDate (last);
-		TimerDate baseDate = new TimerDate(trigDate);
+		TimerDate baseDate = new TimerDate(trigDate.plus(1));
 
 		int nrEntries = v.size();
 		int maxEntries = sysEnv.maxNumCalEntries;
