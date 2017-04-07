@@ -237,17 +237,17 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		checkFinal(sysEnv);
 	}
 
-	public void rerun (SystemEnvironment sysEnv)
+	public void rerun (SystemEnvironment sysEnv, boolean clearScope)
 		throws SDMSException
 	{
 		if (!getJobIsRestartable(sysEnv).booleanValue()) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "03205191052",
 				"Submitted entity not rerunable"));
 		}
-		rerunEntity(sysEnv);
+		rerunEntity(sysEnv, clearScope);
 	}
 
-	public boolean rerunEntity (SystemEnvironment sysEnv)
+	public boolean rerunEntity (SystemEnvironment sysEnv, boolean clearScope)
 		throws SDMSException
 	{
 		if (getJobIsRestartable(sysEnv).booleanValue()) {
@@ -261,7 +261,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			setJobEsdPref(sysEnv, null);
 
 			setState(sysEnv, new Integer(DEPENDENCY_WAIT));
-			setScopeId(sysEnv, null);
+			if (clearScope)
+				setScopeId(sysEnv, null);
 
 			SystemEnvironment.sched.notifyChange(sysEnv, this, SchedulingThread.RERUN);
 			return true;
@@ -272,7 +273,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	public void rerunRecursive (SystemEnvironment sysEnv, Long originId, String comment, boolean topLevel)
 		throws SDMSException
 	{
-		boolean rerun = rerunEntity(sysEnv);
+		boolean rerun = rerunEntity(sysEnv, true);
 		if (getState(sysEnv).intValue() != FINAL) {
 			Vector v_hi = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, getId(sysEnv));
 			Iterator i_hi = v_hi.iterator();
@@ -686,8 +687,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 		long ts = new Date().getTime();
 
+		int state = getState(sysEnv).intValue();
 		if(suspend) {
-			int state = getState(sysEnv).intValue();
 			if(state == RESOURCE_WAIT || state == RUNNABLE) {
 				releaseResources(sysEnv, SYNCHRONIZE_WAIT);
 				setState(sysEnv, new Integer(DEPENDENCY_WAIT));
@@ -698,6 +699,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			if (operator)
 				setOpSusresTs(sysEnv, new Long(ts));
 			checkDeferStall(sysEnv);
+
+			if (state == SYNCHRONIZE_WAIT || state == DEPENDENCY_WAIT)
+				if (getScopeId(sysEnv) != null)
+					setScopeId(sysEnv, null);
 		}
 
 		SystemEnvironment.sched.notifyChange(sysEnv, this, (suspend ? SchedulingThread.SUSPEND : SchedulingThread.RESUME));
@@ -1305,7 +1310,6 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				if (esdIdUR == null) {
 					setState(sysEnv, new Integer(UNREACHABLE));
 				} else {
-					final Integer esdPrevUR = esp.getUnreachableStatePreference(sysEnv, seVersion);
 					final SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, esdIdUR), seVersion);
 					changeState(sysEnv, esdIdUR, es, null, null, null);
 				}
