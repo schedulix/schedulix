@@ -189,22 +189,24 @@ public class Server
 				}
 
 				switch (ri.reassureJob (feil)) {
-				case RepoIface.START_JOB:
-					feil.close();
-					synchronized (jidsWithEiThread) { jidsWithEiThread.add(jid[i]); }
-					new EiThread (ri, cfg, jid [i]).start();
-					break;
+					case RepoIface.START_JOB:
+						feil.close();
+						synchronized (jidsWithEiThread) {
+							jidsWithEiThread.add(jid[i]);
+						}
+						new EiThread (ri, cfg, jid [i]).start();
+						break;
 
-				case RepoIface.DISPOSE_JOB:
-					Server.removeFeil(jid[i]);
-					break;
+					case RepoIface.DISPOSE_JOB:
+						Server.removeFeil(jid[i]);
+						break;
 
-				case RepoIface.SHUTDOWN_SERVER:
-					feil.close();
-					return false;
+					case RepoIface.SHUTDOWN_SERVER:
+						feil.close();
+						return false;
 
-				default:
-					Utils.abortProgram (ri, "(04301271509) Internal error");
+					default:
+						Utils.abortProgram (ri, "(04301271509) Internal error");
 				}
 			}
 		}

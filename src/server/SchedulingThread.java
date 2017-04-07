@@ -723,7 +723,7 @@ public class SchedulingThread extends InternalSession
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion);
 		if(se.getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) return;
 
-		final Vector rqv = SDMSRunnableQueueTable.idx_smeId.getVectorForUpdate(sysEnv, sme.getId(sysEnv));
+		final Vector rqv = SDMSRunnableQueueTable.idx_smeId.getVectorForUpdate(sysEnv, smeId);
 		final Vector sv = new Vector();
 		for(int j = 0; j < rqv.size(); j++) {
 			SDMSRunnableQueue rq = (SDMSRunnableQueue) rqv.get(j);

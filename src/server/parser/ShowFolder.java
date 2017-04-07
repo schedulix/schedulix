@@ -445,7 +445,7 @@ public class ShowFolder extends ShowCommented
 
 			c_container.addData(sysEnv, c_data);
 		}
-		Collections.sort(c_container.dataset, c_container.getComparator(sysEnv, 1));
+		Collections.sort(c_container.dataset, c_container.getComparator(sysEnv, 2));
 
 		return c_container;
 	}
