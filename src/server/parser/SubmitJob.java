@@ -211,8 +211,14 @@ public class SubmitJob extends Node
 		}
 		resumeTs = evalResumeObj(sysEnv, resumeObj, null, true);
 
-		final SDMSSubmittedEntity smec = sme.submitChild(sysEnv, params, suspended, resumeTs, se.getId(sysEnv), childTag, null, submitTag);
-		return smec.getId(sysEnv);
+		Integer state = sme.getState(sysEnv);
+		if (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED || state == SDMSSubmittedEntity.RUNNING) {
+			if (sme.getIsCancelled(sysEnv).booleanValue())
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03703020852", "Child submit rejected because job is cancelling"));
+			final SDMSSubmittedEntity smec = sme.submitChild(sysEnv, params, suspended, resumeTs, se.getId(sysEnv), childTag, null, submitTag);
+			return smec.getId(sysEnv);
+		} else
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03703020852", "Child submit only allowed while job is active"));
 	}
 
 	public void go(SystemEnvironment sysEnv)
