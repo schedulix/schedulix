@@ -22,7 +22,7 @@ public class Parser
 {
 
 	private int stop = 0;
-	private static final String patternString = "^[-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z|])?$";
+	private static final String patternString = "^[-!#%&(-,/0-9=?@A-Z_a-z|]([- !#%&(-,/0-9=?@A-Z_a-z|]*[-!#%&(-,/0-9=?@A-Z_a-z|])?$";
 	private final Pattern identifierPattern = Pattern.compile(patternString);
 
 	public Parser() { /* nothing to do */ }
