@@ -23,6 +23,16 @@ ArchiveHierarchyColumns=ALL
 ArchiveKillJobColumns=ALL
 
 #
+# AuthenticationClass
+# The class, derived from de.independit.scheduler.server.util.Authenticator, which is configured
+# here is responsible for authentication agains some external system like LDAP, AD or PAM
+# If no class is configured or if there is a problem loading the class, only internal authentication
+# will take place.
+# The provided example is NOT secure and NOT intended for production use
+# 
+# AuthenticationClass=de.independit.scheduler.server.util.ExampleAuthenticator
+
+#
 # CalendarEntries: The maximum number of starttimes stored in the calendar
 #
 CalendarEntries=250
