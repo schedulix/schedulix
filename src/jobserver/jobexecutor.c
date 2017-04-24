@@ -936,7 +936,7 @@ This is also true for spaces following the equals sign
 void advance(callstatus *status)
 {
 	if (global.bufpos == -1) {
-		return;	// after EOF we only return EOF
+		return;	/* after EOF we only return EOF */
 	}
 
 	/* are we at the end of the buffer? */
@@ -1189,9 +1189,10 @@ void evaluateTaskfile(callstatus *status)
 		processEntry(status);
 		if (status->severity != STATUS_OK) {
 #ifndef WINDOWS
-			// since something's wrong with the taskfile, we save a reference in the
+			/* since something's wrong with the taskfile, we save a reference in the
 			// errorTaskfiles directory
 			// No need to check success, if it succeeds it's ok, if not, things don't get worse
+			*/
 			createTfLink();
 #endif
 			return;
@@ -1218,7 +1219,7 @@ void processTaskfile(callstatus *status)
 char *getTimestamp(time_t tim, int local)
 {
 	static char buf [64];
-#ifndef SOLARIS
+#if !defined SOLARIS && !defined AIX
   #ifdef WINDOWS
 	_tzset();
   #endif
@@ -1272,7 +1273,7 @@ void appendTaskfile(callstatus *status, const char *key, char *value, int alread
 		global.taskfile = openTaskfile(status);
 		if (status->severity != STATUS_OK) return;
 	} else {
-		// reset file position
+		/* reset file position */
 		Fseek(global.taskfile, 0, FILE_BEGIN);
 		global.filepos = -1;
 		global.bufpos = 0;
@@ -1433,8 +1434,9 @@ void closeLog(callstatus *status)
 
 char *getUniquePid(callstatus *status, pid_t pid)
 {
-	static char buf[64];	// starttime + sep + how + boottime + sep + pid + \0
+	static char buf[64];	/* starttime + sep + how + boottime + sep + pid + \0
 				//    20        1     1       20       1     20    1
+				*/
 	static const char *pattern = "%d@%c%s+%ld";
 	snprintf(buf, 63, pattern, (int) pid, boottimeHow, (global.boottime == NULL ? "0" : global.boottime), global.myStartTime);
 	/* TODO Error handling */
@@ -1454,7 +1456,7 @@ void run(callstatus *status)
 	DWORD exitcode;
 #endif
 	char  *execpid;
-	char  buf[20];	// for the exit code, assumed maximally a 64 byte int
+	char  buf[20];	/* for the exit code, assumed maximally a 64 byte int */
 	int exitstatus;
 
 	execpid = getUniquePid(status, getpid());
@@ -1473,7 +1475,7 @@ void run(callstatus *status)
 	 * of a jobexecutor (for the same taskfile)
 	 */
 	global.taskfile = openTaskfile(status);
-	if (status->severity != STATUS_OK) return;	// TODO: better error handling
+	if (status->severity != STATUS_OK) return;	/* TODO: better error handling */
 
 	appendTaskfile(status, EXECPID, execpid, 1);
 	if (status->severity != STATUS_OK) return;
@@ -1497,8 +1499,8 @@ void run(callstatus *status)
 	if (status->severity != STATUS_OK) return;
 #ifndef WINDOWS
 
-//	/* release the lock from the taskfile first */
-//	closeTaskfile(status, global.taskfile);
+	/* release the lock from the taskfile first */
+/*	closeTaskfile(status, global.taskfile); */
 	fflush(global.taskfile);
 
 	/* now we fork() and the child will do the rest */

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.jobserver;
 
 import java.io.*;
@@ -101,6 +100,8 @@ public class Feil
 	private StringBuffer error = new StringBuffer();
 
 	private boolean complete   = false;
+
+	public boolean doEmergencyRename = false;
 
 	public Feil (final File prefix, final String jid)
 	{
@@ -525,11 +526,9 @@ public class Feil
 			id = jid;
 
 		if (logfile.equals("")) {
-
 			logfile = DEV_NULL;
 		}
 		if (errlog.equals("")) {
-
 			logfile = DEV_NULL;
 		}
 	}

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.jobserver;
 
 import java.util.*;
@@ -112,14 +111,15 @@ public class Server
 			f = (Feil) feilMap.get(jid);
 		else
 			return;
-
+		if (f.doEmergencyRename)
+			f.emergency_rename();
+		else
 		f.remove();
 		feilMap.remove(jid);
 	}
 
 	public static final synchronized boolean feilExists(String jid)
 	{
-
 		return feilMap.containsKey(jid);
 	}
 
@@ -241,7 +241,6 @@ public class Server
 				if (saveIOE != null) throw saveIOE;
 
 				if (feil.length() == 0) {
-
 					feil_expired = true;
 				} else {
 					feil.scan();
@@ -382,14 +381,12 @@ public class Server
 				synchronized (jidsToBreed) {
 					jidsToBreed.clear();
 				}
-
 				Trace.debug("Server:running breed()");
 				breed();
 				bts = now;
 			}
 			Vector<String> v_tmp = new Vector<String>();
 			synchronized(jidsToBreed) {
-
 				v_tmp.addAll(jidsToBreed);
 				jidsToBreed.clear();
 			}
@@ -402,7 +399,6 @@ public class Server
 
 			v_tmp.clear();
 			synchronized(jidsAwaitRunning) {
-
 				v_tmp.addAll(jidsAwaitRunning);
 			}
 			i_tmp = v_tmp.iterator();
