@@ -159,6 +159,7 @@ public class SystemEnvironment implements Cloneable
 	public static Vector atColumns;
 	public static Vector diColumns;
 	public static Vector evColumns;
+	public static Vector exColumns;
 	public static Vector hiColumns;
 	public static Vector kjColumns;
 
@@ -178,6 +179,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_ARCATCOLS             = "ArchiveAuditColumns";
 	public static final String S_ARCDICOLS             = "ArchiveDependencyColumns";
 	public static final String S_ARCEVCOLS             = "ArchiveVariableColumns";
+	public static final String S_ARCEXCOLS             = "ArchiveExtentsColumns";
 	public static final String S_ARCHICOLS             = "ArchiveHierarchyColumns";
 	public static final String S_ARCKJCOLS             = "ArchiveKillJobColumns";
 	public static final String S_AUDITFILE             = "AuditFile";
@@ -1019,6 +1021,7 @@ public class SystemEnvironment implements Cloneable
 		String s_atColumns = props.getProperty(S_ARCATCOLS, ALL);
 		String s_diColumns = props.getProperty(S_ARCDICOLS, ALL);
 		String s_evColumns = props.getProperty(S_ARCEVCOLS, ALL);
+		String s_exColumns = props.getProperty(S_ARCEXCOLS, ALL);
 		String s_hiColumns = props.getProperty(S_ARCHICOLS, ALL);
 		String s_kjColumns = props.getProperty(S_ARCKJCOLS, ALL);
 
@@ -1051,6 +1054,13 @@ public class SystemEnvironment implements Cloneable
 			evColumns = new Vector();
 		else
 			evColumns = convertEntryToVector(s_evColumns, null);
+
+		if (s_exColumns.toUpperCase().equals(NONE))
+			exColumns = null;
+		else if (s_exColumns.toUpperCase().equals(ALL))
+			exColumns = new Vector();
+		else
+			exColumns = convertEntryToVector(s_exColumns, null);
 
 		if (s_hiColumns.toUpperCase().equals(NONE))
 			hiColumns = null;
