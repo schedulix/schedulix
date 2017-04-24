@@ -154,6 +154,10 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 		((SDMSSubmittedEntityGeneric)(object)).setSubmitTag (env, p_submitTag);
 		return ;
 	}
+	public static int getSubmitTagMaxLength ()
+	{
+		return (32);
+	}
 	public Integer getUnresolvedHandling (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -211,6 +215,10 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 
 		((SDMSSubmittedEntityGeneric)(object)).setChildTag (env, p_childTag);
 		return ;
+	}
+	public static int getChildTagMaxLength ()
+	{
+		return (70);
 	}
 	public Long getSeVersion (SystemEnvironment env)
 	throws SDMSException
@@ -498,6 +506,10 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 		((SDMSSubmittedEntityGeneric)(object)).setCommandline (env, p_commandline);
 		return ;
 	}
+	public static int getCommandlineMaxLength ()
+	{
+		return (512);
+	}
 	public String getRrCommandline (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -514,6 +526,10 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 
 		((SDMSSubmittedEntityGeneric)(object)).setRrCommandline (env, p_rrCommandline);
 		return ;
+	}
+	public static int getRrCommandlineMaxLength ()
+	{
+		return (512);
 	}
 	public Integer getRerunSeq (SystemEnvironment env)
 	throws SDMSException
@@ -719,6 +735,10 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 		((SDMSSubmittedEntityGeneric)(object)).setWorkdir (env, p_workdir);
 		return ;
 	}
+	public static int getWorkdirMaxLength ()
+	{
+		return (512);
+	}
 	public String getLogfile (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -735,6 +755,10 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 
 		((SDMSSubmittedEntityGeneric)(object)).setLogfile (env, p_logfile);
 		return ;
+	}
+	public static int getLogfileMaxLength ()
+	{
+		return (512);
 	}
 	public String getErrlogfile (SystemEnvironment env)
 	throws SDMSException
@@ -753,6 +777,10 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 		((SDMSSubmittedEntityGeneric)(object)).setErrlogfile (env, p_errlogfile);
 		return ;
 	}
+	public static int getErrlogfileMaxLength ()
+	{
+		return (512);
+	}
 	public String getPid (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -769,6 +797,10 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 
 		((SDMSSubmittedEntityGeneric)(object)).setPid (env, p_pid);
 		return ;
+	}
+	public static int getPidMaxLength ()
+	{
+		return (32);
 	}
 	public String getExtPid (SystemEnvironment env)
 	throws SDMSException
@@ -787,6 +819,10 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 		((SDMSSubmittedEntityGeneric)(object)).setExtPid (env, p_extPid);
 		return ;
 	}
+	public static int getExtPidMaxLength ()
+	{
+		return (32);
+	}
 	public String getErrorMsg (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -803,6 +839,10 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 
 		((SDMSSubmittedEntityGeneric)(object)).setErrorMsg (env, p_errorMsg);
 		return ;
+	}
+	public static int getErrorMsgMaxLength ()
+	{
+		return (256);
 	}
 	public Long getKillId (SystemEnvironment env)
 	throws SDMSException

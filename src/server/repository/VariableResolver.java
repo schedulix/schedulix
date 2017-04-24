@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -95,23 +94,34 @@ public abstract class VariableResolver
 						SDMSScope evalScope)
 		throws SDMSException
 	{
-
 		StringBuffer result = new StringBuffer();
+		final String BICSUITE_PRAGMA_VPFX = "BICSUITE_PRAGMA_VPFX:";
+		final String BICSUITE_PRAGMA_PBS = "BICSUITE_PRAGMA_PBS";
+		final int pfxOffset = BICSUITE_PRAGMA_VPFX.length();
+		final boolean pbs = key.indexOf(BICSUITE_PRAGMA_PBS) != -1;
+		final int index = key.indexOf(BICSUITE_PRAGMA_VPFX);
+		char prefix = '$';
+		if (index != -1) {
+			prefix = key.charAt (index + pfxOffset);
+			key = key.substring(0, index + pfxOffset) + "\\" + key.substring(index + pfxOffset);
+		}
 		final char[] str = key.toCharArray();
-
 		boolean escape = false;
 
 		for(int i = 0; i < str.length; ++i) {
 			char c = str[i];
+			if (escape && pbs && c != prefix) {
+				result.append('\\');
+				escape = false;
+			}
 			if(escape) {
-				if(c != '\\' && c != '$') {
+				if(!pbs && c != '\\'&& c != prefix) {
 					result.append('\\');
 				}
 				result.append(c);
 				escape = false;
 			} else {
-				if (c == '$') {
-
+				if (c == prefix) {
 					i = readVar(sysEnv, thisObject, str, i, fastAccess, mode, triggercontext, result, recursionCheck, version, evalScope);
 				} else if (c == '\\') {
 					escape = true;
@@ -120,9 +130,9 @@ public abstract class VariableResolver
 				}
 			}
 		}
-
 		if(escape)
 			result.append('\\');
+
 		return result.toString();
 	}
 
@@ -162,14 +172,12 @@ public abstract class VariableResolver
 					if (key[i+1] == '}')
 						i++;
 					else {
-
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03312031425", "Syntax Error: unexpected Character '" + key[i+1] + "'"));
 					}
 				i++;
 				break;
 			} else {
 				if (delimited && Arrays.binarySearch(searchChars, key[i]) < 0) {
-
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03312031427", "Syntax Error: unexpected Character '" + key[i] + "'"));
 				}
 				var.append(key[i]);
@@ -186,7 +194,6 @@ public abstract class VariableResolver
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03603010059", "Run into a loop while trying to resolve variable $1", varName));
 		}
 		recursionCheck.push(k);
-
 		Boolean isDefault = (Boolean) sysEnv.tx.txData.get(SystemEnvironment.S_ISDEFAULT);
 		sysEnv.tx.txData.remove(SystemEnvironment.S_ISDEFAULT);
 		result.append(getInternalVariableValue(sysEnv, thisObject, varName, fastAccess, mode, triggercontext, recursionCheck, version, evalScope));
@@ -269,6 +276,5 @@ public abstract class VariableResolver
 
 	public VariableResolver()
 	{
-
 	}
 }

@@ -74,6 +74,10 @@ public class SDMSPersistentValueProxyGeneric extends SDMSProxy
 		((SDMSPersistentValueGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public Integer getIntValue (SystemEnvironment env)
 	throws SDMSException
 	{

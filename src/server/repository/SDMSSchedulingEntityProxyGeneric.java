@@ -106,6 +106,10 @@ public class SDMSSchedulingEntityProxyGeneric extends SDMSProxy
 		((SDMSSchedulingEntityGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public Long getFolderId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -181,6 +185,10 @@ public class SDMSSchedulingEntityProxyGeneric extends SDMSProxy
 		((SDMSSchedulingEntityGeneric)(object)).setRunProgram (env, p_runProgram);
 		return ;
 	}
+	public static int getRunProgramMaxLength ()
+	{
+		return (512);
+	}
 	public String getRerunProgram (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -197,6 +205,10 @@ public class SDMSSchedulingEntityProxyGeneric extends SDMSProxy
 
 		((SDMSSchedulingEntityGeneric)(object)).setRerunProgram (env, p_rerunProgram);
 		return ;
+	}
+	public static int getRerunProgramMaxLength ()
+	{
+		return (512);
 	}
 	public String getKillProgram (SystemEnvironment env)
 	throws SDMSException
@@ -215,6 +227,10 @@ public class SDMSSchedulingEntityProxyGeneric extends SDMSProxy
 		((SDMSSchedulingEntityGeneric)(object)).setKillProgram (env, p_killProgram);
 		return ;
 	}
+	public static int getKillProgramMaxLength ()
+	{
+		return (512);
+	}
 	public String getWorkdir (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -232,6 +248,10 @@ public class SDMSSchedulingEntityProxyGeneric extends SDMSProxy
 		((SDMSSchedulingEntityGeneric)(object)).setWorkdir (env, p_workdir);
 		return ;
 	}
+	public static int getWorkdirMaxLength ()
+	{
+		return (512);
+	}
 	public String getLogfile (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -248,6 +268,10 @@ public class SDMSSchedulingEntityProxyGeneric extends SDMSProxy
 
 		((SDMSSchedulingEntityGeneric)(object)).setLogfile (env, p_logfile);
 		return ;
+	}
+	public static int getLogfileMaxLength ()
+	{
+		return (512);
 	}
 	public Boolean getTruncLog (SystemEnvironment env)
 	throws SDMSException
@@ -289,6 +313,10 @@ public class SDMSSchedulingEntityProxyGeneric extends SDMSProxy
 
 		((SDMSSchedulingEntityGeneric)(object)).setErrlogfile (env, p_errlogfile);
 		return ;
+	}
+	public static int getErrlogfileMaxLength ()
+	{
+		return (512);
 	}
 	public Boolean getTruncErrlog (SystemEnvironment env)
 	throws SDMSException
@@ -364,6 +392,10 @@ public class SDMSSchedulingEntityProxyGeneric extends SDMSProxy
 
 		((SDMSSchedulingEntityGeneric)(object)).setGetExpectedRuntime (env, p_getExpectedRuntime);
 		return ;
+	}
+	public static int getGetExpectedRuntimeMaxLength ()
+	{
+		return (32);
 	}
 	public Integer getPriority (SystemEnvironment env)
 	throws SDMSException
@@ -480,6 +512,10 @@ public class SDMSSchedulingEntityProxyGeneric extends SDMSProxy
 
 		((SDMSSchedulingEntityGeneric)(object)).setResumeAt (env, p_resumeAt);
 		return ;
+	}
+	public static int getResumeAtMaxLength ()
+	{
+		return (20);
 	}
 	public Integer getResumeIn (SystemEnvironment env)
 	throws SDMSException

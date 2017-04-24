@@ -85,6 +85,10 @@ public class SDMSUserProxyGeneric extends SDMSProxy
 		((SDMSUserGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public String getPasswd (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -102,6 +106,10 @@ public class SDMSUserProxyGeneric extends SDMSProxy
 		((SDMSUserGeneric)(object)).setPasswd (env, p_passwd);
 		return ;
 	}
+	public static int getPasswdMaxLength ()
+	{
+		return (64);
+	}
 	public String getSalt (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -118,6 +126,10 @@ public class SDMSUserProxyGeneric extends SDMSProxy
 
 		((SDMSUserGeneric)(object)).setSalt (env, p_salt);
 		return ;
+	}
+	public static int getSaltMaxLength ()
+	{
+		return (64);
 	}
 	public Integer getMethod (SystemEnvironment env)
 	throws SDMSException

@@ -116,6 +116,10 @@ public class SDMSResourceVariableProxyGeneric extends SDMSProxy
 		((SDMSResourceVariableGeneric)(object)).setValue (env, p_value);
 		return ;
 	}
+	public static int getValueMaxLength ()
+	{
+		return (256);
+	}
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{

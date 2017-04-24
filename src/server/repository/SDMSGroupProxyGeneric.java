@@ -79,6 +79,10 @@ public class SDMSGroupProxyGeneric extends SDMSProxy
 		((SDMSGroupGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public Long getDeleteVersion (SystemEnvironment env)
 	throws SDMSException
 	{

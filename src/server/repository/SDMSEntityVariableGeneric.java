@@ -45,10 +45,11 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 	public final static int nr_value = 4;
 	public final static int nr_isLocal = 5;
 	public final static int nr_evLink = 6;
-	public final static int nr_creatorUId = 7;
-	public final static int nr_createTs = 8;
-	public final static int nr_changerUId = 9;
-	public final static int nr_changeTs = 10;
+	public final static int nr_isLong = 7;
+	public final static int nr_creatorUId = 8;
+	public final static int nr_createTs = 9;
+	public final static int nr_changerUId = 10;
+	public final static int nr_changeTs = 11;
 
 	public static String tableName = SDMSEntityVariableTableGeneric.tableName;
 
@@ -57,6 +58,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 	protected String value;
 	protected Boolean isLocal;
 	protected Long evLink;
+	protected Boolean isLong;
 	protected Long creatorUId;
 	protected Long createTs;
 	protected Long changerUId;
@@ -73,6 +75,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 		String p_value,
 		Boolean p_isLocal,
 		Long p_evLink,
+	        Boolean p_isLong,
 		Long p_creatorUId,
 		Long p_createTs,
 		Long p_changerUId,
@@ -98,6 +101,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 		value = p_value;
 		isLocal = p_isLocal;
 		evLink = p_evLink;
+		isLong = p_isLong;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -252,6 +256,30 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 		return;
 	}
 
+	public Boolean getIsLong (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (isLong);
+	}
+
+	public	void setIsLong (SystemEnvironment env, Boolean p_isLong)
+	throws SDMSException
+	{
+		if(isLong.equals(p_isLong)) return;
+		SDMSEntityVariableGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(EntityVariable) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
+		o.isLong = p_isLong;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -378,6 +406,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 	                                    String p_value,
 	                                    Boolean p_isLocal,
 	                                    Long p_evLink,
+	                                    Boolean p_isLong,
 	                                    Long p_creatorUId,
 	                                    Long p_createTs,
 	                                    Long p_changerUId,
@@ -390,6 +419,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 		value = p_value;
 		isLocal = p_isLocal;
 		evLink = p_evLink;
+		isLong = p_isLong;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -420,11 +450,13 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 				        ", " + squote + "VALUE" + equote +
 				        ", " + squote + "IS_LOCAL" + equote +
 				        ", " + squote + "EV_LINK" + equote +
+				        ", " + squote + "IS_LONG" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ") VALUES (?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -455,10 +487,11 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 				myInsert.setNull(6, Types.INTEGER);
 			else
 				myInsert.setLong (6, evLink.longValue());
-			myInsert.setLong (7, creatorUId.longValue());
-			myInsert.setLong (8, createTs.longValue());
-			myInsert.setLong (9, changerUId.longValue());
-			myInsert.setLong (10, changeTs.longValue());
+			myInsert.setInt (7, isLong.booleanValue() ? 1 : 0);
+			myInsert.setLong (8, creatorUId.longValue());
+			myInsert.setLong (9, createTs.longValue());
+			myInsert.setLong (10, changerUId.longValue());
+			myInsert.setLong (11, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "EntityVariable: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -505,6 +538,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 				        ", " + squote + "VALUE" + equote + " = ? " +
 				        ", " + squote + "IS_LOCAL" + equote + " = ? " +
 				        ", " + squote + "EV_LINK" + equote + " = ? " +
+				        ", " + squote + "IS_LONG" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +
 				        ", " + squote + "CREATE_TS" + equote + " = ? " +
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
@@ -529,11 +563,12 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 				myUpdate.setNull(5, Types.INTEGER);
 			else
 				myUpdate.setLong (5, evLink.longValue());
-			myUpdate.setLong (6, creatorUId.longValue());
-			myUpdate.setLong (7, createTs.longValue());
-			myUpdate.setLong (8, changerUId.longValue());
-			myUpdate.setLong (9, changeTs.longValue());
-			myUpdate.setLong(10, id.longValue());
+			myUpdate.setInt (6, isLong.booleanValue() ? 1 : 0);
+			myUpdate.setLong (7, creatorUId.longValue());
+			myUpdate.setLong (8, createTs.longValue());
+			myUpdate.setLong (9, changerUId.longValue());
+			myUpdate.setLong (10, changeTs.longValue());
+			myUpdate.setLong(11, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "EntityVariable: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -549,6 +584,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "value : " + value, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isLocal : " + isLocal, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "evLink : " + evLink, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "isLong : " + isLong, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "changerUId : " + changerUId, SDMSThread.SEVERITY_MESSAGE);
@@ -570,6 +606,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 		        indentString + "value      : " + value + "\n" +
 		        indentString + "isLocal    : " + isLocal + "\n" +
 		        indentString + "evLink     : " + evLink + "\n" +
+		        indentString + "isLong     : " + isLong + "\n" +
 		        indentString + "creatorUId : " + creatorUId + "\n" +
 		        indentString + "createTs   : " + createTs + "\n" +
 		        indentString + "changerUId : " + changerUId + "\n" +

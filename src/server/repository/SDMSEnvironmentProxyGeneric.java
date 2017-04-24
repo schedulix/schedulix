@@ -116,6 +116,10 @@ public class SDMSEnvironmentProxyGeneric extends SDMSProxy
 		((SDMSEnvironmentGeneric)(object)).setCondition (env, p_condition);
 		return ;
 	}
+	public static int getConditionMaxLength ()
+	{
+		return (1024);
+	}
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{

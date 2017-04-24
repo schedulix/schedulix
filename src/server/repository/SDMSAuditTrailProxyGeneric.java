@@ -289,6 +289,10 @@ public class SDMSAuditTrailProxyGeneric extends SDMSProxy
 		((SDMSAuditTrailGeneric)(object)).setActionInfo (env, p_actionInfo);
 		return ;
 	}
+	public static int getActionInfoMaxLength ()
+	{
+		return (1024);
+	}
 	public String getActionComment (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -306,6 +310,10 @@ public class SDMSAuditTrailProxyGeneric extends SDMSProxy
 		touchMaster(env);
 		((SDMSAuditTrailGeneric)(object)).setActionComment (env, p_actionComment);
 		return ;
+	}
+	public static int getActionCommentMaxLength ()
+	{
+		return (1024);
 	}
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException

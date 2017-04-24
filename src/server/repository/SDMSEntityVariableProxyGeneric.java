@@ -99,6 +99,10 @@ public class SDMSEntityVariableProxyGeneric extends SDMSProxy
 		((SDMSEntityVariableGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public String getValue (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -116,6 +120,10 @@ public class SDMSEntityVariableProxyGeneric extends SDMSProxy
 		touchMaster(env);
 		((SDMSEntityVariableGeneric)(object)).setValue (env, p_value);
 		return ;
+	}
+	public static int getValueMaxLength ()
+	{
+		return (256);
 	}
 	public Boolean getIsLocal (SystemEnvironment env)
 	throws SDMSException
@@ -151,6 +159,24 @@ public class SDMSEntityVariableProxyGeneric extends SDMSProxy
 
 		touchMaster(env);
 		((SDMSEntityVariableGeneric)(object)).setEvLink (env, p_evLink);
+		return ;
+	}
+	public Boolean getIsLong (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSEntityVariableGeneric)(object)).getIsLong (env));
+	}
+
+	public void setIsLong (SystemEnvironment env, Boolean p_isLong)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSEntityVariableGeneric)(object)).setIsLong (env, p_isLong);
 		return ;
 	}
 	public Long getCreatorUId (SystemEnvironment env)

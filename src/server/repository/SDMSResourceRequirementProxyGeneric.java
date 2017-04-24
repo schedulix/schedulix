@@ -192,6 +192,10 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 		((SDMSResourceRequirementGeneric)(object)).setStickyName (env, p_stickyName);
 		return ;
 	}
+	public static int getStickyNameMaxLength ()
+	{
+		return (64);
+	}
 	public Long getStickyParent (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -313,6 +317,10 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 		touchMaster(env);
 		((SDMSResourceRequirementGeneric)(object)).setCondition (env, p_condition);
 		return ;
+	}
+	public static int getConditionMaxLength ()
+	{
+		return (1024);
 	}
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException

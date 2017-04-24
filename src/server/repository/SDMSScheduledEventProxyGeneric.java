@@ -190,6 +190,10 @@ public class SDMSScheduledEventProxyGeneric extends SDMSProxy
 		((SDMSScheduledEventGeneric)(object)).setErrorCode (env, p_errorCode);
 		return ;
 	}
+	public static int getErrorCodeMaxLength ()
+	{
+		return (32);
+	}
 	public String getErrorMsg (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -206,6 +210,10 @@ public class SDMSScheduledEventProxyGeneric extends SDMSProxy
 
 		((SDMSScheduledEventGeneric)(object)).setErrorMsg (env, p_errorMsg);
 		return ;
+	}
+	public static int getErrorMsgMaxLength ()
+	{
+		return (256);
 	}
 	public Long getLastStartTime (SystemEnvironment env)
 	throws SDMSException

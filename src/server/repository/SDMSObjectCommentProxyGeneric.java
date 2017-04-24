@@ -202,6 +202,10 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 		((SDMSObjectCommentGeneric)(object)).setTag (env, p_tag);
 		return ;
 	}
+	public static int getTagMaxLength ()
+	{
+		return (64);
+	}
 	public String getDescription (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -219,6 +223,10 @@ public class SDMSObjectCommentProxyGeneric extends SDMSProxy
 		touchMaster(env);
 		((SDMSObjectCommentGeneric)(object)).setDescription (env, p_description);
 		return ;
+	}
+	public static int getDescriptionMaxLength ()
+	{
+		return (1900);
 	}
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException

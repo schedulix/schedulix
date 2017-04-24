@@ -185,6 +185,10 @@ public class SDMSResourceProxyGeneric extends SDMSProxy
 		((SDMSResourceGeneric)(object)).setTag (env, p_tag);
 		return ;
 	}
+	public static int getTagMaxLength ()
+	{
+		return (64);
+	}
 	public Long getRsdId (SystemEnvironment env)
 	throws SDMSException
 	{

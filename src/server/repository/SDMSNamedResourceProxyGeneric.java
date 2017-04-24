@@ -82,6 +82,10 @@ public class SDMSNamedResourceProxyGeneric extends SDMSProxy
 		((SDMSNamedResourceGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public Long getOwnerId (SystemEnvironment env)
 	throws SDMSException
 	{

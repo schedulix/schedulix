@@ -282,9 +282,10 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 					sme.setResumeTs(sysEnv, resumeTs);
 				}
 			} else {
-				thisSme.rerun(sysEnv);
+				boolean willSuspend = getIsSuspend(sysEnv).booleanValue();
+				thisSme.rerun(sysEnv, !willSuspend);
 				Long resumeTs = null;
-				if (getIsSuspend(sysEnv).booleanValue()) {
+				if (willSuspend) {
 					thisSme.suspend(sysEnv, true, false);
 					Long finishTs = thisSme.getFinishTs(sysEnv);
 					resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv),

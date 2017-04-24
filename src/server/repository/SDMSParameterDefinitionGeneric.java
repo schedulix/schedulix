@@ -66,10 +66,11 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	public final static int nr_isLocal = 7;
 	public final static int nr_linkPdId = 8;
 	public final static int nr_exportName = 9;
-	public final static int nr_creatorUId = 10;
-	public final static int nr_createTs = 11;
-	public final static int nr_changerUId = 12;
-	public final static int nr_changeTs = 13;
+	public final static int nr_isLong = 10;
+	public final static int nr_creatorUId = 11;
+	public final static int nr_createTs = 12;
+	public final static int nr_changerUId = 13;
+	public final static int nr_changeTs = 14;
 
 	public static String tableName = SDMSParameterDefinitionTableGeneric.tableName;
 
@@ -81,6 +82,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	protected Boolean isLocal;
 	protected Long linkPdId;
 	protected String exportName;
+	protected Boolean isLong;
 	protected Long creatorUId;
 	protected Long createTs;
 	protected Long changerUId;
@@ -100,6 +102,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		Boolean p_isLocal,
 		Long p_linkPdId,
 		String p_exportName,
+	        Boolean p_isLong,
 		Long p_creatorUId,
 		Long p_createTs,
 		Long p_changerUId,
@@ -134,6 +137,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			);
 		}
 		exportName = p_exportName;
+		isLong = p_isLong;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -432,6 +436,30 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		return;
 	}
 
+	public Boolean getIsLong (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (isLong);
+	}
+
+	public	void setIsLong (SystemEnvironment env, Boolean p_isLong)
+	throws SDMSException
+	{
+		if(isLong.equals(p_isLong)) return;
+		SDMSParameterDefinitionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		o.isLong = p_isLong;
+		o.changerUId = env.cEnv.euid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -561,6 +589,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	                Boolean p_isLocal,
 	                Long p_linkPdId,
 	                String p_exportName,
+	                Boolean p_isLong,
 	                Long p_creatorUId,
 	                Long p_createTs,
 	                Long p_changerUId,
@@ -576,6 +605,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		isLocal = p_isLocal;
 		linkPdId = p_linkPdId;
 		exportName = p_exportName;
+		isLong = p_isLong;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -609,12 +639,14 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 				        ", " + squote + "IS_LOCAL" + equote +
 				        ", " + squote + "LINK_PD_ID" + equote +
 				        ", " + squote + "EXPORT_NAME" + equote +
+				        ", " + squote + "IS_LONG" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ", VALID_FROM, VALID_TO" +
 				        ") VALUES (?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -655,12 +687,13 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 				myInsert.setNull(9, Types.VARCHAR);
 			else
 				myInsert.setString(9, exportName);
-			myInsert.setLong (10, creatorUId.longValue());
-			myInsert.setLong (11, createTs.longValue());
-			myInsert.setLong (12, changerUId.longValue());
-			myInsert.setLong (13, changeTs.longValue());
-			myInsert.setLong(14, env.tx.versionId);
-			myInsert.setLong(15, Long.MAX_VALUE);
+			myInsert.setInt (10, isLong.booleanValue() ? 1 : 0);
+			myInsert.setLong (11, creatorUId.longValue());
+			myInsert.setLong (12, createTs.longValue());
+			myInsert.setLong (13, changerUId.longValue());
+			myInsert.setLong (14, changeTs.longValue());
+			myInsert.setLong(15, env.tx.versionId);
+			myInsert.setLong(16, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ParameterDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -761,6 +794,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "isLocal : " + isLocal, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "linkPdId : " + linkPdId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "exportName : " + exportName, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "isLong : " + isLong, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "changerUId : " + changerUId, SDMSThread.SEVERITY_MESSAGE);
@@ -785,6 +819,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 		        indentString + "isLocal      : " + isLocal + "\n" +
 		        indentString + "linkPdId     : " + linkPdId + "\n" +
 		        indentString + "exportName   : " + exportName + "\n" +
+		        indentString + "isLong       : " + isLong + "\n" +
 		        indentString + "creatorUId   : " + creatorUId + "\n" +
 		        indentString + "createTs     : " + createTs + "\n" +
 		        indentString + "changerUId   : " + changerUId + "\n" +

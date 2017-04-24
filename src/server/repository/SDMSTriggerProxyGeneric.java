@@ -109,6 +109,10 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 		((SDMSTriggerGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public Long getFireId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -432,6 +436,10 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 		((SDMSTriggerGeneric)(object)).setResumeAt (env, p_resumeAt);
 		return ;
 	}
+	public static int getResumeAtMaxLength ()
+	{
+		return (20);
+	}
 	public Integer getResumeIn (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -564,6 +572,10 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 		touchMaster(env);
 		((SDMSTriggerGeneric)(object)).setCondition (env, p_condition);
 		return ;
+	}
+	public static int getConditionMaxLength ()
+	{
+		return (1024);
 	}
 	public Integer getCheckAmount (SystemEnvironment env)
 	throws SDMSException

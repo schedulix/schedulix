@@ -77,6 +77,10 @@ public class SDMSNiceProfileProxyGeneric extends SDMSProxy
 		((SDMSNiceProfileGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public Boolean getIsActive (SystemEnvironment env)
 	throws SDMSException
 	{

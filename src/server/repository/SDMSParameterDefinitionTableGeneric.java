@@ -51,6 +51,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		, "IS_LOCAL"
 		, "LINK_PD_ID"
 		, "EXPORT_NAME"
+		, "IS_LONG"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
 		, "CHANGER_U_ID"
@@ -83,6 +84,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 	                                      ,Boolean p_isLocal
 	                                      ,Long p_linkPdId
 	                                      ,String p_exportName
+	                                      ,Boolean p_isLong
 	                                     )
 	throws SDMSException
 	{
@@ -102,6 +104,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		         , p_isLocal
 		         , p_linkPdId
 		         , p_exportName
+		         , p_isLong
 		         , p_creatorUId
 		         , p_createTs
 		         , p_changerUId
@@ -118,6 +121,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		                , p_isLocal
 		                , p_linkPdId
 		                , p_exportName
+		                , p_isLong
 		                , p_creatorUId
 		                , p_createTs
 		                , p_changerUId
@@ -163,6 +167,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 	                        ,Boolean p_isLocal
 	                        ,Long p_linkPdId
 	                        ,String p_exportName
+	                        ,Boolean p_isLong
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
 	                        ,Long p_changerUId
@@ -188,6 +193,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		Boolean isLocal;
 		Long linkPdId;
 		String exportName;
+		Boolean isLong;
 		Long creatorUId;
 		Long createTs;
 		Long changerUId;
@@ -208,12 +214,13 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 			if (r.wasNull()) linkPdId = null;
 			exportName = r.getString(9);
 			if (r.wasNull()) exportName = null;
-			creatorUId = new Long (r.getLong(10));
-			createTs = new Long (r.getLong(11));
-			changerUId = new Long (r.getLong(12));
-			changeTs = new Long (r.getLong(13));
-			validFrom = r.getLong(14);
-			validTo = r.getLong(15);
+			isLong = new Boolean ((r.getInt(10) == 0 ? false : true));
+			creatorUId = new Long (r.getLong(11));
+			createTs = new Long (r.getLong(12));
+			changerUId = new Long (r.getLong(13));
+			changeTs = new Long (r.getLong(14));
+			validFrom = r.getLong(15);
+			validTo = r.getLong(16);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 			throw new FatalException(new SDMSMessage(env, "01110182045", "ParameterDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -228,6 +235,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		                isLocal,
 		                linkPdId,
 		                exportName,
+		                isLong,
 		                creatorUId,
 		                createTs,
 		                changerUId,
@@ -255,6 +263,7 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		                                   ", " + squote + "IS_LOCAL" + equote +
 		                                   ", " + squote + "LINK_PD_ID" + equote +
 		                                   ", " + squote + "EXPORT_NAME" + equote +
+		                                   ", " + squote + "IS_LONG" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +

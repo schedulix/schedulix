@@ -48,6 +48,7 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 		, "VALUE"
 		, "IS_LOCAL"
 		, "EV_LINK"
+		, "IS_LONG"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
 		, "CHANGER_U_ID"
@@ -75,6 +76,7 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 	                                 ,String p_value
 	                                 ,Boolean p_isLocal
 	                                 ,Long p_evLink
+	                                 ,Boolean p_isLong
 	                                )
 	throws SDMSException
 	{
@@ -91,6 +93,7 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 		         , p_value
 		         , p_isLocal
 		         , p_evLink
+		         , p_isLong
 		         , p_creatorUId
 		         , p_createTs
 		         , p_changerUId
@@ -104,6 +107,7 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 		                , p_value
 		                , p_isLocal
 		                , p_evLink
+		                , p_isLong
 		                , p_creatorUId
 		                , p_createTs
 		                , p_changerUId
@@ -146,6 +150,7 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 	                        ,String p_value
 	                        ,Boolean p_isLocal
 	                        ,Long p_evLink
+	                        ,Boolean p_isLong
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
 	                        ,Long p_changerUId
@@ -164,6 +169,7 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 		String value;
 		Boolean isLocal;
 		Long evLink;
+		Boolean isLong;
 		Long creatorUId;
 		Long createTs;
 		Long changerUId;
@@ -180,10 +186,11 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 			isLocal = new Boolean ((r.getInt(5) == 0 ? false : true));
 			evLink = new Long (r.getLong(6));
 			if (r.wasNull()) evLink = null;
-			creatorUId = new Long (r.getLong(7));
-			createTs = new Long (r.getLong(8));
-			changerUId = new Long (r.getLong(9));
-			changeTs = new Long (r.getLong(10));
+			isLong = new Boolean ((r.getInt(7) == 0 ? false : true));
+			creatorUId = new Long (r.getLong(8));
+			createTs = new Long (r.getLong(9));
+			changerUId = new Long (r.getLong(10));
+			changeTs = new Long (r.getLong(11));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -197,6 +204,7 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 		                                     value,
 		                                     isLocal,
 		                                     evLink,
+		                                     isLong,
 		                                     creatorUId,
 		                                     createTs,
 		                                     changerUId,
@@ -221,6 +229,7 @@ public class SDMSEntityVariableTableGeneric extends SDMSTable
 		                                   ", " + squote + "VALUE" + equote +
 		                                   ", " + squote + "IS_LOCAL" + equote +
 		                                   ", " + squote + "EV_LINK" + equote +
+		                                   ", " + squote + "IS_LONG" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +

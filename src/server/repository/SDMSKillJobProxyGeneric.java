@@ -208,6 +208,10 @@ public class SDMSKillJobProxyGeneric extends SDMSProxy
 		((SDMSKillJobGeneric)(object)).setCommandline (env, p_commandline);
 		return ;
 	}
+	public static int getCommandlineMaxLength ()
+	{
+		return (512);
+	}
 	public String getLogfile (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -225,6 +229,10 @@ public class SDMSKillJobProxyGeneric extends SDMSProxy
 		touchMaster(env);
 		((SDMSKillJobGeneric)(object)).setLogfile (env, p_logfile);
 		return ;
+	}
+	public static int getLogfileMaxLength ()
+	{
+		return (512);
 	}
 	public String getErrlogfile (SystemEnvironment env)
 	throws SDMSException
@@ -244,6 +252,10 @@ public class SDMSKillJobProxyGeneric extends SDMSProxy
 		((SDMSKillJobGeneric)(object)).setErrlogfile (env, p_errlogfile);
 		return ;
 	}
+	public static int getErrlogfileMaxLength ()
+	{
+		return (512);
+	}
 	public String getPid (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -261,6 +273,10 @@ public class SDMSKillJobProxyGeneric extends SDMSProxy
 		touchMaster(env);
 		((SDMSKillJobGeneric)(object)).setPid (env, p_pid);
 		return ;
+	}
+	public static int getPidMaxLength ()
+	{
+		return (32);
 	}
 	public String getExtPid (SystemEnvironment env)
 	throws SDMSException
@@ -280,6 +296,10 @@ public class SDMSKillJobProxyGeneric extends SDMSProxy
 		((SDMSKillJobGeneric)(object)).setExtPid (env, p_extPid);
 		return ;
 	}
+	public static int getExtPidMaxLength ()
+	{
+		return (32);
+	}
 	public String getErrorMsg (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -297,6 +317,10 @@ public class SDMSKillJobProxyGeneric extends SDMSProxy
 		touchMaster(env);
 		((SDMSKillJobGeneric)(object)).setErrorMsg (env, p_errorMsg);
 		return ;
+	}
+	public static int getErrorMsgMaxLength ()
+	{
+		return (256);
 	}
 	public Long getRunnableTs (SystemEnvironment env)
 	throws SDMSException

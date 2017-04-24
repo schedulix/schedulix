@@ -77,6 +77,10 @@ public class SDMSExitStateMappingProfileProxyGeneric extends SDMSProxy
 		((SDMSExitStateMappingProfileGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{

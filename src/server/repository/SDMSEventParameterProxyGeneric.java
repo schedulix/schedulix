@@ -81,6 +81,10 @@ public class SDMSEventParameterProxyGeneric extends SDMSProxy
 		((SDMSEventParameterGeneric)(object)).setKey (env, p_key);
 		return ;
 	}
+	public static int getKeyMaxLength ()
+	{
+		return (64);
+	}
 	public String getValue (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -98,6 +102,10 @@ public class SDMSEventParameterProxyGeneric extends SDMSProxy
 		touchMaster(env);
 		((SDMSEventParameterGeneric)(object)).setValue (env, p_value);
 		return ;
+	}
+	public static int getValueMaxLength ()
+	{
+		return (256);
 	}
 	public Long getEvtId (SystemEnvironment env)
 	throws SDMSException

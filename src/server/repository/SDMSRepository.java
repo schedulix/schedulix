@@ -264,6 +264,8 @@ public class SDMSRepository
 		tables.put(SDMSTriggerStateTableGeneric.tableName,			new SDMSTriggerStateTable(env));
 		// U
 		tables.put(SDMSUserTableGeneric.tableName,				new SDMSUserTable(env));
+		// V
+		tables.put(SDMSVersionedExtentsTableGeneric.tableName,			new SDMSVersionedExtentsTable(env));
 
 		// non persistent tables
 		tables.put(SDMSnpJobFootprintTableGeneric.tableName,			new SDMSnpJobFootprintTable(env));

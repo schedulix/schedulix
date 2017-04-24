@@ -77,6 +77,10 @@ public class SDMSResourceStateProfileProxyGeneric extends SDMSProxy
 		((SDMSResourceStateProfileGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public Long getInitialRsdId (SystemEnvironment env)
 	throws SDMSException
 	{

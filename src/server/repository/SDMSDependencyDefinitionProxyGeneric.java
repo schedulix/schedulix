@@ -130,6 +130,10 @@ public class SDMSDependencyDefinitionProxyGeneric extends SDMSProxy
 		((SDMSDependencyDefinitionGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public Integer getUnresolvedHandling (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -222,6 +226,10 @@ public class SDMSDependencyDefinitionProxyGeneric extends SDMSProxy
 		touchMaster(env);
 		((SDMSDependencyDefinitionGeneric)(object)).setCondition (env, p_condition);
 		return ;
+	}
+	public static int getConditionMaxLength ()
+	{
+		return (1024);
 	}
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException

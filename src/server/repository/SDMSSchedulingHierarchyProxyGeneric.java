@@ -134,6 +134,10 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 		((SDMSSchedulingHierarchyGeneric)(object)).setAliasName (env, p_aliasName);
 		return ;
 	}
+	public static int getAliasNameMaxLength ()
+	{
+		return (64);
+	}
 	public Boolean getIsStatic (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -244,6 +248,10 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 		touchMaster(env);
 		((SDMSSchedulingHierarchyGeneric)(object)).setResumeAt (env, p_resumeAt);
 		return ;
+	}
+	public static int getResumeAtMaxLength ()
+	{
+		return (20);
 	}
 	public Integer getResumeIn (SystemEnvironment env)
 	throws SDMSException

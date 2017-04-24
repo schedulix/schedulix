@@ -227,6 +227,10 @@ public class SDMSResourceAllocationProxyGeneric extends SDMSProxy
 		((SDMSResourceAllocationGeneric)(object)).setStickyName (env, p_stickyName);
 		return ;
 	}
+	public static int getStickyNameMaxLength ()
+	{
+		return (64);
+	}
 	public Long getStickyParent (SystemEnvironment env)
 	throws SDMSException
 	{

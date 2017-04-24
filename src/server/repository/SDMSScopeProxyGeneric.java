@@ -89,6 +89,10 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 		((SDMSScopeGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public Long getOwnerId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -273,6 +277,10 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 		((SDMSScopeGeneric)(object)).setPasswd (env, p_passwd);
 		return ;
 	}
+	public static int getPasswdMaxLength ()
+	{
+		return (64);
+	}
 	public String getSalt (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -289,6 +297,10 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 
 		((SDMSScopeGeneric)(object)).setSalt (env, p_salt);
 		return ;
+	}
+	public static int getSaltMaxLength ()
+	{
+		return (64);
 	}
 	public Integer getMethod (SystemEnvironment env)
 	throws SDMSException
@@ -331,6 +343,10 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 		((SDMSScopeGeneric)(object)).setPid (env, p_pid);
 		return ;
 	}
+	public static int getPidMaxLength ()
+	{
+		return (32);
+	}
 	public String getNode (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -348,6 +364,10 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 		((SDMSScopeGeneric)(object)).setNode (env, p_node);
 		return ;
 	}
+	public static int getNodeMaxLength ()
+	{
+		return (32);
+	}
 	public String getErrmsg (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -364,6 +384,10 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 
 		((SDMSScopeGeneric)(object)).setErrmsg (env, p_errmsg);
 		return ;
+	}
+	public static int getErrmsgMaxLength ()
+	{
+		return (256);
 	}
 	public Long getLastActive (SystemEnvironment env)
 	throws SDMSException

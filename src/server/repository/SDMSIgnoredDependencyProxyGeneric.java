@@ -98,6 +98,10 @@ public class SDMSIgnoredDependencyProxyGeneric extends SDMSProxy
 		((SDMSIgnoredDependencyGeneric)(object)).setDdName (env, p_ddName);
 		return ;
 	}
+	public static int getDdNameMaxLength ()
+	{
+		return (64);
+	}
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{

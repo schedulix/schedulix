@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -46,87 +45,150 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 		super(p_object);
 	}
 
-	public void delete(SystemEnvironment sysEnv)
+	private void deleteExtents(SystemEnvironment env)
+	throws SDMSException
+	{
+		Long id = getId(env);
+		Vector v = SDMSVersionedExtentsTable.idx_oId.getVector(env, getId(env));
+		for(int i = 0; i < v.size(); i++) {
+			SDMSVersionedExtents e = (SDMSVersionedExtents) v.get(i);
+			e.delete(env);
+		}
+	}
+
+	public void delete(SystemEnvironment env)
 		throws SDMSException
 	{
 		HashSet<Long> s = new HashSet<Long>();
-		s.add(getSeId(sysEnv));
-		delete(sysEnv, s, false);
+		s.add(getSeId(env));
+		delete(env, s, false);
 	}
 
-	public void delete(SystemEnvironment sysEnv, HashSet<Long> seIds, boolean force)
+	public void delete(SystemEnvironment env, HashSet<Long> seIds, boolean force)
 		throws SDMSException
 	{
-		Long id = getId(sysEnv);
-		Vector v = SDMSParameterDefinitionTable.idx_linkPdId.getVector(sysEnv, id);
+		Long id = getId(env);
+		Vector v = SDMSParameterDefinitionTable.idx_linkPdId.getVector(env, id);
 		for(int i = 0; i < v.size(); i++) {
 			SDMSParameterDefinition pd = (SDMSParameterDefinition) v.get(i);
-			if (seIds.contains(pd.getSeId(sysEnv)))
+			if (seIds.contains(pd.getSeId(env)))
 				continue;
-
 				throw new CommonErrorException(
-						new SDMSMessage(sysEnv, "03402082327",
-							"The parameter $1 is referenced by $2", getName(sysEnv), pd.getURL(sysEnv)
+						new SDMSMessage(env, "03402082327",
+							"The parameter $1 is referenced by $2", getName(env), pd.getURL(env)
 						)
 				);
-
-				}
-		super.delete(sysEnv);
+		}
+		if (getIsLong(env).booleanValue())
+			deleteExtents(env);
+		super.delete(env);
 	}
 
-	public String getURLName(SystemEnvironment sysEnv)
+	public String getDefaultValue (SystemEnvironment env)
+	throws SDMSException
+	{
+		String val = super.getDefaultValue (env);
+		if (getIsLong(env).booleanValue()) {
+			Vector v = SDMSVersionedExtentsTable.idx_oId.getVector(env, getId(env));
+			for (int s = 1; s <= v.size(); s ++) {
+				for (int i = 0; i < v.size(); i ++) {
+					SDMSVersionedExtents e = (SDMSVersionedExtents) v.get(i);
+					if (s == e.getSequence(env).intValue()) {
+						val = val + e.getExtent(env);
+					}
+				}
+			}
+		}
+		return (val);
+	}
+
+	private void createExtents(SystemEnvironment env, String p_value)
+	throws SDMSException
+	{
+		int e = 1;
+		while (p_value.length() > 0) {
+			if (p_value.length() > SDMSVersionedExtentsProxyGeneric.getExtentMaxLength()) {
+				SDMSVersionedExtentsTable.table.create(env, getId(env), new Integer(e), p_value.substring(0, SDMSVersionedExtentsProxyGeneric.getExtentMaxLength()));
+				p_value = p_value.substring(SDMSVersionedExtentsProxyGeneric.getExtentMaxLength());
+			} else {
+				SDMSVersionedExtentsTable.table.create(env, getId(env), new Integer(e), p_value);
+				break;
+			}
+			e ++;
+		}
+	}
+
+	public void setDefaultValue (SystemEnvironment env, String p_defaultValue)
+	throws SDMSException
+	{
+		String oldValue = getDefaultValue(env);
+		if(p_defaultValue != null && p_defaultValue.equals(oldValue)) return;
+		if(p_defaultValue == null && oldValue == null) return;
+		if (getIsLong(env).booleanValue())
+			deleteExtents(env);
+		if (p_defaultValue.length() > getDefaultValueMaxLength()) {
+			createExtents(env, p_defaultValue.substring(getDefaultValueMaxLength()));
+			p_defaultValue = p_defaultValue.substring(0, getDefaultValueMaxLength());
+			setIsLong(env, Boolean.TRUE);
+		} else
+			setIsLong(env, Boolean.FALSE);
+		super.setDefaultValue(env, p_defaultValue);
+		return ;
+	}
+
+	public String getURLName(SystemEnvironment env)
 		throws SDMSException
 	{
 		SDMSProxy p = null;
-		final Long seId = getSeId(sysEnv);
+		final Long seId = getSeId(env);
 		try {
-			p = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
+			p = SDMSSchedulingEntityTable.getObject(env, seId);
 		} catch (NotFoundException nfe1) {
 			try {
-				p = SDMSScopeTable.getObject(sysEnv, seId);
+				p = SDMSScopeTable.getObject(env, seId);
 			} catch (NotFoundException nfe2) {
 				try {
-					p = SDMSNamedResourceTable.getObject(sysEnv, seId);
+					p = SDMSNamedResourceTable.getObject(env, seId);
 				} catch (NotFoundException nfe3) {
-					p = SDMSNamedResourceTable.getObject(sysEnv, seId);
+					p = SDMSNamedResourceTable.getObject(env, seId);
 				}
 			}
 		}
 
-		return getName(sysEnv) + " of " + p.getURL(sysEnv);
+		return getName(env) + " of " + p.getURL(env);
 	}
 
-	public String getURL(SystemEnvironment sysEnv)
+	public String getURL(SystemEnvironment env)
 		throws SDMSException
 	{
-		return "parameter " + getURLName(sysEnv);
+		return "parameter " + getURLName(env);
 	}
 
-	public	void setLinkPdId (SystemEnvironment sysEnv, Long p_linkPdId)
+	public	void setLinkPdId (SystemEnvironment env, Long p_linkPdId)
 	throws SDMSException
 	{
-		super.setLinkPdId(sysEnv, p_linkPdId);
-		checkRefCycle(sysEnv);
+		super.setLinkPdId(env, p_linkPdId);
+		checkRefCycle(env);
 	}
 
-	protected void checkRefCycle(SystemEnvironment sysEnv)
+	protected void checkRefCycle(SystemEnvironment env)
 	throws SDMSException
 	{
-		checkRefCycle(sysEnv, new HashSet<Long>());
+		checkRefCycle(env, new HashSet<Long>());
 	}
 
-	protected void checkRefCycle(SystemEnvironment sysEnv, HashSet<Long> pdIds)
+	protected void checkRefCycle(SystemEnvironment env, HashSet<Long> pdIds)
 	throws SDMSException
 	{
-		Long linkPdId = getLinkPdId(sysEnv);
+		Long linkPdId = getLinkPdId(env);
 		if (linkPdId == null)
 			return;
-		pdIds.add(getId(sysEnv));
+		pdIds.add(getId(env));
 		if (pdIds.contains(linkPdId))
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03507140909", "Cyclic Parameter References detected"));
+			throw new CommonErrorException(new SDMSMessage(env, "03507140909", "Cyclic Parameter References detected"));
 
-		SDMSParameterDefinition pd = SDMSParameterDefinitionTable.getObject(sysEnv, linkPdId);
-		pd.checkRefCycle(sysEnv, pdIds);
+		SDMSParameterDefinition pd = SDMSParameterDefinitionTable.getObject(env, linkPdId);
+		pd.checkRefCycle(env, pdIds);
 	}
 }
 

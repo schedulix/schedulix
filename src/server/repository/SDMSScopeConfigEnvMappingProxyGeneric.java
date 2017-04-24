@@ -81,6 +81,10 @@ public class SDMSScopeConfigEnvMappingProxyGeneric extends SDMSProxy
 		((SDMSScopeConfigEnvMappingGeneric)(object)).setKey (env, p_key);
 		return ;
 	}
+	public static int getKeyMaxLength ()
+	{
+		return (64);
+	}
 	public String getValue (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -98,6 +102,10 @@ public class SDMSScopeConfigEnvMappingProxyGeneric extends SDMSProxy
 		touchMaster(env);
 		((SDMSScopeConfigEnvMappingGeneric)(object)).setValue (env, p_value);
 		return ;
+	}
+	public static int getValueMaxLength ()
+	{
+		return (256);
 	}
 	public Long getSId (SystemEnvironment env)
 	throws SDMSException

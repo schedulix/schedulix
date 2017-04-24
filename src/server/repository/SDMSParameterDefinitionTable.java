@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -57,7 +56,8 @@ public class SDMSParameterDefinitionTable extends SDMSParameterDefinitionTableGe
 	                                     )
 	throws SDMSException
 	{
-		SDMSParameterDefinition pd = super.create (env, p_seId, p_name, p_type, p_aggFunction, p_defaultValue, p_isLocal, p_linkPdId, p_exportName);
+		SDMSParameterDefinition pd = super.create (env, p_seId, p_name, p_type, p_aggFunction, null, p_isLocal, p_linkPdId, p_exportName, false);
+		pd.setDefaultValue(env, p_defaultValue);
 		pd.checkRefCycle(env);
 		return pd;
 	}

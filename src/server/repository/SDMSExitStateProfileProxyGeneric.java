@@ -77,6 +77,10 @@ public class SDMSExitStateProfileProxyGeneric extends SDMSProxy
 		((SDMSExitStateProfileGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public Long getDefaultEsmpId (SystemEnvironment env)
 	throws SDMSException
 	{

@@ -80,6 +80,10 @@ public class SDMSScheduleProxyGeneric extends SDMSProxy
 		((SDMSScheduleGeneric)(object)).setName (env, p_name);
 		return ;
 	}
+	public static int getNameMaxLength ()
+	{
+		return (64);
+	}
 	public Long getOwnerId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -147,6 +151,10 @@ public class SDMSScheduleProxyGeneric extends SDMSProxy
 
 		((SDMSScheduleGeneric)(object)).setTimeZone (env, p_timeZone);
 		return ;
+	}
+	public static int getTimeZoneMaxLength ()
+	{
+		return (32);
 	}
 	public Long getSeId (SystemEnvironment env)
 	throws SDMSException
