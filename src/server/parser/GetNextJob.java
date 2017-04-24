@@ -179,23 +179,6 @@ public class GetNextJob extends JobDistribution
 						smeId = rq.getSmeId(sysEnv);
 
 						SDMSSubmittedEntity tmpsme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
-						if (tmpsme == null) {
-							System.out.println("tmpsme is null!");
-						}
-						if (tmpsme.getRunnableTs(sysEnv) == null) {
-							System.out.println("Happens on sme " + tmpsme.getId(sysEnv).toString());
-							System.out.println("tmpsme.getRunnableTs() is null!");
-						}
-						if (tmpsme == null || tmpsme.getRunnableTs(sysEnv) == null) {
-							if (sysEnv.setStateThread != null)
-								System.out.println("setStateThread = " + sysEnv.setStateThread);
-							else
-								System.out.println("setStateThread = null");
-							System.out.println("I am Thread" + Thread.currentThread().getName());
-							System.out.println(tmpsme.object.versions.toString());
-							ObjectLock lock = LockingSystemSynchronized.getObjectLocks(tmpsme.object.versions);
-							System.out.println(lock.dumpLockList());
-						}
 						if (tmpsme.getRunnableTs(sysEnv) > minRunnableTs) continue;
 						candidates++;
 						sme = tmpsme;

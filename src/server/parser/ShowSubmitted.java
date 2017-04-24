@@ -752,6 +752,7 @@ public class ShowSubmitted extends Node
 		c_desc.add("DD_REQUIREDTYPE");
 		c_desc.add("DD_REQUIREDPRIVS");
 		c_desc.add("DD_UNRESOLVED_HANDLING");
+		c_desc.add("DD_STATE_SELECTION");
 		c_desc.add("DD_MODE");
 		c_desc.add("DD_STATES");
 		c_desc.add("JOB_STATE");
@@ -844,6 +845,7 @@ public class ShowSubmitted extends Node
 			c_data.add(se.getTypeAsString(sysEnv));
 			c_data.add(se.getPrivileges(sysEnv, actVersion).toString());
 			c_data.add(dd.getUnresolvedHandlingAsString(sysEnv));
+			c_data.add(dd.getStateSelectionAsString(sysEnv));
 			c_data.add(dd.getModeAsString(sysEnv));
 
 			Vector dds_v = SDMSDependencyStateTable.idx_ddId.getVector(sysEnv, dd.getId(sysEnv), actVersion);

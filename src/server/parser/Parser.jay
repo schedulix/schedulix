@@ -1035,7 +1035,7 @@ list_dependency_hierarchy:	LIST DEPENDENCY_HIERARCHY jobid opt_expand	{ $$ = new
 
 //D:MASTER
 //D:NT-ALIAS = create scope
-//D:DESCRIPTION create_jobserver.tex
+//D:DESCRIPTION create_scope.tex
 //D:PURPOSE P033
 create_scope:		create scope_url cs_optwith				{ $$ = new CreateScope ($2, $3, $1); }
 

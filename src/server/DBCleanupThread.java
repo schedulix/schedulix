@@ -53,12 +53,14 @@ public class DBCleanupThread extends SDMSThread
 	private PreparedStatement deleteMaster = null;
 	private PreparedStatement deleteKillJob = null;
 	private PreparedStatement deleteEntityVariable = null;
+	private PreparedStatement deleteExtents = null;
 	private PreparedStatement deleteDependencyInstance = null;
 	private PreparedStatement deleteHierarchyInstance = null;
 
 	private PreparedStatement archiveMaster = null;
 	private PreparedStatement archiveKillJob = null;
 	private PreparedStatement archiveEntityVariable = null;
+	private PreparedStatement archiveExtents = null;
 	private PreparedStatement archiveDependencyInstance = null;
 	private PreparedStatement archiveHierarchyInstance = null;
 
@@ -107,17 +109,8 @@ public class DBCleanupThread extends SDMSThread
 		columns = checkColumns(table, columns);
 		String columnList = "";
 		String sep = "";
-		String squote = "";
-		String equote = "";
-		final String driverName = sysEnv.dbConnection.getMetaData().getDriverName();
-		if (driverName.startsWith("MySQL") || driverName.startsWith("mariadb")) {
-			squote = "`";
-			equote = "`";
-		}
-		if (driverName.startsWith("Microsoft")) {
-			squote = "[";
-			equote = "]";
-		}
+		String squote = SystemEnvironment.SQUOTE;
+		String equote = SystemEnvironment.EQUOTE;
 		for (int i = 0; i < columns.size(); i ++) {
 			columnList += sep + squote + columns.get(i) + equote;
 			sep = ",";
@@ -152,12 +145,14 @@ public class DBCleanupThread extends SDMSThread
 				deleteMaster             = sysEnv.dbConnection.prepareStatement("DELETE FROM SUBMITTED_ENTITY WHERE MASTER_ID = ?");
 				deleteKillJob            = sysEnv.dbConnection.prepareStatement("DELETE FROM KILL_JOB WHERE SME_ID = ?");
 				deleteEntityVariable     = sysEnv.dbConnection.prepareStatement("DELETE FROM ENTITY_VARIABLE WHERE SME_ID = ?");
+				deleteExtents            = sysEnv.dbConnection.prepareStatement("DELETE FROM EXTENTS WHERE SME_ID = ?");
 				deleteDependencyInstance = sysEnv.dbConnection.prepareStatement("DELETE FROM DEPENDENCY_INSTANCE WHERE DEPENDENT_ID = ?");
 				deleteHierarchyInstance  = sysEnv.dbConnection.prepareStatement("DELETE FROM HIERARCHY_INSTANCE WHERE CHILD_ID = ?");
 				if (sysEnv.archive) {
 					archiveMaster = prepareArchive(SDMSSubmittedEntityTable.table, sysEnv.smeColumns, "MASTER_ID");
 					archiveKillJob = prepareArchive(SDMSKillJobTable.table, sysEnv.kjColumns, "SME_ID");
 					archiveEntityVariable = prepareArchive(SDMSEntityVariableTable.table, sysEnv.evColumns, "SME_ID");
+					archiveExtents = prepareArchive(SDMSExtentsTable.table, sysEnv.exColumns, "SME_ID");
 					archiveDependencyInstance = prepareArchive(SDMSDependencyInstanceTable.table, sysEnv.diColumns, "DEPENDENT_ID");
 					archiveHierarchyInstance = prepareArchive(SDMSHierarchyInstanceTable.table, sysEnv.hiColumns, "CHILD_ID");
 				}
@@ -304,6 +299,8 @@ public class DBCleanupThread extends SDMSThread
 		deleteForSme(deleteKillJob, id, "KILL_JOB");
 		archiveForSme(archiveEntityVariable, id, "ENTITY_VARIABLE");
 		deleteForSme(deleteEntityVariable, id, "ENTITY_VARIABLE");
+		archiveForSme(archiveExtents, id, "EXTENTS");
+		deleteForSme(deleteExtents, id, "EXTENTS");
 		archiveForSme(archiveDependencyInstance, id, "DEPENDENCY_INSTANCE");
 		deleteForSme(deleteDependencyInstance, id, "DEPENDENCY_INSTANCE");
 		archiveForSme(archiveHierarchyInstance, id, "HIERARCHY_INSTANCE");
