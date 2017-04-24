@@ -13,7 +13,7 @@ fi
 . $BICSUITECONFIG/bicsuite.conf || exit 1
 INFO="sdmsh["`whoami`"@"`hostname`"]"
 
-if [ "$1" == "--help" ]; then
+if [ "$1" = "--help" ]; then
 	HELP="-h"
 	shift
 fi
