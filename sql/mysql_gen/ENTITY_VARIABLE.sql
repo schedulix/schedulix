@@ -33,6 +33,7 @@ CREATE TABLE ENTITY_VARIABLE (
     , `VALUE`                        varchar(256)        NULL
     , `IS_LOCAL`                     integer         NOT NULL
     , `EV_LINK`                      decimal(20)         NULL
+    , `IS_LONG`                      integer         NOT NULL
     , `CREATOR_U_ID`                 decimal(20)     NOT NULL
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
@@ -47,6 +48,7 @@ SELECT
     , `NAME`                         AS `NAME`
     , `VALUE`                        AS `VALUE`
     , CASE `IS_LOCAL` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_LOCAL`
+    , CASE `IS_LONG` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_LONG`
     , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
@@ -59,6 +61,7 @@ CREATE TABLE ARC_ENTITY_VARIABLE (
     , `VALUE`                        varchar(256)     NULL
     , `IS_LOCAL`                     integer          NULL
     , `EV_LINK`                      decimal(20)      NULL
+    , `IS_LONG`                      integer          NULL
     , `CREATOR_U_ID`                 decimal(20)      NULL
     , `CREATE_TS`                    decimal(20)      NULL
     , `CHANGER_U_ID`                 decimal(20)      NULL

@@ -36,6 +36,7 @@ CREATE TABLE PARAMETER_DEFINITION (
     , IS_LOCAL                       integer         NOT NULL
     , LINK_PD_ID                     decimal(20)     WITH NULL
     , EXPORT_NAME                    varchar(64)     WITH NULL
+    , IS_LONG                        integer         NOT NULL
     , CREATOR_U_ID                   decimal(20)     NOT NULL
     , CREATE_TS                      decimal(20)     NOT NULL
     , CHANGER_U_ID                   decimal(20)     NOT NULL
@@ -56,6 +57,7 @@ SELECT
     , CASE IS_LOCAL WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_LOCAL
     , LINK_PD_ID                     AS LINK_PD_ID
     , EXPORT_NAME                    AS EXPORT_NAME
+    , CASE IS_LONG WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_LONG
     , CREATOR_U_ID                   AS CREATOR_U_ID
     , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CREATE_TS- decimal(CREATE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
@@ -73,6 +75,7 @@ SELECT
     , CASE IS_LOCAL WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_LOCAL
     , LINK_PD_ID                     AS LINK_PD_ID
     , EXPORT_NAME                    AS EXPORT_NAME
+    , CASE IS_LONG WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_LONG
     , CREATOR_U_ID                   AS CREATOR_U_ID
     , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CREATE_TS- decimal(CREATE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
