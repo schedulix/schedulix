@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -89,7 +87,6 @@ public class SubmitJob extends Node
 		if (resumeAt == null && resumeIn == null) return resumeTs;
 		if (resumeIn != null) {
 			if (resumeBase == null) {
-
 			}
 			int m = resumeIn.intValue();
 			int i = resumeBase.intValue();
@@ -211,8 +208,14 @@ public class SubmitJob extends Node
 		}
 		resumeTs = evalResumeObj(sysEnv, resumeObj, null, true);
 
-		final SDMSSubmittedEntity smec = sme.submitChild(sysEnv, params, suspended, resumeTs, se.getId(sysEnv), childTag, null, submitTag);
-		return smec.getId(sysEnv);
+		Integer state = sme.getState(sysEnv);
+		if (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED || state == SDMSSubmittedEntity.RUNNING) {
+			if (sme.getIsCancelled(sysEnv).booleanValue())
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03703020852", "Child submit rejected because job is cancelling"));
+			final SDMSSubmittedEntity smec = sme.submitChild(sysEnv, params, suspended, resumeTs, se.getId(sysEnv), childTag, null, submitTag);
+			return smec.getId(sysEnv);
+		} else
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03703020852", "Child submit only allowed while job is active"));
 	}
 
 	public void go(SystemEnvironment sysEnv)
@@ -228,7 +231,6 @@ public class SubmitJob extends Node
 		String submitTag = (String) with.get(ParseStr.S_SUBMITTAG);
 		if (submitTag != null) {
 			if (SDMSSubmittedEntityTable.idx_submitTag.containsKey(sysEnv, submitTag)) {
-
 				throw new CommonErrorException( new SDMSMessage(sysEnv, "03406031553",
 									"Job with submit tag $1 already submitted", submitTag));
 			}
