@@ -152,7 +152,7 @@ public class SDMSpopupGuiThread extends Thread
 			String[] buttons = config.split(":");
 			int cols = buttons.length;
 			if (runTimeSecs != null )
-				cols += 1;
+				cols += 1; // needed for hold button
 			gridLayout = new GridLayout(cols, false);
 			gridLayout.marginHeight = 0;
 			gridLayout.marginWidth = 0;
@@ -263,7 +263,7 @@ public class SDMSpopupGuiThread extends Thread
 							try {
 								status.setText(text);
 								display.timerExec(interval, this);
-							} catch (Exception e) {  }
+							} catch (Exception e) { /* ignore exception caused by disposed status and display when program is closed */ }
 						} else
 							System.exit(exitCode);
 					}
@@ -296,9 +296,11 @@ public class SDMSpopupGuiThread extends Thread
 			if (ignoreGuiFailure) {
 				System.err.println("ignored (-I flag is set) , running in silent mode");
 				if (runTimeSecs == null) {
+					// mainThread waits forever so we have to exit here
 					System.exit (exitCode);
 				}
-				SDMSpopup.silent = true;
+				// otherwise we just end our thread, main thread will do the exit for us
+				SDMSpopup.silent = true; // we want the main thread to wait the given runtime
 			} else {
 				System.err.println("exit (" + SDMSpopup.ERRORCODE + ")");
 				System.exit(SDMSpopup.ERRORCODE);

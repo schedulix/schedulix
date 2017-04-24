@@ -237,7 +237,7 @@ public class SDMSsubmitThreadsGuiThread extends Thread
 								status.setText(text);
 								status.update();
 								display.timerExec(interval, this);
-							} catch (Exception e) {  }
+							} catch (Exception e) { /* ignore exception caused by disposed status and display when program is closed */ }
 						} else {
 							SDMSsubmitThreadsGuiThread.submitThreads();
 						}
@@ -260,6 +260,7 @@ public class SDMSsubmitThreadsGuiThread extends Thread
 
 	static void submitThreads()
 	{
+		// disable button
 		submitting = true;
 		ok_button.setEnabled(false);
 
@@ -278,7 +279,7 @@ public class SDMSsubmitThreadsGuiThread extends Thread
 		Runnable submitThread = new Runnable() {
 			public void run() {
 				cntSubmitted ++;
-				if (cntSubmitted > SDMSsubmitThreads.number) {
+				if (cntSubmitted > SDMSsubmitThreads.number) { // shouldn't happen
 					done = true;
 					return;
 				}
@@ -287,8 +288,8 @@ public class SDMSsubmitThreadsGuiThread extends Thread
 					status.setText("Thread " + cntSubmitted + " submitted");
 					status.update();
 					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) { }
+						Thread.sleep(1000); // wait one second before window will be closed after last submit
+					} catch (InterruptedException e) { } // just ignore
 					done = true;
 				} else {
 					int d = SDMSpopup.rndConf(SDMSsubmitThreads.delay);
