@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -303,7 +301,6 @@ public class AlterJob extends Node
 				break;
 			case SDMSSubmittedEntity.BROKEN_FINISHED:
 				sme.releaseResources(sysEnv, status.intValue());
-
 				setSomeFields(sysEnv, sme, status);
 				break;
 			case SDMSSubmittedEntity.ERROR:
@@ -311,7 +308,6 @@ public class AlterJob extends Node
 				sme.setToError(sysEnv, errText);
 				break;
 			default:
-
 				if(force) {
 					sme.setState(sysEnv, status);
 				}
@@ -322,7 +318,6 @@ public class AlterJob extends Node
 	private void setExitState(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, long actVersion)
 		throws SDMSException
 	{
-
 		String oldExitState;
 
 		Long esdId = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, exitState, actVersion).getId(sysEnv);
@@ -342,16 +337,13 @@ public class AlterJob extends Node
 		   (isSuspended && (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED ||
 				    state == SDMSSubmittedEntity.RUNNING || state == SDMSSubmittedEntity.TO_KILL ||
 				    state == SDMSSubmittedEntity.KILLED || state == SDMSSubmittedEntity.BROKEN_ACTIVE))) {
-
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03207082043", "you can only set a state for a (broken) finished  or a suspended not active job"));
 		}
-
 		if(state != SDMSSubmittedEntity.BROKEN_FINISHED  && state != SDMSSubmittedEntity.ERROR) {
 			try {
 				Long jobEsdId = sme.getJobEsdId(sysEnv);
 				if (jobEsdId != null) {
 					es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, jobEsdId), actVersion);
-
 					if(sme.getJobIsFinal(sysEnv).booleanValue()) {
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03207082044",
 										"you can only set a state for a job in a nonfinal state"));
@@ -366,7 +358,6 @@ public class AlterJob extends Node
 		} else {
 			oldExitState = "N/A";
 		}
-
 		try {
 			es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, esdId), actVersion);
 		} catch(NotFoundException nfe) {
@@ -374,7 +365,6 @@ public class AlterJob extends Node
 		}
 
 		if(!exitStateForce.booleanValue()) {
-
 			Long esmpId = se.getEsmpId(sysEnv);
 			if(esmpId == null) {
 				SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, espId, actVersion);
@@ -387,7 +377,6 @@ public class AlterJob extends Node
 					throw new CommonErrorException(m);
 				}
 			}
-
 			if(!SDMSExitStateMappingTable.idx_esmpId_esdId.containsKey(sysEnv, new SDMSKey(esmpId, esdId), actVersion)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03403090958",
 							"A mapping to exit state $1 doesn't exist, use force if you really want this", exitState));
@@ -395,7 +384,6 @@ public class AlterJob extends Node
 		}
 
 		sme.changeState(sysEnv, esdId, es, sme.getExitCode(sysEnv), errText, null, false);
-
 	}
 
 	private void alterByJob(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
@@ -415,7 +403,7 @@ public class AlterJob extends Node
 			if(rerun.booleanValue()) {
 				sme.rerunRecursive(sysEnv, jobId, comment, true);
 			} else {
-				sme.rerun(sysEnv);
+				sme.rerun(sysEnv, true);
 			}
 		}
 		if(cancel != null) {
@@ -431,7 +419,6 @@ public class AlterJob extends Node
 	{
 		auditFlag = false;
 		Long sId = sme.getScopeId(sysEnv);
-
 		int actstate = sme.getState(sysEnv).intValue();
 		if (actstate != SDMSSubmittedEntity.STARTING &&
 		    actstate != SDMSSubmittedEntity.STARTED  &&
@@ -442,7 +429,6 @@ public class AlterJob extends Node
 			result.setFeedback(new SDMSMessage(sysEnv, "03205141709", "Job altered"));
 			return;
 		}
-
 		if(!sysEnv.cEnv.uid().equals(sId)) {
 			result.setFeedback(new SDMSMessage(sysEnv, "03205141710", "Job altered"));
 			return;
@@ -458,7 +444,6 @@ public class AlterJob extends Node
 		throws SDMSException
 	{
 		if(status != null) {
-
 			String oldState = sme.getStateAsString(sysEnv);
 			changeState(sysEnv, sme, true);
 		}
@@ -497,7 +482,10 @@ public class AlterJob extends Node
 			if(rerun.booleanValue()) {
 				sme.rerunRecursive(sysEnv, jobId, comment, true);
 			} else {
-				sme.rerun(sysEnv);
+				if (suspend != null && suspend.booleanValue())
+					sme.rerun(sysEnv, false);
+				else
+					sme.rerun(sysEnv, true);
 			}
 		}
 		if(kill != null) {
@@ -525,7 +513,6 @@ public class AlterJob extends Node
 			SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.IGNORE_RESOURCE);
 		}
 		if(priority != null) {
-
 			if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getType(sysEnv).intValue()
 				!= SDMSSchedulingEntity.JOB) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03211211229", "Cannot change the priority of a batch or milestone"));
@@ -536,11 +523,9 @@ public class AlterJob extends Node
 			sme.setPriority(sysEnv, priority);
 		}
 		if(nicevalue != null) {
-
 			sme.renice(sysEnv, nicevalue, null, comment);
 		}
 		if(renice != null) {
-
 			int nv = renice.intValue() + sme.getNice(sysEnv).intValue();
 			sme.renice(sysEnv, new Integer(nv), null, comment);
 		}
@@ -579,7 +564,6 @@ public class AlterJob extends Node
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03406031442", "Run sequence number out of sync"));
 				}
 			} else {
-
 			}
 		}
 
@@ -648,7 +632,6 @@ public class AlterJob extends Node
 				}
 				break;
 			default:
-
 				if(force) {
 					kj.setState(sysEnv, status);
 				}
@@ -664,7 +647,6 @@ public class AlterJob extends Node
 		kj = SDMSKillJobTable.getObject(sysEnv, jobId);
 
 		if(sysEnv.cEnv.isJobServer()) {
-
 			if(!sysEnv.cEnv.uid().equals(kj.getScopeId(sysEnv))) {
 				result.setFeedback(new SDMSMessage(sysEnv, "03207091826", "Job altered"));
 				return;
@@ -675,7 +657,6 @@ public class AlterJob extends Node
 		} else {
 
 			if(status != null) {
-
 				changeKillJobState(sysEnv, kj, true);
 			}
 		}
@@ -748,7 +729,6 @@ public class AlterJob extends Node
 			SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUniqueForUpdate(sysEnv, new SDMSKey(sme.getId(sysEnv), sysEnv.cEnv.uid()));
 			rq.delete(sysEnv);
 		} catch (NotFoundException nfe) {
-
 		}
 	}
 
@@ -759,7 +739,6 @@ public class AlterJob extends Node
 			SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUnique(sysEnv, new SDMSKey(kj.getId(sysEnv), sysEnv.cEnv.uid()));
 			rq.delete(sysEnv);
 		} catch (NotFoundException nfe) {
-
 		}
 	}
 

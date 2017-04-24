@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -44,6 +42,7 @@ public abstract class ManipUser extends Node
 	protected String user;
 	protected ObjectURL url;
 	protected String passwd;
+	protected String salt;
 	protected Integer method;
 	protected String txtPasswd;
 	protected Boolean enable;
@@ -98,7 +97,7 @@ public abstract class ManipUser extends Node
 		return salt.toString();
 	}
 
-	protected void evaluate_with(SystemEnvironment sysEnv, String salt)
+	protected void evaluate_with(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
 		SDMSGroup g;

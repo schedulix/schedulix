@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -62,10 +60,10 @@ public class AlterUser extends ManipUser
 		boolean suActive = false;
 		boolean manageUser = false;
 		Long uId;
-		String salt = generateSalt();
+		salt = generateSalt();
 		SDMSMessage feedbackMsg = new SDMSMessage(sysEnv, "03202062029", "User altered");
 
-		evaluate_with(sysEnv, salt);
+		evaluate_with(sysEnv);
 
 		try {
 			if (url == null)
@@ -93,7 +91,6 @@ public class AlterUser extends ManipUser
 					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
 					p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 				} catch (NotFoundException nfe) {
-
 				}
 			}
 			if (p.can(SDMSPrivilege.MANAGE_USER)) {
@@ -127,7 +124,6 @@ public class AlterUser extends ManipUser
 				u.setMethod(sysEnv, method);
 			} else {
 				if (passwd != null) {
-
 					if (sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
 						Properties props = new Properties();
 						InputStream ini;
@@ -167,7 +163,6 @@ public class AlterUser extends ManipUser
 
 		try {
 			if(with.containsKey(ParseStr.S_GROUPLIST)) {
-
 				Vector oldgroups = SDMSMemberTable.idx_uId.getVector(sysEnv, uId);
 				if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
 					boolean canAlter = true;
@@ -180,7 +175,6 @@ public class AlterUser extends ManipUser
 								SDMSMember m = (SDMSMember) oldgroups.get(j);
 								Long mGId = m.getGId(sysEnv);
 								if(gId.equals(mGId)) {
-
 									canAlter = true;
 								}
 							}
@@ -219,7 +213,6 @@ public class AlterUser extends ManipUser
 				try {
 					SDMSMemberTable.table.create(sysEnv, defaultGId, uId);
 				} catch (DuplicateKeyException dke) {
-
 				}
 				if (suActive)
 					sysEnv.cEnv.popGid(sysEnv);
@@ -232,7 +225,6 @@ public class AlterUser extends ManipUser
 
 		try {
 			if(with.containsKey(ParseStr.S_ADDGROUP)) {
-
 				if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
 					boolean canAlter = true;
 					SDMSPrivilege p = new SDMSPrivilege();
@@ -258,7 +250,6 @@ public class AlterUser extends ManipUser
 						try {
 							SDMSMemberTable.table.create(sysEnv, gId, uId);
 						} catch (DuplicateKeyException dke) {
-
 						}
 					}
 				}
@@ -289,7 +280,6 @@ public class AlterUser extends ManipUser
 							m = SDMSMemberTable.idx_gId_uId_getUnique(sysEnv, new SDMSKey(gId, uId));
 							m.delete(sysEnv);
 						} catch (NotFoundException nfe) {
-
 						}
 					} else {
 						if (suActive)
