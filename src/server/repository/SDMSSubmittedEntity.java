@@ -3145,36 +3145,48 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		int state = getState(sysEnv).intValue();
 
 		switch (state) {
-			case SUBMITTED:		if (suspended) newStatSelect = STAT_SUSPEND;
-						break;
+			case SUBMITTED:
+				if (suspended) newStatSelect = STAT_SUSPEND;
+				break;
 			case UNREACHABLE:
-			case DEPENDENCY_WAIT:	if (suspended) newStatSelect = STAT_SUSPEND; else newStatSelect = STAT_DEPENDENCY_WAIT;
-						break;
+			case DEPENDENCY_WAIT:
+				if (suspended) newStatSelect = STAT_SUSPEND;
+				else newStatSelect = STAT_DEPENDENCY_WAIT;
+				break;
 
-			case SYNCHRONIZE_WAIT:	if (suspended) newStatSelect = STAT_SUSPEND; else newStatSelect = STAT_SYNCHRONIZE;
-						break;
+			case SYNCHRONIZE_WAIT:
+				if (suspended) newStatSelect = STAT_SUSPEND;
+				else newStatSelect = STAT_SYNCHRONIZE;
+				break;
 
-			case RESOURCE_WAIT:	if (suspended) newStatSelect = STAT_SUSPEND; else newStatSelect = STAT_RESOURCE;
-						break;
+			case RESOURCE_WAIT:
+				if (suspended) newStatSelect = STAT_SUSPEND;
+				else newStatSelect = STAT_RESOURCE;
+				break;
 			case RUNNABLE:
-			case STARTING:		newStatSelect = STAT_JOBSERVER;
-						break;
+			case STARTING:
+				newStatSelect = STAT_JOBSERVER;
+				break;
 			case STARTED:
 			case RUNNING:
 			case TO_KILL:
 			case BROKEN_ACTIVE:
 			case CANCELLED:
 			case FINAL:
-			case KILLED:		newStatSelect = STAT_NONE;
-						break;
+			case KILLED:
+				newStatSelect = STAT_NONE;
+				break;
 
-			case FINISHED:		if (getJobIsRestartable(sysEnv).booleanValue())
-							newStatSelect = STAT_RESTARTABLE;
-						else if (suspended) newStatSelect = STAT_SUSPEND; else newStatSelect = STAT_CHILD_WAIT;
-						break;
+			case FINISHED:
+				if (getJobIsRestartable(sysEnv).booleanValue())
+					newStatSelect = STAT_RESTARTABLE;
+				else if (suspended) newStatSelect = STAT_SUSPEND;
+				else newStatSelect = STAT_CHILD_WAIT;
+				break;
 			case BROKEN_FINISHED:
-			case ERROR:		newStatSelect = STAT_RESTARTABLE;
-						break;
+			case ERROR:
+				newStatSelect = STAT_RESTARTABLE;
+				break;
 		}
 
 		if (newStatSelect != oldStatSelect) {

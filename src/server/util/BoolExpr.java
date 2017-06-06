@@ -99,6 +99,7 @@ public class BoolExpr
 		if(condition == null) return true;
 
 		retval = evalExpression(sysEnv, r, sme, t, tq, s);
+		if (retval == null) return false;
 		if (retval instanceof Boolean)
 			rc = ((Boolean)retval).booleanValue();
 		else {

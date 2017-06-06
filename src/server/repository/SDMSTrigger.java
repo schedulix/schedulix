@@ -493,7 +493,8 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		throws SDMSException
 	{
 		Vector groups;
-		if (checkGroups == null) groups = new Vector(); else groups = checkGroups;
+		if (checkGroups == null) groups = new Vector();
+		else groups = checkGroups;
 
 		long p = 0;
 		p = checkPrivs;
@@ -549,7 +550,8 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		throws SDMSException
 	{
 		Vector groups;
-		if (checkGroups == null) groups = new Vector(); else groups = checkGroups;
+		if (checkGroups == null) groups = new Vector();
+		else groups = checkGroups;
 
 		long p = 0;
 		int objectType = getObjectType(env).intValue();

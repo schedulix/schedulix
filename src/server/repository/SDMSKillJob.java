@@ -93,9 +93,13 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 		Long ts = new Long (dts.getTime());
 
 		if (newState == STARTING)
-			synchronized(sysEnv.jidsStarting) { sysEnv.jidsStarting.put(getId(sysEnv), ts); }
+			synchronized(sysEnv.jidsStarting) {
+				sysEnv.jidsStarting.put(getId(sysEnv), ts);
+			}
 		else if (oldState == STARTING)
-			synchronized(sysEnv.jidsStarting) { sysEnv.jidsStarting.remove(getId(sysEnv)); }
+			synchronized(sysEnv.jidsStarting) {
+				sysEnv.jidsStarting.remove(getId(sysEnv));
+			}
 
 		super.setState(sysEnv, state);
 	}

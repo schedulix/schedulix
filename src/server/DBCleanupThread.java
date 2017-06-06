@@ -132,10 +132,8 @@ public class DBCleanupThread extends SDMSThread
 				throw e;
 			}
 			try {
-
 				sysEnv.dbConnection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 			} catch (SQLException sqle) {
-
 			}
 			try {
 				String query = "SELECT ID, FINAL_TS FROM SUBMITTED_ENTITY WHERE ID = MASTER_ID AND STATE IN (" +

@@ -108,29 +108,41 @@ public class RunTest extends Node
 		}
 
 		switch(testid) {
-		case 1: do_test1(sysEnv);
+		case 1:
+			do_test1(sysEnv);
 			break;
-		case 2: do_test2(sysEnv);
+		case 2:
+			do_test2(sysEnv);
 			break;
-		case 3: do_test3(sysEnv);
+		case 3:
+			do_test3(sysEnv);
 			break;
-		case 4: do_test4(sysEnv);
+		case 4:
+			do_test4(sysEnv);
 			break;
-		case 5: do_test5(sysEnv);
+		case 5:
+			do_test5(sysEnv);
 			break;
-		case 6: do_test6(sysEnv);
+		case 6:
+			do_test6(sysEnv);
 			break;
-		case 7: do_test7(sysEnv);
+		case 7:
+			do_test7(sysEnv);
 			break;
-		case 8: do_test8(sysEnv);
+		case 8:
+			do_test8(sysEnv);
 			break;
-		case 9: do_test9(sysEnv);
+		case 9:
+			do_test9(sysEnv);
 			break;
-		case 10:do_test10(sysEnv);
+		case 10:
+			do_test10(sysEnv);
 			break;
-		case 11:do_test11(sysEnv);
+		case 11:
+			do_test11(sysEnv);
 			break;
-		case 12:do_test12(sysEnv);
+		case 12:
+			do_test12(sysEnv);
 			break;
 		default:
 
