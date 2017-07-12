@@ -238,17 +238,17 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		checkFinal(sysEnv);
 	}
 
-	public void rerun (SystemEnvironment sysEnv, boolean clearScope)
+	public void rerun (SystemEnvironment sysEnv)
 		throws SDMSException
 	{
 		if (!getJobIsRestartable(sysEnv).booleanValue()) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "03205191052",
 				"Submitted entity not rerunable"));
 		}
-		rerunEntity(sysEnv, clearScope);
+		rerunEntity(sysEnv);
 	}
 
-	public boolean rerunEntity (SystemEnvironment sysEnv, boolean clearScope)
+	public boolean rerunEntity (SystemEnvironment sysEnv)
 		throws SDMSException
 	{
 		if (getJobIsRestartable(sysEnv).booleanValue()) {
@@ -262,8 +262,6 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			setJobEsdPref(sysEnv, null);
 
 			setState(sysEnv, new Integer(DEPENDENCY_WAIT));
-			if (clearScope)
-				setScopeId(sysEnv, null);
 
 			SystemEnvironment.sched.notifyChange(sysEnv, this, SchedulingThread.RERUN);
 			return true;
@@ -274,7 +272,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	public void rerunRecursive (SystemEnvironment sysEnv, Long originId, String comment, boolean topLevel)
 		throws SDMSException
 	{
-		boolean rerun = rerunEntity(sysEnv, true);
+		boolean rerun = rerunEntity(sysEnv);
 		if (getState(sysEnv).intValue() != FINAL) {
 			Vector v_hi = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, getId(sysEnv));
 			Iterator i_hi = v_hi.iterator();

@@ -403,7 +403,7 @@ public class AlterJob extends Node
 			if(rerun.booleanValue()) {
 				sme.rerunRecursive(sysEnv, jobId, comment, true);
 			} else {
-				sme.rerun(sysEnv, true);
+				sme.rerun(sysEnv);
 			}
 		}
 		if(cancel != null) {
@@ -482,10 +482,7 @@ public class AlterJob extends Node
 			if(rerun.booleanValue()) {
 				sme.rerunRecursive(sysEnv, jobId, comment, true);
 			} else {
-				if (suspend != null && suspend.booleanValue())
-					sme.rerun(sysEnv, false);
-				else
-					sme.rerun(sysEnv, true);
+				sme.rerun(sysEnv);
 			}
 		}
 		if(kill != null) {
