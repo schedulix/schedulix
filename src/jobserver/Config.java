@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.jobserver;
 
 import java.io.*;
@@ -532,7 +531,6 @@ public class Config
 	public static final String quoted (final String str)
 	{
 		final String result = str.replaceAll ("\\\"", "\\\\\"");
-
 		if (result.matches (".*[^0-9].*"))
 			return "\"" + result + "\"";
 
@@ -647,9 +645,13 @@ public class Config
 
 					String executorVersion = execOut.toString().toLowerCase();
 					executorVersion = executorVersion.substring(0, executorVersion.indexOf("\n"));
+					String executorProtocol = executorVersion.substring(executorVersion.lastIndexOf("(") + 1, executorVersion.lastIndexOf(")"));
 					String serverVersion = Server.getVersionInfo().toLowerCase();
+					System.out.println(serverVersion);
 					serverVersion = serverVersion.substring(0, serverVersion.indexOf("\n"));
-					if (! executorVersion.equals (serverVersion.replaceFirst ("\\(server\\)", "\\(executor\\)")))
+					String serverProtocol = serverVersion.substring(serverVersion.lastIndexOf("(") + 1, serverVersion.lastIndexOf(")"));
+
+					if (! executorProtocol.equals (serverProtocol))
 						throw new IllegalArgumentException ("(04301271419) Invalid/non matching job executor: " + executor + " [ " + serverVersion + " != " + executorVersion + " ]");
 				}
 
@@ -666,7 +668,6 @@ public class Config
 		catch (final IOException ioe) {
 			Trace.error("(04301271416) Cannot launch job executor: " + ioe.getMessage());
 			System.exit(1);
-
 		}
 
 		catch (final InterruptedException ie) {

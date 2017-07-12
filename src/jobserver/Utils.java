@@ -68,6 +68,11 @@ public class Utils
 		return Libjni.getCompany();
 	}
 
+	public static final String getProtocol()
+	{
+		return Libjni.getProtocol();
+	}
+
 	public static final void abortProgram (final String msg)
 	{
 		Trace.fatal ("***ERROR*** " + msg);

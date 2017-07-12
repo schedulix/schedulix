@@ -82,7 +82,7 @@ public class Server
 
 	public static final String getVersionInfo()
 	{
-		return "Jobserver (server) " + Utils.getVersion() + "\n"
+		return "Jobserver (server) " + Utils.getVersion() + " (" + Utils.getProtocol() +")\n"
 			+ Utils.getCopyright() + " " + Utils.getCompany()  + "\n"
 			+ "All rights reserved";
 	}

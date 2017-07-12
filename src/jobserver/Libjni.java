@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.jobserver;
 
 import java.lang.*;
@@ -35,9 +34,10 @@ import de.independit.scheduler.server.SystemEnvironment;
 class Libjni
 {
 
-	public static final String copyright = "Copyright (c) 2002-2015";
+	public static final String copyright = "Copyright (c) 2002-2017";
 	public static final String company   = "independIT Integrative Technologies GmbH";
 	public static final String version   = SystemEnvironment.programVersion;
+	public static final String protocol  = "1.1";
 
 	public static final Boolean alive    = new Boolean(true);
 	public static final Boolean dead     = new Boolean(false);
@@ -98,6 +98,11 @@ class Libjni
 		return company;
 	}
 
+	public static String getProtocol()
+	{
+		return protocol;
+	}
+
 	public int getPid()
 	{
 		try {
@@ -114,7 +119,6 @@ class Libjni
 
 	public Boolean isAlive(String processId)
 	{
-
 		long pid;
 		String boottime;
 		String starttime;
@@ -222,13 +226,11 @@ class Libjni
 
 	private String solarisProcessStartTime(long pid)
 	{
-
 		return "0";
 	}
 
 	private String windowsProcessStartTime(long pid)
 	{
-
 		return "0";
 	}
 
@@ -240,7 +242,6 @@ class Libjni
 			return solarisProcessStartTime(pid);
 		else if (osType == OS_WIN)
 			return windowsProcessStartTime(pid);
-
 		return null;
 	}
 }

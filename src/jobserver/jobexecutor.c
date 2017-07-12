@@ -304,9 +304,9 @@ const char *getUsage()
 const char *getVersion()
 {
 	/* TODO: Generate this from server.SystemEnvironment.java or jobserver.jexecutor.Jexecutor.java (?)*/
-	/* First line must match with line expected from java jobserver agent !!! */
-	return  "Jobserver (executor) 2.8\n" \
-		"Copyright (C) 2013 independIT Integrative Technologies GmbH\n" \
+	/* First line protocol version must match with value expected from java jobserver agent !!! */
+	return  "Jobserver (executor) 2.8 (1.1)\n" \
+		"Copyright (C) 2017 independIT Integrative Technologies GmbH\n" \
 		"All rights reserved\n";
 }
 
