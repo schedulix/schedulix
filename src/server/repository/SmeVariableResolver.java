@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -218,7 +217,6 @@ public class SmeVariableResolver extends VariableResolver
 	protected String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, boolean fastAccess, String mode, boolean triggercontext, long version, SDMSScope evalScope)
 		throws SDMSException
 	{
-
 		sysEnv.tx.txData.remove(SystemEnvironment.S_ISDEFAULT);
 		final String retval = getInternalVariableValue(sysEnv, thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, evalScope);
 
@@ -278,13 +276,10 @@ public class SmeVariableResolver extends VariableResolver
 		}
 
 		if(specialNames.containsKey(key)) return getSpecialValue(sysEnv, thisSme, key, triggercontext, evalScope);
-
 		try {
 			ev = SDMSEntityVariableTable.idx_smeId_Name_getUnique(sysEnv, new SDMSKey(thisSme.getId(sysEnv), key));
-
 			Long evLink = ev.getEvLink(sysEnv);
 			while(evLink != null) {
-
 				ev = SDMSEntityVariableTable.getObject(sysEnv, evLink);
 				evLink = ev.getEvLink(sysEnv);
 			}
@@ -302,7 +297,6 @@ public class SmeVariableResolver extends VariableResolver
 				if(strict) {
 					SDMSThread.doTrace(null, "Couldn't find parameter " + key + " for job " + thisSme.getId(sysEnv) +
 								 " (no import specified)", SDMSThread.SEVERITY_WARNING);
-
 					throw new NotFoundException(new SDMSMessage(sysEnv, "03304101030", "Couldn't resolve Parameter $1", key));
 				}
 				if(warn) {
@@ -327,7 +321,7 @@ public class SmeVariableResolver extends VariableResolver
 			long seVersion = thisSme.getSeVersion(sysEnv).longValue();
 			Long scopeId = thisSme.getScopeId(sysEnv);
 			SDMSScope s = evalScope;
-			if(scopeId != null)
+			if(scopeId != null && evalScope == null)
 				s = SDMSScopeTable.getObject(sysEnv, scopeId);
 			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
 			SDMSFolder f = SDMSFolderTable.getObject(sysEnv, se.getFolderId(sysEnv), seVersion);
@@ -365,21 +359,16 @@ public class SmeVariableResolver extends VariableResolver
 					SDMSScope evalScope)
 		throws SDMSException
 	{
-
 		try {
 			SDMSEntityVariable ev = SDMSEntityVariableTable.idx_smeId_Name_getUnique(sysEnv, new SDMSKey(thisSme.getId(sysEnv), key));
-
 			if(ev.getIsLocal(sysEnv).booleanValue()) {
 				return getVariableExtendedValue(sysEnv, thisSme, baseSme, key, visited, fastAccess, mode, triggercontext, recursionCheck, evalScope);
 			}
-
 			Long evLink = ev.getEvLink(sysEnv);
 			while(evLink != null) {
-
 				ev = SDMSEntityVariableTable.getObject(sysEnv, evLink);
 				evLink = ev.getEvLink(sysEnv);
 			}
-
 			sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, Boolean.FALSE);
 			return parseAndSubstitute(sysEnv, thisSme, ev.getValue(sysEnv).substring(1), fastAccess, mode, triggercontext, recursionCheck, -1, evalScope);
 
@@ -670,7 +659,6 @@ public class SmeVariableResolver extends VariableResolver
 				if (scopeId != null)
 					scope = SDMSScopeTable.getObject(sysEnv, scopeId);
 				else {
-
 					scope = evalScope;
 				}
 				return (scope == null ? emptyString : scope.pathString(sysEnv));
@@ -756,7 +744,6 @@ public class SmeVariableResolver extends VariableResolver
 		long seVersion = thisSme.getSeVersion(sysEnv).longValue();
 		try {
 			pd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(thisSme.getSeId(sysEnv), key), seVersion);
-
 			if(!visited.add(new SDMSKey(thisSme.getId(sysEnv), pd.getId(sysEnv)))) {
 				seId = thisSme.getSeId(sysEnv);
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, seId, seVersion);
@@ -768,7 +755,6 @@ public class SmeVariableResolver extends VariableResolver
 			}
 		} catch (NotFoundException nfe) {
 			if(fastAccess) return emptyString;
-
 			parentId = thisSme.getParentId(sysEnv);
 			if (parentId == null) {
 				throw new NotFoundException(new SDMSMessage(sysEnv, "03208100013", "Couldn't resolve the variable $1", key));
@@ -780,7 +766,6 @@ public class SmeVariableResolver extends VariableResolver
 		defVal =  pd.getDefaultValue(sysEnv);
 		switch(type) {
 			case SDMSParameterDefinition.PARAMETER:
-
 				parentId = thisSme.getParentId(sysEnv);
 				try {
 					if (parentId == null) {
@@ -789,15 +774,12 @@ public class SmeVariableResolver extends VariableResolver
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, parentId);
 					return getVariableValue(sysEnv, sme, baseSme, key, visited, fastAccess, mode, triggercontext, recursionCheck, evalScope);
 				} catch(NotFoundException nfe) {
-
 					if(defVal != null) {
-
 						return parseAndSubstitute(sysEnv, thisSme, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
 					}
 					throw nfe;
 				}
 			case SDMSParameterDefinition.IMPORT:
-
 				parentId = thisSme.getParentId(sysEnv);
 				try {
 					if (parentId == null) {
@@ -806,23 +788,19 @@ public class SmeVariableResolver extends VariableResolver
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, parentId);
 					return getVariableValue(sysEnv, sme, baseSme, key, visited, fastAccess, mode, triggercontext, recursionCheck, evalScope);
 				} catch(NotFoundException nfe) {
-
 					if(defVal != null) {
 						return parseAndSubstitute(sysEnv, thisSme, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
 					}
 					throw nfe;
 				}
 			case SDMSParameterDefinition.RESULT:
-
 				if(defVal == null) defVal = "=";
 				sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, Boolean.FALSE);
 				return parseAndSubstitute(sysEnv, thisSme, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
 			case SDMSParameterDefinition.CONSTANT:
-
 				sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, Boolean.FALSE);
 				return parseAndSubstitute(sysEnv, thisSme, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
 			case SDMSParameterDefinition.REFERENCE:
-
 				lpd = SDMSParameterDefinitionTable.getObject(sysEnv, pd.getLinkPdId(sysEnv), seVersion);
 				seId = lpd.getSeId(sysEnv);
 				linkName = lpd.getName(sysEnv);
@@ -834,7 +812,6 @@ public class SmeVariableResolver extends VariableResolver
 							    SDMSSchedulingEntityTable.getObject(sysEnv, seId, seVersion).pathString(sysEnv)));
 				} else return getVariableValue(sysEnv, sme, baseSme, linkName, visited, fastAccess, mode, triggercontext, recursionCheck, evalScope);
 			case SDMSParameterDefinition.CHILDREFERENCE:
-
 				lpd = SDMSParameterDefinitionTable.getObject(sysEnv, pd.getLinkPdId(sysEnv), seVersion);
 				seId = lpd.getSeId(sysEnv);
 				linkName = lpd.getName(sysEnv);
@@ -845,14 +822,12 @@ public class SmeVariableResolver extends VariableResolver
 							    SDMSSchedulingEntityTable.getObject(sysEnv, seId, seVersion).pathString(sysEnv)));
 				} else return getVariableValue(sysEnv, sme, baseSme, linkName, visited, fastAccess, mode, triggercontext, recursionCheck, evalScope);
 			case SDMSParameterDefinition.RESOURCEREFERENCE:
-
 				lpd = SDMSParameterDefinitionTable.getObject(sysEnv, pd.getLinkPdId(sysEnv), seVersion);
 				nrId = lpd.getSeId(sysEnv);
 				linkName = lpd.getName(sysEnv);
 				HashMap sfp = null;
 				if (evalScope == null) {
 					v = SDMSResourceAllocationTable.idx_smeId_nrId.getVector(sysEnv, new SDMSKey(smeId, nrId));
-
 					if(v.size() > 1) {
 						throw new NotFoundException(new SDMSMessage(sysEnv, "03409222313",
 								    "Couldn't resolve reference $1 unambigiously",
@@ -893,7 +868,6 @@ public class SmeVariableResolver extends VariableResolver
 				}
 				return r.getVariableValue(sysEnv, linkName, thisSme);
 			case SDMSParameterDefinition.EXPRESSION:
-
 				double tmpsum = 0;
 				double tmpmax = Double.MIN_VALUE;
 				double tmpmin = Double.MAX_VALUE;
@@ -906,7 +880,6 @@ public class SmeVariableResolver extends VariableResolver
 						Long baseSmeId = baseSme.getId(sysEnv);
 						Long tsmeId = tsme.getId(sysEnv);
 						String newKey = defVal.substring(1);
-
 						if (baseSmeId != null && baseSmeId.equals(tsmeId) && key.equals(newKey)) {
 							seId = baseSme.getSeId(sysEnv);
 							long vers =  baseSme.getSeVersion(sysEnv).longValue();
@@ -915,14 +888,12 @@ public class SmeVariableResolver extends VariableResolver
 										"Run into a loop while trying to resolve variable $1 of job $2", newKey, se.pathString(sysEnv, vers)));
 						} else {
 							if (baseSmeId != null && baseSmeId.equals(tsmeId) && pd != null) {
-
 								s = getVariableValue(sysEnv, tsme, baseSme, newKey, visited, true , mode, triggercontext, recursionCheck, evalScope);
 							} else {
 								s = tsme.getVariableValue(sysEnv, newKey, true, ParseStr.S_LIBERAL, triggercontext, evalScope);
 							}
 						}
 					} catch(NotFoundException nfe) {
-
 						continue;
 					}
 					try {
@@ -932,10 +903,8 @@ public class SmeVariableResolver extends VariableResolver
 						if(tmpmax < tmpd) tmpmax = tmpd;
 						if(tmpmin > tmpd) tmpmin = tmpd;
 					} catch (NumberFormatException nfe) {
-
 					}
 				}
-
 				sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, Boolean.FALSE);
 				int f = pd.getAggFunction(sysEnv).intValue();
 				switch(f) {
@@ -947,7 +916,6 @@ public class SmeVariableResolver extends VariableResolver
 				}
 				break;
 		}
-
 		throw new FatalException(new SDMSMessage(sysEnv, "03208100006", "Fall through while resolving a parameter $1 of $2",
 						key, SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv),
 						thisSme.getSeVersion(sysEnv).longValue()).pathString(sysEnv, thisSme.getSeVersion(sysEnv).longValue())));
@@ -955,6 +923,5 @@ public class SmeVariableResolver extends VariableResolver
 
 	public SmeVariableResolver()
 	{
-
 	}
 }

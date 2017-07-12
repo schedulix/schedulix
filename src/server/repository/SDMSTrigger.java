@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -74,7 +73,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 	public void delete(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-
 		Vector act_ts = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, getId(sysEnv));
 		for(int i = 0; i < act_ts.size(); i++) {
 			SDMSTriggerState ts = (SDMSTriggerState) act_ts.get(i);
@@ -142,13 +140,10 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			ths = new HashSet();
 			sysEnv.tx.txData.put(SystemEnvironment.S_TRIGGER_HASHSET, ths);
 		}
-
 		boolean isMasterTrigger = getIsMaster(sysEnv).booleanValue();
 
 		Long warnLink = null;
-
 		Vector v_trs = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, trId, seVersion);
-
 		if (v_trs.size() > 0) {
 			Iterator i_trs = v_trs.iterator();
 			boolean found = false;
@@ -161,11 +156,9 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			}
 			if (!found) return fired;
 		}
-
 		int maxTrSeq = 0;
 		Vector v_f_sme;
 		if (action != RERUN) {
-
 			v_f_sme = SDMSSubmittedEntityTable.idx_fireSmeId_trId.getVector(sysEnv,
 					new SDMSKey(id, trId));
 			maxTrSeq = v_f_sme.size();
@@ -182,7 +175,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		}
 
 		if (maxTrSeq >= maxRetry && maxRetry != 0) {
-
 			Long limitState = getLimitState(sysEnv);
 			if (limitState != null) {
 				Long seId = thisSme.getSeId(sysEnv);
@@ -192,7 +184,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				try {
 					es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, limitState), seVersion);
 				} catch (NotFoundException nfe) {
-
 					throw new FatalException(new SDMSMessage(sysEnv, "03602151332",
 						"Invalid limitState $1 not in exit state profile $2",
 						limitState, espId));
@@ -205,7 +196,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 
 		boolean conditionOK = false;
 		try {
-
 			conditionOK = checkCondition(sysEnv, thisSme, tq);
 		} catch(CommonErrorException cee) {
 			java.util.Date dts = new java.util.Date();
@@ -239,10 +229,9 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 					sme.setResumeTs(sysEnv, resumeTs);
 				}
 			} else {
-				boolean willSuspend = getIsSuspend(sysEnv).booleanValue();
-				thisSme.rerun(sysEnv, !willSuspend);
+				thisSme.rerun(sysEnv);
 				Long resumeTs = null;
-				if (willSuspend) {
+				if (getIsSuspend(sysEnv).booleanValue()) {
 					thisSme.suspend(sysEnv, true, false);
 					Long finishTs = thisSme.getFinishTs(sysEnv);
 					resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv),
@@ -278,7 +267,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		}
 
 		if(isMasterTrigger) {
-
 			try {
 				se = SDMSSchedulingEntityTable.getObject(sysEnv, submitSeId);
 			} catch (NotFoundException nfe) {
@@ -294,13 +282,11 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 
 		sysEnv.tx.beginSubTransaction(sysEnv);
 		try {
-
 			if (!mths.add(trId)) {
 				throw new CommonErrorException (new SDMSMessage(sysEnv, "03305141915",
 					"Cannot fire Trigger $1 recursively in same Transaction",
 					getName(sysEnv)));
 			}
-
 			Boolean suspend = getIsSuspend(sysEnv);
 			Integer doSuspend;
 			if (suspend.booleanValue() == false) doSuspend = null;
@@ -317,7 +303,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			} else {
 				Long replaceId = null;
 				if (submitSeId.equals(fireSeId)) {
-
 					replaceId = thisSme.getId(sysEnv);
 				}
 				boolean forceChildDef;
@@ -336,11 +321,9 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			}
 			sme.setBaseSmeId(sysEnv, (Long)(sysEnv.tx.txData.get(SystemEnvironment.S_BASE_SME_ID)));
 		} catch (NonRecoverableException nre) {
-
 			sysEnv.tx.rollbackSubTransaction(sysEnv);
 
 			if(!nre.errNumber().equals("03305141915")) {
-
 				if(isMasterTrigger) {
 					se.createErrorMaster (
 							sysEnv,
@@ -354,7 +337,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			sme =  null;
 		}
 		if (sme != null) {
-
 			sysEnv.tx.commitSubTransaction(sysEnv);
 		}
 
@@ -394,7 +376,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		}
 
 		if(fire) {
-
 			try {
 				fire = checkCondition(sysEnv, r);
 			} catch (CommonErrorException cee) {
@@ -415,11 +396,9 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 					"Triggered by Resource " + r.getId(sysEnv).toString() + "(" + getName(sysEnv) + ")");
 
 			} catch (NonRecoverableException nre) {
-
 				sysEnv.tx.rollbackSubTransaction(sysEnv);
 			}
 			if (sme != null) {
-
 				sysEnv.tx.commitSubTransaction(sysEnv);
 				sme.setBaseSmeId(sysEnv, causeSmeId);
 				sme.setReasonSmeId(sysEnv, causeSmeId);
@@ -620,7 +599,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 					SDMSProxy p = t.get(env, (isInverse ? getSeId(env) : getFireId(env)));
 					p.touch(env);
 				} catch (NotFoundException nfe) {
-
 				}
 				break;
 			case RESOURCE:
@@ -629,7 +607,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 					SDMSProxy p = t.get(env, getFireId(env));
 					p.touch(env);
 				} catch (NotFoundException nfe) {
-
 				}
 				break;
 			case NAMED_RESOURCE:
@@ -638,7 +615,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 					SDMSProxy p = t.get(env, getFireId(env));
 					p.touch(env);
 				} catch (NotFoundException nfe) {
-
 				}
 		}
 	}
