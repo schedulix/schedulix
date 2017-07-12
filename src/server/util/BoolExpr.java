@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.util;
 
 import java.lang.*;
@@ -93,11 +91,30 @@ public class BoolExpr
 	public boolean checkCondition(SystemEnvironment sysEnv, SDMSResource r, SDMSSubmittedEntity sme, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope s)
 	throws SDMSException
 	{
+		Object retval;
 		boolean rc = false;
 
 		if(condition == null) return true;
 
-		rc = ((Boolean)evalExpression(sysEnv, r, sme, t, tq, s)).booleanValue();
+		retval = evalExpression(sysEnv, r, sme, t, tq, s);
+		if (retval == null) return false;
+		if (retval instanceof Boolean)
+			rc = ((Boolean)retval).booleanValue();
+		else {
+			String msg = "The condition '" + condition + "' didn't return a boolean value";
+			SDMSThread.doTrace(sysEnv.cEnv, msg, SDMSThread.SEVERITY_ERROR);
+			if (r != null) {
+				SDMSThread.doTrace(sysEnv.cEnv, "Id of involved Resource = " + r.getId(sysEnv), SDMSThread.SEVERITY_ERROR);
+			}
+			if (sme != null) {
+				SDMSThread.doTrace(sysEnv.cEnv, "Id of involved Submitted Entity = " + sme.getId(sysEnv), SDMSThread.SEVERITY_ERROR);
+			}
+			if (t != null) {
+				SDMSThread.doTrace(sysEnv.cEnv, "Id of involved Trigger = " + t.getId(sysEnv), SDMSThread.SEVERITY_ERROR);
+			}
+			rc = false;
+		}
+
 		return rc;
 	}
 
