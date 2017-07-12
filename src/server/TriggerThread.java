@@ -81,7 +81,6 @@ public class TriggerThread extends InternalSession
 		if (sysEnv.maxWriter > 1)
 			LockingSystem.lock(sysEnv, jobsToResume, ObjectLock.EXCLUSIVE);
 		if (firstTime) {
-
 			i = SDMSSubmittedEntityTable.table.iterator(sysEnv,
 				new SDMSFilter() {
 					public boolean isValid(SystemEnvironment sysEnv, SDMSProxy p)
@@ -106,15 +105,14 @@ public class TriggerThread extends InternalSession
 		}
 		Vector<Long> jobsResumed = new Vector<Long>();
 		try {
-			i = jobsToResume.iterator();
-			while (i.hasNext()) {
-				Long smeId = (Long) i.next();
+			Object a[] = jobsToResume.toArray();
+			for (int j = 0; j < a.length; ++j) {
+				Long smeId = (Long) a[j];
 				SDMSSubmittedEntity sme;
 				try {
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
 				} catch (NotFoundException nfe) {
-
-					i.remove();
+					jobsToResume.remove(smeId);
 					doTrace(cEnv, "Submitted Entity " + smeId + "not found (" + nfe.toString() + ")", SEVERITY_ERROR);
 					continue;
 				}
@@ -124,7 +122,7 @@ public class TriggerThread extends InternalSession
 
 					long rts = resumeTs.longValue();
 					if (rts <= now) {
-						i.remove();
+						jobsToResume.remove(smeId);
 						jobsResumed.add(smeId);
 						sme.resume(sysEnv, false);
 						ctr++;
@@ -132,7 +130,6 @@ public class TriggerThread extends InternalSession
 						if (rts < nextTime) nextTime = rts;
 					}
 				} else {
-
 					doTrace(cEnv, "Submitted Entity " + smeId + " has resumeTs == null", SEVERITY_WARNING);
 				}
 			}
@@ -203,7 +200,6 @@ class DoCheckTrigger extends Node
 				SystemEnvironment.tt.checkTrigger(sysEnv);
 				break;
 			case INITIALIZE:
-
 				break;
 		}
 	}
