@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -94,13 +93,9 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			SDMSIntervalHierarchy ih = (SDMSIntervalHierarchy) v.get(i);
 			filter.add(SDMSIntervalTable.getObject(sysEnv, ih.getChildId(sysEnv)));
 		}
-
 		initSelection(sysEnv);
-
 		initBaseAndDuration(sysEnv);
-
 		initLimits(sysEnv, tz);
-
 		initEmbeddedInterval(sysEnv);
 	}
 
@@ -124,7 +119,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	private long getHorizon(SystemEnvironment sysEnv, TimeZone tz)
 		throws SDMSException
 	{
-
 		int gcUnit = Calendar.YEAR;
 		switch (SystemEnvironment.timerHorizon.unit()) {
 			case YEAR:	gcUnit = Calendar.YEAR;		break;
@@ -134,11 +128,9 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			case HOUR:	gcUnit = Calendar.HOUR_OF_DAY;	break;
 			case MINUTE:	gcUnit = Calendar.MINUTE;	break;
 		}
-
 		GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
 		gc.setTimeInMillis(System.currentTimeMillis());
 		gc.setTimeZone(tz);
-
 		gc.add(gcUnit, SystemEnvironment.timerHorizon.mult());
 
 		return gc.getTimeInMillis();
@@ -159,9 +151,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 		if (!seek(sysEnv, lMinDate, horizon, tz, DRIVER, "")) return null;
 		if (blockState.blockStart < lMinDate) {
-
 			if (blockState.blockEnd == Long.MAX_VALUE) return null;
-
 			if (!seek(sysEnv, blockState.blockEnd + 1, horizon, tz, DRIVER, "")) return null;
 		}
 
@@ -171,26 +161,20 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	private boolean advanceBlock(SystemEnvironment sysEnv, long horizon, TimeZone tz)
 		throws SDMSException
 	{
-
 		if (Thread.currentThread().isInterrupted()) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "02205091100", "Thread Interrupted"));
 		}
 		if (blockState.blockEnd == Long.MAX_VALUE) return false;
 		if (isInfinite) {
-
 			if (blockState.baseEnd <= blockState.blockEnd) return false;
 			long minDate = 0;
-
 			minDate = blockState.blockEnd + 1;
 
 			if (getNextRange(sysEnv, minDate, tz) && blockState.blockStart < endTime && blockState.blockStart < horizon) {
-
 				return true;
 			}
-
 			return false;
 		} else {
-
 			GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
 			gc.setTimeZone(tz);
 
@@ -198,7 +182,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				if (embeddedInterval.getNextTriggerDate(sysEnv, blockState.blockEnd + 1, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz) == null) return false;
 				blockState.blockStart = embeddedInterval.blockState.blockStart;
 				blockState.blockEnd = embeddedInterval.blockState.blockEnd;
-
 				if (blockState.blockStart > blockState.baseEnd) {
 					blockState.baseStart = sync(sysEnv, blockState.blockStart, tz);
 					gc.setTimeInMillis(blockState.baseStart);
@@ -211,7 +194,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				gc.setTimeInMillis(blockState.blockStart);
 				gc.add(gcDurationInterval, durationMultiplier);
 				blockState.blockEnd = gc.getTimeInMillis() - 1;
-
 				if (blockState.blockStart > blockState.baseEnd) {
 					blockState.baseStart = blockState.baseEnd + 1;
 					gc.setTimeInMillis(blockState.baseStart);
@@ -222,29 +204,21 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			}
 
 			if (blockState.blockEnd > blockState.baseEnd) {
-
 				if (embeddedInterval != null || gcDurationInterval != Calendar.WEEK_OF_YEAR) {
 					blockState.blockEnd = blockState.baseEnd;
 				} else {
-
 					while (blockState.blockEnd > blockState.baseEnd) {
 						gc.add(gcDurationInterval, -1);
 						blockState.blockEnd = gc.getTimeInMillis() - 1;
-
 					}
-
 					gc.setTimeInMillis(blockState.baseEnd + 1);
 
 					if ((gc.get(Calendar.DAY_OF_WEEK) - gc.getFirstDayOfWeek() + 7) % 7 + 1 > gc.getMinimalDaysInFirstWeek()) {
-
 						gc.setTimeInMillis(blockState.blockEnd + 1);
 						gc.add(gcDurationInterval, 1);
 						blockState.blockEnd = gc.getTimeInMillis() - 1;
-
 					} else {
-
 						if (blockState.blockStart == blockState.blockEnd + 1) {
-
 							blockState.blockStart = blockState.blockEnd + 1;
 							gc.setTimeInMillis(blockState.blockStart);
 							gc.add(gcDurationInterval, durationMultiplier);
@@ -256,7 +230,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 							blockState.baseEnd = gc.getTimeInMillis() - 1;
 							blockState.blockIdx = 0;
 						}
-
 					}
 				}
 			}
@@ -281,7 +254,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		if (minDate < blockState.baseStart || minDate > blockState.baseEnd || blockState.baseStart == UNINITIALIZED) {
 			blockState.clear();
 			blockState.baseStart = sync(sysEnv, minDate, tz);
-
 		}
 		gc = SystemEnvironment.newGregorianCalendar();
 		gc.setTimeZone(tz);
@@ -290,38 +262,28 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		if (blockState.baseEnd == UNINITIALIZED) {
 			if (isInfinite) blockState.baseEnd = endTime;
 			else {
-
 				gc.add(gcBaseInterval, baseMultiplier);
-
 				blockState.baseEnd = gc.getTimeInMillis() - 1;
 				gc.setTimeInMillis(blockState.baseStart);
 			}
 		}
 
 		if (!isInfinite) {
-
 			if (embeddedInterval == null && gcDurationInterval == Calendar.WEEK_OF_YEAR) {
 				boolean backwardCorrectionNeeded = false;
-
 				if ((gc.get(Calendar.DAY_OF_WEEK) - gc.getFirstDayOfWeek() + 7) % 7 + 1 <= gc.getMinimalDaysInFirstWeek()) {
-
 					backwardCorrectionNeeded = true;
 				}
 				determineBoundary(sysEnv, gc, blockState.baseStart, durationMultiplier, gcDurationInterval);
-
 				if (backwardCorrectionNeeded) {
-
 					while (gc.getTimeInMillis() > blockState.baseStart) gc.add(gcDurationInterval, -1);
 				} else {
 					while (gc.getTimeInMillis() < blockState.baseStart) gc.add(gcDurationInterval, 1);
 				}
-
 			}
-
 			if (embeddedInterval == null) {
 				blockState.blockStart = gc.getTimeInMillis();
 				gc.add(gcDurationInterval, durationMultiplier);
-
 				blockState.blockEnd = gc.getTimeInMillis() - 1;
 			} else {
 				if (embeddedInterval.getNextTriggerDate(sysEnv, blockState.baseStart, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz) == null) return false;
@@ -334,21 +296,16 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 					blockState.baseEnd = gc.getTimeInMillis() - 1;
 				}
 			}
-
 			blockState.blockIdx = 1;
 		} else {
 			blockState.blockStart = blockState.baseStart;
-
 			blockState.blockEnd = getStartingPoint(sysEnv, minDate, tz);
-
 			if (!advanceBlock(sysEnv, horizon, tz)) return false;
 		}
 
 		while (blockState.blockEnd <= minDate && blockState.blockStart < endTime && blockState.blockStart < horizon) {
-
 			if (!advanceBlock(sysEnv, horizon, tz)) return false;
 		}
-
 		if (blockState.blockStart >= endTime) return false;
 
 		return true;
@@ -363,35 +320,26 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		while(true) {
 			long minNext = Long.MAX_VALUE;
-
 			if (!seekLocal(sysEnv, minDate, horizon, tz)) {
 				return false;
 			}
 			if (filter.size() == 0) return true;
 
 			long checkDate = isFilter ? (minDate < blockState.blockStart ? blockState.blockStart : minDate) : blockState.blockStart;
-
 			for (int i = 0; i < filter.size(); ++i) {
 				long next;
-
 				SDMSInterval f = (SDMSInterval) filter.get(i);
 				next = f.filter(sysEnv, checkDate, horizon, tz, indent + "\t");
 				if (next != Long.MAX_VALUE) {
-
 					if (next <= checkDate) {
 						if (isFilter) blockState.blockStart = checkDate;
-
 						return true;
 					}
 					if (minNext > next) minNext = next;
-
 				} else {
-
 				}
 			}
-
 			if (minNext == Long.MAX_VALUE || (!isFilter && (blockState.blockEnd == Long.MAX_VALUE))) return false;
-
 			if (isFilter)
 				minDate = minNext;
 			else
@@ -410,7 +358,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	private boolean checkSelection (SystemEnvironment sysEnv, int blockIdx, int negIdx, long ts, TimeZone tz)
 		throws SDMSException
 	{
-
 		if (!(posSelected || negSelected || rangeSelected)) return true;
 
 		boolean positiveCheck = (posSelected && indexCheckPos(sysEnv, blockIdx)) ||
@@ -479,7 +426,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	private boolean getNextRange(SystemEnvironment sysEnv, long date, TimeZone tz)
 		throws SDMSException
 	{
-
 		if (!rangeSelected) {
 			if (date == blockState.blockStart) {
 				blockState.blockEnd = blockState.baseEnd;
@@ -498,12 +444,10 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			BlockState nextBlock = getNextPositiveRange(sysEnv, prevBlock.blockEnd + 1, tz);
 			if (nextBlock == null) {
 				if (prevBlock.blockEnd + 1 == date) {
-
 					blockState.blockStart = date;
 					blockState.blockEnd = endTime;
 					return true;
 				}
-
 				return false;
 			}
 
@@ -511,9 +455,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				prevBlock = nextBlock;
 				nextBlock = getNextPositiveRange(sysEnv, prevBlock.blockEnd, tz);
 				if (nextBlock == null) {
-
 					if (prevBlock.blockEnd + 1 == date) {
-
 						blockState.blockStart = date;
 						blockState.blockEnd = endTime;
 						return true;
@@ -531,7 +473,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	private long getStartingPoint(SystemEnvironment sysEnv, long date, TimeZone tz)
 		throws SDMSException
 	{
-
 		long maxFloor = startTime;
 		long maxCeil = -1;
 
@@ -549,7 +490,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			}
 
 			if (floor > date) {
-
 				ceil = prevCeil(a[1], a[0], ceil, tz);
 			}
 
@@ -563,7 +503,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	private BlockState getNextPositiveRange(SystemEnvironment sysEnv, long date, TimeZone tz)
 		throws SDMSException
 	{
-
 		long firstFloor = Long.MAX_VALUE;
 		long secondFloor = Long.MAX_VALUE;
 		long firstCeil = 0;
@@ -584,7 +523,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				if (floor > ceil) floor = Long.MAX_VALUE;
 				else
 					floor = floor(a[0], ceil, tz);
-
 			}
 
 			if (floor >= date) {
@@ -596,16 +534,13 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 					if (secondFloor > floor && floor != firstFloor) secondFloor = floor;
 				}
 			}
-
 			if (floor == firstFloor && firstCeil < ceil)
 				firstCeil = ceil;
 
 		}
-
 		if (firstFloor == Long.MAX_VALUE) return null;
 		result.blockStart = firstFloor;
 		result.blockEnd = secondFloor - 1;
-
 		if (maxCeil < firstCeil) maxCeil = firstCeil;
 		if (maxCeil < result.blockEnd) result.blockEnd = maxCeil;
 		return result;
@@ -624,7 +559,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		while (true) {
 			if (currentBaseStart < blockState.baseStart) {
-
 				int fifoSize = fifo.size();
 				for (int i = 0; i < fifoSize; ++i) {
 					BlockState bs = (BlockState) fifo.get(i);
@@ -636,10 +570,8 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				}
 
 				resetPositions();
-
 				fifo.clear();
 				startSeqNo = blockState.blockIdx;
-
 				currentBaseStart = blockState.baseStart;
 				currentBaseEnd = blockState.baseEnd;
 			}
@@ -656,7 +588,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				startSeqNo++;
 			}
 			if(!advanceBlock(sysEnv, horizon, tz) || blockState.blockStart > horizon) {
-
 				int fifoSize = fifo.size();
 				for (int i = 0; i < fifoSize; ++i) {
 					BlockState bs = (BlockState) fifo.get(i);
@@ -690,26 +621,19 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	private void truncToUnit(SystemEnvironment sysEnv, GregorianCalendar gc, int gcInterval)
 		throws SDMSException
 	{
-
 		switch (gcInterval) {
 			case Calendar.YEAR:
 				gc.set (Calendar.MONTH, Calendar.JANUARY);
-
 			case Calendar.MONTH:
 				gc.set (Calendar.DAY_OF_MONTH, 1);
-
 			case Calendar.DAY_OF_MONTH:
 				gc.set (Calendar.HOUR_OF_DAY, 0);
-
 			case Calendar.HOUR_OF_DAY:
 				gc.set (Calendar.MINUTE, 0);
-
 			case Calendar.MINUTE:
-
 				break;
 
 			case Calendar.WEEK_OF_YEAR:
-
 				gc.set (Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 				gc.set (Calendar.HOUR_OF_DAY, 0);
 				gc.set (Calendar.MINUTE, 0);
@@ -720,7 +644,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		gc.set (Calendar.MILLISECOND, 0);
 
 		gc.getTimeInMillis();
-
 	}
 
 	private void determineBoundary(SystemEnvironment sysEnv, GregorianCalendar startDate, long targetDate, int multiplier, int gcInterval)
@@ -759,7 +682,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		throws SDMSException
 	{
 		resetPositions();
-
 		if (selectedBlocksPos != null) return;
 		isInverse = getIsInverse(sysEnv).booleanValue();
 		Vector v = SDMSIntervalSelectionTable.idx_intId.getVector(sysEnv, getId(sysEnv));
@@ -769,11 +691,9 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		for (int i = 0; i < v.size(); ++i) {
 			SDMSIntervalSelection isel = (SDMSIntervalSelection) v.get(i);
-
 			Integer idx = isel.getValue(sysEnv);
 			if (idx != null) {
 				int nextValue = idx.intValue();
-
 				Vector idxv;
 				if (nextValue < 0) {
 					idxv = selectedBlocksNeg;
@@ -785,11 +705,9 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				while (j < idxv.size() && ((Integer) idxv.get(j)).intValue() < nextValue) {
 					++j;
 				}
-
 				if (j == idxv.size() || ((Integer) idxv.get(j)).intValue() != nextValue)
 					idxv.add(j, idx);
 			} else {
-
 				DateTime period[] = new DateTime[2];
 				period[0] = new DateTime(isel.getPeriodFrom(sysEnv), false);
 				Long tmpTo = isel.getPeriodTo(sysEnv);
@@ -799,7 +717,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			}
 		}
 		if (selectedBlocksNeg.size() > 0) {
-
 			fifoLength = Math.abs(((Integer) selectedBlocksNeg.elementAt(0)).intValue());
 			negSelected = true;
 		}
@@ -853,10 +770,8 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 
 		if (durationMultiplier == 0 && baseMultiplier == 0)
-
 			isInfinite = true;
 		else {
-
 			if (durationMultiplier == 0) {
 				durationMultiplier = baseMultiplier;
 				gcDurationInterval = gcBaseInterval;
@@ -879,15 +794,12 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	private void initLimits(SystemEnvironment sysEnv, TimeZone tz)
 		throws SDMSException
 	{
-
 		Long st = this.getStartTime (sysEnv);
 		if (st != null) {
-
 			startTime = localGcFromGMT(sysEnv, st, tz).getTimeInMillis();
 		}
 		Long et = this.getEndTime (sysEnv);
 		if (et != null) {
-
 			endTime = localGcFromGMT(sysEnv, et, tz).getTimeInMillis() - 1;
 		}
 	}
@@ -926,7 +838,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 	private long floor (final DateTime limit, long date, TimeZone tz)
 	{
-
 		if (date == Long.MAX_VALUE) return date;
 		if (floorGc == null) {
 			floorGc = SystemEnvironment.newGregorianCalendar();
@@ -934,7 +845,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		GregorianCalendar gc = floorGc;
 		gc.setTimeZone(tz);
 		gc.setTimeInMillis(date);
-
 		gc.set (Calendar.SECOND, 0);
 		gc.set (Calendar.MILLISECOND, 0);
 
@@ -962,20 +872,17 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			}
 
 			if (limit.month != -1) {
-
 				if (limit.day != -1)
 					gc.set(Calendar.DAY_OF_MONTH, 1);
 				gc.set (Calendar.MONTH, limit.month - 1);
 			}
 			if (limit.day != -1) {
-
 				if (limit.day < 29) {
 					gc.set (Calendar.DAY_OF_MONTH, limit.day);
 				} else {
 					gc.set (Calendar.DAY_OF_MONTH, 1);
 					gc.getTimeInMillis();
 					while (gc.getActualMaximum(Calendar.DAY_OF_MONTH) < limit.day) {
-
 						if (limit.month == -1)
 							gc.add(Calendar.MONTH, -1);
 						else
@@ -993,9 +900,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		long retval = gc.getTimeInMillis();
 		if (retval > date && limit.year == -1) {
-
 			int unit = Calendar.YEAR;
-
 			if (limit.week == -1) {
 				if (limit.month == -1) {
 					unit = Calendar.MONTH;
@@ -1003,13 +908,11 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 						unit = Calendar.DAY_OF_MONTH;
 						if (limit.hour == -1) {
 							unit = Calendar.HOUR_OF_DAY;
-
 						}
 					}
 				}
 			}
 			while (retval > date) {
-
 				if (limit.week == -1 && limit.day >= 29) {
 					gc.set(Calendar.DAY_OF_MONTH, 1);
 					do {
@@ -1021,7 +924,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 					if (limit.week < 53)
 						gc.add(unit, -1);
 					else {
-
 						gc.set(Calendar.WEEK_OF_YEAR, 1);
 						do {
 							gc.add(unit, -1);
@@ -1039,7 +941,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 	private long nextFloor (final DateTime limit, long floor, TimeZone tz)
 	{
-
 		if (floor == Long.MAX_VALUE) return floor;
 		if (limit.year != -1) return Long.MAX_VALUE;
 		if (nextFloorGc == null) {
@@ -1048,7 +949,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		GregorianCalendar gc = nextFloorGc;
 		gc.setTimeZone(tz);
 		long myFloor = floor(limit, floor, tz);
-
 		gc.setTimeInMillis(myFloor);
 
 		int gcInterval = Calendar.YEAR;
@@ -1059,18 +959,14 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			if (limit.month == -1) {
 				gcInterval = Calendar.MONTH;
 				if (limit.day == -1) {
-
 					gcInterval = Calendar.HOUR_OF_DAY;
 					watchOut = false;
-
 					if (limit.hour == -1) {
 						gcInterval = Calendar.HOUR_OF_DAY;
-
 					} else
 						unit = 25;
 				}
 			}
-
 			if (limit.day < 29) watchOut = false;
 		} else if (limit.week < 53) watchOut = false;
 
@@ -1101,7 +997,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 	private long ceil (final DateTime limit, long date, TimeZone tz)
 	{
-
 		if (date == Long.MAX_VALUE) return date;
 		if (ceilGc == null) {
 			ceilGc = SystemEnvironment.newGregorianCalendar();
@@ -1109,7 +1004,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		GregorianCalendar gc = ceilGc;
 		gc.setTimeZone(tz);
 		gc.setTimeInMillis(date);
-
 		gc.set (Calendar.SECOND, 59);
 		gc.set (Calendar.MILLISECOND, 999);
 
@@ -1133,7 +1027,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 							gc.set (Calendar.MONTH, Calendar.DECEMBER);
 						else
 							gc.set (Calendar.MONTH, limit.month - 1);
-
 						gc.set (Calendar.DAY_OF_MONTH, gc.getActualMaximum (Calendar.DAY_OF_MONTH));
 					}
 				}
@@ -1142,12 +1035,10 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			if (limit.month != -1) {
 				gc.set (Calendar.DAY_OF_MONTH, 1);
 				if (limit.day == -1) {
-
 					gc.getTimeInMillis();
 					gc.set (Calendar.MONTH, limit.month - 1);
 					gc.set (Calendar.DAY_OF_MONTH, gc.getActualMaximum (Calendar.DAY_OF_MONTH));
 				} else {
-
 					gc.set (Calendar.MONTH, limit.month - 1);
 				}
 			}
@@ -1158,7 +1049,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 					gc.set (Calendar.DAY_OF_MONTH, 1);
 					gc.getTimeInMillis();
 					while (gc.getActualMaximum(Calendar.DAY_OF_MONTH) < limit.day) {
-
 						if (limit.month == -1)
 							gc.add(Calendar.MONTH, 1);
 						else
@@ -1176,9 +1066,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		long retval = gc.getTimeInMillis();
 		if (retval < date && limit.year == -1) {
-
 			int unit = Calendar.YEAR;
-
 			if (limit.week == -1) {
 				if (limit.month == -1) {
 					unit = Calendar.MONTH;
@@ -1186,13 +1074,11 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 						unit = Calendar.DAY_OF_MONTH;
 						if (limit.hour == -1) {
 							unit = Calendar.HOUR_OF_DAY;
-
 						}
 					}
 				}
 			}
 			while (retval < date) {
-
 				if (limit.week == -1 && limit.day >= 29) {
 					gc.set(Calendar.DAY_OF_MONTH, 1);
 					do {
@@ -1204,7 +1090,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 					if (limit.week < 53)
 						gc.add(unit, 1);
 					else {
-
 						gc.set(Calendar.WEEK_OF_YEAR, 1);
 						do {
 							gc.add(unit, 1);
@@ -1222,7 +1107,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 	private long prevCeil (final DateTime floorLimit, final DateTime limit, long ceil, TimeZone tz)
 	{
-
 		if (limit.year != -1) return 0;
 		if (ceil == Long.MAX_VALUE) return ceil;
 		if (prevCeilGc == null) {
@@ -1230,7 +1114,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 		GregorianCalendar gc = prevCeilGc;
 		gc.setTimeZone(tz);
-
 		long myCeil = ceil(limit, ceil, tz);
 		gc.setTimeInMillis(myCeil);
 
@@ -1243,14 +1126,11 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				if (limit.day == -1) {
 					gcInterval = Calendar.DAY_OF_MONTH;
 					watchOut = false;
-
 					if (limit.hour == -1) {
 						gcInterval = Calendar.HOUR_OF_DAY;
-
 					}
 				}
 			}
-
 			if (limit.day < 29) watchOut = false;
 		} else if (limit.week <= 52) watchOut = false;
 
@@ -1279,7 +1159,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		if (floor > retval) return 0L;
 
 		retval = ceil(limit, floor, tz);
-
 		return retval;
 	}
 
@@ -1309,7 +1188,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
 		seP = se.getPrivileges(sysEnv, SDMSPrivilege.VIEW|SDMSPrivilege.SUBMIT, false, myGroups);
 		if ((seP & SDMSPrivilege.SUBMIT) == SDMSPrivilege.SUBMIT) {
-
 			Long submitGId = getOwnerId(sysEnv);
 			if (myGroups.contains(submitGId) || myGroups.contains(SDMSObject.adminGId)) {
 				p = checkPrivs;
@@ -1326,7 +1204,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 class BlockState implements Cloneable
 {
-
 	public long baseStart;
 	public long baseEnd;
 

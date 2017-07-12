@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -52,8 +50,9 @@ public class ListSubmitted extends Node
 	private final static String emptyString = new String("");
 	private final ObjectFilter objFilter = new ObjectFilter()
 	{
-
-		public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p) { return true; }
+		public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p) {
+			return true;
+		}
 	};
 
 	WithHash with;
@@ -157,17 +156,14 @@ public class ListSubmitted extends Node
 			SDMSThread.doTrace(sysEnv.cEnv, "type creator : getMastersFirst", SDMSThread.SEVERITY_DEBUG);
 			getMastersFirst(sysEnv, result, filter);
 		} else {
-
 			SDMSThread.doTrace(sysEnv.cEnv, "type creator : Scan", SDMSThread.SEVERITY_DEBUG);
 			Iterator i = SDMSSubmittedEntityTable.table.iterator(sysEnv, filter);
 			filtered = true;
-
 			while(i.hasNext()) {
 				result.addElement(i.next());
 			}
 		}
 		if (objFilter.hasFuture) {
-
 			Iterator i;
 			if (filtered)
 				i = SDMSScheduledEventTable.table.iterator(sysEnv, filter);
@@ -175,9 +171,7 @@ public class ListSubmitted extends Node
 				i = SDMSScheduledEventTable.table.iterator(sysEnv);
 			while(i.hasNext()) {
 				SDMSScheduledEvent scev = (SDMSScheduledEvent)(i.next());
-
 				if (!scev.getIsCalendar(sysEnv).booleanValue()) {
-
 					SDMSSchedule sce = SDMSScheduleTable.getObject(sysEnv, scev.getSceId(sysEnv));
 					if (sce.isReallyActive(sysEnv))
 						result.addElement(scev);
@@ -189,7 +183,6 @@ public class ListSubmitted extends Node
 				i = SDMSCalendarTable.table.iterator(sysEnv);
 			while(i.hasNext()) {
 				SDMSCalendar cal = (SDMSCalendar) i.next();
-
 				SDMSScheduledEvent scev = SDMSScheduledEventTable.getObject(sysEnv, cal.getScevId(sysEnv));
 				SDMSSchedule sce = SDMSScheduleTable.getObject(sysEnv, scev.getSceId(sysEnv));
 				if (sce.isReallyActive(sysEnv))
@@ -283,7 +276,6 @@ public class ListSubmitted extends Node
 		errlogfile = se.getErrlogfile(sysEnv);
 
 		Vector parameterVector = new Vector();
-
 		if(parms != null) {
 			for(int i = 0; i < parms.size(); i++) {
 				String w = (String) parms.get(i);
@@ -589,7 +581,6 @@ public class ListSubmitted extends Node
 		Vector c = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, job.getId(sysEnv));
 		Integer numChilds = new Integer(c.size());
 		if(hitList.contains(jobId))	hit = "H";
-
 		if(pathhit.equals("P")) pathhits.add(jobId);
 		String submitPath = "*";
 
@@ -609,7 +600,6 @@ public class ListSubmitted extends Node
 		errlogfile = job.getErrlogfile(sysEnv);
 
 		Vector parameterVector = new Vector();
-
 		if(parms != null) {
 			for(int i = 0; i < parms.size(); i++) {
 				String w = (String) parms.get(i);
@@ -716,12 +706,10 @@ public class ListSubmitted extends Node
 			Long id = (Long) v.get(0);
 			if(hitList.contains(id)) continue;
 			Vector p = (Vector) v.get(2);
-
 			int j = p.size() - 4;
 			if(j > 0) {
 				Long pId = (Long) p.get(j);
 				if(pathhits.contains(pId)) continue;
-
 				if(! (renderedJobs.contains(pId) && (expandIds == null || expandIds.contains(pId)))) {
 					i.remove();
 					foundOrphans = true;
@@ -1033,7 +1021,6 @@ public class ListSubmitted extends Node
 		while (didRemove) {
 			didRemove = checkOrphans(sysEnv, d_container.dataset);
 		}
-
 		d_container.lines = d_container.dataset.size();
 
 		resolvePaths(sysEnv, d_container.dataset);
@@ -1049,7 +1036,6 @@ public class ListSubmitted extends Node
 				} catch (ClassCastException c) {
 					throw new RuntimeException("Classes do not match: o1 = " + o1.toString() + ", o2 = " + o2.toString());
 				}
-
 				if ((v1.get(sortCols[0]) == null) && (v2.get(sortCols[0]) == null)) return c2.compare(o1, o2);
 				else return c1.compare(o1, o2);
 			}
