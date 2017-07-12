@@ -413,16 +413,18 @@ public class Server
 
 		if (SystemEnvironment.SQUOTE == null) {
 			try {
-				final String driverName = c.getMetaData().getDriverName();
+				String driverName = c.getMetaData().getDriverName();
+				if (driverName == null) throw new SQLException("Driver Name is null");
+				driverName = driverName.toUpperCase();
 				SDMSThread.doTrace(null, "JDBC Driver used : " + driverName, SDMSThread.SEVERITY_INFO);
-				if (driverName.startsWith("MySQL") || driverName.startsWith("MariaDB")) {
+				if (driverName.startsWith("MYSQL") || driverName.startsWith("MARIADB")) {
 					SystemEnvironment.SQUOTE = "`";
 					SystemEnvironment.EQUOTE = "`";
-				} else if (driverName.startsWith("Microsoft")) {
+				} else if (driverName.startsWith("MICROSOFT")) {
 					SystemEnvironment.SQUOTE = "[";
 					SystemEnvironment.EQUOTE = "]";
 				} else {
-					if (driverName.startsWith("PostgreSQL"))
+					if (driverName.startsWith("POSTGRESQL"))
 						SystemEnvironment.isPostgreSQL = true;
 					SystemEnvironment.SQUOTE = "";
 					SystemEnvironment.EQUOTE = "";
