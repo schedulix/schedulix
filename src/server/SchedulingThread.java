@@ -641,7 +641,10 @@ public class SchedulingThread extends InternalSession
 			requestLocalResourceSme(sysEnv, sme, type, masterMap, oldState);
 			requestFolderResourceSme(sysEnv, sme, type, masterMap, oldState);
 		} catch (SDMSEscape e) {
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03411141525", "Sticky Resource resolution conflict for job $1", se.pathString(sysEnv)));
+			sme.setToError(sysEnv, "Sticky Resource resolution conflict (resource to allocate not visible)");
+			Long tMasterId = sme.getMasterId(sysEnv);
+			SDMSSubmittedEntity tMsme = SDMSSubmittedEntityTable.getObject(sysEnv, tMasterId);
+			tMsme.suspend(sysEnv, false, false);
 		}
 
 		for(int j = 0; j < v.size(); ++j) {
