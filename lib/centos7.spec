@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.7
-Release:	13%{?dist}
+Release:	14%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -309,9 +309,11 @@ if [ "$1" == "1" ]; then
 	su - postgres -c 'echo "create user schedulix with password '"'schedulix'"' createdb login;" | psql'
 
 	# write the password file in order to be able to connect without a password prompt
-	echo "127.0.0.1:5432:schedulixdb:schedulix:schedulix" > /opt/schedulix/.pgpass
+	touch /opt/schedulix/.pgpass
 	chmod 0600 /opt/schedulix/.pgpass
 	chown schedulix.schedulix /opt/schedulix/.pgpass
+	# now add the line to access schedulixdb
+	echo "127.0.0.1:5432:schedulixdb:schedulix:schedulix" >> /opt/schedulix/.pgpass
 
 	# modify /var/lib/pgsql/data/pg_hba.conf in order to allow jdbc connects
 	sed --in-place=.save '
@@ -373,7 +375,15 @@ else
 
 	# remove the old entry
 	mv /opt/schedulix/.pgpass /opt/schedulix/.tmp.$$
-	grep -v "schedulixdb" < /opt/schedulix/.tmp.$$ > /opt/schedulix/.pgpass
+
+	# create an empty .pgpass
+	touch /opt/schedulix/.pgpass
+	# adjust the privileges
+	chmod 0600 /opt/schedulix/.pgpass
+	chown schedulix.schedulix /opt/schedulix/.pgpass
+
+	# add all entries except for the schedulixdb entry
+	grep -v "schedulixdb" < /opt/schedulix/.tmp.$$ >> /opt/schedulix/.pgpass
 	rm -f /opt/schedulix/.tmp.$$
 
 	# add the new one
