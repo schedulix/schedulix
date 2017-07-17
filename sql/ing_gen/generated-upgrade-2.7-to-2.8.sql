@@ -66,6 +66,19 @@ CREATE TABLE EXTENTS (
 );\g
 CREATE UNIQUE INDEX PK_EXTENTS
 ON EXTENTS(ID) WITH STRUCTURE = BTREE;\g
+DROP VIEW SCI_EXTENTS;\g
+CREATE VIEW SCI_EXTENTS AS
+SELECT
+    ID
+    , O_ID                           AS O_ID
+    , SME_ID                         AS SME_ID
+    , SEQUENCE                       AS SEQUENCE
+    , EXTENT                         AS EXTENT
+    , CREATOR_U_ID                   AS CREATOR_U_ID
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CREATE_TS- decimal(CREATE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CREATE_TS
+    , CHANGER_U_ID                   AS CHANGER_U_ID
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CHANGE_TS- decimal(CHANGE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CHANGE_TS
+  FROM EXTENTS;\g
 ALTER TABLE PARAMETER_DEFINITION ADD COLUMN IS_LONG integer NOT NULL WITH DEFAULT;\g
 DROP VIEW SCI_C_PARAMETER_DEFINITION;\g
 DROP VIEW SCI_V_PARAMETER_DEFINITION;\g
@@ -106,6 +119,79 @@ SELECT
     , VALID_FROM
     , VALID_TO
   FROM PARAMETER_DEFINITION;\g
+CREATE TABLE ARC_SUBMITTED_ENTITY_STATS (
+    ID                             decimal(20) NOT NULL
+    , SME_ID                         decimal(20)      NULL
+    , RERUN_SEQ                      integer          NULL
+    , SCOPE_ID                       decimal(20)      NULL
+    , JOB_ESD_ID                     decimal(20)      NULL
+    , EXIT_CODE                      integer          NULL
+    , COMMANDLINE                    varchar(512)     NULL
+    , WORKDIR                        varchar(512)     NULL
+    , LOGFILE                        varchar(512)     NULL
+    , ERRLOGFILE                     varchar(512)     NULL
+    , EXTPID                         varchar(32)      NULL
+    , SYNC_TS                        decimal(20)      NULL
+    , RESOURCE_TS                    decimal(20)      NULL
+    , RUNNABLE_TS                    decimal(20)      NULL
+    , START_TS                       decimal(20)      NULL
+    , FINISH_TS                      decimal(20)      NULL
+    , CREATOR_U_ID                   decimal(20)      NULL
+    , CREATE_TS                      decimal(20)      NULL
+    , CHANGER_U_ID                   decimal(20)      NULL
+    , CHANGE_TS                      decimal(20)      NULL
+);\g
+-- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
+-- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
+
+CREATE TABLE SUBMITTED_ENTITY_STATS (
+    ID                             decimal(20) NOT NULL
+    , SME_ID                         decimal(20)     NOT NULL
+    , RERUN_SEQ                      integer         NOT NULL
+    , SCOPE_ID                       decimal(20)     WITH NULL
+    , JOB_ESD_ID                     decimal(20)     WITH NULL
+    , EXIT_CODE                      integer         WITH NULL
+    , COMMANDLINE                    varchar(512)    WITH NULL
+    , WORKDIR                        varchar(512)    WITH NULL
+    , LOGFILE                        varchar(512)    WITH NULL
+    , ERRLOGFILE                     varchar(512)    WITH NULL
+    , EXTPID                         varchar(32)     WITH NULL
+    , SYNC_TS                        decimal(20)     WITH NULL
+    , RESOURCE_TS                    decimal(20)     WITH NULL
+    , RUNNABLE_TS                    decimal(20)     WITH NULL
+    , START_TS                       decimal(20)     WITH NULL
+    , FINISH_TS                      decimal(20)     WITH NULL
+    , CREATOR_U_ID                   decimal(20)     NOT NULL
+    , CREATE_TS                      decimal(20)     NOT NULL
+    , CHANGER_U_ID                   decimal(20)     NOT NULL
+    , CHANGE_TS                      decimal(20)     NOT NULL
+);\g
+CREATE UNIQUE INDEX PK_SUBMITTED_ENTITY_STATS
+ON SUBMITTED_ENTITY_STATS(ID) WITH STRUCTURE = BTREE;\g
+DROP VIEW SCI_SUBMITTED_ENTITY_STATS;\g
+CREATE VIEW SCI_SUBMITTED_ENTITY_STATS AS
+SELECT
+    ID
+    , SME_ID                         AS SME_ID
+    , RERUN_SEQ                      AS RERUN_SEQ
+    , SCOPE_ID                       AS SCOPE_ID
+    , JOB_ESD_ID                     AS JOB_ESD_ID
+    , EXIT_CODE                      AS EXIT_CODE
+    , COMMANDLINE                    AS COMMANDLINE
+    , WORKDIR                        AS WORKDIR
+    , LOGFILE                        AS LOGFILE
+    , ERRLOGFILE                     AS ERRLOGFILE
+    , EXTPID                         AS EXTPID
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((SYNC_TS- decimal(SYNC_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS SYNC_TS
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((RESOURCE_TS- decimal(RESOURCE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS RESOURCE_TS
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((RUNNABLE_TS- decimal(RUNNABLE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS RUNNABLE_TS
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((START_TS- decimal(START_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS START_TS
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((FINISH_TS- decimal(FINISH_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS FINISH_TS
+    , CREATOR_U_ID                   AS CREATOR_U_ID
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CREATE_TS- decimal(CREATE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CREATE_TS
+    , CHANGER_U_ID                   AS CHANGER_U_ID
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CHANGE_TS- decimal(CHANGE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CHANGE_TS
+  FROM SUBMITTED_ENTITY_STATS;\g
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
@@ -123,3 +209,30 @@ CREATE TABLE VERSIONED_EXTENTS (
 );\g
 CREATE INDEX PK_VERSIONED_EXTENTS
 ON VERSIONED_EXTENTS(ID) WITH STRUCTURE = BTREE;\g
+DROP VIEW SCI_C_VERSIONED_EXTENTS;\g
+DROP VIEW SCI_V_VERSIONED_EXTENTS;\g
+CREATE VIEW SCI_C_VERSIONED_EXTENTS AS
+SELECT
+    ID
+    , O_ID                           AS O_ID
+    , SEQUENCE                       AS SEQUENCE
+    , EXTENT                         AS EXTENT
+    , CREATOR_U_ID                   AS CREATOR_U_ID
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CREATE_TS- decimal(CREATE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CREATE_TS
+    , CHANGER_U_ID                   AS CHANGER_U_ID
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CHANGE_TS- decimal(CHANGE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CHANGE_TS
+  FROM VERSIONED_EXTENTS
+ WHERE VALID_TO = 9223372036854775807;\g
+CREATE VIEW SCI_V_VERSIONED_EXTENTS AS
+SELECT
+    ID
+    , O_ID                           AS O_ID
+    , SEQUENCE                       AS SEQUENCE
+    , EXTENT                         AS EXTENT
+    , CREATOR_U_ID                   AS CREATOR_U_ID
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CREATE_TS- decimal(CREATE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CREATE_TS
+    , CHANGER_U_ID                   AS CHANGER_U_ID
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CHANGE_TS- decimal(CHANGE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CHANGE_TS
+    , VALID_FROM
+    , VALID_TO
+  FROM VERSIONED_EXTENTS;\g

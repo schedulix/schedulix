@@ -68,6 +68,19 @@ CREATE TABLE EXTENTS (
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_EXTENTS
 ON EXTENTS(`ID`);
+DROP VIEW SCI_EXTENTS;
+CREATE VIEW SCI_EXTENTS AS
+SELECT
+    ID
+    , `O_ID`                         AS `O_ID`
+    , `SME_ID`                       AS `SME_ID`
+    , `SEQUENCE`                     AS `SEQUENCE`
+    , `EXTENT`                       AS `EXTENT`
+    , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
+    , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
+    , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
+    , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
+  FROM EXTENTS;
 ALTER TABLE PARAMETER_DEFINITION
     ADD `IS_LONG` integer NOT NULL DEFAULT 0;
 DROP VIEW SCI_C_PARAMETER_DEFINITION;
@@ -109,6 +122,79 @@ SELECT
     , VALID_FROM
     , VALID_TO
   FROM PARAMETER_DEFINITION;
+CREATE TABLE ARC_SUBMITTED_ENTITY_STATS (
+    ID                             decimal(20) NOT NULL
+    , `SME_ID`                       decimal(20)      NULL
+    , `RERUN_SEQ`                    integer          NULL
+    , `SCOPE_ID`                     decimal(20)      NULL
+    , `JOB_ESD_ID`                   decimal(20)      NULL
+    , `EXIT_CODE`                    integer          NULL
+    , `COMMANDLINE`                  varchar(512)     NULL
+    , `WORKDIR`                      varchar(512)     NULL
+    , `LOGFILE`                      varchar(512)     NULL
+    , `ERRLOGFILE`                   varchar(512)     NULL
+    , `EXTPID`                       varchar(32)      NULL
+    , `SYNC_TS`                      decimal(20)      NULL
+    , `RESOURCE_TS`                  decimal(20)      NULL
+    , `RUNNABLE_TS`                  decimal(20)      NULL
+    , `START_TS`                     decimal(20)      NULL
+    , `FINISH_TS`                    decimal(20)      NULL
+    , `CREATOR_U_ID`                 decimal(20)      NULL
+    , `CREATE_TS`                    decimal(20)      NULL
+    , `CHANGER_U_ID`                 decimal(20)      NULL
+    , `CHANGE_TS`                    decimal(20)      NULL
+) ENGINE = INNODB;
+-- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
+-- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
+
+CREATE TABLE SUBMITTED_ENTITY_STATS (
+    `ID`                           decimal(20) NOT NULL
+    , `SME_ID`                       decimal(20)     NOT NULL
+    , `RERUN_SEQ`                    integer         NOT NULL
+    , `SCOPE_ID`                     decimal(20)         NULL
+    , `JOB_ESD_ID`                   decimal(20)         NULL
+    , `EXIT_CODE`                    integer             NULL
+    , `COMMANDLINE`                  varchar(512)        NULL
+    , `WORKDIR`                      varchar(512)        NULL
+    , `LOGFILE`                      varchar(512)        NULL
+    , `ERRLOGFILE`                   varchar(512)        NULL
+    , `EXTPID`                       varchar(32)         NULL
+    , `SYNC_TS`                      decimal(20)         NULL
+    , `RESOURCE_TS`                  decimal(20)         NULL
+    , `RUNNABLE_TS`                  decimal(20)         NULL
+    , `START_TS`                     decimal(20)         NULL
+    , `FINISH_TS`                    decimal(20)         NULL
+    , `CREATOR_U_ID`                 decimal(20)     NOT NULL
+    , `CREATE_TS`                    decimal(20)     NOT NULL
+    , `CHANGER_U_ID`                 decimal(20)     NOT NULL
+    , `CHANGE_TS`                    decimal(20)     NOT NULL
+) ENGINE = INNODB;
+CREATE UNIQUE INDEX PK_SUBMITTED_ENTITY_STATS
+ON SUBMITTED_ENTITY_STATS(`ID`);
+DROP VIEW SCI_SUBMITTED_ENTITY_STATS;
+CREATE VIEW SCI_SUBMITTED_ENTITY_STATS AS
+SELECT
+    ID
+    , `SME_ID`                       AS `SME_ID`
+    , `RERUN_SEQ`                    AS `RERUN_SEQ`
+    , `SCOPE_ID`                     AS `SCOPE_ID`
+    , `JOB_ESD_ID`                   AS `JOB_ESD_ID`
+    , `EXIT_CODE`                    AS `EXIT_CODE`
+    , `COMMANDLINE`                  AS `COMMANDLINE`
+    , `WORKDIR`                      AS `WORKDIR`
+    , `LOGFILE`                      AS `LOGFILE`
+    , `ERRLOGFILE`                   AS `ERRLOGFILE`
+    , `EXTPID`                       AS `EXTPID`
+    , from_unixtime((`SYNC_TS` & ~1125899906842624)/1000) AS `SYNC_TS`
+    , from_unixtime((`RESOURCE_TS` & ~1125899906842624)/1000) AS `RESOURCE_TS`
+    , from_unixtime((`RUNNABLE_TS` & ~1125899906842624)/1000) AS `RUNNABLE_TS`
+    , from_unixtime((`START_TS` & ~1125899906842624)/1000) AS `START_TS`
+    , from_unixtime((`FINISH_TS` & ~1125899906842624)/1000) AS `FINISH_TS`
+    , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
+    , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
+    , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
+    , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
+  FROM SUBMITTED_ENTITY_STATS;
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
@@ -126,3 +212,30 @@ CREATE TABLE VERSIONED_EXTENTS (
 ) ENGINE = INNODB;
 CREATE INDEX PK_VERSIONED_EXTENTS
 ON VERSIONED_EXTENTS(`ID`);
+DROP VIEW SCI_C_VERSIONED_EXTENTS;
+DROP VIEW SCI_V_VERSIONED_EXTENTS;
+CREATE VIEW SCI_C_VERSIONED_EXTENTS AS
+SELECT
+    ID
+    , `O_ID`                         AS `O_ID`
+    , `SEQUENCE`                     AS `SEQUENCE`
+    , `EXTENT`                       AS `EXTENT`
+    , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
+    , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
+    , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
+    , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
+  FROM VERSIONED_EXTENTS
+ WHERE VALID_TO = 9223372036854775807;
+CREATE VIEW SCI_V_VERSIONED_EXTENTS AS
+SELECT
+    ID
+    , `O_ID`                         AS `O_ID`
+    , `SEQUENCE`                     AS `SEQUENCE`
+    , `EXTENT`                       AS `EXTENT`
+    , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
+    , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
+    , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
+    , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
+    , VALID_FROM
+    , VALID_TO
+  FROM VERSIONED_EXTENTS;
