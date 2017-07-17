@@ -252,11 +252,31 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		throws SDMSException
 	{
 		if (getJobIsRestartable(sysEnv).booleanValue()) {
+			int state = getState(sysEnv).intValue();
+			if(state != ERROR) {
+				Integer rerunSeq = getRerunSeq(sysEnv);
+				SDMSSubmittedEntityStatsTable.table.create(sysEnv,
+				                getId(sysEnv),
+				                rerunSeq,
+				                getScopeId(sysEnv),
+				                getJobEsdId(sysEnv),
+				                getExitCode(sysEnv),
+				                getCommandline(sysEnv),
+				                getWorkdir(sysEnv),
+				                getLogfile(sysEnv),
+				                getErrlogfile(sysEnv),
+				                getExtPid(sysEnv),
+				                getSyncTs(sysEnv),
+				                getResourceTs(sysEnv),
+				                getRunnableTs(sysEnv),
+				                getStartTs(sysEnv),
+				                getFinishTs(sysEnv)
+				                                          );
+				setRerunSeq(sysEnv, new Integer(rerunSeq.intValue() + 1));
+			}
 			setStartTs(sysEnv, null);
 			setFinishTs(sysEnv, null);
-			int state = getState(sysEnv).intValue();
-			if(state != ERROR)
-				setRerunSeq(sysEnv, new Integer(getRerunSeq(sysEnv).intValue() + 1));
+
 			setErrorMsg(sysEnv, null);
 			setJobEsdId(sysEnv, null, false);
 			setJobEsdPref(sysEnv, null);

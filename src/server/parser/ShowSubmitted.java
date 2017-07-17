@@ -120,6 +120,9 @@ public class ShowSubmitted extends Node
 		Vector desc = new Vector();
 		Vector data = new Vector();
 
+		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion);
+		String strType = se.getTypeAsString(sysEnv);
+
 		desc.add("ID");
 		desc.add("SE_NAME");
 		desc.add("SE_OWNER");
@@ -247,8 +250,8 @@ public class ShowSubmitted extends Node
 		desc.add("SUBMITTAG");
 		desc.add("UNRESOLVED_HANDLING");
 		desc.add("DEFINED_RESOURCES");
-
-		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion);
+		if (strType.equals("JOB"))
+			desc.add("RUNS");
 
 		Long smeId = sme.getId(sysEnv);
 		Long espId;
@@ -271,7 +274,7 @@ public class ShowSubmitted extends Node
 		data.add(se.pathVector(sysEnv, actVersion));
 		group = SDMSGroupTable.getObject(sysEnv, se.getOwnerId(sysEnv));
 		data.add(group.getName(sysEnv));
-		data.add(se.getTypeAsString(sysEnv));
+		data.add(strType);
 		data.add(se.getRunProgram(sysEnv));
 		data.add(se.getRerunProgram(sysEnv));
 		data.add(se.getKillProgram(sysEnv));
@@ -536,6 +539,8 @@ public class ShowSubmitted extends Node
 			data.add("IGNORE");
 
 		data.add(definedResources(sysEnv, smeId));
+		if (strType.equals("JOB"))
+			data.add(runs(sysEnv, sme));
 
 		d_container = new SDMSOutputContainer(sysEnv,
 			new SDMSMessage (sysEnv, "03205081202", "Job"), desc, data);
@@ -1133,6 +1138,174 @@ public class ShowSubmitted extends Node
 			c_container.addData(sysEnv, c_data);
 		}
 		Collections.sort(c_container.dataset, c_container.getComparator(sysEnv, 1));
+
+		return c_container;
+	}
+
+	private	SDMSOutputContainer runs (SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
+	throws SDMSException
+	{
+		Vector c_desc = new Vector();
+		c_desc.add("RERUN_SEQ");
+		c_desc.add("SCOPE_ID");
+		c_desc.add("HTTPHOST");
+		c_desc.add("HTTPPORT");
+		c_desc.add("JOB_ESD_ID");
+		c_desc.add("EXIT_CODE");
+		c_desc.add("COMMANDLINE");
+		c_desc.add("WORKDIR");
+		c_desc.add("LOGFILE");
+		c_desc.add("ERRLOGFILE");
+		c_desc.add("EXT_PID");
+		c_desc.add("SYNC_TS");
+		c_desc.add("RESOURCE_TS");
+		c_desc.add("RUNNABLE_TS");
+		c_desc.add("START_TS");
+		c_desc.add("FINISH_TS");
+
+		SDMSOutputContainer c_container = new SDMSOutputContainer(sysEnv, null, c_desc);
+
+		Long scopeId;
+		SDMSScope scope;
+		Long esdId;
+		SDMSExitStateDefinition esd;
+		Date d = new Date();
+		Long ts;
+		int rrSeq;
+
+		Vector c_data;
+
+		c_data = new Vector();
+		rrSeq = sme.getRerunSeq(sysEnv);
+		c_data.add(new Integer(rrSeq));
+		scopeId = sme.getScopeId(sysEnv);
+		if(scopeId != null) {
+			try {
+				scope = SDMSScopeTable.getObject(sysEnv, scopeId);
+				c_data.add(scope.pathVector(sysEnv));
+				c_data.add(ScopeConfig.getItem(sysEnv, scope, Config.HTTP_HOST));
+				c_data.add(ScopeConfig.getItem(sysEnv, scope, Config.HTTP_PORT));
+			} catch (NotFoundException nfe) {
+				c_data.add("Scope deleted");
+				c_data.add(null);
+				c_data.add(null);
+			}
+		} else {
+			c_data.add(null);
+			c_data.add(null);
+			c_data.add(null);
+		}
+		esdId = sme.getJobEsdId(sysEnv);
+		if(esdId != null) {
+			esd = SDMSExitStateDefinitionTable.getObject(sysEnv, esdId, actVersion);
+			c_data.add(esd.getName(sysEnv));
+		} else {
+			c_data.add(null);
+		}
+		c_data.add(sme.getExitCode(sysEnv));
+		if (rrSeq == 0)
+			c_data.add(sme.getCommandline(sysEnv));
+		else
+			c_data.add(sme.getRrCommandline(sysEnv));
+
+		c_data.add(sme.getWorkdir(sysEnv));
+		c_data.add(sme.getLogfile(sysEnv));
+		c_data.add(sme.getErrlogfile(sysEnv));
+		c_data.add(sme.getExtPid(sysEnv));
+		ts = sme.getSyncTs(sysEnv);
+		if(ts != null) {
+			d.setTime(ts.longValue());
+			c_data.add(sysEnv.systemDateFormat.format(d));
+		} else c_data.add(null);
+		ts = sme.getResourceTs(sysEnv);
+		if(ts != null) {
+			d.setTime(ts.longValue());
+			c_data.add(sysEnv.systemDateFormat.format(d));
+		} else c_data.add(null);
+		ts = sme.getRunnableTs(sysEnv);
+		if(ts != null) {
+			d.setTime(ts.longValue());
+			c_data.add(sysEnv.systemDateFormat.format(d));
+		} else c_data.add(null);
+		ts = sme.getStartTs(sysEnv);
+		if(ts != null) {
+			d.setTime(ts.longValue());
+			c_data.add(sysEnv.systemDateFormat.format(d));
+		} else c_data.add(null);
+		ts = sme.getFinishTs(sysEnv);
+		if(ts != null) {
+			d.setTime(ts.longValue());
+			c_data.add(sysEnv.systemDateFormat.format(d));
+		} else c_data.add(null);
+
+		c_container.addData(sysEnv, c_data);
+
+		Vector v = SDMSSubmittedEntityStatsTable.idx_smeId.getVector(sysEnv, sme.getId(sysEnv));
+		for (int i = 0; i < v.size(); i++) {
+			final SDMSSubmittedEntityStats s = (SDMSSubmittedEntityStats) v.get(i);
+
+			c_data = new Vector();
+			rrSeq = s.getRerunSeq(sysEnv);
+			c_data.add(new Integer(rrSeq));
+			scopeId = s.getScopeId(sysEnv);
+			if(scopeId != null) {
+				try {
+					scope = SDMSScopeTable.getObject(sysEnv, scopeId);
+					c_data.add(scope.pathVector(sysEnv));
+					c_data.add(ScopeConfig.getItem(sysEnv, scope, Config.HTTP_HOST));
+					c_data.add(ScopeConfig.getItem(sysEnv, scope, Config.HTTP_PORT));
+				} catch (NotFoundException nfe) {
+					c_data.add("Scope deleted");
+					c_data.add(null);
+					c_data.add(null);
+				}
+			} else {
+				c_data.add(null);
+				c_data.add(null);
+				c_data.add(null);
+			}
+			esdId = s.getJobEsdId(sysEnv);
+			if(esdId != null) {
+				esd = SDMSExitStateDefinitionTable.getObject(sysEnv, esdId, actVersion);
+				c_data.add(esd.getName(sysEnv));
+			} else {
+				c_data.add(null);
+			}
+			c_data.add(s.getExitCode(sysEnv));
+			c_data.add(s.getCommandline(sysEnv));
+			c_data.add(s.getWorkdir(sysEnv));
+			c_data.add(s.getLogfile(sysEnv));
+			c_data.add(s.getErrlogfile(sysEnv));
+			c_data.add(s.getExtPid(sysEnv));
+			ts = s.getSyncTs(sysEnv);
+			if(ts != null) {
+				d.setTime(ts.longValue());
+				c_data.add(sysEnv.systemDateFormat.format(d));
+			} else c_data.add(null);
+			ts = s.getResourceTs(sysEnv);
+			if(ts != null) {
+				d.setTime(ts.longValue());
+				c_data.add(sysEnv.systemDateFormat.format(d));
+			} else c_data.add(null);
+			ts = s.getRunnableTs(sysEnv);
+			if(ts != null) {
+				d.setTime(ts.longValue());
+				c_data.add(sysEnv.systemDateFormat.format(d));
+			} else c_data.add(null);
+			ts = s.getStartTs(sysEnv);
+			if(ts != null) {
+				d.setTime(ts.longValue());
+				c_data.add(sysEnv.systemDateFormat.format(d));
+			} else c_data.add(null);
+			ts = s.getFinishTs(sysEnv);
+			if(ts != null) {
+				d.setTime(ts.longValue());
+				c_data.add(sysEnv.systemDateFormat.format(d));
+			} else c_data.add(null);
+
+			c_container.addData(sysEnv, c_data);
+		}
+		Collections.sort(c_container.dataset, c_container.getComparator(sysEnv, 0));
 
 		return c_container;
 	}

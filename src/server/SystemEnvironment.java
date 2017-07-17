@@ -162,6 +162,7 @@ public class SystemEnvironment implements Cloneable
 	public static Vector exColumns;
 	public static Vector hiColumns;
 	public static Vector kjColumns;
+	public static Vector smesColumns;
 
 	public static int dumpLangLevel;
 	public static HashMap<String,Long> showStackTrace;
@@ -182,6 +183,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_ARCEXCOLS             = "ArchiveExtentsColumns";
 	public static final String S_ARCHICOLS             = "ArchiveHierarchyColumns";
 	public static final String S_ARCKJCOLS             = "ArchiveKillJobColumns";
+	public static final String S_ARCSMESCOLS           = "ArchiveStatsColumns";
 	public static final String S_AUDITFILE             = "AuditFile";
 	public static final String S_AUTHCLASS             = "AuthenticationClass";
 	public static final String S_CALHORIZON            = "CalendarHorizon";
@@ -1024,6 +1026,7 @@ public class SystemEnvironment implements Cloneable
 		String s_exColumns = props.getProperty(S_ARCEXCOLS, ALL);
 		String s_hiColumns = props.getProperty(S_ARCHICOLS, ALL);
 		String s_kjColumns = props.getProperty(S_ARCKJCOLS, ALL);
+		String s_smesColumns = props.getProperty(S_ARCSMESCOLS, ALL);
 
 		if (!archive) return;
 
@@ -1076,6 +1079,12 @@ public class SystemEnvironment implements Cloneable
 		else
 			kjColumns = convertEntryToVector(s_kjColumns, null);
 
+		if (s_smesColumns.toUpperCase().equals(NONE))
+			smesColumns = null;
+		else if (s_smesColumns.toUpperCase().equals(ALL))
+			smesColumns = new Vector();
+		else
+			smesColumns = convertEntryToVector(s_smesColumns, null);
 	}
 
 	private void getExportVariables()

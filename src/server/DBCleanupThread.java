@@ -48,6 +48,14 @@ public class DBCleanupThread extends SDMSThread
 	private final static int IDLE_SLEEP_TIME = 15 * 60 * 1000;
 	private final static int MASTERCHUNK = 10000;
 
+	private final static String KILL_JOB = "KILL_JOB";
+	private final static String AUDIT_TRAIL = "AUDIT_TRAIL";
+	private final static String ENTITY_VARIABLE = "ENTITY_VARIABLE";
+	private final static String EXTENTS = "EXTENTS";
+	private final static String DEPENDENCY_INSTANCE = "DEPENDENCY_INSTANCE";
+	private final static String HIERARCHY_INSTANCE = "HIERARCHY_INSTANCE";
+	private final static String SUBMITTED_ENTITY_STATS = "SUBMITTED_ENTITY_STATS";
+
 	private Vector<MasterEntry> masterList = new Vector<MasterEntry>();
 
 	private PreparedStatement deleteMaster = null;
@@ -56,6 +64,7 @@ public class DBCleanupThread extends SDMSThread
 	private PreparedStatement deleteExtents = null;
 	private PreparedStatement deleteDependencyInstance = null;
 	private PreparedStatement deleteHierarchyInstance = null;
+	private PreparedStatement deleteSubmittedEntityStats = null;
 
 	private PreparedStatement archiveMaster = null;
 	private PreparedStatement archiveKillJob = null;
@@ -63,6 +72,7 @@ public class DBCleanupThread extends SDMSThread
 	private PreparedStatement archiveExtents = null;
 	private PreparedStatement archiveDependencyInstance = null;
 	private PreparedStatement archiveHierarchyInstance = null;
+	private PreparedStatement archiveSubmittedEntityStats = null;
 
 	private PreparedStatement loadSmeForMaster = null;
 	private PreparedStatement loadMasters = null;
@@ -148,6 +158,7 @@ public class DBCleanupThread extends SDMSThread
 				deleteExtents            = sysEnv.dbConnection.prepareStatement("DELETE FROM EXTENTS WHERE SME_ID = ?");
 				deleteDependencyInstance = sysEnv.dbConnection.prepareStatement("DELETE FROM DEPENDENCY_INSTANCE WHERE DEPENDENT_ID = ?");
 				deleteHierarchyInstance  = sysEnv.dbConnection.prepareStatement("DELETE FROM HIERARCHY_INSTANCE WHERE CHILD_ID = ?");
+				deleteSubmittedEntityStats  = sysEnv.dbConnection.prepareStatement("DELETE FROM SUBMITTED_ENTITY_STATS WHERE SME_ID = ?");
 				if (sysEnv.archive) {
 					archiveMaster = prepareArchive(SDMSSubmittedEntityTable.table, sysEnv.smeColumns, "MASTER_ID");
 					archiveKillJob = prepareArchive(SDMSKillJobTable.table, sysEnv.kjColumns, "SME_ID");
@@ -155,6 +166,7 @@ public class DBCleanupThread extends SDMSThread
 					archiveExtents = prepareArchive(SDMSExtentsTable.table, sysEnv.exColumns, "SME_ID");
 					archiveDependencyInstance = prepareArchive(SDMSDependencyInstanceTable.table, sysEnv.diColumns, "DEPENDENT_ID");
 					archiveHierarchyInstance = prepareArchive(SDMSHierarchyInstanceTable.table, sysEnv.hiColumns, "CHILD_ID");
+					archiveSubmittedEntityStats = prepareArchive(SDMSSubmittedEntityStatsTable.table, sysEnv.smesColumns, "SME_ID");
 				}
 			} catch (SQLRecoverableException sqlre) {
 				try {
@@ -295,16 +307,18 @@ public class DBCleanupThread extends SDMSThread
 	private void processSme(long id)
 	throws SDMSException, SQLException
 	{
-		archiveForSme(archiveKillJob, id, "KILL_JOB");
-		deleteForSme(deleteKillJob, id, "KILL_JOB");
-		archiveForSme(archiveEntityVariable, id, "ENTITY_VARIABLE");
-		deleteForSme(deleteEntityVariable, id, "ENTITY_VARIABLE");
-		archiveForSme(archiveExtents, id, "EXTENTS");
-		deleteForSme(deleteExtents, id, "EXTENTS");
-		archiveForSme(archiveDependencyInstance, id, "DEPENDENCY_INSTANCE");
-		deleteForSme(deleteDependencyInstance, id, "DEPENDENCY_INSTANCE");
-		archiveForSme(archiveHierarchyInstance, id, "HIERARCHY_INSTANCE");
-		deleteForSme(deleteHierarchyInstance, id, "HIERARCHY_INSTANCE");
+		archiveForSme(archiveKillJob, id, KILL_JOB);
+		deleteForSme(deleteKillJob, id, KILL_JOB);
+		archiveForSme(archiveEntityVariable, id, ENTITY_VARIABLE);
+		deleteForSme(deleteEntityVariable, id, ENTITY_VARIABLE);
+		archiveForSme(archiveExtents, id, EXTENTS);
+		deleteForSme(deleteExtents, id, EXTENTS);
+		archiveForSme(archiveDependencyInstance, id, DEPENDENCY_INSTANCE);
+		deleteForSme(deleteDependencyInstance, id, DEPENDENCY_INSTANCE);
+		archiveForSme(archiveHierarchyInstance, id, HIERARCHY_INSTANCE);
+		deleteForSme(deleteHierarchyInstance, id, HIERARCHY_INSTANCE);
+		archiveForSme(archiveSubmittedEntityStats, id, SUBMITTED_ENTITY_STATS);
+		deleteForSme(deleteSubmittedEntityStats, id, SUBMITTED_ENTITY_STATS);
 	}
 
 	private boolean processMaster(long id)

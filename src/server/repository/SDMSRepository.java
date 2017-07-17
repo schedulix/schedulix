@@ -257,6 +257,7 @@ public class SDMSRepository
 		tables.put(SDMSScopeConfigEnvMappingTableGeneric.tableName,		new SDMSScopeConfigEnvMappingTable(env));
 		tables.put(SDMSSmeCounterTableGeneric.tableName,			new SDMSSmeCounterTable(env));
 		tables.put(SDMSSubmittedEntityTableGeneric.tableName,			new SDMSSubmittedEntityTable(env));
+		tables.put(SDMSSubmittedEntityStatsTableGeneric.tableName,		new SDMSSubmittedEntityStatsTable(env));
 		// T
 		tables.put(SDMSTemplateVariableTableGeneric.tableName,			new SDMSTemplateVariableTable(env));
 		tables.put(SDMSTriggerTableGeneric.tableName,				new SDMSTriggerTable(env));
