@@ -46,6 +46,9 @@ GENTABLES = \
 	ExitStateMapping \
 	ExitStateMappingProfile \
 	ExitStateProfile \
+	ExitStateTranslation \
+	ExitStateTranslationProfile \
+	Extents \
 	Folder \
 	Footprint \
 	Grant \
@@ -71,6 +74,7 @@ GENTABLES = \
 	ResourceStateMapping \
 	ResourceStateMappingProfile \
 	ResourceStateProfile \
+	ResourceTemplate \
 	ResourceVariable \
 	RunnableQueue \
 	Schedule \
@@ -82,6 +86,8 @@ GENTABLES = \
 	ScopeConfigEnvMapping \
 	SmeCounter \
 	SubmittedEntity \
+	SubmittedEntityStats \
+	TemplateVariable \
 	Trigger \
 	TriggerQueue \
 	TriggerState \

@@ -692,6 +692,8 @@ kill_sess_cmd:	KILL SESSION sid						{ $$ = new KillSession($3); }
 //D:PURPOSE P011
 //D:DESCRIPTION alter_session.tex
 alter_session:	ALTER SESSION opt_sid connect_with				{ $$ = new AlterSession($3, $4); }
+	|	ALTER SESSION SET USER '=' username opt_connect_with		{ $$ = new AlterSession($6, $7); }
+	|	ALTER SESSION SET USER IS DEFAULT				{ $$ = new AlterSession(); }
 
 opt_sid:									{ $$ = null; }
 	|	sid								{ $$ = $1; }

@@ -87,20 +87,20 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSDependencyInstanceGeneric(
-		SystemEnvironment env,
-		Long p_ddId,
-		Long p_dependentId,
-		Long p_dependentIdOrig,
-		Integer p_dependencyOperation,
-		Long p_requiredId,
-		Integer p_state,
-		Integer p_ignore,
-		Long p_diIdOrig,
-		Long p_seVersion,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        Long p_ddId,
+	        Long p_dependentId,
+	        Long p_dependentIdOrig,
+	        Integer p_dependencyOperation,
+	        Long p_requiredId,
+	        Integer p_state,
+	        Integer p_ignore,
+	        Long p_diIdOrig,
+	        Long p_seVersion,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -140,7 +140,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			}
 			o = (SDMSDependencyInstanceGeneric) change(env);
 			o.ddId = p_ddId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 17);
 			env.tx.commitSubTransaction(env);
@@ -171,7 +171,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			}
 			o = (SDMSDependencyInstanceGeneric) change(env);
 			o.dependentId = p_dependentId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 50);
 			env.tx.commitSubTransaction(env);
@@ -200,7 +200,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.dependentIdOrig = p_dependentIdOrig;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -217,10 +217,10 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	{
 		final Integer v = getDependencyOperation (env);
 		switch (v.intValue()) {
-		case SDMSDependencyInstance.AND:
-			return "AND";
-		case SDMSDependencyInstance.OR:
-			return "OR";
+			case SDMSDependencyInstance.AND:
+				return "AND";
+			case SDMSDependencyInstance.OR:
+				return "OR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -240,7 +240,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.dependencyOperation = p_dependencyOperation;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -266,7 +266,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			}
 			o = (SDMSDependencyInstanceGeneric) change(env);
 			o.requiredId = p_requiredId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 52);
 			env.tx.commitSubTransaction(env);
@@ -288,18 +288,18 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	{
 		final Integer v = getState (env);
 		switch (v.intValue()) {
-		case SDMSDependencyInstance.OPEN:
-			return "OPEN";
-		case SDMSDependencyInstance.FULFILLED:
-			return "FULFILLED";
-		case SDMSDependencyInstance.FAILED:
-			return "FAILED";
-		case SDMSDependencyInstance.BROKEN:
-			return "BROKEN";
-		case SDMSDependencyInstance.DEFERED:
-			return "DEFERED";
-		case SDMSDependencyInstance.CANCELLED:
-			return "CANCELLED";
+			case SDMSDependencyInstance.OPEN:
+				return "OPEN";
+			case SDMSDependencyInstance.FULFILLED:
+				return "FULFILLED";
+			case SDMSDependencyInstance.FAILED:
+				return "FAILED";
+			case SDMSDependencyInstance.BROKEN:
+				return "BROKEN";
+			case SDMSDependencyInstance.DEFERED:
+				return "DEFERED";
+			case SDMSDependencyInstance.CANCELLED:
+				return "CANCELLED";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -321,7 +321,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			}
 			o = (SDMSDependencyInstanceGeneric) change(env);
 			o.state = p_state;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 32);
 			env.tx.commitSubTransaction(env);
@@ -343,12 +343,12 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	{
 		final Integer v = getIgnore (env);
 		switch (v.intValue()) {
-		case SDMSDependencyInstance.NO:
-			return "NO";
-		case SDMSDependencyInstance.YES:
-			return "YES";
-		case SDMSDependencyInstance.RECURSIVE:
-			return "RECURSIVE";
+			case SDMSDependencyInstance.NO:
+				return "NO";
+			case SDMSDependencyInstance.YES:
+				return "YES";
+			case SDMSDependencyInstance.RECURSIVE:
+				return "RECURSIVE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -368,7 +368,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.ignore = p_ignore;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -394,7 +394,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			}
 			o = (SDMSDependencyInstanceGeneric) change(env);
 			o.diIdOrig = p_diIdOrig;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
@@ -423,7 +423,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.seVersion = p_seVersion;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -447,7 +447,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -471,7 +471,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -507,7 +507,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		SDMSDependencyInstanceGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -528,7 +528,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			o.ddId = p_ddId;
 			o.dependentId = p_dependentId;
 			o.requiredId = p_requiredId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);
@@ -555,7 +555,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			o.dependentId = p_dependentId;
 			o.requiredId = p_requiredId;
 			o.state = p_state;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);
@@ -758,32 +758,32 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	static public boolean checkDependencyOperation(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSDependencyInstance.AND:
-		case SDMSDependencyInstance.OR:
-			return true;
+			case SDMSDependencyInstance.AND:
+			case SDMSDependencyInstance.OR:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkState(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSDependencyInstance.OPEN:
-		case SDMSDependencyInstance.FULFILLED:
-		case SDMSDependencyInstance.FAILED:
-		case SDMSDependencyInstance.BROKEN:
-		case SDMSDependencyInstance.DEFERED:
-		case SDMSDependencyInstance.CANCELLED:
-			return true;
+			case SDMSDependencyInstance.OPEN:
+			case SDMSDependencyInstance.FULFILLED:
+			case SDMSDependencyInstance.FAILED:
+			case SDMSDependencyInstance.BROKEN:
+			case SDMSDependencyInstance.DEFERED:
+			case SDMSDependencyInstance.CANCELLED:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkIgnore(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSDependencyInstance.NO:
-		case SDMSDependencyInstance.YES:
-		case SDMSDependencyInstance.RECURSIVE:
-			return true;
+			case SDMSDependencyInstance.NO:
+			case SDMSDependencyInstance.YES:
+			case SDMSDependencyInstance.RECURSIVE:
+				return true;
 		}
 		return false;
 	}

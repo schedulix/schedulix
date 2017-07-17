@@ -65,15 +65,15 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSIntervalSelectionGeneric(
-		SystemEnvironment env,
-		Long p_intId,
-		Integer p_value,
-		Long p_periodFrom,
-		Long p_periodTo,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        Long p_intId,
+	        Integer p_value,
+	        Long p_periodFrom,
+	        Long p_periodTo,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -108,7 +108,7 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 			}
 			o = (SDMSIntervalSelectionGeneric) change(env);
 			o.intId = p_intId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
@@ -138,7 +138,7 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
 		o.value = p_value;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -163,7 +163,7 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
 		o.periodFrom = p_periodFrom;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -188,7 +188,7 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
 		o.periodTo = p_periodTo;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -212,7 +212,7 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -236,7 +236,7 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -272,7 +272,7 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		SDMSIntervalSelectionGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalSelectionGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}

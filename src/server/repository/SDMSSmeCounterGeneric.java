@@ -67,16 +67,16 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSSmeCounterGeneric(
-		SystemEnvironment env,
-		Integer p_jahr,
-		Integer p_monat,
-		Integer p_tag,
-		Integer p_anzahl,
-		Long p_checksum,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        Integer p_jahr,
+	        Integer p_monat,
+	        Integer p_tag,
+	        Integer p_anzahl,
+	        Long p_checksum,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -112,7 +112,7 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 			}
 			o = (SDMSSmeCounterGeneric) change(env);
 			o.jahr = p_jahr;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
@@ -143,7 +143,7 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 			}
 			o = (SDMSSmeCounterGeneric) change(env);
 			o.monat = p_monat;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
@@ -174,7 +174,7 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 			}
 			o = (SDMSSmeCounterGeneric) change(env);
 			o.tag = p_tag;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
@@ -203,7 +203,7 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSmeCounterGeneric) change(env);
 		o.anzahl = p_anzahl;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -227,7 +227,7 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSmeCounterGeneric) change(env);
 		o.checksum = p_checksum;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -251,7 +251,7 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSmeCounterGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -275,7 +275,7 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSmeCounterGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -311,7 +311,7 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		SDMSSmeCounterGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSmeCounterGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -332,7 +332,7 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 			o.jahr = p_jahr;
 			o.monat = p_monat;
 			o.tag = p_tag;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);

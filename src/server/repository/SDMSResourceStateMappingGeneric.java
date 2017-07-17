@@ -65,15 +65,15 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSResourceStateMappingGeneric(
-		SystemEnvironment env,
-		Long p_rsmpId,
-		Long p_esdId,
-		Long p_fromRsdId,
-		Long p_toRsdId,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        Long p_rsmpId,
+	        Long p_esdId,
+	        Long p_fromRsdId,
+	        Long p_toRsdId,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -108,7 +108,7 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 			}
 			o = (SDMSResourceStateMappingGeneric) change(env);
 			o.rsmpId = p_rsmpId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 17);
 			env.tx.commitSubTransaction(env);
@@ -139,7 +139,7 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 			}
 			o = (SDMSResourceStateMappingGeneric) change(env);
 			o.esdId = p_esdId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 18);
 			env.tx.commitSubTransaction(env);
@@ -171,7 +171,7 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 			}
 			o = (SDMSResourceStateMappingGeneric) change(env);
 			o.fromRsdId = p_fromRsdId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 20);
 			env.tx.commitSubTransaction(env);
@@ -202,7 +202,7 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 			}
 			o = (SDMSResourceStateMappingGeneric) change(env);
 			o.toRsdId = p_toRsdId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
@@ -231,7 +231,7 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceStateMappingGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -255,7 +255,7 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceStateMappingGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -291,7 +291,7 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 		SDMSResourceStateMappingGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceStateMappingGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -312,7 +312,7 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 			o.rsmpId = p_rsmpId;
 			o.esdId = p_esdId;
 			o.fromRsdId = p_fromRsdId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);

@@ -71,18 +71,18 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSHierarchyInstanceGeneric(
-		SystemEnvironment env,
-		Long p_parentId,
-		Long p_childId,
-		Long p_shId,
-		Integer p_nice,
-		Long p_childEsdId,
-		Integer p_childEsPreference,
-		Long p_seVersionHi,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        Long p_parentId,
+	        Long p_childId,
+	        Long p_shId,
+	        Integer p_nice,
+	        Long p_childEsdId,
+	        Integer p_childEsPreference,
+	        Long p_seVersionHi,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -120,7 +120,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 			}
 			o = (SDMSHierarchyInstanceGeneric) change(env);
 			o.parentId = p_parentId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 5);
 			env.tx.commitSubTransaction(env);
@@ -151,7 +151,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 			}
 			o = (SDMSHierarchyInstanceGeneric) change(env);
 			o.childId = p_childId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 6);
 			env.tx.commitSubTransaction(env);
@@ -180,7 +180,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.shId = p_shId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -204,7 +204,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.nice = p_nice;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -229,7 +229,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.childEsdId = p_childEsdId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -254,7 +254,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.childEsPreference = p_childEsPreference;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -278,7 +278,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.seVersionHi = p_seVersionHi;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -302,7 +302,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -326,7 +326,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -362,7 +362,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 		SDMSHierarchyInstanceGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -382,7 +382,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 			o = (SDMSHierarchyInstanceGeneric) change(env);
 			o.parentId = p_parentId;
 			o.childId = p_childId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);

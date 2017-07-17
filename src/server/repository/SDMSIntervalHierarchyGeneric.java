@@ -61,13 +61,13 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSIntervalHierarchyGeneric(
-		SystemEnvironment env,
-		Long p_childId,
-		Long p_parentId,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        Long p_childId,
+	        Long p_parentId,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -100,7 +100,7 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 			}
 			o = (SDMSIntervalHierarchyGeneric) change(env);
 			o.childId = p_childId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
@@ -131,7 +131,7 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 			}
 			o = (SDMSIntervalHierarchyGeneric) change(env);
 			o.parentId = p_parentId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
@@ -160,7 +160,7 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalHierarchyGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -184,7 +184,7 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalHierarchyGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -220,7 +220,7 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 		SDMSIntervalHierarchyGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalHierarchyGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}

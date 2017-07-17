@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -42,22 +40,76 @@ public class AlterSession extends Node
 
 	public final static String __version = "@(#) $Id: AlterSession.java,v 2.6.2.1 2013/03/14 10:24:23 ronald Exp $";
 
+	private final static Long zero = new Long(0);
 	private Integer sid;
+	private String userName;
 	private boolean trc;
 	private WithHash withs;
+	boolean resetUser = false;
 
 	public AlterSession(Integer id, WithHash wh)
 	{
 		super();
 		sid = id;
 		withs = wh;
+		userName = null;
 		cmdtype = Node.ANY_COMMAND;
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
 	}
 
-	public void go(SystemEnvironment sysEnv)
-		throws SDMSException
+	public AlterSession(String userName, WithHash wh)
+	{
+		super();
+		sid = null;
+		withs = wh;
+		this.userName = userName;
+		cmdtype = Node.USER_COMMAND;
+		txMode = SDMSTransaction.READONLY;
+		auditFlag = false;
+	}
+
+	public AlterSession()
+	{
+		super();
+		sid = null;
+		this.userName = null;
+		resetUser = true;
+		withs = null;
+		cmdtype = Node.USER_COMMAND;
+		txMode = SDMSTransaction.READONLY;
+		auditFlag = false;
+	}
+
+	private boolean setUser(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSUser u;
+		Long uId;
+		String salt;
+		int method;
+
+		try {
+			u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(userName, zero));
+			if (!u.getIsEnabled(sysEnv).booleanValue()) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv,
+				                               "03707161120", "User disabled"));
+			}
+		} catch (NotFoundException nfe) {
+			throw new CommonErrorException(new SDMSMessage(sysEnv,
+			                               "03707161121", "Invalid username or password"));
+		}
+		uId = u.getId(sysEnv);
+		sysEnv.cEnv.setConnectedUser(sysEnv, uId, SDMSMemberTable.idx_uId.getVector(sysEnv, uId));
+		return true;
+	}
+
+	private boolean resetUser(SystemEnvironment sysEnv)
+	{
+		return sysEnv.cEnv.resetConnectedUser();
+	}
+
+	private void alterSession(SystemEnvironment sysEnv)
 	{
 		ThreadGroup tg;
 		SDMSThread[]    list;
@@ -73,7 +125,6 @@ public class AlterSession extends Node
 		searchedId = sid.intValue();
 
 		for(i=0; i<nt; i++) {
-
 			if(list[i] instanceof ListenThread) continue;
 
 			cEnv = ((UserConnection) list[i]).getEnv();
@@ -104,7 +155,31 @@ public class AlterSession extends Node
 
 			break;
 		}
+	}
+
+	public void go(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		if (userName != null) {
+			sysEnv.cEnv.resetConnectedUser();
+			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+				throw new AccessViolationException(new SDMSMessage(sysEnv, "037071405", "Insufficient privileges"));
+			}
+			if (setUser(sysEnv)) {
+				alterSession(sysEnv);
+				result.setFeedback(new SDMSMessage(sysEnv, "03203182358", "Session altered"));
+			} else {
+				result.setFeedback(new SDMSMessage(sysEnv, "03707141429", "Session unchanged"));
+			}
+		} else if (resetUser) {
+			if (resetUser(sysEnv))
+				result.setFeedback(new SDMSMessage(sysEnv, "03203182359", "Session altered"));
+			else
+				result.setFeedback(new SDMSMessage(sysEnv, "03707141428", "Session unchanged"));
+		} else {
+			alterSession(sysEnv);
 		result.setFeedback(new SDMSMessage(sysEnv, "03203182357", "Session altered"));
+		}
 	}
 
 }

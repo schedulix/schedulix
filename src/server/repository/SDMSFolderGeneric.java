@@ -67,16 +67,16 @@ public class SDMSFolderGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSFolderGeneric(
-		SystemEnvironment env,
-		String p_name,
-		Long p_ownerId,
-		Long p_envId,
-		Long p_parentId,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs,
-		Long p_inheritPrivs
+	        SystemEnvironment env,
+	        String p_name,
+	        Long p_ownerId,
+	        Long p_envId,
+	        Long p_parentId,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs,
+	        Long p_inheritPrivs
 	)
 	throws SDMSException
 	{
@@ -124,7 +124,7 @@ public class SDMSFolderGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
@@ -150,7 +150,7 @@ public class SDMSFolderGeneric extends SDMSObject
 		try {
 			o = (SDMSFolderGeneric) change(env);
 			o.ownerId = p_ownerId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
@@ -182,7 +182,7 @@ public class SDMSFolderGeneric extends SDMSObject
 			}
 			o = (SDMSFolderGeneric) change(env);
 			o.envId = p_envId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
@@ -214,7 +214,7 @@ public class SDMSFolderGeneric extends SDMSObject
 			}
 			o = (SDMSFolderGeneric) change(env);
 			o.parentId = p_parentId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 12);
 			env.tx.commitSubTransaction(env);
@@ -243,7 +243,7 @@ public class SDMSFolderGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSFolderGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -267,7 +267,7 @@ public class SDMSFolderGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSFolderGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -303,7 +303,7 @@ public class SDMSFolderGeneric extends SDMSObject
 		SDMSFolderGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSFolderGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -326,7 +326,7 @@ public class SDMSFolderGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSFolderGeneric) change(env);
 		o.inheritPrivs = p_inheritPrivs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -353,7 +353,7 @@ public class SDMSFolderGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);

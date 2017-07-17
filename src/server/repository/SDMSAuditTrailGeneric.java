@@ -128,21 +128,21 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSAuditTrailGeneric(
-		SystemEnvironment env,
-		Long p_userId,
-		Long p_ts,
-		Long p_txId,
-		Integer p_action,
-		Integer p_objectType,
-		Long p_objectId,
-		Long p_originId,
-		Boolean p_isSetWarning,
-		String p_actionInfo,
-		String p_actionComment,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        Long p_userId,
+	        Long p_ts,
+	        Long p_txId,
+	        Integer p_action,
+	        Integer p_objectType,
+	        Long p_objectId,
+	        Long p_originId,
+	        Boolean p_isSetWarning,
+	        String p_actionInfo,
+	        String p_actionComment,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -189,7 +189,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			}
 			o = (SDMSAuditTrailGeneric) change(env);
 			o.userId = p_userId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
@@ -218,7 +218,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.ts = p_ts;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -242,7 +242,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.txId = p_txId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -336,7 +336,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.action = p_action;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -374,7 +374,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.objectType = p_objectType;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -400,7 +400,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			}
 			o = (SDMSAuditTrailGeneric) change(env);
 			o.objectId = p_objectId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
@@ -431,7 +431,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			}
 			o = (SDMSAuditTrailGeneric) change(env);
 			o.originId = p_originId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 4);
 			env.tx.commitSubTransaction(env);
@@ -460,7 +460,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.isSetWarning = p_isSetWarning;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -488,7 +488,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			p_actionInfo = p_actionInfo.substring(0,1024);
 		}
 		o.actionInfo = p_actionInfo;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -516,7 +516,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			p_actionComment = p_actionComment.substring(0,1024);
 		}
 		o.actionComment = p_actionComment;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -540,7 +540,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -564,7 +564,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -600,7 +600,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		SDMSAuditTrailGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}

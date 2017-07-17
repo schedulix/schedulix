@@ -85,18 +85,18 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSDependencyDefinitionGeneric(
-		SystemEnvironment env,
-		Long p_seDependentId,
-		Long p_seRequiredId,
-		String p_name,
-		Integer p_unresolvedHandling,
-		Integer p_mode,
-		Integer p_stateSelection,
-		String p_condition,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        Long p_seDependentId,
+	        Long p_seRequiredId,
+	        String p_name,
+	        Integer p_unresolvedHandling,
+	        Integer p_mode,
+	        Integer p_stateSelection,
+	        String p_condition,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -146,7 +146,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 			}
 			o = (SDMSDependencyDefinitionGeneric) change(env);
 			o.seDependentId = p_seDependentId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 9);
 			env.tx.commitSubTransaction(env);
@@ -177,7 +177,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 			}
 			o = (SDMSDependencyDefinitionGeneric) change(env);
 			o.seRequiredId = p_seRequiredId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 10);
 			env.tx.commitSubTransaction(env);
@@ -215,7 +215,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 4);
 			env.tx.commitSubTransaction(env);
@@ -237,14 +237,14 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 	{
 		final Integer v = getUnresolvedHandling (env);
 		switch (v.intValue()) {
-		case SDMSDependencyDefinition.IGNORE:
-			return "IGNORE";
-		case SDMSDependencyDefinition.ERROR:
-			return "ERROR";
-		case SDMSDependencyDefinition.SUSPEND:
-			return "SUSPEND";
-		case SDMSDependencyDefinition.DEFER:
-			return "DEFER";
+			case SDMSDependencyDefinition.IGNORE:
+				return "IGNORE";
+			case SDMSDependencyDefinition.ERROR:
+				return "ERROR";
+			case SDMSDependencyDefinition.SUSPEND:
+				return "SUSPEND";
+			case SDMSDependencyDefinition.DEFER:
+				return "DEFER";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -264,7 +264,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyDefinitionGeneric) change(env);
 		o.unresolvedHandling = p_unresolvedHandling;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -281,10 +281,10 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 	{
 		final Integer v = getMode (env);
 		switch (v.intValue()) {
-		case SDMSDependencyDefinition.ALL_FINAL:
-			return "ALL_FINAL";
-		case SDMSDependencyDefinition.JOB_FINAL:
-			return "JOB_FINAL";
+			case SDMSDependencyDefinition.ALL_FINAL:
+				return "ALL_FINAL";
+			case SDMSDependencyDefinition.JOB_FINAL:
+				return "JOB_FINAL";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -304,7 +304,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyDefinitionGeneric) change(env);
 		o.mode = p_mode;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -321,14 +321,14 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 	{
 		final Integer v = getStateSelection (env);
 		switch (v.intValue()) {
-		case SDMSDependencyDefinition.FINAL:
-			return "FINAL";
-		case SDMSDependencyDefinition.ALL_REACHABLE:
-			return "ALL_REACHABLE";
-		case SDMSDependencyDefinition.UNREACHABLE:
-			return "UNREACHABLE";
-		case SDMSDependencyDefinition.DEFAULT:
-			return "DEFAULT";
+			case SDMSDependencyDefinition.FINAL:
+				return "FINAL";
+			case SDMSDependencyDefinition.ALL_REACHABLE:
+				return "ALL_REACHABLE";
+			case SDMSDependencyDefinition.UNREACHABLE:
+				return "UNREACHABLE";
+			case SDMSDependencyDefinition.DEFAULT:
+				return "DEFAULT";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -348,7 +348,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyDefinitionGeneric) change(env);
 		o.stateSelection = p_stateSelection;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -379,7 +379,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 			);
 		}
 		o.condition = p_condition;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -403,7 +403,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyDefinitionGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -427,7 +427,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyDefinitionGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -463,7 +463,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 		SDMSDependencyDefinitionGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyDefinitionGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -483,7 +483,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 			o = (SDMSDependencyDefinitionGeneric) change(env);
 			o.seDependentId = p_seDependentId;
 			o.seRequiredId = p_seRequiredId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);
@@ -659,31 +659,31 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 	static public boolean checkUnresolvedHandling(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSDependencyDefinition.IGNORE:
-		case SDMSDependencyDefinition.ERROR:
-		case SDMSDependencyDefinition.SUSPEND:
-		case SDMSDependencyDefinition.DEFER:
-			return true;
+			case SDMSDependencyDefinition.IGNORE:
+			case SDMSDependencyDefinition.ERROR:
+			case SDMSDependencyDefinition.SUSPEND:
+			case SDMSDependencyDefinition.DEFER:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkMode(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSDependencyDefinition.ALL_FINAL:
-		case SDMSDependencyDefinition.JOB_FINAL:
-			return true;
+			case SDMSDependencyDefinition.ALL_FINAL:
+			case SDMSDependencyDefinition.JOB_FINAL:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkStateSelection(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSDependencyDefinition.FINAL:
-		case SDMSDependencyDefinition.ALL_REACHABLE:
-		case SDMSDependencyDefinition.UNREACHABLE:
-		case SDMSDependencyDefinition.DEFAULT:
-			return true;
+			case SDMSDependencyDefinition.FINAL:
+			case SDMSDependencyDefinition.ALL_REACHABLE:
+			case SDMSDependencyDefinition.UNREACHABLE:
+			case SDMSDependencyDefinition.DEFAULT:
+				return true;
 		}
 		return false;
 	}

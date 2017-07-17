@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server;
 
 import java.io.*;
@@ -62,7 +60,6 @@ public class ConnectionEnvironment
 	protected Date dStart;
 	protected PrintStream ostream;
 	protected Long uid;
-	protected Long euid;
 	protected HashSet gid;
 	protected SyncFifo cmdQueue;
 	protected SyncFifo roCmdQueue;
@@ -84,6 +81,11 @@ public class ConnectionEnvironment
 
 	private Stack groupStack;
 	public SDMSThread worker;
+
+	protected Long prev_uid;
+	protected HashSet prev_gid;
+	protected boolean prev_trace;
+	protected int prev_tracelevel;
 
 	public ConnectionEnvironment(int c, String n, boolean svrtrc, PrintStream o, SyncFifo f, SyncFifo rof, int portno, InetAddress uNode)
 	{
@@ -107,6 +109,7 @@ public class ConnectionEnvironment
 		userNode = uNode;
 		tracelevel = SDMSThread.SEVERITY_INFO;
 		worker = null;
+		prev_uid = null;
 	}
 
 	public ConnectionEnvironment(int c, boolean svrtrc, PrintStream o, SyncFifo f, SyncFifo rof, int portno, InetAddress uNode)
@@ -152,10 +155,6 @@ public class ConnectionEnvironment
 	{
 		return uid;
 	}
-	public Long euid()
-	{
-		return euid;
-	}
 	public HashSet gid()
 	{
 		return gid;
@@ -163,15 +162,6 @@ public class ConnectionEnvironment
 	public void setUid(Long id)
 	{
 		uid = id;
-		euid = id;
-	}
-	public void setEUid(Long id)
-	{
-		euid = id;
-	}
-	public void resetEUid()
-	{
-		euid = uid;
 	}
 	public int timeout()
 	{
@@ -394,10 +384,39 @@ public class ConnectionEnvironment
 	public String toString()
 	{
 		String s = "Id : " + id + ", Name : " + name + ", Start : " + start + ", Last : " + last +
-			   ", Uid : " + uid + ", Euid : " + euid + ", Type : " + (user ? "User" : job ? "Job" : "Jobserver") +
+			   ", Uid : " + uid + ", Type : " + (user ? "User" : job ? "Job" : "Jobserver") +
 			   ", Trace : " + trace + ", Port : " + port + ", State : " + stateNames[state];
 		return s;
 	}
 
+	public boolean setConnectedUser(SystemEnvironment sysEnv, Long uid, Vector groups)
+	throws SDMSException
+	{
+		prev_uid = this.uid;
+		prev_gid = this.gid;
+		prev_trace = this.trace;
+		prev_tracelevel = this.tracelevel;
+
+		setUid(uid);
+		setGid(sysEnv, groups);
+		return true;
+	}
+
+	public boolean resetConnectedUser()
+	{
+		if (prev_uid != null) {
+			uid = prev_uid;
+			gid = prev_gid;
+			trace = prev_trace;
+			tracelevel = prev_tracelevel;
+
+			prev_uid = null;
+			prev_gid = null;
+			prev_trace = false;
+			prev_tracelevel = 0;
+			return true;
+		}
+		return false;
+	}
 }
 

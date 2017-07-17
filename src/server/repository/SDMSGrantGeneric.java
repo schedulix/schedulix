@@ -95,16 +95,16 @@ public class SDMSGrantGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSGrantGeneric(
-		SystemEnvironment env,
-		Long p_objectId,
-		Long p_gId,
-		Integer p_objectType,
-		Long p_privs,
-		Long p_deleteVersion,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        Long p_objectId,
+	        Long p_gId,
+	        Integer p_objectType,
+	        Long p_privs,
+	        Long p_deleteVersion,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -140,7 +140,7 @@ public class SDMSGrantGeneric extends SDMSObject
 			}
 			o = (SDMSGrantGeneric) change(env);
 			o.objectId = p_objectId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 5);
 			env.tx.commitSubTransaction(env);
@@ -171,7 +171,7 @@ public class SDMSGrantGeneric extends SDMSObject
 			}
 			o = (SDMSGrantGeneric) change(env);
 			o.gId = p_gId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 6);
 			env.tx.commitSubTransaction(env);
@@ -258,7 +258,7 @@ public class SDMSGrantGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.objectType = p_objectType;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -282,7 +282,7 @@ public class SDMSGrantGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.privs = p_privs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -307,7 +307,7 @@ public class SDMSGrantGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.deleteVersion = p_deleteVersion;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -331,7 +331,7 @@ public class SDMSGrantGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -355,7 +355,7 @@ public class SDMSGrantGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -391,7 +391,7 @@ public class SDMSGrantGeneric extends SDMSObject
 		SDMSGrantGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -411,7 +411,7 @@ public class SDMSGrantGeneric extends SDMSObject
 			o = (SDMSGrantGeneric) change(env);
 			o.objectId = p_objectId;
 			o.gId = p_gId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);

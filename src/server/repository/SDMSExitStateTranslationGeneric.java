@@ -104,7 +104,7 @@ public class SDMSExitStateTranslationGeneric extends SDMSObject
 			}
 			o = (SDMSExitStateTranslationGeneric) change(env);
 			o.estpId = p_estpId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 9);
 			env.tx.commitSubTransaction(env);
@@ -135,7 +135,7 @@ public class SDMSExitStateTranslationGeneric extends SDMSObject
 			}
 			o = (SDMSExitStateTranslationGeneric) change(env);
 			o.fromEsdId = p_fromEsdId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 10);
 			env.tx.commitSubTransaction(env);
@@ -166,7 +166,7 @@ public class SDMSExitStateTranslationGeneric extends SDMSObject
 			}
 			o = (SDMSExitStateTranslationGeneric) change(env);
 			o.toEsdId = p_toEsdId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 4);
 			env.tx.commitSubTransaction(env);
@@ -195,7 +195,7 @@ public class SDMSExitStateTranslationGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateTranslationGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -219,7 +219,7 @@ public class SDMSExitStateTranslationGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateTranslationGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -255,7 +255,7 @@ public class SDMSExitStateTranslationGeneric extends SDMSObject
 		SDMSExitStateTranslationGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateTranslationGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -275,7 +275,7 @@ public class SDMSExitStateTranslationGeneric extends SDMSObject
 			o = (SDMSExitStateTranslationGeneric) change(env);
 			o.estpId = p_estpId;
 			o.fromEsdId = p_fromEsdId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);

@@ -265,7 +265,7 @@ public class SDMSGroupProxyGeneric extends SDMSProxy
 	protected void touch(SystemEnvironment env)
 	throws SDMSException
 	{
-		setChangerUIdNoCheck (env, env.cEnv.euid());
+		setChangerUIdNoCheck (env, env.cEnv.uid());
 		setChangeTsNoCheck (env, env.txTime());
 	}
 

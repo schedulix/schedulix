@@ -76,19 +76,19 @@ public class SDMSScheduleGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSScheduleGeneric(
-		SystemEnvironment env,
-		String p_name,
-		Long p_ownerId,
-		Long p_intId,
-		Long p_parentId,
-		String p_timeZone,
-		Long p_seId,
-		Boolean p_isActive,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs,
-		Long p_inheritPrivs
+	        SystemEnvironment env,
+	        String p_name,
+	        Long p_ownerId,
+	        Long p_intId,
+	        Long p_parentId,
+	        String p_timeZone,
+	        Long p_seId,
+	        Boolean p_isActive,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs,
+	        Long p_inheritPrivs
 	)
 	throws SDMSException
 	{
@@ -145,7 +145,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 16);
 			env.tx.commitSubTransaction(env);
@@ -171,7 +171,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 		try {
 			o = (SDMSScheduleGeneric) change(env);
 			o.ownerId = p_ownerId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
@@ -203,7 +203,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 			}
 			o = (SDMSScheduleGeneric) change(env);
 			o.intId = p_intId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
@@ -235,7 +235,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 			}
 			o = (SDMSScheduleGeneric) change(env);
 			o.parentId = p_parentId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 20);
 			env.tx.commitSubTransaction(env);
@@ -270,7 +270,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 			);
 		}
 		o.timeZone = p_timeZone;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -297,7 +297,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 			}
 			o = (SDMSScheduleGeneric) change(env);
 			o.seId = p_seId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
@@ -341,7 +341,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScheduleGeneric) change(env);
 		o.isActive = p_isActive;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -365,7 +365,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScheduleGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -389,7 +389,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScheduleGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -425,7 +425,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 		SDMSScheduleGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScheduleGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -448,7 +448,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScheduleGeneric) change(env);
 		o.inheritPrivs = p_inheritPrivs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -475,7 +475,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);

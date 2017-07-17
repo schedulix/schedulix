@@ -137,37 +137,37 @@ public class SDMSTriggerGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSTriggerGeneric(
-		SystemEnvironment env,
-		String p_name,
-		Long p_fireId,
-		Integer p_objectType,
-		Long p_seId,
-		Long p_mainSeId,
-		Long p_parentSeId,
-		Boolean p_isActive,
-		Boolean p_isInverse,
-		Integer p_action,
-		Integer p_type,
-		Boolean p_isMaster,
-		Boolean p_isSuspend,
-		Boolean p_isCreate,
-		Boolean p_isChange,
-		Boolean p_isDelete,
-		Boolean p_isGroup,
-		String p_resumeAt,
-		Integer p_resumeIn,
-		Integer p_resumeBase,
-		Boolean p_isWarnOnLimit,
-		Long p_limitState,
-		Integer p_maxRetry,
-		Long p_submitOwnerId,
-		String p_condition,
-		Integer p_checkAmount,
-		Integer p_checkBase,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        String p_name,
+	        Long p_fireId,
+	        Integer p_objectType,
+	        Long p_seId,
+	        Long p_mainSeId,
+	        Long p_parentSeId,
+	        Boolean p_isActive,
+	        Boolean p_isInverse,
+	        Integer p_action,
+	        Integer p_type,
+	        Boolean p_isMaster,
+	        Boolean p_isSuspend,
+	        Boolean p_isCreate,
+	        Boolean p_isChange,
+	        Boolean p_isDelete,
+	        Boolean p_isGroup,
+	        String p_resumeAt,
+	        Integer p_resumeIn,
+	        Integer p_resumeBase,
+	        Boolean p_isWarnOnLimit,
+	        Long p_limitState,
+	        Integer p_maxRetry,
+	        Long p_submitOwnerId,
+	        String p_condition,
+	        Integer p_checkAmount,
+	        Integer p_checkBase,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -248,7 +248,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 448);
 			env.tx.commitSubTransaction(env);
@@ -279,7 +279,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			}
 			o = (SDMSTriggerGeneric) change(env);
 			o.fireId = p_fireId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 353);
 			env.tx.commitSubTransaction(env);
@@ -328,7 +328,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.objectType = p_objectType;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -354,7 +354,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			}
 			o = (SDMSTriggerGeneric) change(env);
 			o.seId = p_seId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 386);
 			env.tx.commitSubTransaction(env);
@@ -386,7 +386,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			}
 			o = (SDMSTriggerGeneric) change(env);
 			o.mainSeId = p_mainSeId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 4);
 			env.tx.commitSubTransaction(env);
@@ -418,7 +418,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			}
 			o = (SDMSTriggerGeneric) change(env);
 			o.parentSeId = p_parentSeId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
@@ -447,7 +447,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isActive = p_isActive;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -473,7 +473,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			}
 			o = (SDMSTriggerGeneric) change(env);
 			o.isInverse = p_isInverse;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 256);
 			env.tx.commitSubTransaction(env);
@@ -518,7 +518,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.action = p_action;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -572,7 +572,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			}
 			o = (SDMSTriggerGeneric) change(env);
 			o.type = p_type;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 32);
 			env.tx.commitSubTransaction(env);
@@ -616,7 +616,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isMaster = p_isMaster;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -655,7 +655,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isSuspend = p_isSuspend;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -680,7 +680,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isCreate = p_isCreate;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -705,7 +705,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isChange = p_isChange;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -730,7 +730,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isDelete = p_isDelete;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -755,7 +755,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isGroup = p_isGroup;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -786,7 +786,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			);
 		}
 		o.resumeAt = p_resumeAt;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -811,7 +811,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.resumeIn = p_resumeIn;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -862,7 +862,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.resumeBase = p_resumeBase;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -886,7 +886,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isWarnOnLimit = p_isWarnOnLimit;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -911,7 +911,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.limitState = p_limitState;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -935,7 +935,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.maxRetry = p_maxRetry;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -962,7 +962,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			}
 			o = (SDMSTriggerGeneric) change(env);
 			o.submitOwnerId = p_submitOwnerId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 16);
 			env.tx.commitSubTransaction(env);
@@ -998,7 +998,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			);
 		}
 		o.condition = p_condition;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1023,7 +1023,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.checkAmount = p_checkAmount;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1074,7 +1074,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.checkBase = p_checkBase;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1098,7 +1098,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1122,7 +1122,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1158,7 +1158,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 		SDMSTriggerGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -1178,7 +1178,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			o = (SDMSTriggerGeneric) change(env);
 			o.fireId = p_fireId;
 			o.type = p_type;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);
@@ -1210,7 +1210,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);
@@ -1242,7 +1242,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);
@@ -1276,7 +1276,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			}
 			o.name = p_name;
 			o.isInverse = p_isInverse;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);

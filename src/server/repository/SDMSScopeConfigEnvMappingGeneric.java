@@ -63,14 +63,14 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSScopeConfigEnvMappingGeneric(
-		SystemEnvironment env,
-		String p_key,
-		String p_value,
-		Long p_sId,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        String p_key,
+	        String p_value,
+	        Long p_sId,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -122,7 +122,7 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 				);
 			}
 			o.key = p_key;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
@@ -157,7 +157,7 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 			);
 		}
 		o.value = p_value;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -183,7 +183,7 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 			}
 			o = (SDMSScopeConfigEnvMappingGeneric) change(env);
 			o.sId = p_sId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 3);
 			env.tx.commitSubTransaction(env);
@@ -212,7 +212,7 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigEnvMappingGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -236,7 +236,7 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigEnvMappingGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -272,7 +272,7 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 		SDMSScopeConfigEnvMappingGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigEnvMappingGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -298,7 +298,7 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 				);
 			}
 			o.key = p_key;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);

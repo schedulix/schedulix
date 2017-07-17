@@ -77,18 +77,18 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSNamedResourceGeneric(
-		SystemEnvironment env,
-		String p_name,
-		Long p_ownerId,
-		Long p_parentId,
-		Integer p_usage,
-		Long p_rspId,
-		Float p_factor,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs,
-		Long p_inheritPrivs
+	        SystemEnvironment env,
+	        String p_name,
+	        Long p_ownerId,
+	        Long p_parentId,
+	        Integer p_usage,
+	        Long p_rspId,
+	        Float p_factor,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs,
+	        Long p_inheritPrivs
 	)
 	throws SDMSException
 	{
@@ -138,7 +138,7 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 17);
 			env.tx.commitSubTransaction(env);
@@ -169,7 +169,7 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 			}
 			o = (SDMSNamedResourceGeneric) change(env);
 			o.ownerId = p_ownerId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
@@ -201,7 +201,7 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 			}
 			o = (SDMSNamedResourceGeneric) change(env);
 			o.parentId = p_parentId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 20);
 			env.tx.commitSubTransaction(env);
@@ -252,7 +252,7 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNamedResourceGeneric) change(env);
 		o.usage = p_usage;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -279,7 +279,7 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 			}
 			o = (SDMSNamedResourceGeneric) change(env);
 			o.rspId = p_rspId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
@@ -309,7 +309,7 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNamedResourceGeneric) change(env);
 		o.factor = p_factor;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -333,7 +333,7 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNamedResourceGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -357,7 +357,7 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNamedResourceGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -393,7 +393,7 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		SDMSNamedResourceGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNamedResourceGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -416,7 +416,7 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNamedResourceGeneric) change(env);
 		o.inheritPrivs = p_inheritPrivs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -443,7 +443,7 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);

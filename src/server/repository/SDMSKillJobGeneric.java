@@ -96,26 +96,26 @@ public class SDMSKillJobGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSKillJobGeneric(
-		SystemEnvironment env,
-		Long p_seId,
-		Long p_seVersion,
-		Long p_smeId,
-		Long p_scopeId,
-		Integer p_state,
-		Integer p_exitCode,
-		String p_commandline,
-		String p_logfile,
-		String p_errlogfile,
-		String p_pid,
-		String p_extPid,
-		String p_errorMsg,
-		Long p_runnableTs,
-		Long p_startTs,
-		Long p_finishTs,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        Long p_seId,
+	        Long p_seVersion,
+	        Long p_smeId,
+	        Long p_scopeId,
+	        Integer p_state,
+	        Integer p_exitCode,
+	        String p_commandline,
+	        String p_logfile,
+	        String p_errlogfile,
+	        String p_pid,
+	        String p_extPid,
+	        String p_errorMsg,
+	        Long p_runnableTs,
+	        Long p_startTs,
+	        Long p_finishTs,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -185,7 +185,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			}
 			o = (SDMSKillJobGeneric) change(env);
 			o.seId = p_seId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
@@ -214,7 +214,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.seVersion = p_seVersion;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -240,7 +240,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			}
 			o = (SDMSKillJobGeneric) change(env);
 			o.smeId = p_smeId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
@@ -271,7 +271,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			}
 			o = (SDMSKillJobGeneric) change(env);
 			o.scopeId = p_scopeId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 4);
 			env.tx.commitSubTransaction(env);
@@ -330,7 +330,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			}
 			o = (SDMSKillJobGeneric) change(env);
 			o.state = p_state;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
@@ -360,7 +360,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.exitCode = p_exitCode;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -388,7 +388,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			p_commandline = p_commandline.substring(0,512);
 		}
 		o.commandline = p_commandline;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -416,7 +416,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			p_logfile = p_logfile.substring(0,512);
 		}
 		o.logfile = p_logfile;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -444,7 +444,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			p_errlogfile = p_errlogfile.substring(0,512);
 		}
 		o.errlogfile = p_errlogfile;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -475,7 +475,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			);
 		}
 		o.pid = p_pid;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -506,7 +506,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			);
 		}
 		o.extPid = p_extPid;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -534,7 +534,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			p_errorMsg = p_errorMsg.substring(0,256);
 		}
 		o.errorMsg = p_errorMsg;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -559,7 +559,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.runnableTs = p_runnableTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -584,7 +584,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.startTs = p_startTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -609,7 +609,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.finishTs = p_finishTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -633,7 +633,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -657,7 +657,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -693,7 +693,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 		SDMSKillJobGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}

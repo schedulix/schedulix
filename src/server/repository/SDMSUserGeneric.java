@@ -78,18 +78,18 @@ public class SDMSUserGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSUserGeneric(
-		SystemEnvironment env,
-		String p_name,
-		String p_passwd,
-		String p_salt,
-		Integer p_method,
-		Boolean p_isEnabled,
-		Long p_defaultGId,
-		Long p_deleteVersion,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        String p_name,
+	        String p_passwd,
+	        String p_salt,
+	        Integer p_method,
+	        Boolean p_isEnabled,
+	        Long p_defaultGId,
+	        Long p_deleteVersion,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -151,7 +151,7 @@ public class SDMSUserGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 3);
 			env.tx.commitSubTransaction(env);
@@ -181,7 +181,7 @@ public class SDMSUserGeneric extends SDMSObject
 			);
 		}
 		o.passwd = p_passwd;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -207,7 +207,7 @@ public class SDMSUserGeneric extends SDMSObject
 			);
 		}
 		o.salt = p_salt;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -242,7 +242,7 @@ public class SDMSUserGeneric extends SDMSObject
 		SDMSUserGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.method = p_method;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -266,7 +266,7 @@ public class SDMSUserGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.isEnabled = p_isEnabled;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -285,7 +285,7 @@ public class SDMSUserGeneric extends SDMSObject
 		SDMSUserGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.defaultGId = p_defaultGId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -311,7 +311,7 @@ public class SDMSUserGeneric extends SDMSObject
 			}
 			o = (SDMSUserGeneric) change(env);
 			o.deleteVersion = p_deleteVersion;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
@@ -340,7 +340,7 @@ public class SDMSUserGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -364,7 +364,7 @@ public class SDMSUserGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -400,7 +400,7 @@ public class SDMSUserGeneric extends SDMSObject
 		SDMSUserGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -426,7 +426,7 @@ public class SDMSUserGeneric extends SDMSObject
 			}
 			o.name = p_name;
 			o.deleteVersion = p_deleteVersion;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);

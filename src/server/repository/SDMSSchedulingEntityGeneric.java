@@ -151,47 +151,47 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSSchedulingEntityGeneric(
-		SystemEnvironment env,
-		String p_name,
-		Long p_folderId,
-		Long p_ownerId,
-		Integer p_type,
-		String p_runProgram,
-		String p_rerunProgram,
-		String p_killProgram,
-		String p_workdir,
-		String p_logfile,
-		Boolean p_truncLog,
-		String p_errlogfile,
-		Boolean p_truncErrlog,
-		Integer p_expectedRuntime,
-		Integer p_expectedFinaltime,
-		String p_getExpectedRuntime,
-		Integer p_priority,
-		Integer p_minPriority,
-		Integer p_agingAmount,
-		Integer p_agingBase,
-		Boolean p_submitSuspended,
-		String p_resumeAt,
-		Integer p_resumeIn,
-		Integer p_resumeBase,
-		Boolean p_masterSubmittable,
-		Integer p_timeoutAmount,
-		Integer p_timeoutBase,
-		Long p_timeoutStateId,
-		Boolean p_sameNode,
-		Boolean p_gangSchedule,
-		Integer p_dependencyOperation,
-		Long p_esmpId,
-		Long p_espId,
-		Long p_qaId,
-		Long p_neId,
-		Long p_fpId,
-		Long p_inheritPrivs,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        String p_name,
+	        Long p_folderId,
+	        Long p_ownerId,
+	        Integer p_type,
+	        String p_runProgram,
+	        String p_rerunProgram,
+	        String p_killProgram,
+	        String p_workdir,
+	        String p_logfile,
+	        Boolean p_truncLog,
+	        String p_errlogfile,
+	        Boolean p_truncErrlog,
+	        Integer p_expectedRuntime,
+	        Integer p_expectedFinaltime,
+	        String p_getExpectedRuntime,
+	        Integer p_priority,
+	        Integer p_minPriority,
+	        Integer p_agingAmount,
+	        Integer p_agingBase,
+	        Boolean p_submitSuspended,
+	        String p_resumeAt,
+	        Integer p_resumeIn,
+	        Integer p_resumeBase,
+	        Boolean p_masterSubmittable,
+	        Integer p_timeoutAmount,
+	        Integer p_timeoutBase,
+	        Long p_timeoutStateId,
+	        Boolean p_sameNode,
+	        Boolean p_gangSchedule,
+	        Integer p_dependencyOperation,
+	        Long p_esmpId,
+	        Long p_espId,
+	        Long p_qaId,
+	        Long p_neId,
+	        Long p_fpId,
+	        Long p_inheritPrivs,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -318,7 +318,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 64);
 			env.tx.commitSubTransaction(env);
@@ -349,7 +349,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			}
 			o = (SDMSSchedulingEntityGeneric) change(env);
 			o.folderId = p_folderId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 193);
 			env.tx.commitSubTransaction(env);
@@ -380,7 +380,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			}
 			o = (SDMSSchedulingEntityGeneric) change(env);
 			o.ownerId = p_ownerId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
@@ -427,7 +427,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.type = p_type;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -458,7 +458,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			);
 		}
 		o.runProgram = p_runProgram;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -489,7 +489,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			);
 		}
 		o.rerunProgram = p_rerunProgram;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -520,7 +520,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			);
 		}
 		o.killProgram = p_killProgram;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -551,7 +551,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			);
 		}
 		o.workdir = p_workdir;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -582,7 +582,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			);
 		}
 		o.logfile = p_logfile;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -624,7 +624,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.truncLog = p_truncLog;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -655,7 +655,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			);
 		}
 		o.errlogfile = p_errlogfile;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -697,7 +697,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.truncErrlog = p_truncErrlog;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -722,7 +722,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.expectedRuntime = p_expectedRuntime;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -747,7 +747,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.expectedFinaltime = p_expectedFinaltime;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -778,7 +778,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			);
 		}
 		o.getExpectedRuntime = p_getExpectedRuntime;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -802,7 +802,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.priority = p_priority;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -827,7 +827,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.minPriority = p_minPriority;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -852,7 +852,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.agingAmount = p_agingAmount;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -903,7 +903,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.agingBase = p_agingBase;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -942,7 +942,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.submitSuspended = p_submitSuspended;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -973,7 +973,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			);
 		}
 		o.resumeAt = p_resumeAt;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -998,7 +998,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.resumeIn = p_resumeIn;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1049,7 +1049,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.resumeBase = p_resumeBase;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1090,7 +1090,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			}
 			o = (SDMSSchedulingEntityGeneric) change(env);
 			o.masterSubmittable = p_masterSubmittable;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 128);
 			env.tx.commitSubTransaction(env);
@@ -1120,7 +1120,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.timeoutAmount = p_timeoutAmount;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1171,7 +1171,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.timeoutBase = p_timeoutBase;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1196,7 +1196,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.timeoutStateId = p_timeoutStateId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1238,7 +1238,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.sameNode = p_sameNode;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1280,7 +1280,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.gangSchedule = p_gangSchedule;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1320,7 +1320,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.dependencyOperation = p_dependencyOperation;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1347,7 +1347,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			}
 			o = (SDMSSchedulingEntityGeneric) change(env);
 			o.esmpId = p_esmpId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 4);
 			env.tx.commitSubTransaction(env);
@@ -1379,7 +1379,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			}
 			o = (SDMSSchedulingEntityGeneric) change(env);
 			o.espId = p_espId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
@@ -1409,7 +1409,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.qaId = p_qaId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1436,7 +1436,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			}
 			o = (SDMSSchedulingEntityGeneric) change(env);
 			o.neId = p_neId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 16);
 			env.tx.commitSubTransaction(env);
@@ -1468,7 +1468,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			}
 			o = (SDMSSchedulingEntityGeneric) change(env);
 			o.fpId = p_fpId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 32);
 			env.tx.commitSubTransaction(env);
@@ -1497,7 +1497,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.inheritPrivs = p_inheritPrivs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1521,7 +1521,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1545,7 +1545,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -1581,7 +1581,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		SDMSSchedulingEntityGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
@@ -1607,7 +1607,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 				);
 			}
 			o.name = p_name;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);
@@ -1633,7 +1633,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			o = (SDMSSchedulingEntityGeneric) change(env);
 			o.folderId = p_folderId;
 			o.masterSubmittable = p_masterSubmittable;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o);
 			env.tx.commitSubTransaction(env);

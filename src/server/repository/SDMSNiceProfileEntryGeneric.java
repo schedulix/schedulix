@@ -73,17 +73,17 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	private static PreparedStatement pInsert[] = new PreparedStatement[128];
 
 	public SDMSNiceProfileEntryGeneric(
-		SystemEnvironment env,
-		Long p_npId,
-		Integer p_preference,
-		Long p_folderId,
-		Integer p_isSuspended,
-		Integer p_renice,
-		Boolean p_isActive,
-		Long p_creatorUId,
-		Long p_createTs,
-		Long p_changerUId,
-		Long p_changeTs
+	        SystemEnvironment env,
+	        Long p_npId,
+	        Integer p_preference,
+	        Long p_folderId,
+	        Integer p_isSuspended,
+	        Integer p_renice,
+	        Boolean p_isActive,
+	        Long p_creatorUId,
+	        Long p_createTs,
+	        Long p_changerUId,
+	        Long p_changeTs
 	)
 	throws SDMSException
 	{
@@ -120,7 +120,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			}
 			o = (SDMSNiceProfileEntryGeneric) change(env);
 			o.npId = p_npId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 1);
 			env.tx.commitSubTransaction(env);
@@ -149,7 +149,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.preference = p_preference;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -176,7 +176,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			}
 			o = (SDMSNiceProfileEntryGeneric) change(env);
 			o.folderId = p_folderId;
-			o.changerUId = env.cEnv.euid();
+			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
 			o.versions.table.index(env, o, 2);
 			env.tx.commitSubTransaction(env);
@@ -223,7 +223,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.isSuspended = p_isSuspended;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -247,7 +247,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.renice = p_renice;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -271,7 +271,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.isActive = p_isActive;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -295,7 +295,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.creatorUId = p_creatorUId;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -319,7 +319,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.createTs = p_createTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
@@ -355,7 +355,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 		SDMSNiceProfileEntryGeneric o = this;
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.changeTs = p_changeTs;
-		o.changerUId = env.cEnv.euid();
+		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
 		return;
 	}
