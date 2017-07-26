@@ -522,7 +522,12 @@ public class SystemEnvironment implements Cloneable
 				props.setProperty(S_TRUSTSTOREPASSWORD, truststorepassword);
 			}
 
-			clientAuthentication = Boolean.parseBoolean(props.getProperty(S_CLIENTAUTHENTICATION, "false").trim());
+			String clauth = props.getProperty(S_CLIENTAUTHENTICATION, "false").trim();
+			clauth = clauth.toUpperCase();
+			if (clauth.equals("TRUE") || clauth.equals("YES"))
+				clientAuthentication = true;
+			else
+				clientAuthentication = false;
 		}
 	}
 

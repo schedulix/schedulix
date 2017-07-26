@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server;
 
 import java.io.*;
@@ -32,6 +30,7 @@ import java.util.*;
 import java.lang.*;
 import java.net.*;
 import javax.net.ssl.*;
+import java.security.*;
 
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.parser.*;
@@ -44,21 +43,43 @@ public class SSLListenThread extends ListenThread
 	public final static String __version = "@(#) $Id: SSLListenThread.java,v 2.2.6.1 2013/03/14 10:24:09 ronald Exp $";
 
 	private String[] prots = null;
+	private KeyStore ks;
+	private KeyManagerFactory kmf;
+	private char[] ksPass;
+	private SSLContext sc;
+	private SSLServerSocketFactory ssf;
 
 	public SSLListenThread(ThreadGroup t, int p, int mc, SyncFifo f, SyncFifo rof, int type)
+		throws SDMSException
 	{
 		super(t, p, mc, f, rof, type);
+
+		try {
+			ks = KeyStore.getInstance("JKS");
+			ksPass = SystemEnvironment.keystorepassword.toCharArray();
+			ks.load(new FileInputStream(SystemEnvironment.keystore), ksPass);
+			kmf = KeyManagerFactory.getInstance("SunX509");
+			kmf.init(ks, ksPass);
+			sc = SSLContext.getInstance("SSL");
+			sc.init(kmf.getKeyManagers(), null, null);
+			ssf = sc.getServerSocketFactory();
+		} catch (Exception e) {
+			throw new FatalException("Unable to initialize SSL/TLS Listener : " + e.toString());
+		}
 	}
 
 	ServerSocket getServerSocket(int port)
 	throws IOException
 	{
-		SSLServerSocketFactory sslserversocketfactory =
-		        (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-		SSLServerSocket sslserversocket =
-		        (SSLServerSocket) sslserversocketfactory.createServerSocket(port);
+		SSLServerSocket sslserversocket = (SSLServerSocket) ssf.createServerSocket(port);
 
-		sslserversocket.setNeedClientAuth(SystemEnvironment.clientAuthentication);
+		if (SystemEnvironment.clientAuthentication) {
+			System.out.println("Client Authentication is needed");
+			sslserversocket.setNeedClientAuth(true);
+		} else {
+			System.out.println("Client Authentication is optional");
+			sslserversocket.setWantClientAuth(true);
+		}
 
 		prots = sslserversocket.getSupportedProtocols();
 
@@ -68,7 +89,8 @@ public class SSLListenThread extends ListenThread
 	protected Socket accept()
 	throws InterruptedIOException, IOException
 	{
-		return (SSLSocket) serv.accept();
+		SSLSocket sock = (SSLSocket) serv.accept();
+		return sock;
 	}
 
 	public String[] getProtocols()

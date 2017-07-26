@@ -31,6 +31,7 @@ import java.util.*;
 import java.lang.*;
 import java.net.*;
 import javax.net.ssl.*;
+import java.security.*;
 
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
@@ -40,9 +41,6 @@ import de.independit.scheduler.SDMSApp.*;
 
 public class SDMSServerConnection
 {
-
-	public final static String __version = "@(#) $Id: SDMSServerConnection.java,v 2.8.2.2 2013/03/15 12:16:53 ronald Exp $";
-
 	String host;
 	int port = 2506;
 	String user;
@@ -55,6 +53,8 @@ public class SDMSServerConnection
 	boolean use_ssl = false;
 	int timeout = -1;
 	String info = null;
+	KeyManagerFactory kmf;
+	SSLContext sc = null;
 
 	public SDMSServerConnection(String h, int p, String u, String pwd)
 	{
@@ -119,11 +119,48 @@ public class SDMSServerConnection
 		}
 	}
 
-	public SDMSOutput connect() throws IOException
+	public SDMSOutput connect(Options options)
+	throws IOException
 	{
 		if (use_ssl) {
-			SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-			SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(InetAddress.getByName(host), port);
+			KeyStore ks = null;
+			String ksName;
+			char[] ksPass = null;
+
+			if (options.isSet(App.KEYSTORE) && options.isSet(App.KEYSTOREPW)) {
+				ksName = options.getValue(App.KEYSTORE);
+				System.setProperty("javax.net.ssl.keyStore", ksName);
+				System.setProperty("javax.net.ssl.keyStorePassword", options.getValue(App.KEYSTOREPW));
+				ksPass = options.getValue(App.KEYSTOREPW).toCharArray();
+				try {
+					ks = KeyStore.getInstance("JKS");
+					ks.load(new FileInputStream(ksName), ksPass);
+				} catch (Exception e) {
+					System.out.println(e.toString());
+					System.exit(1);
+				}
+			}
+			if (options.isSet(App.TRUSTSTORE) && options.isSet(App.TRUSTSTOREPW)) {
+				System.setProperty("javax.net.ssl.trustStore", options.getValue(App.TRUSTSTORE));
+				System.setProperty("javax.net.ssl.trustStorePassword", options.getValue(App.TRUSTSTOREPW));
+			}
+			try {
+				kmf = KeyManagerFactory.getInstance("SunX509");
+				if (ks == null)
+					kmf.init(null, null);
+				else
+					kmf.init(ks, ksPass);
+
+				sc = SSLContext.getInstance("SSL");
+				sc.init(kmf.getKeyManagers(), null, null);
+			} catch (Exception e) {
+				System.out.println(e.toString());
+				System.exit(1);
+			}
+
+			SSLSocketFactory ssf = sc.getSocketFactory();
+			SSLSocket sslsocket = (SSLSocket) ssf.createSocket(InetAddress.getByName(host), port);
+			sslsocket.startHandshake();
 			svrConnection = sslsocket;
 		} else {
 			svrConnection = new Socket();
@@ -201,8 +238,8 @@ public class SDMSServerConnection
 
 	private void closeall() throws IOException
 	{
-		in.close();
 		out.close();
+		in.close();
 		svrConnection.close();
 	}
 

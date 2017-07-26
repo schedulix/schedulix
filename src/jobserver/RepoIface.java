@@ -30,6 +30,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import javax.net.ssl.*;
+import java.security.*;
 
 import de.independit.scheduler.server.SystemEnvironment;
 import de.independit.scheduler.server.output.*;
@@ -86,6 +87,16 @@ public class RepoIface
 	private final String mypid = Utils.getMyPid();
 
 	private final Config cfg;
+
+	private static Object sslInitLock = new Object();
+	private static String keyFile = null;
+	private static String trustFile = null;
+	private static String keyFilePw = null;
+	private static String trustFilePw = null;
+	private static char[] ksPass;
+	private static KeyStore ks;
+	private static KeyManagerFactory kmf;
+	private static SSLContext sc;
 
 	private Socket repoSock = null;
 	private BufferedOutputStream repoOut = null;
@@ -230,20 +241,44 @@ public class RepoIface
 		final String repoUser = (String) cfg.get (Config.REPO_USER);
 		final String repoPass = (String) cfg.get (Config.REPO_PASS);
 
-		if (use_ssl) {
-			final String keyFile = (String) cfg.get (Config.KEYSTORE);
-			final String trustFile = (String) cfg.get (Config.TRUSTSTORE);
-			final String keyFilePw = (String) cfg.get (Config.KEYSTOREPW);
-			final String trustFilePw = (String) cfg.get (Config.TRUSTSTOREPW);
-			if (keyFile != null)
-				System.setProperty(SystemEnvironment.J_KEYSTORE, keyFile);
-			if (trustFile != null)
-				System.setProperty(SystemEnvironment.J_TRUSTSTORE, trustFile);
+		synchronized (sslInitLock) {
+			if (use_ssl && trustFile == null) {
+				keyFile = (String) cfg.get (Config.KEYSTORE);
+				trustFile = (String) cfg.get (Config.TRUSTSTORE);
+				keyFilePw = (String) cfg.get (Config.KEYSTOREPW);
+				trustFilePw = (String) cfg.get (Config.TRUSTSTOREPW);
 
-			if (keyFilePw != null)
-				System.setProperty(SystemEnvironment.J_KEYSTOREPASSWORD, keyFilePw);
-			if (trustFilePw != null)
-				System.setProperty(SystemEnvironment.J_TRUSTSTOREPASSWORD, trustFilePw);
+				if (keyFilePw != null && keyFile != null) {
+					System.setProperty(SystemEnvironment.J_KEYSTORE, keyFile);
+					System.setProperty(SystemEnvironment.J_KEYSTOREPASSWORD, keyFilePw);
+					ksPass = keyFilePw.toCharArray();
+					try {
+						ks = KeyStore.getInstance("JKS");
+						ks.load(new FileInputStream(keyFile), ksPass);
+					} catch (Exception e) {
+						Trace.error("Error occured while evaluating SSL KeyStore : " + e.toString());
+					}
+
+				}
+				if (trustFilePw != null && trustFile != null) {
+					System.setProperty(SystemEnvironment.J_TRUSTSTORE, trustFile);
+					System.setProperty(SystemEnvironment.J_TRUSTSTOREPASSWORD, trustFilePw);
+				}
+
+				try {
+					kmf = KeyManagerFactory.getInstance("SunX509");
+					if (ks == null)
+						kmf.init(null, null);
+					else
+						kmf.init(ks, ksPass);
+
+					sc = SSLContext.getInstance("SSL");
+					sc.init(kmf.getKeyManagers(), null, null);
+				} catch (Exception e) {
+					Trace.error("Error occured while initializing SSL context : " + e.toString());
+				}
+
+			}
 		}
 
 		Trace.debug ("Trying " + repoUser + "/" + "********" + "@" + currentHost + ":" + currentPort + (use_ssl ? " (ssl) " : "") + "...");
@@ -252,8 +287,9 @@ public class RepoIface
 
 		try {
 			if (use_ssl) {
-				final SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-				final SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(InetAddress.getByName(currentHost), currentPort);
+				final SSLSocketFactory ssf = sc.getSocketFactory();
+				final SSLSocket sslsocket = (SSLSocket) ssf.createSocket(InetAddress.getByName(currentHost), currentPort);
+				sslsocket.startHandshake();
 				repoSock = sslsocket;
 			} else {
 				repoSock = new Socket();

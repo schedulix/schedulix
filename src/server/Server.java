@@ -258,7 +258,11 @@ public class Server
 		}
 
 		if (SystemEnvironment.sslport != 0) {
-			ssllt = new SSLListenThread(utg, SystemEnvironment.sslport, SystemEnvironment.maxConnects, cmdQueue, roCmdQueue, ListenThread.LISTENER);
+			try {
+				ssllt = new SSLListenThread(utg, SystemEnvironment.sslport, SystemEnvironment.maxConnects, cmdQueue, roCmdQueue, ListenThread.LISTENER);
+			} catch (SDMSException e) {
+				SDMSThread.doTrace(null, e.toString(), SDMSThread.SEVERITY_FATAL);
+			}
 
 			ssllt.start();
 			try {

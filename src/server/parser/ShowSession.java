@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -65,23 +63,16 @@ public class ShowSession extends Node
 		Vector t_desc = new Vector();
 
 		desc.add("THIS");
-
 		desc.add("SESSIONID");
-
 		desc.add("START");
-
 		desc.add("USER");
-
 		desc.add("UID");
-
 		desc.add("IP");
-
+		desc.add("IS_SSL");
+		desc.add("IS_AUTHENTICATED");
 		desc.add("TXID");
-
 		desc.add("IDLE");
-
 		desc.add("TIMEOUT");
-
 		desc.add("STATEMENT");
 
 		tg = env.getMe().getThreadGroup();
@@ -92,7 +83,6 @@ public class ShowSession extends Node
 
 		Vector data = new Vector();
 		for(i=0; i<nt; i++) {
-
 			if(list[i] instanceof ListenThread) continue;
 
 			cEnv = ((UserConnection) list[i]).getEnv();
@@ -124,6 +114,8 @@ public class ShowSession extends Node
 		}
 		data.add(cEnv.uid());
 		data.add(cEnv.ip());
+		data.add(new Boolean(cEnv.getIsSSLConnection()));
+		data.add(new Boolean(cEnv.getIsClientAuthenticated()));
 		data.add(new Long(cEnv.txId()));
 		data.add(new Long(cEnv.idle()));
 		data.add(new Long(cEnv.timeout()));

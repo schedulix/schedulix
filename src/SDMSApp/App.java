@@ -293,7 +293,7 @@ public class App
 			);
 		}
 		try {
-			SDMSOutput o = serverConnection.connect();
+			SDMSOutput o = serverConnection.connect(options);
 			if (o.error != null) {
 				if (!silent) System.err.println("Connect Error: " + o.error.code + ", " + o.error.message);
 				if (isRetryError(o.error.code)) {

@@ -134,9 +134,9 @@ public class SDMSsubmitThreads
 			System.exit(1);
 		}
 
-		connection = new SDMSServerConnection(host, new Integer(port).intValue(), id, key);
+		connection = new SDMSServerConnection(host, new Integer(port).intValue(), id, key, 0, false);
 		try {
-			output = connection.connect();
+			output = connection.connect(null);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);

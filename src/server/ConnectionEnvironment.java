@@ -82,12 +82,15 @@ public class ConnectionEnvironment
 	private Stack groupStack;
 	public SDMSThread worker;
 
+	private boolean isSSLConnection;
+	private boolean isClientAuthenticated;
+
 	protected Long prev_uid;
 	protected HashSet prev_gid;
 	protected boolean prev_trace;
 	protected int prev_tracelevel;
 
-	public ConnectionEnvironment(int c, String n, boolean svrtrc, PrintStream o, SyncFifo f, SyncFifo rof, int portno, InetAddress uNode)
+	public ConnectionEnvironment(int c, String n, boolean svrtrc, PrintStream o, SyncFifo f, SyncFifo rof, int portno, InetAddress uNode, boolean ssl, boolean auth)
 	{
 		id = c;
 		name = n;
@@ -110,16 +113,18 @@ public class ConnectionEnvironment
 		tracelevel = SDMSThread.SEVERITY_INFO;
 		worker = null;
 		prev_uid = null;
+		isSSLConnection = ssl;
+		isClientAuthenticated = auth;
 	}
 
-	public ConnectionEnvironment(int c, boolean svrtrc, PrintStream o, SyncFifo f, SyncFifo rof, int portno, InetAddress uNode)
+	public ConnectionEnvironment(int c, boolean svrtrc, PrintStream o, SyncFifo f, SyncFifo rof, int portno, InetAddress uNode, boolean ssl, boolean auth)
 	{
-		this (c, null, svrtrc, o, f, rof, portno, uNode);
+		this (c, null, svrtrc, o, f, rof, portno, uNode, ssl, auth);
 	}
 
 	public ConnectionEnvironment(int c, String n, boolean svrtrc, PrintStream o, SyncFifo f, SyncFifo rof, InetAddress uNode)
 	{
-		this (c, n, svrtrc, o, f, rof, 0, uNode);
+		this (c, n, svrtrc, o, f, rof, 0, uNode, false, false);
 	}
 
 	public int id()
@@ -175,6 +180,14 @@ public class ConnectionEnvironment
 	public void setInfo(String inf)
 	{
 		info = inf;
+	}
+	public boolean getIsSSLConnection()
+	{
+		return isSSLConnection;
+	}
+	public boolean getIsClientAuthenticated()
+	{
+		return isClientAuthenticated;
 	}
 
 	public String ip()
