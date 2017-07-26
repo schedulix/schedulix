@@ -207,6 +207,7 @@ public class SDMSRepository
 		tables.put(SDMSExitStateProfileGeneric.tableName,			new SDMSExitStateProfileTable(env));
 		tables.put(SDMSExitStateTranslationTableGeneric.tableName,		new SDMSExitStateTranslationTable(env));
 		tables.put(SDMSExitStateTranslationProfileTableGeneric.tableName,	new SDMSExitStateTranslationProfileTable(env));
+		tables.put(SDMSExtentsTableGeneric.tableName,				new SDMSExtentsTable(env));
 		// F
 		tables.put(SDMSFolderTableGeneric.tableName,				new SDMSFolderTable(env));
 		tables.put(SDMSFootprintTableGeneric.tableName,				new SDMSFootprintTable(env));
