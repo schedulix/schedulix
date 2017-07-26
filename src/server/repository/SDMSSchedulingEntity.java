@@ -358,8 +358,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 
 		sme.resolveDependencies(sysEnv, true );
 
-		sme.checkDependencies(sysEnv);
-
 		Vector trv = SDMSTriggerTable.idx_fireId.getVector(sysEnv, seId);
 		for(int i = 0; i < trv.size(); i++) {
 			SDMSTrigger t = (SDMSTrigger) trv.get(i);
@@ -368,6 +366,8 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 				SDMSTriggerQueueTable.table.create(sysEnv, sme.getId(sysEnv), t.getId(sysEnv), lzero, zero, zero);
 			}
 		}
+
+		sme.checkDependencies(sysEnv);
 
 		Long lTs = new Long (ts.getTime());
 		Long internalId;
