@@ -35,7 +35,7 @@ CalendarHorizon=90
 #
 # If using an TLS/SSL Connection, does the client have to authenticate himself
 #
-ClientAuthorization=true
+ClientAuthentication=true
 
 #
 # CodePage: Which Character Set do we use. See the Java Documentation for more information
