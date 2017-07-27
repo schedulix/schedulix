@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -33,6 +31,7 @@ import java.lang.*;
 import java.sql.*;
 
 import de.independit.scheduler.server.*;
+import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
@@ -45,12 +44,15 @@ public class SelectCmd extends Node
 	private Vector sv;
 	private int clist[];
 	private int ctype[];
+	private int cquote[];
 	private int cl_size;
 
 	public static final int CATEGORYTYPE = Parser.CATEGORY;
 	public static final int FOLDERTYPE = Parser.FOLDER;
-	public static final int SCOPETYPE = Parser.SCOPE;
 	public static final int JOBTYPE = Parser.JOB;
+	public static final int RESOURCETYPE = Parser.RESOURCE;
+	public static final int SCOPETYPE = Parser.SCOPE;
+	public static final int SCHEDULETYPE = Parser.SCHEDULE;
 
 	public SelectCmd(String s)
 	{
@@ -89,7 +91,8 @@ public class SelectCmd extends Node
 			if(cl_size > 0 && with.get(cn) != null) {
 				Integer t = (Integer) with.get(cn);
 				clist[j] = i;
-				ctype[j] = t.intValue();
+				ctype[j] = Math.abs(t.intValue());
+				cquote[j] = (t > 0 ? 1 : -1);
 				j++;
 			}
 			desc.addElement(cn);
@@ -102,7 +105,6 @@ public class SelectCmd extends Node
 
 	private void sort()
 	{
-
 		int i, j;
 
 		for(i = 0; i < cl_size - 1; i++) {
@@ -132,48 +134,116 @@ public class SelectCmd extends Node
 			sId = new Long (((java.math.BigDecimal) o).intValue());
 		} else {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03204250147",
-				"Type Error, Column is no ScopeId but a $1", o.getClass().getName()));
+				"Type Error, Column is not an Id but a $1", o.getClass().getName()));
 		}
 		return sId;
 	}
 
-	private String convert_folder(SystemEnvironment sysEnv, Object o)
-		throws SDMSException
+	private PathVector convert_folder(SystemEnvironment sysEnv, Object o)
+	throws SDMSException
 	{
-		return SDMSFolderTable.getObject(sysEnv, objectToId(sysEnv, o)).pathString(sysEnv);
+		SDMSFolder f;
+		Long id = objectToId(sysEnv, o);
+		try {
+			f = SDMSFolderTable.getObject(sysEnv, id);
+		} catch (NotFoundException nfe) {
+			return convert_job_raw(sysEnv, id);
+		}
+		return f.pathVector(sysEnv);
 	}
 
-	private String convert_scope(SystemEnvironment sysEnv, Object o)
-		throws SDMSException
+	private PathVector convert_folder_raw(SystemEnvironment sysEnv, Long id)
+	throws SDMSException
 	{
-		return SDMSScopeTable.getObject(sysEnv, objectToId(sysEnv, o)).pathString(sysEnv);
+		SDMSFolder f;
+		f = SDMSFolderTable.getObject(sysEnv, id);
+		return f.pathVector(sysEnv);
 	}
 
-	private String convert_job(SystemEnvironment sysEnv, Object o)
-		throws SDMSException
+	private PathVector convert_scope(SystemEnvironment sysEnv, Object o)
+	throws SDMSException
 	{
-		return SDMSSchedulingEntityTable.getObject(sysEnv, objectToId(sysEnv, o)).pathString(sysEnv);
+		SDMSScope s;
+		s = SDMSScopeTable.getObject(sysEnv, objectToId(sysEnv, o));
+		return s.pathVector(sysEnv);
 	}
 
-	private String convert_category(SystemEnvironment sysEnv, Object o)
-		throws SDMSException
+	private PathVector convert_job(SystemEnvironment sysEnv, Object o)
+	throws SDMSException
 	{
-		return SDMSNamedResourceTable.getObject(sysEnv, objectToId(sysEnv, o)).pathString(sysEnv);
+		SDMSSchedulingEntity se;
+		Long id = objectToId(sysEnv, o);
+		try {
+			se = SDMSSchedulingEntityTable.getObject(sysEnv, id);
+		} catch (NotFoundException nfe) {
+			return convert_folder_raw(sysEnv, id);
+		}
+		return se.pathVector(sysEnv);
+	}
+
+	private PathVector convert_job_raw(SystemEnvironment sysEnv, Long id)
+	throws SDMSException
+	{
+		SDMSSchedulingEntity se;
+		se = SDMSSchedulingEntityTable.getObject(sysEnv, id);
+		return se.pathVector(sysEnv);
+	}
+
+	private PathVector convert_category(SystemEnvironment sysEnv, Object o)
+	throws SDMSException
+	{
+		SDMSNamedResource nr;
+		nr = SDMSNamedResourceTable.getObject(sysEnv, objectToId(sysEnv, o));
+		return nr.pathVector(sysEnv);
+	}
+
+	private PathVector convert_schedule(SystemEnvironment sysEnv, Object o)
+	throws SDMSException
+	{
+		SDMSSchedule sc;
+		sc = SDMSScheduleTable.getObject(sysEnv, objectToId(sysEnv, o));
+		return sc.pathVector(sysEnv);
 	}
 
 	private String convert(SystemEnvironment sysEnv, Object o, int idx)
-		throws SDMSException
+	throws SDMSException
 	{
+		PathVector pv = null;
+		int quoted = cquote[idx];
+
 		if(o == null) return null;
-		switch(ctype[idx]) {
-			case CATEGORYTYPE:
-				return convert_category(sysEnv, o);
-			case FOLDERTYPE:
-				return convert_folder(sysEnv, o);
-			case SCOPETYPE:	
-				return convert_scope(sysEnv, o);
-			case JOBTYPE:
-				return convert_job(sysEnv, o);
+		try {
+			switch(ctype[idx]) {
+				case CATEGORYTYPE:
+					pv = convert_category(sysEnv, o);
+					break;
+				case FOLDERTYPE:
+					pv = convert_folder(sysEnv, o);
+					break;
+				case JOBTYPE:
+					pv = convert_job(sysEnv, o);
+					break;
+				case RESOURCETYPE:
+					pv = convert_category(sysEnv, o);
+					break;
+				case SCHEDULETYPE:
+					pv = convert_schedule(sysEnv, o);
+					break;
+				case SCOPETYPE:
+					pv = convert_scope(sysEnv, o);
+					break;
+			}
+		} catch (NotFoundException nfe) {
+			nfe.printStackTrace();
+			pv = null;
+		}
+
+		if (pv != null) {
+			if (quoted < 0) {
+				return pv.toQuotedString(null);
+			} else {
+				return pv.toString();
+			}
 		}
 		return null;
 	}
@@ -193,7 +263,6 @@ public class SelectCmd extends Node
 					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , m.getGId(sysEnv)));
 					p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 				} catch (NotFoundException nfe) {
-
 				}
 			}
 			try {
@@ -202,7 +271,6 @@ public class SelectCmd extends Node
 					sgId = sg.getId(sysEnv);
 				}
 			} catch (NotFoundException nfe) {
-
 			}
 			if (!(p.can(SDMSPrivilege.MANAGE_SEL) || (sgId != null && sysEnv.cEnv.gid().contains(sgId))))
 				throw new AccessViolationException(new SDMSMessage(sysEnv, "03003081235", "Insufficient Privileges"));
@@ -214,6 +282,7 @@ public class SelectCmd extends Node
 		if(cl_size > 0) {
 			clist = new int[cl_size];
 			ctype = new int[cl_size];
+			cquote = new int[cl_size];
 		}
 
 		try {
@@ -239,15 +308,11 @@ public class SelectCmd extends Node
 			stmt.close();
 			sysEnv.dbConnection.commit();
 		} catch (SQLException sqle) {
-
 			try {
-
 				sysEnv.dbConnection.rollback();
 			} catch (SQLException sqle2) {
-
 				throw new RecoverableException(new SDMSMessage(sysEnv, "03310281524", "Connection lost"));
 			}
-
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03204170024", "SQL Error : $1", sqle.toString()));
 		}
 

@@ -25,6 +25,36 @@ public class Parser
 	private static final String patternString = "^[-!#%&(-,/0-9=?@A-Z_a-z|]([- !#%&(-,/0-9=?@A-Z_a-z|]*[-!#%&(-,/0-9=?@A-Z_a-z|])?$";
 	private final Pattern identifierPattern = Pattern.compile(patternString);
 
+	private final static Integer PLUS_ONE		= new Integer(1);
+	private final static Integer MINUS_ONE		= new Integer(-1);
+	private final static Integer I_STATIC		= new Integer(SDMSNamedResource.STATIC);
+	private final static Integer I_SYSTEM		= new Integer(SDMSNamedResource.SYSTEM);
+	private final static Integer I_SYNCHRONIZING	= new Integer(SDMSNamedResource.SYNCHRONIZING);
+	private final static Integer I_CATEGORY		= new Integer(SDMSNamedResource.CATEGORY);
+	private final static Integer I_POOL		= new Integer(SDMSNamedResource.POOL);
+
+	private final static Integer I_MINUTE		= new Integer(SDMSInterval.MINUTE);
+	private final static Integer I_HOUR		= new Integer(SDMSInterval.HOUR);
+	private final static Integer I_DAY		= new Integer(SDMSInterval.DAY);
+	private final static Integer I_WEEK		= new Integer(SDMSInterval.WEEK);
+	private final static Integer I_MONTH		= new Integer(SDMSInterval.MONTH);
+	private final static Integer I_YEAR		= new Integer(SDMSInterval.YEAR);
+
+	private final static Integer I_AVG		= new Integer(SDMSParameterDefinition.AVG);
+	private final static Integer I_COUNT		= new Integer(SDMSParameterDefinition.COUNT);
+	private final static Integer I_MAX		= new Integer(SDMSParameterDefinition.MAX);
+	private final static Integer I_MIN		= new Integer(SDMSParameterDefinition.MIN);
+	private final static Integer I_SUM		= new Integer(SDMSParameterDefinition.SUM);
+	private final static Integer I_CONSTANT		= new Integer(SDMSParameterDefinition.CONSTANT);
+	private final static Integer I_LOCAL_CONSTANT	= new Integer(SDMSParameterDefinition.LOCAL_CONSTANT);
+	private final static Integer I_PARAMETER	= new Integer(SDMSParameterDefinition.PARAMETER);
+	private final static Integer I_REFERENCE	= new Integer(SDMSParameterDefinition.REFERENCE);
+	private final static Integer I_RESOURCEREFERENCE	= new Integer(SDMSParameterDefinition.RESOURCEREFERENCE);
+	private final static Integer I_CHILDREFERENCE	= new Integer(SDMSParameterDefinition.CHILDREFERENCE);
+	private final static Integer I_RESULT		= new Integer(SDMSParameterDefinition.RESULT);
+	private final static Integer I_IMPORT		= new Integer(SDMSParameterDefinition.IMPORT);
+	private final static Integer I_EXPRESSION	= new Integer(SDMSParameterDefinition.EXPRESSION);
+
 	public Parser() { /* nothing to do */ }
 %}
 
@@ -55,6 +85,7 @@ public class Parser
 %token <Token>	NORESUME NOSTICKY NOSUSPEND NOT NOTRACE NOTRUNC NOWARN
 %token <Token>	OBJECT OF OFFLINE ON ONLINE ONLY OPERATE OR OTHER OWNER
 %token <Token>	PARENT PARAMETERS PASSWORD PATH PENDING PERFORMANCE PERL PID POOL PRIORITY PROFILE PROTOCOL PUBLIC PYTHON
+%token <Token>	QUOTED
 %token <Token>	RAWPASSWORD REACHABLE READ REASSURE RECREATE RECURSIVE REFERENCE REGISTER RENAME RENICE REQUIRED REQUESTABLE_AMOUNT RERUN RERUN_PROGRAM RESOURCE
 %token <Token>	RESOURCE_TEMPLATE RESOURCE_STATUS RESOURCE_STATUS_DEFINITION RESOURCE_STATUS_MAPPING RESOURCE_STATUS_PROFILE RESOURCE_WAIT
 %token <Token>	RESTARTABLE RESTRICT RESULT RESUME REVOKE ROLLBACK ROOT RUN RUNNABLE RUNNING RUNTIME RUN_PROGRAM
@@ -155,7 +186,7 @@ public class Parser
 %type <Integer>	job_childdef_suspend, job_type, jobstate, jobstate2, jp_aggfunction, jrq_unresolved, jrq_mode
 %type <Integer>	lj_mode, lockmode, jrd_keep
 %type <Integer>	mergemode
-%type <Integer>	opt_integer, opt_sid, opt_signed_integer, om_recreate
+%type <Integer>	opt_integer, opt_quoted, opt_sid, opt_signed_integer, om_recreate
 %type <Integer>	resource_usage
 %type <Integer>	schevbacklog, sid, signed_integer, sj_filteritem
 %type <Integer>	testid
@@ -544,11 +575,16 @@ selwithlist:	selwithitem							{ $$ = new WithHash(); $<WithHash>$.addItem($1); 
 	|	selwithlist ',' selwithitem					{ $1.addItem($3); }
 
 //D:NT-ALIAS = withitem
-selwithitem:	identifier SCOPE						{ $$ = new WithItem($1, $2.token); }
-	|	identifier FOLDER						{ $$ = new WithItem($1, $2.token); }
-	|	identifier JOB							{ $$ = new WithItem($1, $2.token); }
-	|	identifier CATEGORY						{ $$ = new WithItem($1, $2.token); }
+selwithitem:	identifier SCOPE opt_quoted					{ $$ = new WithItem($1, $2.token * $3); }
+	|	identifier FOLDER opt_quoted					{ $$ = new WithItem($1, $2.token * $3); }
+	|	identifier JOB opt_quoted					{ $$ = new WithItem($1, $2.token * $3); }
+	|	identifier CATEGORY opt_quoted					{ $$ = new WithItem($1, $2.token * $3); }
+	|	identifier RESOURCE opt_quoted					{ $$ = new WithItem($1, $2.token * $3); }
+	|	identifier SCHEDULE opt_quoted					{ $$ = new WithItem($1, $2.token * $3); }
 	|	SORT '(' sortlist ')'						{ $$ = new WithItem(ParseStr.S_SORT, $3); }
+
+opt_quoted:									{ $$ = PLUS_ONE; }
+	|	QUOTED								{ $$ = MINUS_ONE; }
 
 sortlist:	signed_integer							{ $$ = new Vector(); $<Vector>$.addElement($1); }
 	|	sortlist ',' signed_integer					{ $1.addElement($3); }
@@ -944,7 +980,7 @@ cf_parmlist:	cf_parm								{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
 	|	cf_parmlist ',' cf_parm						{ $1.addItem($3); }
 
 cf_parm:	parametername '=' STRING					{ Vector v = new Vector();
-										  v.addElement(new Integer(SDMSParameterDefinition.CONSTANT));
+										  v.addElement(I_CONSTANT);
 										  v.addElement($3.textValue);
 										  v.addElement(Boolean.FALSE);	// non local variable
 										  $$ = new WithItem($1, v);
@@ -1294,39 +1330,39 @@ anr_with_item:		STATUS_PROFILE '=' rspname				{ $$ = new WithItem(ParseStr.map($
 	|		FACTOR '=' FLOAT					{ $$ = new WithItem(ParseStr.map($1.token), $3.value); }
 	|		with_inherit_grant					{ $$ = $1; }
 
-resource_usage:		STATIC							{ $$ = new Integer(SDMSNamedResource.STATIC); }
-	|		SYSTEM							{ $$ = new Integer(SDMSNamedResource.SYSTEM); }
-	|		SYNCHRONIZING						{ $$ = new Integer(SDMSNamedResource.SYNCHRONIZING); }
-	|		CATEGORY						{ $$ = new Integer(SDMSNamedResource.CATEGORY); }
+resource_usage:		STATIC							{ $$ = I_STATIC; }
+	|		SYSTEM							{ $$ = I_SYSTEM; }
+	|		SYNCHRONIZING						{ $$ = I_SYNCHRONIZING; }
+	|		CATEGORY						{ $$ = I_CATEGORY; }
 			//D:LEVEL enterprise
-	|		POOL							{ $$ = new Integer(SDMSNamedResource.POOL); }
+	|		POOL							{ $$ = I_POOL; }
 
 cnr_parmlist:		cnr_parm						{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
 	|		cnr_parmlist ',' cnr_parm				{ $1.addItem($3); }
 
 //D:NT-ALIAS = parameter
 cnr_parm:		parametername PARAMETERS '=' STRING			{ Vector v = new Vector();
-										  v.addElement(new Integer(SDMSParameterDefinition.PARAMETER));
+										  v.addElement(I_PARAMETER);
 										  v.addElement($4.textValue);
 										  $$ = new WithItem($1, v);
 										}
 	|		parametername LOCAL_CONSTANT				{ Vector v = new Vector();
-										  v.addElement(new Integer(SDMSParameterDefinition.LOCAL_CONSTANT));
+										  v.addElement(I_LOCAL_CONSTANT);
 										  v.addElement(null);
 										  $$ = new WithItem($1, v);
 										}
 	|		parametername LOCAL_CONSTANT '=' STRING			{ Vector v = new Vector();
-										  v.addElement(new Integer(SDMSParameterDefinition.LOCAL_CONSTANT));
+										  v.addElement(I_LOCAL_CONSTANT);
 										  v.addElement($4.textValue);
 										  $$ = new WithItem($1, v);
 										}
 	|		parametername CONSTANT '=' STRING			{ Vector v = new Vector();
-										  v.addElement(new Integer(SDMSParameterDefinition.CONSTANT));
+										  v.addElement(I_CONSTANT);
 										  v.addElement($4.textValue);
 										  $$ = new WithItem($1, v);
 										}
 	|		parametername PARAMETERS				{ Vector v = new Vector();
-										  v.addElement(new Integer(SDMSParameterDefinition.PARAMETER));
+										  v.addElement(I_PARAMETER);
 										  v.addElement(null);
 										  $$ = new WithItem($1, v);
 										}
@@ -1415,7 +1451,7 @@ ar_with_list:		ar_with_item						{ $$ = new WithHash(); $<WithHash>$.addItem($1)
 ar_with_item:		STATUS '=' statusname					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	 		//D:OPTION amount
 	|		AMOUNT '=' integer					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
-	|		AMOUNT '=' INFINITE					{ $$ = new WithItem(ParseStr.map($1.token), new Integer(-1)); }
+	|		AMOUNT '=' INFINITE					{ $$ = new WithItem(ParseStr.map($1.token), MINUS_ONE); }
 			//D:DEFAULT
 			//D:OPTION factor
 			//D:LEVEL enterprise
@@ -1424,7 +1460,7 @@ ar_with_item:		STATUS '=' statusname					{ $$ = new WithItem(ParseStr.map($1.tok
 	|		FACTOR '=' FLOAT					{ $$ = new WithItem(ParseStr.map($1.token), $3.value); }
 			//D:OPTION requestable amount
 	|		REQUESTABLE_AMOUNT '=' integer				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
-	|		REQUESTABLE_AMOUNT '=' INFINITE				{ $$ = new WithItem(ParseStr.map($1.token), new Integer(-1)); }
+	|		REQUESTABLE_AMOUNT '=' INFINITE				{ $$ = new WithItem(ParseStr.map($1.token), MINUS_ONE); }
 			//D:OPTION touch
 	|		TOUCH '=' datetime					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|		TOUCH							{ $$ = new WithItem(ParseStr.map($1.token), null); }
@@ -1457,11 +1493,11 @@ ar_parmlist:		ar_parm							{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
 
 //D:NT-ALIAS = parameter
 ar_parm:		parametername '=' STRING				{ Vector v = new Vector();
-										  v.addElement(new Integer(SDMSParameterDefinition.CONSTANT));
+										  v.addElement(I_CONSTANT);
 										  v.addElement($3.textValue);
 										  $$ = new WithItem($1, v); }
 	|		parametername '=' DEFAULT				{ Vector v = new Vector();
-										  v.addElement(new Integer(SDMSParameterDefinition.CONSTANT));
+										  v.addElement(I_CONSTANT);
 										  v.addElement(null);
 										  $$ = new WithItem($1, v);
 										}
@@ -2450,32 +2486,32 @@ job_parameter:		parametername opt_jp_withitem jp_optdefault jp_optlocal	jp_optex
 										  $$ = new WithItem($1, v);
 										}
 
-opt_jp_withitem:								{ $$ = new WithItem(new Integer(SDMSParameterDefinition.PARAMETER), null); }
+opt_jp_withitem:								{ $$ = new WithItem(I_PARAMETER, null); }
 	|		jp_withitem						{ $$ = $1; }
 
 //NT-ALIAS = parametertype
-jp_withitem:		PARAMETERS						{ $$ = new WithItem(new Integer(SDMSParameterDefinition.PARAMETER), null); }
+jp_withitem:		PARAMETERS						{ $$ = new WithItem(I_PARAMETER, null); }
 	|		REFERENCE folderpath '(' parametername ')'		{ $2.addElement($4);
-										  $$ = new WithItem(new Integer(SDMSParameterDefinition.REFERENCE), $2);
+										  $$ = new WithItem(I_REFERENCE, $2);
 										}
 	|		REFERENCE RESOURCE resourcepath '(' parametername ')'	{ $3.addElement($5);
-										  $$ = new WithItem(new Integer(SDMSParameterDefinition.RESOURCEREFERENCE), $3);
+										  $$ = new WithItem(I_RESOURCEREFERENCE, $3);
 										}
 	|		REFERENCE CHILD folderpath '(' parametername ')'	{ $3.addElement($5);
-										  $$ = new WithItem(new Integer(SDMSParameterDefinition.CHILDREFERENCE), $3);
+										  $$ = new WithItem(I_CHILDREFERENCE, $3);
 										}
-	|		RESULT							{ $$ = new WithItem(new Integer(SDMSParameterDefinition.RESULT), null); }
-	|		IMPORT							{ $$ = new WithItem(new Integer(SDMSParameterDefinition.IMPORT), null); }
+	|		RESULT							{ $$ = new WithItem(I_RESULT, null); }
+	|		IMPORT							{ $$ = new WithItem(I_IMPORT, null); }
 
 jp_optexport:									{ $$ = null; }
 	|		EXPORT '=' parametername				{ $$ = $3; }
 	|		EXPORT '=' NONE						{ $$ = null; }
 
-jp_nondefwith:		CONSTANT '=' STRING					{ $$ = new WithItem(new Integer(SDMSParameterDefinition.CONSTANT), $3.textValue); }
+jp_nondefwith:		CONSTANT '=' STRING					{ $$ = new WithItem(I_CONSTANT, $3.textValue); }
 	|		jp_aggfunction '(' parametername ')'			{ final Vector v = new Vector();
 										  v.addElement($1);
 										  v.addElement($3);
-										  $$ = new WithItem(new Integer(SDMSParameterDefinition.EXPRESSION), v);
+										  $$ = new WithItem(I_EXPRESSION, v);
 										}
 
 jp_optdefault:									{ $$ = null; }
@@ -2485,11 +2521,11 @@ jp_optdefault:									{ $$ = null; }
 jp_optlocal:									{ $$ = Boolean.FALSE; }
 	|		LOCAL							{ $$ = Boolean.TRUE; }
 
-jp_aggfunction:		AVG							{ $$ = new Integer(SDMSParameterDefinition.AVG); }
-	|		COUNT							{ $$ = new Integer(SDMSParameterDefinition.COUNT); }
-	|		MAX							{ $$ = new Integer(SDMSParameterDefinition.MAX); }
-	|		MIN							{ $$ = new Integer(SDMSParameterDefinition.MIN); }
-	|		SUM							{ $$ = new Integer(SDMSParameterDefinition.SUM); }
+jp_aggfunction:		AVG							{ $$ = I_AVG; }
+	|		COUNT							{ $$ = I_COUNT; }
+	|		MAX							{ $$ = I_MAX; }
+	|		MIN							{ $$ = I_MIN; }
+	|		SUM							{ $$ = I_SUM; }
 
 
 
@@ -4102,7 +4138,7 @@ period:	integer baseinterval							{ $$ = new WithHash();
 										  $<WithHash>$.addItem(new WithItem(ParseStr.S_INTERVAL, $2));
 										}
 	| baseinterval								{ $$ = new WithHash();
-										  $<WithHash>$.addItem(new WithItem(ParseStr.S_MULT, new Integer(1)));
+										  $<WithHash>$.addItem(new WithItem(ParseStr.S_MULT, PLUS_ONE));
 										  $<WithHash>$.addItem(new WithItem(ParseStr.S_INTERVAL, $1));
 										}
 
@@ -4112,7 +4148,7 @@ signed_period:	signed_integer baseinterval					{ $$ = new WithHash();
 										  $<WithHash>$.addItem(new WithItem(ParseStr.S_INTERVAL, $2));
 										}
 	| baseinterval								{ $$ = new WithHash();
-										  $<WithHash>$.addItem(new WithItem(ParseStr.S_MULT, new Integer(1)));
+										  $<WithHash>$.addItem(new WithItem(ParseStr.S_MULT, PLUS_ONE));
 										  $<WithHash>$.addItem(new WithItem(ParseStr.S_INTERVAL, $1));
 										}
 opt_period:	period								{ $$ = $1; }
@@ -4360,11 +4396,11 @@ integer:	INTEGER								{ if(((Long) $1.value).longValue() <= Integer.MAX_VALUE)
 											$$ = new Integer (((Long) $1.value).intValue());
 										  else {
 											yyerror(ParseStr.S_SYNTAX_ERROR, new String[]{"VALID INTEGER (Integer out of bounds)"});
-											$$ = new Integer(1);
+											$$ = PLUS_ONE;
 										  }
 										}
 	|	NAN								{ yyerror(ParseStr.S_SYNTAX_ERROR, new String[]{"VALID INTEGER (Integer out of bounds)"});
-										  $$ = new Integer(1);
+										  $$ = PLUS_ONE;
 										}
 
 opt_integer:	integer								{ $$ = $1; }
@@ -4460,12 +4496,12 @@ expand:		EXPAND '=' '(' idlist ')'					{ $$ = $4; }
 idlist:		id								{ $$ = new HashSet(); $<HashSet>$.add($1); }
 	|	idlist ',' id							{ $1.add($3); }
 
-baseinterval:	MINUTE								{ $$ = new Integer(SDMSInterval.MINUTE); }
-	|	HOUR								{ $$ = new Integer(SDMSInterval.HOUR); }
-	|	DAY								{ $$ = new Integer(SDMSInterval.DAY); }
-	|	WEEK								{ $$ = new Integer(SDMSInterval.WEEK); }
-	|	MONTH								{ $$ = new Integer(SDMSInterval.MONTH); }
-	|	YEAR								{ $$ = new Integer(SDMSInterval.YEAR); }
+baseinterval:	MINUTE								{ $$ = I_MINUTE; }
+	|	HOUR								{ $$ = I_HOUR; }
+	|	DAY								{ $$ = I_DAY; }
+	|	WEEK								{ $$ = I_WEEK; }
+	|	MONTH								{ $$ = I_MONTH; }
+	|	YEAR								{ $$ = I_YEAR; }
 
 keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	ACTIVE								{ $$ = (String) $1.value; }
@@ -4639,6 +4675,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	PROTOCOL							{ $$ = (String) $1.value; }
 	|	PUBLIC								{ $$ = (String) $1.value; }
 	|	PYTHON								{ $$ = (String) $1.value; }
+	|	QUOTED								{ $$ = (String) $1.value; }
 	|	RAWPASSWORD							{ $$ = (String) $1.value; }
 	|	READ								{ $$ = (String) $1.value; }
 	|	REASSURE							{ $$ = (String) $1.value; }

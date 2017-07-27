@@ -253,6 +253,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("PUBLIC",		new Integer(Parser.PUBLIC));
 	tokens.put("PYTHON",		new Integer(Parser.PYTHON));
 	tokens.put("QUIT",		new Integer(Parser.DISCONNECT));
+	tokens.put("QUOTED",		new Integer(Parser.QUOTED));
 	tokens.put("RAWPASSWORD",	new Integer(Parser.RAWPASSWORD));
 	tokens.put("REACHABLE",		new Integer(Parser.REACHABLE));
 	tokens.put("READ",		new Integer(Parser.READ));
