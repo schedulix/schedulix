@@ -110,7 +110,7 @@ public class CreateUser extends ManipUser
 			}
 
 			try {
-				u = SDMSUserTable.table.create( sysEnv, user, passwd, salt, method, enable, defaultGId, new Long(0));
+				u = SDMSUserTable.table.create( sysEnv, user, passwd, salt, method, enable, defaultGId, connect_type, new Long(0));
 			} catch (DuplicateKeyException dke) {
 				if(replace) {
 					try {

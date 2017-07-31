@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -89,22 +87,18 @@ public class ShowUser extends ShowCommented
 
 		desc.add("ID");
 		desc.add("NAME");
-
 		desc.add("IS_ENABLED");
-
 		desc.add("DEFAULT_GROUP");
+		desc.add("CONNECTION_TYPE");
 		desc.add("CREATOR");
 		desc.add("CREATE_TIME");
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("MANAGE_PRIVS");
-
 		desc.add("GROUPS");
 		desc.add("COMMENTTYPE");
 		desc.add("COMMENT");
-
 		c_desc.add("TAG");
 		c_desc.add("COMMENT");
 
@@ -115,6 +109,7 @@ public class ShowUser extends ShowCommented
 
 		data.add(u.getIsEnabled(sysEnv));
 		data.add(SDMSGroupTable.getObject(sysEnv, u.getDefaultGId(sysEnv)).getName(sysEnv));
+		data.add(u.getConnectionTypeAsString(sysEnv));
 		try {
 			data.add(SDMSUserTable.getObject(sysEnv, u.getCreatorUId(sysEnv)).getName(sysEnv));
 		} catch (NotFoundException nfe) {
@@ -149,7 +144,6 @@ public class ShowUser extends ShowCommented
 		SDMSOutputContainer d_container = null;
 
 		Vector desc = new Vector(2);
-
 		desc.add("ID");
 		desc.add("NAME");
 		desc.add("PRIVS");
@@ -179,7 +173,6 @@ public class ShowUser extends ShowCommented
 		SDMSOutputContainer dc = null;
 
 		Vector desc = new Vector(2);
-
 		desc.add("PRIVS");
 
 		dc = new SDMSOutputContainer(sysEnv, "MANAGE_PRIVS", desc);
@@ -192,7 +185,6 @@ public class ShowUser extends ShowCommented
 				SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , m.getGId(sysEnv)));
 				p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 			} catch (NotFoundException nfe) {
-
 			}
 		}
 		long pr = p.toLong().longValue();

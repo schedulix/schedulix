@@ -190,6 +190,26 @@ public class Connect extends Node
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
 				"02110192350", "Invalid username or password"));
 		}
+
+		int connectType = u.getConnectionType(sysEnv).intValue();
+		boolean connectOK;
+		if (connectType > SDMSUser.PLAIN)
+			if (sysEnv.cEnv.getIsSSLConnection())
+				if (connectType > SDMSUser.SSL)
+					if (sysEnv.cEnv.getIsClientAuthenticated())
+						connectOK = true;
+					else
+						connectOK = false;
+				else
+					connectOK = true;
+			else
+				connectOK = false;
+		else
+			connectOK = true;
+
+		if (!connectOK)
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03707271340", "(Authencicated) SSL Connection required"));
+
 		uId = u.getId(sysEnv);
 		sysEnv.cEnv.setUid(uId);
 		sysEnv.cEnv.setUser();
@@ -232,7 +252,7 @@ public class Connect extends Node
 				if (u == null) {
 					String passwd = "Internal Authentication Disabled";
 					Boolean enable = Boolean.TRUE;
-					u = SDMSUserTable.table.create(sysEnv, user, passwd, passwd , method, enable, SDMSObject.publicGId, zero);
+					u = SDMSUserTable.table.create(sysEnv, user, passwd, passwd , method, enable, SDMSObject.publicGId, new Integer(SDMSUser.PLAIN), zero);
 					SDMSMemberTable.table.create(sysEnv, u.getId(sysEnv), SDMSObject.publicGId);
 					freshMeat = true;
 				} else {

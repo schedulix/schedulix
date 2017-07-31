@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -57,10 +55,9 @@ public class ListUser extends Node
 
 		desc.add("ID");
 		desc.add("NAME");
-
 		desc.add("IS_ENABLED");
-
 		desc.add("DEFAULT_GROUP");
+		desc.add("CONNECTION_TYPE");
 		desc.add("PRIVS");
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv,
@@ -94,6 +91,7 @@ public class ListUser extends Node
 			v.add(u.getName(sysEnv));
 			v.add(u.getIsEnabled(sysEnv));
 			v.add(SDMSGroupTable.getObject(sysEnv, u.getDefaultGId(sysEnv)).getName(sysEnv));
+			v.add(u.getConnectionTypeAsString(sysEnv));
 			v.add(p.toString());
 
 			d_container.addData(sysEnv, v);

@@ -62,7 +62,7 @@ public class Parser
 %token <Token>	FLOAT
 
 %token <Token>	ACTION ACTIVATE ACTIVE ADD AFTER AFTER_FINAL AGING
-%token <Token>	ALIAS ALL ALL_FINAL ALTER AMOUNT AND ANY AT AUDIT AVG
+%token <Token>	ALIAS ALL ALL_FINAL ALTER AMOUNT AND ANY AT AUDIT AUTHENTICATED AVG
 %token <Token>	BACKLOG_HANDLING BACKUP BASE BATCH BEFORE BEFORE_FINAL BETWEEN BMULTICMD BROKEN BROKEN_ACTIVE BROKEN_FINISHED BY
 %token <Token>	CALENDAR CANCEL CANCELLED CASCADE CATEGORY CHANGE_STATUS CHANGE CHILD CHECK CHILDREN CHILDSUSPEND CHILDTAG CLEANUP CLEAR CMPOP
 %token <Token>	COMMAND COMMENT CONDITION CONFIG CONNECT CONSTANT CONTENT COPY COUNT CREATE CYCLE
@@ -84,12 +84,12 @@ public class Parser
 %token <Token>	N NAME NAMED_RESOURCE NICE_PROFILE NICEVALUE NODE NOINVERSE NOKEEP NOMASTER NOMERGE NOMINALPCT NONE NONFATAL
 %token <Token>	NORESUME NOSTICKY NOSUSPEND NOT NOTRACE NOTRUNC NOWARN
 %token <Token>	OBJECT OF OFFLINE ON ONLINE ONLY OPERATE OR OTHER OWNER
-%token <Token>	PARENT PARAMETERS PASSWORD PATH PENDING PERFORMANCE PERL PID POOL PRIORITY PROFILE PROTOCOL PUBLIC PYTHON
+%token <Token>	PARENT PARAMETERS PASSWORD PATH PENDING PERFORMANCE PERL PID PLAIN POOL PRIORITY PROFILE PROTOCOL PUBLIC PYTHON
 %token <Token>	QUOTED
 %token <Token>	RAWPASSWORD REACHABLE READ REASSURE RECREATE RECURSIVE REFERENCE REGISTER RENAME RENICE REQUIRED REQUESTABLE_AMOUNT RERUN RERUN_PROGRAM RESOURCE
 %token <Token>	RESOURCE_TEMPLATE RESOURCE_STATUS RESOURCE_STATUS_DEFINITION RESOURCE_STATUS_MAPPING RESOURCE_STATUS_PROFILE RESOURCE_WAIT
 %token <Token>	RESTARTABLE RESTRICT RESULT RESUME REVOKE ROLLBACK ROOT RUN RUNNABLE RUNNING RUNTIME RUN_PROGRAM
-%token <Token>	S SALT SC SCHEDULE SCHEDULED_EVENT SCOPE SELECT SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT
+%token <Token>	S SALT SC SCHEDULE SCHEDULED_EVENT SCOPE SELECT SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT SSL
 %token <Token>	STARTED STARTING STARTTIME STATIC STATUS STATUS_MAPPING STATUS_PROFILE STICKY STOP STRICT STRING
 %token <Token>	SUBMIT SUBMITCOUNT SUBMITTAG SUBMITTED SUBMITTING_USER SUM SUSPEND SUSPEND_LIMIT SX SYNCHRONIZE_WAIT SYNCHRONIZING SYNCTIME SYSTEM
 %token <Token>	TAG TEST TEXT TIME TIMEOUT TIMESTAMP TO TO_KILL TOUCH TRACE TRANSLATION TREE TRIGGER TRUNC TYPE
@@ -190,6 +190,7 @@ public class Parser
 %type <Integer>	resource_usage
 %type <Integer>	schevbacklog, sid, signed_integer, sj_filteritem
 %type <Integer>	testid
+%type <Integer>	us_connect_type
 
 %type <Long>	id, jobid, longg
 %type <Long> 	privilege, privilege_list
@@ -797,6 +798,12 @@ us_withitem:	password							{ $$ = $1; }
 	|	GROUP '=' '(' us_grlist ')'					{ $$ = new WithItem(ParseStr.S_GROUPLIST, $4); }
 		//D:OPTION default group
 	|	DEFAULT GROUP '=' groupname					{ $$ = new WithItem(ParseStr.S_DEFAULTGROUP, $4); }
+		//D:OPTION connect type
+	|	CONNECT TYPE '=' us_connect_type				{ $$ = new WithItem(ParseStr.S_CONNECT, $4); }
+
+us_connect_type:	PLAIN							{ $$ = new Integer(SDMSUser.PLAIN); }
+	|		SSL							{ $$ = new Integer(SDMSUser.SSL); }
+	|		SSL AUTHENTICATED					{ $$ = new Integer(SDMSUser.SSL_AUTH); }
 
 //D:LINEBREAK
 us_add_dellist: us_add_delitem							{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
@@ -4512,6 +4519,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	AMOUNT								{ $$ = (String) $1.value; }
 	|	AND								{ $$ = (String) $1.value; }
 	|	AT								{ $$ = (String) $1.value; }
+	|	AUTHENTICATED							{ $$ = (String) $1.value; }
 	|	AVG								{ $$ = (String) $1.value; }
 	|	BACKUP								{ $$ = (String) $1.value; }
 	|	BASE								{ $$ = (String) $1.value; }
@@ -4669,6 +4677,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	PERFORMANCE							{ $$ = (String) $1.value; }
 	|	PERL								{ $$ = (String) $1.value; }
 	|	PID								{ $$ = (String) $1.value; }
+	|	PLAIN								{ $$ = (String) $1.value; }
 	|	POOL								{ $$ = (String) $1.value; }
 	|	PRIORITY							{ $$ = (String) $1.value; }
 	|	PROFILE								{ $$ = (String) $1.value; }
@@ -4708,6 +4717,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	SHUTDOWN							{ $$ = (String) $1.value; }
 	|	SHOW								{ $$ = (String) $1.value; }
 	|	SINGLE								{ $$ = (String) $1.value; }
+	|	SSL								{ $$ = (String) $1.value; }
 	|	SORT								{ $$ = (String) $1.value; }
 	|	STARTED								{ $$ = (String) $1.value; }
 	|	STARTING							{ $$ = (String) $1.value; }

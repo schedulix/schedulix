@@ -34,6 +34,7 @@ CREATE TABLE USERS (
     , `METHOD`                       integer         NOT NULL
     , `IS_ENABLED`                   integer         NOT NULL
     , `DEFAULT_G_ID`                 decimal(20)     NOT NULL
+    , `CONNECTION_TYPE`              integer         NOT NULL
     , `DELETE_VERSION`               decimal(20)     NOT NULL
     , `CREATOR_U_ID`                 decimal(20)     NOT NULL
     , `CREATE_TS`                    decimal(20)     NOT NULL
@@ -48,6 +49,7 @@ SELECT
     , `NAME`                         AS `NAME`
     , CASE `IS_ENABLED` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_ENABLED`
     , `DEFAULT_G_ID`                 AS `DEFAULT_G_ID`
+    , CASE `CONNECTION_TYPE` WHEN 0 THEN 'PLAIN' WHEN 1 THEN 'SSL' WHEN 2 THEN 'SSL_AUTH' END AS `CONNECTION_TYPE`
     , `DELETE_VERSION`               AS `DELETE_VERSION`
     , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`

@@ -44,6 +44,9 @@ public class SDMSUserGeneric extends SDMSObject
 	public final static String NOBODY = "NOBODY";
 	public final static int MD5 = 0;
 	public final static int SHA256 = 1;
+	public final static int PLAIN = 0;
+	public final static int SSL = 1;
+	public final static int SSL_AUTH = 2;
 	public final static int SALT_LENGTH = 64;
 
 	public final static int nr_id = 1;
@@ -53,11 +56,12 @@ public class SDMSUserGeneric extends SDMSObject
 	public final static int nr_method = 5;
 	public final static int nr_isEnabled = 6;
 	public final static int nr_defaultGId = 7;
-	public final static int nr_deleteVersion = 8;
-	public final static int nr_creatorUId = 9;
-	public final static int nr_createTs = 10;
-	public final static int nr_changerUId = 11;
-	public final static int nr_changeTs = 12;
+	public final static int nr_connectionType = 8;
+	public final static int nr_deleteVersion = 9;
+	public final static int nr_creatorUId = 10;
+	public final static int nr_createTs = 11;
+	public final static int nr_changerUId = 12;
+	public final static int nr_changeTs = 13;
 
 	public static String tableName = SDMSUserTableGeneric.tableName;
 
@@ -67,6 +71,7 @@ public class SDMSUserGeneric extends SDMSObject
 	protected Integer method;
 	protected Boolean isEnabled;
 	protected Long defaultGId;
+	protected Integer connectionType;
 	protected Long deleteVersion;
 	protected Long creatorUId;
 	protected Long createTs;
@@ -85,6 +90,7 @@ public class SDMSUserGeneric extends SDMSObject
 	        Integer p_method,
 	        Boolean p_isEnabled,
 	        Long p_defaultGId,
+	        Integer p_connectionType,
 	        Long p_deleteVersion,
 	        Long p_creatorUId,
 	        Long p_createTs,
@@ -118,6 +124,7 @@ public class SDMSUserGeneric extends SDMSObject
 		method = p_method;
 		isEnabled = p_isEnabled;
 		defaultGId = p_defaultGId;
+		connectionType = p_connectionType;
 		deleteVersion = p_deleteVersion;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
@@ -291,6 +298,48 @@ public class SDMSUserGeneric extends SDMSObject
 		return;
 	}
 
+	public Integer getConnectionType (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (connectionType);
+	}
+
+	public String getConnectionTypeAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		final Integer v = getConnectionType (env);
+		switch (v.intValue()) {
+			case SDMSUser.PLAIN:
+				return "PLAIN";
+			case SDMSUser.SSL:
+				return "SSL";
+			case SDMSUser.SSL_AUTH:
+				return "SSL_AUTH";
+		}
+		throw new FatalException (new SDMSMessage (env,
+		                          "01205252242",
+		                          "Unknown User.connectionType: $1",
+		                          getConnectionType (env)));
+	}
+
+	public	void setConnectionType (SystemEnvironment env, Integer p_connectionType)
+	throws SDMSException
+	{
+		if(connectionType.equals(p_connectionType)) return;
+		SDMSUserGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(User) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
+		o.connectionType = p_connectionType;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
 	public Long getDeleteVersion (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -449,6 +498,7 @@ public class SDMSUserGeneric extends SDMSObject
 	                          Integer p_method,
 	                          Boolean p_isEnabled,
 	                          Long p_defaultGId,
+	                          Integer p_connectionType,
 	                          Long p_deleteVersion,
 	                          Long p_creatorUId,
 	                          Long p_createTs,
@@ -463,6 +513,7 @@ public class SDMSUserGeneric extends SDMSObject
 		method = p_method;
 		isEnabled = p_isEnabled;
 		defaultGId = p_defaultGId;
+		connectionType = p_connectionType;
 		deleteVersion = p_deleteVersion;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
@@ -495,12 +546,14 @@ public class SDMSUserGeneric extends SDMSObject
 				        ", " + squote + "METHOD" + equote +
 				        ", " + squote + "IS_ENABLED" + equote +
 				        ", " + squote + "DEFAULT_G_ID" + equote +
+				        ", " + squote + "CONNECTION_TYPE" + equote +
 				        ", " + squote + "DELETE_VERSION" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ") VALUES (?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -531,11 +584,12 @@ public class SDMSUserGeneric extends SDMSObject
 			myInsert.setInt(5, method.intValue());
 			myInsert.setInt (6, isEnabled.booleanValue() ? 1 : 0);
 			myInsert.setLong (7, defaultGId.longValue());
-			myInsert.setLong (8, deleteVersion.longValue());
-			myInsert.setLong (9, creatorUId.longValue());
-			myInsert.setLong (10, createTs.longValue());
-			myInsert.setLong (11, changerUId.longValue());
-			myInsert.setLong (12, changeTs.longValue());
+			myInsert.setInt(8, connectionType.intValue());
+			myInsert.setLong (9, deleteVersion.longValue());
+			myInsert.setLong (10, creatorUId.longValue());
+			myInsert.setLong (11, createTs.longValue());
+			myInsert.setLong (12, changerUId.longValue());
+			myInsert.setLong (13, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -583,6 +637,7 @@ public class SDMSUserGeneric extends SDMSObject
 				        ", " + squote + "METHOD" + equote + " = ? " +
 				        ", " + squote + "IS_ENABLED" + equote + " = ? " +
 				        ", " + squote + "DEFAULT_G_ID" + equote + " = ? " +
+				        ", " + squote + "CONNECTION_TYPE" + equote + " = ? " +
 				        ", " + squote + "DELETE_VERSION" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +
 				        ", " + squote + "CREATE_TS" + equote + " = ? " +
@@ -606,12 +661,13 @@ public class SDMSUserGeneric extends SDMSObject
 			myUpdate.setInt(4, method.intValue());
 			myUpdate.setInt (5, isEnabled.booleanValue() ? 1 : 0);
 			myUpdate.setLong (6, defaultGId.longValue());
-			myUpdate.setLong (7, deleteVersion.longValue());
-			myUpdate.setLong (8, creatorUId.longValue());
-			myUpdate.setLong (9, createTs.longValue());
-			myUpdate.setLong (10, changerUId.longValue());
-			myUpdate.setLong (11, changeTs.longValue());
-			myUpdate.setLong(12, id.longValue());
+			myUpdate.setInt(7, connectionType.intValue());
+			myUpdate.setLong (8, deleteVersion.longValue());
+			myUpdate.setLong (9, creatorUId.longValue());
+			myUpdate.setLong (10, createTs.longValue());
+			myUpdate.setLong (11, changerUId.longValue());
+			myUpdate.setLong (12, changeTs.longValue());
+			myUpdate.setLong(13, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -627,6 +683,16 @@ public class SDMSUserGeneric extends SDMSObject
 		}
 		return false;
 	}
+	static public boolean checkConnectionType(Integer p)
+	{
+		switch (p.intValue()) {
+			case SDMSUser.PLAIN:
+			case SDMSUser.SSL:
+			case SDMSUser.SSL_AUTH:
+				return true;
+		}
+		return false;
+	}
 
 	public void print()
 	{
@@ -638,6 +704,7 @@ public class SDMSUserGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "method : " + method, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isEnabled : " + isEnabled, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "defaultGId : " + defaultGId, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "connectionType : " + connectionType, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "deleteVersion : " + deleteVersion, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
@@ -661,6 +728,7 @@ public class SDMSUserGeneric extends SDMSObject
 		        indentString + "method        : " + method + "\n" +
 		        indentString + "isEnabled     : " + isEnabled + "\n" +
 		        indentString + "defaultGId    : " + defaultGId + "\n" +
+		        indentString + "connectionType : " + connectionType + "\n" +
 		        indentString + "deleteVersion : " + deleteVersion + "\n" +
 		        indentString + "creatorUId    : " + creatorUId + "\n" +
 		        indentString + "createTs      : " + createTs + "\n" +

@@ -53,6 +53,7 @@ public abstract class ManipUser extends Node
 	protected WithHash with;
 	private boolean withEvaluated = false;
 	protected Long publicGId;
+	protected Integer connect_type;
 
 	protected final static Long ZERO = new Long(0L);
 	protected final static int MD5LENGTH = 35;
@@ -147,6 +148,12 @@ public abstract class ManipUser extends Node
 				if(!gId.equals(defaultGId))
 					grouplist.add(gId);
 			}
+		}
+
+		if (with.containsKey(ParseStr.S_CONNECT)) {
+			connect_type = (Integer) with.get(ParseStr.S_CONNECT);
+		} else {
+			connect_type = new Integer(SDMSUser.PLAIN);
 		}
 
 		if(with.containsKey(ParseStr.S_ADDGROUP)) {

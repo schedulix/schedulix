@@ -297,6 +297,10 @@ public class AlterUser extends ManipUser
 			throw t;
 		}
 
+		if (with.containsKey(ParseStr.S_CONNECT)) {
+			u.setConnectionType(sysEnv, (Integer) with.get(ParseStr.S_CONNECT));
+		}
+
 		if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(defaultGId, uId)))
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03312130121", "a user must belong to his default group"));
 

@@ -43,6 +43,9 @@ public class SDMSUserProxyGeneric extends SDMSProxy
 	public final static String NOBODY = "NOBODY";
 	public final static int MD5 = 0;
 	public final static int SHA256 = 1;
+	public final static int PLAIN = 0;
+	public final static int SSL = 1;
+	public final static int SSL_AUTH = 2;
 	public final static int SALT_LENGTH = 64;
 	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP|SDMSPrivilege.GRANT;
 
@@ -187,6 +190,30 @@ public class SDMSUserProxyGeneric extends SDMSProxy
 			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
 
 		((SDMSUserGeneric)(object)).setDefaultGId (env, p_defaultGId);
+		return ;
+	}
+	public Integer getConnectionType (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSUserGeneric)(object)).getConnectionType (env));
+	}
+
+	public String getConnectionTypeAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSUserGeneric) object).getConnectionTypeAsString (env);
+	}
+
+	public void setConnectionType (SystemEnvironment env, Integer p_connectionType)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSUserGeneric)(object)).setConnectionType (env, p_connectionType);
 		return ;
 	}
 	public Long getDeleteVersion (SystemEnvironment env)

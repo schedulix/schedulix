@@ -49,6 +49,7 @@ public class SDMSUserTableGeneric extends SDMSTable
 		, "METHOD"
 		, "IS_ENABLED"
 		, "DEFAULT_G_ID"
+		, "CONNECTION_TYPE"
 		, "DELETE_VERSION"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
@@ -78,6 +79,7 @@ public class SDMSUserTableGeneric extends SDMSTable
 	                       ,Integer p_method
 	                       ,Boolean p_isEnabled
 	                       ,Long p_defaultGId
+	                       ,Integer p_connectionType
 	                       ,Long p_deleteVersion
 	                      )
 	throws SDMSException
@@ -96,6 +98,7 @@ public class SDMSUserTableGeneric extends SDMSTable
 		         , p_method
 		         , p_isEnabled
 		         , p_defaultGId
+		         , p_connectionType
 		         , p_deleteVersion
 		         , p_creatorUId
 		         , p_createTs
@@ -111,6 +114,7 @@ public class SDMSUserTableGeneric extends SDMSTable
 		                                        , p_method
 		                                        , p_isEnabled
 		                                        , p_defaultGId
+		                                        , p_connectionType
 		                                        , p_deleteVersion
 		                                        , p_creatorUId
 		                                        , p_createTs
@@ -154,6 +158,7 @@ public class SDMSUserTableGeneric extends SDMSTable
 	                        ,Integer p_method
 	                        ,Boolean p_isEnabled
 	                        ,Long p_defaultGId
+	                        ,Integer p_connectionType
 	                        ,Long p_deleteVersion
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
@@ -164,6 +169,8 @@ public class SDMSUserTableGeneric extends SDMSTable
 	{
 		if (!SDMSUserGeneric.checkMethod(p_method))
 			throw new FatalException(new SDMSMessage(env, "01110182023", "User: $1 $2", "method", p_method));
+		if (!SDMSUserGeneric.checkConnectionType(p_connectionType))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "User: $1 $2", "connectionType", p_connectionType));
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -176,6 +183,7 @@ public class SDMSUserTableGeneric extends SDMSTable
 		Integer method;
 		Boolean isEnabled;
 		Long defaultGId;
+		Integer connectionType;
 		Long deleteVersion;
 		Long creatorUId;
 		Long createTs;
@@ -193,11 +201,12 @@ public class SDMSUserTableGeneric extends SDMSTable
 			method = new Integer (r.getInt(5));
 			isEnabled = new Boolean ((r.getInt(6) == 0 ? false : true));
 			defaultGId = new Long (r.getLong(7));
-			deleteVersion = new Long (r.getLong(8));
-			creatorUId = new Long (r.getLong(9));
-			createTs = new Long (r.getLong(10));
-			changerUId = new Long (r.getLong(11));
-			changeTs = new Long (r.getLong(12));
+			connectionType = new Integer (r.getInt(8));
+			deleteVersion = new Long (r.getLong(9));
+			creatorUId = new Long (r.getLong(10));
+			createTs = new Long (r.getLong(11));
+			changerUId = new Long (r.getLong(12));
+			changeTs = new Long (r.getLong(13));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -212,6 +221,7 @@ public class SDMSUserTableGeneric extends SDMSTable
 		                           method,
 		                           isEnabled,
 		                           defaultGId,
+		                           connectionType,
 		                           deleteVersion,
 		                           creatorUId,
 		                           createTs,
@@ -238,6 +248,7 @@ public class SDMSUserTableGeneric extends SDMSTable
 		                                   ", " + squote + "METHOD" + equote +
 		                                   ", " + squote + "IS_ENABLED" + equote +
 		                                   ", " + squote + "DEFAULT_G_ID" + equote +
+		                                   ", " + squote + "CONNECTION_TYPE" + equote +
 		                                   ", " + squote + "DELETE_VERSION" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +

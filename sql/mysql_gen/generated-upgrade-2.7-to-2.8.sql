@@ -195,6 +195,22 @@ SELECT
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
   FROM SUBMITTED_ENTITY_STATS;
+ALTER TABLE USERS
+    ADD `CONNECTION_TYPE` integer NOT NULL DEFAULT 0;
+DROP VIEW SCI_USERS;
+CREATE VIEW SCI_USERS AS
+SELECT
+    ID
+    , `NAME`                         AS `NAME`
+    , CASE `IS_ENABLED` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_ENABLED`
+    , `DEFAULT_G_ID`                 AS `DEFAULT_G_ID`
+    , CASE `CONNECTION_TYPE` WHEN 0 THEN 'PLAIN' WHEN 1 THEN 'SSL' WHEN 2 THEN 'SSL_AUTH' END AS `CONNECTION_TYPE`
+    , `DELETE_VERSION`               AS `DELETE_VERSION`
+    , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
+    , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
+    , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
+    , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
+  FROM USERS;
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
