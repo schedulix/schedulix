@@ -54,6 +54,7 @@ public abstract class ManipUser extends Node
 	private boolean withEvaluated = false;
 	protected Long publicGId;
 	protected Integer connect_type;
+	protected Vector userEquiv = null;
 
 	protected final static Long ZERO = new Long(0L);
 	protected final static int MD5LENGTH = 35;
@@ -154,6 +155,10 @@ public abstract class ManipUser extends Node
 			connect_type = (Integer) with.get(ParseStr.S_CONNECT);
 		} else {
 			connect_type = new Integer(SDMSUser.PLAIN);
+		}
+
+		if (with.containsKey(ParseStr.S_EQUIVALENT)) {
+			userEquiv = (Vector) with.get(ParseStr.S_EQUIVALENT);
 		}
 
 		if(with.containsKey(ParseStr.S_ADDGROUP)) {

@@ -43,6 +43,7 @@ public class AlterSession extends Node
 	private final static Long zero = new Long(0);
 	private Integer sid;
 	private String userName;
+	private String baseUser;
 	private boolean trc;
 	private WithHash withs;
 	boolean resetUser = false;
@@ -53,6 +54,7 @@ public class AlterSession extends Node
 		sid = id;
 		withs = wh;
 		userName = null;
+		baseUser = null;
 		cmdtype = Node.ANY_COMMAND;
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
@@ -64,6 +66,19 @@ public class AlterSession extends Node
 		sid = null;
 		withs = wh;
 		this.userName = userName;
+		this.baseUser = null;
+		cmdtype = Node.USER_COMMAND;
+		txMode = SDMSTransaction.READONLY;
+		auditFlag = false;
+	}
+
+	public AlterSession(String userName, String baseUser, WithHash wh)
+	{
+		super();
+		sid = null;
+		withs = wh;
+		this.userName = userName;
+		this.baseUser = baseUser;
 		cmdtype = Node.USER_COMMAND;
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
@@ -84,23 +99,57 @@ public class AlterSession extends Node
 	private boolean setUser(SystemEnvironment sysEnv)
 	throws SDMSException
 	{
-		SDMSUser u;
-		Long uId;
-		String salt;
-		int method;
+		SDMSUser c = null;
+		SDMSUser b = null;
+		Long bId;
+		Long cId;
+		Long aId;
 
 		try {
-			u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(userName, zero));
-			if (!u.getIsEnabled(sysEnv).booleanValue()) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv,
-				                               "03707161120", "User disabled"));
+			c = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(userName, zero));
+			if (!c.getIsEnabled(sysEnv).booleanValue()) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03707161120", "User disabled"));
+			}
+			if (baseUser != null) {
+				b = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(baseUser, zero));
+				if (!b.getIsEnabled(sysEnv).booleanValue()) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03708010942", "User disabled"));
+				}
 			}
 		} catch (NotFoundException nfe) {
-			throw new CommonErrorException(new SDMSMessage(sysEnv,
-			                               "03707161121", "Invalid username or password"));
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03707161121", "User not found"));
 		}
-		uId = u.getId(sysEnv);
-		sysEnv.cEnv.setConnectedUser(sysEnv, uId, SDMSMemberTable.idx_uId.getVector(sysEnv, uId));
+
+		if (userName.equals(baseUser) || (baseUser == null)) {
+			b = c;
+			baseUser = userName;
+		}
+
+		boolean aIsAdmin = sysEnv.cEnv.gid().contains(SDMSObject.adminGId);
+		boolean bIsAdmin = false;
+		aId = new Long(sysEnv.cEnv.uid());
+		bId = b.getId(sysEnv);
+		cId = c.getId(sysEnv);
+
+		if (SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, bId)))
+			bIsAdmin = true;
+
+		if (!bId.equals(cId) && !(SDMSUserEquivTable.idx_uId_altUId.containsKey(sysEnv, new SDMSKey(bId, cId)) || bIsAdmin)) {
+			throw new AccessViolationException(new SDMSMessage(sysEnv, "03708011016", "Insufficient privileges"));
+		}
+
+		if (!aIsAdmin) {
+			if (!bId.equals(aId)) {
+				if (!bId.equals(cId)) {
+					throw new AccessViolationException(new SDMSMessage(sysEnv, "03707071405", "Insufficient privileges"));
+				} else {
+					if (!SDMSUserEquivTable.idx_uId_altUId.containsKey(sysEnv, new SDMSKey(aId, cId)))
+						throw new AccessViolationException(new SDMSMessage(sysEnv, "03708011035", "Insufficient privileges"));
+				}
+		}
+		}
+
+		sysEnv.cEnv.setConnectedUser(sysEnv, cId, SDMSMemberTable.idx_uId.getVector(sysEnv, cId));
 		return true;
 	}
 
@@ -162,9 +211,6 @@ public class AlterSession extends Node
 	{
 		if (userName != null) {
 			sysEnv.cEnv.resetConnectedUser();
-			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
-				throw new AccessViolationException(new SDMSMessage(sysEnv, "037071405", "Insufficient privileges"));
-			}
 			if (setUser(sysEnv)) {
 				alterSession(sysEnv);
 				result.setFeedback(new SDMSMessage(sysEnv, "03203182358", "Session altered"));

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -80,7 +78,6 @@ public class DropUser extends Node
 						SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
 						p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 					} catch (NotFoundException nfe) {
-
 					}
 				}
 				if (p.can(SDMSPrivilege.MANAGE_USER)) {
@@ -93,10 +90,20 @@ public class DropUser extends Node
 				}
 			}
 
-			Vector v = SDMSMemberTable.idx_uId.getVector(sysEnv, u.getId(sysEnv));
+			Vector v = SDMSMemberTable.idx_uId.getVector(sysEnv, uid);
 			for(int i = 0; i < v.size(); i++) {
 				SDMSMember m = (SDMSMember) v.get(i);
 				m.delete(sysEnv);
+			}
+			v = SDMSUserEquivTable.idx_uId.getVector(sysEnv, uid);
+			for (int i = 0; i < v.size(); ++i) {
+				SDMSUserEquiv ue = (SDMSUserEquiv) v.get(i);
+				ue.delete(sysEnv);
+			}
+			v = SDMSUserEquivTable.idx_altUId.getVector(sysEnv, uid);
+			for (int i = 0; i < v.size(); ++i) {
+				SDMSUserEquiv ue = (SDMSUserEquiv) v.get(i);
+				ue.delete(sysEnv);
 			}
 			u.setIsEnabled(sysEnv, Boolean.FALSE);
 			u.setDeleteVersion(sysEnv, new Long(sysEnv.tx.txId));

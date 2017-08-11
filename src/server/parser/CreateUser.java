@@ -30,6 +30,7 @@ import java.util.*;
 import java.lang.*;
 
 import de.independit.scheduler.server.*;
+import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 
@@ -59,8 +60,8 @@ public class CreateUser extends ManipUser
 		if(passwd == null)
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03312101400", "Either " + ParseStr.S_PASSWORD + " or " + ParseStr.S_RAWPASSWORD + " must be specified"));
 
+		HashSet ug = sysEnv.cEnv.gid();
 		try {
-			HashSet ug = sysEnv.cEnv.gid();
 			if (!ug.contains(SDMSObject.adminGId)) {
 				boolean canCreate = true;
 				SDMSPrivilege p = new SDMSPrivilege();
@@ -157,6 +158,36 @@ public class CreateUser extends ManipUser
 				suActive = false;
 			}
 			throw t;
+		}
+		if (ug.contains(SDMSObject.adminGId)) {
+			if (userEquiv != null) {
+				for (int i = 0; i < userEquiv.size(); ++i) {
+					Object o = (Object) userEquiv.get(i);
+					if (o instanceof String) {
+						try {
+							SDMSUser eu = SDMSUserTable.idx_name_getUnique(sysEnv, (String) o);
+							if (!eu.getDeleteVersion(sysEnv).equals(new Long(0))) {
+								throw new NotFoundException(new SDMSMessage(sysEnv, "03707311526", "User " + o.toString() + " not found"));
+							}
+							SDMSUserEquivTable.table.create(sysEnv, u.getId(sysEnv), new Integer(SDMSUserEquiv.USER), eu.getId(sysEnv));
+						} catch (NotFoundException nfe) {
+							throw nfe;
+						}
+					} else {
+						if (o instanceof PathVector) {
+							try {
+								SDMSScope s = SDMSScopeTable.getScope(sysEnv, (PathVector) o);
+								if (s.getType(sysEnv).intValue() != SDMSScope.SERVER) {
+									throw new NotFoundException(new SDMSMessage(sysEnv, "03707311527", "No job server " + o.toString() + " found"));
+								}
+								SDMSUserEquivTable.table.create(sysEnv, u.getId(sysEnv), new Integer(SDMSUserEquiv.SERVER), s.getId(sysEnv));
+							} catch (NotFoundException nfe) {
+
+							}
+						}
+					}
+				}
+			}
 		}
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03201291636", "User created"));

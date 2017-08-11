@@ -97,6 +97,7 @@ public class ShowUser extends ShowCommented
 		desc.add("PRIVS");
 		desc.add("MANAGE_PRIVS");
 		desc.add("GROUPS");
+		desc.add("EQUIVALENT_USERS");
 		desc.add("COMMENTTYPE");
 		desc.add("COMMENT");
 		c_desc.add("TAG");
@@ -127,6 +128,7 @@ public class ShowUser extends ShowCommented
 		data.add(u.getPrivileges(sysEnv).toString());
 		data.add(getManageList(sysEnv, uId));
 		data.add(getGroupList(sysEnv, uId));
+		data.add(getEquivUserList(sysEnv, uId));
 
 		data.add(getCommentInfoType(sysEnv, uId));
 		data.add(getCommentContainer(sysEnv, uId));
@@ -163,6 +165,39 @@ public class ShowUser extends ShowCommented
 		}
 
 		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, 1));
+
+		return d_container;
+	}
+
+	private SDMSOutputContainer getEquivUserList(SystemEnvironment sysEnv, Long uId)
+	throws SDMSException
+	{
+		SDMSOutputContainer d_container = null;
+
+		Vector desc = new Vector(2);
+		desc.add("TYPE");
+		desc.add("EQUIVALENT_USER");
+
+		d_container = new SDMSOutputContainer(sysEnv, "EQUIVALENT_USERS", desc);
+
+		Vector v = SDMSUserEquivTable.idx_uId.getVector(sysEnv, uId);
+		SDMSUser eu;
+		SDMSScope es;
+		SDMSUserEquiv equiv;
+		for(int i = 0; i < v.size(); i++) {
+			equiv = (SDMSUserEquiv) v.get(i);
+			Vector data = new Vector();
+			data.add(equiv.getAltTypeAsString(sysEnv));
+			if (equiv.getAltType(sysEnv).intValue() == SDMSUserEquiv.USER) {
+				eu = SDMSUserTable.getObject(sysEnv, equiv.getAltUId(sysEnv));
+				data.add(eu.getName(sysEnv));
+			} else {
+				es = SDMSScopeTable.getObject(sysEnv, equiv.getAltUId(sysEnv));
+				data.add(es.pathString(sysEnv));
+			}
+
+			d_container.addData(sysEnv, data);
+		}
 
 		return d_container;
 	}

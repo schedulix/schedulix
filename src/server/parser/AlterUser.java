@@ -301,6 +301,65 @@ public class AlterUser extends ManipUser
 			u.setConnectionType(sysEnv, (Integer) with.get(ParseStr.S_CONNECT));
 		}
 
+		if (sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+			if (with.containsKey(ParseStr.S_EQUIVALENT)) {
+				Vector w = SDMSUserEquivTable.idx_uId.getVector(sysEnv, uId);
+				SDMSUserEquiv ue;
+				SDMSUser tmpu;
+				SDMSScope tmps;
+				Object lookUpValue;
+				if (userEquiv == null) {
+					for (int i = 0; i < w.size(); ++i) {
+						ue = (SDMSUserEquiv) w.get(i);
+						ue.delete(sysEnv);
+					}
+				} else {
+					for (int i = 0; i < w.size(); ++i) {
+						ue = (SDMSUserEquiv) w.get(i);
+						Long eId = ue.getAltUId(sysEnv);
+						try {
+							tmpu = SDMSUserTable.getObject(sysEnv, eId);
+							lookUpValue = tmpu.getName(sysEnv);
+						} catch (NotFoundException nfe) {
+							tmps = SDMSScopeTable.getObject(sysEnv, eId);
+							lookUpValue = tmps.pathVector(sysEnv);
+						}
+						if (userEquiv.contains(lookUpValue)) {
+							userEquiv.remove(lookUpValue);
+						} else {
+							ue.delete(sysEnv);
+						}
+					}
+					for (int i = 0; i < userEquiv.size(); ++i) {
+						Object o = (Object) userEquiv.get(i);
+						if (o instanceof String) {
+							try {
+								SDMSUser eu = SDMSUserTable.idx_name_getUnique(sysEnv, (String) o);
+								if (!eu.getDeleteVersion(sysEnv).equals(new Long(0))) {
+									throw new NotFoundException(new SDMSMessage(sysEnv, "03707311522", "User " + o.toString() + " not found"));
+								}
+								SDMSUserEquivTable.table.create(sysEnv, u.getId(sysEnv), new Integer(SDMSUserEquiv.USER), eu.getId(sysEnv));
+							} catch (NotFoundException nfe) {
+								throw nfe;
+							}
+						} else {
+							if (o instanceof PathVector) {
+								try {
+									SDMSScope s = SDMSScopeTable.getScope(sysEnv, (PathVector) o);
+									if (s.getType(sysEnv).intValue() != SDMSScope.SERVER) {
+										throw new NotFoundException(new SDMSMessage(sysEnv, "03707311523", "No job server " + o.toString() + " found"));
+									}
+									SDMSUserEquivTable.table.create(sysEnv, u.getId(sysEnv), new Integer(SDMSUserEquiv.SERVER), s.getId(sysEnv));
+								} catch (NotFoundException nfe) {
+									throw nfe;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(defaultGId, uId)))
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03312130121", "a user must belong to his default group"));
 
