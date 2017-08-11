@@ -49,6 +49,15 @@ public class SDMSSchedule
 		super (o);
 	}
 
+	protected void initProxy(SDMSObject p_object)
+	{
+		super.initProxy(p_object);
+
+		thread = null;
+		interval = null;
+		tz = null;
+	}
+
 	public final TimerDate getNextTriggerDate (final SystemEnvironment sysEnv, final TimerDate minDate)
 		throws SDMSException
 	{

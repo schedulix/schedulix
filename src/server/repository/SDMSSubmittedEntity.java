@@ -111,7 +111,6 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	public static final String S_ACTIVE_TIME	= "ACTIVE_TIME";
 	public static final String S_IDLE_PCT	= "IDLE_PCT";
 
-	protected static Long internalId = null;
 	protected static final Integer zero = new Integer(0);
 	protected static final Long lzero = new Long(0);
 
@@ -909,8 +908,6 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 						suspend(sysEnv, false, false);
 						Date dts = new Date();
 						Long ts = new Long (dts.getTime());
-						if(internalId == null)
-							internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, new Long(0))).getId(sysEnv);
 						continue;
 					case SDMSDependencyDefinition.DEFER:
 						state = new Integer(SDMSDependencyInstance.DEFERED);
@@ -1897,8 +1894,6 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			setJobIsRestartable(sysEnv, Boolean.TRUE);
 			Date dts = new Date();
 			Long ts = new Long (dts.getTime());
-			if(internalId == null)
-				internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, new Long(0))).getId(sysEnv);
 
 		} else {
 			setJobIsRestartable(sysEnv, Boolean.FALSE);
@@ -2289,8 +2284,6 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			if (!checkParentCancelled(sysEnv, mySmeId, chs)) {
 				Date adts = new Date();
 				Long ats = new Long (dts.getTime());
-				if(internalId == null)
-					internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, new Long(0))).getId(sysEnv);
 			}
 		}
 
@@ -2914,9 +2907,6 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		long seVersion = getSeVersion(sysEnv).longValue();
 		boolean fired = false;
 		Long fireSeId = getSeId(sysEnv);
-
-		if(internalId == null)
-			internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, new Long(0))).getId(sysEnv);
 
 		HashSet ths = (HashSet)sysEnv.tx.txData.get(SystemEnvironment.S_TRIGGER_HASHSET);
 		if (ths == null) {

@@ -41,7 +41,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 {
 
 	public final static String __version = "@(#) $Id: SDMSTrigger.java,v 2.42.2.4 2013/03/22 14:01:55 dieter Exp $";
-	public static Long internalId = null;
 
 	private final static HashMap mapper = new HashMap();
 
@@ -132,9 +131,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		Long trId = getId(sysEnv);
 		long now = System.currentTimeMillis();
 		int action = getAction(sysEnv).intValue();
-
-		if(internalId == null)
-			internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, new Long(0))).getId(sysEnv);
 
 		HashSet ths = (HashSet)sysEnv.tx.txData.get(SystemEnvironment.S_TRIGGER_HASHSET);
 		if (ths == null) {

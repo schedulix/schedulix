@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -69,7 +68,6 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	private SDMSScope internalCopy(SystemEnvironment sysEnv, Long targetScopeId, String name, HashMap rMap, HashMap pMap)
 		throws SDMSException
 	{
-
 		Long id = getId(sysEnv);
 		SDMSUser u = SDMSUserTable.getObject(sysEnv, sysEnv.cEnv.uid());
 		Long defaultGId = u.getDefaultGId(sysEnv);
@@ -124,14 +122,12 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 		}
 
 		Long newId = f.getId(sysEnv);
-
 		Vector v_ss = SDMSScopeTable.idx_parentId.getVector(sysEnv, id);
 		Iterator i_ss = v_ss.iterator();
 		while (i_ss.hasNext()) {
 			SDMSScope ss = (SDMSScope)i_ss.next();
 			ss.internalCopy(sysEnv, newId, ss.getName(sysEnv), rMap, pMap);
 		}
-
 		Vector v_r = SDMSResourceTable.idx_scopeId.getVector(sysEnv, id);
 		Iterator i_r = v_r.iterator();
 		while (i_r.hasNext()) {
@@ -166,9 +162,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 		}
 
 		ScopeConfig.copy(sysEnv, id, newId);
-
 		ScopeParameter.copy(sysEnv, id, newId);
-
 		if (type.equals(new Integer(SDMSScope.SERVER))) {
 			SystemEnvironment.sched.notifyChange(sysEnv, f, SchedulingThread.CREATE);
 		}
@@ -231,7 +225,6 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 				ConnectionEnvironment env = uc.getEnv();
 				return env.idle();
 			} else {
-
 				Long lastActive = getLastActive(sysEnv);
 				if (lastActive == null) return sysEnv.cEnv.last()/1000;
 				return (sysEnv.cEnv.last() - lastActive.longValue() + 500)/1000;
@@ -281,7 +274,6 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 			for(int i=0; i < v.size(); i++) {
 				((SDMSScope) v.get(i)).myDelete(sysEnv, cascade);
 			}
-
 			cv = SDMSResourceTable.idx_scopeId.getVector(sysEnv, id);
 			for(int j = 0; j < cv.size(); j++) {
 				SDMSResource r = ((SDMSResource) cv.get(j));
@@ -308,6 +300,11 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 		ScopeParameter.kill (sysEnv, getId (sysEnv));
 
 		if(getType(sysEnv).intValue() == SDMSScope.SERVER) {
+			cv = SDMSUserEquivTable.idx_altUId.getVector(sysEnv, id);
+			for (int i = 0; i < cv.size(); ++i) {
+				SDMSUserEquiv ue = (SDMSUserEquiv) cv.get(i);
+				ue.delete(sysEnv);
+			}
 			SystemEnvironment.sched.notifyChange(sysEnv, this, SchedulingThread.DELETE);
 		}
 
@@ -380,19 +377,16 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 		throws SDMSException
 	{
 		if (this.getType(sysEnv).intValue() == SDMSScope.SERVER) {
-
 			String sport = ScopeConfig.getItem(sysEnv, this, Config.NOTIFY_PORT);
 			if (sport == null) return;
 			UserConnection uc = getConnection(sysEnv);
 			InetAddress addr;
 			if (uc == null) {
-
 				String host = ScopeConfig.getItem(sysEnv, this, Config.HTTP_HOST);
 				if (host == null || host.equals("")) return;
 				try {
 					addr = InetAddress.getByName(host);
 				} catch(Exception e) {
-
 					return;
 				}
 			} else {

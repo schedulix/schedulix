@@ -44,7 +44,8 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 	public final static String __version = "@(#) $Id: SDMSResource.java,v 2.50.2.5 2013/03/25 10:19:14 dieter Exp $";
 
 	private final static VariableResolver RVR = new ResourceVariableResolver();
-	private static PreparedStatement traceInsert;
+	private static final Object protectTraceInsert = new Object();
+	private static PreparedStatement traceInsert = null;
 
 	protected SDMSResource(SDMSObject p_object)
 	{
@@ -266,12 +267,10 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			return true;
 		}
 		final int dAmount = rAmount.intValue() - waitAmount;
-
 		float factor = 1;
 		final int crrAmount = (int) Math.ceil(irrAmount * factor);
 		if(crrAmount > dAmount && rr.getIsSticky(sysEnv).booleanValue()) {
 			try {
-
 				Long nStickyParent = new Long(-stickyParent.longValue());
 				SDMSResourceAllocation mra = (SDMSResourceAllocation)
 					SDMSResourceAllocationTable.idx_smeId_rId_stickyName.getUnique(

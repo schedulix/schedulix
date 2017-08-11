@@ -313,7 +313,6 @@ public class SDMSExitStateDefinitionGeneric extends SDMSObject
 				                               "" + Long.MAX_VALUE);
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-				// Can't prepare statement
 				throw new FatalException(new SDMSMessage(env, "01110181955", "ExitStateDefinition : $1\n$2", stmt, sqle.toString()));
 			}
 		}
