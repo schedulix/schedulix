@@ -41,6 +41,11 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 
 	public final static String __version = "SDMSAuditTrail $Revision: 2.4.2.2 $ / @(#) $Id: SDMSAuditTrail.java,v 2.4.2.2 2013/03/16 11:47:20 dieter Exp $";
 
+	protected SDMSAuditTrail(SDMSObject p_object)
+	{
+		super(p_object);
+	}
+
 	public static Integer convert(Token t1)
 	{
 		switch (t1.token.intValue()) {
@@ -128,11 +133,6 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 				return new Integer(JOB_IN_ERROR);
 		}
 		return null;
-	}
-
-	protected SDMSAuditTrail(SDMSObject p_object)
-	{
-		super(p_object);
 	}
 
 	public long getPrivileges(SystemEnvironment env, long checkPrivs, boolean fastFail, Vector checkGroups)
