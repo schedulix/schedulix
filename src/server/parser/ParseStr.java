@@ -27,6 +27,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
+import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.server.repository.*;
 
 public class ParseStr
 {
@@ -136,6 +138,7 @@ public class ParseStr
 	public static final String S_ERRLOG		= "ERRLOG";
 	public static final String S_ERROR_TEXT		= "ERROR_TEXT";
 	public static final String S_ERROR_TOKEN	= "ERROR";
+	public static final String S_EQUIVALENT		= "EQUIVALENT";
 	public static final String S_EVENT		= "EVENT";
 	public static final String S_EXEC_PID		= "EXEC_PID";
 	public static final String S_EXECUTE		= "EXECUTE";
@@ -444,6 +447,94 @@ public class ParseStr
 
 	public static final String S_SYNTAX_ERROR	= "syntax error";
 
+	public final static Integer I_STATIC		= new Integer(SDMSNamedResource.STATIC);
+	public final static Integer I_SYSTEM		= new Integer(SDMSNamedResource.SYSTEM);
+	public final static Integer I_SYNCHRONIZING	= new Integer(SDMSNamedResource.SYNCHRONIZING);
+	public final static Integer I_CATEGORY		= new Integer(SDMSNamedResource.CATEGORY);
+	public final static Integer I_POOL		= new Integer(SDMSNamedResource.POOL);
+
+	public final static Integer I_MINUTE		= new Integer(SDMSInterval.MINUTE);
+	public final static Integer I_HOUR		= new Integer(SDMSInterval.HOUR);
+	public final static Integer I_DAY		= new Integer(SDMSInterval.DAY);
+	public final static Integer I_WEEK		= new Integer(SDMSInterval.WEEK);
+	public final static Integer I_MONTH		= new Integer(SDMSInterval.MONTH);
+	public final static Integer I_YEAR		= new Integer(SDMSInterval.YEAR);
+
+	public final static Integer I_AVG		= new Integer(SDMSParameterDefinition.AVG);
+	public final static Integer I_COUNT		= new Integer(SDMSParameterDefinition.COUNT);
+	public final static Integer I_MAX		= new Integer(SDMSParameterDefinition.MAX);
+	public final static Integer I_MIN		= new Integer(SDMSParameterDefinition.MIN);
+	public final static Integer I_SUM		= new Integer(SDMSParameterDefinition.SUM);
+
+	public final static Integer I_CONSTANT		= new Integer(SDMSParameterDefinition.CONSTANT);
+	public final static Integer I_LOCAL_CONSTANT	= new Integer(SDMSParameterDefinition.LOCAL_CONSTANT);
+	public final static Integer I_PARAMETER		= new Integer(SDMSParameterDefinition.PARAMETER);
+	public final static Integer I_REFERENCE		= new Integer(SDMSParameterDefinition.REFERENCE);
+	public final static Integer I_RESOURCEREFERENCE	= new Integer(SDMSParameterDefinition.RESOURCEREFERENCE);
+	public final static Integer I_CHILDREFERENCE	= new Integer(SDMSParameterDefinition.CHILDREFERENCE);
+	public final static Integer I_RESULT		= new Integer(SDMSParameterDefinition.RESULT);
+	public final static Integer I_IMPORT		= new Integer(SDMSParameterDefinition.IMPORT);
+	public final static Integer I_EXPRESSION	= new Integer(SDMSParameterDefinition.EXPRESSION);
+
+	public final static Integer I_PLAIN		= new Integer(SDMSUser.PLAIN);
+	public final static Integer I_SSL		= new Integer(SDMSUser.SSL);
+	public final static Integer I_SSL_AUTH		= new Integer(SDMSUser.SSL_AUTH);
+
+	public final static Integer I_FOLDER		= new Integer(Parser.FOLDER);
+	public final static Integer I_SCOPE		= new Integer(Parser.SCOPE);
+
+	public final static Integer I_FINAL		= new Integer(SDMSExitState.FINAL);
+	public final static Integer I_RESTARTABLE	= new Integer(SDMSExitState.RESTARTABLE);
+	public final static Integer I_PENDING		= new Integer(SDMSExitState.PENDING);
+
+	public final static Integer I_NP_SUSPEND	= new Integer(SDMSNiceProfileEntry.SUSPEND);
+	public final static Integer I_NP_NOSUSPEND	= new Integer(SDMSNiceProfileEntry.NOSUSPEND);
+	public final static Integer I_NP_ADMINSUSPEND	= new Integer(SDMSNiceProfileEntry.ADMINSUSPEND);
+
+	public final static Integer I_JOB		= new Integer(SDMSSchedulingEntity.JOB);
+	public final static Integer I_MILESTONE		= new Integer(SDMSSchedulingEntity.MILESTONE);
+	public final static Integer I_BATCH		= new Integer(SDMSSchedulingEntity.BATCH);
+
+	public final static Integer I_ALL		= new Integer(SDMSSchedulingEntity.AND);
+	public final static Integer I_ANY		= new Integer(SDMSSchedulingEntity.OR);
+
+	public final static Integer I_SH_CHILDSUSPEND	= new Integer(SDMSSchedulingHierarchy.CHILDSUSPEND);
+	public final static Integer I_SH_SUSPEND	= new Integer(SDMSSchedulingHierarchy.SUSPEND);
+	public final static Integer I_SH_NOSUSPEND	= new Integer(SDMSSchedulingHierarchy.NOSUSPEND);
+
+	public final static Integer I_MERGE_LOCAL	= new Integer(SDMSSchedulingHierarchy.MERGE_LOCAL);
+	public final static Integer I_MERGE_GLOBAL	= new Integer(SDMSSchedulingHierarchy.MERGE_GLOBAL);
+	public final static Integer I_NOMERGE		= new Integer(SDMSSchedulingHierarchy.NOMERGE);
+	public final static Integer I_FAILURE		= new Integer(SDMSSchedulingHierarchy.FAILURE);
+
+	public final static Integer I_DD_ERROR		= new Integer(SDMSDependencyDefinition.ERROR);
+	public final static Integer I_DD_IGNORE		= new Integer(SDMSDependencyDefinition.IGNORE);
+	public final static Integer I_DD_SUSPEND	= new Integer(SDMSDependencyDefinition.SUSPEND);
+	public final static Integer I_DD_DEFER		= new Integer(SDMSDependencyDefinition.DEFER);
+	public final static Integer I_DD_ALL_FINAL	= new Integer(SDMSDependencyDefinition.ALL_FINAL);
+	public final static Integer I_DD_JOB_FINAL	= new Integer(SDMSDependencyDefinition.JOB_FINAL);
+
+	public final static Integer I_KEEP		= new Integer(SDMSResourceRequirement.KEEP);
+	public final static Integer I_NOKEEP		= new Integer(SDMSResourceRequirement.NOKEEP);
+	public final static Integer I_KEEP_FINAL	= new Integer(SDMSResourceRequirement.KEEP_FINAL);
+
+	public final static Integer I_ADMINSUSPEND	= new Integer(SDMSSubmittedEntity.ADMINSUSPEND);
+	public final static Integer I_LOCALSUSPEND	= new Integer(AlterJob.LOCALSUSPEND);
+	public final static Integer I_LOCALADMINSUSPEND	= new Integer(AlterJob.LOCALADMINSUSPEND);
+
+	public final static Integer I_TREE		= new Integer(ListSubmitted.TREE);
+	public final static Integer I_LIST		= new Integer(ListSubmitted.LIST);
+
+	public final static Integer I_SCE_LAST		= new Integer(SDMSScheduledEvent.LAST);
+	public final static Integer I_SCE_ALL		= new Integer(SDMSScheduledEvent.ALL);
+	public final static Integer I_SCE_NONE		= new Integer(SDMSScheduledEvent.NONE);
+
+	public final static Integer I_LM_N		= new Integer(Lockmode.N);
+	public final static Integer I_LM_S		= new Integer(Lockmode.S);
+	public final static Integer I_LM_SX		= new Integer(Lockmode.SX);
+	public final static Integer I_LM_SC		= new Integer(Lockmode.SC);
+	public final static Integer I_LM_X		= new Integer(Lockmode.X);
+
 	private static final HashMap mapper = new HashMap();
 
 	static
@@ -529,6 +620,7 @@ public class ParseStr
 		mapper.put(new Integer(Parser.ERRLOG),			ParseStr.S_ERRLOG);
 		mapper.put(new Integer(Parser.ERROR_TEXT),		ParseStr.S_ERROR_TEXT);
 		mapper.put(new Integer(Parser.ERROR_TOKEN),		ParseStr.S_ERROR_TOKEN);
+		mapper.put(new Integer(Parser.EQUIVALENT),		ParseStr.S_EQUIVALENT);
 		mapper.put(new Integer(Parser.EVENT),			ParseStr.S_EVENT);
 		mapper.put(new Integer(Parser.EXECUTE),			ParseStr.S_EXECUTE);
 		mapper.put(new Integer(Parser.EXEC_PID),		ParseStr.S_EXEC_PID);

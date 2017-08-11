@@ -110,6 +110,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("ERRLOG",		new Integer(Parser.ERRLOG));
 	tokens.put("ERRLOGFILE",	new Integer(Parser.ERRLOG));
 	tokens.put("ERROR",		new Integer(Parser.ERROR_TOKEN));
+	tokens.put("EQUIVALENT",	new Integer(Parser.EQUIVALENT));
 	tokens.put("EVENT",		new Integer(Parser.EVENT));
 	tokens.put("EVENTS",		new Integer(Parser.EVENT));
 	tokens.put("EXECUTE",		new Integer(Parser.EXECUTE));

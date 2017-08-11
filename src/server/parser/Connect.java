@@ -54,7 +54,8 @@ public class Connect extends Node
 	private Vector path;
 	private Long jobid;
 	private WithHash withs;
-	private final Node cmd;
+	private final Vector cmd;
+	private Node actual_cmd = null;
 
 	public Connect(String u, String p, WithHash wh)
 	{
@@ -69,14 +70,21 @@ public class Connect extends Node
 		jobid = null;
 		path = null;
 		withs = wh;
-		cmd = (Node) withs.get(ParseStr.S_COMMAND);
+		cmd = (Vector) withs.get(ParseStr.S_COMMAND);
 		auditFlag = false;
 		if (cmd == null && SystemEnvironment.auth == null) {
 			txMode = SDMSTransaction.READONLY;
 		} else {
+			txMode = SDMSTransaction.READONLY;
 			if (SystemEnvironment.auth == null) {
-				txMode = cmd.txMode;
-				auditFlag = cmd.auditFlag;
+				for (int i = 0; i < cmd.size(); ++i) {
+					Node n = (Node) cmd.get(i);
+					if (n.txMode == SDMSTransaction.READWRITE) {
+						txMode = SDMSTransaction.READWRITE;
+						auditFlag = n.auditFlag;
+						break;
+					}
+				}
 			} else {
 				txMode = SDMSTransaction.READWRITE;
 			}
@@ -96,9 +104,11 @@ public class Connect extends Node
 		jobid = null;
 		path = pth;
 		withs = wh;
-		cmd = (Node) withs.get(ParseStr.S_COMMAND);
+		cmd = (Vector) withs.get(ParseStr.S_COMMAND);
 		if (cmd == null) auditFlag = false;
-		else		auditFlag = cmd.auditFlag;
+		else {
+			auditFlag = ((Node) cmd.get(0)).auditFlag;
+		}
 	}
 
 	public Connect(Long i, String p, WithHash wh)
@@ -114,13 +124,21 @@ public class Connect extends Node
 		jobid = i;
 		path = null;
 		withs = wh;
-		cmd = (Node) withs.get(ParseStr.S_COMMAND);
+		cmd = (Vector) withs.get(ParseStr.S_COMMAND);
 		if (cmd == null) {
 			txMode = SDMSTransaction.READONLY;
 			auditFlag = false;
 		} else {
-			txMode = cmd.txMode;
-			auditFlag = cmd.auditFlag;
+			txMode = SDMSTransaction.READONLY;
+			auditFlag = false;
+			for (int k = 0; k < cmd.size(); ++k) {
+				Node n = (Node) cmd.get(k);
+				if (n.txMode == SDMSTransaction.READWRITE) {
+					txMode = SDMSTransaction.READWRITE;
+					auditFlag = n.auditFlag;
+					break;
+				}
+			}
 		}
 	}
 
@@ -436,7 +454,7 @@ public class Connect extends Node
 
 	public Node getNode()
 	{
-		return cmd;
+		return actual_cmd;
 	}
 
 	public String getName()
@@ -494,23 +512,35 @@ public class Connect extends Node
 		}
 
 		if (cmd != null) {
+			int stmtnr = 0;
+			sysEnv.tx.beginSubTransaction(sysEnv);
+			try {
+				for (int i = 0; i < cmd.size(); ++i) {
+					stmtnr++;
+					Node n = (Node) cmd.get(i);
 			sysEnv.tx.beginSubTransaction(sysEnv);
 			while(true) {
 				if(env.isUser()) {
-					if((cmd.cmdtype & USER_COMMAND) != 0) break;
+					if((n.cmdtype & USER_COMMAND) != 0) break;
 				} else if(env.isJobServer()) {
-					if((cmd.cmdtype & SERVER_COMMAND) != 0) break;
+					if((n.cmdtype & SERVER_COMMAND) != 0) break;
 				} else {
-					if((cmd.cmdtype & JOB_COMMAND) != 0) break;
+					if((n.cmdtype & JOB_COMMAND) != 0) break;
 				}
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03603041709", "Illegal commandtype within connect command"));
 			}
-			if (cmd.contextVersion != null)
-				sysEnv.tx.setContextVersionId(sysEnv, cmd.contextVersion);
-			cmd.env = env;
-			cmd.go(sysEnv);
+			if (n.contextVersion != null)
+				sysEnv.tx.setContextVersionId(sysEnv, n.contextVersion);
+			n.env = env;
+			n.go(sysEnv);
+					sysEnv.tx.commitSubTransaction(sysEnv);
+					result = n.result;
+				}
+			} catch (SDMSException e) {
+				sysEnv.tx.rollbackSubTransaction(sysEnv);
+				throw e;
+			}
 			sysEnv.tx.commitSubTransaction(sysEnv);
-			result = cmd.result;
 		} else {
 			desc.add("CONNECT_TIME");
 			data.add(sysEnv.systemDateFormat.format(new Date(System.currentTimeMillis())));
