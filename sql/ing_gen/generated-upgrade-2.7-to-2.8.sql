@@ -210,6 +210,33 @@ SELECT
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
+CREATE TABLE USER_EQUIV (
+    ID                             decimal(20) NOT NULL
+    , U_ID                           decimal(20)     NOT NULL
+    , ALT_U_TYPE                     integer         NOT NULL
+    , ALT_U_ID                       decimal(20)     NOT NULL
+    , CREATOR_U_ID                   decimal(20)     NOT NULL
+    , CREATE_TS                      decimal(20)     NOT NULL
+    , CHANGER_U_ID                   decimal(20)     NOT NULL
+    , CHANGE_TS                      decimal(20)     NOT NULL
+);\g
+CREATE UNIQUE INDEX PK_USER_EQUIV
+ON USER_EQUIV(ID) WITH STRUCTURE = BTREE;\g
+DROP VIEW SCI_USER_EQUIV;\g
+CREATE VIEW SCI_USER_EQUIV AS
+SELECT
+    ID
+    , U_ID                           AS U_ID
+    , CASE ALT_U_TYPE WHEN 0 THEN 'USER' WHEN 1 THEN 'SERVER' END AS ALT_U_TYPE
+    , ALT_U_ID                       AS ALT_U_ID
+    , CREATOR_U_ID                   AS CREATOR_U_ID
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CREATE_TS- decimal(CREATE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CREATE_TS
+    , CHANGER_U_ID                   AS CHANGER_U_ID
+    , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CHANGE_TS- decimal(CHANGE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CHANGE_TS
+  FROM USER_EQUIV;\g
+-- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
+-- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
+
 CREATE TABLE VERSIONED_EXTENTS (
     ID                             decimal(20) NOT NULL
     , O_ID                           decimal(20)     NOT NULL
