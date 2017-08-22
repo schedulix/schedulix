@@ -200,7 +200,7 @@ public class ListJobDefinitionHierarchy extends Node
 		d_container.addData(sysEnv, v);
 		add_childs(sysEnv, d_container, v1, sePath);
 
-		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, 33));
+		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, 34));
 
 		result.setOutputContainer(d_container);
 
