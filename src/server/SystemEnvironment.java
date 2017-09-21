@@ -256,9 +256,11 @@ public class SystemEnvironment implements Cloneable
 	public static final TimeZone systemTimeZone = TimeZone.getTimeZone ("GMT");
 	public static final Locale systemLocale = new Locale("EN", "GB");
 	public static final SimpleDateFormat staticJSCommDateFormat = new SimpleDateFormat ("dd-MM-yyyy HH:mm:ss Z", systemLocale);
+	public static final SimpleDateFormat staticOldJSCommDateFormat = new SimpleDateFormat ("dd-MM-yyyy HH:mm:ss z", systemLocale);
 	public static final SimpleDateFormat staticSystemDateFormat = new SimpleDateFormat ("dd MMM yyyy HH:mm:ss z", systemLocale);
 	public SimpleDateFormat systemDateFormat = (SimpleDateFormat) staticSystemDateFormat.clone();
 	public SimpleDateFormat jsCommDateFormat = (SimpleDateFormat) staticJSCommDateFormat.clone();
+	public SimpleDateFormat oldJsCommDateFormat = (SimpleDateFormat) staticOldJSCommDateFormat.clone();
 
 	public static final String S_GRANTS                   = "GRANTS";
 	public static final String S_CONDITIONAL_DEPENDENCIES = "CONDITIONAL_DEPENDENCIES";
