@@ -124,14 +124,16 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 		String oldValue = getDefaultValue(env);
 		if(p_defaultValue != null && p_defaultValue.equals(oldValue)) return;
 		if(p_defaultValue == null && oldValue == null) return;
-		if (getIsLong(env).booleanValue())
-			deleteExtents(env);
-		if (p_defaultValue.length() > getDefaultValueMaxLength()) {
-			createExtents(env, p_defaultValue.substring(getDefaultValueMaxLength()));
-			p_defaultValue = p_defaultValue.substring(0, getDefaultValueMaxLength());
-			setIsLong(env, Boolean.TRUE);
-		} else
-			setIsLong(env, Boolean.FALSE);
+		if (p_defaultValue != null) {
+			if (getIsLong(env).booleanValue())
+				deleteExtents(env);
+			if (p_defaultValue.length() > getDefaultValueMaxLength()) {
+				createExtents(env, p_defaultValue.substring(getDefaultValueMaxLength()));
+				p_defaultValue = p_defaultValue.substring(0, getDefaultValueMaxLength());
+				setIsLong(env, Boolean.TRUE);
+			} else
+				setIsLong(env, Boolean.FALSE);
+		}
 		super.setDefaultValue(env, p_defaultValue);
 		return ;
 	}
