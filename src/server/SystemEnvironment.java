@@ -65,9 +65,13 @@ public class SystemEnvironment implements Cloneable
 	private static final String S_LANGLEVEL27  = "2.7";
 	public static final int LANGLEVEL27 = 1;
 
+	private static final String S_LANGLEVEL28  = "2.8";
+	public static final int LANGLEVEL28 = 2;
+
 	private static final String LANGLEVELS[] = {
 		S_LANGLEVEL261,
-		S_LANGLEVEL27
+		S_LANGLEVEL27,
+		S_LANGLEVEL28
 	};
 
 	private static final int DEFAULT_LANGLEVEL = LANGLEVELS.length - 1;
@@ -164,6 +168,14 @@ public class SystemEnvironment implements Cloneable
 	public static Vector kjColumns;
 	public static Vector smesColumns;
 
+	public static boolean includeDomainNames;
+	public static boolean autoCreateUsers;
+	public static boolean autoCreateGroups;
+	public static boolean useAdGroups;
+	public static String serverName;
+	public static String bicsuitePrefix;
+	public static Integer nameCase;
+
 	public static int dumpLangLevel;
 	public static HashMap<String,Long> showStackTrace;
 
@@ -241,6 +253,13 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_TRUSTSTOREPROVIDER    = "TrustStoreProvider";
 	public static final String S_TRUSTSTORETYPE        = "TrustStoreType";
 	public static final String S_CLIENTAUTHENTICATION  = "ClientAuthentication";
+	public static final String S_INCLUDEDOMAINNAMES    = "SSOincludeDomainNames";
+	public static final String S_AUTOCREATEUSERS       = "SSOautoCreateUsers";
+	public static final String S_AUTOCREATEGROUPS      = "SSOautoCreateGroups";
+	public static final String S_USEADGROUPS           = "SSOuseADGroups";
+	public static final String S_SERVERNAME            = "SSOserverName";
+	public static final String S_BICSUITEPREFIX        = "SSObicsuitePrefix";
+	public static final String S_NAMECASE              = "SSOnameCase";
 
 	public static final String J_KEYSTORE                     = "javax.net.ssl.keyStore";
 	public static final String J_KEYSTOREPASSWORD             = "javax.net.ssl.keyStorePassword";
@@ -260,15 +279,27 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_SE_NAMEFILTER_CACHE   = "SE_NAMEFILTER_CACHE";
 	public static final String S_PARAMETERFILTER_CACHE = "PARAMETERFILTER_CACHE";
 
+	public static final Integer CASE_UPPER = 0;
+	public static final Integer CASE_LOWER = 1;
+	public static final Integer CASE_MIXED = 2;
+	public static final String S_CASE_UPPER = "UPPER";
+	public static final String S_CASE_LOWER = "LOWER";
+	public static final String S_CASE_MIXED = "MIXED";
+
+	public static final String S_FALSE = "false";
+	public static final String S_TRUE = "true";
+
 	public static final String nullString = "<null>";
 	public static final String defaultString = "<default>";
 	public static final String noneString = "<none>";
 	public static final TimeZone systemTimeZone = TimeZone.getTimeZone ("GMT");
 	public static final Locale systemLocale = new Locale("EN", "GB");
 	public static final SimpleDateFormat staticJSCommDateFormat = new SimpleDateFormat ("dd-MM-yyyy HH:mm:ss Z", systemLocale);
+	public static final SimpleDateFormat staticOldJSCommDateFormat = new SimpleDateFormat ("dd-MM-yyyy HH:mm:ss z", systemLocale);
 	public static final SimpleDateFormat staticSystemDateFormat = new SimpleDateFormat ("dd MMM yyyy HH:mm:ss z", systemLocale);
 	public SimpleDateFormat systemDateFormat = (SimpleDateFormat) staticSystemDateFormat.clone();
 	public SimpleDateFormat jsCommDateFormat = (SimpleDateFormat) staticJSCommDateFormat.clone();
+	public SimpleDateFormat oldJsCommDateFormat = (SimpleDateFormat) staticOldJSCommDateFormat.clone();
 
 	public static final String S_AUDITTRAIL               = "AUDITTRAIL";
 	public static final String S_GRANTS                   = "GRANTS";
@@ -430,6 +461,8 @@ public class SystemEnvironment implements Cloneable
 
 		getDumpLangLevel();
 
+		getSSOconfig();
+
 		got_properties = true;
 	}
 
@@ -522,7 +555,7 @@ public class SystemEnvironment implements Cloneable
 				props.setProperty(S_TRUSTSTOREPASSWORD, truststorepassword);
 			}
 
-			String clauth = props.getProperty(S_CLIENTAUTHENTICATION, "false").trim();
+			String clauth = props.getProperty(S_CLIENTAUTHENTICATION, S_FALSE).trim();
 			clauth = clauth.toUpperCase();
 			if (clauth.equals("TRUE") || clauth.equals("YES"))
 				clientAuthentication = true;
@@ -571,9 +604,9 @@ public class SystemEnvironment implements Cloneable
 
 	private void getArchive()
 	{
-		String s_archive = props.getProperty(S_ARCHIVE, "false");
+		String s_archive = props.getProperty(S_ARCHIVE, S_FALSE);
 		archive = Boolean.parseBoolean(s_archive.trim());
-		props.setProperty(S_ARCHIVE, archive ? "true" : "false" );
+		props.setProperty(S_ARCHIVE, archive ? S_TRUE : S_FALSE );
 	}
 
 	private void getAuthClass()
@@ -922,9 +955,9 @@ public class SystemEnvironment implements Cloneable
 
 	private void getSingleServer()
 	{
-		String s_singleServer = props.getProperty(S_SINGLESERVER, "false");
+		String s_singleServer = props.getProperty(S_SINGLESERVER, S_FALSE);
 		singleServer = Boolean.parseBoolean(s_singleServer.trim());
-		props.setProperty(S_SINGLESERVER, singleServer ? "true" : "false" );
+		props.setProperty(S_SINGLESERVER, singleServer ? S_TRUE : S_FALSE );
 	}
 
 	private void getSysPasswd()
@@ -1162,6 +1195,45 @@ public class SystemEnvironment implements Cloneable
 			}
 		}
 		props.setProperty(S_DMPLANGLEVEL, LANGLEVELS[dumpLangLevel]);
+	}
+
+	private void getSSOconfig()
+	{
+		String value;
+		value = props.getProperty(S_INCLUDEDOMAINNAMES, S_FALSE);
+		includeDomainNames = Boolean.parseBoolean(value.trim());
+		props.setProperty(S_INCLUDEDOMAINNAMES, includeDomainNames ? S_TRUE : S_FALSE );
+
+		value = props.getProperty(S_AUTOCREATEUSERS, S_FALSE);
+		autoCreateUsers = Boolean.parseBoolean(value.trim());
+		props.setProperty(S_AUTOCREATEUSERS, autoCreateUsers ? S_TRUE : S_FALSE );
+
+		value = props.getProperty(S_AUTOCREATEGROUPS, S_FALSE);
+		autoCreateGroups = Boolean.parseBoolean(value.trim());
+		props.setProperty(S_AUTOCREATEGROUPS, autoCreateGroups ? S_TRUE : S_FALSE );
+
+		value = props.getProperty(S_USEADGROUPS, S_FALSE);
+		useAdGroups = Boolean.parseBoolean(value.trim());
+		props.setProperty(S_USEADGROUPS, useAdGroups ? S_TRUE : S_FALSE );
+
+		serverName = props.getProperty(S_SERVERNAME, "DEFAULT");
+		props.setProperty(S_SERVERNAME, serverName);
+
+		bicsuitePrefix = props.getProperty(S_BICSUITEPREFIX, "BICSUITE");
+		props.setProperty(S_BICSUITEPREFIX, bicsuitePrefix);
+
+		value = props.getProperty(S_NAMECASE, S_CASE_UPPER).toUpperCase();
+		if (value.equals(S_CASE_UPPER)) {
+			nameCase = CASE_UPPER;
+		} else if (value.equals(S_CASE_LOWER)) {
+			nameCase = CASE_LOWER;
+		} else if (value.equals(S_CASE_MIXED)) {
+			nameCase = CASE_MIXED;
+		} else {
+			nameCase = CASE_UPPER;
+			value = S_CASE_UPPER;
+		}
+		props.setProperty(S_NAMECASE, value);
 	}
 
 	private int checkIntProperty(String val, String name, int minval, int def, int maxval, String msg)

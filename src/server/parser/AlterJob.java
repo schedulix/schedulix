@@ -186,10 +186,16 @@ public class AlterJob extends Node
 			Date d = sysEnv.jsCommDateFormat.parse (ts, pp);
 			if(pp.getErrorIndex() != -1) {
 				pp = new ParsePosition(0);
-				d = sysEnv.systemDateFormat.parse (ts, pp);
-				if (pp.getErrorIndex() != -1)
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03205061602", "Error in date format: $1\nPosition: $2",
-						ts, pp.toString()));
+				d = sysEnv.oldJsCommDateFormat.parse (ts, pp);
+				if(pp.getErrorIndex() != -1) {
+					pp = new ParsePosition(0);
+					d = sysEnv.systemDateFormat.parse (ts, pp);
+					if (pp.getErrorIndex() != -1) {
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03205061602", "Error in date format: $1\nPosition: $2",
+								ts, pp.toString()));
+					}
+					
+				}
 			}
 			final GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
 			gc.setTime(d);
