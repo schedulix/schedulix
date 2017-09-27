@@ -163,7 +163,7 @@ public class sdmsh extends App
 			}
 		}
 
-		if (!options.isSet(App.HELP) && !options.getOption(App.HELP).getBValue()) {
+		if (!options.isSet(App.HELP) && !options.getOption(App.HELP).getBValue() && !(options.isSet(App.AUTH) && options.getValue(App.AUTH).equals("WINSSO"))) {
 			if (user == null) {
 				user = getValue ("USERNAME: ", true);
 				o = options.getOption(App.USER);
@@ -194,6 +194,7 @@ public class sdmsh extends App
 	public void render(SDMSOutput o)
 		throws SDMSException
 	{
+		((SDMSLineRenderer)(mp.getOutputRenderer())).setPrompt("[" + App.userName + "@" + host + ":" + port + "] SDMS> ");
 		if (mp != null)	mp.render(o);
 	}
 
@@ -201,7 +202,7 @@ public class sdmsh extends App
 	{
 		scanner = new MiniScanner (new InputStreamReader(System.in));
 		mp = new MiniParser();
-		SDMSLineRenderer renderer = new SDMSLineRenderer("[" + user + "@" + host + ":" + port + "] SDMS> ");
+		SDMSLineRenderer renderer = new SDMSLineRenderer("[" + App.userName + "@" + host + ":" + port + "] SDMS> ");
 		mp.setOutputRenderer (renderer);
 		mp.setEnvInfo(host, port, user);
 		mp.setPrintCmd(verbose);

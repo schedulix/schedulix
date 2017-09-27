@@ -94,6 +94,7 @@ public class ParseStr
 	public static final String S_CONFIG		= "CONFIG";
 	public static final String S_CONNECT		= "CONNECT";
 	public static final String S_CONTENT		= "CONTENT";
+	public static final String S_CONTINUE		= "CONTINUE";
 	public static final String S_COPY		= "COPY";
 	public static final String S_COUNT		= "COUNT";
 	public static final String S_CREATE		= "CREATE";
@@ -252,6 +253,7 @@ public class ParseStr
 	public static final String S_MERGE_GLOBAL	= "MERGE_GLOBAL";
 	public static final String S_MERGE_LOCAL	= "MERGE_LOCAL";
 	public static final String S_MERGE_MODE		= "MERGE_MODE";
+	public static final String S_METHOD		= "METHOD";
 	public static final String S_MILESTONE		= "MILESTONE";
 	public static final String S_MIN		= "MIN";
 	public static final String S_MINPCT		= "MINPCT";
@@ -397,6 +399,7 @@ public class ParseStr
 	public static final String S_TIMESTAMP		= "TIMESTAMP";
 	public static final String S_TO			= "TO";
 	public static final String S_TO_KILL		= "TO_KILL";
+	public static final String S_TOKEN		= "TOKEN";
 	public static final String S_TOUCH		= "TOUCH";
 	public static final String S_TRACE		= "TRACE";
 	public static final String S_TRACE_LEVEL	= "TRACE_LEVEL";
@@ -511,6 +514,7 @@ public class ParseStr
 	public final static Integer I_DD_IGNORE		= new Integer(SDMSDependencyDefinition.IGNORE);
 	public final static Integer I_DD_SUSPEND	= new Integer(SDMSDependencyDefinition.SUSPEND);
 	public final static Integer I_DD_DEFER		= new Integer(SDMSDependencyDefinition.DEFER);
+	public final static Integer I_DD_DEFER_IGNORE	= new Integer(SDMSDependencyDefinition.DEFER_IGNORE);
 	public final static Integer I_DD_ALL_FINAL	= new Integer(SDMSDependencyDefinition.ALL_FINAL);
 	public final static Integer I_DD_JOB_FINAL	= new Integer(SDMSDependencyDefinition.JOB_FINAL);
 
@@ -848,6 +852,7 @@ public class ParseStr
 		mapper.put(new Integer(Parser.TIMESTAMP),		ParseStr.S_TIMESTAMP);
 		mapper.put(new Integer(Parser.TO),			ParseStr.S_TO);
 		mapper.put(new Integer(Parser.TO_KILL),			ParseStr.S_TO_KILL);
+		mapper.put(new Integer(Parser.TOKEN),			ParseStr.S_TOKEN);
 		mapper.put(new Integer(Parser.TOUCH),			ParseStr.S_TOUCH);
 		mapper.put(new Integer(Parser.TRACE),			ParseStr.S_TRACE);
 		mapper.put(new Integer(Parser.TRANSLATION),		ParseStr.S_TRANSLATION);

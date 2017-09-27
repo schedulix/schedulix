@@ -26,10 +26,14 @@ JAY = $(SDMSHOME)/tools/bin/jay
 SKELETON = $(SDMSHOME)/tools/lib/skeleton
 JLEX = $(SDMSHOME)/tools/bin/jflex
 
+GUAVAJAR = $(SDMSHOME)/lib/guava-20.0.jar
+JNA_PLATFORMJAR = $(SDMSHOME)/lib/jna-platform-4.3.0.jar
+WAFFLEJAR = $(SDMSHOME)/lib/waffle-jna-1.8.3.jar
+
 AWK := $(shell for fff in /usr/bin/gawk /usr/bin/nawk /usr/bin/awk; do if [ -f $$fff ]; then echo $$fff; break; fi; done;)
 SED = sed
 
-JAVAC = javac -cp $(SDMSHOME)/src:$(SWTJAR):$(JNAJAR)
+JAVAC = javac -cp $(SDMSHOME)/src:$(SWTJAR):$(JNAJAR):$(GUAVAJAR):$(JNA_PLATFORMJAR):$(WAFFLEJAR)
 JAR = jar
 JARCREATEFLAGS = cmf
 JAVAH = javah

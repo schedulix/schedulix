@@ -91,7 +91,7 @@ public class SDMSUser extends SDMSUserProxyGeneric
 	throws SDMSException
 	{
 		long p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
-		if (sysEnv.cEnv.uid().equals(getId(sysEnv))) {
+		if (getId(sysEnv).equals(sysEnv.cEnv.uid())) {
 			p = p | SDMSPrivilege.VIEW;
 		}
 		return p & checkPrivs;

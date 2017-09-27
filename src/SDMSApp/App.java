@@ -46,6 +46,10 @@ public class App
 	public static final String JID = "JID";
 	public static final String KEY = "KEY";
 	public static final String SILENT = "SILENT";
+	public static final String AUTH = "AUTH";
+	public static final String BASIC = "BASIC";
+	public static final String WINSSO = "WINSSO";
+	public static final String SPN = "SPN";
 	public static final String VERBOSE = "VERBOSE";
 	public static final String TIMEOUT = "TIMEOUT";
 	public static final String CONNTIMEOUT = "CONNTIMEOUT";
@@ -67,6 +71,8 @@ public class App
 	static App app;
 
 	protected SDMSServerConnection serverConnection = null;
+	public static String userName = "UNKNOWN";
+	public static String auth = BASIC;
 
 	public Options options;
 	public int executions;
@@ -88,6 +94,10 @@ public class App
 		          "BICsuite!server Host");
 		addOption("p", "port"    , "Port",     PORT    , "2506", "portnumber", false ,
 		          "BICsuite!server Port (defaults to 2506)");
+		addOption("a", "auth"    , "Auhentication",     AUTH    , BASIC, "authcode", false ,
+		          "User Authentication Method (defaults to 'BASIC') allowed are 'BASIC','WINSSO'");
+		addOption("P", "spn"    , "SPN",     SPN    , null, "spn", false ,
+		          "Service Pricipal Name of BICsuite service when using WINSSO Authentication");
 		addOption("u", "user"    , "User",     USER    , null, "username"  , uo,
 		          "Username (user or jid must be specified)");
 		addOption("w", "pass"    , "Password", PASS    , null, "password"  , uo,
@@ -122,17 +132,29 @@ public class App
 
 	private boolean validateStandardOptions()
 	{
+		if (options.isSet(AUTH)) {
+			auth = options.getValue(AUTH);
+			switch (auth) {
+				case "BASIC":
+					break;
+				case "WINSSO":
+					break;
+				default:
+					if (!silent) System.err.println("auth option must be 'BASIC' or 'WINSSO' if given");
+					return false;
+			}
+		}
 		try {
 			int port = Integer.parseInt (options.getValue(PORT));
 		} catch (Exception e) {
 			if (!silent) System.err.println("port must be an integer !");
 			return false;
 		}
-		if (!options.isSet(USER) && !options.isSet(JID)) {
+		if (!options.isSet(USER) && !options.isSet(JID) && !auth.equals(WINSSO)) {
 			if (!silent) System.err.println("Either user or jid option must be given !");
 			return false;
 		}
-		if (options.isSet(USER) && !options.isSet(PASS)) {
+		if (options.isSet(USER) && !options.isSet(PASS) && !auth.equals(WINSSO)) {
 			if (!silent) System.err.println("user option requires pass option !");
 			return false;
 		}
@@ -282,6 +304,7 @@ public class App
 		if (options.isSet(USER)) {
 			serverConnection = new SDMSServerConnection ( options );
 		} else {
+			userName = options.getValue(JID);
 			serverConnection = new SDMSServerConnection (
 				options.getValue(HOST),
 				port,

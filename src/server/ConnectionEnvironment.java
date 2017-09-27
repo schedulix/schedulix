@@ -82,6 +82,8 @@ public class ConnectionEnvironment
 	private Stack groupStack;
 	public SDMSThread worker;
 
+	public HashMap SSOInfo;
+
 	private boolean isSSLConnection;
 	private boolean isClientAuthenticated;
 

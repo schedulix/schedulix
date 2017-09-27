@@ -32,6 +32,7 @@ import java.lang.*;
 import java.net.*;
 import javax.net.ssl.*;
 import java.security.*;
+import javax.xml.bind.DatatypeConverter;
 
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
@@ -39,10 +40,17 @@ import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
 import de.independit.scheduler.SDMSApp.*;
 
+import com.sun.jna.platform.win32.Sspi;
+import com.sun.jna.platform.win32.Sspi.SecBufferDesc;
+import com.sun.jna.platform.win32.Win32Exception;
+import waffle.windows.auth.IWindowsSecurityContext;
+import waffle.windows.auth.impl.WindowsSecurityContextImpl;
+
 public class SDMSServerConnection
 {
 	String host;
 	int port = 2506;
+	String auth = App.BASIC;
 	String user;
 	String passwd;
 	Socket svrConnection = null;
@@ -55,6 +63,20 @@ public class SDMSServerConnection
 	String info = null;
 	KeyManagerFactory kmf;
 	SSLContext sc = null;
+
+	public SDMSServerConnection(String h, int p, String u, String pwd, String auth)
+	{
+		this.auth = auth;
+		host = h;
+		port = p;
+		user = u;
+		try {
+			Long.parseLong(u);
+			isJob = true;
+		} catch(NumberFormatException nfe) {
+		}
+		passwd = pwd;
+	}
 
 	public SDMSServerConnection(String h, int p, String u, String pwd)
 	{
@@ -69,11 +91,42 @@ public class SDMSServerConnection
 		passwd = pwd;
 	}
 
+	public SDMSServerConnection(String h, int p, String u, String pwd, String auth, int timeout)
+	{
+		this.auth = auth;
+		host = h;
+		port = p;
+		user = u;
+		try {
+			Long.parseLong(u);
+			isJob = true;
+		} catch(NumberFormatException nfe) {
+		}
+		passwd = pwd;
+		this.timeout = timeout;
+	}
+
 	public SDMSServerConnection(String h, int p, String u, String pwd, int timeout)
 	{
 		host = h;
 		port = p;
 		user = u;
+		try {
+			Long.parseLong(u);
+			isJob = true;
+		} catch(NumberFormatException nfe) {
+		}
+		passwd = pwd;
+		this.timeout = timeout;
+	}
+
+	public SDMSServerConnection(String h, int p, String u, String pwd, String auth, int timeout, boolean ssl)
+	{
+		this.auth = auth;
+		host = h;
+		port = p;
+		user = u;
+		use_ssl = ssl;
 		try {
 			Long.parseLong(u);
 			isJob = true;
@@ -174,10 +227,104 @@ public class SDMSServerConnection
 
 		out = new PrintStream(svrConnection.getOutputStream(), true);
 
-		return execute("connect " + (isJob ? "job " : "") + user + " identified by '" + passwd +
+		String userSQuote = "'";
+		String userEQuote = "'";
+		if (isJob) {
+			auth = App.BASIC;
+			userSQuote = "job ";
+			userEQuote = "";
+		}
+
+		SDMSOutput result;
+		String strToken = null;
+		byte[] byteToken;
+		IWindowsSecurityContext clientContext = null;
+		if (options.isSet(App.AUTH))
+			auth = options.getValue(App.AUTH);
+		switch (auth) {
+			case App.BASIC:
+				return execute("connect " + userSQuote + user + userEQuote + " identified by '" + passwd +
 			"' with protocol = SERIAL" +
 			(timeout != -1 ? ", timeout = " + timeout : "") +
 			(info != null ? ", session = '" + info + "'" : "" ) + ";");
+			case App.WINSSO:
+				String spn = null;
+				if (options.isSet(App.SPN))
+					spn = options.getValue(App.SPN);
+				try {
+					clientContext = WindowsSecurityContextImpl.getCurrent( "Negotiate", spn );
+					byteToken = clientContext.getToken();
+					strToken = DatatypeConverter.printBase64Binary(byteToken);
+				} catch (Throwable e) {
+					clientContext.dispose();
+					result = new SDMSOutput();
+					result.setError(new SDMSOutputError("Desktop-0006", "Exception getting clientToken:" + e.toString() + " !"));
+					return result;
+				}
+
+				String cmd = "connect with" +
+				             " token = '" + strToken + "'" +
+				             ", protocol = SERIAL" +
+				             ", method = '" + auth + "'" +
+				             (timeout != -1 ? ", timeout = " + timeout : "") +
+				             (info != null ? ", session = '" + info + "'" : "" ) + ";";
+
+				result = execute(cmd);
+				if (result.error != null) {
+					clientContext.dispose();
+					return result;
+				}
+
+				int idxToken = result.container.indexForName (null, "TOKEN");
+				Vector v_data = (Vector)(result.container.dataset.get(0));
+				strToken = (String)(v_data.get(idxToken));
+				byteToken = DatatypeConverter.parseBase64Binary(strToken);
+				try {
+					SecBufferDesc continueToken = new SecBufferDesc(Sspi.SECBUFFER_TOKEN, byteToken);
+					clientContext.initialize(clientContext.getHandle(), continueToken, spn);
+					byteToken = clientContext.getToken();
+					strToken = DatatypeConverter.printBase64Binary(byteToken);
+				} catch (Throwable e) {
+					result = new SDMSOutput();
+					result.setError(new SDMSOutputError("Desktop-0006", "Exception getting clientToken:" + e.toString() + " !"));
+					return result;
+				} finally {
+					clientContext.dispose();
+				}
+
+				cmd = "continue connect with token = '" + strToken + "';";
+				SDMSOutput result2 = execute(cmd);
+				if (result2.error != null) {
+					return result;
+				}
+
+				cmd = "show user;";
+				result = execute(cmd);
+				if (result.error != null) {
+					return result;
+				}
+
+				int idxName = result.container.indexForName (null, "NAME");
+				v_data = (Vector)(result.container.dataset.get(0));
+				App.userName = (String)(v_data.get(idxName));
+				if (options.isSet(App.USER)) {
+					String userName  = options.getValue(App.USER);
+					if (!userName.equals(App.userName)) {
+						App.userName = userName;
+						cmd = "alter session set user = '" + userName + "';";
+						result = execute(cmd);
+						if (result.error != null) {
+							return result;
+						}
+					}
+				}
+
+				return result2;
+			default:
+				result = new SDMSOutput();
+				result.setError(new SDMSOutputError("Desktop-0005", "Invalid auth option '" + auth + "'!"));
+				return result;
+		}
 	}
 
 	public SDMSOutput execute(String cmd)

@@ -38,8 +38,8 @@ public class Parser
 %token <Token>	ALIAS ALL ALL_FINAL ALTER AMOUNT AND ANY AT AUDIT AUTHENTICATED AVG
 %token <Token>	BACKLOG_HANDLING BACKUP BASE BATCH BEFORE BEFORE_FINAL BETWEEN BMULTICMD BROKEN BROKEN_ACTIVE BROKEN_FINISHED BY
 %token <Token>	CALENDAR CANCEL CANCELLED CASCADE CATEGORY CHANGE_STATUS CHANGE CHILD CHECK CHILDREN CHILDSUSPEND CHILDTAG CLEANUP CLEAR CMPOP
-%token <Token>	COMMAND COMMENT CONDITION CONFIG CONNECT CONSTANT CONTENT COPY COUNT CREATE CYCLE
-%token <Token>	DAY DEFAULT DEFAULT_MAPPING DEFER DEFINITION DELAY DELETE DEPENDENCY DEPENDENCY_DEFINITION
+%token <Token>	COMMAND COMMENT CONDITION CONFIG CONNECT CONSTANT CONTENT CONTINUE COPY COUNT CREATE CYCLE
+%token <Token>	DAY DEFAULT DEFAULT_MAPPING DEFER DEFER_IGNORE DEFINITION DELAY DELETE DEPENDENCY DEPENDENCY_DEFINITION
 %token <Token>	DEPENDENCY_HIERARCHY DEPENDENCY_MODE DEPENDENCY_WAIT DEPLOY DEREGISTER DIR DISABLE DISCONNECT DISTRIBUTION DROP DUMP DURATION DYNAMIC
 %token <Token>	EDIT EMBEDDED EMULTICMD ENABLE ENDTIME ENVIRONMENT ERRLOG ERROR_TEXT ERROR_TOKEN EQUIVALENT EVENT EXECUTE EXEC_PID
 %token <Token>	EXISTING EXIT_CODE EXIT_STATUS EXIT_STATUS_DEFINITION EXIT_STATUS_MAPPING EXIT_STATUS_PROFILE
@@ -52,7 +52,7 @@ public class Parser
 %token <Token>	JOB JOB_DEFINITION JOB_DEFINITION_HIERARCHY JOB_FINAL JOB_SERVER JOB_STATUS JSON
 %token <Token>	KEEP KEEP_FINAL KILL KILLED KILL_PROGRAM
 %token <Token>	LAST LEVEL LIBERAL LIKE LIMIT LINE LINK LIST LOCAL LOCAL_CONSTANT LOCK LOCKMODE LOGFILE LOOPS
-%token <Token>	MAIN MANAGE MANAGED MANAGE_SELECT MAP MAPPING MAPS MASTER MASTER_ID MAX MAXPCT MERGE MERGED MERGE_GLOBAL MERGE_LOCAL MERGE_MODE MILESTONE
+%token <Token>	MAIN MANAGE MANAGED MANAGE_SELECT MAP MAPPING MAPS MASTER MASTER_ID MAX MAXPCT MERGE MERGED MERGE_GLOBAL MERGE_LOCAL MERGE_MODE METHOD MILESTONE
 %token <Token>	MIN MINPCT MINUTE MODE MONITOR MONTH MOVE MULTICOMMAND MULTIPLIER
 %token <Token>	N NAME NAMED_RESOURCE NICE_PROFILE NICEVALUE NODE NOINVERSE NOKEEP NOMASTER NOMERGE NOMINALPCT NONE NONFATAL
 %token <Token>	NORESUME NOSTICKY NOSUSPEND NOT NOTRACE NOTRUNC NOWARN
@@ -65,7 +65,7 @@ public class Parser
 %token <Token>	S SALT SC SCHEDULE SCHEDULED_EVENT SCOPE SELECT SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT SSL
 %token <Token>	STARTED STARTING STARTTIME STATIC STATUS STATUS_MAPPING STATUS_PROFILE STICKY STOP STRICT STRING
 %token <Token>	SUBMIT SUBMITCOUNT SUBMITTAG SUBMITTED SUBMITTING_USER SUM SUSPEND SUSPEND_LIMIT SX SYNCHRONIZE_WAIT SYNCHRONIZING SYNCTIME SYSTEM
-%token <Token>	TAG TEST TEXT TIME TIMEOUT TIMESTAMP TO TO_KILL TOUCH TRACE TRANSLATION TREE TRIGGER TRUNC TYPE
+%token <Token>	TAG TEST TEXT TIME TIMEOUT TIMESTAMP TO TO_KILL TOKEN TOUCH TRACE TRANSLATION TREE TRIGGER TRUNC TYPE
 %token <Token>	UNREACHABLE UNRESOLVED UNTIL_FINAL UNTIL_FINISHED UPDATE URL USAGE USE USER
 %token <Token>	VALUE VERSION VIEW
 %token <Token>	WARN WARNING WATCH WATCHER WEEK WITH WORKDIR
@@ -82,7 +82,7 @@ public class Parser
 %type <Node>	alter_om, alter_omj, alter_pool, alter_resource, alter_rsm, alter_rsp, alter_schedule, alter_scheduled_event, alter_scope, alter_server
 %type <Node>	alter_session, alter_trigger, alter_user, alter_wt
 %type <Node>	child_submit_cmd, cleanup_folder, cmd,
-%type <Node>	connect_cmd, connect_cmdu, connect_cmdj, connect_cmds, copy_cmd
+%type <Node>	connect_cmd, connect_cmdu, connect_cmdj, connect_cmds, connect_init, connect_cont, copy_cmd
 %type <Node>	copy_dist, copy_folder, copy_named_resource, copy_scope
 %type <Node>	create_cmd, create_comment, create_dist
 %type <Node>	create_environment, create_event, create_exit_status_prof, create_exit_status_def, create_exit_status_mapping
@@ -126,7 +126,7 @@ public class Parser
 %type <Boolean>	ival_merge
 %type <Boolean>	jp_optlocal, js_fatal
 %type <Boolean>	master
-%type <Boolean>	opt_cascade, opt_force, opt_suspended, opttrunc
+%type <Boolean>	opt_cascade, opt_force, opt_ignore, opt_suspended, opttrunc
 %type <Boolean>	active, staticdynamic
 %type <Boolean>	trace, trunc
 %type <Boolean> wt_submitpar
@@ -256,6 +256,7 @@ public class Parser
 
 connect:									{ /* Empty input is OK */ }
 	|	connect_cmd SECO						{ if(!post($1)) return null; } optcmdlist
+	|	sso_connect optcmdlist
 	|	error SECO							{ post(new Disconnect()); if(stop == 0) return null; }
 	|	error FORCED_EOC						{ post(new Disconnect()); if(stop == 0) return null; }
 
@@ -583,6 +584,17 @@ connect_cmd:	connect_cmdu							{ $$ = $1; }
 	|	connect_cmds							{ $$ = $1; }
 	|	connect_cmdj							{ $$ = $1; }
 
+sso_connect:	connect_init 							{ if (!post($1)) return null; } connect_contlist
+
+connect_init:	CONNECT connect_with SECO					{ $$ = new SSOConnect($2, true); }
+
+connect_contlist: connect_cont SECO						{ if (!post($1)) return null; }
+	|	connect_contlist connect_cont SECO				{ if (!post($2)) return null; }
+	|	error SECO							{ post(new Disconnect()); if(stop == 0) return null; }
+
+connect_cont:	CONTINUE CONNECT connect_with					{ $$ = new SSOConnect($3, false); }
+
+
 //D:MASTER USER NOJOB NOSERVER
 //D:NT-ALIAS = connect
 //D:PURPOSE P004
@@ -628,7 +640,9 @@ connect_withitem:	PROTOCOL '=' protocol					{ $$ = new WithItem(ParseStr.map($1.
 	|	TIMEOUT '=' integer						{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|	trace								{ $$ = new WithItem(ParseStr.S_TRACE_LEVEL, $1); }
 	|	COMMAND '=' '(' connect_cmdlist ')'				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
+	|	METHOD '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|	SESSION '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
+	|	TOKEN '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 	|	TRACE LEVEL '=' integer						{ $$ = new WithItem(ParseStr.S_TRACE_LEVEL, $4); }
 
 connect_cmdlist:	cmd							{ $$ = new Vector(); $<Vector>$.addElement($1); }
@@ -2370,6 +2384,7 @@ jrq_unresolved:		ERROR_TOKEN						{ $$ = ParseStr.I_DD_ERROR; }
 	|		IGNORE							{ $$ = ParseStr.I_DD_IGNORE; }
 	|		SUSPEND							{ $$ = ParseStr.I_DD_SUSPEND; }
 	|		DEFER							{ $$ = ParseStr.I_DD_DEFER; }
+	|		DEFER_IGNORE						{ $$ = ParseStr.I_DD_DEFER_IGNORE; }
 
 			//D:DEFAULT
 jrq_mode:		ALL_FINAL						{ $$ = ParseStr.I_DD_ALL_FINAL; }
@@ -4135,14 +4150,20 @@ period:	integer baseinterval							{ $$ = new WithHash();
 										}
 
 //D:NT=PARM
-signed_period:	signed_integer baseinterval					{ $$ = new WithHash();
+signed_period:	signed_integer baseinterval opt_ignore				{ $$ = new WithHash();
 										  $<WithHash>$.addItem(new WithItem(ParseStr.S_MULT, $1));
 										  $<WithHash>$.addItem(new WithItem(ParseStr.S_INTERVAL, $2));
+										  $<WithHash>$.addItem(new WithItem(ParseStr.S_IGNORE, $3));
 										}
-	| baseinterval								{ $$ = new WithHash();
+	| baseinterval opt_ignore						{ $$ = new WithHash();
 										  $<WithHash>$.addItem(new WithItem(ParseStr.S_MULT, PLUS_ONE));
 										  $<WithHash>$.addItem(new WithItem(ParseStr.S_INTERVAL, $1));
+										  $<WithHash>$.addItem(new WithItem(ParseStr.S_IGNORE, $2));
 										}
+
+opt_ignore:									{ $$ = Boolean.FALSE; }
+	| IGNORE ON RERUN							{ $$ = Boolean.TRUE; }
+
 opt_period:	period								{ $$ = $1; }
 		//D:DEFAULT
 	|	NONE								{ $$ = null; }
@@ -4531,6 +4552,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	CONNECT								{ $$ = (String) $1.value; }
 	|	CONSTANT							{ $$ = (String) $1.value; }
 	|	CONTENT								{ $$ = (String) $1.value; }
+	|	CONTINUE							{ $$ = (String) $1.value; }
 	|	COPY								{ $$ = (String) $1.value; }
 	|	COUNT								{ $$ = (String) $1.value; }
 	|	CREATE								{ $$ = (String) $1.value; }
@@ -4628,6 +4650,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	MIN								{ $$ = (String) $1.value; }
 	|	MERGE								{ $$ = (String) $1.value; }
 	|	MERGED								{ $$ = (String) $1.value; }
+	|	METHOD								{ $$ = (String) $1.value; }
 	|	MILESTONE							{ $$ = (String) $1.value; }
 	|	MINUTE								{ $$ = (String) $1.value; }
 	|	MODE								{ $$ = (String) $1.value; }
@@ -4727,6 +4750,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	TIMEOUT								{ $$ = (String) $1.value; }
 	|	TIMESTAMP							{ $$ = (String) $1.value; }
 	|	TO								{ $$ = (String) $1.value; }
+	|	TOKEN								{ $$ = (String) $1.value; }
 	|	TOUCH								{ $$ = (String) $1.value; }
 	|	TRACE								{ $$ = (String) $1.value; }
 	|	TRANSLATION							{ $$ = (String) $1.value; }

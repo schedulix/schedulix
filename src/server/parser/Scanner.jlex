@@ -77,6 +77,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("CONNECT",		new Integer(Parser.CONNECT));
 	tokens.put("CONSTANT",		new Integer(Parser.CONSTANT));
 	tokens.put("CONTENT",		new Integer(Parser.CONTENT));
+	tokens.put("CONTINUE",		new Integer(Parser.CONTINUE));
 	tokens.put("COPY",		new Integer(Parser.COPY));
 	tokens.put("COUNT",		new Integer(Parser.COUNT));
 	tokens.put("CREATE",		new Integer(Parser.CREATE));
@@ -198,6 +199,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("MAXPCT",		new Integer(Parser.MAXPCT));
 	tokens.put("MERGE",		new Integer(Parser.MERGE));
 	tokens.put("MERGED",		new Integer(Parser.MERGED));
+	tokens.put("METHOD",		new Integer(Parser.METHOD));
 	tokens.put("MILESTONE",		new Integer(Parser.MILESTONE));
 	tokens.put("MILESTONES",	new Integer(Parser.MILESTONE));
 	tokens.put("MIN",		new Integer(Parser.MIN));
@@ -328,6 +330,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("TIMEOUT",		new Integer(Parser.TIMEOUT));
 	tokens.put("TIMESTAMP",		new Integer(Parser.TIMESTAMP));
 	tokens.put("TO",		new Integer(Parser.TO));
+	tokens.put("TOKEN",		new Integer(Parser.TOKEN));
 	tokens.put("TOUCH",		new Integer(Parser.TOUCH));
 	tokens.put("TRACE",		new Integer(Parser.TRACE));
 	tokens.put("TRANSLATION",	new Integer(Parser.TRANSLATION));
@@ -485,6 +488,7 @@ child =		[Cc][Hh][Ii][Ll][Dd]
 code =		[Cc][Oo][Dd][Ee]
 constant =	[Cc][Oo][Nn][Ss][Tt][Aa][Nn][Tt]
 default =	[Dd][Ee][Ff][Aa][Uu][Ll][Tt]
+defer	 =	[Dd][Ee][Ff][Ee][Rr]
 definition =	[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn]([Ss])?
 dependencx =	[Dd][Ee][Pp][Ee][Nn][Dd][Ee][Nn][Cc][Yy]
 dependencies =	[Dd][Ee][Pp][Ee][Nn][Dd][Ee][Nn][Cc][Ii][Ee][Ss]
@@ -556,6 +560,7 @@ broken_active =		{broken}{uscore}{active}
 broken_finished =	{broken}{uscore}{finished}
 change_state =		{change}{uscore}{state}
 default_mapping =	{default}{uscore}{mapping}
+defer_ignore =		{defer}{uscore}{ignore}
 dependency =		{dependencx}|{dependencies}
 dependency_definition = {dependency}{uscore}{definition}
 dependency_hierarchy = 	{dependency}{uscore}{hierarchy}
@@ -651,6 +656,7 @@ until_finished =	{until}{uscore}{finished}
 <YYINITIAL>{broken_finished}		{ proto_input(yytext()); t = new Token(Parser.BROKEN_FINISHED, yytext());		return Parser.BROKEN_FINISHED; }
 <YYINITIAL>{change_state}		{ proto_input(yytext()); t = new Token(Parser.CHANGE_STATUS, yytext());			return Parser.CHANGE_STATUS; }
 <YYINITIAL>{default_mapping}		{ proto_input(yytext()); t = new Token(Parser.DEFAULT_MAPPING, yytext());		return Parser.DEFAULT_MAPPING; }
+<YYINITIAL>{defer_ignore}		{ proto_input(yytext()); t = new Token(Parser.DEFER_IGNORE, yytext());			return Parser.DEFER_IGNORE; }
 <YYINITIAL>{dependency_definition}	{ proto_input(yytext()); t = new Token(Parser.DEPENDENCY_DEFINITION, yytext());		return Parser.DEPENDENCY_DEFINITION; }
 <YYINITIAL>{dependency_hierarchy}	{ proto_input(yytext()); t = new Token(Parser.DEPENDENCY_HIERARCHY, yytext());		return Parser.DEPENDENCY_HIERARCHY; }
 <YYINITIAL>{dependency_mode}		{ proto_input(yytext()); t = new Token(Parser.DEPENDENCY_MODE, yytext());		return Parser.DEPENDENCY_MODE; }
