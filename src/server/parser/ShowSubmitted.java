@@ -1419,6 +1419,7 @@ class SsResourceScopeFormatter implements Formatter
 		c_desc.add("ALLOCATE_STATE");
 		c_desc.add("EXPIRE");
 		c_desc.add("EXPIRE_SIGN");
+		c_desc.add("IGNORE_ON_RERUN");
 		c_desc.add("DEFINITION");
 
 		return c_desc;
@@ -1467,6 +1468,7 @@ class SsResourceScopeFormatter implements Formatter
 		v.add(null);
 		v.add(null);
 		v.add(new Boolean(s.isConnected(sysEnv)));
+		v.add(null);
 		v.add(null);
 		v.add(null);
 		v.add(null);
@@ -1576,6 +1578,7 @@ class SsResourceScopeFormatter implements Formatter
 			v.add(null);
 			v.add(null);
 			v.add(r.getIsOnline(sysEnv));
+			v.add(null);
 			v.add(null);
 			v.add(null);
 			v.add(null);
@@ -1721,11 +1724,14 @@ class SsResourceScopeFormatter implements Formatter
 					dts.setTime(ts);
 					v.add(sysEnv.systemDateFormat.format(dts));
 					v.add(expSign);
+					v.add(rr.getIgnoreOnRerun(sysEnv));
 				} else {
+					v.add(null);
 					v.add(null);
 					v.add(null);
 				}
 			} else {
+				v.add(null);
 				v.add(null);
 				v.add(null);
 			}

@@ -544,6 +544,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 		WithHash expired;
 		Integer exp_mult;
 		Integer exp_interval;
+		Boolean ignoreOnRerun;
 		Vector  states;
 		String  condition;
 
@@ -623,12 +624,15 @@ public class AlterJobDefinition extends ManipJobDefinition
 								exp_mult = (Integer) expired.get(ParseStr.S_MULT);
 								if(exp_mult == null) exp_mult = new Integer(1);
 								exp_interval = (Integer) expired.get(ParseStr.S_INTERVAL);
+								ignoreOnRerun = (Boolean) expired.get(ParseStr.S_IGNORE);
 							} else {
 								exp_mult = null;
 								exp_interval = null;
+								ignoreOnRerun = Boolean.FALSE;
 							}
 							rr.setExpiredAmount(sysEnv, exp_mult);
 							rr.setExpiredBase(sysEnv, exp_interval);
+							rr.setIgnoreOnRerun(sysEnv, ignoreOnRerun);
 						}
 						if(wh.containsKey(ParseStr.S_CONDITION)) rr.setCondition(sysEnv, condition);
 						break;
@@ -668,14 +672,16 @@ public class AlterJobDefinition extends ManipJobDefinition
 					if(expired == null) {
 						exp_mult = null;
 						exp_interval = null;
+						ignoreOnRerun = Boolean.FALSE;
 					} else {
 						exp_mult = (Integer) expired.get(ParseStr.S_MULT);
 						if(exp_mult == null) exp_mult = new Integer(1);
 						exp_interval = (Integer) expired.get(ParseStr.S_INTERVAL);
+						ignoreOnRerun = (Boolean) expired.get(ParseStr.S_IGNORE);
 					}
 					rr = SDMSResourceRequirementTable.table.create(sysEnv,
 							newNrId, seId, amount, keepMode, isSticky, stickyName, stickyParent,
-							rsmpId, exp_mult, exp_interval, lockmode, condition);
+							rsmpId, exp_mult, exp_interval, ignoreOnRerun, lockmode, condition);
 				}
 
 				if(wh.containsKey(ParseStr.S_STATUS))

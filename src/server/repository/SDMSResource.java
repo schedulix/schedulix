@@ -407,40 +407,44 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		Integer expBase = rr.getExpiredBase(sysEnv);
 		if(expBase != null) {
 			if(nr.getRspId(sysEnv) != null) {
-				long rsdTime = getRsdTime(sysEnv).longValue();
-				long expTime = rr.getExpiredAmount(sysEnv).longValue();
-				switch(expBase.intValue()) {
-					case SDMSInterval.MINUTE:
-						expTime *= SDMSInterval.MINUTE_DUR;
-						break;
-					case SDMSInterval.HOUR:
-						expTime *= SDMSInterval.HOUR_DUR;
-						break;
-					case SDMSInterval.DAY:
-						expTime *= SDMSInterval.DAY_DUR;
-						break;
-					case SDMSInterval.WEEK:
-						expTime *= SDMSInterval.WEEK_DUR;
-						break;
-					case SDMSInterval.MONTH:
-						expTime *= SDMSInterval.MONTH_DUR;
-						break;
-					case SDMSInterval.YEAR:
-						expTime *= SDMSInterval.YEAR_DUR;
-						break;
-				}
-				long ts;
-				long dts = (new java.util.Date()).getTime();
-				if(expTime == 0) {
-					ts = sme.getSyncTs(sysEnv).longValue() - rsdTime;
+				boolean ignoreOnRerun = rr.getIgnoreOnRerun(sysEnv).booleanValue();
+				if (ignoreOnRerun && (sme.getRerunSeq(sysEnv).intValue() > 0)) {
 				} else {
-					if(expTime > 0)
-						ts = dts - expTime - rsdTime;
-					else
-						ts = rsdTime - expTime - dts;
-				}
-				if(ts > 0) {
-					return false;
+					long rsdTime = getRsdTime(sysEnv).longValue();
+					long expTime = rr.getExpiredAmount(sysEnv).longValue();
+					switch(expBase.intValue()) {
+						case SDMSInterval.MINUTE:
+							expTime *= SDMSInterval.MINUTE_DUR;
+							break;
+						case SDMSInterval.HOUR:
+							expTime *= SDMSInterval.HOUR_DUR;
+							break;
+						case SDMSInterval.DAY:
+							expTime *= SDMSInterval.DAY_DUR;
+							break;
+						case SDMSInterval.WEEK:
+							expTime *= SDMSInterval.WEEK_DUR;
+							break;
+						case SDMSInterval.MONTH:
+							expTime *= SDMSInterval.MONTH_DUR;
+							break;
+						case SDMSInterval.YEAR:
+							expTime *= SDMSInterval.YEAR_DUR;
+							break;
+					}
+					long ts;
+					long dts = (new java.util.Date()).getTime();
+					if(expTime == 0) {
+						ts = sme.getSyncTs(sysEnv).longValue() - rsdTime;
+					} else {
+						if(expTime > 0)
+							ts = dts - expTime - rsdTime;
+						else
+							ts = rsdTime - expTime - dts;
+					}
+					if(ts > 0) {
+						return false;
+					}
 				}
 			}
 		}

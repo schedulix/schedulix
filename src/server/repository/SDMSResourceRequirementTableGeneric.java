@@ -53,6 +53,7 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		, "RSMP_ID"
 		, "EXPIRED_AMOUNT"
 		, "EXPIRED_BASE"
+		, "IGNORE_ON_RERUN"
 		, "LOCKMODE"
 		, "CONDITION"
 		, "CREATOR_U_ID"
@@ -91,6 +92,7 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 	                                      ,Long p_rsmpId
 	                                      ,Integer p_expiredAmount
 	                                      ,Integer p_expiredBase
+	                                      ,Boolean p_ignoreOnRerun
 	                                      ,Integer p_lockmode
 	                                      ,String p_condition
 	                                     )
@@ -114,6 +116,7 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		         , p_rsmpId
 		         , p_expiredAmount
 		         , p_expiredBase
+		         , p_ignoreOnRerun
 		         , p_lockmode
 		         , p_condition
 		         , p_creatorUId
@@ -134,6 +137,7 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		                , p_rsmpId
 		                , p_expiredAmount
 		                , p_expiredBase
+		                , p_ignoreOnRerun
 		                , p_lockmode
 		                , p_condition
 		                , p_creatorUId
@@ -183,6 +187,7 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 	                        ,Long p_rsmpId
 	                        ,Integer p_expiredAmount
 	                        ,Integer p_expiredBase
+	                        ,Boolean p_ignoreOnRerun
 	                        ,Integer p_lockmode
 	                        ,String p_condition
 	                        ,Long p_creatorUId
@@ -214,6 +219,7 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		Long rsmpId;
 		Integer expiredAmount;
 		Integer expiredBase;
+		Boolean ignoreOnRerun;
 		Integer lockmode;
 		String condition;
 		Long creatorUId;
@@ -241,16 +247,17 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 			if (r.wasNull()) expiredAmount = null;
 			expiredBase = new Integer (r.getInt(11));
 			if (r.wasNull()) expiredBase = null;
-			lockmode = new Integer (r.getInt(12));
+			ignoreOnRerun = new Boolean ((r.getInt(12) == 0 ? false : true));
+			lockmode = new Integer (r.getInt(13));
 			if (r.wasNull()) lockmode = null;
-			condition = r.getString(13);
+			condition = r.getString(14);
 			if (r.wasNull()) condition = null;
-			creatorUId = new Long (r.getLong(14));
-			createTs = new Long (r.getLong(15));
-			changerUId = new Long (r.getLong(16));
-			changeTs = new Long (r.getLong(17));
-			validFrom = r.getLong(18);
-			validTo = r.getLong(19);
+			creatorUId = new Long (r.getLong(15));
+			createTs = new Long (r.getLong(16));
+			changerUId = new Long (r.getLong(17));
+			changeTs = new Long (r.getLong(18));
+			validFrom = r.getLong(19);
+			validTo = r.getLong(20);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 			throw new FatalException(new SDMSMessage(env, "01110182045", "ResourceRequirement: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -267,6 +274,7 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		                rsmpId,
 		                expiredAmount,
 		                expiredBase,
+		                ignoreOnRerun,
 		                lockmode,
 		                condition,
 		                creatorUId,
@@ -298,6 +306,7 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		                                   ", " + squote + "RSMP_ID" + equote +
 		                                   ", " + squote + "EXPIRED_AMOUNT" + equote +
 		                                   ", " + squote + "EXPIRED_BASE" + equote +
+		                                   ", " + squote + "IGNORE_ON_RERUN" + equote +
 		                                   ", " + squote + "LOCKMODE" + equote +
 		                                   ", " + squote + "CONDITION" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +

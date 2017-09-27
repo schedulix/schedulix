@@ -493,6 +493,7 @@ public class ShowFolder extends ShowCommented
 		c_desc.add("RESOURCE_STATE_MAPPING");
 		c_desc.add("EXPIRED_AMOUNT");
 		c_desc.add("EXPIRED_BASE");
+		c_desc.add("IGNORE_ON_RERUN");
 		c_desc.add("LOCKMODE");
 		c_desc.add("STATES");
 		c_desc.add("DEFINITION");
@@ -608,6 +609,7 @@ public class ShowFolder extends ShowCommented
 		}
 		c_data.add(rr.getExpiredAmount(sysEnv));
 		c_data.add(rr.getExpiredBaseAsString(sysEnv));
+		c_data.add(rr.getIgnoreOnRerun(sysEnv));
 		Integer lm = rr.getLockmode(sysEnv);
 		if(lm != null) {
 			c_data.add((new Lockmode(sysEnv, lm.intValue())).str(sysEnv));
@@ -650,6 +652,7 @@ public class ShowFolder extends ShowCommented
 		c_data.add(nr.pathVector(sysEnv));
 		c_data.add(nr.getUsageAsString(sysEnv));
 		c_data.add(nr.getPrivileges(sysEnv).toString());
+		c_data.add(null);
 		c_data.add(null);
 		c_data.add(null);
 		c_data.add(null);

@@ -510,6 +510,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                               rr_o.getRsmpId(sysEnv),
 			                               rr_o.getExpiredAmount(sysEnv),
 			                               rr_o.getExpiredBase(sysEnv),
+			                               rr_o.getIgnoreOnRerun(sysEnv),
 			                               rr_o.getLockmode(sysEnv),
 			                               rr_o.getCondition(sysEnv)
 			                                                                        );

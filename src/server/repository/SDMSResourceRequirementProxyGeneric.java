@@ -275,6 +275,24 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 		((SDMSResourceRequirementGeneric)(object)).setExpiredBase (env, p_expiredBase);
 		return ;
 	}
+	public Boolean getIgnoreOnRerun (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSResourceRequirementGeneric)(object)).getIgnoreOnRerun (env));
+	}
+
+	public void setIgnoreOnRerun (SystemEnvironment env, Boolean p_ignoreOnRerun)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSResourceRequirementGeneric)(object)).setIgnoreOnRerun (env, p_ignoreOnRerun);
+		return ;
+	}
 	public Integer getLockmode (SystemEnvironment env)
 	throws SDMSException
 	{

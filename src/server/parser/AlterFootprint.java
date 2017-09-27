@@ -135,6 +135,7 @@ public class AlterFootprint extends Node
 		Long stickyParent = null;
 		Integer exp_mult = null;
 		Integer exp_interval = null;
+		Boolean ignoreOnRerun = Boolean.FALSE;
 		String condition = null;
 
 		SDMSResourceRequirement rr;
@@ -157,7 +158,7 @@ public class AlterFootprint extends Node
 
 		rr = SDMSResourceRequirementTable.table.create(sysEnv,
 				nrId, fId, amount, keepMode, isSticky, stickyName, stickyParent,
-				rsmpId, exp_mult, exp_interval, lockmode, condition);
+				rsmpId, exp_mult, exp_interval, ignoreOnRerun, lockmode, condition);
 
 		rr.check(sysEnv);
 	}

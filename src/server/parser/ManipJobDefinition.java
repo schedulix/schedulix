@@ -794,6 +794,7 @@ public abstract class ManipJobDefinition extends Node
 		WithHash expired;
 		Integer exp_mult;
 		Integer exp_interval;
+		Boolean ignoreOnRerun;
 		Vector  states;
 		String  condition;
 		SDMSNamedResource nr;
@@ -848,27 +849,29 @@ public abstract class ManipJobDefinition extends Node
 			exp_mult = (Integer) expired.get(ParseStr.S_MULT);
 			if(exp_mult == null) exp_mult = new Integer(1);
 			exp_interval = (Integer) expired.get(ParseStr.S_INTERVAL);
+			ignoreOnRerun = (Boolean) expired.get(ParseStr.S_IGNORE);
 		} else {
 			exp_mult = null;
 			exp_interval = null;
+			ignoreOnRerun = Boolean.FALSE;
 		}
 
 		if(isAdd) {
 			try {
 				rr = SDMSResourceRequirementTable.table.create(sysEnv,
 								nrId, seId, amount, keepMode, isSticky, stickyName, stickyParent,
-								rsmpId, exp_mult, exp_interval, lockmode, condition);
+								rsmpId, exp_mult, exp_interval, ignoreOnRerun, lockmode, condition);
 			} catch (DuplicateKeyException dke) {
 				if(processError) {
 					rr = changeResourceRequirement(sysEnv, seId, nrId, amount, keepMode, isSticky, stickyName, stickyParent, rsmpId,
-									exp_mult, exp_interval, lockmode, condition);
+									exp_mult, exp_interval, ignoreOnRerun, lockmode, condition);
 				} else {
 					throw dke;
 				}
 			}
 		} else {
 			try {
-				rr = changeResourceRequirement(sysEnv, seId, nrId, amount, keepMode, isSticky, stickyName, stickyParent, rsmpId, exp_mult, exp_interval, lockmode, condition);
+				rr = changeResourceRequirement(sysEnv, seId, nrId, amount, keepMode, isSticky, stickyName, stickyParent, rsmpId, exp_mult, exp_interval, ignoreOnRerun, lockmode, condition);
 			} catch (NotFoundException nfe) {
 				if(processError) return;
 				throw nfe;
@@ -902,7 +905,7 @@ public abstract class ManipJobDefinition extends Node
 
 	private SDMSResourceRequirement changeResourceRequirement(SystemEnvironment sysEnv, Long seId, Long nrId, Integer amount, Integer keepMode,
 			Boolean isSticky, String stickyName, Long stickyParent, Long rsmpId, Integer
-			exp_mult, Integer exp_interval, Integer lockmode, String condition)
+	                exp_mult, Integer exp_interval, Boolean ignoreOnRerun, Integer lockmode, String condition)
 		throws SDMSException
 	{
 		SDMSResourceRequirement rr;
@@ -915,6 +918,7 @@ public abstract class ManipJobDefinition extends Node
 		rr.setRsmpId(sysEnv, rsmpId);
 		rr.setExpiredAmount(sysEnv, exp_mult);
 		rr.setExpiredBase(sysEnv, exp_interval);
+		rr.setIgnoreOnRerun(sysEnv, ignoreOnRerun);
 		rr.setLockmode(sysEnv, lockmode);
 		rr.setCondition(sysEnv, condition);
 
