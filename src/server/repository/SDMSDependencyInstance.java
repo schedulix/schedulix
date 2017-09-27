@@ -65,8 +65,8 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 	public int check(SystemEnvironment sysEnv, HashMap checkCache)
 		throws SDMSException
 	{
-		if (getState(sysEnv).intValue() == SDMSDependencyInstance.DEFERED)
-			return SDMSDependencyInstance.DEFERED;
+		if (getState(sysEnv).intValue() == SDMSDependencyInstance.DEFERRED)
+			return SDMSDependencyInstance.DEFERRED;
 
 		Long idOrig = getDiIdOrig(sysEnv);
 		if (checkCache != null && checkCache.containsKey(idOrig)) {

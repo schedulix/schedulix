@@ -42,7 +42,7 @@ public class SDMSDependencyInstanceProxyGeneric extends SDMSProxy
 	public static final int FULFILLED = 1;
 	public static final int FAILED = 2;
 	public static final int BROKEN = 3;
-	public static final int DEFERED = 4;
+	public static final int DEFERRED = 4;
 	public static final int CANCELLED = 8;
 	public static final int NO = 0;
 	public static final int YES = 1;

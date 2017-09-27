@@ -43,7 +43,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	public static final int FULFILLED = 1;
 	public static final int FAILED = 2;
 	public static final int BROKEN = 3;
-	public static final int DEFERED = 4;
+	public static final int DEFERRED = 4;
 	public static final int CANCELLED = 8;
 	public static final int NO = 0;
 	public static final int YES = 1;
@@ -296,8 +296,8 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 				return "FAILED";
 			case SDMSDependencyInstance.BROKEN:
 				return "BROKEN";
-			case SDMSDependencyInstance.DEFERED:
-				return "DEFERED";
+			case SDMSDependencyInstance.DEFERRED:
+				return "DEFERRED";
 			case SDMSDependencyInstance.CANCELLED:
 				return "CANCELLED";
 		}
@@ -771,7 +771,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			case SDMSDependencyInstance.FULFILLED:
 			case SDMSDependencyInstance.FAILED:
 			case SDMSDependencyInstance.BROKEN:
-			case SDMSDependencyInstance.DEFERED:
+			case SDMSDependencyInstance.DEFERRED:
 			case SDMSDependencyInstance.CANCELLED:
 				return true;
 		}

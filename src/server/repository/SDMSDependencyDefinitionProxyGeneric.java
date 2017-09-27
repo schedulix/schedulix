@@ -45,6 +45,7 @@ public class SDMSDependencyDefinitionProxyGeneric extends SDMSProxy
 	public static final int SUSPEND = 3;
 	public static final int UH_SUSPEND = 3;
 	public static final int DEFER = 4;
+	public static final int DEFER_IGNORE = 5;
 	public static final int ALL_FINAL = 1;
 	public static final int JOB_FINAL = 2;
 	public static final int FINAL = 0;

@@ -46,6 +46,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 	public static final int SUSPEND = 3;
 	public static final int UH_SUSPEND = 3;
 	public static final int DEFER = 4;
+	public static final int DEFER_IGNORE = 5;
 	public static final int ALL_FINAL = 1;
 	public static final int JOB_FINAL = 2;
 	public static final int FINAL = 0;
@@ -245,6 +246,8 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 				return "SUSPEND";
 			case SDMSDependencyDefinition.DEFER:
 				return "DEFER";
+			case SDMSDependencyDefinition.DEFER_IGNORE:
+				return "DEFER_IGNORE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -662,6 +665,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 			case SDMSDependencyDefinition.ERROR:
 			case SDMSDependencyDefinition.SUSPEND:
 			case SDMSDependencyDefinition.DEFER:
+			case SDMSDependencyDefinition.DEFER_IGNORE:
 				return true;
 		}
 		return false;
