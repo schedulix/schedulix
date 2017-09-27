@@ -94,6 +94,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 \i pg_gen/TRIGGER_DEFINITION.sql
 \i pg_gen/TRIGGER_QUEUE.sql
 \i pg_gen/TRIGGER_STATE.sql
+\i pg_gen/USER_EQUIV.sql
 \i pg_gen/USERS.sql
 \i pg_gen/VERSIONED_EXTENTS.sql
 \i pg_gen/WATCH_TYPE_PARAMETER.sql
