@@ -183,6 +183,9 @@ public class sdmsh extends App
 				verbose = true;
 			}
 		}
+
+		if (user != null)
+			App.userName = user;
 		return true;
 	}
 
