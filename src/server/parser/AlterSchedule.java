@@ -56,26 +56,33 @@ public class AlterSchedule
 	{
 		obj.resolve(sysEnv);
 		final Long seId = obj.seId;
+		final SDMSSchedule sce;
 
 		final Vector mappedPath = obj.path;
 		final String mappedName = (String) mappedPath.remove (mappedPath.size() - 1);
+		if (mappedPath.size() == 0) {
+			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+				throw new CommonErrorException(new SDMSMessage (sysEnv, "03709291504", "Insufficient privileges"));
+			}
+			sce = SDMSScheduleTable.getObject(sysEnv, SDMSObject.rootScId);
+		} else {
 
-		final Long parentId = SDMSScheduleTable.pathToId (sysEnv, mappedPath);
-		final SDMSKey parentKey = new SDMSKey (parentId, mappedName);
-		final SDMSSchedule sce;
+			final Long parentId = SDMSScheduleTable.pathToId (sysEnv, mappedPath);
+			final SDMSKey parentKey = new SDMSKey (parentId, mappedName);
+
+			try {
+				sce = SDMSScheduleTable.idx_parentId_name_getUnique (sysEnv, parentKey);
+			} catch (NotFoundException nfe) {
+				if(noerr) {
+					result.setFeedback (new SDMSMessage (sysEnv, "03311130102", "No Schedule altered"));
+					return;
+				}
+				throw nfe;
+			}
+		}
 
 		if(!with.containsKey(ParseStr.S_ACTIVE)) active = null;
 		else	active = (Boolean) with.get(ParseStr.S_ACTIVE);
-
-		try {
-			sce = SDMSScheduleTable.idx_parentId_name_getUnique (sysEnv, parentKey);
-		} catch (NotFoundException nfe) {
-			if(noerr) {
-				result.setFeedback (new SDMSMessage (sysEnv, "03311130102", "No Schedule altered"));
-				return;
-			}
-			throw nfe;
-		}
 
 		final String intervalName = (String) with.get(ParseStr.S_INTERVAL);
 		if (intervalName != null) {

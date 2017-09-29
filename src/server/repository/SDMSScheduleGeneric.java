@@ -334,11 +334,6 @@ public class SDMSScheduleGeneric extends SDMSObject
 	{
 		if(isActive.equals(p_isActive)) return;
 		SDMSScheduleGeneric o = this;
-		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-			throw new CommonErrorException(
-			        new SDMSMessage (env, "02112141636", "(Schedule) Change of system object not allowed")
-			);
-		}
 		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScheduleGeneric) change(env);
 		o.isActive = p_isActive;
 		o.changerUId = env.cEnv.uid();
