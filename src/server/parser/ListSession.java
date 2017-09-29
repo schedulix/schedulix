@@ -59,6 +59,7 @@ public class ListSession extends Node
 		ConnectionEnvironment cEnv;
 		SDMSOutputContainer d_container = null;
 		boolean isInternal;
+		boolean isSuspended = false;
 
 		if(sysEnv.cEnv.gid().contains(SDMSObject.adminGId))	fullView = true;
 		else {
@@ -117,11 +118,13 @@ public class ListSession extends Node
 				cEnv = ((UserConnection) list[i]).getEnv();
 				isInternal = false;
 			} else {
-				cEnv = ((InternalSession) list[i]).getEnv();
+				InternalSession is = (InternalSession) list[i];
+				cEnv = is.getEnv();
 				isInternal = true;
+				isSuspended = is.isSuspended();
 			}
 			Vector data = new Vector();
-			if (fillVector(sysEnv, cEnv, data, isInternal)) {
+			if (fillVector(sysEnv, cEnv, data, isInternal, isSuspended)) {
 				d_container.addData(sysEnv, data);
 				sessionCtr++;
 			}
@@ -133,7 +136,7 @@ public class ListSession extends Node
 		result.setOutputContainer(d_container);
 	}
 
-	private boolean fillVector(SystemEnvironment sysEnv, ConnectionEnvironment cEnv, Vector data, boolean isInternal)
+	private boolean fillVector(SystemEnvironment sysEnv, ConnectionEnvironment cEnv, Vector data, boolean isInternal, boolean isSuspended)
 		throws SDMSException
 	{
 		if(cEnv.id() == env.id()) {
@@ -151,7 +154,7 @@ public class ListSession extends Node
 					data.add("USER");
 					if (isInternal) {
 						String s = cEnv.getMe().getClass().getCanonicalName();
-						data.add(s.substring(s.lastIndexOf('.')+1));
+						data.add(s.substring(s.lastIndexOf('.')+1) + (isSuspended ? "[S]" : ""));
 					} else
 						data.add(userName);
 				} catch (NotFoundException nfe) {

@@ -49,6 +49,7 @@ public abstract class SDMSThread extends Thread
 	public final static int SEVERITY_FATAL   = -2;
 
 	protected volatile boolean run;
+	protected volatile boolean isSuspended;
 
 	private static final SimpleDateFormat sysDateFmt = (SimpleDateFormat) SystemEnvironment.staticSystemDateFormat.clone();
 
@@ -61,24 +62,28 @@ public abstract class SDMSThread extends Thread
 	{
 		super();
 		run = true;
+		isSuspended = false;
 	}
 
 	public SDMSThread(String s)
 	{
 		super(s);
 		run = true;
+		isSuspended = false;
 	}
 
 	public SDMSThread(Runnable r)
 	{
 		super(r);
 		run = true;
+		isSuspended = false;
 	}
 
 	public SDMSThread  (ThreadGroup t, String s)
 	{
 		super(t, s);
 		run = true;
+		isSuspended = false;
 	}
 
 	public void print(PrintStream o)
@@ -91,6 +96,21 @@ public abstract class SDMSThread extends Thread
 	{
 		run = false;
 		interrupt();
+	}
+
+	public void SDMSsuspend()
+	{
+		isSuspended = true;
+	}
+
+	public void SDMSresume()
+	{
+		isSuspended = false;
+	}
+
+	public boolean isSuspended()
+	{
+		return isSuspended;
 	}
 
 	public void setTimeout(int newTimeout)

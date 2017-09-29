@@ -132,7 +132,8 @@ public abstract class InternalSession extends SDMSThread
 				try {
 					doWait = true;
 					lastRun = new java.util.Date().getTime();
-					post(getNode(NORMAL));
+					if (!isSuspended)
+						post(getNode(NORMAL));
 				} catch (SDMSException e) {
 
 				}

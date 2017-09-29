@@ -118,7 +118,7 @@ public class Parser
 %type <Node>	show_session, show_system, show_trigger, show_user, show_wt, shutdown_cmd, stop_svr_cmd, submit_cmd, suspend_cmd
 %type <Node>	versionedcmd
 
-%type <Boolean>	add_or_alter, add_or_delete, alter, ar_online
+%type <Boolean>	add_or_alter, add_or_delete, alter, ar_online, as_suspend
 %type <Boolean>	create
 %type <Boolean>	delete, drop
 %type <Boolean>	enable
@@ -688,6 +688,10 @@ stop_svr_cmd:	STOP SERVER							{ $$ = new StopServer(); }
 alter_server:	ALTER SERVER WITH enable CONNECT				{ $$ = new ConnectCtrl($4.booleanValue()); }
 	|	ALTER SERVER WITH SCHEDULE					{ $$ = new AlterServer(); }
 	|	ALTER SERVER WITH TRACE LEVEL '=' integer			{ $$ = new AlterServer($7); }
+	|	ALTER SERVER WITH as_suspend integer				{ $$ = new AlterServer($4, $5); }
+
+as_suspend:	SUSPEND								{ $$ = Boolean.TRUE; }
+	|	RESUME								{ $$ = Boolean.FALSE; }
 
 //D:MASTER
 //D:NT-ALIAS = show system

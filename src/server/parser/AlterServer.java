@@ -44,12 +44,24 @@ public class AlterServer extends Node
 
 	int traceLevel;
 	boolean doSchedule;
+	Boolean suspend;
+	int threadId;
+
+	public AlterServer(Boolean s, Integer t)
+	{
+		super();
+		threadId = -t.intValue();
+		doSchedule = false;
+		suspend = s;
+		txMode = SDMSTransaction.READONLY;
+	}
 
 	public AlterServer(Integer a)
 	{
 		super();
 		traceLevel = a.intValue();
 		doSchedule = false;
+		suspend = null;
 		txMode = SDMSTransaction.READONLY;
 	}
 
@@ -57,6 +69,7 @@ public class AlterServer extends Node
 	{
 		super();
 		doSchedule = true;
+		suspend = null;
 		txMode = SDMSTransaction.READWRITE;
 	}
 
@@ -82,6 +95,34 @@ public class AlterServer extends Node
 		if (doSchedule) {
 			sysEnv.sched.requestReschedule();
 			result.setFeedback(new SDMSMessage(sysEnv, "03805141212", "Resource reschedule requested"));
+		} else if (suspend != null) {
+			if (suspend.booleanValue()) {
+				if (SystemEnvironment.sched.id() == threadId) {
+					SystemEnvironment.sched.SDMSsuspend();
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Scheduling Thread suspended"));
+				}
+				if (SystemEnvironment.tt.id() == threadId) {
+					SystemEnvironment.tt.SDMSsuspend();
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Trigger Thread suspended"));
+				}
+				if (SystemEnvironment.timer.id() == threadId) {
+					SystemEnvironment.timer.SDMSsuspend();
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Timer Thread suspended"));
+				}
+			} else {
+				if (SystemEnvironment.sched.id() == threadId) {
+					SystemEnvironment.sched.SDMSresume();
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Scheduling Thread resumed"));
+				}
+				if (SystemEnvironment.tt.id() == threadId) {
+					SystemEnvironment.tt.SDMSresume();
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Trigger Thread resumed"));
+				}
+				if (SystemEnvironment.timer.id() == threadId) {
+					SystemEnvironment.timer.SDMSresume();
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Timer Thread resumed"));
+				}
+			}
 		} else {
 			ThreadGroup tg;
 			SDMSThread[]    list;
