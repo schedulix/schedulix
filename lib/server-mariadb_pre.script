@@ -1,0 +1,6 @@
+echo "executing pre server-mariadb -- %version-%release"
+if [ "$1" == "1" ]; then
+	: noting to do on initial install
+else
+	service schedulix-server stop || true
+fi

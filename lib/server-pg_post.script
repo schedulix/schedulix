@@ -1,0 +1,141 @@
+echo "executing post server-pg -- %version-%release"
+if [ "$1" == "1" ]; then
+	PGHBA=$SDMS_PGHBA
+	if [ -z "$PGHBA" ]; then
+		if [ -f /etc/pgpure/postgres/*/pgsql/pg_hba.conf ]; then
+			PGHBA=/etc/pgpure/postgres/*/data/pg_hba.conf
+			PGSRVNAME=postgres
+		else
+			PGSRVNAME=postgresql
+			if [ -f /var/lib/pgsql/data/pg_hba.conf ]; then
+				PGHBA=/var/lib/pgsql/data/pg_hba.conf
+			fi
+		fi
+	fi
+	# create a valid server.conf
+	echo "creating server.conf file"
+	HOSTNAME=`hostname`
+	su - schedulix -c "
+	. ~/.bashrc;
+	sed '
+		s:DbPasswd=.*:DbPasswd=schedulix:
+		s!DbUrl=.*!DbUrl=jdbc:postgresql:schedulixdb!
+		s:DbUser=.*:DbUser=schedulix:
+		s:Hostname=.*:Hostname=$HOSTNAME:
+		s:JdbcDriver=.*:JdbcDriver=org.postgresql.Driver:
+	' < /opt/schedulix/schedulix/etc/server.conf.template > /opt/schedulix/etc/server.conf;
+	chmod 600 /opt/schedulix/etc/server.conf;
+	cp /opt/schedulix/etc/java.conf /tmp/$$.tmp;
+	sed '
+		s:JDBCJAR=.*:JDBCJAR=/usr/share/java/postgresql-jdbc.jar:
+	' < /tmp/$$.tmp > /opt/schedulix/etc/java.conf;
+	rm -f /tmp/$$.tmp
+	"
+
+	echo "creating database user"
+	su - postgres -c 'echo "create user schedulix with password '"'schedulix'"' createdb login;" | psql'
+
+	# write the password file in order to be able to connect without a password prompt
+	touch /opt/schedulix/.pgpass
+	chmod 0600 /opt/schedulix/.pgpass
+	chown schedulix.schedulix /opt/schedulix/.pgpass
+	# now add the line to access schedulixdb
+	echo "127.0.0.1:5432:schedulixdb:schedulix:schedulix" >> /opt/schedulix/.pgpass
+
+	# modify /var/lib/pgsql/data/pg_hba.conf in order to allow jdbc connects
+	sed --in-place=.save '
+	     s!^host *all * all *127.0.0.1/32 *.*!host    all             all             127.0.0.1/32            md5!
+	     s!^host *all * all *::1/128 *.*!host    all             all             ::1/128                 md5!
+	' $PGHBA
+
+	# we now restart the DBMS to make our config change effective
+	service $PGSRVNAME restart
+
+	# since we need the DBMS, we'll enable it
+	systemctl enable $PGSRVNAME
+
+	echo "populating database"
+	su - schedulix -c '
+		. ~/.bashrc;
+		cd $BICSUITEHOME/sql
+		createdb schedulixdb
+		psql -f pg/install.sql schedulixdb
+		ret=$?
+		if [ $ret != 0 ]
+		then
+			echo "Error initializing repository database schedulixdb -- exit code $ret"
+			exit 1
+		fi
+		echo "create table schema_version (version char(10), release char(20));
+		      insert into schema_version (version, release) values ('"'"'%{version}'"'"', '"'"'%{release}'"'"');
+		" | psql schedulixdb
+	'
+
+	echo "Setting up /opt/schedulix/.sdmshrc"
+	su - schedulix -c "
+	echo 'User=SYSTEM
+	Password=G0H0ME
+	Timeout=0' > /opt/schedulix/.sdmshrc
+	chmod 600 /opt/schedulix/.sdmshrc
+	"
+
+	echo "Setting up /opt/schedulix/etc/sdmshrc"
+
+	su - schedulix -c "
+	echo 'Host=$HOSTNAME
+	Port=2506' > /opt/schedulix/etc/sdmshrc
+	chmod 644 /opt/schedulix/etc/sdmshrc
+	"
+
+	ln -s /etc/init.d/schedulix-server-pg /etc/init.d/schedulix-server
+
+	chkconfig schedulix-server on
+	echo "Loading convenience package"
+	service schedulix-server start
+	su - schedulix -c ". \$HOME/.bashrc; sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;"
+
+	chkconfig schedulix-server on
+else
+	# determine password from server.conf and write .pgpass
+	. /opt/schedulix/etc/SETTINGS
+	DBPASSWD=`egrep -e '^DbPasswd=' $BICSUITECONFIG/server.conf | sed 's/DbPasswd=//'`
+
+	# remove the old entry
+	mv /opt/schedulix/.pgpass /opt/schedulix/.tmp.$$
+
+	# create an empty .pgpass
+	touch /opt/schedulix/.pgpass
+	# adjust the privileges
+	chmod 0600 /opt/schedulix/.pgpass
+	chown schedulix.schedulix /opt/schedulix/.pgpass
+
+	# add all entries except for the schedulixdb entry
+	grep -v "schedulixdb" < /opt/schedulix/.tmp.$$ >> /opt/schedulix/.pgpass
+	rm -f /opt/schedulix/.tmp.$$
+
+	# add the new one
+	echo "127.0.0.1:5432:schedulixdb:schedulix:$DBPASSWD" >> /opt/schedulix/.pgpass
+
+	su - schedulix -c 'echo -e "\\\\t on\nselect version from schema_version;" | psql -q schedulixdb | head -1 | sed "s/ //g"' > /tmp/ver.$$
+	OLDVERSION=`cat /tmp/ver.$$`
+	rm -f /tmp/ver.$$
+	echo "currently installed: '$OLDVERSION', target: '%{version}'"
+	cd /opt/schedulix/schedulix-%{version}/sql/pg_gen
+	while [ "$OLDVERSION" != "%{version}" ]; do
+		UPGRADESCRIPT=`ls -1 generated-upgrade-${OLDVERSION}-to-*`
+		if [ -z "$UPGRADESCRIPT" ]; then
+			echo "WARNING: didn't find any more upgrade scripts!"
+			break;
+		fi
+		OLDVERSION=`basename $UPGRADESCRIPT .sql | sed 's/.*-to-//'`
+		echo "changing schema version to '$OLDVERSION' ..."
+		echo "executing $UPGRADESCRIPT ..."
+		su - schedulix -c "cd /opt/schedulix/schedulix-%{version}/sql/pg_gen; psql -f $UPGRADESCRIPT schedulixdb"
+	done
+	su - schedulix -c '
+		echo   "begin;
+			delete from schema_version;
+			insert into schema_version (version, release) values ('"'"'%{version}'"'"', '"'"'%{release}'"'"');
+			commit;
+		" | psql schedulixdb'
+fi

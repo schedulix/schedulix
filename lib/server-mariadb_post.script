@@ -1,0 +1,103 @@
+echo "executing post server-mariadb -- %version-%release"
+V="'%{version}'"
+R="'%{release}'"
+if [ "$1" == "1" ]; then
+	echo "creating server.conf file"
+	HOSTNAME=`hostname`
+	su - schedulix -c "
+	. ~/.bashrc;
+	sed '
+		s:DbPasswd=.*:DbPasswd=schedulix:
+		s:DbUrl=.*:DbUrl=jdbc\:mysql\:///schedulixdb:
+		s:DbUser=.*:DbUser=schedulix:
+		s:Hostname=.*:Hostname=$HOSTNAME:
+		s:JdbcDriver=.*:JdbcDriver=com.mysql.jdbc.Driver:
+	' < /opt/schedulix/schedulix/etc/server.conf.template > /opt/schedulix/etc/server.conf;
+	chmod 600 /opt/schedulix/etc/server.conf;
+	cp /opt/schedulix/etc/java.conf /tmp/$$.tmp;
+	sed '
+		s:JDBCJAR=.*:JDBCJAR=/usr/share/java/mysql-connector-java.jar:
+	' < /tmp/$$.tmp > /opt/schedulix/etc/java.conf;
+	rm -f /tmp/$$.tmp
+	"
+
+	echo "creating database"
+	chkconfig mariadb on
+	service mariadb start
+	mysql --user=root << ENDMYSQL
+	create user schedulix@localhost identified by 'schedulix';
+	create database schedulixdb;
+	grant all on schedulixdb.* to schedulix;
+	quit
+ENDMYSQL
+
+	# we enable the service. We need it
+	systemctl enable mariadb
+
+	echo "populating database"
+	su - schedulix -c "
+		. ~/.bashrc
+		cd "'$BICSUITEHOME'"/sql
+		mysql --user=schedulix --password=schedulix --database=schedulixdb --execute 'source mysql/install.sql'
+		"'ret=$?
+		if [ $ret != 0 ]'"
+		then
+			echo "'"Error initializing repository database schedulixdb -- exit code $ret"'"
+			exit 1
+		fi
+	"
+	echo 'create table schema_version (`version` char(10), `release` char(20));
+	      insert into schema_version (`version`, `release`) values ('"$V, $R"');
+	' | mysql --user=schedulix --password=schedulix --database=schedulixdb
+
+	echo "Setting up /opt/schedulix/.sdmshrc"
+
+	su - schedulix -c "
+	echo 'User=SYSTEM
+	Password=G0H0ME
+	Timeout=0' > /opt/schedulix/.sdmshrc
+	chmod 600 /opt/schedulix/.sdmshrc
+	"
+
+	echo "Setting up /opt/schedulix/etc/sdmshrc"
+
+	su - schedulix -c "
+	echo 'Host=$HOSTNAME
+	Port=2506' > /opt/schedulix/etc/sdmshrc
+	chmod 644 /opt/schedulix/etc/sdmshrc
+	"
+
+	ln -s /etc/init.d/schedulix-server-mariadb /etc/init.d/schedulix-server
+
+	chkconfig schedulix-server on
+	service schedulix-server start
+	echo "Loading convenience package"
+	su - schedulix -c ". ~/.bashrc; sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;"
+else
+	# determine password from server.conf
+	. /opt/schedulix/etc/SETTINGS
+	DBPASSWD=`egrep -e '^DbPasswd=' $BICSUITECONFIG/server.conf | sed 's/DbPasswd=//'`
+
+	su - schedulix -c 'echo -e "select version from schema_version;" | mysql -sN --user=schedulix --password='"$DBPASSWD"' --database=schedulixdb | sed "s/ //g"' > /tmp/ver.$$
+	OLDVERSION=`cat /tmp/ver.$$`
+	rm -f /tmp/ver.$$
+	echo "currently installed: '$OLDVERSION', target: '%{version}'"
+	cd /opt/schedulix/schedulix-%{version}/sql/mysql_gen
+	while [ "$OLDVERSION" != "%{version}" ]; do
+		UPGRADESCRIPT=`ls -1 generated-upgrade-${OLDVERSION}-to-*`
+		if [ -z "$UPGRADESCRIPT" ]; then
+			echo "WARNING: didn't find any more upgrade scripts!"
+			break;
+		fi
+		OLDVERSION=`basename $UPGRADESCRIPT .sql | sed 's/.*-to-//'`
+		echo "changing schema version to '$OLDVERSION' ..."
+		echo "executing $UPGRADESCRIPT ..."
+		su - schedulix -c "cd /opt/schedulix/schedulix-%{version}/sql/mysql_gen; mysql --user=schedulix --password='$DBPASSWD' --database=schedulixdb --execute 'source $UPGRADESCRIPT'"
+	done
+	echo   'begin;
+		delete from schema_version;
+		insert into schema_version (`version`, `release`) values ('"$V, $R"');
+		commit;
+	' | mysql --user=schedulix --password="$DBPASSWD" --database=schedulixdb
+	service schedulix-server start
+fi

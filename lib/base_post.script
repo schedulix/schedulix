@@ -1,0 +1,61 @@
+echo "executing post base -- %version-%release"
+if [ "$1" == "1" ]; then
+	# we basically write the configuration files bicsuite.conf, java.conf and a settings file here
+	sed '
+	s!JNAJAR=.*!JNAJAR=/usr/share/java/jna.jar!
+	s!SWTJAR=.*!SWTJAR=/usr/lib64/java/swt.jar!' < /opt/schedulix/schedulix-%{version}/etc/java.conf.template > /opt/schedulix/etc/java.conf
+
+	cp /opt/schedulix/schedulix-%{version}/etc/bicsuite.conf.template /opt/schedulix/etc/bicsuite.conf
+	echo '
+BICSUITEHOME=/opt/schedulix/schedulix
+BICSUITECONFIG=/opt/schedulix/etc
+BICSUITELOGDIR=/opt/schedulix/log
+PATH=$BICSUITEHOME/bin:$PATH
+export BICSUITEHOME BICSUITECONFIG BICSUITELOGDIR PATH
+	' > /opt/schedulix/etc/SETTINGS
+
+	# make the three files readable for world
+	chown schedulix.schedulix /opt/schedulix/etc/bicsuite.conf /opt/schedulix/etc/java.conf /opt/schedulix/etc/SETTINGS
+	chmod 644 /opt/schedulix/etc/bicsuite.conf /opt/schedulix/etc/java.conf /opt/schedulix/etc/SETTINGS
+	if [ %{arch} == "ppc64le" ]; then
+		# we'll have to remove the "-client" flag as the ppc openJDK Java doesn't like it
+		sed --in-place=.save 's/-client[ ]?//' /opt/schedulix/etc/java.conf
+	fi
+
+	echo '
+# source schedulix environment if not done already
+if [ -z "$BICSUITEHOME" ]; then
+	. /opt/schedulix/etc/SETTINGS
+fi
+' >> ~schedulix/.bashrc
+	chown schedulix.schedulix ~schedulix/.bashrc
+
+	#
+	# as it seems, the .bashrc isn't read when doing "su - schedulix"
+	# therefor we create a .profile if it doesn't exist yet
+	#
+	if [ ! -f /opt/schedulix/.profile ]; then
+		echo '
+#!/bin/bash
+
+if [ -f $HOME/.bashrc ]; then
+	. $HOME/.bashrc
+fi
+' > /opt/schedulix/.profile
+		chown schedulix.schedulix ~schedulix/.profile
+	fi
+fi
+# link has to be created or recreated to point to the actual version
+cd /opt/schedulix
+if [ -L schedulix ]; then
+	rm schedulix
+fi
+su schedulix -c "ln -s schedulix-%{version} schedulix"
+if [ "$1" != "1" ]; then
+	if [ -x /etc/init.d/schedulix-server ]; then
+		service schedulix-server start || true
+	fi
+	if [ -x /etc/init.d/schedulix-client ]; then
+		service schedulix-client start || true
+	fi
+fi
