@@ -68,6 +68,8 @@ public abstract class SDMSObject implements Cloneable, Comparable
 
 	public final static Long systemFId = new Long(40);
 
+	public final static Long rootScId = new Long(70);
+
 	protected SDMSObject()
 	{
 	}
