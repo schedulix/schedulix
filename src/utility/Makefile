@@ -55,8 +55,8 @@ CFILES = scrolllog.c common.c
 HFILES = scrolllog.h common.h
 SLOBJS = scrolllog.o common.o
 OBJS = $(SLOBJS)
-
 EXEC = $(SDMSHOME)/bin/scrolllog 
+
 
 DISTRIB = $(EXEC)
 
@@ -77,8 +77,8 @@ new: clean all
 
 include $(SDMSHOME)/src/Makefile.CommonRules
 
-CXXFLAGS += -fno-exceptions -pedantic -Wall -Wshadow -Wpointer-arith \
-	-Wwrite-strings -Wconversion -Wstrict-prototypes -Wmissing-prototypes \
+CXXFLAGS += -fno-exceptions -Wall -Wshadow -Wpointer-arith \
+	-Wwrite-strings -Wstrict-prototypes \
 	-Wmissing-declarations -Wnested-externs
 
 ifdef LINUX
@@ -89,17 +89,17 @@ CXXFLAGS += -DBSD -Winline
 else
 ifdef SOLARIS
 CXXFLAGS += -DSOLARIS
-else
+endif
+endif
+endif
 ifdef AIX
 CXXFLAGS += -DAIX
-endif
-endif
-endif
+LDFLAGS += -lbsd
 endif
 
 .c.o:
 	$(CC) $(CXXFLAGS) -c $<
 
 $(SDMSHOME)/bin/scrolllog: $(SLOBJS)
-	$(CC) $(SLOBJS) -o $@
+	$(CC) $(LDFLAGS) $(SLOBJS) -o $@
 
