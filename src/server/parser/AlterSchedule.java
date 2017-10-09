@@ -59,6 +59,9 @@ public class AlterSchedule
 
 		final Vector mappedPath = obj.path;
 		final String mappedName = (String) mappedPath.remove (mappedPath.size() - 1);
+		if (mappedPath.size() == 0) {
+			throw new CommonErrorException (new SDMSMessage (sysEnv, "03709290909", "The root schedule can't be altered"));
+		}
 
 		final Long parentId = SDMSScheduleTable.pathToId (sysEnv, mappedPath);
 		final SDMSKey parentKey = new SDMSKey (parentId, mappedName);
