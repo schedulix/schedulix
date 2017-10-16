@@ -269,6 +269,12 @@ public class Connect extends Node
 	protected void initUser(SystemEnvironment sysEnv, String[] groups, boolean syncCredentials, boolean createUser, boolean createGroups)
 	throws SDMSException
 	{
+		initUser(sysEnv, groups, syncCredentials, createUser, createGroups, null);
+	}
+
+	protected void initUser(SystemEnvironment sysEnv, String[] groups, boolean syncCredentials, boolean createUser, boolean createGroups, String defaultGroup)
+	throws SDMSException
+	{
 		SDMSUser u;
 		Long uId;
 		Integer method = new Integer(SDMSUser.SHA256);
@@ -304,7 +310,7 @@ public class Connect extends Node
 			if (u == null) {
 				String passwd = "Internal Authentication Disabled";
 				Boolean enable = Boolean.TRUE;
-				u = SDMSUserTable.table.create(sysEnv, user, passwd, passwd , method, enable, SDMSObject.publicGId, new Integer(SDMSUser.PLAIN), zero);
+				u = SDMSUserTable.table.create(sysEnv, user, passwd, passwd, method, enable, SDMSObject.publicGId, new Integer(SDMSUser.PLAIN), zero);
 				SDMSMemberTable.table.create(sysEnv, SDMSObject.publicGId, u.getId(sysEnv));
 				freshMeat = true;
 			} else {
@@ -349,6 +355,15 @@ public class Connect extends Node
 						it.remove();
 						m.delete(sysEnv);
 					}
+				}
+			}
+
+			if (defaultGroup != null) {
+				try {
+					Long defaultGId = SDMSGroupTable.idx_name_getUnique(sysEnv, defaultGroup).getId(sysEnv);
+					u.setDefaultGId(sysEnv, defaultGId);
+				} catch (NotFoundException e)  {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "02710041057", "Default Group " + defaultGroup + " does not exist"));
 				}
 			}
 

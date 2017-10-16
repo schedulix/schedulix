@@ -111,7 +111,11 @@ public class AlterSession extends Node
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03707161120", "User disabled"));
 			}
 			if (baseUser != null) {
-				b = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(baseUser, zero));
+				try {
+					b = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(baseUser, zero));
+				} catch (NotFoundException nfe) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03707161122", "Base User not found"));
+				}
 				if (!b.getIsEnabled(sysEnv).booleanValue()) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03708010942", "User disabled"));
 				}

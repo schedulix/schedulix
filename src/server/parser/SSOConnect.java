@@ -50,6 +50,9 @@ public class SSOConnect extends Connect
 	private String token;
 	private boolean firstTime;
 
+	private final static String ADMIN = "ASDMIN";
+	private final static String PUBLIC = "PUBLIC";
+	private final static String ISDEFAULT = "ISDEFAULT";
 	private final static String PROVIDER = "PROVIDER";
 
 	public SSOConnect(WithHash w, boolean firstTime)
@@ -125,6 +128,8 @@ public class SSOConnect extends Connect
 			IWindowsAccount[] groups = serverContext.getIdentity().getGroups();
 			Vector<String> vGroups = new Vector<String>();
 			boolean isBicsuiteUser = false;
+			String defaultGroup = null;
+			boolean isDefaultGroup = false;
 			for (IWindowsAccount group : serverContext.getIdentity().getGroups()) {
 				String name = group.getFqn();
 				int i = name.indexOf('\\');
@@ -133,13 +138,17 @@ public class SSOConnect extends Connect
 					name = name.substring(i + 1);
 				if (!name.startsWith(namePrefix))
 					continue;
-				if (name.equals(namePrefix + "_USER")) {
+				if (name.endsWith("_" + ISDEFAULT)) {
+					isDefaultGroup = true;
+					name = name.substring(0,name.length() - ("_" + ISDEFAULT).length());
+				}
 					isBicsuiteUser = true;
+				if (name.equals(namePrefix + "_" + PUBLIC)) {
 					continue;
 				}
 				if (SystemEnvironment.useAdGroups) {
-					if (name.equals(namePrefix + "_ADMIN"))
-						vGroups.add("ADMIN");
+					if (name.equals(namePrefix + "_" + ADMIN))
+						name = (ADMIN);
 					else {
 						name = name.substring(namePrefix.length());
 						if (SystemEnvironment.includeDomainNames)
@@ -149,17 +158,19 @@ public class SSOConnect extends Connect
 						} else if (SystemEnvironment.nameCase.equals(SystemEnvironment.CASE_LOWER)) {
 							name = name.toLowerCase();
 						}
-						vGroups.add(name);
 					}
+					if (isDefaultGroup)
+						defaultGroup = name;
+					vGroups.add(name);
 				}
 			}
 			if (!isBicsuiteUser)
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "02709251459", "Permission denied"));
 
 			if (SystemEnvironment.useAdGroups)
-				initUser(sysEnv, vGroups.toArray(new String[0]), false, SystemEnvironment.autoCreateUsers, SystemEnvironment.autoCreateGroups);
+				initUser(sysEnv, vGroups.toArray(new String[0]), false, SystemEnvironment.autoCreateUsers, SystemEnvironment.autoCreateGroups, defaultGroup);
 			else
-				initUser(sysEnv, null, false, SystemEnvironment.autoCreateUsers, SystemEnvironment.autoCreateGroups);
+				initUser(sysEnv, null, false, SystemEnvironment.autoCreateUsers, SystemEnvironment.autoCreateGroups, defaultGroup);
 		}
 
 		desc.add("CONNECT_TIME");
