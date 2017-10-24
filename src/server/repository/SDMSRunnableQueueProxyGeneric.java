@@ -198,6 +198,34 @@ public class SDMSRunnableQueueProxyGeneric extends SDMSProxy
 		return (SDMSRunnableQueue)this;
 	}
 
+	public SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSKey s = null;
+		Long myId = getId(sysEnv);
+		if (sysEnv.tx.sortKeyMap == null)
+			sysEnv.tx.sortKeyMap = new HashMap();
+		else
+			s = (SDMSKey) sysEnv.tx.sortKeyMap.get(myId);
+		if (s != null) return s;
+		boolean gotIt = false;
+		s = new SDMSKey();
+
+		gotIt = false;
+		Long scopeId = getScopeId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSScopeTable.getObject(sysEnv, scopeId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		s.add(getSmeId(sysEnv));
+
+		sysEnv.tx.sortKeyMap.put(myId, s);
+		return s;
+	}
+
 	public final boolean checkPrivileges(SystemEnvironment env, long p)
 	throws SDMSException
 	{

@@ -286,6 +286,27 @@ public class SDMSHierarchyInstanceProxyGeneric extends SDMSProxy
 		return (SDMSHierarchyInstance)this;
 	}
 
+	public SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSKey s = null;
+		Long myId = getId(sysEnv);
+		if (sysEnv.tx.sortKeyMap == null)
+			sysEnv.tx.sortKeyMap = new HashMap();
+		else
+			s = (SDMSKey) sysEnv.tx.sortKeyMap.get(myId);
+		if (s != null) return s;
+		boolean gotIt = false;
+		s = new SDMSKey();
+
+		s.add(getParentId(sysEnv));
+
+		s.add(getChildId(sysEnv));
+
+		sysEnv.tx.sortKeyMap.put(myId, s);
+		return s;
+	}
+
 	public void delete (SystemEnvironment env)
 	throws SDMSException
 	{

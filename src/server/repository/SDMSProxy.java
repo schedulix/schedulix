@@ -75,7 +75,7 @@ public abstract class SDMSProxy implements Comparable
 	}
 
 	protected void checkRead (SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		if (current) {
 			if (!object.isCurrent) {
@@ -83,21 +83,21 @@ public abstract class SDMSProxy implements Comparable
 			}
 			if (object.isDeleted) {
 				throw new FatalException (new SDMSMessage (env, "02110292004",
-							"Accessing a previously deleted object"));
+				                          "Accessing a previously deleted object"));
 			}
 		}
 	}
 
 	protected void checkWrite (SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		if(env.tx.mode == SDMSTransaction.READONLY) {
 			throw new FatalException(new SDMSMessage(env,
-					"03110182335", "Illegal write access in Readonly Transaction"));
+			                         "03110182335", "Illegal write access in Readonly Transaction"));
 		}
 		if (!current) {
 			throw new FatalException (new SDMSMessage (env, "02110292014",
-						  "Trying to change object via readonly object reference"));
+			                          "Trying to change object via readonly object reference"));
 		}
 		if (!lockedExclusive) {
 			if (env.maxWriter > 1)
@@ -108,19 +108,19 @@ public abstract class SDMSProxy implements Comparable
 	}
 
 	void delete(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		objectDelete(env, false);
 	}
 
 	public void memDelete(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		objectDelete(env, true);
 	}
 
 	private void objectDelete(SystemEnvironment env, boolean memOnly)
-		throws SDMSException
+	throws SDMSException
 	{
 		if (!lockedExclusive) {
 			if (env.maxWriter > 1)
@@ -137,45 +137,48 @@ public abstract class SDMSProxy implements Comparable
 			object.delete (env);
 	}
 
+	public abstract SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException;
+
 	public String toString()
 	{
 		return "SDMSProxy (object = " + object.toString() +
-				",current = " + current +
-				", lockedExclusive = " + lockedExclusive + ")";
+		       ",current = " + current +
+		       ", lockedExclusive = " + lockedExclusive + ")";
 	}
 
 	public long getValidFrom(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		checkRead(env);
 		return object.getValidFrom(env);
 	}
 
 	public long getValidTo(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		checkRead(env);
 		return object.getValidTo(env);
 	}
 
 	public Long getId(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		checkRead(env);
 		return object.getId(env);
 	}
 
 	protected abstract void touch(SystemEnvironment env)
-		throws SDMSException;
+	throws SDMSException;
 
 	synchronized void release(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		object.memDelete(env);
 	}
 
 	public Vector getContent(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		return null;
 	}
@@ -190,19 +193,19 @@ public abstract class SDMSProxy implements Comparable
 	public abstract long getPrivilegeMask();
 
 	public abstract boolean checkPrivileges(SystemEnvironment env, long p)
-		throws SDMSException;
+	throws SDMSException;
 
 	public abstract SDMSPrivilege getPrivileges(SystemEnvironment env)
-		throws SDMSException;
+	throws SDMSException;
 
 	public abstract SDMSPrivilege getPrivilegesForGroups(SystemEnvironment env, Vector groups)
-		throws SDMSException;
+	throws SDMSException;
 
 	public abstract long getPrivileges(SystemEnvironment env, long checkPrivs, boolean fastFail, Vector checkGroups)
-		throws SDMSException;
+	throws SDMSException;
 
 	public abstract SDMSMessage accessViolationMessage(SystemEnvironment sysEnv, String errno)
-		throws SDMSException;
+	throws SDMSException;
 
 	public void dumpVersions()
 	{
@@ -210,19 +213,19 @@ public abstract class SDMSProxy implements Comparable
 	}
 
 	public String getURL(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		return "getURL is not supported for this object";
 	}
 
 	public String getURLName(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		return "getURLName is not supported for this object";
 	}
 
 	public String getSubtypeName(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		return "";
 	}
@@ -234,7 +237,7 @@ public abstract class SDMSProxy implements Comparable
 	}
 
 	public Long getInheritPrivs(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		return ZERO;
 	}
@@ -249,25 +252,25 @@ public abstract class SDMSProxy implements Comparable
 	}
 
 	public Long getParentId(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		return null;
 	}
 
 	public SDMSProxy getParent(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		return null;
 	}
 
 	public PathVector pathVector(SystemEnvironment sysEnv)
-		throws SDMSException
+	throws SDMSException
 	{
 		return null;
 	}
 
 	public Long getOwnerId(SystemEnvironment sysEnv)
-		throws SDMSException
+	throws SDMSException
 	{
 		return null;
 	}

@@ -326,6 +326,34 @@ public class SDMSExitStateProxyGeneric extends SDMSProxy
 		return (SDMSExitState)this;
 	}
 
+	public SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSKey s = null;
+		Long myId = getId(sysEnv);
+		if (sysEnv.tx.sortKeyMap == null)
+			sysEnv.tx.sortKeyMap = new HashMap();
+		else
+			s = (SDMSKey) sysEnv.tx.sortKeyMap.get(myId);
+		if (s != null) return s;
+		boolean gotIt = false;
+		s = new SDMSKey();
+
+		gotIt = false;
+		Long espId = getEspId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSExitStateProfileTable.getObject(sysEnv, espId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		s.add(getPreference(sysEnv));
+
+		sysEnv.tx.sortKeyMap.put(myId, s);
+		return s;
+	}
+
 	public void delete (SystemEnvironment env)
 	throws SDMSException
 	{

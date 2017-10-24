@@ -232,6 +232,50 @@ public class SDMSResourceStateMappingProxyGeneric extends SDMSProxy
 		return (SDMSResourceStateMapping)this;
 	}
 
+	public SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSKey s = null;
+		Long myId = getId(sysEnv);
+		if (sysEnv.tx.sortKeyMap == null)
+			sysEnv.tx.sortKeyMap = new HashMap();
+		else
+			s = (SDMSKey) sysEnv.tx.sortKeyMap.get(myId);
+		if (s != null) return s;
+		boolean gotIt = false;
+		s = new SDMSKey();
+
+		gotIt = false;
+		Long rsmpId = getRsmpId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSResourceStateMappingProfileTable.getObject(sysEnv, rsmpId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		gotIt = false;
+		Long esdId = getEsdId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSExitStateDefinitionTable.getObject(sysEnv, esdId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		gotIt = false;
+		Long fromRsdId = getFromRsdId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSResourceStateDefinitionTable.getObject(sysEnv, fromRsdId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		sysEnv.tx.sortKeyMap.put(myId, s);
+		return s;
+	}
+
 	public void delete (SystemEnvironment env)
 	throws SDMSException
 	{

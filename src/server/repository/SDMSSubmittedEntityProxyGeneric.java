@@ -1917,6 +1917,14 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 		return (SDMSSubmittedEntity)this;
 	}
 
+	public SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSKey s = new SDMSKey();
+		s.add(getId(sysEnv));
+		return s;
+	}
+
 	public final boolean checkPrivileges(SystemEnvironment env, long p)
 	throws SDMSException
 	{

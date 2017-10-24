@@ -184,6 +184,15 @@ public class SDMSIntervalHierarchyProxyGeneric extends SDMSProxy
 		((SDMSIntervalHierarchyGeneric)(object)).setChangeTs (env, p_changeTs);
 		return (SDMSIntervalHierarchy)this;
 	}
+
+	public SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSKey s = new SDMSKey();
+		s.add(getId(sysEnv));
+		return s;
+	}
+
 	public void delete (SystemEnvironment env)
 	throws SDMSException
 	{

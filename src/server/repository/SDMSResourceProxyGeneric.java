@@ -571,6 +571,56 @@ public class SDMSResourceProxyGeneric extends SDMSProxy
 		return (SDMSResource)this;
 	}
 
+	public SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSKey s = null;
+		Long myId = getId(sysEnv);
+		if (sysEnv.tx.sortKeyMap == null)
+			sysEnv.tx.sortKeyMap = new HashMap();
+		else
+			s = (SDMSKey) sysEnv.tx.sortKeyMap.get(myId);
+		if (s != null) return s;
+		boolean gotIt = false;
+		s = new SDMSKey();
+
+		gotIt = false;
+		Long nrId = getNrId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSNamedResourceTable.getObject(sysEnv, nrId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		gotIt = false;
+		Long scopeId = getScopeId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSScopeTable.getObject(sysEnv, scopeId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+		if (!gotIt)
+			try {
+				s.add(SDMSFolderTable.getObject(sysEnv, scopeId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		gotIt = false;
+		Long masterId = getMasterId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSSubmittedEntityTable.getObject(sysEnv, masterId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		sysEnv.tx.sortKeyMap.put(myId, s);
+		return s;
+	}
+
 	public void delete (SystemEnvironment env)
 	throws SDMSException
 	{

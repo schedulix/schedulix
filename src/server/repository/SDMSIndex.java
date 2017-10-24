@@ -60,10 +60,10 @@ public class SDMSIndex
 	throws SDMSException
 	{
 		if(t != ORDINARY &&
-		   t != UNIQUE   &&
-		   t != IDUNIQUE) {
+		    t != UNIQUE   &&
+		    t != IDUNIQUE) {
 			throw new FatalException(new SDMSMessage(env,
-						"03110181526", "Invalid Indextype $1", new Integer(t)));
+			                         "03110181526", "Invalid Indextype $1", new Integer(t)));
 		}
 		this.table = table;
 		this.indexName = indexName;
@@ -73,13 +73,13 @@ public class SDMSIndex
 	}
 
 	public void put (SystemEnvironment env, Object key, SDMSObject o)
-		throws SDMSException
+	throws SDMSException
 	{
 		put (env, key, o, true);
 	}
 
 	public void put (SystemEnvironment env, Object key, SDMSObject o, boolean doLockBucket)
-		throws SDMSException
+	throws SDMSException
 	{
 		SDMSIndexBucket v = null;
 		synchronized(hashMap) {
@@ -163,7 +163,7 @@ public class SDMSIndex
 						v.modCnt --;
 					}
 					throw new DuplicateKeyException(new SDMSMessage(env, "03110181528",
-						"Duplicate Key $1: Second object exists", key));
+					                                "Duplicate Key $1: Second object exists", key));
 				}
 
 				if (env.maxWriter > 1)
@@ -180,7 +180,7 @@ public class SDMSIndex
 					p[6] = new Long(o.validTo);
 					v.modCnt --;
 					throw new FatalException(new SDMSMessage(env, "03110181529",
-						"Duplicate Key $1: Overlapping versionrange with same id: o[$2:$3,$4], old[$5:$6,$7]", p));
+					                         "Duplicate Key $1: Overlapping versionrange with same id: o[$2:$3,$4], old[$5:$6,$7]", p));
 				}
 			}
 		}
@@ -193,7 +193,7 @@ public class SDMSIndex
 	}
 
 	public boolean remove(SystemEnvironment env, Object key, SDMSObject o)
-		throws SDMSException
+	throws SDMSException
 	{
 		boolean rc = false;
 		synchronized(hashMap) {
@@ -223,7 +223,7 @@ public class SDMSIndex
 	}
 
 	private SDMSIndexBucket getOrCreateBucket(SystemEnvironment env, Object key, int lockMode)
-		throws SerializationException
+	throws SerializationException
 	{
 		SDMSIndexBucket v;
 		synchronized(hashMap) {
@@ -241,7 +241,7 @@ public class SDMSIndex
 	}
 
 	public boolean containsKeyForUpdate(SystemEnvironment env, Object key)
-		throws SerializationException, SDMSException
+	throws SerializationException, SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return containsKey(env, key);
@@ -337,7 +337,7 @@ public class SDMSIndex
 	}
 
 	public Vector getVector(SystemEnvironment env, Object key)
-		throws SDMSException
+	throws SDMSException
 	{
 		return getVector(env, key, null, 0);
 	}
@@ -349,7 +349,7 @@ public class SDMSIndex
 	}
 
 	public Vector getVector(SystemEnvironment env, Object key, SDMSFilter filter)
-		throws SDMSException
+	throws SDMSException
 	{
 		return getVector(env, key, filter, 0);
 	}
@@ -361,7 +361,7 @@ public class SDMSIndex
 	}
 
 	public Vector getVector(SystemEnvironment env, Object key, int limit)
-		throws SDMSException
+	throws SDMSException
 	{
 		return getVector(env, key, null, limit);
 	}
@@ -379,7 +379,7 @@ public class SDMSIndex
 		return getVector(env, key, filter, limit);
 	}
 	public Vector getVector(SystemEnvironment env, Object key, SDMSFilter filter, int limit)
-		throws SDMSException
+	throws SDMSException
 	{
 		int readLock = env.thread.readLock;
 		env.thread.readLock = ObjectLock.SHARED;
@@ -459,24 +459,24 @@ public class SDMSIndex
 	throws SDMSException
 	{
 		Vector v = getVectorForUpdate(env, key);
-		Collections.sort(v);
+		Collections.sort(v, new SDMSProxyComparator(env));
 		return v;
 	}
 	public Vector getSortedVector(SystemEnvironment env, Object key)
-		throws SDMSException
+	throws SDMSException
 	{
 		Vector v = getVector(env, key);
-		Collections.sort(v);
+		Collections.sort(v, new SDMSProxyComparator(env));
 		return v;
 	}
 
 	public Vector getVector(SystemEnvironment env, Object key, long version)
-		throws SDMSException
+	throws SDMSException
 	{
 		return getVector(env, key, version, null);
 	}
 	private Vector getVector(SystemEnvironment env, Object key, long version, SDMSFilter filter)
-		throws SDMSException
+	throws SDMSException
 	{
 		Vector r = new Vector();
 
@@ -525,7 +525,7 @@ public class SDMSIndex
 	}
 
 	public Vector getSortedVector(SystemEnvironment env, Object key, long version)
-		throws SDMSException
+	throws SDMSException
 	{
 		Vector v = getVector(env, key, version);
 		Collections.sort(v);
@@ -539,7 +539,7 @@ public class SDMSIndex
 		return getUnique(env, key);
 	}
 	public SDMSProxy getUnique(SystemEnvironment env, Object key)
-		throws SDMSException
+	throws SDMSException
 	{
 		int readLock = env.thread.readLock;
 		env.thread.readLock = ObjectLock.SHARED;
@@ -548,7 +548,7 @@ public class SDMSIndex
 
 		if((type&UNIQUE) == 0)
 			throw new FatalException(new SDMSMessage(env, "03110181530",
-				"Attempt to retrieve unique value from nonunique index"));
+			                         "Attempt to retrieve unique value from nonunique index"));
 
 		if(env.tx.mode == SDMSTransaction.READWRITE) {
 
@@ -601,11 +601,11 @@ public class SDMSIndex
 	}
 
 	public SDMSProxy getUnique(SystemEnvironment env, Object key, long version)
-		throws SDMSException
+	throws SDMSException
 	{
 		if((type&UNIQUE) == 0)
 			throw new FatalException(new SDMSMessage(env, "03110181531",
-				"Attempt to retrieve unique value from nonunique index"));
+			                         "Attempt to retrieve unique value from nonunique index"));
 
 		SDMSIndexBucket v;
 		synchronized(hashMap) {

@@ -63,12 +63,12 @@ public class SDMSRepository
 			env.dbConnection.close();
 		} catch(SQLException sqle) {
 			throw new FatalException(new SDMSMessage(env, "03110181535",
-						"SQL Error : $1", sqle.getMessage()));
+			                         "SQL Error : $1", sqle.getMessage()));
 		}
 	}
 
 	private void fillSme2Load(SystemEnvironment env)
-		throws SDMSException
+	throws SDMSException
 	{
 		long lowestActiveDate = getLowestActiveDate(env);
 		long historyDate = getHistoryDate(env);
@@ -96,18 +96,18 @@ public class SDMSRepository
 
 			Statement stmt = env.dbConnection.createStatement();
 			ResultSet rset = stmt.executeQuery("SELECT " + "ID" +
-					", " + squote + "SE_ID" + equote +
-					", " + squote + "SE_VERSION" + equote +
-					", " + squote + "STATE" + equote +
-					", " + squote + "FINAL_TS" + equote +
-					", " + squote + "SUBMIT_TS" + equote +
-					"  FROM SUBMITTED_ENTITY" +
-					" WHERE ID = MASTER_ID" +
-					"   AND (" + squote + "STATE" + equote + " NOT IN (" + SDMSSubmittedEntity.CANCELLED + "," + SDMSSubmittedEntity.FINAL + ") OR" +
-					"       FINAL_TS >= " + (postgres ?
-					"	   CAST (\'" + lowestActiveDate + "\' AS DECIMAL)" :
-					"	   " + lowestActiveDate) + ")" +
-					" ORDER BY SE_ID, SUBMIT_TS DESC");
+			                                   ", " + squote + "SE_ID" + equote +
+			                                   ", " + squote + "SE_VERSION" + equote +
+			                                   ", " + squote + "STATE" + equote +
+			                                   ", " + squote + "FINAL_TS" + equote +
+			                                   ", " + squote + "SUBMIT_TS" + equote +
+			                                   "  FROM SUBMITTED_ENTITY" +
+			                                   " WHERE ID = MASTER_ID" +
+			                                   "   AND (" + squote + "STATE" + equote + " NOT IN (" + SDMSSubmittedEntity.CANCELLED + "," + SDMSSubmittedEntity.FINAL + ") OR" +
+			                                   "       FINAL_TS >= " + (postgres ?
+			                                                   "	   CAST (\'" + lowestActiveDate + "\' AS DECIMAL)" :
+			                                                   "	   " + lowestActiveDate) + ")" +
+			                                   " ORDER BY SE_ID, SUBMIT_TS DESC");
 			int insctr = 0;
 			while(rset.next()) {
 				hit = false;
@@ -133,18 +133,17 @@ public class SDMSRepository
 				if (hit) {
 					if (seVersion < lowestActiveVersion)
 						lowestActiveVersion = seVersion;
-					// now write sme2load table with masterId
 					insertStmt.setLong(1, smeId);
 					insertStmt.addBatch();
 					insctr++;
-					if (insctr == 1000) {	// write 1000 rows "at once"
+					if (insctr == 1000) {
 						insertStmt.executeBatch();
 						insertStmt.clearBatch();
 						insctr = 0;
 					}
 				}
 			}
-			if (insctr != 0)			// if there are any remaining rows, write them
+			if (insctr != 0)
 				insertStmt.executeBatch();
 			stmt.close();
 			insertStmt.close();
@@ -152,13 +151,13 @@ public class SDMSRepository
 
 			Statement fill = env.dbConnection.createStatement();
 			fill.executeUpdate("INSERT INTO SME2LOAD " +
-					   "SELECT S.ID FROM SUBMITTED_ENTITY S, SME2LOAD M " +
-					   " WHERE M.ID = S.MASTER_ID " +
-					   "   AND S.ID != S.MASTER_ID");
+			                   "SELECT S.ID FROM SUBMITTED_ENTITY S, SME2LOAD M " +
+			                   " WHERE M.ID = S.MASTER_ID " +
+			                   "   AND S.ID != S.MASTER_ID");
 			env.dbConnection.commit();
 		} catch(SQLException sqle) {
 			throw new FatalException(new SDMSMessage(env, "03401131304",
-						"SQL Error : $1", sqle.getMessage()));
+			                         "SQL Error : $1", sqle.getMessage()));
 		}
 	}
 
@@ -188,14 +187,10 @@ public class SDMSRepository
 	{
 		tables = new HashMap();
 
-		// For each table
-		// C
 		tables.put(SDMSCalendarTableGeneric.tableName,				new SDMSCalendarTable(env));
-		// D
 		tables.put(SDMSDependencyDefinitionTableGeneric.tableName,		new SDMSDependencyDefinitionTable(env));
 		tables.put(SDMSDependencyInstanceTableGeneric.tableName,		new SDMSDependencyInstanceTable(env));
 		tables.put(SDMSDependencyStateTableGeneric.tableName,			new SDMSDependencyStateTable(env));
-		// E
 		tables.put(SDMSEntityVariableTableGeneric.tableName,			new SDMSEntityVariableTable(env));
 		tables.put(SDMSEnvironmentTableGeneric.tableName,			new SDMSEnvironmentTable(env));
 		tables.put(SDMSEventParameterTableGeneric.tableName,			new SDMSEventParameterTable(env));
@@ -208,34 +203,24 @@ public class SDMSRepository
 		tables.put(SDMSExitStateTranslationTableGeneric.tableName,		new SDMSExitStateTranslationTable(env));
 		tables.put(SDMSExitStateTranslationProfileTableGeneric.tableName,	new SDMSExitStateTranslationProfileTable(env));
 		tables.put(SDMSExtentsTableGeneric.tableName,				new SDMSExtentsTable(env));
-		// F
 		tables.put(SDMSFolderTableGeneric.tableName,				new SDMSFolderTable(env));
 		tables.put(SDMSFootprintTableGeneric.tableName,				new SDMSFootprintTable(env));
-		// G
 		tables.put(SDMSGrantTableGeneric.tableName,				new SDMSGrantTable(env));
 		tables.put(SDMSGroupTableGeneric.tableName,				new SDMSGroupTable(env));
-		// H
 		tables.put(SDMSHierarchyInstanceTableGeneric.tableName,			new SDMSHierarchyInstanceTable(env));
-		// I
 		tables.put(SDMSIgnoredDependencyTableGeneric.tableName,			new SDMSIgnoredDependencyTable(env));
 		tables.put(SDMSIntervalHierarchyTableGeneric.tableName,			new SDMSIntervalHierarchyTable(env));
 		tables.put(SDMSIntervalSelectionTableGeneric.tableName,			new SDMSIntervalSelectionTable(env));
 		tables.put(SDMSIntervalTableGeneric.tableName,				new SDMSIntervalTable(env));
-		// K
 		tables.put(SDMSKillJobTableGeneric.tableName,				new SDMSKillJobTable(env));
-		// N
 		tables.put(SDMSNamedEnvironmentTableGeneric.tableName,			new SDMSNamedEnvironmentTable(env));
 		tables.put(SDMSNamedResourceTableGeneric.tableName,			new SDMSNamedResourceTable(env));
 		tables.put(SDMSNiceProfileTableGeneric.tableName,			new SDMSNiceProfileTable(env));
 		tables.put(SDMSNiceProfileEntryTableGeneric.tableName,			new SDMSNiceProfileEntryTable(env));
-		// M
 		tables.put(SDMSMemberTableGeneric.tableName,				new SDMSMemberTable(env));
-		// O
 		tables.put(SDMSObjectCommentTableGeneric.tableName,			new SDMSObjectCommentTable(env));
-		// P
 		tables.put(SDMSParameterDefinitionTableGeneric.tableName,		new SDMSParameterDefinitionTable(env));
 		tables.put(SDMSPersistentValueTableGeneric.tableName,			new SDMSPersistentValueTable(env));
-		// R
 		tables.put(SDMSResourceAllocationTableGeneric.tableName,		new SDMSResourceAllocationTable(env));
 		tables.put(SDMSResourceReqStatesTableGeneric.tableName,			new SDMSResourceReqStatesTable(env));
 		tables.put(SDMSResourceRequirementTableGeneric.tableName,		new SDMSResourceRequirementTable(env));
@@ -248,7 +233,6 @@ public class SDMSRepository
 		tables.put(SDMSResourceTableGeneric.tableName,				new SDMSResourceTable(env));
 		tables.put(SDMSResourceTemplateTableGeneric.tableName,			new SDMSResourceTemplateTable(env));
 		tables.put(SDMSRunnableQueueTableGeneric.tableName,			new SDMSRunnableQueueTable(env));
-		// S
 		tables.put(SDMSScheduledEventTableGeneric.tableName,			new SDMSScheduledEventTable(env));
 		tables.put(SDMSScheduleTableGeneric.tableName,				new SDMSScheduleTable(env));
 		tables.put(SDMSSchedulingEntityTableGeneric.tableName,			new SDMSSchedulingEntityTable(env));
@@ -259,18 +243,14 @@ public class SDMSRepository
 		tables.put(SDMSSmeCounterTableGeneric.tableName,			new SDMSSmeCounterTable(env));
 		tables.put(SDMSSubmittedEntityTableGeneric.tableName,			new SDMSSubmittedEntityTable(env));
 		tables.put(SDMSSubmittedEntityStatsTableGeneric.tableName,		new SDMSSubmittedEntityStatsTable(env));
-		// T
 		tables.put(SDMSTemplateVariableTableGeneric.tableName,			new SDMSTemplateVariableTable(env));
 		tables.put(SDMSTriggerTableGeneric.tableName,				new SDMSTriggerTable(env));
 		tables.put(SDMSTriggerQueueTableGeneric.tableName,			new SDMSTriggerQueueTable(env));
 		tables.put(SDMSTriggerStateTableGeneric.tableName,			new SDMSTriggerStateTable(env));
-		// U
 		tables.put(SDMSUserTableGeneric.tableName,				new SDMSUserTable(env));
 		tables.put(SDMSUserEquivTableGeneric.tableName,				new SDMSUserEquivTable(env));
-		// V
 		tables.put(SDMSVersionedExtentsTableGeneric.tableName,			new SDMSVersionedExtentsTable(env));
 
-		// non persistent tables
 		tables.put(SDMSnpJobFootprintTableGeneric.tableName,			new SDMSnpJobFootprintTable(env));
 		tables.put(SDMSnpSrvrSRFootprintTableGeneric.tableName,			new SDMSnpSrvrSRFootprintTable(env));
 
@@ -279,17 +259,13 @@ public class SDMSRepository
 
 	private void loadTables(SystemEnvironment env) throws SDMSException
 	{
-		// save number of rw threads
 		int saveMaxWriter = env.maxWriter;
-		// set to 1 during load Tables because we do not need locking while loading
 		env.maxWriter = 1;
 
-		// Initialize Iterator
 		tableIterator = tables.values().iterator();
 
 		TableLoader tl[] = new TableLoader[SystemEnvironment.dbLoaders];
 
-		// start LoaderThreads
 		for(int i = 0; i < SystemEnvironment.dbLoaders; i++) {
 			tl[i] = new TableLoader(i, env);
 		}
@@ -305,9 +281,9 @@ public class SDMSRepository
 				i--;
 				continue;
 			}
-			tl[i] = null;	// explicitly discard Thread
+			tl[i] = null;
 		}
-		env.maxWriter = saveMaxWriter; // restore number of rw threads
+		env.maxWriter = saveMaxWriter;
 		if(loaderException != null) throw loaderException;
 	}
 
@@ -328,13 +304,13 @@ public class SDMSRepository
 	}
 
 	public Iterator getTableIterator(SystemEnvironment sysEnv)
-		throws SDMSException
+	throws SDMSException
 	{
 		return tables.values().iterator();
 	}
 
 	public SDMSTable getTable(SystemEnvironment env, String n)
-		throws SDMSException
+	throws SDMSException
 	{
 		SDMSTable retVal = (SDMSTable) tables.get(n);
 		if(retVal == null) {
@@ -344,7 +320,7 @@ public class SDMSRepository
 	}
 
 	public SDMSTable userGetTable(SystemEnvironment env, String n)
-		throws SDMSException
+	throws SDMSException
 	{
 		SDMSTable retVal = (SDMSTable) tables.get(n);
 		if(retVal == null) {
@@ -454,7 +430,7 @@ class TableLoader extends SDMSThread
 				}
 			} catch (SQLException sqle) {
 				throw new FatalException(new SDMSMessage(sysEnv, "03110181536",
-							"SQL Error : " + sqle.getMessage()));
+				                         "SQL Error : " + sqle.getMessage()));
 			}
 		} catch (SDMSException e) {
 			SystemEnvironment.repository.notify(e);
@@ -463,7 +439,7 @@ class TableLoader extends SDMSThread
 				sysEnv.dbConnection.close();
 			} catch (SQLException sqle) {
 				SystemEnvironment.repository.notify(new FatalException(new SDMSMessage(sysEnv, "03305091627",
-							"SQL Error : " + sqle.getMessage())));
+				                                    "SQL Error : " + sqle.getMessage())));
 			}
 		}
 	}

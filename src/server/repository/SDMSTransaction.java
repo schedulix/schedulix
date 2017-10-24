@@ -62,6 +62,7 @@ public class SDMSTransaction
 	public Stack lockStack = new Stack();
 	public HashMap privCache = new HashMap();
 	public Vector resourceRequestList = null;
+	public HashMap sortKeyMap = null;
 
 	public    long    txId;
 	public    int     mode;
@@ -193,7 +194,7 @@ public class SDMSTransaction
 					"*** This might compromise our database                            ***\n" +
 					"***                                                               ***\n" +
 					"*********************************************************************\n" +
-					"*********************************************************************\n" ,
+					"*********************************************************************\n",
 					SDMSThread.SEVERITY_ERROR
 					);
 				}
@@ -482,7 +483,6 @@ class TxCounter
 					j++;
 				}
 			}
-
 			Arrays.sort(result);
 		} else {
 			result = new long[1];

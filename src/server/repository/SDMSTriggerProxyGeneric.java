@@ -756,6 +756,52 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 		return (SDMSTrigger)this;
 	}
 
+	public SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSKey s = null;
+		Long myId = getId(sysEnv);
+		if (sysEnv.tx.sortKeyMap == null)
+			sysEnv.tx.sortKeyMap = new HashMap();
+		else
+			s = (SDMSKey) sysEnv.tx.sortKeyMap.get(myId);
+		if (s != null) return s;
+		boolean gotIt = false;
+		s = new SDMSKey();
+
+		gotIt = false;
+		Long fireId = getFireId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSSchedulingEntityTable.getObject(sysEnv, fireId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+		if (!gotIt)
+			try {
+				s.add(SDMSResourceTable.getObject(sysEnv, fireId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+		if (!gotIt)
+			try {
+				s.add(SDMSObjectMonitorTable.getObject(sysEnv, fireId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+		if (!gotIt)
+			try {
+				s.add(SDMSNamedResourceTable.getObject(sysEnv, fireId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		s.add(getName(sysEnv));
+
+		sysEnv.tx.sortKeyMap.put(myId, s);
+		return s;
+	}
+
 	public void delete (SystemEnvironment env)
 	throws SDMSException
 	{
