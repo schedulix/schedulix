@@ -239,7 +239,7 @@ public class SDMSServerConnection
 		String strToken = null;
 		byte[] byteToken;
 		IWindowsSecurityContext clientContext = null;
-		if (options.isSet(App.AUTH))
+		if (options != null && options.isSet(App.AUTH))
 			auth = options.getValue(App.AUTH);
 		switch (auth) {
 			case App.BASIC:
