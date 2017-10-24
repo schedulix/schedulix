@@ -38,6 +38,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef WINDOWS
 #include <sys/wait.h>
 #include <ctype.h>
+#include <sys/resource.h>
+#include <sys/time.h>
 #endif
 #include <sys/types.h>
 #ifdef WINDOWS
@@ -264,6 +266,7 @@ void closeTaskfile(callstatus *status, HANDLE taskfile);
 #ifndef WINDOWS
 void createErrorTaskfileName(char *tfn);
 void createTfLink();
+void reportSysUse(callstatus *status, struct rusage usage);
 #endif
 void advance(callstatus *status);
 void readTimestamp(callstatus *status);
@@ -1444,6 +1447,40 @@ char *getUniquePid(callstatus *status, pid_t pid)
 	return buf;
 }
 
+#ifndef WINDOWS
+void reportSysUse(callstatus *status, struct rusage usage)
+{
+	
+/*
+    struct rusage {
+        struct timeval ru_utime; // user CPU time used
+        struct timeval ru_stime; // system CPU time used
+        long   ru_maxrss;        // maximum resident set size
+        long   ru_ixrss;         // integral shared memory size
+        long   ru_idrss;         // integral unshared data size
+        long   ru_isrss;         // integral unshared stack size
+        long   ru_minflt;        // page reclaims (soft page faults)
+        long   ru_majflt;        // page faults (hard page faults)
+        long   ru_nswap;         // swaps
+        long   ru_inblock;       // block input operations
+        long   ru_oublock;       // block output operations
+        long   ru_msgsnd;        // IPC messages sent
+        long   ru_msgrcv;        // IPC messages received
+        long   ru_nsignals;      // signals received
+        long   ru_nvcsw;         // voluntary context switches
+        long   ru_nivcsw;        // involuntary context switches
+    };
+
+*/
+	fprintf(stderr, "user CPU  : %ld / %ld\n", (long) usage.ru_utime.tv_sec, (long) usage.ru_utime.tv_usec);
+	fprintf(stderr, "system CPU: %ld / %ld\n", (long) usage.ru_stime.tv_sec, (long) usage.ru_stime.tv_usec);
+	fprintf(stderr, "RSS       : %ld\n", (long) usage.ru_maxrss);
+	fprintf(stderr, "inblock   : %ld\n", (long) usage.ru_inblock);
+	fprintf(stderr, "oublock   : %ld\n", (long) usage.ru_oublock);
+
+}
+#endif
+
 void run(callstatus *status)
 {
 	char **argv;
@@ -1452,6 +1489,7 @@ void run(callstatus *status)
 #ifndef WINDOWS
 	int   exitcode;
 	int fd, fds;
+	struct rusage usage;
 #else
 	DWORD exitcode;
 #endif
@@ -1531,6 +1569,13 @@ void run(callstatus *status)
 
 		if (global.verboselogs) {
 			fprintf(stdout, "------- %s End (%d) --------\n", getTimestamp(time(NULL), 1), exitcode);
+			if (getrusage(RUSAGE_CHILDREN, &usage) == 0) {
+				/* report system usage */
+				reportSysUse(status, usage);
+				if (status->severity != STATUS_OK) {
+					fprintf(stderr, "Error reporting system usage\n");
+				}
+			}
 		}
 
 		/* something might have gone wrong starting the process
