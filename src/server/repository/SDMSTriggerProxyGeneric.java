@@ -785,12 +785,6 @@ public class SDMSTriggerProxyGeneric extends SDMSProxy
 			}
 		if (!gotIt)
 			try {
-				s.add(SDMSObjectMonitorTable.getObject(sysEnv, fireId).getSortKey(sysEnv));
-				gotIt = true;
-			} catch (NotFoundException nfe) {
-			}
-		if (!gotIt)
-			try {
 				s.add(SDMSNamedResourceTable.getObject(sysEnv, fireId).getSortKey(sysEnv));
 				gotIt = true;
 			} catch (NotFoundException nfe) {
