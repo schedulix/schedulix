@@ -107,7 +107,8 @@ echo "executing preun base -- %version-%release"
 %dir %attr(755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc
 %dir %attr(755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/bin
 %dir %attr(755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib
-%doc %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/AGPL.TXT
+%doc %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/LICENSE
+%doc %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/CONTRIBUTING.md
 %doc %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/README.md
      %attr(755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/bin/scrolllog
      %attr(755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/bin/sdmsctl
@@ -531,6 +532,17 @@ The schedulix doc package installs the schedulix documentation.
 %doc /usr/share/doc/schedulix-%{version}/syntax_de.pdf
 %doc /usr/share/doc/schedulix-%{version}/syntax_en.pdf
 
+%package repo
+Summary:		The repo package installs a repo file to get automated access to the rpm repository
+Group:			System/Packages
+
+%description repo
+
+This package installs a repo file to get automated access to the schedulix rpm repository
+
+%files repo
+%attr(0644, root, root) /etc/yum.repos.d/schedulix.repo
+
 
 
 # ----------------------------------------------------------------------------------------
@@ -553,7 +565,7 @@ cd ..
 %install
 echo "starting the installation of schedulix"
 mkdir -p %{buildroot}/opt/schedulix/schedulix-%{version}
-cp -r bin etc install lib sql zope AGPL.TXT README.md buildhash %{buildroot}/opt/schedulix/schedulix-%{version}
+cp -r bin etc install lib sql zope LICENSE README.md CONTRIBUTING.md buildhash %{buildroot}/opt/schedulix/schedulix-%{version}
 mkdir %{buildroot}/opt/schedulix/etc
 mkdir %{buildroot}/opt/schedulix/bin
 mkdir %{buildroot}/opt/schedulix/log
@@ -561,12 +573,15 @@ mkdir %{buildroot}/opt/schedulix/taskfiles
 mkdir -p %{buildroot}/usr/share/doc/schedulix-%{version}
 cp doc/* %{buildroot}/usr/share/doc/schedulix-%{version}
 mkdir -p %{buildroot}/etc/init.d
+mkdir -p %{buildroot}/etc/yum.repos.d
 # here we move the init.d scripts from the bin directory to the init.d directory
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-server-mariadb %{buildroot}/etc/init.d/schedulix-server-mariadb
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-server-pg %{buildroot}/etc/init.d/schedulix-server-pg
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-zope %{buildroot}/etc/init.d/schedulix-zope
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-examples %{buildroot}/etc/init.d/schedulix-examples
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-client %{buildroot}/etc/init.d/schedulix-client
+# 
+mv %{buildroot}/opt/schedulix/schedulix-%{version}/lib/schedulix.repo %{buildroot}/etc/yum.repos.d/schedulix.repo
 
 
 echo "End of the installation of schedulix"
