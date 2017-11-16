@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.jobserver;
 
 import java.lang.*;
@@ -114,7 +113,6 @@ class Libjni
 
 	public Boolean isAlive(String processId)
 	{
-
 		long pid;
 		String boottime;
 		String starttime;
@@ -219,13 +217,11 @@ class Libjni
 
 	private String solarisProcessStartTime(long pid)
 	{
-
 		return "0";
 	}
 
 	private String windowsProcessStartTime(long pid)
 	{
-
 		return "0";
 	}
 
@@ -237,7 +233,6 @@ class Libjni
 			return solarisProcessStartTime(pid);
 		else if (osType == OS_WIN)
 			return windowsProcessStartTime(pid);
-
 		return null;
 	}
 }

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.jobserver;
 
 import java.io.*;
@@ -106,7 +105,6 @@ public class RepoIface
 
 			TimeoutThread timeoutThread = new TimeoutThread(5*60);
 			try {
-
 				timeoutThread.setExecuting(true);
 				timeoutThread.start();
 
@@ -294,7 +292,6 @@ public class RepoIface
 		boolean failed = false;
 
 		while (true) {
-
 			Boolean useSSL;
 			useSSL = Boolean.FALSE;
 			if (connect (((String) cfg.get (Config.REPO_HOST)),
@@ -505,12 +502,11 @@ public class RepoIface
 		final SDMSOutput res = sdmsExec (command);
 		if (res.error != null) {
 			if (res.error.code.equals("03110251037")) {
-
 				Trace.error("Server responded with a not found error for job " + feil.getId());
 				Trace.error("The issued command was:");
 				Trace.error(command);
 				if(!feil.emergency_rename()) {
-
+					// rename failed; can't do more
 				}
 			} else {
 				Utils.abortProgram (this, "(04301271504) Unexpected response: (" + res.error.code + ") " + res.error.message);
@@ -637,12 +633,11 @@ public class RepoIface
 		res = sdmsExec (cmd.toString());
 		if (res.error != null) {
 			if (res.error.code.equals("03110251037")) {
-
 				Trace.error("Server responded with a not found error for job " + jobId);
 				Trace.error("The issued command was:");
 				Trace.error(cmd.toString());
 				if(!feil.emergency_rename()) {
-
+					// rename failed; can't do more
 				}
 			} else {
 				Utils.abortProgram (this, "(04301271507) Unexpected response: (" + res.error.code + ") " + res.error.message);
@@ -677,18 +672,15 @@ class TimeoutThread extends Thread
 			try {
 				sleep(timeoutLeft);
 			} catch (InterruptedException ie) {
-
 				long now = System.currentTimeMillis();
 				if (executing && (now - startTime < timeout)) {
 					timeoutLeft = timeout - (now - startTime);
 					continue;
 				}
 			}
-
 			if (executing) {
 				Utils.abortProgram ("(04407171144) Timeout on Command execution");
 			}
-
 		}
 	}
 }
