@@ -26,12 +26,19 @@ from __future__ import nested_scopes
 
 import socket
 import string
+import random
 import locale
 import time
 import re
 import threading
 import os
 import locale
+from zExceptions import Unauthorized
+try:
+	import ldap
+	have_ldap = True
+except:
+	have_ldap = False
 
 try:
 	import json
@@ -39,11 +46,11 @@ try:
 except:
 	have_json = False
 try:
-        import pytz
-        import datetime
-        have_pytz = True
+	import pytz
+	import datetime
+	have_pytz = True
 except:
-        have_pytz = False
+	have_pytz = False
 
 try:
 	from M2Crypto import SSL
@@ -58,7 +65,7 @@ yesList = [ 'TRUE', 'YES', 'Y', '1' ]
 
 def getSocketKey(server):
 	return  server['HOST'] + ':' + \
-		server['PORT'] + ':' + \
+		str(server['PORT']) + ':' + \
 		server.get('SSL','') + ':' + \
 		server.get('TRUSTSTORE','') + ':' + \
 		server.get('KEYSTORE','')
@@ -154,7 +161,7 @@ def releaseSocket(server,soc):
 		closeSocket(soc)
 		# print "closed connection for server:" +str(server)
 
-# 
+#
 # old version for backward compatibility
 # with user not case sensitive if not quoted
 #
@@ -243,17 +250,17 @@ def SDMSCommandWithSoc(soc,command):
 # to have non blocking connections of type USER as default
 # we leave this for backward compatibility
 #
-def SDMSUserCommandNoBlock(host, port, user, pwd , command, session=''):
+def SDMSUserCommandNoBlock(host, port, user, pwd , command, session='', context = None):
 	server = { 'HOST' : host, 'PORT' : port }
-	return SDMSUserConnectCommandV2(server, user, pwd , command, 0, None, 'USER', 0, 1, session)
+	return SDMSUserConnectCommandV2(server, user, pwd , command, 0, None, 'USER', 0, 1, session, context)
 
 #
 # New version of wrapper used from BICsuite!webs Common.Util.SDMSCommand()
 # Taking a server dict with attributes 'HOST', 'PORT', and optionally further attributes,
 # neccessary for SSL connections to BICsuite servers
 #
-def SDMSUserCommandNoBlockV2(server, user, pwd , command, session = ''):
-	return SDMSUserConnectCommandV2(server, user, pwd , command, 0, None, 'USER', 0, 1, session)
+def SDMSUserCommandNoBlockV2(server, user, pwd , command, session = '', context = None):
+	return SDMSUserConnectCommandV2(server, user, pwd , command, 0, None, 'USER', 0, 1, session, context)
 
 #
 # This Function uses the Server Connect with command feature to execute the command
@@ -263,13 +270,230 @@ def SDMSUserCommandNoBlockV2(server, user, pwd , command, session = ''):
 # old version for backward compatibility
 # with user not case sensitive if not quoted
 #
-def SDMSUserConnectCommand(host, port, user, pwd , command, repeatable=0, outdict=None, type='USER', timeout=None, cycle=1, session = ''):
+def SDMSUserConnectCommand(host, port, user, pwd , command, repeatable=0, outdict=None, type='USER', timeout=None, cycle=1, session = '', context = None):
 	if user[0] != "'":
 		user = string.upper(user)
 	else:
 		user = string.replace(user,"'","")
-        server = { 'HOST' : host, 'PORT' : port }
-	return  SDMSUserConnectCommandV2(server, user, pwd , command, repeatable, outdict, type, timeout, cycle, session)
+	server = { 'HOST' : host, 'PORT' : port }
+	return  SDMSUserConnectCommandV2(server, user, pwd , command, repeatable, outdict, type, timeout, cycle, session, context)
+
+ssoConf = None
+ssoConfFileName = None
+def initSsoConf ():
+	global ssoConf
+	global ssoConfFileName
+	if ssoConf != None:
+		return True
+	ssoConf = {}
+	ssoConfFileDir = os.getenv('BICSUITECONFIG', None)
+	if ssoConfFileDir == None:
+		print "initSsoConf:Exception (" + str(e) + ") getting BICSUITECONFIG "
+		return False
+	ssoConfFileName = ssoConfFileDir + '/ZopeSSO.conf'
+	try:
+		ssoConfFile = open(ssoConfFileName, "r")
+		ssoConf = eval(ssoConfFile.read())
+	except Exception,e:
+		print "initSsoConf:Exception (" + str(e) + ") reading sso config from " + ssoConfFileName
+		return False
+	return True
+
+def getConfig(key, default, server = None, domain = None):
+	global ssoConf
+	if not initSsoConf():
+		return None
+	if server == None:
+		if domain == None:
+			return ssoConf.get(key, default)
+		else:
+			return ssoConf.get('DOMAINS', {}).get(domain, {}).get(key, ssoConf.get(key, default))
+	else:
+		ssoConfKey = server['HOST'] + ':' + server['PORT']
+		srv = ssoConf.get('SERVERS', {}).get(ssoConfKey, {})
+		return srv.get('DOMAINS', {}).get(domain, {}).get(key, srv.get(key, ssoConf.get('DOMAINS', {}).get(domain, {}).get(key, ssoConf.get(key, default))))
+
+def randomPassword():
+	return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
+
+def getSystemConnectData(server):
+	connectUser = getConfig ('AdminUser', None, server = server)
+	connectPass = getConfig ('AdminPassword', None, server = server)
+	if connectUser == None or connectPass == None:
+		print "getSystemConnectData(): Missing AdminUser and/or AdminPassword for server " + server['HOST'] + ':' + server['PORT']
+		return None
+	return{ 'USER' : connectUser, 'PASS' : connectPass }
+
+def getSDMSgroups(server, userName):
+	connectData = getSystemConnectData(server)
+	if connectData == None:
+		return None
+	data = SDMSUserConnectCommandV2(server, connectData['USER'], connectData['PASS'], "SHOW USER '" + userName + "'")
+	if data.has_key('ERROR'):
+		print "getSDMSgroups(): " + data['ERROR']['ERRORMESSAGE']
+		return None
+	defaultGroup = data['DATA']['RECORD']['DEFAULT_GROUP']
+	groups = []
+	for rec in data['DATA']['RECORD']['GROUPS']['TABLE']:
+		if rec['NAME'] != 'PUBLIC':
+			groups.append(rec['NAME'])
+	groups.sort()
+	ret = { 'GROUPS' : groups, 'DEFAULT_GROUP' : defaultGroup }
+	return ret
+
+def getUserDomains(context):
+	return  context.REQUEST['AUTHENTICATED_USER'].getDomains()
+
+def getLdapGroups(server, userName, context):
+	ldapGroups = False
+	domains = getUserDomains(context)
+	defaultGroup = "PUBLIC"
+	groups = []
+	for domain in domains:
+		ServerUseLdapGroups = getConfig('ServerUseLdapGroups', False, domain = domain, server = server)
+		if not ServerUseLdapGroups:
+			continue
+		ldapGroups = True
+		ServerBicsuitePrefix = getConfig('ServerBicsuitePrefix', 'BICSUITE', domain = domain, server = server)
+		ServerName = getConfig('ServerName', 'DEFAULT', domain = domain, server = server)
+		ServerDefaultGroupSuffix = getConfig('ServerDefaultGroupSuffix', '_ISDEFAULT', domain = domain, server = server)
+		groupPfx = ServerBicsuitePrefix + '_' + ServerName + '_'
+		LdapServer = getConfig('LdapServer', None, domain = domain)
+		LdapBaseDn = getConfig('LdapBaseDn', None, domain = domain)
+		LdapUsername = getConfig('LdapUsername', None, domain = domain)
+		LdapPassword = getConfig('LdapPassword', None, domain = domain)
+		if LdapServer == None or LdapBaseDn == None or LdapUsername == None or LdapPassword == None:
+			print 'getLdapGroups(): Missing or uncomplete LDAP settings!'
+		else:
+			ldap_filter='(&(objectClass=user)(cn=' + userName + '))'
+			attrs = ['memberOf']
+			ldap_client = ldap.initialize(LdapServer)
+			ldap_client.simple_bind_s(LdapUsername, LdapPassword)
+			result = ldap_client.search_s(LdapBaseDn, ldap.SCOPE_SUBTREE, ldap_filter,['memberOf'])
+			for elem in result:
+				if elem[0] != None:
+					for grp in elem[1]['memberOf']:
+						grp = grp.replace('CN=','')
+						grp = grp[:grp.index(',')]
+						isDefaultGroup = False
+						if grp[0:len(groupPfx)] == groupPfx:
+							grp = grp[len(groupPfx):]
+							if grp[-len(ServerDefaultGroupSuffix):] == ServerDefaultGroupSuffix:
+								isDefaultGroup = True
+								grp = grp[0:-len(ServerDefaultGroupSuffix)]
+
+							ServerGroupNameCase = getConfig('ServerGroupNameCase', 'UPPER', domain = domain, server = server)
+							if ServerGroupNameCase == 'UPPER':
+								grp = grp.upper()
+							elif ServerGroupNameCase == 'LOWER':
+								grp = grp.lower()
+
+							ServerIncludeGroupDomainNames = getConfig('ServerIncludeGroupDomainNames', False, domain = domain, server = server)
+							if grp != "ADMIN" and ServerIncludeGroupDomainNames:
+								grp = domain + '_' + grp
+							if isDefaultGroup:
+								defaultGroup = grp
+							if grp not in groups:
+								groups.append(grp)
+			ldap_client.unbind()
+	if not ldapGroups:
+		return None
+	groups.sort()
+	ret = { 'GROUPS' : groups, 'DEFAULT_GROUP' : defaultGroup }
+	return ret
+
+def syncLdapGroups(server, userName, context):
+	if server.get('SSO', False):
+		return False
+	# we do not sync for the BICsuite SYSTEM user
+	if userName == 'SYSTEM':
+		return False
+	ldapGroups = getLdapGroups(server, userName, context)
+	if ldapGroups == None:
+		return False
+	sdmsGroups = getSDMSgroups(server, userName)
+	if sdmsGroups == None:
+		return None
+	changed = False
+	cmd = "BEGIN MULTICOMMAND\n"
+	if sdmsGroups['DEFAULT_GROUP'] != ldapGroups['DEFAULT_GROUP']:
+		cmd = cmd + "ALTER USER '" + userName + "' WITH DEFAULT GROUP = PUBLIC;\n"
+	if not sdmsGroups['GROUPS'] == ldapGroups['GROUPS']:
+		cmd = cmd + "ALTER USER '" + userName + "' WITH GROUP = ("
+		sep = ""
+		for grp in ldapGroups['GROUPS']:
+			cmd = cmd + sep + "'" + grp + "'"
+			sep = ", "
+		cmd = cmd + ");\n"
+		changed = True
+	if sdmsGroups['DEFAULT_GROUP'] != ldapGroups['DEFAULT_GROUP']:
+		cmd = cmd + "ALTER USER '" + userName + "' WITH DEFAULT GROUP = '" + ldapGroups['DEFAULT_GROUP'] + "';\n"
+		changed = True
+	cmd = cmd + "END MULTICOMMAND"
+	if changed:
+		connectData = getSystemConnectData(server)
+		if connectData == None:
+			return None
+		data = SDMSUserConnectCommandV2(server, connectData['USER'], connectData['PASS'], cmd)
+		if data.has_key('ERROR'):
+			print data['ERROR']['ERRORMESSAGE']
+			return None
+		return True
+	else:
+		return False
+
+def getServerUser(server, context):
+	#
+	# if WebIncludeDomainNames = False for more than one domain
+	# and so a web user was created with more than one domain,
+	# The name casing rules of those domains may differ
+	# we do not handle this case at the moment and just use the configuration of
+	# just one of those domains (alphabetical first)
+	#
+	userName = str(context.REQUEST['AUTHENTICATED_USER'])
+	domains = getUserDomains(context)
+	domain = None
+	if domains == None or len(domains) < 1:
+		# This should not happen !
+		print "getServerUser(): Cannot obtain domains for user " + str(context.REQUEST['AUTHENTICATED_USER']) + ", server settings will be used"
+		ServerIncludeUserDomainNames = getConfig('ServerIncludeGroupDomainNames', False, server = server)
+		WebIncludeDomainNames = getConfig('WebIncludeDomainNames', False)
+		ServerUserNameCase = getConfig('ServerUserNameCase', 'UPPER')
+	else:
+		domain = domains[0]
+		ServerIncludeUserDomainNames = getConfig('ServerIncludeGroupDomainNames', False, server = server, domain = domain)
+		WebIncludeDomainNames = getConfig('WebIncludeDomainNames', False, domain = domain)
+		ServerUserNameCase = getConfig('ServerUserNameCase', 'UPPER', domain = domain)
+	if ServerIncludeUserDomainNames:
+		if not WebIncludeDomainNames and domain != None:
+			userName = domain + '_' + userName
+	else:
+		if WebIncludeDomainNames and domain != None:
+			userName = userName[len(domain)+1:]
+	if ServerUserNameCase == 'UPPER':
+		userName = userName.upper()
+	elif ServerUserNameCase == 'LOWER':
+		userName = userName.lower()
+	return userName
+
+def createSsoUser(server, userName, context = None):
+	data = getSystemConnectData(server)
+	if data == None:
+		return None
+	connectUser=data['USER']
+	connectPass=data['PASS']
+	data = SDMSUserConnectCommandV2(server, connectUser, connectPass, "CREATE USER '" + userName + "' WITH DEFAULT GROUP = PUBLIC, PASSWORD = '" + randomPassword() + "', ENABLE", context = context)
+	if data.has_key('ERROR'):
+		print "createSsoUser(): " + data['ERROR']['ERRORMESSAGE']
+		return None
+	if syncLdapGroups(server, userName, context) == None:
+		return None
+	return True
+
+def printCommand(command):
+	command = re.sub(r"([Pp][Aa][Ss][Ss][Ww][Oo][Rr]['Dd] *= *')[^']*'", r"\1******'", command)
+	print command
+
 #
 # New version
 # Taking a server dict with attributes 'HOST', 'PORT', and optionally further attributes,
@@ -277,7 +501,7 @@ def SDMSUserConnectCommand(host, port, user, pwd , command, repeatable=0, outdic
 #
 # user is case sensitive !
 #
-def SDMSUserConnectCommandV2(server, user, pwd , command, repeatable=0, outdict=None, type='USER', timeout=None, cycle=1, session = ''):
+def SDMSUserConnectCommandV2(server, user, pwd , command, repeatable=0, outdict=None, type='USER', timeout=None, cycle=1, session = '', context = None):
 	global yesList
 	executions = 0
 	if timeout != None:
@@ -295,6 +519,21 @@ def SDMSUserConnectCommandV2(server, user, pwd , command, repeatable=0, outdict=
 	first = 1
 	user_error = 0
 	error = None
+	connectUser = user
+	connectPass = pwd
+	sso = False
+	if user in ['', None] or pwd in ['', None]:
+		if server.has_key('SSO') and server['SSO'] == True:
+			data = getSystemConnectData(server)
+			if data == None:
+				return { 'ERROR' : { 'ERRORCODE' : 'ZSI-10010', 'ERRORMESSAGE' : 'Cannot obtain system credentials' }}
+			connectUser = data['USER']
+			connectPass = data['PASS']
+			sso = True
+		else:
+			data = { 'ERROR' : { 'ERRORCODE' : 'ZSI-10004', 'ERRORMESSAGE' : 'Missing Credentials for user "' +  user + '" on non SSO connection' }}
+			return data
+
 	while user_error == 0 and (first == 1 or (done == 0 and (timeout_secs == -1 or int((timeout_secs-last_time+start_time)/60) > 0))):
 		first = 0
 		if retries > 0:
@@ -318,30 +557,71 @@ def SDMSUserConnectCommandV2(server, user, pwd , command, repeatable=0, outdict=
 
 			executions = executions + 1
 			command = string.rstrip(command,'\n\t ;')
-			connectCommand = "CONNECT '" + user + "' IDENTIFIED BY '" + pwd + "' WITH PROTOCOL = PYTHON"
-			if server.get('CACHE','NO').upper() in yesList:
-				timeout = 60 # default timeout of 60 seconds
-				if server.has_key('TIMEOUT'):
-					try:
-						timeout = int(server['TIMEOUT'])
-					except:
-						pass
-				connectCommand = connectCommand + ', TIMEOUT = ' + str(timeout)
-			if session != '':
-				session = string.replace(session,'\\','\\\\')
-				session = string.replace(session,'\'','\\\'')
-				connectCommand = connectCommand + ", SESSION = '" + session + "'"
-			connectCommand = connectCommand + ", COMMAND = (" + command + ");"
-			print command 
-			output = sendCommand(soc, connectCommand)
+			repeats = 0
+			while repeats < 2:
+				repeats = repeats + 1
+				connectCommand = "CONNECT '" + connectUser + "' IDENTIFIED BY '" + connectPass + "' WITH PROTOCOL = PYTHON"
+				if server.get('CACHE','NO').upper() in yesList:
+					timeout = 60 # default timeout of 60 seconds
+					if server.has_key('TIMEOUT'):
+						try:
+							timeout = int(server['TIMEOUT'])
+						except:
+							pass
+					connectCommand = connectCommand + ', TIMEOUT = ' + str(timeout)
+				if session != '':
+					session = string.replace(session,'\\','\\\\')
+					session = string.replace(session,'\'','\\\'')
+					connectCommand = connectCommand + ", SESSION = '" + session + "'"
+				printCommand(command)
+				if sso:
+					userLst = user.split(':')
+					setUserCommand = "ALTER SESSION SET USER = '" + userLst[0] + "'"
+					if len(userLst) > 1:
+						setUserCommand = setUserCommand + " FOR '" + userLst[1] + "'"
+					setUserCommand = setUserCommand + '; '
+					command = setUserCommand + command
 
+				connectCommand = connectCommand + ", COMMAND = (" + command + ");"
+				output = sendCommand(soc, connectCommand)
+				evalOutput = eval(output)
+				if sso and evalOutput.has_key('ERROR') and repeats == 1:
+					#
+					# Create user id server is SSO and user does not exist
+					# Error: '03707161121' User not found
+					#       If a plain set user ... without for clause was executed we try to create the non existing user
+					# Error: '03707161122' Base User not found
+					#       Only possible with for option, we try to create the base user
+					# We try to create a user only if the SSOautoCreateUsers option is set in ZopeSSO.conf
+					#
+					if evalOutput['ERROR']['ERRORCODE'] == '03707161122' or (len(userLst) == 1 and evalOutput['ERROR']['ERRORCODE'] == '03707161121'):
+						domains = getUserDomains(context)
+						domain = None
+						if domains == None or len(domains) < 1:
+							# This should not happen !
+							print "SDMSUserConnectCommandV2(): Cannot obtain domains for user " + str(context.REQUEST['AUTHENTICATED_USER']) + ", server settings will be used"
+							ServerAutoCreateUsers = getConfig('ServerAutoCreateUsers', False, server = server)
+						else:
+							domain = domains[0]
+							ServerAutoCreateUsers = getConfig('ServerAutoCreateUsers', False, server = server, domain = domain)
+
+						if ServerAutoCreateUsers:
+							if len(userLst) == 1:
+								userToCreate = userLst[0]
+							else:
+								userToCreate = userLst[1]
+							if createSsoUser(server, userToCreate, context) == None:
+								output = { 'ERROR' : { 'ERRORCODE' : 'ZSI-10011', 'ERRORMESSAGE' : 'Error creating new SSO user ' + userToCreate }}
+								repeats = 2
+				else:
+					repeats = 2
 			try:
 				data = eval(output)
 			except:
 				# this is nearly impossilble but can be the case if
 				# server returns output not evalable which should be never the case
 				data = { 'ERROR' : { 'ERRORCODE' : 'ZSI-10003', 'ERRORMESSAGE' : 'Invalid Server Response' }}
-	
+
 			error = None
 			if data.has_key('ERROR'):
 				error = data['ERROR']
@@ -367,9 +647,9 @@ def SDMSUserConnectCommandV2(server, user, pwd , command, repeatable=0, outdict=
 				break
 
 	if done == 0:
-	    if user_error == 0:
-		if timeout_secs != 0:
-			print 'Timeout reached'
+		if user_error == 0:
+			if timeout_secs != 0:
+				print 'Timeout reached'
 
 	if outdict != None:
 		outdict.update ( { 'EXECUTIONS' : executions } )
@@ -461,7 +741,7 @@ def SDMSBaseCommandV2(server, user, pwd , command, repeatable=0, outdict=None, t
 			# soc is a socket everythings ok
 			pass
 
-		print command + '\n'
+		printCommand(command)
 		output = sendCommand(soc, command)
 		executions = executions + 1
 
@@ -476,7 +756,7 @@ def SDMSBaseCommandV2(server, user, pwd , command, repeatable=0, outdict=None, t
 			# we treat this as user error because looping until timeout not good in this fatal error case
 			user_error = 1
 			continue
-			
+
 		if data.has_key('ERROR'):
 			if data['ERROR']['ERRORCODE'] == 'ZSI-10002' and repeatable == 1:
 				# command idempotent and error is a temporary error
@@ -495,9 +775,9 @@ def SDMSBaseCommandV2(server, user, pwd , command, repeatable=0, outdict=None, t
 		done = 1
 
 	if done == 0:
-	    if user_error == 0:
-		if timeout_secs != 0:
-			print 'Timeout reached'
+		if user_error == 0:
+			if timeout_secs != 0:
+				print 'Timeout reached'
 
 	if outdict != None:
 		outdict.update ( { 'EXECUTIONS' : executions } )
@@ -571,80 +851,80 @@ def sendCommand(soc, command):
 import rfc822
 
 def havePytz():
-    return have_pytz
+	return have_pytz
 
 def convertFormat(s, timeformat = '%d.%m.%Y %H:%M:%S', timezone = None):
-    return convertClockTime(rfc822.mktime_tz(rfc822.parsedate_tz(s)), timeformat, timezone)
+	return convertClockTime(rfc822.mktime_tz(rfc822.parsedate_tz(s)), timeformat, timezone)
 
 def convertClockTime(ct, timeformat = '%d.%m.%Y %H:%M:%S', timezone = None):
-    # print str(ct) + ' ' + timeformat + ' ' + str(timezone)
-    if timezone == None or have_pytz == False:
-        return time.strftime(timeformat, time.localtime(ct))
-    else:
-        dt = datetime.datetime.fromtimestamp(ct, pytz.timezone(timezone))
-        return dt.strftime(timeformat)
+	# print str(ct) + ' ' + timeformat + ' ' + str(timezone)
+	if timezone == None or have_pytz == False:
+		return time.strftime(timeformat, time.localtime(ct))
+	else:
+		dt = datetime.datetime.fromtimestamp(ct, pytz.timezone(timezone))
+		return dt.strftime(timeformat)
 
 def numericTime(s):
-    # local not supported under windows
-    # since we are using english anyway we skip that
-    # locale.setlocale(locale.LC_ALL, 'en_GB')
-    pt = rfc822.parsedate_tz(s[:20])
-    # ts = time.mktime(time.strptime(s[:20], '%d %b %Y %H:%M:%S'))
-    ts = time.mktime(pt[:9])
-    return ts
-    
+	# local not supported under windows
+	# since we are using english anyway we skip that
+	# locale.setlocale(locale.LC_ALL, 'en_GB')
+	pt = rfc822.parsedate_tz(s[:20])
+	# ts = time.mktime(time.strptime(s[:20], '%d %b %Y %H:%M:%S'))
+	ts = time.mktime(pt[:9])
+	return ts
+
 def gmtime(secs):
-    return time.gmtime(secs)
+	return time.gmtime(secs)
 
 def localtime(secs):
-    return time.localtime(secs)
+	return time.localtime(secs)
 
 def mktime (tuple):
-    return time.mktime(tuple)
+	return time.mktime(tuple)
 
 def strftime (format, tuple):
-    return time.strftime (format, tuple)
+	return time.strftime (format, tuple)
 
 def currentTime():
-    return time.time()
+	return time.time()
 
 def clockTime(s):
-    # local not supported under windows
-    # since we are using english anyway we skip that
-    # locale.setlocale(locale.LC_ALL, 'en_GB')
-    # return time.mktime(time.strptime(s[:20], '%d %b %Y %H:%M:%S'))
-    return rfc822.mktime_tz(rfc822.parsedate_tz(s))
-    # pt = rfc822.parsedate_tz(s[:20])
-    # print pt
-    # return time.mktime(pt[:9])
+	# local not supported under windows
+	# since we are using english anyway we skip that
+	# locale.setlocale(locale.LC_ALL, 'en_GB')
+	# return time.mktime(time.strptime(s[:20], '%d %b %Y %H:%M:%S'))
+	return rfc822.mktime_tz(rfc822.parsedate_tz(s))
+	# pt = rfc822.parsedate_tz(s[:20])
+	# print pt
+	# return time.mktime(pt[:9])
 
 def validate_identifier(str):
-    result = re.match('^[a-zA-Z_@#][a-zA-Z_@#0-9]*$',str)
-    if result == None:
-	return 0
-    else:
-	return 1
-    
+	result = re.match('^[a-zA-Z_@#][a-zA-Z_@#0-9]*$',str)
+	if result == None:
+		return 0
+	else:
+		return 1
+
 def readlog(fname):
-    f = open(fname)
-    lines = f.readlines()
-    if len(lines) > 1000:
-	lines = [ 'LOGFILE TOO LARGE !!!\n',
-		  'ONLY LAST 1000 LINES OF LOGFILE SHOWN\n',
-		  'USE OPERATING SYSTEM LEVEL EDITOR TO VIEW ENTIRE FILE\n',
-		  '\n',
-		  '-----------------------------------------------------\n'
-		  '\n' ] + lines[-1000:]
-    return string.join(lines,'')
+	f = open(fname)
+	lines = f.readlines()
+	if len(lines) > 1000:
+		lines = [ 'LOGFILE TOO LARGE !!!\n',
+			  'ONLY LAST 1000 LINES OF LOGFILE SHOWN\n',
+			  'USE OPERATING SYSTEM LEVEL EDITOR TO VIEW ENTIRE FILE\n',
+			  '\n',
+			  '-----------------------------------------------------\n'
+			  '\n' ] + lines[-1000:]
+	return string.join(lines,'')
 
 def changeOwnership(self, username, obj):
-    """ explicitly setup changeOwnership for TTW """
-    acl_users = getattr(self, 'acl_users')    #UserFolder source
-    user = acl_users.getUser(username).__of__(acl_users)
-    obj.changeOwnership(user)
+	""" explicitly setup changeOwnership for TTW """
+	acl_users = getattr(self, 'acl_users')    #UserFolder source
+	user = acl_users.getUser(username).__of__(acl_users)
+	obj.changeOwnership(user)
 
 def clock():
-    return time.clock()
+	return time.clock()
 
 def SDMSQueryWithSoc(soc, cmd, qry):
 	#
@@ -696,76 +976,76 @@ def SDMSQueryWithSoc(soc, cmd, qry):
 		return tblqry(data['TABLE'],qry)
 
 def log(str):
-    print str
+	print str
 
 def sleep(s):
-    time.sleep(s)
+	time.sleep(s)
 
 def variant():
-    return 'schedulix'
+	return 'schedulix'
 
-def re_sub(pattern, replacement, text, count=0, flags=0):
-    return re.sub(pattern, replacement, text, count, flags)
+def re_sub(pattern, replacement, text, count=0):
+	return re.sub(pattern, replacement, text, count)
 
 docs = [
-    {
-        'ICON' : 'pdficon_large.gif',
-        'TEXT' : variant() + '!Web Dokumentation',
-        'MODE' : 'DOC',
-        'FILE' : 'online_de.pdf',
-        'TYPE' : 'application/pdf',
-        'LANG' : 'de'
-    },
-    {
-        'ICON' : 'pdficon_large.gif',
-        'TEXT' : variant() + '!Web documentation',
-        'MODE' : 'DOC',
-        'FILE' : 'online_en.pdf',
-        'TYPE' : 'application/pdf',
-        'LANG' : 'en'
-    },
-    {
-        'ICON' : 'pdficon_large.gif',
-        'TEXT' : 'Beschreibung der ' + variant() + ' Kommandosprache',
-        'MODE' : 'DOC',
-        'FILE' : 'syntax_de.pdf',
-        'TYPE' : 'application/pdf',
-        'LANG' : 'de'
-    },
-#    {
-#        'ICON' : 'pdficon_large.gif',
-#        'TEXT' : variant() + ' Syntax documentation',
-#        'MODE' : 'DOC',
-#        'FILE' : 'syntax_en.pdf',
-#        'TYPE' : 'application/pdf',
-#        'LANG' : 'en'
-#    },
-    {
-        'ICON' : 'globe.jpg',
-        'TEXT' : variant() + ' Internet Biliothek',
-        'MODE' : 'URL',
-        'URL'  : 'http://www.independit.de/de/support/downloads',
-        'LANG' : 'de'
-    },
-    {
-        'ICON' : 'globe.jpg',
-        'TEXT' : variant() + ' Web Library',
-        'MODE' : 'URL',
-        'URL'  : 'http://www.independit.de/en/support/downloads',
-        'LANG' : 'en'
-    }
+	{
+		'ICON' : 'pdficon_large.gif',
+		'TEXT' : variant() + '!Web Dokumentation',
+		'MODE' : 'DOC',
+		'FILE' : 'online_de.pdf',
+		'TYPE' : 'application/pdf',
+		'LANG' : 'de'
+	},
+	{
+		'ICON' : 'pdficon_large.gif',
+		'TEXT' : variant() + '!Web documentation',
+		'MODE' : 'DOC',
+		'FILE' : 'online_en.pdf',
+		'TYPE' : 'application/pdf',
+		'LANG' : 'en'
+	},
+	{
+		'ICON' : 'pdficon_large.gif',
+		'TEXT' : 'Beschreibung der ' + variant() + ' Kommandosprache',
+		'MODE' : 'DOC',
+		'FILE' : 'syntax_de.pdf',
+		'TYPE' : 'application/pdf',
+		'LANG' : 'de'
+	},
+#	{
+#		'ICON' : 'pdficon_large.gif',
+#		'TEXT' : variant() + ' Syntax documentation',
+#		'MODE' : 'DOC',
+#		'FILE' : 'syntax_en.pdf',
+#		'TYPE' : 'application/pdf',
+#		'LANG' : 'en'
+#	},
+	{
+		'ICON' : 'globe.jpg',
+		'TEXT' : variant() + ' Internet Biliothek',
+		'MODE' : 'URL',
+		'URL'  : 'http://www.independit.de/de/support/downloads',
+		'LANG' : 'de'
+	},
+	{
+		'ICON' : 'globe.jpg',
+		'TEXT' : variant() + ' Web Library',
+		'MODE' : 'URL',
+		'URL'  : 'http://www.independit.de/en/support/downloads',
+		'LANG' : 'en'
+	}
 ]
 
 def getDocs():
-    return docs
+	return docs
 
 def readDoc(index):
-    doc = docs[index]
-    filename = os.environ['BICSUITEHOME'] + '/doc/' + doc['FILE']
-    f = open (filename, 'r')
-    data = f.read()
-    f.close()
-    return data
+	doc = docs[index]
+	filename = os.environ['BICSUITEHOME'] + '/doc/' + doc['FILE']
+	f = open (filename, 'r')
+	data = f.read()
+	f.close()
+	return data
 
 def json_dumps(o):
 	if have_json:
@@ -776,7 +1056,32 @@ def json_dumps(o):
 def StringCompare(string1, string2):
 	return locale.strcoll(string1, string2)
 
-# print SDMSCommand('localhost', 2506, 'DONALD', 'duck', 'create exit state definition xxx')
-# print SDMSCommand('localhost', 2506, 'DONALD', 'duck', 'rename exit state definition xxx to \'\'')
-# print SDMSCommand('localhost', 2506, 'DONALD', 'duck', 'list job with expand = all')
-# print SDMSCommand('localhost', 2506, 'DONALD', 'duck', 'list exit state definition')
+logoutBrowserIds = {}
+
+def registerLogout(browserId):
+	logoutBrowserIds.update ( { str(browserId) : True } )
+	# print 'logoutBrowserIds = ' + str(logoutBrowserIds)
+
+def raiseUnauthorized(browserId):
+	# print "raiseUnauthorized called with browserId " + str(browserId)
+	if browserId == None:
+		raise Unauthorized
+	else:
+		# print 'logoutBrowserIds = ' + str(logoutBrowserIds)
+		if str(browserId) in logoutBrowserIds:
+			del logoutBrowserIds[str(browserId)]
+			# print 'raise Unauthorized'
+			raise Unauthorized
+
+translations = None
+
+def translate(context, text, lang):
+	global translations
+	# print "translate(" + text + ")"
+	# print str(translations)
+	if translations == None:
+		translations = context.Common.translations()
+	try:
+		return translations[text][lang]
+	except:
+		return text
