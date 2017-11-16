@@ -77,7 +77,7 @@ public class Config
 
 	private static final String[] REQUIRED = {REPO_HOST, REPO_PORT, REPO_USER, REPO_PASS};
 	private static final String[] WRITE_THROUGH = {REPO_HOST, REPO_PORT, REPO_USER, USE_SSL,
-						       KEYSTOREPW, TRUSTSTOREPW ,
+						       KEYSTOREPW, TRUSTSTOREPW,
 						       KEYSTORE, TRUSTSTORE
 							};
 	private static final String[] DEPRECATED = {RECONNECT_DELAY, NOP_DELAY, DEFAULT_WORKDIR, USE_PATH,
