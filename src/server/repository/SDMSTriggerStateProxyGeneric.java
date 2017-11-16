@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -190,6 +189,57 @@ public class SDMSTriggerStateProxyGeneric extends SDMSProxy
 		((SDMSTriggerStateGeneric)(object)).setChangeTs (env, p_changeTs);
 		return (SDMSTriggerState)this;
 	}
+
+	public SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSKey s = null;
+		Long myId = getId(sysEnv);
+		if (sysEnv.tx.sortKeyMap == null)
+			sysEnv.tx.sortKeyMap = new HashMap();
+		else
+			s = (SDMSKey) sysEnv.tx.sortKeyMap.get(myId);
+		if (s != null) return s;
+		boolean gotIt = false;
+		s = new SDMSKey();
+
+		gotIt = false;
+		Long triggerId = getTriggerId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSTriggerTable.getObject(sysEnv, triggerId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		gotIt = false;
+		Long fromStateId = getFromStateId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSExitStateDefinitionTable.getObject(sysEnv, fromStateId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+		if (!gotIt)
+			try {
+				s.add(SDMSResourceStateDefinitionTable.getObject(sysEnv, fromStateId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		gotIt = false;
+		Long toStateId = getToStateId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSResourceStateDefinitionTable.getObject(sysEnv, toStateId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		sysEnv.tx.sortKeyMap.put(myId, s);
+		return s;
+	}
+
 	public void delete (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -246,7 +296,6 @@ public class SDMSTriggerStateProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -284,7 +333,6 @@ public class SDMSTriggerStateProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -307,7 +355,6 @@ public class SDMSTriggerStateProxyGeneric extends SDMSProxy
 			SDMSProxy p = t.get(env, getTriggerId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 	}
 

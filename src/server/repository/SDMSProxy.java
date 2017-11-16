@@ -57,11 +57,9 @@ public abstract class SDMSProxy implements Comparable
 		throws SDMSException
 	{
 		if (current) {
-
 			if (!object.isCurrent) {
 				object = object.versions.get (env);
 			}
-
 			if (object.isDeleted) {
 				throw new FatalException (new SDMSMessage (env, "02110292004",
 							"Accessing a previously deleted object"));
@@ -80,13 +78,11 @@ public abstract class SDMSProxy implements Comparable
 			throw new FatalException (new SDMSMessage (env, "02110292014",
 						  "Trying to change object via readonly object reference"));
 		}
-
 		if (!lockedExclusive) {
 			if (env.maxWriter > 1)
 				LockingSystem.lock(env, object.versions, ObjectLock.EXCLUSIVE);
 			lockedExclusive = true;
 		}
-
 		checkRead(env);
 	}
 
@@ -105,13 +101,11 @@ public abstract class SDMSProxy implements Comparable
 	private void objectDelete(SystemEnvironment env, boolean memOnly)
 		throws SDMSException
 	{
-
 		if (!lockedExclusive) {
 			if (env.maxWriter > 1)
 				LockingSystem.lock(env, object.versions, ObjectLock.EXCLUSIVE);
 			lockedExclusive = true;
 		}
-
 		checkRead(env);
 		if(!checkPrivileges(env, SDMSPrivilege.DROP)) {
 			throw new AccessViolationException(accessViolationMessage(env, "03312191407"));
@@ -121,6 +115,9 @@ public abstract class SDMSProxy implements Comparable
 		else
 			object.delete (env);
 	}
+
+	public abstract SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException;
 
 	public String toString()
 	{
@@ -162,7 +159,6 @@ public abstract class SDMSProxy implements Comparable
 	public Vector getContent(SystemEnvironment env)
 		throws SDMSException
 	{
-
 		return null;
 	}
 

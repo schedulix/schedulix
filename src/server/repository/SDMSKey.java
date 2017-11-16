@@ -74,12 +74,19 @@ public class SDMSKey extends Vector implements Comparable
 		SDMSKey k = (SDMSKey) o;
 		int ks, ts, ms;
 		int i, r;
+		Comparable c1, c2;
 
 		ks = k.size();
 		ts = this.size();
 		ms = (ks > ts ? ts : ks);
 		for(i = 0; i<ms; i++) {
-			r = ((Comparable) get(i)).compareTo(k.get(i));
+			c1 = (Comparable) get(i);
+			c2 = (Comparable) k.get(i);
+			if (c1 == null && c2 != null) return -1;
+			if (c1 != null && c2 == null) return 1;
+			if (c1 == null && c2 == null) continue;
+
+			r = c1.compareTo(c2);
 			if(r != 0) return r;
 		}
 		if(ks > ts) return -1;
@@ -90,6 +97,22 @@ public class SDMSKey extends Vector implements Comparable
 	public void add(Comparable c)
 	{
 		super.add(c);
+	}
+
+	public String toString()
+	{
+		StringBuffer sb = new StringBuffer();
+		String sep = "";
+		sb.append('[');
+		for (int i = 0; i < this.size(); ++i) {
+			Object o = get(i);
+			sb.append(sep);
+			sb.append((o == null ? "null" : o.toString()));
+			sep = ", ";
+		}
+		sb.append(']');
+
+		return sb.toString();
 	}
 
 }

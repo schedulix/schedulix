@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -402,6 +401,47 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 		return (SDMSResourceRequirement)this;
 	}
 
+	public SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSKey s = null;
+		Long myId = getId(sysEnv);
+		if (sysEnv.tx.sortKeyMap == null)
+			sysEnv.tx.sortKeyMap = new HashMap();
+		else
+			s = (SDMSKey) sysEnv.tx.sortKeyMap.get(myId);
+		if (s != null) return s;
+		boolean gotIt = false;
+		s = new SDMSKey();
+
+		gotIt = false;
+		Long seId = getSeId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSSchedulingEntityTable.getObject(sysEnv, seId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+		if (!gotIt)
+			try {
+				s.add(SDMSFootprintTable.getObject(sysEnv, seId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		gotIt = false;
+		Long nrId = getNrId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSNamedResourceTable.getObject(sysEnv, nrId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		sysEnv.tx.sortKeyMap.put(myId, s);
+		return s;
+	}
+
 	public void delete (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -458,7 +498,6 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFootprintTable.tableName);
 		try {
@@ -469,7 +508,6 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -507,7 +545,6 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFootprintTable.tableName);
 		try {
@@ -519,7 +556,6 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -542,14 +578,12 @@ public class SDMSResourceRequirementProxyGeneric extends SDMSProxy
 			SDMSProxy p = t.get(env, getSeId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 		t = SystemEnvironment.repository.getTable(env, SDMSFootprintTable.tableName);
 		try {
 			SDMSProxy p = t.get(env, getSeId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 	}
 

@@ -64,7 +64,6 @@ public class SDMSIndex
 		   t != IDUNIQUE) {
 			throw new FatalException(new SDMSMessage(env,
 						"03110181526", "Invalid Indextype $1", new Integer(t)));
-
 		}
 		this.table = table;
 		this.indexName = indexName;
@@ -96,7 +95,6 @@ public class SDMSIndex
 					v.modCnt ++;
 				}
 		}
-
 		if (env.maxWriter > 1 && doLockBucket) {
 			try {
 				LockingSystem.lock(env, v, ObjectLock.EXCLUSIVE);
@@ -148,12 +146,9 @@ public class SDMSIndex
 				}
 
 				if (!old.isCurrent) {
-
 					if (env.maxWriter > 1) {
-
 						old = ov.getRaw(env, true);
 						if (old != null) {
-
 							synchronized(v) {
 								if (! v.contains(old))
 									old = null;
@@ -193,7 +188,6 @@ public class SDMSIndex
 			v.add(o);
 			v.modCnt --;
 		}
-
 		if (env.maxWriter > 1 && doLockBucket)
 			LockingSystem.release(env, v);
 	}
@@ -281,7 +275,6 @@ public class SDMSIndex
 
 				if (versionsChecked.contains(ov))
 					continue;
-
 				versionsChecked.add(ov);
 
 				if (env.maxWriter > 1) {
@@ -289,10 +282,8 @@ public class SDMSIndex
 				}
 
 				if (!o.isCurrent) {
-
 					o = ov.getRaw(env, true);
 					if (o != null) {
-
 						synchronized(v) {
 							if (! v.contains(o))
 								o = null;
@@ -312,7 +303,6 @@ public class SDMSIndex
 		} else {
 			return containsKey(env, key, env.tx.versionId);
 		}
-
 	}
 
 	public boolean containsKey(SystemEnvironment env, Object key, long version)
@@ -397,7 +387,6 @@ public class SDMSIndex
 			synchronized(v) {
 				va = v.toArray();
 			}
-
 			if (env.maxWriter > 1) {
 				Arrays.sort(va, objectIdComparator);
 			}
@@ -411,7 +400,6 @@ public class SDMSIndex
 
 				if (versionsChecked.contains(ov))
 					continue;
-
 				versionsChecked.add(ov);
 
 				if (env.maxWriter > 1) {
@@ -419,10 +407,8 @@ public class SDMSIndex
 				}
 
 				if (!o.isCurrent) {
-
 					o = ov.getRaw(env, true);
 					if (o != null) {
-
 						synchronized(v) {
 							if (! v.contains(o))
 								o = null;
@@ -436,7 +422,6 @@ public class SDMSIndex
 						p.current = true;
 					} else
 						p.object = o;
-
 					if (filter == null || filter.isValid(env, p)) {
 						r.add(p);
 						p = null;
@@ -446,18 +431,15 @@ public class SDMSIndex
 					} else
 						o = null;
 				}
-
 				if (o == null) {
 					if (env.maxWriter > 1)
 						LockingSystem.releaseToCheckPoint(env, ov, checkPoint);
 				}
 			}
-
 			if (env.maxWriter > 1)
 				LockingSystem.release(env, v);
 			return r;
 		} else {
-
 			return getVector(env, key, env.tx.versionId, filter);
 		}
 	}
@@ -466,14 +448,14 @@ public class SDMSIndex
 		throws SDMSException
 	{
 		Vector v = getVectorForUpdate(env, key);
-		Collections.sort(v);
+		Collections.sort(v, new SDMSProxyComparator(env));
 		return v;
 	}
 	public Vector getSortedVector(SystemEnvironment env, Object key)
 		throws SDMSException
 	{
 		Vector v = getVector(env, key);
-		Collections.sort(v);
+		Collections.sort(v, new SDMSProxyComparator(env));
 		return v;
 	}
 
@@ -482,7 +464,6 @@ public class SDMSIndex
 	{
 		return getVector(env, key, version, null);
 	}
-
 	private Vector getVector(SystemEnvironment env, Object key, long version, SDMSFilter filter)
 		throws SDMSException
 	{
@@ -559,7 +540,6 @@ public class SDMSIndex
 			synchronized(v) {
 				va = v.toArray();
 			}
-
 			for (int i = 0; i < va.length; ++i) {
 				o = (SDMSObject) va[i];
 				SDMSVersions ov = o.versions;
@@ -570,10 +550,8 @@ public class SDMSIndex
 
 				if (!o.isCurrent) {
 					if (env.maxWriter > 1) {
-
 						o = ov.getRaw(env, true);
 						if (o != null) {
-
 							synchronized(v) {
 								if (! v.contains(o))
 									o = null;
@@ -595,7 +573,6 @@ public class SDMSIndex
 			}
 			throw new NotFoundException(new SDMSMessage(env, "03110181533", "$1 not found", key));
 		}
-
 		return getUnique(env, key, env.tx.versionId);
 	}
 

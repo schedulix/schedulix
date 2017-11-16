@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -172,6 +171,15 @@ public class SDMSIntervalHierarchyProxyGeneric extends SDMSProxy
 		((SDMSIntervalHierarchyGeneric)(object)).setChangeTs (env, p_changeTs);
 		return (SDMSIntervalHierarchy)this;
 	}
+
+	public SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSKey s = new SDMSKey();
+		s.add(getId(sysEnv));
+		return s;
+	}
+
 	public void delete (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -222,7 +230,6 @@ public class SDMSIntervalHierarchyProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -245,7 +252,6 @@ public class SDMSIntervalHierarchyProxyGeneric extends SDMSProxy
 			SDMSProxy p = t.get(env, getParentId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 	}
 

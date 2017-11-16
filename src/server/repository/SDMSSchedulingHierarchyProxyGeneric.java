@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -431,6 +430,41 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 		return (SDMSSchedulingHierarchy)this;
 	}
 
+	public SDMSKey getSortKey(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSKey s = null;
+		Long myId = getId(sysEnv);
+		if (sysEnv.tx.sortKeyMap == null)
+			sysEnv.tx.sortKeyMap = new HashMap();
+		else
+			s = (SDMSKey) sysEnv.tx.sortKeyMap.get(myId);
+		if (s != null) return s;
+		boolean gotIt = false;
+		s = new SDMSKey();
+
+		gotIt = false;
+		Long seParentId = getSeParentId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSSchedulingEntityTable.getObject(sysEnv, seParentId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		gotIt = false;
+		Long seChildId = getSeChildId(sysEnv);
+		if (!gotIt)
+			try {
+				s.add(SDMSSchedulingEntityTable.getObject(sysEnv, seChildId).getSortKey(sysEnv));
+				gotIt = true;
+			} catch (NotFoundException nfe) {
+			}
+
+		sysEnv.tx.sortKeyMap.put(myId, s);
+		return s;
+	}
+
 	public void delete (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -487,7 +521,6 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -525,7 +558,6 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 			}
 			p = p & sp;
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -548,7 +580,6 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 			SDMSProxy p = t.get(env, getSeParentId(env));
 			p.touch(env);
 		} catch (NotFoundException nfe) {
-
 		}
 	}
 
