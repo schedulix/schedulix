@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.7
-Release:	15%{?dist}
+Release:	16%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -211,8 +211,8 @@ echo "executing preun base -- %version-%release"
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix server pg package installs a schedulix server based on an underlying Postgres RDBMS
 Group:			Applications/System
-Requires:		schedulix-base = %{version} postgresql-server postgresql-jdbc coreutils
-Provides:		schedulix-server %{version}
+Requires:		schedulix-base = %{version}-%{release} postgresql-server postgresql-jdbc coreutils
+Provides:		schedulix-server %{version}-%{release}
 Conflicts:		schedulix-server-mariadb
 
 %description server-pg
@@ -463,8 +463,8 @@ fi
 Summary:		The schedulix server mariadb package installs a schedulix server based on an underlying MariaDB od MySQL RDBMS
 Group:			Applications/System
 # Requires: schedulix-base mysql-server mysql-connector-java
-Requires:		schedulix-base = %{version} mariadb mariadb-libs mariadb-server mysql-connector-java coreutils 
-Provides:		schedulix-server %{version}
+Requires:		schedulix-base = %{version}-%{release} mariadb mariadb-libs mariadb-server mysql-connector-java coreutils 
+Provides:		schedulix-server %{version}-%{release}
 Conflicts:		schedulix-server-pg
 
 %description server-mariadb
@@ -718,7 +718,7 @@ echo "executing postun client -- %version-%release"
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix zope package installs the zope application server and configures it to access a locally installed server
 Group:			Applications/System
-Requires:		schedulix-base >= %{version} gcc python python-devel python-setuptools python-virtualenv wget
+Requires:		schedulix-base == %{version}-%{release} gcc python python-devel python-setuptools python-virtualenv wget
 
 %description zope
 %commonDescription
