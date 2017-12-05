@@ -222,7 +222,7 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(RunnableQueue) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSRunnableQueueGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSRunnableQueueGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -246,7 +246,7 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(RunnableQueue) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSRunnableQueueGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSRunnableQueueGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -264,7 +264,7 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSRunnableQueueGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSRunnableQueueGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSRunnableQueueGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -282,7 +282,7 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSRunnableQueueGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSRunnableQueueGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSRunnableQueueGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

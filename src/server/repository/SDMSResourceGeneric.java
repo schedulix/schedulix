@@ -458,7 +458,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.rsdTime = p_rsdTime;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -483,7 +483,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.definedAmount = p_definedAmount;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -508,7 +508,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.requestableAmount = p_requestableAmount;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -533,7 +533,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.amount = p_amount;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -558,7 +558,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.freeAmount = p_freeAmount;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -583,7 +583,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.isOnline = p_isOnline;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -608,7 +608,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.factor = p_factor;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -633,7 +633,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.traceInterval = p_traceInterval;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -658,7 +658,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.traceBase = p_traceBase;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -682,7 +682,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.traceBaseMultiplier = p_traceBaseMultiplier;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -706,7 +706,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.td0Avg = p_td0Avg;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -730,7 +730,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.td1Avg = p_td1Avg;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -754,7 +754,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.td2Avg = p_td2Avg;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -778,7 +778,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.lwAvg = p_lwAvg;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -802,7 +802,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.lastEval = p_lastEval;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -826,7 +826,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.lastWrite = p_lastWrite;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -850,7 +850,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -874,7 +874,7 @@ public class SDMSResourceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Resource) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -892,7 +892,7 @@ public class SDMSResourceGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSResourceGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -910,7 +910,7 @@ public class SDMSResourceGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSResourceGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

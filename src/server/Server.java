@@ -49,6 +49,7 @@ public class Server
 	private GarbageThread gst;
 	private TimerThread tt;
 	private TriggerThread trt;
+	private InitRepositoryThread irt;
 	private ThreadGroup wg;
 	private SyncFifo cmdQueue;
 	private SyncFifo roCmdQueue;
@@ -227,6 +228,17 @@ public class Server
 		if(tt.isAlive()) return;
 		SDMSThread.doTrace(null, "Starting Time Scheduling Thread", SDMSThread.SEVERITY_INFO);
 		tt.start();
+	}
+
+	private void initIRT() throws SDMSException
+	{
+		irt = new InitRepositoryThread(env, cmdQueue);
+	}
+
+	private void startIRT() throws SDMSException
+	{
+		SDMSThread.doTrace(null, "Starting Init Repository Thread", SDMSThread.SEVERITY_INFO);
+		irt.start();
 	}
 
 	private void initListener()
@@ -464,6 +476,7 @@ public class Server
 			initTimeScheduling();
 			initTT();
 			initGC();
+			initIRT();
 			initNotifierThread();
 			if (env.dbPreserveTime > 0)
 				initDBCleanupThread();
@@ -478,6 +491,17 @@ public class Server
 		} catch(SDMSException fe) {
 			SDMSThread.doTrace(null, (new SDMSMessage(env, "03202252203",
 							"Fatal exception while starting Workerthreads:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
+		}
+		try {
+			startIRT();
+			try {
+				irt.join();
+			} catch (InterruptedException ie) {
+			}
+			irt = null;
+		} catch(SDMSException fe) {
+			SDMSThread.doTrace(null, (new SDMSMessage(env, "03711131738",
+			                          "Fatal exception while initializing the Repository:\n$1", fe.toString())).toString(), SDMSThread.SEVERITY_FATAL);
 		}
 		try {
 			startScheduling();

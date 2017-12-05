@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server;
 
 import java.util.*;
@@ -140,7 +138,6 @@ public class TimerThread
 			final Integer lastTime = persVal.getIntValue (sysEnv);
 			lastRun.set (lastTime.intValue());
 			if (lastTime.intValue() > (SystemEnvironment.startTime / (1000 * 60))) {
-
 				aliveSinceLong = true;
 			} else {
 				aliveSinceLong = false;
@@ -187,7 +184,6 @@ public class TimerThread
 			final SDMSEventParameter ep = (SDMSEventParameter) epList.get (i);
 
 			final String key = ep.getKey (sysEnv);
-
 			final String value = ep.getValue (sysEnv).substring (1);
 
 			final WithItem wi = new WithItem (key, value);
@@ -197,12 +193,11 @@ public class TimerThread
 		final boolean forceSuspend = triggerDate.lt (suspendNow);
 
 		final boolean submitSuspended = se.getSubmitSuspended (sysEnv).booleanValue();
-
 		final Boolean doSuspend = (forceSuspend || submitSuspended) ? Boolean.TRUE : Boolean.FALSE;
 
 		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, parmList, new Integer(doSuspend.booleanValue() ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
-		                                null ,
-								ownerId, null , "Event " + evt.getName (sysEnv));
+		                                null,
+						ownerId, null, "Event " + evt.getName (sysEnv));
 
 		if (forceSuspend) {
 
@@ -245,25 +240,21 @@ public class TimerThread
 		if (! isActive) {
 			if ((nextActivityDate != null)
 			    && nextActivityDate.gt (now))
-
 				return;
 
 			baseDate = new TimerDate (now.plus (1));
-
 			trigDate = sce.getNextTriggerDate (sysEnv, baseDate);
 		}
 
 		else {
 			if (nextActivityDate == null)
 				if (backlogHandling != SDMSScheduledEvent.NONE && submit)
-
 					baseDate = new TimerDate (lastRun.plus (1));
 				else
 					baseDate = new TimerDate (now.plus (1));
 
 			else {
 				if (nextActivityDate.gt (now))
-
 					return;
 
 				if (scev.getNextActivityIsTrigger (sysEnv).booleanValue())
@@ -293,30 +284,23 @@ public class TimerThread
 					lastDate = trigDate;
 
 					baseDate.set (trigDate.plus (1));
-
 					trigDate = sce.getNextTriggerDate (sysEnv, baseDate);
-
 				}
 
 				if ((backlogHandling == SDMSScheduledEvent.LAST)
 				    && (lastDate != null))
-
 					submit_and_set (sysEnv, scev, evt, ownerId, lastDate, suspendNow);
-
 				if (   backlogHandling == SDMSScheduledEvent.NONE
 				    && aliveSinceLong
 				    && lastDate != null
 				    && ! trigDate.isNaD() && !trigDate.eq (now))
-
 					submit_and_set (sysEnv, scev, evt, ownerId, lastDate, suspendNow);
 
 				if ((! trigDate.isNaD()) && trigDate.eq (now)) {
 					submit_and_set (sysEnv, scev, evt, ownerId, trigDate, suspendNow);
 
 					baseDate.set (trigDate.plus (1));
-
 					trigDate = sce.getNextTriggerDate (sysEnv, baseDate);
-
 				}
 			}
 		}
@@ -330,7 +314,6 @@ public class TimerThread
 		else {
 			scev.setNextActivityTime      (sysEnv, dateToDateTimeLong (trigDate));
 			scev.setNextActivityIsTrigger (sysEnv, Boolean.TRUE);
-
 			scev.updateCalendar(sysEnv, now, sce);
 		}
 
@@ -348,13 +331,11 @@ public class TimerThread
 		try {
 			doSubmit (sysEnv, evt, ownerId, triggerDate, suspendNow);
 		} catch (SerializationException e) {
-
 			setLastStartTime = false;
 			throw e;
 		} finally {
 			if (setLastStartTime)
 			scev.setLastStartTime (sysEnv, nowLong);
-
 		}
 	}
 
@@ -372,6 +353,7 @@ public class TimerThread
 
 		scev.setNextActivityTime      (sysEnv, null);
 		scev.setNextActivityIsTrigger (sysEnv, null);
+		scev.clearCalendar            (sysEnv);
 
 	}
 
@@ -413,12 +395,10 @@ public class TimerThread
 						createError (sysEnv, scev, e.toString());
 						retire (sysEnv, scev, new CommonErrorException (new SDMSMessage (sysEnv, "04311102118", toString (e))));
 					}
-
 				}
 			}
 
 			setLastRunToNow (sysEnv);
-
 		}
 
 	}
@@ -426,7 +406,6 @@ public class TimerThread
 	private final void createError (final SystemEnvironment sysEnv, final SDMSScheduledEvent scev, final String errorMsg)
 		throws SDMSException
 	{
-
 		final Long evtId = scev.getEvtId (sysEnv);
 		final SDMSEvent evt = SDMSEventTable.getObject (sysEnv, evtId);
 		final Long seId = evt.getSeId (sysEnv);
@@ -441,7 +420,6 @@ public class TimerThread
 	{
 
 		loadNow();
-
 		loadLastRun (sysEnv);
 
 	}
@@ -487,13 +465,11 @@ public class TimerThread
 			final Iterator ivalIdsIt = ivalIds.iterator();
 			while (ivalIdsIt.hasNext()) {
 				final Long ivalId = (Long) ivalIdsIt.next();
-
 				final Vector sceList = SDMSScheduleTable.idx_intId.getVector (sysEnv, ivalId);
 
 				final int sceSize = sceList.size();
 				for (int i = 0; i < sceSize; ++i) {
 					final SDMSSchedule sce = (SDMSSchedule) sceList.get (i);
-
 					notifyChange (sysEnv, sce, ALTER);
 				}
 			}
@@ -545,7 +521,6 @@ public class TimerThread
 		final int size = scevList.size();
 		for (int i = 0; i < size; ++i) {
 			final SDMSScheduledEvent scev = (SDMSScheduledEvent) scevList.get (i);
-
 			notifyChange (sysEnv, scev, ALTER);
 		}
 
@@ -591,7 +566,6 @@ public class TimerThread
 			break;
 
 		case DROP:
-
 			break;
 
 		default:

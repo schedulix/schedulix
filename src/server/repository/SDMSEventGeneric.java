@@ -206,7 +206,7 @@ public class SDMSEventGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Event) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEventGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSEventGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -230,7 +230,7 @@ public class SDMSEventGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Event) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEventGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSEventGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -248,7 +248,7 @@ public class SDMSEventGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSEventGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEventGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSEventGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -266,7 +266,7 @@ public class SDMSEventGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSEventGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEventGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSEventGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

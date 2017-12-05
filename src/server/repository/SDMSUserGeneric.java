@@ -180,7 +180,7 @@ public class SDMSUserGeneric extends SDMSObject
 	{
 		if(passwd.equals(p_passwd)) return;
 		SDMSUserGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		if (p_passwd != null && p_passwd.length() > 64) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -206,7 +206,7 @@ public class SDMSUserGeneric extends SDMSObject
 		if(p_salt != null && p_salt.equals(salt)) return;
 		if(p_salt == null && salt == null) return;
 		SDMSUserGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		if (p_salt != null && p_salt.length() > 64) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -247,7 +247,7 @@ public class SDMSUserGeneric extends SDMSObject
 	{
 		if(method.equals(p_method)) return;
 		SDMSUserGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.method = p_method;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -271,7 +271,7 @@ public class SDMSUserGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(User) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.isEnabled = p_isEnabled;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -290,7 +290,7 @@ public class SDMSUserGeneric extends SDMSObject
 	{
 		if(defaultGId.equals(p_defaultGId)) return;
 		SDMSUserGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.defaultGId = p_defaultGId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -332,7 +332,7 @@ public class SDMSUserGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(User) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.connectionType = p_connectionType;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -387,7 +387,7 @@ public class SDMSUserGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(User) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -411,7 +411,7 @@ public class SDMSUserGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(User) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -429,7 +429,7 @@ public class SDMSUserGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSUserGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -447,7 +447,7 @@ public class SDMSUserGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSUserGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSUserGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -722,18 +722,18 @@ public class SDMSUserGeneric extends SDMSObject
 		String indentString = new String(sb);
 		String result =
 		        indentString + "id : " + id + "\n" +
-		        indentString + "name          : " + name + "\n" +
-		        indentString + "passwd        : " + passwd + "\n" +
-		        indentString + "salt          : " + salt + "\n" +
-		        indentString + "method        : " + method + "\n" +
-		        indentString + "isEnabled     : " + isEnabled + "\n" +
-		        indentString + "defaultGId    : " + defaultGId + "\n" +
+		        indentString + "name           : " + name + "\n" +
+		        indentString + "passwd         : " + passwd + "\n" +
+		        indentString + "salt           : " + salt + "\n" +
+		        indentString + "method         : " + method + "\n" +
+		        indentString + "isEnabled      : " + isEnabled + "\n" +
+		        indentString + "defaultGId     : " + defaultGId + "\n" +
 		        indentString + "connectionType : " + connectionType + "\n" +
-		        indentString + "deleteVersion : " + deleteVersion + "\n" +
-		        indentString + "creatorUId    : " + creatorUId + "\n" +
-		        indentString + "createTs      : " + createTs + "\n" +
-		        indentString + "changerUId    : " + changerUId + "\n" +
-		        indentString + "changeTs      : " + changeTs + "\n" +
+		        indentString + "deleteVersion  : " + deleteVersion + "\n" +
+		        indentString + "creatorUId     : " + creatorUId + "\n" +
+		        indentString + "createTs       : " + createTs + "\n" +
+		        indentString + "changerUId     : " + changerUId + "\n" +
+		        indentString + "changeTs       : " + changeTs + "\n" +
 		        indentString + "validFrom : " + validFrom + "\n" +
 		        indentString + "validTo : " + validTo + "\n";
 		return result;

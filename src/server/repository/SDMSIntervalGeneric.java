@@ -244,7 +244,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.startTime = p_startTime;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -269,7 +269,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.endTime = p_endTime;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -294,7 +294,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.delay = p_delay;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -345,7 +345,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.baseInterval = p_baseInterval;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -370,7 +370,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.baseIntervalMultiplier = p_baseIntervalMultiplier;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -421,7 +421,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.duration = p_duration;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -446,7 +446,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.durationMultiplier = p_durationMultiplier;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -470,7 +470,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.syncTime = p_syncTime;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -494,7 +494,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.isInverse = p_isInverse;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -518,7 +518,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.isMerge = p_isMerge;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -606,7 +606,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -630,7 +630,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -648,7 +648,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSIntervalGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -666,7 +666,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSIntervalGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

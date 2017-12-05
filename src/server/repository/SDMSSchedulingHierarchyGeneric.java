@@ -283,7 +283,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
 		o.isStatic = p_isStatic;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -322,7 +322,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
 		o.isDisabled = p_isDisabled;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -346,7 +346,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
 		o.priority = p_priority;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -388,7 +388,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
 		o.suspend = p_suspend;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -413,7 +413,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
 		if (p_resumeAt != null && p_resumeAt.length() > 20) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -444,7 +444,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
 		o.resumeIn = p_resumeIn;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -495,7 +495,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
 		o.resumeBase = p_resumeBase;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -539,7 +539,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
 		o.mergeMode = p_mergeMode;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -595,7 +595,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -619,7 +619,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -637,7 +637,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSSchedulingHierarchyGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -655,7 +655,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSSchedulingHierarchyGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);
