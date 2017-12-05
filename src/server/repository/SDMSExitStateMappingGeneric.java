@@ -167,7 +167,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
 		o.ecrStart = p_ecrStart;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -192,7 +192,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
 		o.ecrEnd = p_ecrEnd;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -216,7 +216,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -240,7 +240,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -258,7 +258,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSExitStateMappingGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -276,7 +276,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSExitStateMappingGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

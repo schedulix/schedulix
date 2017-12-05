@@ -261,7 +261,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		o.jobEsdId = p_jobEsdId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -286,7 +286,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		o.exitCode = p_exitCode;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -311,7 +311,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		if (p_commandline != null && p_commandline.length() > 512) {
 			p_commandline = p_commandline.substring(0,512);
 		}
@@ -339,7 +339,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		if (p_workdir != null && p_workdir.length() > 512) {
 			p_workdir = p_workdir.substring(0,512);
 		}
@@ -367,7 +367,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		if (p_logfile != null && p_logfile.length() > 512) {
 			p_logfile = p_logfile.substring(0,512);
 		}
@@ -395,7 +395,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		if (p_errlogfile != null && p_errlogfile.length() > 512) {
 			p_errlogfile = p_errlogfile.substring(0,512);
 		}
@@ -423,7 +423,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		if (p_extPid != null && p_extPid.length() > 32) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -454,7 +454,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		o.syncTs = p_syncTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -479,7 +479,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		o.resourceTs = p_resourceTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -504,7 +504,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		o.runnableTs = p_runnableTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -529,7 +529,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		o.startTs = p_startTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -554,7 +554,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		o.finishTs = p_finishTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -578,7 +578,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -602,7 +602,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(SubmittedEntityStats) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -620,7 +620,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSSubmittedEntityStatsGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -638,7 +638,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSSubmittedEntityStatsGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityStatsGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

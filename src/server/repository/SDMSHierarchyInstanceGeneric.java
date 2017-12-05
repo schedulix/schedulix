@@ -178,7 +178,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(HierarchyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.shId = p_shId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -202,7 +202,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(HierarchyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.nice = p_nice;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -227,7 +227,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(HierarchyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.childEsdId = p_childEsdId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -252,7 +252,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(HierarchyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.childEsPreference = p_childEsPreference;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -276,7 +276,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(HierarchyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.seVersionHi = p_seVersionHi;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -300,7 +300,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(HierarchyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -324,7 +324,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(HierarchyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -342,7 +342,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSHierarchyInstanceGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -360,7 +360,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSHierarchyInstanceGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSHierarchyInstanceGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

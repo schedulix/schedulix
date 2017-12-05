@@ -147,7 +147,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.preference = p_preference;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -221,7 +221,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.isSuspended = p_isSuspended;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -245,7 +245,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.renice = p_renice;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -269,7 +269,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.isActive = p_isActive;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -293,7 +293,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -317,7 +317,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(NiceProfileEntry) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -335,7 +335,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSNiceProfileEntryGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -353,7 +353,7 @@ public class SDMSNiceProfileEntryGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSNiceProfileEntryGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSNiceProfileEntryGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

@@ -306,7 +306,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
 		o.infoType = p_infoType;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -330,7 +330,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
 		o.sequenceNumber = p_sequenceNumber;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -355,7 +355,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
 		if (p_tag != null && p_tag.length() > 64) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -385,7 +385,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
 		if (p_description != null && p_description.length() > 1900) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -415,7 +415,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -439,7 +439,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ObjectComment) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -457,7 +457,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSObjectCommentGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -475,7 +475,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSObjectCommentGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSObjectCommentGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

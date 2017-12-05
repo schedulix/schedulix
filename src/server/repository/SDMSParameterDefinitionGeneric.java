@@ -262,7 +262,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.type = p_type;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -310,7 +310,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.aggFunction = p_aggFunction;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -335,7 +335,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		if (p_defaultValue != null && p_defaultValue.length() > 256) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -365,7 +365,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.isLocal = p_isLocal;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -422,7 +422,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		if (p_exportName != null && p_exportName.length() > 64) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -452,7 +452,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.isLong = p_isLong;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -476,7 +476,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -500,7 +500,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -518,7 +518,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSParameterDefinitionGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -536,7 +536,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSParameterDefinitionGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

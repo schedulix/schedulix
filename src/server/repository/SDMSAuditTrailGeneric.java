@@ -216,7 +216,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.ts = p_ts;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -240,7 +240,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.txId = p_txId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -334,7 +334,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.action = p_action;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -372,7 +372,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.objectType = p_objectType;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -458,7 +458,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.isSetWarning = p_isSetWarning;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -483,7 +483,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		if (p_actionInfo != null && p_actionInfo.length() > 1024) {
 			p_actionInfo = p_actionInfo.substring(0,1024);
 		}
@@ -511,7 +511,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		if (p_actionComment != null && p_actionComment.length() > 1024) {
 			p_actionComment = p_actionComment.substring(0,1024);
 		}
@@ -538,7 +538,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -562,7 +562,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -580,7 +580,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSAuditTrailGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -598,7 +598,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSAuditTrailGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

@@ -193,7 +193,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(EntityVariable) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
 		if (p_value != null && p_value.length() > 256) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -223,7 +223,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(EntityVariable) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
 		o.isLocal = p_isLocal;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -248,7 +248,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(EntityVariable) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
 		o.evLink = p_evLink;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -272,7 +272,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(EntityVariable) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
 		o.isLong = p_isLong;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -296,7 +296,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(EntityVariable) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -320,7 +320,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(EntityVariable) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -338,7 +338,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSEntityVariableGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -356,7 +356,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSEntityVariableGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSEntityVariableGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

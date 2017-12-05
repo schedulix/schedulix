@@ -326,7 +326,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.objectType = p_objectType;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -445,7 +445,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isActive = p_isActive;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -516,7 +516,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.action = p_action;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -614,7 +614,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isMaster = p_isMaster;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -653,7 +653,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isSuspend = p_isSuspend;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -678,7 +678,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isCreate = p_isCreate;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -703,7 +703,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isChange = p_isChange;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -728,7 +728,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isDelete = p_isDelete;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -753,7 +753,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isGroup = p_isGroup;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -778,7 +778,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		if (p_resumeAt != null && p_resumeAt.length() > 20) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -809,7 +809,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.resumeIn = p_resumeIn;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -860,7 +860,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.resumeBase = p_resumeBase;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -884,7 +884,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.isWarnOnLimit = p_isWarnOnLimit;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -909,7 +909,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.limitState = p_limitState;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -933,7 +933,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.maxRetry = p_maxRetry;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -990,7 +990,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		if (p_condition != null && p_condition.length() > 1024) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -1021,7 +1021,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.checkAmount = p_checkAmount;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -1072,7 +1072,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.checkBase = p_checkBase;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -1096,7 +1096,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -1120,7 +1120,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Trigger) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
@@ -1138,7 +1138,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSTriggerGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -1156,7 +1156,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSTriggerGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSTriggerGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.uid();
 		if (o != this) o.versions.table.index(env, o, 0);

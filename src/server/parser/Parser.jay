@@ -667,6 +667,7 @@ run_test_cmd:	RUN TEST testid							{ $$ = new RunTest($3); }
 	|	RUN TEST testid STRING						{ $$ = new RunTest($3, $4.textValue); }
 	|	RUN TEST testid STRING READ					{ $$ = new RunTest($3, $4.textValue, true); }
 	|	RUN TEST testid STRING id					{ $$ = new RunTest($3, $4.textValue, $5); }
+	|	RUN TEST testid id						{ $$ = new RunTest($3, $4); }
 
 
 

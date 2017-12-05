@@ -434,7 +434,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 	}
 
-	private void doDeferredCancel (SystemEnvironment sysEnv)
+	public void doDeferredCancel (SystemEnvironment sysEnv)
 		throws SDMSException
 	{
 		Long id = getId(sysEnv);
@@ -559,7 +559,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		return false;
 	}
 
-	private void checkFinal (SystemEnvironment sysEnv)
+	public void checkFinal (SystemEnvironment sysEnv)
 		throws SDMSException
 	{
 		if (getState(sysEnv).intValue() == CANCELLED || getState(sysEnv).intValue() == FINAL) {
@@ -2499,8 +2499,9 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		    !esdId.equals(finalEsdId)) {
 			super.setFinalEsdId(sysEnv, esdId);
 
-			if(doTrigger)
+			if(doTrigger) {
 				trigger (sysEnv, SDMSTrigger.IMMEDIATE_MERGE);
+			}
 
 			translateToParent(sysEnv, doTrigger);
 			return;
