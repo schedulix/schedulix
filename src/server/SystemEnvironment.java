@@ -345,7 +345,7 @@ public class SystemEnvironment implements Cloneable
 		featureLevels.put(S_CONDITIONAL_DEPENDENCIES, new Feature(S_ENTERPRISE,   "Conditional Dependencies"));
 		featureLevels.put(S_MILESTONES,               new Feature(S_PROFESSIONAL, "Scheduling Entity Type MILESTONE"));
 		featureLevels.put(S_EXTENDED_TRIGGERS,        new Feature(S_PROFESSIONAL, "Using Trigger Types other than IMMEDIATE_..., FINISH_CHILD or BEFORE_FINAL"));
-		featureLevels.put(S_ASYNC_TRIGGERS,           new Feature(S_ENTERPRISE  , "Asynchronous Trigger Types"));
+		featureLevels.put(S_ASYNC_TRIGGERS,           new Feature(S_ENTERPRISE,   "Asynchronous Trigger Types"));
 		featureLevels.put(S_FOLDER_ENVIRONMENTS,      new Feature(S_PROFESSIONAL, "Use of Folder Environments"));
 		featureLevels.put(S_FOLDER_RESOURCES,         new Feature(S_PROFESSIONAL, "Use of Folder Resources"));
 		featureLevels.put(S_SE_RESOURCES,             new Feature(S_PROFESSIONAL, "Use of Job or Batch Resources"));

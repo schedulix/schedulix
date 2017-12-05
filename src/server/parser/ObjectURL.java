@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -103,7 +101,6 @@ public class ObjectURL
 		objId = id;
 		objType = (Integer) typeFromURL.get(t);
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, String n)
@@ -111,7 +108,6 @@ public class ObjectURL
 		name = n;
 		objType = (Integer) typeFromURL.get(t);
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, String n, WithItem s)
@@ -121,7 +117,6 @@ public class ObjectURL
 		objType = (Integer) typeFromURL.get(t);
 		seSpec = s;
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, PathVector p)
@@ -133,7 +128,6 @@ public class ObjectURL
 			path.remove(path.size() - 1);
 		}
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, PathVector p, WithItem s)
@@ -147,7 +141,6 @@ public class ObjectURL
 			path.remove(path.size() - 1);
 		}
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, PathVector p, ObjectURL o)
@@ -160,7 +153,6 @@ public class ObjectURL
 			path.remove(path.size() - 1);
 		}
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, String s, ObjectURL o)
@@ -169,7 +161,6 @@ public class ObjectURL
 		master = o;
 		name = s;
 		parserType = t;
-
 	}
 
 	public ObjectURL(Integer t, String s, ObjectURL o, WithItem inverse)
@@ -179,7 +170,6 @@ public class ObjectURL
 		name = s;
 		parserType = t;
 		triggerInverse = inverse;
-
 	}
 
 	public SDMSProxy resolve(SystemEnvironment sysEnv)

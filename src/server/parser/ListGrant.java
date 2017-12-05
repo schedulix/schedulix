@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -278,7 +276,6 @@ public class ListGrant extends Node
 				default: break;
 			}
 		} catch (NotFoundException nfe) {
-
 		}
 		return p;
 	}
@@ -400,7 +397,6 @@ public class ListGrant extends Node
 						SDMSGrant g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSProxy.ZERO, gId));
 						p.addPriv(sysEnv, g.getPrivs(sysEnv).longValue());
 					} catch (NotFoundException nfe) {
-
 					}
 				}
 				if (!p.can(SDMSPrivilege.MANAGE_GROUP))

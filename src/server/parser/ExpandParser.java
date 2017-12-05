@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -494,7 +492,6 @@ public class ExpandParser
 	static final String CA_TSX = "%tsx%";
 
 	static final DumpExpandItem[] compoundRules = {
-
 		new DumpExpandItem(ST_FOLDER, null,		new PathVector().addThis(new DumpRule(SO_CHILDREN,       CA_FC))),
 		new DumpExpandItem(ST_FOLDER, null,		new PathVector().addThis(new DumpRule(SO_JOB_DEFINITION, CA_FC))),
 		new DumpExpandItem(ST_FOLDER, null,		new PathVector().addThis(new DumpRule(SO_COMMENT,        CA_FC))),
@@ -578,7 +575,6 @@ public class ExpandParser
 
 	static int findValue(int operator, int operand, int[][] searchTable)
 	{
-
 		int lb = 0;
 		int ub = searchTable.length - 1;
 		int idx;
@@ -661,7 +657,6 @@ public class ExpandParser
 			newDei.ruleList.setSep(", ");
 			PathVector resultRule = new PathVector();
 			do {
-
 				resultRule.addAll(next.ruleList);
 				i++;
 				if (i == ruleArray.length) break;
@@ -679,7 +674,6 @@ public class ExpandParser
 				old = dr;
 			}
 			result.add(newDei);
-
 		}
 		result.setSep(" \n\t");
 		compile(result);

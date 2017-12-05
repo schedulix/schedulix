@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.timer;
 
 import de.independit.scheduler.server.SystemEnvironment;
@@ -42,7 +40,6 @@ public class TimerUnit
 	public static final int WEEK   = 3;
 
 	public static final int[][] STANDARD_LENGTH = {
-
 		{ 1                                      },
 		{ 60,        1                           },
 		{ 60*24,     24,     1                   },

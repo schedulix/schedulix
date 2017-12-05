@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -325,7 +323,6 @@ public class ShowResource extends ShowCommented
 			v.add(null);
 		}
 		Long ts = getRsdTime(sysEnv, r, rt);
-
 		final Date d = new Date();
 		if(ts != null &&
 		   nr.getUsage(sysEnv).intValue() == SDMSNamedResource.SYNCHRONIZING &&
@@ -468,7 +465,6 @@ public class ShowResource extends ShowCommented
 		} else v.add(null);
 		int allocType = ra.getAllocationType(sysEnv).intValue();
 		if (allocType == SDMSResourceAllocation.REQUEST) {
-
 			Long nrId = nr.getId(sysEnv);
 			try {
 				rr = SDMSResourceRequirementTable.idx_seId_nrId_getUnique(sysEnv, new SDMSKey(seId, nrId), actVersion);
@@ -501,7 +497,6 @@ public class ShowResource extends ShowCommented
 			}
 		} else {
 			if (allocType == SDMSResourceAllocation.MASTER_REQUEST) {
-
 				v.add(ra.getAllocationTypeAsString(sysEnv));
 				v.add(MASTER_REQUEST);
 			} else {

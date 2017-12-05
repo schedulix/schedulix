@@ -47,10 +47,10 @@ class auto_restart extends App
 
 	public void addOptions()
 	{
-		addOption("f", "failed" , null, FAILED , null, "jobid"    , true , "Id of the failed job which might get restarted");
-		addOption("d", "delay"  , null, DELAY  , null, "minutes"  , false, "Default number of minutes the job should be delayed if job does not define AUTORESTART_DELAY");
-		addOption("m", "max"    , null, MAX    , null, "number"   , false, "Default max number of times the job should be restarted if job does not define AUTORESTART_MAX");
-		addOption("W", "warn"   , null, WARN   , null, null       , false, "[Don't] Set Warning if maximum number of restarts was reached");
+		addOption("f", "failed",  null, FAILED,  null, "jobid",     true,  "Id of the failed job which might get restarted");
+		addOption("d", "delay",   null, DELAY,   null, "minutes",   false, "Default number of minutes the job should be delayed if job does not define AUTORESTART_DELAY");
+		addOption("m", "max",     null, MAX,     null, "number",    false, "Default max number of times the job should be restarted if job does not define AUTORESTART_MAX");
+		addOption("W", "warn",    null, WARN,    null, null,        false, "[Don't] Set Warning if maximum number of restarts was reached");
 	}
 	public String getName() { return "auto_restart"; }
 	public boolean userOnly() { return true; }
@@ -64,7 +64,6 @@ class auto_restart extends App
 		String cmd = "GET PARAMETER OF " + failedJob + " AUTORESTART LIBERAL";
 		SDMSOutput o = execute(cmd);
 		if (o.error != null) {
-
 			if (!o.error.code.equals("03209231453")) {
 				System.err.println("Error executing: " + cmd);
 				printError(o.error);
@@ -82,7 +81,6 @@ class auto_restart extends App
 		cmd = "GET PARAMETER OF " + failedJob + " AUTORESTART_MAX LIBERAL";
 		o = execute(cmd);
 		if (o.error != null) {
-
 			if (!o.error.code.equals("03209231453")) {
 				System.err.println("Error executing: " + cmd);
 				printError(o.error);
@@ -93,11 +91,9 @@ class auto_restart extends App
 			max_restarts = Integer.parseInt(SDMSOutputUtil.getFromRecord(o,"VALUE"));
 		}
 		if (max_restarts != -1) {
-
 			cmd = "GET PARAMETER OF " + failedJob + " AUTORESTART_COUNT LIBERAL";
 			o = execute(cmd);
 			if (o.error != null) {
-
 				if (!o.error.code.equals("03209231453")) {
 					System.err.println("Error executing: " + cmd);
 					printError(o.error);
@@ -145,7 +141,6 @@ class auto_restart extends App
 		cmd = "GET PARAMETER OF " + failedJob + " AUTORESTART_DELAY LIBERAL";
 		o = execute(cmd);
 		if (o.error != null) {
-
 			if (!o.error.code.equals("03209231453")) {
 				System.err.println("Error executing: " + cmd);
 				printError(o.error);

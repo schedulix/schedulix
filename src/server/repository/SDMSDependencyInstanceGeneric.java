@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -199,7 +198,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(DependencyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.dependentIdOrig = p_dependentIdOrig;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -218,10 +217,10 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	{
 		final Integer v = getDependencyOperation (env);
 		switch (v.intValue()) {
-		case SDMSDependencyInstance.AND:
-			return "AND";
-		case SDMSDependencyInstance.OR:
-			return "OR";
+			case SDMSDependencyInstance.AND:
+				return "AND";
+			case SDMSDependencyInstance.OR:
+				return "OR";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -239,7 +238,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(DependencyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.dependencyOperation = p_dependencyOperation;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -289,18 +288,18 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	{
 		final Integer v = getState (env);
 		switch (v.intValue()) {
-		case SDMSDependencyInstance.OPEN:
-			return "OPEN";
-		case SDMSDependencyInstance.FULFILLED:
-			return "FULFILLED";
-		case SDMSDependencyInstance.FAILED:
-			return "FAILED";
-		case SDMSDependencyInstance.BROKEN:
-			return "BROKEN";
-		case SDMSDependencyInstance.DEFERED:
-			return "DEFERED";
-		case SDMSDependencyInstance.CANCELLED:
-			return "CANCELLED";
+			case SDMSDependencyInstance.OPEN:
+				return "OPEN";
+			case SDMSDependencyInstance.FULFILLED:
+				return "FULFILLED";
+			case SDMSDependencyInstance.FAILED:
+				return "FAILED";
+			case SDMSDependencyInstance.BROKEN:
+				return "BROKEN";
+			case SDMSDependencyInstance.DEFERED:
+				return "DEFERED";
+			case SDMSDependencyInstance.CANCELLED:
+				return "CANCELLED";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -344,12 +343,12 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	{
 		final Integer v = getIgnore (env);
 		switch (v.intValue()) {
-		case SDMSDependencyInstance.NO:
-			return "NO";
-		case SDMSDependencyInstance.YES:
-			return "YES";
-		case SDMSDependencyInstance.RECURSIVE:
-			return "RECURSIVE";
+			case SDMSDependencyInstance.NO:
+				return "NO";
+			case SDMSDependencyInstance.YES:
+				return "YES";
+			case SDMSDependencyInstance.RECURSIVE:
+				return "RECURSIVE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -367,7 +366,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(DependencyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.ignore = p_ignore;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -422,7 +421,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(DependencyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.seVersion = p_seVersion;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -446,7 +445,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(DependencyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -470,7 +469,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(DependencyInstance) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -488,7 +487,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSDependencyInstanceGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -506,7 +505,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSDependencyInstanceGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.euid();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -653,12 +652,10 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "DependencyInstance: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -677,7 +674,6 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			myInsert.setLong (14, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "DependencyInstance: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -693,7 +689,6 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 				        "DELETE FROM DEPENDENCY_INSTANCE WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "DependencyInstance: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -703,7 +698,6 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "DependencyInstance: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -735,7 +729,6 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "DependencyInstance: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -758,7 +751,6 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			myUpdate.setLong(14, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "DependencyInstance: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -766,32 +758,32 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	static public boolean checkDependencyOperation(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSDependencyInstance.AND:
-		case SDMSDependencyInstance.OR:
-			return true;
+			case SDMSDependencyInstance.AND:
+			case SDMSDependencyInstance.OR:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkState(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSDependencyInstance.OPEN:
-		case SDMSDependencyInstance.FULFILLED:
-		case SDMSDependencyInstance.FAILED:
-		case SDMSDependencyInstance.BROKEN:
-		case SDMSDependencyInstance.DEFERED:
-		case SDMSDependencyInstance.CANCELLED:
-			return true;
+			case SDMSDependencyInstance.OPEN:
+			case SDMSDependencyInstance.FULFILLED:
+			case SDMSDependencyInstance.FAILED:
+			case SDMSDependencyInstance.BROKEN:
+			case SDMSDependencyInstance.DEFERED:
+			case SDMSDependencyInstance.CANCELLED:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkIgnore(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSDependencyInstance.NO:
-		case SDMSDependencyInstance.YES:
-		case SDMSDependencyInstance.RECURSIVE:
-			return true;
+			case SDMSDependencyInstance.NO:
+			case SDMSDependencyInstance.YES:
+			case SDMSDependencyInstance.RECURSIVE:
+				return true;
 		}
 		return false;
 	}

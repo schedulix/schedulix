@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -90,7 +88,6 @@ public class ScopeConfig
 	private static final void createConfig (final SystemEnvironment sysEnv, final Long sId, final String key, final String value)
 		throws SDMSException
 	{
-
 		final String sic = '=' + value;
 
 		SDMSScopeConfigTable.table.create (sysEnv, key, sic, sId);
@@ -103,7 +100,6 @@ public class ScopeConfig
 		final int size = keyList.size();
 		for (int i = 0; i < size; ++i) {
 			final String key = (String) keyList.get (i);
-
 			final String value = '=' + (String) mappings.get (key);
 
 			SDMSScopeConfigEnvMappingTable.table.create (sysEnv, key, value, sId);
@@ -210,7 +206,6 @@ public class ScopeConfig
 					}
 
 					if (key.startsWith (Config.NAME_PATTERN) && value != null) {
-
 						try {
 							((String) value).matches((String) value);
 						} catch (java.util.regex.PatternSyntaxException pse) {
@@ -227,10 +222,8 @@ public class ScopeConfig
 					}
 					String sic = null;
 					if (value != null) {
-
 						sic = '=' + (String) value;
 					}
-
 					if ((sic == null && sc == null) || (sic != null && sc != null && sic.equals(sc.getValue(sysEnv))))
 						continue;
 
@@ -377,7 +370,6 @@ public class ScopeConfig
 				final SDMSScopeConfig sc = (SDMSScopeConfig) list.get (i);
 
 				final String key = sc.getKey (sysEnv);
-
 				final String value = sc.getValue (sysEnv).substring (1);
 
 				if (config.containsKey (key)) {
@@ -397,7 +389,6 @@ public class ScopeConfig
 				final SDMSScopeConfigEnvMapping sce = (SDMSScopeConfigEnvMapping) list.get (i);
 
 				final String key = sce.getKey (sysEnv);
-
 				final String value = sce.getValue (sysEnv).substring (1);
 
 				if (envMapping.containsKey (key)) {
@@ -435,6 +426,5 @@ public class ScopeConfig
 
 	private ScopeConfig()
 	{
-
 	}
 }

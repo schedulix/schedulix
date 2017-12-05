@@ -143,7 +143,6 @@ public class LockingSystemSynchronized
 				locksToNotify.addAll(locksToNotifyForLock);
 			}
 		}
-
 		return locksToNotify;
 	}
 
@@ -165,12 +164,10 @@ public class LockingSystemSynchronized
 	protected static synchronized Vector<ObjectLock> release(SystemEnvironment sysEnv, Object object)
 		throws FatalException
 	{
-
 		ObjectLock lock = getLockForThread(sysEnv.thread, object);
 		Vector<ObjectLock> locksToNotify = null;
 		if (lock != null) {
 			locksToNotify = releaseLock(sysEnv, lock, true);
-
 			removeLockFromSubTxStack(sysEnv, lock);
 		}
 		return locksToNotify;
@@ -178,16 +175,13 @@ public class LockingSystemSynchronized
 	protected static synchronized Vector<ObjectLock> releaseToCheckPoint(SystemEnvironment sysEnv, Object object, long checkPoint)
 		throws FatalException
 	{
-
 		ObjectLock lock = getLockForThread(sysEnv.thread, object);
 
 		Vector<ObjectLock> locksToNotify = null;
 		if (lock != null) {
 			if (lock.createCp <= checkPoint)
 				return null;
-
 			locksToNotify = releaseLock(sysEnv, lock, true);
-
 			removeLockFromSubTxStack(sysEnv, lock);
 		}
 		return locksToNotify;
@@ -229,9 +223,7 @@ public class LockingSystemSynchronized
 	protected static synchronized ObjectLock getLock(SystemEnvironment sysEnv, Object object, int mode)
 		throws DeadlockException
 	{
-
 		if (object == null) throw new RuntimeException();
-
 		ObjectLock lock = getLockForThread(sysEnv.thread, object);
 		boolean escalateDeadlock = false;
 
@@ -250,7 +242,6 @@ public class LockingSystemSynchronized
 								ol.mode + " wait = " + ol.wait);
 							ol = ol.next;
 						}
-
 						throw new RuntimeException();
 					}
 					q = q.prev;
@@ -263,17 +254,13 @@ public class LockingSystemSynchronized
 						":Lock Escalation on Object[" +  ObjectLock.objectToShortString(object) + "]");
 
 				if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_STACK_TRACES)) != 0)
-
 					System.out.println("Lock Escalation Start Stacktrace on " + lock.objectToShortString() + ":\n" + lock.stackTrace + "Lock Escalation End Stacktrace:\n");
 
 				lock.mode = ObjectLock.EXCLUSIVE;
-
 				lock.escalated = true;
-
 				ObjectLock p = lock;
 				while (true) {
 					if (p.next == null)
-
 						break;
 					if (p.next.mode == ObjectLock.EXCLUSIVE) {
 						if (p.next.escalated) {
@@ -283,10 +270,8 @@ public class LockingSystemSynchronized
 
 							escalateDeadlock = true;
 						}
-
 						break;
 					} else
-
 						if (p.next.wait && !p.next.notify) throw new RuntimeException();
 
 					p = p.next;
@@ -306,30 +291,23 @@ public class LockingSystemSynchronized
 
 					p.next = lock;
 					if (lock.next != null)
-
 						lock.next.prev = lock;
 				}
 				if (lock.prev != null) {
-
 					lock.wait = true;
 				}
 			}
-
 		} else {
-
 			lock = ObjectLock.getObjectLock(sysEnv.thread, object, mode, sysEnv.getLockCp());
 			if (sysEnv.tx.subTxLocks != null) {
 				sysEnv.tx.subTxLocks.add(lock);
 			}
 			registerLockForThread(sysEnv.thread, object, lock);
-
 			ObjectLock locks = objectLocks.get(object);
 
 			if (locks == null) {
-
 				objectLocks.put(object, lock);
 			} else {
-
 				if (mode == ObjectLock.EXCLUSIVE) {
 					lock.wait = true;
 				}
@@ -348,7 +326,6 @@ public class LockingSystemSynchronized
 				}
 			}
 		}
-
 		if (lock.wait) {
 			if (lock.object == null) throw new RuntimeException();
 			waits.put(sysEnv.thread, lock);
@@ -360,7 +337,6 @@ public class LockingSystemSynchronized
 
 		if (escalateDeadlock) {
 			if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_STACK_TRACES)) != 0)
-
 				System.out.println("Escalation Deadlock Start Stacktrace on " + lock.objectToShortString() + ":\n" + lock.stackTrace + "Escalation Deadlock End Stacktrace:\n");
 
 			String stackTrace = ObjectLock.getStackTrace();
@@ -390,10 +366,8 @@ public class LockingSystemSynchronized
 			)
 		   ) {
 			ObjectLock p = lock.next;
-
 			while (p != null) {
 				if (p == lock.next || p.mode != ObjectLock.EXCLUSIVE) {
-
 					synchronized (p.syncLock) {
 						if (p.wait && !p.notify) {
 							if (locksToNotify == null)
@@ -405,37 +379,30 @@ public class LockingSystemSynchronized
 					}
 				}
 				if (p.mode == ObjectLock.EXCLUSIVE)
-
 					break;
 				p = p.next;
 			}
 		}
 
 		if (lock.prev == null) {
-
 			if (lock.object == null) {
-
 				if (lock.freeStackTrace != null) {
 					System.out.println("Lock has been freed at:\n" + lock.freeStackTrace);
 					System.out.println("Current Stack Trace:");
 					System.out.println(ObjectLock.getStackTrace());
 				}
-
 				throw new RuntimeException();
 			}
 			objectLocks.put(lock.object, lock.next);
 		} else
-
 			lock.prev.next = lock.next;
 
 		if (lock.next != null)
-
 			lock.next.prev = lock.prev;
 
 		if (removeFromThreadLocks) {
 			clearLockForThread(sysEnv.thread, lock);
 		}
-
 		lock.syncLock.freeObjectLock(sysEnv);
 
 		return locksToNotify;

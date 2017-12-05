@@ -70,7 +70,6 @@ public abstract class InternalSession extends SDMSThread
 		cEnv.setMe(this);
 		try {
 			env.dbConnection = Server.connectToDB(env);
-
 			cEnv.setGid(env, new Vector());
 			cEnv.gid().add(SDMSObject.adminGId);
 			cEnv.setUid(SDMSObject.internalUId);
@@ -123,7 +122,6 @@ public abstract class InternalSession extends SDMSThread
 			try {
 				post(getNode(INITIALIZE));
 			} catch (SDMSException e) {
-
 			}
 			while(run) {
 				try {
@@ -131,7 +129,6 @@ public abstract class InternalSession extends SDMSThread
 					lastRun = new java.util.Date().getTime();
 					post(getNode(NORMAL));
 				} catch (SDMSException e) {
-
 				}
 				long now = new java.util.Date().getTime();
 				while (doWait) {

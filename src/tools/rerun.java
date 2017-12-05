@@ -44,11 +44,11 @@ class rerun extends App
 
 	public void addOptions()
 	{
-		addOption("j", "jid"    , null, JID    , null, "jobid", true , "Id of job to rerun");
-		addOption("S", "suspend", null, SUSPEND, null, null   , false, "Submit job [not] suspended");
-		addOption("D", "delay"  , null, DELAY  , null, "delay", false, "Delay after Job will be resumed (only valid with suspend option)");
-		addOption("U", "unit"   , null, UNIT   , null, "unit" , false, "Delay Unit (MINUTE, HOUR or DAY) defaults to MINUTE");
-		addOption("A", "at"     , null, AT     , null, "at"   , false, "Timestamp (YYYY-MM-DDTHH:MM) when job should be resumed (only valid with suspend option)");
+		addOption("j", "jid",     null, JID,     null, "jobid", true,  "Id of job to rerun");
+		addOption("S", "suspend", null, SUSPEND, null, null,    false, "Submit job [not] suspended");
+		addOption("D", "delay",   null, DELAY,   null, "delay", false, "Delay after Job will be resumed (only valid with suspend option)");
+		addOption("U", "unit",    null, UNIT,    null, "unit",  false, "Delay Unit (MINUTE, HOUR or DAY) defaults to MINUTE");
+		addOption("A", "at",      null, AT,      null, "at",    false, "Timestamp (YYYY-MM-DDTHH:MM) when job should be resumed (only valid with suspend option)");
 
 	}
 	public String getName() { return "rerun"; }
@@ -101,7 +101,6 @@ class rerun extends App
 
 		SDMSOutput o = execute(cmd);
 		if (o.error != null) {
-
 			if (o.error.code.equals("03205191052") && executions > 1) return 0;
 			printError(o.error);
 			return 1;

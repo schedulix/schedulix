@@ -161,7 +161,7 @@ public class SDMSTransaction
 		throws SQLException, SDMSException
 	{
 		if (traceSubTx)
-			SDMSThread.doTrace(null, "Commiting or rolling back Transaction", SDMSThread.SEVERITY_ERROR);
+			SDMSThread.doTrace(null, (isCommit ? "Commiting" : "Rolling back") + " Transaction [" + txId + "/" + subTxId + "]", SDMSThread.SEVERITY_ERROR);
 		if (isCommit) {
 			if(subTxId != 0) {
 				throw new FatalException (new SDMSMessage (env, "02110301918",
@@ -395,6 +395,26 @@ public class SDMSTransaction
 			"-- End Transaction Data --\n"
 		);
 		return rc;
+	}
+
+	private static int dmpctr = 0;
+	public void dumpTouchList(SystemEnvironment sysEnv, String msg)
+	throws SDMSException
+	{
+		dmpctr++;
+		if (touchList == null) {
+			System.out.println("[" + dmpctr + "] START: " + msg);
+			System.out.println("[" + dmpctr + "] END: " + msg);
+			return;
+		}
+		System.out.println("[" + dmpctr + "] START: " + msg);
+		System.out.println(this.toString());
+		Iterator i = touchList.iterator();
+		while (i.hasNext()) {
+			SDMSChangeListElement changeListElement = (SDMSChangeListElement) i.next();
+			System.out.println(changeListElement.toString());
+		}
+		System.out.println("[" + dmpctr + "] END: " + msg);
 	}
 }
 

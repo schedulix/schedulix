@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -257,7 +256,7 @@ public class SDMSGrantGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Grant) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.objectType = p_objectType;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -281,7 +280,7 @@ public class SDMSGrantGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Grant) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.privs = p_privs;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -306,7 +305,7 @@ public class SDMSGrantGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Grant) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.deleteVersion = p_deleteVersion;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -330,7 +329,7 @@ public class SDMSGrantGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Grant) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -354,7 +353,7 @@ public class SDMSGrantGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(Grant) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -372,7 +371,7 @@ public class SDMSGrantGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSGrantGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -390,7 +389,7 @@ public class SDMSGrantGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSGrantGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSGrantGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.euid();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -493,12 +492,10 @@ public class SDMSGrantGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "Grant: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -516,7 +513,6 @@ public class SDMSGrantGeneric extends SDMSObject
 			myInsert.setLong (10, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "Grant: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -532,7 +528,6 @@ public class SDMSGrantGeneric extends SDMSObject
 				        "DELETE FROM GRANTS WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Grant: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -542,7 +537,6 @@ public class SDMSGrantGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "Grant: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -570,7 +564,6 @@ public class SDMSGrantGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "Grant: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -592,7 +585,6 @@ public class SDMSGrantGeneric extends SDMSObject
 			myUpdate.setLong(10, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "Grant: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

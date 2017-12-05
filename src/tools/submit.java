@@ -55,15 +55,15 @@ class submit extends App
 
 	public void addOptions()
 	{
-		addOption("J", "job"    , null, JOB    , null, "jobname"  , true , "Name or alias of job to submit");
-		addOption("T", "tag"    , null, TAG    , null, "tag"      , false, "Child tag for dynamic child submits");
-		addOption("m", "master" , null, MASTER , null, null       , false, "Ignored option for backward compatibility reasons");
-		addOption("N", "nice"   , null, NICE   , null, "nice"     , false, "Nice value of the job or batch");
-		addOption("S", "suspend", null, SUSPEND, null, null       , false, "Submit job [not] suspended");
-		addOption("D", "delay"  , null, DELAY  , null, "delay"    , false, "Delay after Job will be resumed (only valid with suspend option)");
-		addOption("U", "unit"   , null, UNIT   , null, "unit"     , false, "Delay Unit (MINUTE, HOUR or DAY) defaults to MINUTE");
-		addOption("A", "at"     , null, AT     , null, "at"       , false, "Timestamp (YYYY-MM-DDTHH:MM) when job should be resumed (only valid with suspend option)");
-		addOption("g", "group"  , null, GROUP  , null, "groupname", false, "Group to own the submitted job (not allows with jid option)");
+		addOption("J", "job",     null, JOB,     null, "jobname",   true,  "Name or alias of job to submit");
+		addOption("T", "tag",     null, TAG,     null, "tag",       false, "Child tag for dynamic child submits");
+		addOption("m", "master",  null, MASTER,  null, null,        false, "Ignored option for backward compatibility reasons");
+		addOption("N", "nice",    null, NICE,    null, "nice",      false, "Nice value of the job or batch");
+		addOption("S", "suspend", null, SUSPEND, null, null,        false, "Submit job [not] suspended");
+		addOption("D", "delay",   null, DELAY,   null, "delay",     false, "Delay after Job will be resumed (only valid with suspend option)");
+		addOption("U", "unit",    null, UNIT,    null, "unit",      false, "Delay Unit (MINUTE, HOUR or DAY) defaults to MINUTE");
+		addOption("A", "at",      null, AT,      null, "at",        false, "Timestamp (YYYY-MM-DDTHH:MM) when job should be resumed (only valid with suspend option)");
+		addOption("g", "group",   null, GROUP,   null, "groupname", false, "Group to own the submitted job (not allows with jid option)");
 	}
 	public String getName() { return "submit"; }
 	public boolean canRetry() { return true; }
@@ -150,7 +150,6 @@ class submit extends App
 			while (i.hasNext()) {
 				String parameter = (String)i.next();
 				String value     = (String)i.next();
-
 				value = value.replaceAll("\\\\", "\\\\\\\\");
 				value = value.replaceAll("'", "\\\\'");
 				cmd = cmd + sep + "        '" + parameter + "' = '" + value + "'";
@@ -161,7 +160,6 @@ class submit extends App
 
 		o = execute(cmd);
 		if (o.error != null) {
-
 			if (o.error.code.equals("03406031553")) return 0;
 			printError(o.error);
 			return 1;

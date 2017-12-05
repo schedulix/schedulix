@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server;
 
 import java.io.*;
@@ -94,11 +93,9 @@ public class UserConnection extends SDMSThread
 	public void do_stop()
 	{
 		run = false;
-
 		try {
 			istream.close();
 		} catch(IOException ioe) {
-
 		}
 		interrupt();
 	}
@@ -110,7 +107,6 @@ public class UserConnection extends SDMSThread
 			try {
 				sock.setSoTimeout(newTimeout * 1000);
 			} catch (java.net.SocketException se) {
-
 				return;
 			}
 			timeout = newTimeout;
@@ -135,7 +131,6 @@ public class UserConnection extends SDMSThread
 		try {
 			parser.yyparse(scanner);
 		} catch (java.net.SocketTimeoutException ste) {
-
 			if (run) {
 				String username = null;
 				if(env.isUser()) {

@@ -444,11 +444,9 @@ public class Feil
 			id = jid;
 
 		if (logfile.equals("")) {
-
 			logfile = DEV_NULL;
 		}
 		if (errlog.equals("")) {
-
 			logfile = DEV_NULL;
 		}
 	}

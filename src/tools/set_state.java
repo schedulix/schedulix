@@ -42,9 +42,9 @@ class set_state extends App
 
 	public void addOptions()
 	{
-		addOption("j", "jid"  , null, JID  , null, "jobid", true , "Id of job to set state for");
-		addOption("S", "state", null, STATE, null, "state", true , "Exit State to set");
-		addOption("f", "force", null, FORCE, null, null   , false, "[Don't] Force if job does not define a mapping for that state");
+		addOption("j", "jid",   null, JID,   null, "jobid", true,  "Id of job to set state for");
+		addOption("S", "state", null, STATE, null, "state", true,  "Exit State to set");
+		addOption("f", "force", null, FORCE, null, null,    false, "[Don't] Force if job does not define a mapping for that state");
 	}
 	public String getName() { return "set_state"; }
 	public boolean canRetry() { return true; }
@@ -57,7 +57,6 @@ class set_state extends App
 		if (options.isSet(FORCE) && options.getOption(FORCE).getBValue()) cmd = cmd + " FORCE";
 		SDMSOutput o = execute(cmd);
 		if (o.error != null) {
-
 			if (o.error.code.equals("03207082043") && executions > 1) return 0;
 			printError(o.error);
 			return 1;

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -216,7 +215,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.ts = p_ts;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -240,7 +239,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.txId = p_txId;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -259,62 +258,62 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	{
 		final Integer v = getAction (env);
 		switch (v.intValue()) {
-		case SDMSAuditTrail.RERUN:
-			return "RERUN";
-		case SDMSAuditTrail.RERUN_RECURSIVE:
-			return "RERUN_RECURSIVE";
-		case SDMSAuditTrail.CANCEL:
-			return "CANCEL";
-		case SDMSAuditTrail.SUSPEND:
-			return "SUSPEND";
-		case SDMSAuditTrail.RESUME:
-			return "RESUME";
-		case SDMSAuditTrail.SET_STATE:
-			return "SET_STATE";
-		case SDMSAuditTrail.SET_EXIT_STATE:
-			return "SET_EXIT_STATE";
-		case SDMSAuditTrail.IGNORE_DEPENDENCY:
-			return "IGNORE_DEPENDENCY";
-		case SDMSAuditTrail.IGNORE_DEP_RECURSIVE:
-			return "IGNORE_DEP_RECURSIVE";
-		case SDMSAuditTrail.IGNORE_RESOURCE:
-			return "IGNORE_RESOURCE";
-		case SDMSAuditTrail.KILL:
-			return "KILL";
-		case SDMSAuditTrail.ALTER_RUN_PROGRAM:
-			return "ALTER_RUN_PROGRAM";
-		case SDMSAuditTrail.ALTER_RERUN_PROGRAM:
-			return "ALTER_RERUN_PROGRAM";
-		case SDMSAuditTrail.COMMENT_JOB:
-			return "COMMENT_JOB";
-		case SDMSAuditTrail.SUBMITTED:
-			return "SUBMITTED";
-		case SDMSAuditTrail.TRIGGER_FAILED:
-			return "TRIGGER_FAILED";
-		case SDMSAuditTrail.TRIGGER_SUBMIT:
-			return "TRIGGER_SUBMIT";
-		case SDMSAuditTrail.JOB_RESTARTABLE:
-			return "JOB_RESTARTABLE";
-		case SDMSAuditTrail.CHANGE_PRIORITY:
-			return "CHANGE_PRIORITY";
-		case SDMSAuditTrail.RENICE:
-			return "RENICE";
-		case SDMSAuditTrail.SUBMIT_SUSPENDED:
-			return "SUBMIT_SUSPENDED";
-		case SDMSAuditTrail.IGNORE_NAMED_RESOURCE:
-			return "IGNORE_NAMED_RESOURCE";
-		case SDMSAuditTrail.TIMEOUT:
-			return "TIMEOUT";
-		case SDMSAuditTrail.SET_RESOURCE_STATE:
-			return "SET_RESOURCE_STATE";
-		case SDMSAuditTrail.JOB_IN_ERROR:
-			return "JOB_IN_ERROR";
-		case SDMSAuditTrail.CLEAR_WARNING:
-			return "CLEAR_WARNING";
-		case SDMSAuditTrail.SET_WARNING:
-			return "SET_WARNING";
-		case SDMSAuditTrail.JOB_UNREACHABLE:
-			return "JOB_UNREACHABLE";
+			case SDMSAuditTrail.RERUN:
+				return "RERUN";
+			case SDMSAuditTrail.RERUN_RECURSIVE:
+				return "RERUN_RECURSIVE";
+			case SDMSAuditTrail.CANCEL:
+				return "CANCEL";
+			case SDMSAuditTrail.SUSPEND:
+				return "SUSPEND";
+			case SDMSAuditTrail.RESUME:
+				return "RESUME";
+			case SDMSAuditTrail.SET_STATE:
+				return "SET_STATE";
+			case SDMSAuditTrail.SET_EXIT_STATE:
+				return "SET_EXIT_STATE";
+			case SDMSAuditTrail.IGNORE_DEPENDENCY:
+				return "IGNORE_DEPENDENCY";
+			case SDMSAuditTrail.IGNORE_DEP_RECURSIVE:
+				return "IGNORE_DEP_RECURSIVE";
+			case SDMSAuditTrail.IGNORE_RESOURCE:
+				return "IGNORE_RESOURCE";
+			case SDMSAuditTrail.KILL:
+				return "KILL";
+			case SDMSAuditTrail.ALTER_RUN_PROGRAM:
+				return "ALTER_RUN_PROGRAM";
+			case SDMSAuditTrail.ALTER_RERUN_PROGRAM:
+				return "ALTER_RERUN_PROGRAM";
+			case SDMSAuditTrail.COMMENT_JOB:
+				return "COMMENT_JOB";
+			case SDMSAuditTrail.SUBMITTED:
+				return "SUBMITTED";
+			case SDMSAuditTrail.TRIGGER_FAILED:
+				return "TRIGGER_FAILED";
+			case SDMSAuditTrail.TRIGGER_SUBMIT:
+				return "TRIGGER_SUBMIT";
+			case SDMSAuditTrail.JOB_RESTARTABLE:
+				return "JOB_RESTARTABLE";
+			case SDMSAuditTrail.CHANGE_PRIORITY:
+				return "CHANGE_PRIORITY";
+			case SDMSAuditTrail.RENICE:
+				return "RENICE";
+			case SDMSAuditTrail.SUBMIT_SUSPENDED:
+				return "SUBMIT_SUSPENDED";
+			case SDMSAuditTrail.IGNORE_NAMED_RESOURCE:
+				return "IGNORE_NAMED_RESOURCE";
+			case SDMSAuditTrail.TIMEOUT:
+				return "TIMEOUT";
+			case SDMSAuditTrail.SET_RESOURCE_STATE:
+				return "SET_RESOURCE_STATE";
+			case SDMSAuditTrail.JOB_IN_ERROR:
+				return "JOB_IN_ERROR";
+			case SDMSAuditTrail.CLEAR_WARNING:
+				return "CLEAR_WARNING";
+			case SDMSAuditTrail.SET_WARNING:
+				return "SET_WARNING";
+			case SDMSAuditTrail.JOB_UNREACHABLE:
+				return "JOB_UNREACHABLE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -332,7 +331,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.action = p_action;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -351,8 +350,8 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	{
 		final Integer v = getObjectType (env);
 		switch (v.intValue()) {
-		case SDMSAuditTrail.JOB:
-			return "JOB";
+			case SDMSAuditTrail.JOB:
+				return "JOB";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -370,7 +369,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.objectType = p_objectType;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -456,7 +455,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.isSetWarning = p_isSetWarning;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -481,7 +480,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		if (p_actionInfo != null && p_actionInfo.length() > 1024) {
 			p_actionInfo = p_actionInfo.substring(0,1024);
 		}
@@ -509,7 +508,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		if (p_actionComment != null && p_actionComment.length() > 1024) {
 			p_actionComment = p_actionComment.substring(0,1024);
 		}
@@ -536,7 +535,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -560,7 +559,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -578,7 +577,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSAuditTrailGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -596,7 +595,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSAuditTrailGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.euid();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -693,12 +692,10 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "AuditTrail: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -724,7 +721,6 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			myInsert.setLong (15, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -740,7 +736,6 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				        "DELETE FROM AUDIT_TRAIL WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "AuditTrail: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -750,7 +745,6 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -783,7 +777,6 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "AuditTrail: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -813,7 +806,6 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			myUpdate.setLong(15, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -821,43 +813,43 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	static public boolean checkAction(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSAuditTrail.RERUN:
-		case SDMSAuditTrail.RERUN_RECURSIVE:
-		case SDMSAuditTrail.CANCEL:
-		case SDMSAuditTrail.SUSPEND:
-		case SDMSAuditTrail.RESUME:
-		case SDMSAuditTrail.SET_STATE:
-		case SDMSAuditTrail.SET_EXIT_STATE:
-		case SDMSAuditTrail.IGNORE_DEPENDENCY:
-		case SDMSAuditTrail.IGNORE_DEP_RECURSIVE:
-		case SDMSAuditTrail.IGNORE_RESOURCE:
-		case SDMSAuditTrail.KILL:
-		case SDMSAuditTrail.ALTER_RUN_PROGRAM:
-		case SDMSAuditTrail.ALTER_RERUN_PROGRAM:
-		case SDMSAuditTrail.COMMENT_JOB:
-		case SDMSAuditTrail.SUBMITTED:
-		case SDMSAuditTrail.TRIGGER_FAILED:
-		case SDMSAuditTrail.TRIGGER_SUBMIT:
-		case SDMSAuditTrail.JOB_RESTARTABLE:
-		case SDMSAuditTrail.CHANGE_PRIORITY:
-		case SDMSAuditTrail.RENICE:
-		case SDMSAuditTrail.SUBMIT_SUSPENDED:
-		case SDMSAuditTrail.IGNORE_NAMED_RESOURCE:
-		case SDMSAuditTrail.TIMEOUT:
-		case SDMSAuditTrail.SET_RESOURCE_STATE:
-		case SDMSAuditTrail.JOB_IN_ERROR:
-		case SDMSAuditTrail.CLEAR_WARNING:
-		case SDMSAuditTrail.SET_WARNING:
-		case SDMSAuditTrail.JOB_UNREACHABLE:
-			return true;
+			case SDMSAuditTrail.RERUN:
+			case SDMSAuditTrail.RERUN_RECURSIVE:
+			case SDMSAuditTrail.CANCEL:
+			case SDMSAuditTrail.SUSPEND:
+			case SDMSAuditTrail.RESUME:
+			case SDMSAuditTrail.SET_STATE:
+			case SDMSAuditTrail.SET_EXIT_STATE:
+			case SDMSAuditTrail.IGNORE_DEPENDENCY:
+			case SDMSAuditTrail.IGNORE_DEP_RECURSIVE:
+			case SDMSAuditTrail.IGNORE_RESOURCE:
+			case SDMSAuditTrail.KILL:
+			case SDMSAuditTrail.ALTER_RUN_PROGRAM:
+			case SDMSAuditTrail.ALTER_RERUN_PROGRAM:
+			case SDMSAuditTrail.COMMENT_JOB:
+			case SDMSAuditTrail.SUBMITTED:
+			case SDMSAuditTrail.TRIGGER_FAILED:
+			case SDMSAuditTrail.TRIGGER_SUBMIT:
+			case SDMSAuditTrail.JOB_RESTARTABLE:
+			case SDMSAuditTrail.CHANGE_PRIORITY:
+			case SDMSAuditTrail.RENICE:
+			case SDMSAuditTrail.SUBMIT_SUSPENDED:
+			case SDMSAuditTrail.IGNORE_NAMED_RESOURCE:
+			case SDMSAuditTrail.TIMEOUT:
+			case SDMSAuditTrail.SET_RESOURCE_STATE:
+			case SDMSAuditTrail.JOB_IN_ERROR:
+			case SDMSAuditTrail.CLEAR_WARNING:
+			case SDMSAuditTrail.SET_WARNING:
+			case SDMSAuditTrail.JOB_UNREACHABLE:
+				return true;
 		}
 		return false;
 	}
 	static public boolean checkObjectType(Integer p)
 	{
 		switch (p.intValue()) {
-		case SDMSAuditTrail.JOB:
-			return true;
+			case SDMSAuditTrail.JOB:
+				return true;
 		}
 		return false;
 	}

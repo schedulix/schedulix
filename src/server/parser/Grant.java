@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -173,7 +171,6 @@ public class Grant extends Node
 		}
 		if((p.getPrivilegeMask() & lpriv) != lpriv) {
 			if (force) {
-
 				newPrivs = p.getPrivilegeMask() & lpriv;
 			} else {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03402240938", "Incompatible grant"));
@@ -208,7 +205,6 @@ public class Grant extends Node
 			if(pr.isEmpty()) {
 				g.delete(sysEnv);
 			} else {
-
 				g.setPrivs(sysEnv, pr.toLong());
 			}
 		}
@@ -239,10 +235,8 @@ public class Grant extends Node
 			gId = (Long) gList.get(i);
 
 			try {
-
 				g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(oId, gId));
 			} catch (NotFoundException nfe) {
-
 				g = SDMSGrantTable.table.create(sysEnv, oId, gId, SYSTEM, NOPRIVS, null);
 			}
 			Long oldPrivs = g.getPrivs(sysEnv);
@@ -253,7 +247,6 @@ public class Grant extends Node
 				pr.delPriv(sysEnv, lpriv);
 			}
 			if(pr.isEmpty()) {
-
 				g.delete(sysEnv);
 			} else {
 				g.setPrivs(sysEnv, pr.toLong());
@@ -280,7 +273,6 @@ public class Grant extends Node
 			checkObjectType (sysEnv, objectType);
 
 			if (
-
 				objectType != SDMSGrant.ENVIRONMENT
 			) {
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_GRANTS);

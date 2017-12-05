@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -168,7 +167,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
 		o.ecrStart = p_ecrStart;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -193,7 +192,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
 		o.ecrEnd = p_ecrEnd;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -217,7 +216,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -241,7 +240,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ExitStateMapping) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -259,7 +258,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSExitStateMappingGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -277,7 +276,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSExitStateMappingGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateMappingGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.euid();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -378,12 +377,10 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ExitStateMapping: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -405,7 +402,6 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			myInsert.setLong(11, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ExitStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -456,7 +452,6 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			myUpdate.setLong(4, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ExitStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

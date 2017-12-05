@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -131,7 +129,6 @@ public class Connect extends Node
 		int method;
 
 		try {
-
 			u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(user, zero));
 			if (!u.getIsEnabled(sysEnv).booleanValue()) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
@@ -156,7 +153,6 @@ public class Connect extends Node
 			}
 			if(sysEnv.getConnectState() != SystemEnvironment.NORMAL) {
 				if(u.getId(sysEnv).intValue() != 0)
-
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03202081739", "Login restricted"));
 			}
 		} catch (NotFoundException nfe) {
@@ -179,7 +175,6 @@ public class Connect extends Node
 		int method;
 
 		try {
-
 			pId = SDMSScopeTable.pathToId(sysEnv, path);
 
 			s = SDMSScopeTable.idx_parentId_name_getUnique(sysEnv, new SDMSKey(pId, jsName));
@@ -219,7 +214,6 @@ public class Connect extends Node
 			timeout = Integer.parseInt(ScopeConfig.getItem(sysEnv, s, Config.NOP_DELAY));
 			sysEnv.cEnv.getMe().setTimeout(timeout * 3);
 		} catch (NumberFormatException nfe) {
-
 			sysEnv.cEnv.getMe().setTimeout(300);
 		}
 	}
@@ -253,7 +247,6 @@ public class Connect extends Node
 		}
 
 		if (!adminAccess) {
-
 			int state = sme.getState(sysEnv).intValue();
 			if (state == SDMSSubmittedEntity.CANCELLED || state == SDMSSubmittedEntity.FINAL)
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03703141511",
@@ -287,19 +280,15 @@ public class Connect extends Node
 		Vector desc = new Vector();
 		Vector data = new Vector();
 		if (isUser) {
-
 			connect_user(sysEnv);
 		} else {
 			if(sysEnv.getConnectState() != SystemEnvironment.NORMAL) {
-
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202081740", "Login restricted"));
 			}
 			if(isJobServer) {
-
 				connect_jobserver(sysEnv);
 			} else {
 				if(isJob) {
-
 					connect_job(sysEnv);
 				} else {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03406282207", "Wrong usertype"));
@@ -327,12 +316,10 @@ public class Connect extends Node
 			}
 		}
 		if(withs.containsKey(ParseStr.S_TIMEOUT)) {
-
 			sysEnv.cEnv.getMe().setTimeout(((Integer) withs.get(ParseStr.S_TIMEOUT)).intValue());
 		}
 
 		if (cmd != null) {
-
 			sysEnv.tx.beginSubTransaction(sysEnv);
 			while(true) {
 				if(env.isUser()) {

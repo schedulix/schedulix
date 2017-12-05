@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser.filter;
 
 import java.io.*;
@@ -121,7 +119,6 @@ public class ParameterFilter extends Filter
 					SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
 					try {
 						parmVal = sme.getVariableValue(sysEnv, name, true, ParseStr.S_DEFAULT, (be != null));
-
 					} catch(NotFoundException cee) {
 						parmVal = null;
 					}
@@ -155,14 +152,11 @@ public class ParameterFilter extends Filter
 			}
 			if (parmVal != null) {
 				if (be != null) {
-
 					if (! (p instanceof SDMSSubmittedEntity)) {
-
 						return false;
 					}
 
 					Object o = be.evalExpression(sysEnv, null, (SDMSSubmittedEntity) p, null, null, null);
-
 					if (o instanceof String) {
 						cst = strCaster;
 						c.setValue((String) o);

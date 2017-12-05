@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -259,7 +258,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.type = p_type;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -307,7 +306,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.aggFunction = p_aggFunction;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -332,7 +331,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		if (p_defaultValue != null && p_defaultValue.length() > 256) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -362,7 +361,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.isLocal = p_isLocal;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -419,7 +418,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		if (p_exportName != null && p_exportName.length() > 64) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -449,7 +448,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -473,7 +472,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ParameterDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -491,7 +490,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSParameterDefinitionGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -509,7 +508,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSParameterDefinitionGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSParameterDefinitionGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.euid();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -632,12 +631,10 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ParameterDefinition: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -666,7 +663,6 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			myInsert.setLong(15, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ParameterDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -717,7 +713,6 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			myUpdate.setLong(4, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ParameterDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

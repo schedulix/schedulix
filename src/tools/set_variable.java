@@ -72,7 +72,6 @@ class set_variable extends App
 		while (i.hasNext()) {
 			String variable = (String)i.next();
 			String value    = (String)i.next();
-
 			value = value.replaceAll("\\\\", "\\\\\\\\");
 			value = value.replaceAll("'", "\\\\'");
 			cmd = cmd + sep + " " + quote + variable + quote + " = '" + value + "'";

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -213,7 +212,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.seVersion = p_seVersion;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -359,7 +358,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.exitCode = p_exitCode;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -384,7 +383,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		if (p_commandline != null && p_commandline.length() > 512) {
 			p_commandline = p_commandline.substring(0,512);
 		}
@@ -412,7 +411,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		if (p_logfile != null && p_logfile.length() > 512) {
 			p_logfile = p_logfile.substring(0,512);
 		}
@@ -440,7 +439,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		if (p_errlogfile != null && p_errlogfile.length() > 512) {
 			p_errlogfile = p_errlogfile.substring(0,512);
 		}
@@ -468,7 +467,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		if (p_pid != null && p_pid.length() > 32) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -499,7 +498,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		if (p_extPid != null && p_extPid.length() > 32) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -530,7 +529,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		if (p_errorMsg != null && p_errorMsg.length() > 256) {
 			p_errorMsg = p_errorMsg.substring(0,256);
 		}
@@ -558,7 +557,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.runnableTs = p_runnableTs;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -583,7 +582,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.startTs = p_startTs;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -608,7 +607,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.finishTs = p_finishTs;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -632,7 +631,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -656,7 +655,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(KillJob) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -674,7 +673,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSKillJobGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -692,7 +691,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSKillJobGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSKillJobGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.euid();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -809,12 +808,10 @@ public class SDMSKillJobGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "KillJob: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -869,7 +866,6 @@ public class SDMSKillJobGeneric extends SDMSObject
 			myInsert.setLong (20, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -885,7 +881,6 @@ public class SDMSKillJobGeneric extends SDMSObject
 				        "DELETE FROM KILL_JOB WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "KillJob: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -895,7 +890,6 @@ public class SDMSKillJobGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -933,7 +927,6 @@ public class SDMSKillJobGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "KillJob: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -992,7 +985,6 @@ public class SDMSKillJobGeneric extends SDMSObject
 			myUpdate.setLong(20, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

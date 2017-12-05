@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -102,7 +100,6 @@ public class SelectCmd extends Node
 
 	private void sort()
 	{
-
 		int i, j;
 
 		for(i = 0; i < cl_size - 1; i++) {
@@ -186,10 +183,9 @@ public class SelectCmd extends Node
 			for(int i = 0; i < v.size(); i++) {
 				SDMSMember m = (SDMSMember) v.get(i);
 				try {
-					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , m.getGId(sysEnv)));
+					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO, m.getGId(sysEnv)));
 					p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 				} catch (NotFoundException nfe) {
-
 				}
 			}
 			try {
@@ -198,7 +194,6 @@ public class SelectCmd extends Node
 					sgId = sg.getId(sysEnv);
 				}
 			} catch (NotFoundException nfe) {
-
 			}
 			if (!(p.can(SDMSPrivilege.MANAGE_SEL) || (sgId != null && sysEnv.cEnv.gid().contains(sgId))))
 				throw new AccessViolationException(new SDMSMessage(sysEnv, "03003081235", "Insufficient Privileges"));
@@ -235,15 +230,11 @@ public class SelectCmd extends Node
 			stmt.close();
 			sysEnv.dbConnection.commit();
 		} catch (SQLException sqle) {
-
 			try {
-
 				sysEnv.dbConnection.rollback();
 			} catch (SQLException sqle2) {
-
 				throw new RecoverableException(new SDMSMessage(sysEnv, "03310281524", "Connection lost"));
 			}
-
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03204170024", "SQL Error : $1", sqle.toString()));
 		}
 

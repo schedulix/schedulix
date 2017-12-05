@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -136,7 +135,7 @@ public class SDMSResourceStateDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ResourceStateDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceStateDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceStateDefinitionGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -160,7 +159,7 @@ public class SDMSResourceStateDefinitionGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ResourceStateDefinition) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceStateDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceStateDefinitionGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -178,7 +177,7 @@ public class SDMSResourceStateDefinitionGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSResourceStateDefinitionGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceStateDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceStateDefinitionGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -196,7 +195,7 @@ public class SDMSResourceStateDefinitionGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSResourceStateDefinitionGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSResourceStateDefinitionGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSResourceStateDefinitionGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.euid();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -257,12 +256,10 @@ public class SDMSResourceStateDefinitionGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ResourceStateDefinition: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -273,7 +270,6 @@ public class SDMSResourceStateDefinitionGeneric extends SDMSObject
 			myInsert.setLong (6, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ResourceStateDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -289,7 +285,6 @@ public class SDMSResourceStateDefinitionGeneric extends SDMSObject
 				        "DELETE FROM RESOURCE_STATE_DEFINITION WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "ResourceStateDefinition: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -299,7 +294,6 @@ public class SDMSResourceStateDefinitionGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "ResourceStateDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -323,7 +317,6 @@ public class SDMSResourceStateDefinitionGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "ResourceStateDefinition: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -338,7 +331,6 @@ public class SDMSResourceStateDefinitionGeneric extends SDMSObject
 			myUpdate.setLong(6, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "ResourceStateDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

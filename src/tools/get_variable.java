@@ -41,9 +41,9 @@ class get_variable extends App
 
 	public void addOptions()
 	{
-		addOption("j", "jid" , null, JID , null, "jobid"       , true , "Id of job to get variable from");
-		addOption("n", "name", null, NAME, null, "variablename", true , "Name of variable to get");
-		addOption("m", "mode", null, MODE, null, "mode"        , false, "Override retrieve mode (strict, warn or liberal)");
+		addOption("j", "jid",  null, JID,  null, "jobid",        true,  "Id of job to get variable from");
+		addOption("n", "name", null, NAME, null, "variablename", true,  "Name of variable to get");
+		addOption("m", "mode", null, MODE, null, "mode",         false, "Override retrieve mode (strict, warn or liberal)");
 	}
 	public String getName() { return "get_variable"; }
 	public boolean canRetry() { return true; }

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -150,7 +149,7 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ScopeConfig) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigGeneric) change(env);
 		if (p_value != null && p_value.length() > 256) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141510",
@@ -211,7 +210,7 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ScopeConfig) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigGeneric) change(env);
 		o.creatorUId = p_creatorUId;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -235,7 +234,7 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 			        new SDMSMessage (env, "02112141636", "(ScopeConfig) Change of system object not allowed")
 			);
 		}
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigGeneric) change(env);
 		o.createTs = p_createTs;
 		o.changerUId = env.cEnv.euid();
 		o.changeTs = env.txTime();
@@ -253,7 +252,7 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 	throws SDMSException
 	{
 		SDMSScopeConfigGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigGeneric) change(env);
 		o.changerUId = p_changerUId;
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -271,7 +270,7 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 	{
 		if(changeTs.equals(p_changeTs)) return;
 		SDMSScopeConfigGeneric o = this;
-		if (o.versions.o_v == null || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigGeneric) change(env);
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSScopeConfigGeneric) change(env);
 		o.changeTs = p_changeTs;
 		o.changerUId = env.cEnv.euid();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -372,12 +371,10 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 				        ")";
 				pInsert[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110181952", "ScopeConfig: $1\n$2", stmt, sqle.toString()));
 			}
 		}
 		myInsert = pInsert[env.dbConnectionNr];
-
 		try {
 			myInsert.clearParameters();
 			myInsert.setLong(1, id.longValue());
@@ -390,7 +387,6 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 			myInsert.setLong (8, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ScopeConfig: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -406,7 +402,6 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 				        "DELETE FROM SCOPE_CONFIG WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182001", "ScopeConfig: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -416,7 +411,6 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "ScopeConfig: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
@@ -442,7 +436,6 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 				        "WHERE ID = ?";
 				pUpdate[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
-
 				throw new FatalException(new SDMSMessage(env, "01110182005", "ScopeConfig: $1\n$2", stmt, sqle.toString()));
 			}
 		}
@@ -459,7 +452,6 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 			myUpdate.setLong(8, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "ScopeConfig: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -228,7 +226,6 @@ public class ListFolder extends Node
 		if (!fl.useFilter)
 			v.add(' ');
 		else
-
 			if (fl.objectsToList.contains(f)) {
 				if (f.getId(sysEnv).equals(SDMSObject.systemFId)) {
 					if (fl.checkValid(sysEnv, f))
@@ -318,7 +315,6 @@ public class ListFolder extends Node
 		if (!fl.useFilter)
 			v.add(' ');
 		else
-
 			if (fl.objectsToList.contains(se))
 				v.add('Y');
 			else
