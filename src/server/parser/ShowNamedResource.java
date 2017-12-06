@@ -511,6 +511,7 @@ public class ShowNamedResource extends ShowCommented
 		c_data.add(null);
 		c_data.add(null);
 		c_data.add(null);
+		c_data.add(null);
 		c_data.add(e.getCondition(sysEnv));
 		c_data.add(se.getPrivileges(sysEnv).toString());
 	}
