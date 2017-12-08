@@ -19,7 +19,7 @@ BuildRequires:	jna gcc-c++ java-1.7.0-openjdk-devel rpm-build rpm-libs rpmdevtoo
 # disable debug package
 %global debug_package %{nil}
 
-%define zope2version 2.13.22
+%define zope2version 2.13.26
 
 #
 # this description will be the first part of every package description
@@ -767,7 +767,7 @@ if [ "$1" == "1" ]; then
 	retryctr=1
 	maxretry=10
 	while true; do
-		su schedulix -c "bin/easy_install -i http://download.zope.org/Zope2/index/%{zope2version} Zope2"
+		su schedulix -c "bin/pip install -r https://raw.githubusercontent.com/zopefoundation/Zope/%{zope2version}/requirements.txt"
 		ret=$?
 		if [ $ret != 0 ]; then
 			echo "Error during easy_install of Zope2 version %{zope2version}"
