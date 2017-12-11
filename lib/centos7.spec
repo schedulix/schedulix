@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.8
-Release:	5%{?dist}
+Release:	6%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -19,7 +19,7 @@ BuildRequires:	jna gcc-c++ java-1.7.0-openjdk-devel rpm-build rpm-libs rpmdevtoo
 # disable debug package
 %global debug_package %{nil}
 
-%define zope2version 2.13.22
+%define zope2version 2.13.26
 
 #
 # this description will be the first part of every package description
@@ -401,7 +401,7 @@ your security concept).
 
 
 %post zope
-%include ../lib/zope_pre.script
+%include ../lib/zope_post.script
 
 
 %preun zope
