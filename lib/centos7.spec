@@ -535,6 +535,7 @@ The schedulix doc package installs the schedulix documentation.
 %package repo
 Summary:		The repo package installs a repo file to get automated access to the rpm repository
 Group:			System/Packages
+BuildArch:	noarch
 
 %description repo
 
