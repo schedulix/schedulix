@@ -888,7 +888,7 @@ public class SmeVariableResolver extends VariableResolver
 										"Run into a loop while trying to resolve variable $1 of job $2", newKey, se.pathString(sysEnv, vers)));
 						} else {
 							if (baseSmeId != null && baseSmeId.equals(tsmeId) && pd != null) {
-								s = getVariableValue(sysEnv, tsme, baseSme, newKey, visited, true , mode, triggercontext, recursionCheck, evalScope);
+								s = getVariableValue(sysEnv, tsme, baseSme, newKey, visited, true, mode, triggercontext, recursionCheck, evalScope);
 							} else {
 								s = tsme.getVariableValue(sysEnv, newKey, true, ParseStr.S_LIBERAL, triggercontext, evalScope);
 							}

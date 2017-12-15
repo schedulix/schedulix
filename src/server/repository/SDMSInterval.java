@@ -581,7 +581,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				BlockState bs = (BlockState) fifo.remove(0);
 				long s = bs.blockStart;
 				if (s > horizon) return false;
-				if (checkSelection(sysEnv, startSeqNo, 0 , s, tz)) {
+				if (checkSelection(sysEnv, startSeqNo, 0, s, tz)) {
 					blockState.copyFrom(bs);
 					return true;
 				}

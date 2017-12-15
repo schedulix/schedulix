@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -62,7 +61,6 @@ public class CleanupFolder
 	public void go (final SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-
 		Vector folders = new Vector();
 		Iterator it = cl.iterator();
 		while (it.hasNext()) {
@@ -76,7 +74,6 @@ public class CleanupFolder
 
 			}
 		}
-
 		HashSet keeplist = new HashSet();
 		it = kl.iterator();
 		while (it.hasNext()) {
@@ -93,6 +90,39 @@ public class CleanupFolder
 		}
 
 		SDMSSchedulingEntity.delete(sysEnv, seIds, force);
+
+		it = keeplist.iterator();
+		while (it.hasNext()) {
+			Long seId = (Long) it.next();
+			Vector tv = SDMSTriggerTable.idx_fireId.getVector(sysEnv, seId);
+			for (int i = 0; i < tv.size(); ++i) {
+				SDMSTrigger t = (SDMSTrigger) tv.get(i);
+				if (t.getIsInverse(sysEnv).booleanValue())
+					continue;
+				if (!keeplist.contains(t.getId(sysEnv)))
+					t.delete(sysEnv);
+			}
+			tv = SDMSTriggerTable.idx_seId.getVector(sysEnv, seId);
+			for (int i = 0; i < tv.size(); ++i) {
+				SDMSTrigger t = (SDMSTrigger) tv.get(i);
+				if (!t.getIsInverse(sysEnv).booleanValue())
+					continue;
+				if (!keeplist.contains(t.getId(sysEnv)))
+					t.delete(sysEnv);
+			}
+			Vector rtv = SDMSResourceTemplateTable.idx_seId.getVector(sysEnv, seId);
+			for (int i = 0; i < rtv.size(); ++i) {
+				SDMSResourceTemplate rt = (SDMSResourceTemplate) rtv.get(i);
+				if (!keeplist.contains(rt.getId(sysEnv)))
+					rt.delete(sysEnv);
+			}
+			Vector rv = SDMSResourceTable.idx_scopeId.getVector(sysEnv, seId);
+			for (int i = 0; i < rv.size(); ++i) {
+				SDMSResource r = (SDMSResource) rv.get(i);
+				if (!keeplist.contains(r.getId(sysEnv)))
+					r.delete(sysEnv);
+			}
+		}
 
 		it = folders.iterator();
 		while (it.hasNext()) {
