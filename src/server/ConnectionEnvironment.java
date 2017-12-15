@@ -129,68 +129,23 @@ public class ConnectionEnvironment
 		this (c, n, svrtrc, o, f, rof, 0, uNode, false, false);
 	}
 
-	public int id()
-	{
-		return id;
-	}
-	public String name()
-	{
-		return name != null ? name : new Integer (id).toString();
-	}
-	public long start()
-	{
-		return start;
-	}
-	public long last()
-	{
-		return last;
-	}
-	public long idle()
-	{
-		return ((System.currentTimeMillis() - last + 500)/1000);
-	}
-	public Date dStart()
-	{
-		return dStart;
-	}
-	public PrintStream ostream()
-	{
-		return ostream;
-	}
+	public int id()				{ return id; }
+	public String name()			{ return name != null ? name : new Integer (id).toString(); }
+	public long start()			{ return start; }
+	public long last()			{ return last; }
+	public long idle()			{ return ((System.currentTimeMillis() - last + 500)/1000); }
+	public Date dStart()			{ return dStart; }
+	public PrintStream ostream()		{ return ostream; }
 
-	public Long uid()
-	{
-		return uid;
-	}
-	public HashSet gid()
-	{
-		return gid;
-	}
-	public void setUid(Long id)
-	{
-		uid = id;
-	}
-	public int timeout()
-	{
-		return ((UserConnection) me).getTimeout();
-	}
+	public Long uid()			{ return uid; }
+	public HashSet gid()			{ return gid; }
+	public void setUid(Long id)		{ uid = id; }
+	public int timeout()			{ return ((UserConnection) me).getTimeout(); }
 
-	public String getInfo()
-	{
-		return info;
-	}
-	public void setInfo(String inf)
-	{
-		info = inf;
-	}
-	public boolean getIsSSLConnection()
-	{
-		return isSSLConnection;
-	}
-	public boolean getIsClientAuthenticated()
-	{
-		return isClientAuthenticated;
-	}
+	public String getInfo()			{ return info; }
+	public void setInfo(String inf)		{ info = inf; }
+	public boolean getIsSSLConnection()	{ return isSSLConnection; }
+	public boolean getIsClientAuthenticated()	{ return isClientAuthenticated; }
 
 	public String ip()
 	{
@@ -198,10 +153,7 @@ public class ConnectionEnvironment
 			return userNode.getHostAddress();
 		return null;
 	}
-	public InetAddress getAddress()
-	{
-		return userNode;
-	}
+	public InetAddress getAddress() { return userNode; }
 
 	public void setGid(SystemEnvironment sysEnv, Vector v)
 		throws SDMSException
@@ -250,94 +202,28 @@ public class ConnectionEnvironment
 		}
 	}
 
-	public int port()
-	{
-		return port;
-	}
+	public int port()			{ return port; }
 
-	public SyncFifo cmdQueue()
-	{
-		return cmdQueue;
-	}
-	public SyncFifo roCmdQueue()
-	{
-		return roCmdQueue;
-	}
+	public SyncFifo cmdQueue()		{ return cmdQueue; }
+	public SyncFifo roCmdQueue()		{ return roCmdQueue; }
 
-	public void setMe(SDMSThread t)
-	{
-		me = t;
-	}
-	public SDMSThread getMe()
-	{
-		return me;
-	}
-	public ThreadLock lock()
-	{
-		return lock;
-	}
-	public boolean isJobServer()
-	{
-		return jobServer;
-	}
-	public boolean isJob()
-	{
-		return job;
-	}
-	public boolean isUser()
-	{
-		return user;
-	}
-	public void setJobServer()
-	{
-		jobServer = true;
-		job       = false;
-		user = false;
-	}
-	public void setJob()
-	{
-		job       = true;
-		jobServer = false;
-		user = false;
-	}
-	public void setUser()
-	{
-		user      = true;
-		jobServer = false;
-		job  = false;
-	}
-	public void trace_on()
-	{
-		trace = true;
-	}
-	public void trace_off()
-	{
-		trace = false;
-	}
-	public void setTrace(boolean t)
-	{
-		trace = t;
-	}
-	public boolean trace()
-	{
-		return trace;
-	}
-	public void setTraceLevel(int t)
-	{
-		tracelevel = t;
-	}
-	public int getTraceLevel()
-	{
-		return tracelevel;
-	}
-	public void setLast()
-	{
-		last = System.currentTimeMillis();
-	}
-	public SDMSOutputRenderer renderer()
-	{
-		return renderer;
-	}
+	public void setMe(SDMSThread t)		{ me = t; }
+	public SDMSThread getMe()		{ return me; }
+	public ThreadLock lock()		{ return lock; }
+	public boolean isJobServer()		{ return jobServer; }
+	public boolean isJob()			{ return job; }
+	public boolean isUser()			{ return user; }
+	public void setJobServer()		{ jobServer = true; job       = false; user = false; }
+	public void setJob()			{ job       = true; jobServer = false; user = false; }
+	public void setUser()			{ user      = true; jobServer = false; job  = false; }
+	public void trace_on()			{ trace = true; }
+	public void trace_off()			{ trace = false; }
+	public void setTrace(boolean t)		{ trace = t; }
+	public boolean trace()			{ return trace; }
+	public void setTraceLevel(int t)	{ tracelevel = t; }
+	public int getTraceLevel()		{ return tracelevel; }
+	public void setLast()			{ last = System.currentTimeMillis(); }
+	public SDMSOutputRenderer renderer()	{ return renderer; }
 	public void setRenderer(SDMSOutputRenderer type)
 	{
 		renderer = type;
@@ -376,10 +262,7 @@ public class ConnectionEnvironment
 		return tx.versionId(env);
 	}
 
-	public long txId()
-	{
-		return tx.txId;
-	}
+	public long txId() { return tx.txId; }
 	public void proto_input(String s)
 	{
 		((UserConnection) me).scanner.proto_input(s);

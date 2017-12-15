@@ -178,15 +178,8 @@ public class ListJobDefinitionHierarchy extends Node
 		v.add(new Integer(v1.size()));
 
 		String empty = "";
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
-		v.add(empty);
+		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
+		v.add(empty); v.add(empty); v.add(empty); v.add(empty);
 
 		v.add(sePath);
 

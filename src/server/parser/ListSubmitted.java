@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -52,10 +50,7 @@ public class ListSubmitted extends Node
 	private final static String emptyString = new String("");
 	private final ObjectFilter objFilter = new ObjectFilter()
 	{
-
-		public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p) {
-			return true;
-		}
+		public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p) { return true; }
 	};
 
 	WithHash with;
@@ -159,17 +154,14 @@ public class ListSubmitted extends Node
 			SDMSThread.doTrace(sysEnv.cEnv, "type creator : getMastersFirst", SDMSThread.SEVERITY_DEBUG);
 			getMastersFirst(sysEnv, result, filter);
 		} else {
-
 			SDMSThread.doTrace(sysEnv.cEnv, "type creator : Scan", SDMSThread.SEVERITY_DEBUG);
 			Iterator i = SDMSSubmittedEntityTable.table.iterator(sysEnv, filter);
 			filtered = true;
-
 			while(i.hasNext()) {
 				result.addElement(i.next());
 			}
 		}
 		if (objFilter.hasFuture) {
-
 			Iterator i;
 			if (filtered)
 				i = SDMSScheduledEventTable.table.iterator(sysEnv, filter);
@@ -177,9 +169,7 @@ public class ListSubmitted extends Node
 				i = SDMSScheduledEventTable.table.iterator(sysEnv);
 			while(i.hasNext()) {
 				SDMSScheduledEvent scev = (SDMSScheduledEvent)(i.next());
-
 				if (!scev.getIsCalendar(sysEnv).booleanValue()) {
-
 					SDMSSchedule sce = SDMSScheduleTable.getObject(sysEnv, scev.getSceId(sysEnv));
 					if (sce.isReallyActive(sysEnv))
 						result.addElement(scev);
@@ -191,7 +181,6 @@ public class ListSubmitted extends Node
 				i = SDMSCalendarTable.table.iterator(sysEnv);
 			while(i.hasNext()) {
 				SDMSCalendar cal = (SDMSCalendar) i.next();
-
 				SDMSScheduledEvent scev = SDMSScheduledEventTable.getObject(sysEnv, cal.getScevId(sysEnv));
 				SDMSSchedule sce = SDMSScheduleTable.getObject(sysEnv, scev.getSceId(sysEnv));
 				if (sce.isReallyActive(sysEnv))
@@ -285,7 +274,6 @@ public class ListSubmitted extends Node
 		errlogfile = se.getErrlogfile(sysEnv);
 
 		Vector parameterVector = new Vector();
-
 		if(parms != null) {
 			for(int i = 0; i < parms.size(); i++) {
 				String w = (String) parms.get(i);
@@ -591,7 +579,6 @@ public class ListSubmitted extends Node
 		Vector c = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, job.getId(sysEnv));
 		Integer numChilds = new Integer(c.size());
 		if(hitList.contains(jobId))	hit = "H";
-
 		if(pathhit.equals("P")) pathhits.add(jobId);
 		String submitPath = "*";
 
@@ -611,7 +598,6 @@ public class ListSubmitted extends Node
 		errlogfile = job.getErrlogfile(sysEnv);
 
 		Vector parameterVector = new Vector();
-
 		if(parms != null) {
 			for(int i = 0; i < parms.size(); i++) {
 				String w = (String) parms.get(i);
@@ -718,12 +704,10 @@ public class ListSubmitted extends Node
 			Long id = (Long) v.get(0);
 			if(hitList.contains(id)) continue;
 			Vector p = (Vector) v.get(2);
-
 			int j = p.size() - 4;
 			if(j > 0) {
 				Long pId = (Long) p.get(j);
 				if(pathhits.contains(pId)) continue;
-
 				if(! (renderedJobs.contains(pId) && (expandIds == null || expandIds.contains(pId)))) {
 					i.remove();
 					foundOrphans = true;
@@ -862,139 +846,73 @@ public class ListSubmitted extends Node
 	protected void createDescription(SystemEnvironment sysEnv, Vector desc)
 		throws SDMSException
 	{
-
 		desc.add("ID");
-
 		desc.add("MASTER_ID");
-
 		desc.add("HIERARCHY_PATH");
-
 		desc.add("SE_TYPE");
-
 		desc.add("PARENT_ID");
 		desc.add("OWNER");
-
 		desc.add("SCOPE");
-
 		desc.add("HTTPHOST");
-
 		desc.add("HTTPPORT");
-
 		desc.add("EXIT_CODE");
-
 		desc.add("PID");
-
 		desc.add("EXTPID");
-
 		desc.add("STATE");
-
 		desc.add("IS_DISABLED");
-
 		desc.add("IS_CANCELLED");
-
 		desc.add("JOB_ESD");
-
 		desc.add("FINAL_ESD");
-
 		desc.add("JOB_IS_FINAL");
-
 		desc.add("CNT_RESTARTABLE");
-
 		desc.add("CNT_SUBMITTED");
-
 		desc.add("CNT_DEPENDENCY_WAIT");
-
 		desc.add("CNT_SYNCHRONIZE_WAIT");
-
 		desc.add("CNT_RESOURCE_WAIT");
-
 		desc.add("CNT_RUNNABLE");
-
 		desc.add("CNT_STARTING");
-
 		desc.add("CNT_STARTED");
-
 		desc.add("CNT_RUNNING");
-
 		desc.add("CNT_TO_KILL");
-
 		desc.add("CNT_KILLED");
-
 		desc.add("CNT_CANCELLED");
-
 		desc.add("CNT_FINISHED");
-
 		desc.add("CNT_FINAL");
-
 		desc.add("CNT_BROKEN_ACTIVE");
-
 		desc.add("CNT_BROKEN_FINISHED");
-
 		desc.add("CNT_ERROR");
-
 		desc.add("CNT_UNREACHABLE");
-
 		desc.add("CNT_WARN");
-
 		desc.add("SUBMIT_TS");
-
 		desc.add("RESUME_TS");
-
 		desc.add("SYNC_TS");
-
 		desc.add("RESOURCE_TS");
-
 		desc.add("RUNNABLE_TS");
-
 		desc.add("START_TS");
-
 		desc.add("FINISH_TS");
-
 		desc.add("FINAL_TS");
-
 		desc.add("PRIORITY");
-
 		desc.add("DYNAMIC_PRIORITY");
-
 		desc.add("NICEVALUE");
-
 		desc.add("MIN_PRIORITY");
-
 		desc.add("AGING_AMOUNT");
-
 		desc.add("AGING_BASE");
-
 		desc.add("ERROR_MSG");
-
 		desc.add("CHILDREN");
-
 		desc.add("HIT");
-
 		desc.add("HITPATH");
-
 		desc.add("SUBMITPATH");
-
 		desc.add("IS_SUSPENDED");
-
 		desc.add("IS_RESTARTABLE");
-
 		desc.add("PARENT_SUSPENDED");
-
 		desc.add("CHILDTAG");
-
 		desc.add("IS_REPLACED");
-
 		desc.add("WARN_COUNT");
-
 		desc.add("CHILD_SUSPENDED");
-
 		desc.add("CNT_PENDING");
 		desc.add("PRIVS");
-
 		desc.add("WORKDIR");
-
 		desc.add("LOGFILE");
-
 		desc.add("ERRLOGFILE");
 
 		if(with != null) {

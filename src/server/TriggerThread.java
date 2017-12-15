@@ -102,7 +102,8 @@ public class TriggerThread extends InternalSession
 			i = SDMSSubmittedEntityTable.table.iterator(sysEnv,
 			new SDMSFilter() {
 				public boolean isValid(SystemEnvironment sysEnv, SDMSProxy p)
-				throws SDMSException {
+					throws SDMSException
+				{
 					SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
 					if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND) return false;
 					if (sme.getResumeTs(sysEnv) == null) return false;
