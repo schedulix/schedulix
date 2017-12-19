@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.7
-Release:	18%{?dist}
+Release:	19%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -972,6 +972,7 @@ fi
 Summary:		The schedulix examples package installs a few local jobservers and loads a bunch of examples into the system
 Group:			Applications/System
 Requires:		schedulix-base >= %{version} schedulix-server >= %{version} schedulix-client eclipse-swt
+BuildArch:		noarch
 
 %description examples
 %commonDescription
@@ -1033,6 +1034,7 @@ echo "executing postun examples -- %version-%release"
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix doc package installs the schedulix documentation
 Group:			Documentation
+BuildArch:		noarch
 
 %description doc
 %commonDescription
