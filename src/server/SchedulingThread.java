@@ -523,7 +523,7 @@ public class SchedulingThread extends InternalSession
 		if (cacheEntry == null || result == null) {
 			++envmiss;
 			Vector envv = SDMSEnvironmentTable.idx_neId.getVector(sysEnv, envId, actVersion);
-			SDMSNamedEnvironment ne = SDMSNamedEnvironmentTable.getObject(sysEnv, envId);
+			SDMSNamedEnvironment ne = SDMSNamedEnvironmentTable.getObject(sysEnv, envId, actVersion);
 			validFrom = new Long(ne.getValidFrom(sysEnv));
 			validTo = new Long(ne.getValidTo(sysEnv));
 			result = SDMSScopeTable.idx_type.getVectorForUpdate(sysEnv, new Integer(SDMSScope.SERVER));
