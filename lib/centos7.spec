@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.8
-Release:	3%{?dist}
+Release:	4%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -19,7 +19,7 @@ BuildRequires:	jna gcc-c++ java-1.7.0-openjdk-devel rpm-build rpm-libs rpmdevtoo
 # disable debug package
 %global debug_package %{nil}
 
-%define zope2version 2.13.22
+%define zope2version 2.13.26
 
 #
 # this description will be the first part of every package description
@@ -146,8 +146,8 @@ echo "executing preun base -- %version-%release"
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix server pg package installs a schedulix server based on an underlying Postgres RDBMS
 Group:			Applications/System
-Requires:		schedulix-base = %{version} postgresql-server postgresql-jdbc coreutils
-Provides:		schedulix-server %{version}
+Requires:		schedulix-base = %{version}-%{release} postgresql-server postgresql-jdbc coreutils
+Provides:		schedulix-server %{version}-%{release}
 Conflicts:		schedulix-server-mariadb
 
 %description server-pg
@@ -217,8 +217,8 @@ fi
 Summary:		The schedulix server mariadb package installs a schedulix server based on an underlying MariaDB od MySQL RDBMS
 Group:			Applications/System
 # Requires: schedulix-base mysql-server mysql-connector-java
-Requires:		schedulix-base = %{version} mariadb mariadb-libs mariadb-server mysql-connector-java coreutils 
-Provides:		schedulix-server %{version}
+Requires:		schedulix-base = %{version}-%{release} mariadb mariadb-libs mariadb-server mysql-connector-java coreutils 
+Provides:		schedulix-server %{version}-%{release}
 Conflicts:		schedulix-server-pg
 
 %description server-mariadb
@@ -300,7 +300,7 @@ fi
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix client package installs everything needed to setup a jobserver
 Group:			Applications/System
-Requires:		schedulix-base = %{version} coreutils
+Requires:		schedulix-base = %{version}-%{release} coreutils
 
 %description client
 %commonDescription
@@ -365,7 +365,7 @@ echo "executing postun client -- %version-%release"
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix zope package installs the zope application server and configures it to access a locally installed server
 Group:			Applications/System
-Requires:		schedulix-base >= %{version} gcc python python-devel python-setuptools python-virtualenv wget
+Requires:		schedulix-base = %{version}-%{release} gcc python python-devel python-setuptools python-virtualenv wget
 
 %description zope
 %commonDescription
@@ -401,7 +401,7 @@ your security concept).
 
 
 %post zope
-%include ../lib/zope_pre.script
+%include ../lib/zope_post.script
 
 
 %preun zope
@@ -455,6 +455,7 @@ fi
 Summary:		The schedulix examples package installs a few local jobservers and loads a bunch of examples into the system
 Group:			Applications/System
 Requires:		schedulix-base >= %{version} schedulix-server >= %{version} schedulix-client eclipse-swt
+BuildArch:		noarch
 
 %description examples
 %commonDescription
@@ -516,6 +517,7 @@ echo "executing postun examples -- %version-%release"
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix doc package installs the schedulix documentation
 Group:			Documentation
+BuildArch:		noarch
 
 %description doc
 %commonDescription
@@ -535,7 +537,7 @@ The schedulix doc package installs the schedulix documentation.
 %package repo
 Summary:		The repo package installs a repo file to get automated access to the rpm repository
 Group:			System/Packages
-BuildArch:	noarch
+BuildArch:		noarch
 
 %description repo
 
