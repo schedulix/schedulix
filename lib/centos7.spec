@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.7
-Release:	19%{?dist}
+Release:	20%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
