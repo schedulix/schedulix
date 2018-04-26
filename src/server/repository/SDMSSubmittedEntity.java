@@ -466,18 +466,18 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			sme = SDMSSubmittedEntityTable.getObject(sysEnv, mSmeId);
 		}
 		if (
-			sme.getState(sysEnv).intValue()		!= CANCELLED		&&
-			sme.getIsSuspended(sysEnv).intValue()	== NOSUSPEND		&&
+			sme.getState(sysEnv).intValue()			!= CANCELLED	&&
+			sme.getIsSuspended(sysEnv).intValue()		== NOSUSPEND	&&
 			sme.getChildSuspended(sysEnv).intValue()	<= 0		&&
 			sme.getJobIsFinal(sysEnv).booleanValue()	== true		&&
-			sme.getCntSubmitted(sysEnv).intValue()	== 0 			&&
+			sme.getCntSubmitted(sysEnv).intValue()		== 0 		&&
 			sme.getCntDependencyWait(sysEnv).intValue()	> 0 		&&
-			sme.getCntSynchronizeWait(sysEnv).intValue()== 0		&&
-			sme.getCntResourceWait(sysEnv).intValue()   == 0		&&
-			sme.getCntRunnable(sysEnv).intValue()	== 0			&&
-			sme.getCntStarting(sysEnv).intValue()	== 0			&&
-			sme.getCntStarted(sysEnv).intValue()	== 0			&&
-			sme.getCntRunning(sysEnv).intValue()	== 0			&&
+			sme.getCntSynchronizeWait(sysEnv).intValue()	== 0		&&
+			sme.getCntResourceWait(sysEnv).intValue()   	== 0		&&
+			sme.getCntRunnable(sysEnv).intValue()		== 0		&&
+			sme.getCntStarting(sysEnv).intValue()		== 0		&&
+			sme.getCntStarted(sysEnv).intValue()		== 0		&&
+			sme.getCntRunning(sysEnv).intValue()		== 0		&&
 			sme.getCntToKill(sysEnv).intValue()		== 0 		&&
 			sme.getCntKilled(sysEnv).intValue()		== 0 		&&
 			sme.getCntRestartable(sysEnv).intValue()	== 0 			&&
@@ -514,7 +514,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				for(int j = 0; j < v_di.size(); j++) {
 					SDMSDependencyInstance di = (SDMSDependencyInstance)v_di.get(j);
 					if (di.getState(sysEnv).intValue() == SDMSDependencyInstance.DEFERRED) {
-						di.setState(sysEnv, SDMSDependencyInstance.FAILED);
+						SDMSDependencyDefinition dd = SDMSDependencyDefinitionTable.getObject(sysEnv, di.getDdId(sysEnv), dwSme.getSeVersion(sysEnv));
+						if (dd.getUnresolvedHandling(sysEnv).intValue() != SDMSDependencyDefinition.DEFER_IGNORE) {
+							di.setState(sysEnv, SDMSDependencyInstance.FAILED);
+						}
 						deferred = true;
 					}
 				}
