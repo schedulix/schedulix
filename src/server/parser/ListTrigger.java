@@ -88,7 +88,12 @@ public class ListTrigger extends Node
 		} else if(fireObj.key.equals(ParseStr.S_RESOURCE)) {
 			objpath = (Vector) fireObj.value;
 			resourcepath = (Vector) objpath.remove(objpath.size() - 1);
-			Long scopeId = SDMSScopeTable.pathToId(sysEnv, objpath);
+			Long scopeId;
+			try {
+				scopeId = SDMSScopeTable.pathToId(sysEnv, objpath);
+			} catch (NotFoundException nfe) {
+				scopeId = SDMSFolderTable.pathToId(sysEnv, objpath);
+			}
 			nr = SDMSNamedResourceTable.getNamedResource(sysEnv, resourcepath);
 			Long nrId = nr.getId(sysEnv);
 			SDMSResource r = SDMSResourceTable.idx_nrId_scopeId_getUnique(sysEnv, new SDMSKey(nrId, scopeId));
