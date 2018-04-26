@@ -109,6 +109,7 @@ public class SystemEnvironment implements Cloneable
 
 	public static String runMode;
 	public static int traceLevel;
+	public static boolean traceExpressions;
 	public static String parameterHandling;
 	public static TimerUnit timerHorizon;
 	public static TimerUnit timerRecalc;
@@ -236,6 +237,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_TIMERTIMEOUT          = "TimerTimeout";
 	public static final String S_TIMERWAKEUP           = "TimerWakeup";
 	public static final String S_TRACELEVEL            = "TraceLevel";
+	public static final String S_TRACEEXPRESSIONS      = "TraceExpressions";
 	public static final String S_TRIGGERSOFTLIMIT      = "TriggerSoftLimit";
 	public static final String S_TRIGGERHARDLIMIT      = "TriggerHardLimit";
 	public static final String S_TTWAKEUP              = "TTWakeup";
@@ -411,6 +413,7 @@ public class SystemEnvironment implements Cloneable
 		getSimpleValues();
 		getAuthClass();
 		getPropsTraceLevel();
+		getTraceExpressions();
 		getShowStackTrace();
 		getArchive();
 		getArchiveCols();
@@ -958,6 +961,13 @@ public class SystemEnvironment implements Cloneable
 		String s_singleServer = props.getProperty(S_SINGLESERVER, S_FALSE);
 		singleServer = Boolean.parseBoolean(s_singleServer.trim());
 		props.setProperty(S_SINGLESERVER, singleServer ? S_TRUE : S_FALSE );
+	}
+
+	private void getTraceExpressions()
+	{
+		String s_traceExpressions = props.getProperty(S_TRACEEXPRESSIONS, S_FALSE);
+		traceExpressions = Boolean.parseBoolean(s_traceExpressions.trim());
+		props.setProperty(S_TRACEEXPRESSIONS, traceExpressions ? S_TRUE : S_FALSE );
 	}
 
 	private void getSysPasswd()
