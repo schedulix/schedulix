@@ -19,8 +19,10 @@ ArchiveSMEColumns=ALL
 ArchiveAuditColumns=ALL
 ArchiveDependencyColumns=ALL
 ArchiveVariableColumns=ALL
+ArchiveExtentsColumns=ALL
 ArchiveHierarchyColumns=ALL
 ArchiveKillJobColumns=ALL
+ArchiveStatsColumns=ALL
 
 #
 # AuthenticationClass
