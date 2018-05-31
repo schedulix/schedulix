@@ -51,11 +51,3 @@ if [ -L schedulix ]; then
 	rm schedulix
 fi
 su schedulix -c "ln -s schedulix-%{version} schedulix"
-if [ "$1" != "1" ]; then
-	if [ -x /etc/init.d/schedulix-server ]; then
-		service schedulix-server start || true
-	fi
-	if [ -x /etc/init.d/schedulix-client ]; then
-		service schedulix-client start || true
-	fi
-fi
