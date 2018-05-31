@@ -131,7 +131,7 @@ Password=$SDMSPWD
 		echo "ERROR: The specified user does not belong to group ADMIN"
 		exit 1
 	fi
-	DEFGRP=`echo -e "show user $SDMSUSER;" | sdmsh --ini $SDMSHRC | grep -E "DEFAULT_GROUP :" | cut -d " " -f 3`
+	DEFGRP=`echo -e "show user $SDMSUSER;" | sdmsh --ini $SDMSHRC | awk '/DEFAULT_GROUP/ {print $3}'`
 }
 
 promptForPwd()
