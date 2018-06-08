@@ -206,6 +206,7 @@ public class HttpThread
 			out.println("<html>");
 			if (title != null) {
 				out.println("<head>");
+				out.println("<meta charset=\"utf-8\">");
 				out.println("<title>" + title + "</title>");
 				out.println("</head>");
 			}

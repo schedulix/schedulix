@@ -232,6 +232,53 @@ SingleServer=true
 #SSLPort=2507
 
 #
+# Properties for Single Sign On (on Windows)
+#
+
+#
+# SSOincludeDomainNames indicates if Domain Names should be part of Group/User Identifiers
+# default = false
+#
+SSOincludeDomainNames=false
+
+#
+# SSOautoCreateUsers indicates if AD users should be created automatically
+# default = false
+#
+SSOautoCreateUsers=false
+
+#
+# SSOautoCreateGroups indicates if AD groups should be created automatically
+# default = false
+#
+SSOautoCreateGroups=false
+
+#
+# SSOuseADGroups indicates if AD groups should be used or not
+# default = false
+#
+SSOuseADGroups=false
+
+#
+# SSOserverName is the name of the server (within AD); this is used to filter out groups
+#
+SSOserverName=DEFAULT
+
+#
+# SSObicsuitePrefix is the prefix used for AD groups. Groups called otherwise than <SSObicsuitePrefix>_<SSOserverName>_<groupname>
+# are ignored
+#
+SSObicsuitePrefix=BICSUITE
+
+#
+# SSOnameCase defines if names have to be converted to
+# UPPER case (= default value; make identifier case insensitive if they adhere to BICsuite naming standards)
+# LOWER case
+# MIXED case (= don't convert them)
+#
+SSOnameCase=UPPER
+
+#
 # Truststore Information (needed for TLS/SSL communication with client authentication)
 #
 TrustStore=/home/bicsuite/etc/certs/srvkeystore
@@ -301,6 +348,12 @@ TriggerHardLimit=100
 #                   by the TriggerSoftLimit. The value can't exceed the vlue of TriggerHardLimit.
 #
 TriggerSoftLimit=50
+
+#
+# TTWakeup: The number of seconds between two invocations of the Trigger Thread. The trigger
+#           thread is responsible for asynchroneous triggers (UNTIL ...).
+#
+TTWakeup=30
 
 #
 # TxRetryCount: Retry Count for problematic Transactions. In some seldom cases a transaction

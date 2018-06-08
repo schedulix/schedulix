@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler;
 
 import java.lang.*;
@@ -53,7 +52,6 @@ public class sdmsh extends App
 
 	public void addOptions()
 	{
-
 		addOption("S" , null     , null     , MYSILENT, null, null     , false , "[No] (error) messages are printed (has preference over -s)");
 		addOption(null, "timeout", "Timeout", MYTIMEOUT , null, "timeout", false , "Number of seconds after which the server will remove an idle session. 0 means no timeout.");
 	}
@@ -102,7 +100,6 @@ public class sdmsh extends App
 
 	public boolean specificParse()
 	{
-
 		if (options.isSet(MYSILENT)) {
 			Option myo = options.getOption(MYSILENT);
 			options.getOption(App.SILENT).set(myo);

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -66,14 +64,12 @@ public class DropFolder extends Node
 		for (int i = 0; i < urlVector.size(); ++i) {
 			url = (ObjectURL) urlVector.get(i);
 			if (url.objType.equals(SDMSObjectComment.FOLDER)) {
-
 				if(cascade || force) {
 					try {
 						f = (SDMSFolder) url.resolve(sysEnv);
 						parentId = f.getParentId(sysEnv);
 					} catch(NotFoundException nfe) {
 						if(noerr) {
-
 							continue;
 						}
 						throw nfe;
@@ -86,7 +82,6 @@ public class DropFolder extends Node
 					f.collectSeIds(sysEnv, seIds, null);
 				}
 			} else {
-
 				SDMSSchedulingEntity se;
 				try {
 					se = (SDMSSchedulingEntity)url.resolve(sysEnv);
@@ -96,7 +91,6 @@ public class DropFolder extends Node
 				}
 			}
 		}
-
 		SDMSSchedulingEntity.delete(sysEnv, seIds, force);
 
 		for (int i = 0; i < urlVector.size(); ++i) {
@@ -107,7 +101,6 @@ public class DropFolder extends Node
 					parentId = f.getParentId(sysEnv);
 				} catch(NotFoundException nfe) {
 					if(noerr) {
-
 						continue;
 					}
 					throw nfe;
