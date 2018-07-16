@@ -37,9 +37,9 @@ SELECT
     , TAG                            AS TAG
     , DESCRIPTION                    AS DESCRIPTION
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM OBJECT_COMMENT
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_OBJECT_COMMENT AS
@@ -52,9 +52,9 @@ SELECT
     , TAG                            AS TAG
     , DESCRIPTION                    AS DESCRIPTION
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
     , VALID_FROM
     , VALID_TO
   FROM OBJECT_COMMENT;
@@ -74,9 +74,9 @@ SELECT
     , LINK_PD_ID                     AS LINK_PD_ID
     , EXPORT_NAME                    AS EXPORT_NAME
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM PARAMETER_DEFINITION
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_PARAMETER_DEFINITION AS
@@ -91,9 +91,9 @@ SELECT
     , LINK_PD_ID                     AS LINK_PD_ID
     , EXPORT_NAME                    AS EXPORT_NAME
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
     , VALID_FROM
     , VALID_TO
   FROM PARAMETER_DEFINITION;
@@ -117,9 +117,9 @@ SELECT
     , CASE MERGE_MODE WHEN 1 THEN 'MERGE_LOCAL' WHEN 2 THEN 'MERGE_GLOBAL' WHEN 3 THEN 'NOMERGE' WHEN 4 THEN 'FAILURE' END AS MERGE_MODE
     , ESTP_ID                        AS ESTP_ID
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM SCHEDULING_HIERARCHY
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_SCHEDULING_HIERARCHY AS
@@ -138,9 +138,9 @@ SELECT
     , CASE MERGE_MODE WHEN 1 THEN 'MERGE_LOCAL' WHEN 2 THEN 'MERGE_GLOBAL' WHEN 3 THEN 'NOMERGE' WHEN 4 THEN 'FAILURE' END AS MERGE_MODE
     , ESTP_ID                        AS ESTP_ID
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
     , VALID_FROM
     , VALID_TO
   FROM SCHEDULING_HIERARCHY;
@@ -207,14 +207,14 @@ SELECT
     , CHILD_SUSPENDED                AS CHILD_SUSPENDED
     , WARN_COUNT                     AS WARN_COUNT
     , WARN_LINK                      AS WARN_LINK
-    , timestamp 'epoch' + cast(to_char(mod(SUBMIT_TS, 1125899906842624)/1000, '999999999999') as interval) AS SUBMIT_TS
-    , timestamp 'epoch' + cast(to_char(mod(RESUME_TS, 1125899906842624)/1000, '999999999999') as interval) AS RESUME_TS
-    , timestamp 'epoch' + cast(to_char(mod(SYNC_TS, 1125899906842624)/1000, '999999999999') as interval) AS SYNC_TS
-    , timestamp 'epoch' + cast(to_char(mod(RESOURCE_TS, 1125899906842624)/1000, '999999999999') as interval) AS RESOURCE_TS
-    , timestamp 'epoch' + cast(to_char(mod(RUNNABLE_TS, 1125899906842624)/1000, '999999999999') as interval) AS RUNNABLE_TS
-    , timestamp 'epoch' + cast(to_char(mod(START_TS, 1125899906842624)/1000, '999999999999') as interval) AS START_TS
-    , timestamp 'epoch' + cast(to_char(mod(FINSH_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINSH_TS
-    , timestamp 'epoch' + cast(to_char(mod(FINAL_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINAL_TS
+    , timestamptz 'epoch' + cast(to_char(mod(SUBMIT_TS, 1125899906842624)/1000, '999999999999') as interval) AS SUBMIT_TS
+    , timestamptz 'epoch' + cast(to_char(mod(RESUME_TS, 1125899906842624)/1000, '999999999999') as interval) AS RESUME_TS
+    , timestamptz 'epoch' + cast(to_char(mod(SYNC_TS, 1125899906842624)/1000, '999999999999') as interval) AS SYNC_TS
+    , timestamptz 'epoch' + cast(to_char(mod(RESOURCE_TS, 1125899906842624)/1000, '999999999999') as interval) AS RESOURCE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(RUNNABLE_TS, 1125899906842624)/1000, '999999999999') as interval) AS RUNNABLE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(START_TS, 1125899906842624)/1000, '999999999999') as interval) AS START_TS
+    , timestamptz 'epoch' + cast(to_char(mod(FINSH_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINSH_TS
+    , timestamptz 'epoch' + cast(to_char(mod(FINAL_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINAL_TS
     , IDLE_TIME                      AS IDLE_TIME
     , DEPENDENCY_WAIT_TIME           AS DEPENDENCY_WAIT_TIME
     , SUSPEND_TIME                   AS SUSPEND_TIME
@@ -226,9 +226,9 @@ SELECT
     , OP_SUSRES_TS                   AS OP_SUSRES_TS
     , NPE_ID                         AS NPE_ID
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
     , ((COALESCE(FINAL_TS, EXTRACT(EPOCH FROM CURRENT_TIMESTAMP AT TIME ZONE 'GMT') * 1000) - SUBMIT_TS) / 1000) - DEPENDENCY_WAIT_TIME AS PROCESS_TIME
   FROM SUBMITTED_ENTITY;
 ALTER TABLE TRIGGER_DEFINITION
@@ -266,9 +266,9 @@ SELECT
     , CHECK_AMOUNT                   AS CHECK_AMOUNT
     , CASE CHECK_BASE WHEN 0 THEN 'MINUTE' WHEN 1 THEN 'HOUR' WHEN 2 THEN 'DAY' WHEN 3 THEN 'WEEK' WHEN 4 THEN 'MONTH' WHEN 5 THEN 'YEAR' END AS CHECK_BASE
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM TRIGGER_DEFINITION
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_TRIGGER_DEFINITION AS
@@ -301,9 +301,9 @@ SELECT
     , CHECK_AMOUNT                   AS CHECK_AMOUNT
     , CASE CHECK_BASE WHEN 0 THEN 'MINUTE' WHEN 1 THEN 'HOUR' WHEN 2 THEN 'DAY' WHEN 3 THEN 'WEEK' WHEN 4 THEN 'MONTH' WHEN 5 THEN 'YEAR' END AS CHECK_BASE
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
     , VALID_FROM
     , VALID_TO
   FROM TRIGGER_DEFINITION;

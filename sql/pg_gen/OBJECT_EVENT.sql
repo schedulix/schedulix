@@ -56,16 +56,16 @@ SELECT
     , CASE EVENT_TYPE WHEN 1 THEN 'CREATE' WHEN 2 THEN 'CHANGE' WHEN 3 THEN 'DELETE' END AS EVENT_TYPE
     , SME_ID                         AS SME_ID
     , SE_ID                          AS SE_ID
-    , timestamp 'epoch' + cast(to_char(mod(SUBMIT_TS, 1125899906842624)/1000, '999999999999') as interval) AS SUBMIT_TS
-    , timestamp 'epoch' + cast(to_char(mod(FINAL_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINAL_TS
+    , timestamptz 'epoch' + cast(to_char(mod(SUBMIT_TS, 1125899906842624)/1000, '999999999999') as interval) AS SUBMIT_TS
+    , timestamptz 'epoch' + cast(to_char(mod(FINAL_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINAL_TS
     , FINAL_ESD_ID                   AS FINAL_ESD_ID
     , MAIN_SME_ID                    AS MAIN_SME_ID
     , MAIN_SE_ID                     AS MAIN_SE_ID
-    , timestamp 'epoch' + cast(to_char(mod(MAIN_FINAL_TS, 1125899906842624)/1000, '999999999999') as interval) AS MAIN_FINAL_TS
+    , timestamptz 'epoch' + cast(to_char(mod(MAIN_FINAL_TS, 1125899906842624)/1000, '999999999999') as interval) AS MAIN_FINAL_TS
     , MAIN_FINAL_ESD_ID              AS MAIN_FINAL_ESD_ID
     , SE_VERSION                     AS SE_VERSION
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM OBJECT_EVENT;

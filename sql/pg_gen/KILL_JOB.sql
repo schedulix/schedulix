@@ -65,13 +65,13 @@ SELECT
     , PID                            AS PID
     , EXTPID                         AS EXTPID
     , ERROR_MSG                      AS ERROR_MSG
-    , timestamp 'epoch' + cast(to_char(mod(RUNNABLE_TS, 1125899906842624)/1000, '999999999999') as interval) AS RUNNABLE_TS
-    , timestamp 'epoch' + cast(to_char(mod(START_TS, 1125899906842624)/1000, '999999999999') as interval) AS START_TS
-    , timestamp 'epoch' + cast(to_char(mod(FINSH_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINSH_TS
+    , timestamptz 'epoch' + cast(to_char(mod(RUNNABLE_TS, 1125899906842624)/1000, '999999999999') as interval) AS RUNNABLE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(START_TS, 1125899906842624)/1000, '999999999999') as interval) AS START_TS
+    , timestamptz 'epoch' + cast(to_char(mod(FINSH_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINSH_TS
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM KILL_JOB;
 CREATE TABLE ARC_KILL_JOB (
     ID                             decimal(20) NOT NULL

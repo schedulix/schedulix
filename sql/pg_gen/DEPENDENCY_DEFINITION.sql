@@ -55,9 +55,9 @@ SELECT
     , CASE STATE_SELECTION WHEN 0 THEN 'FINAL' WHEN 1 THEN 'ALL_REACHABLE' WHEN 2 THEN 'UNREACHABLE' WHEN 3 THEN 'DEFAULT' END AS STATE_SELECTION
     , CONDITION                      AS CONDITION
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM DEPENDENCY_DEFINITION
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_DEPENDENCY_DEFINITION AS
@@ -71,9 +71,9 @@ SELECT
     , CASE STATE_SELECTION WHEN 0 THEN 'FINAL' WHEN 1 THEN 'ALL_REACHABLE' WHEN 2 THEN 'UNREACHABLE' WHEN 3 THEN 'DEFAULT' END AS STATE_SELECTION
     , CONDITION                      AS CONDITION
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
     , VALID_FROM
     , VALID_TO
   FROM DEPENDENCY_DEFINITION;

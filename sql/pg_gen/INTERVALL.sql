@@ -54,20 +54,20 @@ SELECT
     ID
     , NAME                           AS NAME
     , OWNER_ID                       AS OWNER_ID
-    , timestamp 'epoch' + cast(to_char(mod(START_TIME, 1125899906842624)/1000, '999999999999') as interval) AS START_TIME
-    , timestamp 'epoch' + cast(to_char(mod(END_TIME, 1125899906842624)/1000, '999999999999') as interval) AS END_TIME
+    , timestamptz 'epoch' + cast(to_char(mod(START_TIME, 1125899906842624)/1000, '999999999999') as interval) AS START_TIME
+    , timestamptz 'epoch' + cast(to_char(mod(END_TIME, 1125899906842624)/1000, '999999999999') as interval) AS END_TIME
     , DELAY                          AS DELAY
     , CASE BASE_INTERVAL WHEN 0 THEN 'MINUTE' WHEN 1 THEN 'HOUR' WHEN 2 THEN 'DAY' WHEN 3 THEN 'WEEK' WHEN 4 THEN 'MONTH' WHEN 5 THEN 'YEAR' END AS BASE_INTERVAL
     , BASE_INTERVAL_MULTIPLIER       AS BASE_INTERVAL_MULTIPLIER
     , CASE DURATION WHEN 0 THEN 'MINUTE' WHEN 1 THEN 'HOUR' WHEN 2 THEN 'DAY' WHEN 3 THEN 'WEEK' WHEN 4 THEN 'MONTH' WHEN 5 THEN 'YEAR' END AS DURATION
     , DURATION_MULTIPLIER            AS DURATION_MULTIPLIER
-    , timestamp 'epoch' + cast(to_char(mod(SYNC_TIME, 1125899906842624)/1000, '999999999999') as interval) AS SYNC_TIME
+    , timestamptz 'epoch' + cast(to_char(mod(SYNC_TIME, 1125899906842624)/1000, '999999999999') as interval) AS SYNC_TIME
     , CASE IS_INVERSE WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_INVERSE
     , CASE IS_MERGE WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_MERGE
     , EMBEDDED_INT_ID                AS EMBEDDED_INT_ID
     , SE_ID                          AS SE_ID
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM INTERVALL;
