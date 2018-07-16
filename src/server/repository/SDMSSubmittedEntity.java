@@ -1291,7 +1291,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 					if (state != SDMSDependencyInstance.DEFERRED)
 						fulfilled = false;
 					else {
-						SDMSDependencyDefinition tmpDD = SDMSDependencyDefinitionTable.table.getObject(sysEnv, di.getDdId(sysEnv));
+						SDMSDependencyDefinition tmpDD = SDMSDependencyDefinitionTable.table.getObject(sysEnv, di.getDdId(sysEnv), seVersion);
 						if (tmpDD.getUnresolvedHandling(sysEnv).intValue() == SDMSDependencyDefinition.DEFER)
 					fulfilled = false;
 
