@@ -50,7 +50,9 @@ public class ListSubmitted extends Node
 	private final static String emptyString = new String("");
 	private final ObjectFilter objFilter = new ObjectFilter()
 	{
-		public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p) { return true; }
+		public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p) {
+			return true;
+		}
 	};
 
 	WithHash with;
@@ -1019,7 +1021,6 @@ public class ListSubmitted extends Node
 		while (didRemove) {
 			didRemove = checkOrphans(sysEnv, d_container.dataset);
 		}
-
 		d_container.lines = d_container.dataset.size();
 
 		resolvePaths(sysEnv, d_container.dataset);
@@ -1035,7 +1036,6 @@ public class ListSubmitted extends Node
 				} catch (ClassCastException c) {
 					throw new RuntimeException("Classes do not match: o1 = " + o1.toString() + ", o2 = " + o2.toString());
 				}
-
 				if ((v1.get(sortCols[0]) == null) && (v2.get(sortCols[0]) == null)) return c2.compare(o1, o2);
 				else return c1.compare(o1, o2);
 			}

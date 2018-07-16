@@ -215,14 +215,14 @@ public class ProcessInfo
 				} catch (InterruptedException ie) {  }
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename)));
 				String line;
-				long now = System.currentTimeMillis() / 1000;	// we want seconds
+				long now = System.currentTimeMillis() / 1000;
 				while ((line = in.readLine()) != null) {
-					line = line.trim();	// remove leading spaces
-					String parts[] = line.split("  *");	// cut into pid and elapsed time
+					line = line.trim();
+					String parts[] = line.split("  *");
 					String strPid = parts[0];
 					String strDate;
 					if (parts.length < 2) 
-						strDate = "00:00:00";		// AIX shows lines without an elapsed time
+						strDate = "00:00:00";
 					else
 						strDate = parts[1];
 					String etimeParts[] = strDate.split("[-:]");
@@ -230,18 +230,18 @@ public class ProcessInfo
 					int idx = 0;
 					try {
 						if (etimeParts.length > 3) {
-							etime += Integer.parseInt(etimeParts[idx]) * 86400;	// number of seconds per day
+							etime += Integer.parseInt(etimeParts[idx]) * 86400;
 							idx++;
 						}
 						if (etimeParts.length > 2) {
-							etime += Integer.parseInt(etimeParts[idx]) * 3600;	// number of seconds per hour
+							etime += Integer.parseInt(etimeParts[idx]) * 3600;
 							idx++;
 						}
-						etime += Integer.parseInt(etimeParts[idx]) * 60;		// number of seconds per minute
+						etime += Integer.parseInt(etimeParts[idx]) * 60;
 						idx++;
-						etime += Integer.parseInt(etimeParts[idx]);			// last but not least the seconds
+						etime += Integer.parseInt(etimeParts[idx]);
 					} catch (NumberFormatException nfe) {
-						etime = 0;							// If it can't be parsed, we assume 0
+						etime = 0;
 					}
 					Long startTime = new Long(now - etime);
 					result.put(strPid,startTime);

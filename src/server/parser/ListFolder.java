@@ -193,10 +193,28 @@ public class ListFolder extends Node
 	private void add_empties(Vector v)
 	{
 		String empty = "";
-		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
-		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
-		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
-		v.add(empty); v.add(empty); v.add(empty); v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
 	}
 
 	private void fillFVector(SystemEnvironment sysEnv, SDMSFolder f, Vector v)
@@ -225,8 +243,7 @@ public class ListFolder extends Node
 		v.add(f.idPathVector(sysEnv));
 		if (!fl.useFilter)
 			v.add(' ');
-		else
-			if (fl.objectsToList.contains(f)) {
+		else if (fl.objectsToList.contains(f)) {
 				if (f.getId(sysEnv).equals(SDMSObject.systemFId)) {
 					if (fl.checkValid(sysEnv, f))
 						v.add('Y');
@@ -313,8 +330,7 @@ public class ListFolder extends Node
 		v.add(se.idPathVector(sysEnv));
 		if (!fl.useFilter)
 			v.add(' ');
-		else
-			if (fl.objectsToList.contains(se))
+		else if (fl.objectsToList.contains(se))
 				v.add('Y');
 			else
 				v.add('N');

@@ -70,7 +70,6 @@ public abstract class InternalSession extends SDMSThread
 		cEnv.setMe(this);
 		try {
 			env.dbConnection = Server.connectToDB(env);
-
 			cEnv.setGid(env, new Vector());
 			cEnv.gid().add(SDMSObject.adminGId);
 			cEnv.setUid(SDMSObject.internalUId);

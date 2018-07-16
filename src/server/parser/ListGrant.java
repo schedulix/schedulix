@@ -242,12 +242,24 @@ public class ListGrant extends Node
 		SDMSProxy p = null;
 		try {
 			switch (objType.intValue()) {
-				case SDMSObjectComment.ENVIRONMENT:		p = SDMSNamedEnvironmentTable.getObject(sysEnv, objId);		break;
-				case SDMSObjectComment.EVENT:			p = SDMSEventTable.getObject(sysEnv, objId);			break;
-				case SDMSObjectComment.EXIT_STATE_DEFINITION:	p = SDMSExitStateDefinitionTable.getObject(sysEnv, objId);	break;
-				case SDMSObjectComment.EXIT_STATE_PROFILE:	p = SDMSExitStateProfileTable.getObject(sysEnv, objId);		break;
-				case SDMSObjectComment.EXIT_STATE_MAPPING:	p = SDMSExitStateMappingProfileTable.getObject(sysEnv, objId);	break;
-				case SDMSObjectComment.EXIT_STATE_TRANSLATION:	p = SDMSExitStateTranslationProfileTable.getObject(sysEnv, objId); break;
+				case SDMSObjectComment.ENVIRONMENT:
+					p = SDMSNamedEnvironmentTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.EVENT:
+					p = SDMSEventTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.EXIT_STATE_DEFINITION:
+					p = SDMSExitStateDefinitionTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.EXIT_STATE_PROFILE:
+					p = SDMSExitStateProfileTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.EXIT_STATE_MAPPING:
+					p = SDMSExitStateMappingProfileTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.EXIT_STATE_TRANSLATION:
+					p = SDMSExitStateTranslationProfileTable.getObject(sysEnv, objId);
+					break;
 				case SDMSObjectComment.FOLDER:
 				case SDMSObjectComment.JOB_DEFINITION:
 					try {
@@ -258,22 +270,53 @@ public class ListGrant extends Node
 						objType = new Integer(SDMSObjectComment.JOB_DEFINITION);
 					}
 					break;
-				case SDMSObjectComment.FOOTPRINT:		p = SDMSFootprintTable.getObject(sysEnv, objId);		break;
-				case SDMSObjectComment.GROUP:			p = SDMSGroupTable.getObject(sysEnv, objId);			break;
-				case SDMSObjectComment.INTERVAL:		p = SDMSIntervalTable.getObject(sysEnv, objId);			break;
-				case SDMSObjectComment.JOB:			p = SDMSSubmittedEntityTable.getObject(sysEnv, objId);		break;
-				case SDMSObjectComment.NAMED_RESOURCE:		p = SDMSNamedResourceTable.getObject(sysEnv, objId);		break;
-				case SDMSObjectComment.PARAMETER:		p = SDMSParameterDefinitionTable.getObject(sysEnv, objId);	break;
-				case SDMSObjectComment.RESOURCE:		p = SDMSResourceTable.getObject(sysEnv, objId);			break;
-				case SDMSObjectComment.RESOURCE_STATE_DEFINITION: p = SDMSResourceStateDefinitionTable.getObject(sysEnv, objId); break;
-				case SDMSObjectComment.RESOURCE_STATE_PROFILE:	p = SDMSResourceStateProfileTable.getObject(sysEnv, objId);	break;
-				case SDMSObjectComment.RESOURCE_STATE_MAPPING:	p = SDMSResourceStateMappingProfileTable.getObject(sysEnv, objId); break;
-				case SDMSObjectComment.SCHEDULE:		p = SDMSScheduleTable.getObject(sysEnv, objId);			break;
-				case SDMSObjectComment.SCHEDULED_EVENT:		p = SDMSScheduledEventTable.getObject(sysEnv, objId);		break;
-				case SDMSObjectComment.SCOPE:			p = SDMSScopeTable.getObject(sysEnv, objId);			break;
-				case SDMSObjectComment.TRIGGER:			p = SDMSTriggerTable.getObject(sysEnv, objId);			break;
-				case SDMSObjectComment.USER:			p = SDMSUserTable.getObject(sysEnv, objId);			break;
-				default: break;
+				case SDMSObjectComment.FOOTPRINT:
+					p = SDMSFootprintTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.GROUP:
+					p = SDMSGroupTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.INTERVAL:
+					p = SDMSIntervalTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.JOB:
+					p = SDMSSubmittedEntityTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.NAMED_RESOURCE:
+					p = SDMSNamedResourceTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.PARAMETER:
+					p = SDMSParameterDefinitionTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.RESOURCE:
+					p = SDMSResourceTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
+					p = SDMSResourceStateDefinitionTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.RESOURCE_STATE_PROFILE:
+					p = SDMSResourceStateProfileTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.RESOURCE_STATE_MAPPING:
+					p = SDMSResourceStateMappingProfileTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.SCHEDULE:
+					p = SDMSScheduleTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.SCHEDULED_EVENT:
+					p = SDMSScheduledEventTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.SCOPE:
+					p = SDMSScopeTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.TRIGGER:
+					p = SDMSTriggerTable.getObject(sysEnv, objId);
+					break;
+				case SDMSObjectComment.USER:
+					p = SDMSUserTable.getObject(sysEnv, objId);
+					break;
+				default:
+					break;
 			}
 		} catch (NotFoundException nfe) {
 		}

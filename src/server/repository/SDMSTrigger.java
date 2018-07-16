@@ -261,7 +261,10 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				if(sme == null) return fired;
 				fired = true;
 
-				sme.setBaseSmeId(sysEnv, (Long)sysEnv.tx.txData.get(SystemEnvironment.S_BASE_SME_ID));
+				Long baseSmeId = (Long)(sysEnv.tx.txData.get(SystemEnvironment.S_BASE_SME_ID));
+				if (baseSmeId == null)
+					baseSmeId = reasonSmeId;
+				sme.setBaseSmeId(sysEnv, baseSmeId);
 				sme.setReasonSmeId(sysEnv, reasonSmeId);
 				sme.setFireSmeId(sysEnv, id);
 				sme.setFireSeId(sysEnv, fireSeId);

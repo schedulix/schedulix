@@ -823,8 +823,7 @@ public class ShowSubmitted extends Node
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getRequiredId(sysEnv));
 				} catch(NotFoundException nfe) {
 					sme = null;
-				}
-			else
+				} else
 				sme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getDependentId(sysEnv));
 
 			if (sme == null) {
@@ -1688,12 +1687,24 @@ class SsResourceScopeFormatter implements Formatter
 				if(nr.getRspId(sysEnv) != null) {
 					long expTime = rr.getExpiredAmount(sysEnv).longValue();
 					switch(expBase.intValue()) {
-						case SDMSInterval.MINUTE: expTime *= SDMSInterval.MINUTE_DUR; break;
-						case SDMSInterval.HOUR:	  expTime *= SDMSInterval.HOUR_DUR;   break;
-						case SDMSInterval.DAY:	  expTime *= SDMSInterval.DAY_DUR;    break;
-						case SDMSInterval.WEEK:   expTime *= SDMSInterval.WEEK_DUR;   break;
-						case SDMSInterval.MONTH:  expTime *= SDMSInterval.MONTH_DUR;  break;
-						case SDMSInterval.YEAR:	  expTime *= SDMSInterval.YEAR_DUR;   break;
+						case SDMSInterval.MINUTE:
+							expTime *= SDMSInterval.MINUTE_DUR;
+							break;
+						case SDMSInterval.HOUR:
+							expTime *= SDMSInterval.HOUR_DUR;
+							break;
+						case SDMSInterval.DAY:
+							expTime *= SDMSInterval.DAY_DUR;
+							break;
+						case SDMSInterval.WEEK:
+							expTime *= SDMSInterval.WEEK_DUR;
+							break;
+						case SDMSInterval.MONTH:
+							expTime *= SDMSInterval.MONTH_DUR;
+							break;
+						case SDMSInterval.YEAR:
+							expTime *= SDMSInterval.YEAR_DUR;
+							break;
 					}
 					dts = new java.util.Date();
 					String expSign;
