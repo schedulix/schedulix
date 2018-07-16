@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2000-2013 "independIT Integrative Technologies GmbH"
+# Copyright (c) 2000-2018 "independIT Integrative Technologies GmbH"
 # 
 # schedulix Enterprise Job Scheduling System
 # 
@@ -34,6 +34,8 @@ import threading
 import os
 import locale
 from zExceptions import Unauthorized
+from ZODB.POSException import ConflictError
+
 try:
 	import ldap
 	have_ldap = True
@@ -365,9 +367,11 @@ def getLdapGroups(server, userName, context):
 		if LdapServer == None or LdapBaseDn == None or LdapUsername == None or LdapPassword == None:
 			print 'getLdapGroups(): Missing or uncomplete LDAP settings!'
 		else:
-			ldap_filter='(&(objectClass=user)(cn=' + userName + '))'
+			ldap_filter='(&(objectClass=user)(sAMAccountName=' + userName + '))'
 			attrs = ['memberOf']
 			ldap_client = ldap.initialize(LdapServer)
+                        ldap_client.protocol_version = ldap.VERSION3
+                        ldap_client.set_option(ldap.OPT_REFERRALS, 0)
 			ldap_client.simple_bind_s(LdapUsername, LdapPassword)
 			result = ldap_client.search_s(LdapBaseDn, ldap.SCOPE_SUBTREE, ldap_filter,['memberOf'])
 			for elem in result:
@@ -419,11 +423,9 @@ def syncLdapGroups(server, userName, context):
 	if sdmsGroups['DEFAULT_GROUP'] != ldapGroups['DEFAULT_GROUP']:
 		cmd = cmd + "ALTER USER '" + userName + "' WITH DEFAULT GROUP = PUBLIC;\n"
 	if not sdmsGroups['GROUPS'] == ldapGroups['GROUPS']:
-		cmd = cmd + "ALTER USER '" + userName + "' WITH GROUP = ("
-		sep = ""
+		cmd = cmd + "ALTER USER '" + userName + "' WITH GROUP = (PUBLIC"
 		for grp in ldapGroups['GROUPS']:
-			cmd = cmd + sep + "'" + grp + "'"
-			sep = ", "
+			cmd = cmd + ",'" + grp + "'"
 		cmd = cmd + ");\n"
 		changed = True
 	if sdmsGroups['DEFAULT_GROUP'] != ldapGroups['DEFAULT_GROUP']:
@@ -920,7 +922,12 @@ def readlog(fname):
 def changeOwnership(self, username, obj):
 	""" explicitly setup changeOwnership for TTW """
 	acl_users = getattr(self, 'acl_users')    #UserFolder source
-	user = acl_users.getUser(username).__of__(acl_users)
+	user = acl_users.getUser(username)
+	if user == None:
+		web = getattr(self,'web')
+		acl_users = getattr(web,'acl_users')
+		user = acl_users.getUser(username)
+	user = user.__of__(acl_users)
 	obj.changeOwnership(user)
 
 def clock():
@@ -1072,6 +1079,9 @@ def raiseUnauthorized(browserId):
 			del logoutBrowserIds[str(browserId)]
 			# print 'raise Unauthorized'
 			raise Unauthorized
+
+def abortAndRetryTransaction():
+    raise ConflictError
 
 translations = None
 
