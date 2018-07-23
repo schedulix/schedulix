@@ -60,7 +60,7 @@ public class ExprParser
 	private SystemEnvironment sysEnv = null;
 	private SDMSScope evalScope = null;
 	public boolean checkOnly = false;
-	private boolean debug = false;
+	private static boolean debug = SystemEnvironment.traceExpressions;
 
 	// Names of Trigger Variables
 	public static final String S_TIMES_CHECKED = "TIMES_CHECKED";
@@ -97,7 +97,7 @@ boolterm:	booloperand				{ debuginfo("boolterm/booloperand"); $$ = $1; }
 
 booloperand:	'(' boolexp ')'				{ debuginfo("booloperand/(boolexp)"); $$ = $2; }
 	|	NOT booloperand				{ debuginfo("booloperand/NOT booloperand"); $$ = new Boolean(! $2.booleanValue()); }
-	|	expression comparison expression	{ debuginfo("booloperand/expression comparison expression"); $$ = $1.compare($3, $2, checkOnly); }
+	|	expression comparison expression	{ debuginfo("booloperand/expression (" + $1.toString() + ") comparison expression (" + $3.toString() + ")"); $$ = $1.compare($3, $2, checkOnly); }
 	|	BOOLEAN					{ debuginfo("booloperand/BOOLEAN"); $$ = $1; }
 
 expression:	term					{ debuginfo("expression/term"); $$ = $1; }
@@ -260,6 +260,14 @@ class ParseObject {
 			System.err.println("Fatal Exception! Unexpected Object: " + o.toString() + "\n");
 			System.exit(1);
 		}
+	}
+
+	public String toString()
+	{
+		if (type == VOID) return "VOID";
+		if (type == STRING) return string;
+		if (type == NUMBER) return number.toString();
+		return "Unknown";
 	}
 
 	public ParseObject(String s)
