@@ -316,13 +316,12 @@ public class Feil
 		rfil = new RandomAccessFile (filnam, "rws");
 		rfil.setLength (0);
 
-		// set file permissions to rw for user
 		success &= filnam.setReadable(false, false);  
 		success &= filnam.setWritable(false, false); 
 		success &= filnam.setExecutable(false, false);
  
-		success &= filnam.setReadable(true, true);   // Only the owner can read
-		success &= filnam.setWritable(true, true);   // Only the owner can write
+		success &= filnam.setReadable(true, true);
+		success &= filnam.setWritable(true, true);
 
 		if (!success) {
 			Trace.warning("Failed to set file permissions on taskfile");
@@ -466,7 +465,7 @@ public class Feil
 				++pos;
 				final int value_start = pos;
 
-				final int qu = key.indexOf ('\'');							//	locate '\'' inside key
+				final int qu = key.indexOf ('\'');
 				if (qu == -1)
 					do ++pos;
 					while ((pos < size) && ("\n\r".indexOf (data.charAt (pos)) == -1));

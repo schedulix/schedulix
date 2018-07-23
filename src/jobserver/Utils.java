@@ -120,10 +120,6 @@ public class Utils
 		return buf.toString();
 	}
 
-	//-------------------------------------------------------------------------
-	// Returns if the specified key is in the specified array
-	//-------------------------------------------------------------------------
-
 	public static final boolean isOneOf (final String key, final String[] array)
 	{
 		final int n = array.length;
@@ -132,10 +128,6 @@ public class Utils
 				return true;
 		return false;
 	}
-
-	//-------------------------------------------------------------------------
-	/** Get identification of current process. */
-	//-------------------------------------------------------------------------
 
 	public static final String getMyPid()
 	{
@@ -147,36 +139,20 @@ public class Utils
 		return jni.getPid();
 	}
 
-	//-------------------------------------------------------------------------
-	/** Find out, if the specified pid is (still) active. */
-	//-------------------------------------------------------------------------
-
 	public static final boolean isAlive (final RepoIface ri, final String pid)
 	{
 		return jni.isAlive(pid);
 	}
-
-	//-------------------------------------------------------------------------
-	/** Return command that writes the system environment to standard output. */
-	//-------------------------------------------------------------------------
 
 	public static final String getEnvCmd()
 	{
 		return jni.getEnvCmd();
 	}
 
-	//-------------------------------------------------------------------------
-	/** chdir() to the specified path and return null if that was possible, else an error message is returned. */
-	//-------------------------------------------------------------------------
-
 	public static final String chdir (final String path)
 	{
 		return jni.chdir(path);
 	}
-
-	//-------------------------------------------------------------------------
-	/** Set how to determine time of last boot and return null if that was possible, else an error message is returned. */
-	//-------------------------------------------------------------------------
 
 	public static final String setBoottimeHow (final char how)
 	{
@@ -184,26 +160,15 @@ public class Utils
 		else return "Oops";
 	}
 
-	//-------------------------------------------------------------------------
-	/** Return how the time of the last boot is determined. */
-	//-------------------------------------------------------------------------
-
 	public static final char getBoottimeHow()
 	{
 		return jni.getBoottimeHow();
 	}
 
-	//-------------------------------------------------------------------------
-	/** Return a string representing a starting time of a propcess */
-	//-------------------------------------------------------------------------
-
 	public static final String getProcessStartTime(long pid)
 	{
 		return jni.getProcessStartTime(pid);
 	}
-
-	//-------------------------------------------------------------------------
-	// Don't instantiate!
 
 	private Utils()
 	{

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -92,14 +91,15 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 		Date dts = new Date();
 		Long ts = new Long (dts.getTime());
 
-		if (newState == STARTING)
+		if (newState == STARTING) {
 			synchronized(sysEnv.jidsStarting) {
 				sysEnv.jidsStarting.put(getId(sysEnv), ts);
 			}
-		else if (oldState == STARTING)
+		} else if (oldState == STARTING) {
 			synchronized(sysEnv.jidsStarting) {
 				sysEnv.jidsStarting.remove(getId(sysEnv));
 			}
+		}
 
 		super.setState(sysEnv, state);
 	}

@@ -77,7 +77,7 @@ public class Config
 
 	private static final String[] REQUIRED = {REPO_HOST, REPO_PORT, REPO_USER, REPO_PASS};
 	private static final String[] WRITE_THROUGH = {REPO_HOST, REPO_PORT, REPO_USER, USE_SSL,
-						       KEYSTOREPW, TRUSTSTOREPW ,
+						       KEYSTOREPW, TRUSTSTOREPW,
 						       KEYSTORE, TRUSTSTORE
 							};
 	private static final String[] DEPRECATED = {RECONNECT_DELAY, NOP_DELAY, DEFAULT_WORKDIR, USE_PATH,
@@ -574,15 +574,18 @@ public class Config
 			begin = skipBlanks (oldLine, begin + 1);
 
 		int end = begin + 1;
-		if (oldLine.charAt (begin) == '"')
+		if (oldLine.charAt (begin) == '"') {
 			while ((end < length) && (oldLine.charAt (end) != '"')) {
-				if (oldLine.charAt (end) == '\\')
+				if (oldLine.charAt (end) == '\\') {
 					++end;
+				}
 				++end;
 			}
-		else
-			while ((end < length) && ! Character.isWhitespace (oldLine.charAt (end)))
+		} else {
+			while ((end < length) && ! Character.isWhitespace (oldLine.charAt (end))) {
 				++end;
+			}
+		}
 		if ((end < length) && (oldLine.charAt (end) == '"'))
 			++end;
 

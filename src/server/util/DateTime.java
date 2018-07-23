@@ -198,7 +198,7 @@ public class DateTime
 				i += tzID.length();
 				break;
 
-			default: // separators, tags, etc.
+			default:
 				if (str.length() <= i) return false;
 				if (Character.toUpperCase (str.charAt (i)) != Character.toUpperCase (p))
 					return false;
@@ -242,10 +242,6 @@ public class DateTime
 
 		return true;
 	}
-
-	//------------------------------------------------------------------------------------------
-	// Constructs a newly allocated DateTime object so that it represents the date specified by str.
-	// If isDuration is true, the resulting DateTime is a duration (that has nothing to do with timezone's and must not be >= MIN_VALUE)
 
 	public DateTime (final String str, final boolean isDuration)
 		throws SDMSEscape
@@ -319,19 +315,11 @@ public class DateTime
 			throw new SDMSEscape ("(04304091321) Date is too early: " + this + " (must be at least " + MIN_VALUE + ")");
 	}
 
-	//------------------------------------------------------------------------------------------
-	// Constructs a newly allocated DateTime object so that it represents the specified date (which is not a duration)
-	//------------------------------------------------------------------------------------------
-
 	public DateTime (final String str)
 		throws SDMSEscape
 	{
 		this (str, ! IS_DURATION);
 	}
-
-	//-------------------------------------------------------------------------
-	// Fills the public fields (year, ..., second) from the current value in gc
-	//-------------------------------------------------------------------------
 
 	private final void setFieldsFromGC()
 	{
@@ -345,10 +333,6 @@ public class DateTime
 		minute = gc.get (Calendar.MINUTE);
 		second = gc.get (Calendar.SECOND);
 	}
-
-	//-------------------------------------------------------------------------
-	// Fills the public fields (year, ..., second) from the current value in gc
-	//-------------------------------------------------------------------------
 
 	public final void setMissingFieldsFromNow()
 	{
@@ -365,11 +349,6 @@ public class DateTime
 
 	public final void setMissingFieldsFromReference(java.util.Date refDate, boolean adjust)
 	{
-		// adjust == true means that the calculated time
-		//                will be in the future, related to refDate, but only
-		//		  if the most significant values are missing
-		//                i.e. '--3T17:00' will be corrected
-		//                     '1970' will not
 
 		gc.setTimeZone (tz);
 		GregorianCalendar refGC = new GregorianCalendar(tz);
@@ -455,16 +434,9 @@ public class DateTime
 		tmp.loadGC();
 
 		if (refDate.compareTo(toDate()) > 0) {
-			// if refDate larger than the calculated date
-			// we use the adjusted calculated date
-			// if adjust == false then newGC == refGC
 			set(tmp);
 		}
 	}
-
-	//------------------------------------------------------------------------------------------
-	// Constructs a newly allocated DateTime object so that it represents the specified date (which is not a duration)
-	//------------------------------------------------------------------------------------------
 
 	public DateTime (final Date date)
 	{
@@ -480,18 +452,11 @@ public class DateTime
 			setFieldsFromGC();
 	}
 
-	//------------------------------------------------------------------------------------------
-	// Constructs a newly allocated DateTime object so that it represents the specified DateTime
-	//------------------------------------------------------------------------------------------
-
 	public DateTime (final DateTime other)
 	{
 		set (other);
 	}
 
-	//------------------------------------------------------------------------------------------
-	// Constructs a newly allocated DateTime object so that it represents the date specified by the long value
-	//------------------------------------------------------------------------------------------
 	public DateTime (final long l)
 	{
 		setValues(l, true);
@@ -541,10 +506,6 @@ public class DateTime
 		isFixed = true;
 	}
 
-	//------------------------------------------------------------------------------------------
-	// Sets this DateTime object so that it represents the specified DateTime
-	//------------------------------------------------------------------------------------------
-
 	public final void set (final DateTime other)
 	{
 		isDuration = other.isDuration;
@@ -564,10 +525,6 @@ public class DateTime
 		minute = other.minute;
 		second = other.second;
 	}
-
-	//------------------------------------------------------------------------------------------
-	// Loads gc with the current values
-	//------------------------------------------------------------------------------------------
 
 	public final void loadGC()
 	{
@@ -593,10 +550,6 @@ public class DateTime
 		gcValid = true;
 	}
 
-	//------------------------------------------------------------------------------------------
-	// Adjusts this DateTime so that it represents the earliest possible date
-	//------------------------------------------------------------------------------------------
-
 	public final void fixToMinDate()
 	{
 		if (isDuration)
@@ -611,10 +564,6 @@ public class DateTime
 
 		isFixed = true;
 	}
-
-	//------------------------------------------------------------------------------------------
-	// Adjusts this DateTime so that it represents the latest possible date
-	//------------------------------------------------------------------------------------------
 
 	public final void fixToMaxDate()
 	{
@@ -653,10 +602,6 @@ public class DateTime
 		isFixed = true;
 	}
 
-	//------------------------------------------------------------------------------------------
-	// Removes this DateTime's seconds and returns whether it was necessary (ie. the seconds were set before)
-	//------------------------------------------------------------------------------------------
-
 	public final boolean suppressSeconds()
 	{
 		if (secondsSuppressed)
@@ -679,10 +624,6 @@ public class DateTime
 
 		return needed;
 	}
-
-	//------------------------------------------------------------------------------------------
-	// Compares two DateTimes for ordering.
-	//------------------------------------------------------------------------------------------
 
 	private static final void fillGC (final DateTime dt)
 	{
@@ -713,10 +654,6 @@ public class DateTime
 
 		return gc.getTimeInMillis() - other.gc.getTimeInMillis();
 	}
-
-	//------------------------------------------------------------------------------------------
-	// Returns a newly allocated Long object that represents this DateTime's value.
-	//------------------------------------------------------------------------------------------
 
 	public final Long toLong()
 	{
@@ -755,10 +692,6 @@ public class DateTime
 		return new Long (result);
 	}
 
-	//------------------------------------------------------------------------------------------
-	// Returns a newly allocated Date object that represents this DateTime's value (which must be fixed).
-	//------------------------------------------------------------------------------------------
-
 	public final Date toDate()
 	{
 		if (isDuration)
@@ -775,10 +708,6 @@ public class DateTime
 		return gc.getTime();
 	}
 
-	//------------------------------------------------------------------------------------------
-	// Returns time in millis that represents this DateTime's value (which must be fixed).
-	//------------------------------------------------------------------------------------------
-
 	public final long getTimeInMillis()
 	{
 		if (isDuration)
@@ -794,10 +723,6 @@ public class DateTime
 
 		return gc.getTimeInMillis();
 	}
-
-	//------------------------------------------------------------------------------------------
-	// Returns a String object representing this DateTime's current value.
-	//------------------------------------------------------------------------------------------
 
 	private static final DecimalFormat df = new DecimalFormat();
 
@@ -826,9 +751,7 @@ public class DateTime
 				final GregorianCalendar tmpGc = SystemEnvironment.newGregorianCalendar();
 				tmpGc.setTimeZone (myTz == null ? SystemEnvironment.systemTimeZone : myTz);
 				tmpGc.setTimeInMillis(gc.getTimeInMillis());
-				// if Summer Time, isDST == true
 				final boolean isDST = (tmpGc.get(Calendar.DST_OFFSET) != 0);
-				// now if isDST && gc.hour == tmpGc.hour + 1 -> A Period
 				if (isDST) {
 					tmpGc.add(Calendar.HOUR_OF_DAY, 1);
 					if (tmpGc.get(Calendar.HOUR_OF_DAY) == gc.get(Calendar.HOUR_OF_DAY))

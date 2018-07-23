@@ -61,17 +61,10 @@ public abstract class Dump
 		return new String (buf);
 	}
 
-	//-------------------------------------------------------------------------
-	// quote specified object name
-	//-------------------------------------------------------------------------
-
 	public static final String quotedName (final Long id, final String name)
 	{
 		return isSystemObject (id) ? name.toUpperCase() : quotedString (name);
 	}
-
-	//-------------------------------------------------------------------------
-	// join vec's elements into a single string separated by sep
 
 	public static final String join (final String sep, final Vector vec)
 	{
