@@ -417,6 +417,14 @@ public class AlterJob extends Node
 				sme.cancel(sysEnv);
 			}
 		}
+		if (kill != null) {
+			if(kill.booleanValue()) {
+				if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getKillProgram(sysEnv) == null) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "032070111144", "couldn't kill, no kill program defined"));
+				}
+				sme.kill(sysEnv);
+			}
+		}
 		return;
 	}
 
@@ -458,7 +466,7 @@ public class AlterJob extends Node
 		}
 		Long resumeTs = null;
 		if(resumeObj != null) {
-			resumeTs = SubmitJob.evalResumeObj(sysEnv, resumeObj, null , true);
+			resumeTs = SubmitJob.evalResumeObj(sysEnv, resumeObj, null, true);
 
 			if (resumeTs == null || resumeTs.longValue() == -1l) {
 				if (sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND)
