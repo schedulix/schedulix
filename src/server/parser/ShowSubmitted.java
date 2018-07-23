@@ -823,7 +823,8 @@ public class ShowSubmitted extends Node
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getRequiredId(sysEnv));
 				} catch(NotFoundException nfe) {
 					sme = null;
-				} else
+				}
+			else
 				sme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getDependentId(sysEnv));
 
 			if (sme == null) {
