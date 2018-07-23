@@ -43,7 +43,7 @@ SELECT
     , NAME                           AS NAME
     , INT_VALUE                      AS INT_VALUE
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM PERSISTENT_VALUE;

@@ -37,9 +37,9 @@ SELECT
     , CASE IS_LOCAL WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_LOCAL
     , CASE IS_LONG WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_LONG
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM ENTITY_VARIABLE;
 CREATE TABLE ARC_EXTENTS (
     ID                             decimal(20) NOT NULL
@@ -77,9 +77,9 @@ SELECT
     , SEQUENCE                       AS SEQUENCE
     , EXTENT                         AS EXTENT
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM EXTENTS;
 ALTER TABLE PARAMETER_DEFINITION
     ADD IS_LONG integer NOT NULL DEFAULT 0;
@@ -98,9 +98,9 @@ SELECT
     , EXPORT_NAME                    AS EXPORT_NAME
     , CASE IS_LONG WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_LONG
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM PARAMETER_DEFINITION
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_PARAMETER_DEFINITION AS
@@ -116,9 +116,9 @@ SELECT
     , EXPORT_NAME                    AS EXPORT_NAME
     , CASE IS_LONG WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_LONG
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
     , VALID_FROM
     , VALID_TO
   FROM PARAMETER_DEFINITION;
@@ -143,9 +143,9 @@ SELECT
     , CASE LOCKMODE WHEN 255 THEN 'N' WHEN 0 THEN 'X' WHEN 2 THEN 'SX' WHEN 4 THEN 'S' WHEN 6 THEN 'SC' END AS LOCKMODE
     , CONDITION                      AS CONDITION
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM RESOURCE_REQUIREMENT
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_RESOURCE_REQUIREMENT AS
@@ -165,9 +165,9 @@ SELECT
     , CASE LOCKMODE WHEN 255 THEN 'N' WHEN 0 THEN 'X' WHEN 2 THEN 'SX' WHEN 4 THEN 'S' WHEN 6 THEN 'SC' END AS LOCKMODE
     , CONDITION                      AS CONDITION
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
     , VALID_FROM
     , VALID_TO
   FROM RESOURCE_REQUIREMENT;
@@ -234,15 +234,15 @@ SELECT
     , LOGFILE                        AS LOGFILE
     , ERRLOGFILE                     AS ERRLOGFILE
     , EXTPID                         AS EXTPID
-    , timestamp 'epoch' + cast(to_char(mod(SYNC_TS, 1125899906842624)/1000, '999999999999') as interval) AS SYNC_TS
-    , timestamp 'epoch' + cast(to_char(mod(RESOURCE_TS, 1125899906842624)/1000, '999999999999') as interval) AS RESOURCE_TS
-    , timestamp 'epoch' + cast(to_char(mod(RUNNABLE_TS, 1125899906842624)/1000, '999999999999') as interval) AS RUNNABLE_TS
-    , timestamp 'epoch' + cast(to_char(mod(START_TS, 1125899906842624)/1000, '999999999999') as interval) AS START_TS
-    , timestamp 'epoch' + cast(to_char(mod(FINISH_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINISH_TS
+    , timestamptz 'epoch' + cast(to_char(mod(SYNC_TS, 1125899906842624)/1000, '999999999999') as interval) AS SYNC_TS
+    , timestamptz 'epoch' + cast(to_char(mod(RESOURCE_TS, 1125899906842624)/1000, '999999999999') as interval) AS RESOURCE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(RUNNABLE_TS, 1125899906842624)/1000, '999999999999') as interval) AS RUNNABLE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(START_TS, 1125899906842624)/1000, '999999999999') as interval) AS START_TS
+    , timestamptz 'epoch' + cast(to_char(mod(FINISH_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINISH_TS
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM SUBMITTED_ENTITY_STATS;
 ALTER TABLE USERS
     ADD CONNECTION_TYPE integer NOT NULL DEFAULT 0;
@@ -256,9 +256,9 @@ SELECT
     , CASE CONNECTION_TYPE WHEN 0 THEN 'PLAIN' WHEN 1 THEN 'SSL' WHEN 2 THEN 'SSL_AUTH' END AS CONNECTION_TYPE
     , DELETE_VERSION                 AS DELETE_VERSION
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM USERS;
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
@@ -283,9 +283,9 @@ SELECT
     , CASE ALT_U_TYPE WHEN 0 THEN 'USER' WHEN 1 THEN 'SERVER' END AS ALT_U_TYPE
     , ALT_U_ID                       AS ALT_U_ID
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM USER_EQUIV;
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
@@ -313,9 +313,9 @@ SELECT
     , SEQUENCE                       AS SEQUENCE
     , EXTENT                         AS EXTENT
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM VERSIONED_EXTENTS
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_VERSIONED_EXTENTS AS
@@ -325,9 +325,9 @@ SELECT
     , SEQUENCE                       AS SEQUENCE
     , EXTENT                         AS EXTENT
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
     , VALID_FROM
     , VALID_TO
   FROM VERSIONED_EXTENTS;

@@ -65,9 +65,9 @@ SELECT
     , CASE MERGE_MODE WHEN 1 THEN 'MERGE_LOCAL' WHEN 2 THEN 'MERGE_GLOBAL' WHEN 3 THEN 'NOMERGE' WHEN 4 THEN 'FAILURE' END AS MERGE_MODE
     , ESTP_ID                        AS ESTP_ID
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM SCHEDULING_HIERARCHY
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_SCHEDULING_HIERARCHY AS
@@ -86,9 +86,9 @@ SELECT
     , CASE MERGE_MODE WHEN 1 THEN 'MERGE_LOCAL' WHEN 2 THEN 'MERGE_GLOBAL' WHEN 3 THEN 'NOMERGE' WHEN 4 THEN 'FAILURE' END AS MERGE_MODE
     , ESTP_ID                        AS ESTP_ID
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
     , VALID_FROM
     , VALID_TO
   FROM SCHEDULING_HIERARCHY;

@@ -44,10 +44,10 @@ SELECT
     ID
     , UNIQUE_NAME                    AS UNIQUE_NAME
     , OM_ID                          AS OM_ID
-    , timestamp 'epoch' + cast(to_char(mod(MODIFY_TS, 1125899906842624)/1000, '999999999999') as interval) AS MODIFY_TS
-    , timestamp 'epoch' + cast(to_char(mod(REMOVE_TS, 1125899906842624)/1000, '999999999999') as interval) AS REMOVE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(MODIFY_TS, 1125899906842624)/1000, '999999999999') as interval) AS MODIFY_TS
+    , timestamptz 'epoch' + cast(to_char(mod(REMOVE_TS, 1125899906842624)/1000, '999999999999') as interval) AS REMOVE_TS
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM OBJECT_INSTANCE;

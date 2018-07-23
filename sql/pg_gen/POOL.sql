@@ -78,10 +78,10 @@ SELECT
     , TD1_AVG                        AS TD1_AVG
     , TD2_AVG                        AS TD2_AVG
     , LW_AVG                         AS LW_AVG
-    , timestamp 'epoch' + cast(to_char(mod(LAST_EVAL, 1125899906842624)/1000, '999999999999') as interval) AS LAST_EVAL
-    , timestamp 'epoch' + cast(to_char(mod(LAST_WRITE, 1125899906842624)/1000, '999999999999') as interval) AS LAST_WRITE
+    , timestamptz 'epoch' + cast(to_char(mod(LAST_EVAL, 1125899906842624)/1000, '999999999999') as interval) AS LAST_EVAL
+    , timestamptz 'epoch' + cast(to_char(mod(LAST_WRITE, 1125899906842624)/1000, '999999999999') as interval) AS LAST_WRITE
     , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamp 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
+    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM POOL;

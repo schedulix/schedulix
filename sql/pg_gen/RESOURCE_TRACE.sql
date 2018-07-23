@@ -50,6 +50,6 @@ SELECT
     , TD1_AVG                        AS TD1_AVG
     , TD2_AVG                        AS TD2_AVG
     , LW_AVG                         AS LW_AVG
-    , timestamp 'epoch' + cast(to_char(mod(WRITE_TIME, 1125899906842624)/1000, '999999999999') as interval) AS WRITE_TIME
-    , timestamp 'epoch' + cast(to_char(mod(LAST_WRITE, 1125899906842624)/1000, '999999999999') as interval) AS LAST_WRITE
+    , timestamptz 'epoch' + cast(to_char(mod(WRITE_TIME, 1125899906842624)/1000, '999999999999') as interval) AS WRITE_TIME
+    , timestamptz 'epoch' + cast(to_char(mod(LAST_WRITE, 1125899906842624)/1000, '999999999999') as interval) AS LAST_WRITE
   FROM RESOURCE_TRACE;
