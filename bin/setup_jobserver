@@ -53,7 +53,7 @@ usage()
 	PRG=`which $0`
 	(
 	echo ""
-	echo "Usage: $0 [--help] [-n JSNAME] [-w JSPWD] [-o OWNER] [-H SDMSHOST] [-P SDMSPORT] [-h HTTPPORT] [-w JSWD] [-c] [-u SDMSUSER] [-p SDMSPWD]"
+	echo "Usage: $0 [--help] [-n JSNAME] [-w JSPWD] [-o OWNER] [-H SDMSHOST] [-P SDMSPORT] [-h HTTPPORT] [-W JSWD] [-c] [-u SDMSUSER] [-p SDMSPWD]"
 	echo ""
 	echo "JSNAME   is the name of the jobserver to create"
 	echo "JSPWD    is the password of the jobserver to create"
@@ -126,12 +126,12 @@ Password=$SDMSPWD
 		exit 1
 	fi
 	# check if we have admin rights
-	echo -e "show user $SDMSUSER;" | sdmsh --ini $SDMSHRC | grep -e "ADMIN *KDEMOVG$" >/dev/null
+	echo -e "show user $SDMSUSER;" | sdmsh --ini $SDMSHRC | grep -E "ADMIN *KDEMOVG$" >/dev/null
 	if [ "$?" -ne 0 ]; then
 		echo "ERROR: The specified user does not belong to group ADMIN"
 		exit 1
 	fi
-	DEFGRP=`echo -e "show user $SDMSUSER;" | sdmsh --ini $SDMSHRC | awk '/DEFAULT_GROUP :/ {print $3}'`
+	DEFGRP=`echo -e "show user $SDMSUSER;" | sdmsh --ini $SDMSHRC | awk '/DEFAULT_GROUP/ {print $3}'`
 }
 
 promptForPwd()
@@ -194,13 +194,16 @@ fi
 . $BICSUITEHOME/../etc/SETTINGS
 . $BICSUITECONFIG/bicsuite.conf
 
+if [ -f $BICSUITECONFIG/sdmshrc ]; then
+	. $BICSUITECONFIG/sdmshrc
+fi
 if [ -f ~/.sdmshrc ]; then
 	. ~/.sdmshrc
 fi
 
 JSNAME="DEFAULT"
 JSPWD=""
-THISUSER=`$WHOAMI | tr [a-z] [A-Z]`
+THISUSER=`$WHOAMI | tr [a-z.] [A-Z_]`
 
 if [ -z "$User" ]; then
 	SDMSUSER=""
@@ -229,7 +232,7 @@ fi
 OWNERGRP=""
 DEFGRP=""
 JSWD=$HOME
-HOSTNAME=`hostname | tr [a-z.] [A-Z_]`
+HOSTNAME=`hostname -s | tr [a-z.] [A-Z_]`
 HOSTNM=`hostname`
 CREATEWD=0
 
@@ -251,7 +254,7 @@ while [ -n "$1" ]; do
 		shift ;;
 	-P)	SDMSPORT=$2 ;
 		shift ;;
-	-w)	JSWD="$2" ;
+	-W)	JSWD="$2" ;
 		shift ;;
 	-u)	SDMSUSER=$2 ;
 		shift ;;
@@ -338,8 +341,7 @@ fi
 # calculate some httpport for logfile view
 if [ -z "$HTTPPORT" ]; then
 	MYEUID=`id -u`
-	HTTPPORT=`expr 10 '*' $MYEUID`
-	HTTPPORT=`expr $HTTPPORT + 10240`
+	HTTPPORT=10240
 	while netstat -an | grep $HTTPPORT; do
 		HTTPPORT=`expr $HTTPPORT + 1`
 		if [ $HTTPPORT -gt 65535 ]; then
