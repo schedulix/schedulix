@@ -514,7 +514,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				for(int j = 0; j < v_di.size(); j++) {
 					SDMSDependencyInstance di = (SDMSDependencyInstance)v_di.get(j);
 					if (di.getState(sysEnv).intValue() == SDMSDependencyInstance.DEFERRED) {
-						di.setState(sysEnv, SDMSDependencyInstance.FAILED);
+						SDMSDependencyDefinition dd = SDMSDependencyDefinitionTable.getObject(sysEnv, di.getDdId(sysEnv), dwSme.getSeVersion(sysEnv));
+						if (dd.getUnresolvedHandling(sysEnv).intValue() != SDMSDependencyDefinition.DEFER_IGNORE) {
+							di.setState(sysEnv, SDMSDependencyInstance.FAILED);
+						}
 						deferred = true;
 					}
 				}
@@ -1288,7 +1291,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 					if (state != SDMSDependencyInstance.DEFERRED)
 						fulfilled = false;
 					else {
-						SDMSDependencyDefinition tmpDD = SDMSDependencyDefinitionTable.table.getObject(sysEnv, di.getDdId(sysEnv));
+						SDMSDependencyDefinition tmpDD = SDMSDependencyDefinitionTable.table.getObject(sysEnv, di.getDdId(sysEnv), seVersion);
 						if (tmpDD.getUnresolvedHandling(sysEnv).intValue() == SDMSDependencyDefinition.DEFER)
 					fulfilled = false;
 
