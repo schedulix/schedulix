@@ -140,8 +140,8 @@ public abstract class ManipUser extends Node
 			defaultGId = null;
 		}
 
+		if(defaultGId != null) grouplist.add(defaultGId);
 		if(with.containsKey(ParseStr.S_GROUPLIST)) {
-			if(defaultGId != null) grouplist.add(defaultGId);
 			Vector v = (Vector) with.get(ParseStr.S_GROUPLIST);
 			Long gId;
 			for(int i = 0; i < v.size(); i++) {
