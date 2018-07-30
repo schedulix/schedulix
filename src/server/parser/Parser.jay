@@ -599,7 +599,23 @@ connect_cont:	CONTINUE CONNECT connect_with					{ $$ = new SSOConnect($3, false)
 //D:NT-ALIAS = connect
 //D:PURPOSE P004
 //D:DESCRIPTION connect.tex
-connect_cmdu:	CONNECT username identified_by opt_connect_with 		{ $$ = new Connect($2, $3, $4); }
+connect_cmdu:	CONNECT username identified_by opt_connect_with 		{
+										  WithHash w = $4;
+										  Vector cmds = (Vector) w.get(ParseStr.S_COMMAND);
+										  boolean correct = true;
+										  if (cmds != null) {
+											for (int i = 0; i < cmds.size(); ++i) {
+												if (cmds.get(i) == null) {
+													yyerror(ParseStr.S_SYNTAX_ERROR, new String[]{""});
+													correct = false;
+												}
+											}
+										  }
+										  if (correct)
+											$$ = new Connect($2, $3, $4); 
+										  else
+											$$ = null;
+										}
 
 //D:MASTER SERVER NOUSER NOJOB
 //D:NT-ALIAS = connect
@@ -3397,8 +3413,9 @@ ct_withitem:		STATUS '=' '(' ct_jobstatuslist ')'			{ $$ = new WithItem(ParseStr
 	|		MAIN folderpath						{ $$ = new WithItem(ParseStr.map($1.token), $2); }
 			//D:DEFAULT
 	|		MAIN NONE						{ $$ = new WithItem(ParseStr.map($1.token), null); }
-	|		LIMIT STATUS '=' statusname				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
+			//D:DEFAULT
 	|		LIMIT STATUS '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
+	|		LIMIT STATUS '=' statusname				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
 
 opt_ival_inverse:								{ $$ = new WithItem(ParseStr.S_INVERSE, Boolean.FALSE); }
 	|		ival_inverse						{ $$ = $1; }
