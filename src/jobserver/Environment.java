@@ -50,7 +50,7 @@ public class Environment
 			systemEnvironment = new Environment();
 			systemEnvironment.putAll(System.getenv());
 		}
-		return systemEnvironment;
+		return (Environment)(systemEnvironment.clone());
 	}
 
 	public Environment (final Vector settings)
