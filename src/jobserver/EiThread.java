@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.jobserver;
 
 import java.io.*;
@@ -56,8 +55,9 @@ public class EiThread
 		this.jid = jid;
 		this.workdir = workdir;
 
-		final Environment e = Environment.getSystemEnvironment().merge (env, ri, cfg);
+		Environment e = Environment.getSystemEnvironment();
 		if (jobenv != null) e.putAll(jobenv);
+		e = e.merge (env, ri, cfg);
 		this.env = e.toArray();
 
 		setPriority (Thread.MIN_PRIORITY);
@@ -109,30 +109,23 @@ public class EiThread
 						}
 					}
 				}
-
 				try {
-
 					InputStream i1 = p.getInputStream();
 					i1.close();
 				} catch (final IOException ioe) {
 					Trace.warning("(03210171637) Error closing pipe stdout : " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
-
 				}
 				try {
-
 					InputStream i1 = p.getErrorStream();
 					i1.close();
 				} catch (final IOException ioe) {
 					Trace.warning("(03210171638) Error closing pipe stderr : " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
-
 				}
 				try {
-
 					OutputStream i1 = p.getOutputStream();
 					i1.close();
 				} catch (final IOException ioe) {
 					Trace.warning("(03210171639) Error closing pipe stdin : " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
-
 				}
 
 				while (true) {
@@ -140,21 +133,18 @@ public class EiThread
 						rc = p.waitFor();
 						break;
 					} catch (final InterruptedException ie) {
-
 					}
 				}
 			}
 
 			IOException ioe = null;
 			synchronized(feil) {
-
 				if (Server.feilExists(jid)) {
 					try {
 						feil.open();
 						feil.scan();
 
 						if (rc == 42) {
-
 							Trace.warning("(02402051056)Job executor for job " + jid + " returned error = " + rc + ", double execution ignored");
 						} else if (rc != 0) {
 							String extPid = feil.getExtPid();
@@ -181,12 +171,10 @@ public class EiThread
 							}
 						}
 					} catch (final OverlappingFileLockException ofle) {
-
 					} catch (final IOException e) {
 						ioe = e;
 					} finally {
 						feil.close();
-
 					}
 				} else {
 					System.out.println("Feil for jid " + jid + " does not exist !");
@@ -195,7 +183,6 @@ public class EiThread
 
 			if (ioe != null)
 				synchronized(feil) {
-
 					ri.notifyError (RepoIface.NONFATAL, "(04302042025) Cannot operate on jobfile " + feil.getFilename() + ": " +
 						ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
 				}

@@ -326,9 +326,8 @@ public class Feil
 					int l = buffer.length;
 					while (l > 0 && buffer[l-1] == 0) l--;
 					tag.append(l);
-
 				} else
-				tag.append (val.length());
+					tag.append (val.length());
 			}
 			tag.append ("=");
 			tag.append (val);
