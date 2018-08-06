@@ -110,6 +110,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	public static final String S_PROCESS_TIME	= "PROCESS_TIME";
 	public static final String S_ACTIVE_TIME	= "ACTIVE_TIME";
 	public static final String S_IDLE_PCT	= "IDLE_PCT";
+	public static final String S_SUBMITTER		= "SUBMITTER";
+	public static final String S_SUBMITGROUP	= "SUBMITGROUP";
+	public static final String S_SEOWNER	= "SEOWNER";
+	public static final String S_ENVIRONMENT	= "ENVIRONMENT";
 
 	protected static final Integer zero = new Integer(0);
 	protected static final Long lzero = new Long(0);
@@ -3283,6 +3287,11 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		v = SDMSKillJobTable.idx_smeId.getVector(sysEnv, id);
 		for(i = 0; i < v.size(); i++) {
 			((SDMSKillJob) v.get(i)).release(sysEnv);
+		}
+
+		v = SDMSSubmittedEntityStatsTable.idx_smeId.getVector(sysEnv, id);
+		for(i = 0; i < v.size(); i++) {
+			((SDMSSubmittedEntityStats) v.get(i)).release(sysEnv);
 		}
 
 		super.release(sysEnv);
