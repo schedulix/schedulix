@@ -98,6 +98,11 @@ public class SmeVariableResolver extends VariableResolver
 	public final static String S_ACTIVE_TIME	= SDMSSubmittedEntity.S_ACTIVE_TIME;
 	public final static String S_IDLE_PCT		= SDMSSubmittedEntity.S_IDLE_PCT;
 
+	public final static String S_SUBMITTER		= SDMSSubmittedEntity.S_SUBMITTER;
+	public final static String S_SUBMITGROUP	= SDMSSubmittedEntity.S_SUBMITGROUP;
+	public final static String S_SEOWNER		= SDMSSubmittedEntity.S_SEOWNER;
+	public final static String S_ENVIRONMENT	= SDMSSubmittedEntity.S_ENVIRONMENT;
+
 	public final static int I_JOBID		= 1;
 	public final static int I_MASTERID	= 2;
 	public final static int I_KEY		= 3;
@@ -153,6 +158,10 @@ public class SmeVariableResolver extends VariableResolver
 	public final static int I_PROCESS_TIME		= 54;
 	public final static int I_ACTIVE_TIME		= 55;
 	public final static int I_IDLE_PCT		= 56;
+	public final static int I_SUBMITTER		= 57;
+	public final static int I_SUBMITGROUP		= 58;
+	public final static int I_ENVIRONMENT		= 59;
+	public final static int I_SEOWNER		= 60;
 
 	private final static HashMap specialNames = new HashMap();
 
@@ -213,6 +222,10 @@ public class SmeVariableResolver extends VariableResolver
 		specialNames.put(S_PROCESS_TIME,	new Integer(I_PROCESS_TIME));
 		specialNames.put(S_ACTIVE_TIME,	new Integer(I_ACTIVE_TIME));
 		specialNames.put(S_IDLE_PCT,	new Integer(I_IDLE_PCT));
+		specialNames.put(S_SUBMITTER,	new Integer(I_SUBMITTER));
+		specialNames.put(S_SUBMITGROUP,	new Integer(I_SUBMITGROUP));
+		specialNames.put(S_ENVIRONMENT,	new Integer(I_ENVIRONMENT));
+		specialNames.put(S_SEOWNER,	new Integer(I_SEOWNER));
 	}
 
 	protected String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, boolean fastAccess, String mode, boolean triggercontext, long version, SDMSScope evalScope)
@@ -276,7 +289,7 @@ public class SmeVariableResolver extends VariableResolver
 			}
 		}
 
-		if(specialNames.containsKey(key)) return getSpecialValue(sysEnv, thisSme, key, triggercontext, evalScope);
+		if(specialNames.containsKey(key) || SystemEnvironment.scopeSysVars.contains(key)) return getSpecialValue(sysEnv, thisSme, key, triggercontext, evalScope);
 		try {
 			ev = SDMSEntityVariableTable.idx_smeId_Name_getUnique(sysEnv, new SDMSKey(thisSme.getId(sysEnv), key));
 			Long evLink = ev.getEvLink(sysEnv);
@@ -383,7 +396,7 @@ public class SmeVariableResolver extends VariableResolver
 		throws SDMSException
 	{
 		long seVersion;
-		int varno = ((Integer) specialNames.get(key)).intValue();
+		int varno;
 		int trObjectType;
 		long sysdate;
 		String s;
@@ -404,6 +417,10 @@ public class SmeVariableResolver extends VariableResolver
 		Integer trSeq;
 		Boolean isRestartable;
 		int i;
+		Integer ivarno = ((Integer) specialNames.get(key));
+		if (ivarno != null) {
+
+			varno = ivarno.intValue();
 
 		switch(varno) {
 			case I_JOBID:
@@ -711,7 +728,42 @@ public class SmeVariableResolver extends VariableResolver
 					return new Integer(idleTime.intValue() * 100 / processTime).toString();
 				}
 			}
+				case I_SUBMITTER:
+					Long submitter = thisSme.getCreatorUId(sysEnv);
+					SDMSUser u = SDMSUserTable.getObject(sysEnv, submitter);
+					return u.getName(sysEnv);
+				case I_SUBMITGROUP:
+					Long submitgroup = thisSme.getOwnerId(sysEnv);
+					SDMSGroup g = SDMSGroupTable.getObject(sysEnv, submitgroup);
+					return g.getName(sysEnv);
+				case I_ENVIRONMENT:
+					seVersion = thisSme.getSeVersion(sysEnv).longValue();
+					se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
+					SDMSNamedEnvironment ne = SDMSNamedEnvironmentTable.getObject(sysEnv, se.getNeId(sysEnv), seVersion);
+					return ne.getName(sysEnv);
+				case I_SEOWNER:
+					seVersion = thisSme.getSeVersion(sysEnv).longValue();
+					se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
+					SDMSGroup og = SDMSGroupTable.getObject(sysEnv, se.getOwnerId(sysEnv));
+					return og.getName(sysEnv);
 
+		}
+		} else {
+			String result;
+			seVersion = thisSme.getSeVersion(sysEnv).longValue();
+			SDMSScope scope;
+			Long scopeId = thisSme.getScopeId(sysEnv);
+			if (scopeId != null)
+				scope = SDMSScopeTable.getObject(sysEnv, scopeId);
+			else {
+				scope = evalScope;
+			}
+			try {
+				result = (scope == null ? emptyString : scope.getVariableValue(sysEnv, key, seVersion));
+			} catch (NotFoundException nfe) {
+				return emptyString;
+			}
+			return result;
 		}
 		throw new FatalException(new SDMSMessage(sysEnv, "03208090953", "Unknown special Parameter : $1", key));
 	}
@@ -889,7 +941,7 @@ public class SmeVariableResolver extends VariableResolver
 											"Run into a loop while trying to resolve variable $1 of job $2", newKey, se.pathString(sysEnv, vers)));
 						} else {
 							if (baseSmeId != null && baseSmeId.equals(tsmeId) && pd != null) {
-								s = getVariableValue(sysEnv, tsme, baseSme, newKey, visited, true , mode, triggercontext, recursionCheck, evalScope);
+								s = getVariableValue(sysEnv, tsme, baseSme, newKey, visited, true, mode, triggercontext, recursionCheck, evalScope);
 							} else {
 								s = tsme.getVariableValue(sysEnv, newKey, true, ParseStr.S_LIBERAL, triggercontext, evalScope);
 							}

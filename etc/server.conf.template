@@ -208,6 +208,16 @@ RunMode=PRODUCTION
 ScheduleWakeup=30
 
 #
+# ScopeSystemVariables define the variables/parameters which are evaluated
+# like System Variables (e.g. JOBID) in the context of the executing scope.
+# Note that (scope) system variables are always converted to upper case.
+# The names of the variables are comma separated as in the example below.
+#     ScopeSystemVariables=a,b,c,  \
+#       d,e,f, \
+#      g,h
+# ScopeSystemVariables=
+
+#
 # ServicePort: The service port is a port to which an administrator can connect.
 #
 ServicePort=2505
