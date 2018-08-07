@@ -371,6 +371,38 @@ public class AlterTrigger extends ManipTrigger
 		}
 	}
 
+	private void diffParameters(SystemEnvironment sysEnv, SDMSTrigger t)
+	throws SDMSException
+	{
+		Long tId = t.getId(sysEnv);
+		Vector pv = SDMSTriggerParameterTable.idx_triggerId.getVector(sysEnv, tId);
+		WithHash parmHash = (WithHash) with.get(ParseStr.S_PARAMETERS);
+		if (parmHash == null) parmHash = new WithHash();
+		for (int i = 0; i < pv.size(); ++i) {
+			SDMSTriggerParameter tp = (SDMSTriggerParameter) pv.get(i);
+			String name = tp.getName(sysEnv);
+			if (parmHash.containsKey(name)) {
+				String expression = tp.getExpression(sysEnv);
+				String phExpression = (String) parmHash.get(name);
+				if (!expression.equals(phExpression)) {
+					t.checkParameterExpressionSyntax(sysEnv, phExpression);
+					tp.setExpression(sysEnv, phExpression);
+				}
+				parmHash.remove(name);
+			} else {
+				tp.delete(sysEnv);
+			}
+		}
+
+		Iterator phi = parmHash.keySet().iterator();
+		while (phi.hasNext()) {
+			String name = (String) phi.next();
+			String expression = (String) parmHash.get(name);
+			t.checkParameterExpressionSyntax(sysEnv, expression);
+			SDMSTriggerParameterTable.table.create(sysEnv, name, expression, tId);
+		}
+	}
+
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
@@ -504,6 +536,8 @@ public class AlterTrigger extends ManipTrigger
 				}
 			}
 		}
+
+		if (with.containsKey(ParseStr.S_PARAMETERS)) diffParameters(sysEnv, t);
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03206191441", "Trigger altered"));
 	}

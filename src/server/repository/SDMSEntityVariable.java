@@ -61,6 +61,21 @@ public class SDMSEntityVariable extends SDMSEntityVariableProxyGeneric
 		super.delete(env);
 	}
 
+	public synchronized void release(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Long id = getId(sysEnv);
+		int i;
+		Vector v = null;
+
+		v = SDMSExtentsTable.idx_oId.getVector(sysEnv, id);
+		for(i = 0; i < v.size(); i++) {
+			((SDMSExtents) v.get(i)).release(sysEnv);
+		}
+
+		super.release(sysEnv);
+	}
+
 	public String getValue (SystemEnvironment env)
 	throws SDMSException
 	{

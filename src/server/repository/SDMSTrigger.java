@@ -73,10 +73,16 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 	public void delete(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		Vector act_ts = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, getId(sysEnv));
+		Long id = getId(sysEnv);
+		Vector act_ts = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, id);
 		for(int i = 0; i < act_ts.size(); i++) {
 			SDMSTriggerState ts = (SDMSTriggerState) act_ts.get(i);
 			ts.delete(sysEnv);
+		}
+		Vector tpv = SDMSTriggerParameterTable.idx_triggerId.getVector(sysEnv, id);
+		for (int i = 0; i < tpv.size(); ++i) {
+			SDMSTriggerParameter tp = (SDMSTriggerParameter) tpv.get(i);
+			tp.delete(sysEnv);
 		}
 
 		super.delete(sysEnv);
@@ -103,18 +109,35 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 
 		final BoolExpr be = new BoolExpr(cond);
 
-		return be.checkCondition(sysEnv, r, sme, this, tq, null);
+		return be.checkCondition(sysEnv, r, sme, sme, this, tq, null);
 	}
 
 	public void checkConditionSyntax(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		SDMSMessage msg = null;
 		String cond = getCondition(sysEnv);
 		if(cond == null) return;
 		final BoolExpr be = new BoolExpr(cond);
 
 		be.checkConditionSyntax(sysEnv);
+	}
+
+	public void checkParameterExpressionSyntax(SystemEnvironment sysEnv, String expr)
+	throws SDMSException
+	{
+		if (expr == null) return;
+		final BoolExpr be = new BoolExpr(expr);
+		be.checkConditionSyntax(sysEnv);
+	}
+
+	public String evalExpression(SystemEnvironment sysEnv, String expression, SDMSResource r, SDMSSubmittedEntity sme, SDMSTriggerQueue tq)
+	throws SDMSException
+	{
+		if (expression == null || expression.equals("")) return "";
+		BoolExpr be = new BoolExpr(expression);
+
+		Object rc = be.evalExpression(sysEnv, r, sme, sme, this, tq, null);
+		return rc.toString();
 	}
 
 	public boolean trigger(SystemEnvironment sysEnv, Long esdId, Long reasonSmeId, SDMSTriggerQueue tq, SDMSSubmittedEntity thisSme)
@@ -350,6 +373,17 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 					"Cannot fire Trigger $1 recursively in same Transaction",
 					getName(sysEnv)));
 			}
+			Vector params = new Vector();
+			Vector tpdv = SDMSTriggerParameterTable.idx_triggerId.getVector(sysEnv, trId, thisSme.getSeVersion(sysEnv));
+			Iterator tpdi = tpdv.iterator();
+			while (tpdi.hasNext()) {
+				SDMSTriggerParameter tdp = (SDMSTriggerParameter) tpdi.next();
+				String expression = tdp.getExpression(sysEnv);
+				String result = this.evalExpression(sysEnv, expression, null, thisSme, null);
+				WithItem p = new WithItem(tdp.getName(sysEnv), result);
+				params.add(p);
+			}
+
 			Boolean suspend = getIsSuspend(sysEnv);
 			Integer doSuspend;
 			if (suspend.booleanValue() == false) doSuspend = null;
@@ -357,7 +391,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			if(isMasterTrigger) {
 				final SDMSSchedulingEntity thisSe = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
 				sme = se.submitMaster(sysEnv,
-					null,
+				                      params,
 					doSuspend,
 					null,
 					getSubmitOwnerId(sysEnv),
@@ -372,7 +406,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				if (trigger_type == SDMSTrigger.AFTER_FINAL) forceChildDef = true;
 				else forceChildDef = false;
 				sme = psme.submitChild(sysEnv,
-					null,
+					params,
 					doSuspend,
 					null,
 					submitSeId,

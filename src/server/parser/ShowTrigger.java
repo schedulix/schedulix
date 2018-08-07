@@ -57,7 +57,9 @@ public class ShowTrigger extends ShowCommented
 		SDMSOutputContainer r_container = null;
 		SDMSTrigger t;
 		SDMSTriggerState ts;
+		SDMSTriggerParameter tp;
 		Vector vts;
+		Vector vtp;
 		Vector desc;
 		Vector data;
 		Vector rdesc;
@@ -72,6 +74,7 @@ public class ShowTrigger extends ShowCommented
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411727", "Insufficient privileges"));
 		Long tId = t.getId(sysEnv);
 		vts = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, tId);
+		vtp = SDMSTriggerParameterTable.idx_triggerId.getSortedVector(sysEnv, tId);
 
 		desc = new Vector();
 		desc.add("ID");
@@ -119,6 +122,7 @@ public class ShowTrigger extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("STATES");
+		desc.add("PARAMETERS");
 
 		data = new Vector();
 		data.add(tId);
@@ -260,6 +264,26 @@ public class ShowTrigger extends ShowCommented
 		}
 
 		Collections.sort(r_container.dataset, r_container.getComparator(sysEnv, 1, 2));
+
+		data.add(r_container);
+
+		rdesc = new Vector();
+		rdesc.add("ID");
+		rdesc.add("NAME");
+		rdesc.add("EXPRESSION");
+
+		r_container = new SDMSOutputContainer(sysEnv, null, rdesc);
+
+		for(int i = 0; i < vtp.size(); i++) {
+			tp = (SDMSTriggerParameter) vtp.get(i);
+			rdata = new Vector();
+			rdata.add(tp.getId(sysEnv));
+			rdata.add(tp.getName(sysEnv));
+			rdata.add(tp.getExpression(sysEnv));
+			r_container.addData(sysEnv, rdata);
+		}
+
+		Collections.sort(r_container.dataset, r_container.getComparator(sysEnv, 1));
 
 		data.add(r_container);
 

@@ -418,6 +418,24 @@ public class CreateTrigger extends ManipTrigger
 			}
 		}
 		if (condition != null && !(condition.equals(""))) sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXTENDED_TRIGGERS);
+
+	}
+
+	private void checkAndCreateParameters(SystemEnvironment sysEnv, SDMSTrigger t)
+	throws SDMSException
+	{
+		WithHash parmHash = (WithHash) with.get(ParseStr.S_PARAMETERS);
+		Iterator i = parmHash.keySet().iterator();
+		while (i.hasNext()) {
+			String key = (String) i.next();
+			String value = (String) parmHash.get(key);
+			t.checkParameterExpressionSyntax(sysEnv, value);
+			try {
+				SDMSTriggerParameterTable.table.create(sysEnv, key, value, t.getId(sysEnv));
+			} catch (DuplicateKeyException dke) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03801311320", "Ambiguous parameter definition for parameter $1", key));
+			}
+		}
 	}
 
 	public void go(SystemEnvironment sysEnv)
@@ -455,6 +473,10 @@ public class CreateTrigger extends ManipTrigger
 			}
 		}
 		t.checkConditionSyntax(sysEnv);
+
+		if (with.containsKey(ParseStr.S_PARAMETERS)) {
+			checkAndCreateParameters(sysEnv, t);
+		}
 
 		if (isInverse.booleanValue())
 			checkUniqueness(sysEnv, name, fireId, seId, isInverse);

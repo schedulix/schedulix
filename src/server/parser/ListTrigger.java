@@ -110,6 +110,42 @@ public class ListTrigger extends Node
 		return fireId;
 	}
 
+	private String quote(String s)
+	{
+		String result;
+		result = s.replace("\\", "\\\\");
+		result = result.replace("'", "\\'");
+
+		return result;
+	}
+
+	private String renderParameters(SystemEnvironment sysEnv, SDMSTrigger t)
+	throws SDMSException
+	{
+		StringBuffer result = new StringBuffer();
+		SDMSTriggerParameter tp;
+		String name;
+		String expression;
+		Long id = t.getId(sysEnv);
+		String sep = "";
+
+		Vector v = SDMSTriggerParameterTable.idx_triggerId.getSortedVector(sysEnv, id);
+		for (int i = 0; i < v.size(); ++i) {
+			tp = (SDMSTriggerParameter) v.get(i);
+			name = tp.getName(sysEnv);
+			expression = tp.getExpression(sysEnv);
+			result.append(sep);
+			result.append("'");
+			result.append(name);
+			result.append("'='");
+			result.append(quote(expression));
+			result.append("'");
+			sep = ",";
+		}
+
+		return result.toString();
+	}
+
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
@@ -181,6 +217,7 @@ public class ListTrigger extends Node
 		desc.add("CONDITION");
 		desc.add("CHECK_AMOUNT");
 		desc.add("CHECK_BASE");
+		desc.add("PARAMETERS");
 		desc.add("PRIVS");
 		desc.add("TAG");
 		desc.add("COMMENT");
@@ -340,6 +377,7 @@ public class ListTrigger extends Node
 			data.add(t.getCondition(sysEnv));
 			data.add(t.getCheckAmount(sysEnv));
 			data.add(t.getCheckBaseAsString(sysEnv));
+			data.add(renderParameters(sysEnv, t));
 			data.add(t.getPrivileges(sysEnv).toString());
 			try {
 				SDMSObjectComment oc = SDMSObjectCommentTable.idx_objectId_getFirst(sysEnv, t.getId(sysEnv));

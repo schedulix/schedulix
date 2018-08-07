@@ -209,6 +209,7 @@ public class SDMSRepository
 		tables.put(SDMSGroupTableGeneric.tableName,				new SDMSGroupTable(env));
 		tables.put(SDMSHierarchyInstanceTableGeneric.tableName,			new SDMSHierarchyInstanceTable(env));
 		tables.put(SDMSIgnoredDependencyTableGeneric.tableName,			new SDMSIgnoredDependencyTable(env));
+		tables.put(SDMSIntervalDispatcherTableGeneric.tableName,		new SDMSIntervalDispatcherTable(env));
 		tables.put(SDMSIntervalHierarchyTableGeneric.tableName,			new SDMSIntervalHierarchyTable(env));
 		tables.put(SDMSIntervalSelectionTableGeneric.tableName,			new SDMSIntervalSelectionTable(env));
 		tables.put(SDMSIntervalTableGeneric.tableName,				new SDMSIntervalTable(env));
@@ -245,6 +246,7 @@ public class SDMSRepository
 		tables.put(SDMSSubmittedEntityStatsTableGeneric.tableName,		new SDMSSubmittedEntityStatsTable(env));
 		tables.put(SDMSTemplateVariableTableGeneric.tableName,			new SDMSTemplateVariableTable(env));
 		tables.put(SDMSTriggerTableGeneric.tableName,				new SDMSTriggerTable(env));
+		tables.put(SDMSTriggerParameterTableGeneric.tableName,			new SDMSTriggerParameterTable(env));
 		tables.put(SDMSTriggerQueueTableGeneric.tableName,			new SDMSTriggerQueueTable(env));
 		tables.put(SDMSTriggerStateTableGeneric.tableName,			new SDMSTriggerStateTable(env));
 		tables.put(SDMSUserTableGeneric.tableName,				new SDMSUserTable(env));
