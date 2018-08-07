@@ -151,19 +151,41 @@ public class SubmitJob extends Node
 		}
 
 		final Long uId = env.uid();
-		final SDMSUser u = SDMSUserTable.getObject(sysEnv, uId);
-		final Long gId;
-		if(!with.containsKey(ParseStr.S_GROUP)) {
-			gId = u.getDefaultGId(sysEnv);
+		Long gId;
+		String auditMsg;
+		if (env.isUser()) {
+			final SDMSUser u = SDMSUserTable.getObject(sysEnv, uId);
+			if(!with.containsKey(ParseStr.S_GROUP)) {
+				gId = u.getDefaultGId(sysEnv);
+			} else {
+				final String gName = (String) with.get(ParseStr.S_GROUP);
+				gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
+				              sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			}
+			auditMsg = "manually submitted";
 		} else {
-			final String gName = (String) with.get(ParseStr.S_GROUP);
-			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			SDMSSubmittedEntity submittingSme = SDMSSubmittedEntityTable.getObject(sysEnv, uId);
+			gId = submittingSme.getOwnerId(sysEnv);
+			auditMsg = "submitted by job " + uId;
 		}
-		if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT)) {
-			throw new AccessViolationException(
-				new SDMSMessage(sysEnv, "03312181437", "Insufficient privileges for submitting $1", se.pathString(sysEnv))
-			);
+
+		boolean job2user = false;
+		try {
+			if (env.isJob()) {
+				job2user = true;
+				env.setUser();
+			}
+			if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT)) {
+				throw new AccessViolationException(
+				        new SDMSMessage(sysEnv, "03312181437", "Insufficient privileges for submitting $1", se.pathString(sysEnv))
+				);
+			}
+		} catch (SDMSException e) {
+			throw e;
+		} finally {
+			if (job2user) {
+				env.setJob();
+			}
 		}
 		se.checkSubmitForGroup(sysEnv, gId);
 
@@ -176,8 +198,9 @@ public class SubmitJob extends Node
 			}
 		}
 
-		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, params, suspend == null ? null : new Integer(suspend ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND), resumeTs, gId, niceValue,
-								"manually submitted", submitTag, childTag, unresolvedHandling);
+		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, params, suspend == null ? null : new Integer(suspend ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
+		                                resumeTs, gId, niceValue,
+		                                auditMsg, submitTag, childTag, unresolvedHandling);
 		return sme.getId(sysEnv);
 	}
 
@@ -251,7 +274,14 @@ public class SubmitJob extends Node
 				return;
 			}
 		} else {
-			id = child_submit(sysEnv, submitTag);
+			if (with.containsKey(ParseStr.S_MASTER)) {
+				if (path == null) {
+					throw new CommonErrorException( new SDMSMessage(sysEnv, "03801291249", "A master submit by alias is not supported"));
+				}
+				id = master_submit(sysEnv, submitTag);
+			} else {
+				id = child_submit(sysEnv, submitTag);
+			}
 		}
 
 		data.add(id);

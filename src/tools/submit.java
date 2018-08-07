@@ -83,6 +83,9 @@ class submit extends App
 			if (!silent) System.err.println("group option only allowed with user option !");
 			return false;
 		}
+		if (options.isSet(MASTER) && options.isSet(App.USER)) {
+			if (!silent) System.err.println("WARNING: master option has no effect for submits by user");
+		}
 		if (options.isSet(NICE)) {
 			int nicevalue;
 			try {
@@ -164,6 +167,9 @@ class submit extends App
 		if (options.isSet(TAG))     {
 			cmd = cmd + ",\n    " + "CHILDTAG = '" + options.getValue(TAG) + "'";
 		}
+		if (options.isSet(MASTER) && !options.isSet(App.USER))  {
+			cmd = cmd + ",\n    " + "MASTER";
+		}
 		if (options.rest.size() > 0 ) {
 			cmd = cmd + ",\n    " + "PARAMETERS = (\n";
 			String sep = "";
@@ -171,7 +177,6 @@ class submit extends App
 			while (i.hasNext()) {
 				String parameter = (String)i.next();
 				String value     = (String)i.next();
-
 				value = value.replaceAll("\\\\", "\\\\\\\\");
 				value = value.replaceAll("'", "\\\\'");
 				cmd = cmd + sep + "        '" + parameter + "' = '" + value + "'";
@@ -179,10 +184,8 @@ class submit extends App
 			}
 			cmd = cmd + "\n    )";
 		}
-
 		o = execute(cmd);
 		if (o.error != null) {
-
 			if (o.error.code.equals("03406031553")) return 0;
 			printError(o.error);
 			return 1;
