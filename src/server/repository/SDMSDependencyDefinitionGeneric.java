@@ -53,6 +53,15 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 	public static final int ALL_REACHABLE = 1;
 	public static final int UNREACHABLE = 2;
 	public static final int DEFAULT = 3;
+	public static final int INTERNAL = 0;
+	public static final int EXTERNAL = 1;
+	public static final int BOTH = 2;
+	public static final int MINUTE = SDMSInterval.MINUTE;
+	public static final int HOUR = SDMSInterval.HOUR;
+	public static final int DAY = SDMSInterval.DAY;
+	public static final int WEEK = SDMSInterval.WEEK;
+	public static final int MONTH = SDMSInterval.MONTH;
+	public static final int YEAR = SDMSInterval.YEAR;
 
 	public final static int nr_id = 1;
 	public final static int nr_seDependentId = 2;
@@ -62,10 +71,14 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 	public final static int nr_mode = 6;
 	public final static int nr_stateSelection = 7;
 	public final static int nr_condition = 8;
-	public final static int nr_creatorUId = 9;
-	public final static int nr_createTs = 10;
-	public final static int nr_changerUId = 11;
-	public final static int nr_changeTs = 12;
+	public final static int nr_resolveMode = 9;
+	public final static int nr_expiredAmount = 10;
+	public final static int nr_expiredBase = 11;
+	public final static int nr_selectCondition = 12;
+	public final static int nr_creatorUId = 13;
+	public final static int nr_createTs = 14;
+	public final static int nr_changerUId = 15;
+	public final static int nr_changeTs = 16;
 
 	public static String tableName = SDMSDependencyDefinitionTableGeneric.tableName;
 
@@ -76,6 +89,10 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 	protected Integer mode;
 	protected Integer stateSelection;
 	protected String condition;
+	protected Integer resolveMode;
+	protected Integer expiredAmount;
+	protected Integer expiredBase;
+	protected String selectCondition;
 	protected Long creatorUId;
 	protected Long createTs;
 	protected Long changerUId;
@@ -94,6 +111,10 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 	        Integer p_mode,
 	        Integer p_stateSelection,
 	        String p_condition,
+	        Integer p_resolveMode,
+	        Integer p_expiredAmount,
+	        Integer p_expiredBase,
+	        String p_selectCondition,
 	        Long p_creatorUId,
 	        Long p_createTs,
 	        Long p_changerUId,
@@ -121,6 +142,16 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 			);
 		}
 		condition = p_condition;
+		resolveMode = p_resolveMode;
+		expiredAmount = p_expiredAmount;
+		expiredBase = p_expiredBase;
+		if (p_selectCondition != null && p_selectCondition.length() > 1024) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141528",
+			                        "(DependencyDefinition) Length of $1 exceeds maximum length $2", "selectCondition", "1024")
+			);
+		}
+		selectCondition = p_selectCondition;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -388,6 +419,155 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 		return;
 	}
 
+	public Integer getResolveMode (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (resolveMode);
+	}
+
+	public String getResolveModeAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		final Integer v = getResolveMode (env);
+		switch (v.intValue()) {
+			case SDMSDependencyDefinition.INTERNAL:
+				return "INTERNAL";
+			case SDMSDependencyDefinition.EXTERNAL:
+				return "EXTERNAL";
+			case SDMSDependencyDefinition.BOTH:
+				return "BOTH";
+		}
+		throw new FatalException (new SDMSMessage (env,
+		                          "01205252242",
+		                          "Unknown DependencyDefinition.resolveMode: $1",
+		                          getResolveMode (env)));
+	}
+
+	public	void setResolveMode (SystemEnvironment env, Integer p_resolveMode)
+	throws SDMSException
+	{
+		if(resolveMode.equals(p_resolveMode)) return;
+		SDMSDependencyDefinitionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(DependencyDefinition) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyDefinitionGeneric) change(env);
+		o.resolveMode = p_resolveMode;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
+	public Integer getExpiredAmount (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (expiredAmount);
+	}
+
+	public	void setExpiredAmount (SystemEnvironment env, Integer p_expiredAmount)
+	throws SDMSException
+	{
+		if(p_expiredAmount != null && p_expiredAmount.equals(expiredAmount)) return;
+		if(p_expiredAmount == null && expiredAmount == null) return;
+		SDMSDependencyDefinitionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(DependencyDefinition) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyDefinitionGeneric) change(env);
+		o.expiredAmount = p_expiredAmount;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
+	public Integer getExpiredBase (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (expiredBase);
+	}
+
+	public String getExpiredBaseAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		final Integer v = getExpiredBase (env);
+		if (v == null)
+			return null;
+		switch (v.intValue()) {
+			case SDMSDependencyDefinition.MINUTE:
+				return "MINUTE";
+			case SDMSDependencyDefinition.HOUR:
+				return "HOUR";
+			case SDMSDependencyDefinition.DAY:
+				return "DAY";
+			case SDMSDependencyDefinition.WEEK:
+				return "WEEK";
+			case SDMSDependencyDefinition.MONTH:
+				return "MONTH";
+			case SDMSDependencyDefinition.YEAR:
+				return "YEAR";
+		}
+		throw new FatalException (new SDMSMessage (env,
+		                          "01205252242",
+		                          "Unknown DependencyDefinition.expiredBase: $1",
+		                          getExpiredBase (env)));
+	}
+
+	public	void setExpiredBase (SystemEnvironment env, Integer p_expiredBase)
+	throws SDMSException
+	{
+		if(p_expiredBase != null && p_expiredBase.equals(expiredBase)) return;
+		if(p_expiredBase == null && expiredBase == null) return;
+		SDMSDependencyDefinitionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(DependencyDefinition) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyDefinitionGeneric) change(env);
+		o.expiredBase = p_expiredBase;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
+	public String getSelectCondition (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (selectCondition);
+	}
+
+	public	void setSelectCondition (SystemEnvironment env, String p_selectCondition)
+	throws SDMSException
+	{
+		if(p_selectCondition != null && p_selectCondition.equals(selectCondition)) return;
+		if(p_selectCondition == null && selectCondition == null) return;
+		SDMSDependencyDefinitionGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(DependencyDefinition) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyDefinitionGeneric) change(env);
+		if (p_selectCondition != null && p_selectCondition.length() > 1024) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(DependencyDefinition) Length of $1 exceeds maximum length $2", "selectCondition", "1024")
+			);
+		}
+		o.selectCondition = p_selectCondition;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -510,6 +690,10 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 	                Integer p_mode,
 	                Integer p_stateSelection,
 	                String p_condition,
+	                Integer p_resolveMode,
+	                Integer p_expiredAmount,
+	                Integer p_expiredBase,
+	                String p_selectCondition,
 	                Long p_creatorUId,
 	                Long p_createTs,
 	                Long p_changerUId,
@@ -524,6 +708,10 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 		mode = p_mode;
 		stateSelection = p_stateSelection;
 		condition = p_condition;
+		resolveMode = p_resolveMode;
+		expiredAmount = p_expiredAmount;
+		expiredBase = p_expiredBase;
+		selectCondition = p_selectCondition;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -556,12 +744,20 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 				        ", " + squote + "DMODE" + equote +
 				        ", " + squote + "STATE_SELECTION" + equote +
 				        ", " + squote + "CONDITION" + equote +
+				        ", " + squote + "RESOLVE_MODE" + equote +
+				        ", " + squote + "EXPIRED_AMOUNT" + equote +
+				        ", " + squote + "EXPIRED_BASE" + equote +
+				        ", " + squote + "SELECT_CONDITION" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ", VALID_FROM, VALID_TO" +
 				        ") VALUES (?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -597,12 +793,25 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 				myInsert.setNull(8, Types.VARCHAR);
 			else
 				myInsert.setString(8, condition);
-			myInsert.setLong (9, creatorUId.longValue());
-			myInsert.setLong (10, createTs.longValue());
-			myInsert.setLong (11, changerUId.longValue());
-			myInsert.setLong (12, changeTs.longValue());
-			myInsert.setLong(13, env.tx.versionId);
-			myInsert.setLong(14, Long.MAX_VALUE);
+			myInsert.setInt(9, resolveMode.intValue());
+			if (expiredAmount == null)
+				myInsert.setNull(10, Types.INTEGER);
+			else
+				myInsert.setInt(10, expiredAmount.intValue());
+			if (expiredBase == null)
+				myInsert.setNull(11, Types.INTEGER);
+			else
+				myInsert.setInt(11, expiredBase.intValue());
+			if (selectCondition == null)
+				myInsert.setNull(12, Types.VARCHAR);
+			else
+				myInsert.setString(12, selectCondition);
+			myInsert.setLong (13, creatorUId.longValue());
+			myInsert.setLong (14, createTs.longValue());
+			myInsert.setLong (15, changerUId.longValue());
+			myInsert.setLong (16, changeTs.longValue());
+			myInsert.setLong(17, env.tx.versionId);
+			myInsert.setLong(18, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "DependencyDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -690,6 +899,30 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 		}
 		return false;
 	}
+	static public boolean checkResolveMode(Integer p)
+	{
+		switch (p.intValue()) {
+			case SDMSDependencyDefinition.INTERNAL:
+			case SDMSDependencyDefinition.EXTERNAL:
+			case SDMSDependencyDefinition.BOTH:
+				return true;
+		}
+		return false;
+	}
+	static public boolean checkExpiredBase(Integer p)
+	{
+		if(p == null) return true;
+		switch (p.intValue()) {
+			case SDMSDependencyDefinition.MINUTE:
+			case SDMSDependencyDefinition.HOUR:
+			case SDMSDependencyDefinition.DAY:
+			case SDMSDependencyDefinition.WEEK:
+			case SDMSDependencyDefinition.MONTH:
+			case SDMSDependencyDefinition.YEAR:
+				return true;
+		}
+		return false;
+	}
 
 	public void print()
 	{
@@ -702,6 +935,10 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "mode : " + mode, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "stateSelection : " + stateSelection, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "condition : " + condition, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "resolveMode : " + resolveMode, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "expiredAmount : " + expiredAmount, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "expiredBase : " + expiredBase, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "selectCondition : " + selectCondition, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "changerUId : " + changerUId, SDMSThread.SEVERITY_MESSAGE);
@@ -725,6 +962,10 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 		        indentString + "mode               : " + mode + "\n" +
 		        indentString + "stateSelection     : " + stateSelection + "\n" +
 		        indentString + "condition          : " + condition + "\n" +
+		        indentString + "resolveMode        : " + resolveMode + "\n" +
+		        indentString + "expiredAmount      : " + expiredAmount + "\n" +
+		        indentString + "expiredBase        : " + expiredBase + "\n" +
+		        indentString + "selectCondition    : " + selectCondition + "\n" +
 		        indentString + "creatorUId         : " + creatorUId + "\n" +
 		        indentString + "createTs           : " + createTs + "\n" +
 		        indentString + "changerUId         : " + changerUId + "\n" +

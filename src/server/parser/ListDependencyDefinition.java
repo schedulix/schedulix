@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -57,37 +55,29 @@ public class ListDependencyDefinition extends Node
 
 		SDMSOutputContainer d_container = null;
 		Vector desc = new Vector();
-
 		desc.add("ID");
-
 		desc.add("SE_DEPENDENT_PATH");
-
 		desc.add("DEPENDENT_NAME");
-
 		desc.add("SE_REQUIRED_PATH");
-
 		desc.add("REQUIRED_NAME");
 		desc.add("NAME");
-
 		desc.add("UNRESOLVED_HANDLING");
-
 		desc.add("MODE");
-
 		desc.add("STATE_SELECTION");
-
 		desc.add("ALL_FINALS");
-
 		desc.add("CONDITION");
-
 		desc.add("STATES");
+
+		desc.add("RESOLVE_MODE");
+		desc.add("EXPIRED_AMOUNT");
+		desc.add("EXPIRED_BASE");
+		desc.add("SELECT_CONDITION");
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv,
 			"02204291436", "Dependency Definitions"), desc);
 
 		String name = (String) path.remove(path.size() -1);
-
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.get(sysEnv, path, name);
-
 		HashMap resolveMap = new HashMap();
 		fill_resolveMap (sysEnv, se, new Vector(), "", resolveMap, false);
 
@@ -118,7 +108,6 @@ public class ListDependencyDefinition extends Node
 		}
 		v_Path = new Vector(p_v_Path);
 		v_Path.add(path);
-
 		if (v_Path.size() == 1) {
 			Vector rootVector = new Vector();
 			rootVector.add(path);
@@ -169,7 +158,6 @@ public class ListDependencyDefinition extends Node
 			if ( v != null) {
 				return v;
 			}
-
 			v = (Vector)(resolveMap.get(path));
 			if ( v != null) {
 				return v;
@@ -226,9 +214,7 @@ public class ListDependencyDefinition extends Node
 			Long dd_req_id = dd.getSeRequiredId(sysEnv);
 			SDMSSchedulingEntity rse = SDMSSchedulingEntityTable.getObject(sysEnv, dd_req_id);
 			String rpath = rse.pathString(sysEnv);
-
 			Vector vr = lookupRequired (resolveMap, p_v_Path, rpath);
-
 			for(int j = 0; j < vr.size(); j++) {
 				Vector v = new Vector();
 				v.add(dd.getId(sysEnv));
@@ -240,7 +226,6 @@ public class ListDependencyDefinition extends Node
 				v.add(dd.getUnresolvedHandlingAsString(sysEnv));
 				v.add(dd.getModeAsString(sysEnv));
 				v.add(dd.getStateSelectionAsString(sysEnv));
-
 				if (SDMSDependencyStateTable.idx_ddId.containsKey(sysEnv, dd.getId(sysEnv))) {
 					v.add(Boolean.FALSE);
 				} else {
@@ -248,6 +233,11 @@ public class ListDependencyDefinition extends Node
 				}
 				v.add(dd.getCondition(sysEnv));
 				v.add(statesString);
+				v.add(dd.getResolveModeAsString(sysEnv));
+				v.add(dd.getExpiredAmount(sysEnv));
+				v.add(dd.getExpiredBaseAsString(sysEnv));
+				v.add(dd.getSelectCondition(sysEnv));
+
 				d_container.addData(sysEnv, v);
 			}
 			if(vr.size() == 0) {
@@ -261,7 +251,6 @@ public class ListDependencyDefinition extends Node
 				v.add(dd.getUnresolvedHandlingAsString(sysEnv));
 				v.add(dd.getModeAsString(sysEnv));
 				v.add(dd.getStateSelectionAsString(sysEnv));
-
 				if (SDMSDependencyStateTable.idx_ddId.containsKey(sysEnv, dd.getId(sysEnv))) {
 					v.add(Boolean.FALSE);
 				} else {
@@ -269,6 +258,11 @@ public class ListDependencyDefinition extends Node
 				}
 				v.add(dd.getCondition(sysEnv));
 				v.add(statesString);
+				v.add(dd.getResolveModeAsString(sysEnv));
+				v.add(dd.getExpiredAmount(sysEnv));
+				v.add(dd.getExpiredBaseAsString(sysEnv));
+				v.add(dd.getSelectCondition(sysEnv));
+
 				d_container.addData(sysEnv, v);
 			}
 		}

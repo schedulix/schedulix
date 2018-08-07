@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -55,6 +54,10 @@ public class SDMSDependencyDefinitionTable extends SDMSDependencyDefinitionTable
 	                                       ,Integer p_mode
 	                                       ,Integer p_state_selection
 	                                       ,String p_condition
+	                                       ,Integer p_resolveMode
+	                                       ,Integer p_expiredAmount
+	                                       ,Integer p_expiredBase
+	                                       ,String p_selectCondition
 	                                      )
 	throws SDMSException
 	{
@@ -67,6 +70,7 @@ public class SDMSDependencyDefinitionTable extends SDMSDependencyDefinitionTable
 				                               rSe.getTypeAsString(env), rSe.pathVector(env)));
 			}
 		}
-		return super.create(env, p_seDependentId, p_seRequiredId, p_name, p_unresolvedHandling, p_mode, p_state_selection, p_condition);
+		return super.create(env, p_seDependentId, p_seRequiredId, p_name, p_unresolvedHandling, p_mode, p_state_selection, p_condition,
+		                    p_resolveMode, p_expiredAmount, p_expiredBase, p_selectCondition);
 	}
 }

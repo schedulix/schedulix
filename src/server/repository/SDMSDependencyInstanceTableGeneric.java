@@ -48,6 +48,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		, "DEPENDENT_ID_ORIG"
 		, "DEPENDENCY_OPERATION"
 		, "REQUIRED_ID"
+		, "REQUIRED_SE_ID"
 		, "STATE"
 		, "IGNORE"
 		, "DI_ID_ORIG"
@@ -60,6 +61,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 	public static SDMSIndex idx_ddId;
 	public static SDMSIndex idx_dependentId;
 	public static SDMSIndex idx_requiredId;
+	public static SDMSIndex idx_requiredSeId;
 	public static SDMSIndex idx_diIdOrig;
 	public static SDMSIndex idx_ddId_dependentId_RequiredId;
 	public static SDMSIndex idx_dependentId_RequiredId_state;
@@ -77,6 +79,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		idx_ddId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "ddId");
 		idx_dependentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "dependentId");
 		idx_requiredId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "requiredId");
+		idx_requiredSeId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "requiredSeId");
 		idx_diIdOrig = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "diIdOrig");
 		idx_ddId_dependentId_RequiredId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "ddId_dependentId_RequiredId");
 		idx_dependentId_RequiredId_state = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "dependentId_RequiredId_state");
@@ -87,6 +90,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 	                                     ,Long p_dependentIdOrig
 	                                     ,Integer p_dependencyOperation
 	                                     ,Long p_requiredId
+	                                     ,Long p_requiredSeId
 	                                     ,Integer p_state
 	                                     ,Integer p_ignore
 	                                     ,Long p_diIdOrig
@@ -107,6 +111,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		         , p_dependentIdOrig
 		         , p_dependencyOperation
 		         , p_requiredId
+		         , p_requiredSeId
 		         , p_state
 		         , p_ignore
 		         , p_diIdOrig
@@ -124,6 +129,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		                , p_dependentIdOrig
 		                , p_dependencyOperation
 		                , p_requiredId
+		                , p_requiredSeId
 		                , p_state
 		                , p_ignore
 		                , p_diIdOrig
@@ -170,6 +176,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 	                        ,Long p_dependentIdOrig
 	                        ,Integer p_dependencyOperation
 	                        ,Long p_requiredId
+	                        ,Long p_requiredSeId
 	                        ,Integer p_state
 	                        ,Integer p_ignore
 	                        ,Long p_diIdOrig
@@ -198,6 +205,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		Long dependentIdOrig;
 		Integer dependencyOperation;
 		Long requiredId;
+		Long requiredSeId;
 		Integer state;
 		Integer ignore;
 		Long diIdOrig;
@@ -216,14 +224,16 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 			dependentIdOrig = new Long (r.getLong(4));
 			dependencyOperation = new Integer (r.getInt(5));
 			requiredId = new Long (r.getLong(6));
-			state = new Integer (r.getInt(7));
-			ignore = new Integer (r.getInt(8));
-			diIdOrig = new Long (r.getLong(9));
-			seVersion = new Long (r.getLong(10));
-			creatorUId = new Long (r.getLong(11));
-			createTs = new Long (r.getLong(12));
-			changerUId = new Long (r.getLong(13));
-			changeTs = new Long (r.getLong(14));
+			requiredSeId = new Long (r.getLong(7));
+			if (r.wasNull()) requiredSeId = null;
+			state = new Integer (r.getInt(8));
+			ignore = new Integer (r.getInt(9));
+			diIdOrig = new Long (r.getLong(10));
+			seVersion = new Long (r.getLong(11));
+			creatorUId = new Long (r.getLong(12));
+			createTs = new Long (r.getLong(13));
+			changerUId = new Long (r.getLong(14));
+			changeTs = new Long (r.getLong(15));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -237,6 +247,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		                dependentIdOrig,
 		                dependencyOperation,
 		                requiredId,
+		                requiredSeId,
 		                state,
 		                ignore,
 		                diIdOrig,
@@ -265,6 +276,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		                                   ", " + squote + "DEPENDENT_ID_ORIG" + equote +
 		                                   ", " + squote + "DEPENDENCY_OPERATION" + equote +
 		                                   ", " + squote + "REQUIRED_ID" + equote +
+		                                   ", " + squote + "REQUIRED_SE_ID" + equote +
 		                                   ", " + squote + "STATE" + equote +
 		                                   ", " + squote + "IGNORE" + equote +
 		                                   ", " + squote + "DI_ID_ORIG" + equote +
@@ -296,6 +308,8 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		out = out + "idx_dependentId: " + (ok ? "ok" : "missing") + "\n";
 		ok =  idx_requiredId.check(((SDMSDependencyInstanceGeneric) o).requiredId, o);
 		out = out + "idx_requiredId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_requiredSeId.check(((SDMSDependencyInstanceGeneric) o).requiredSeId, o);
+		out = out + "idx_requiredSeId: " + (ok ? "ok" : "missing") + "\n";
 		ok =  idx_diIdOrig.check(((SDMSDependencyInstanceGeneric) o).diIdOrig, o);
 		out = out + "idx_diIdOrig: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
@@ -326,18 +340,19 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		idx_ddId.put(env, ((SDMSDependencyInstanceGeneric) o).ddId, o, ((1 & indexMember) != 0));
 		idx_dependentId.put(env, ((SDMSDependencyInstanceGeneric) o).dependentId, o, ((2 & indexMember) != 0));
 		idx_requiredId.put(env, ((SDMSDependencyInstanceGeneric) o).requiredId, o, ((4 & indexMember) != 0));
-		idx_diIdOrig.put(env, ((SDMSDependencyInstanceGeneric) o).diIdOrig, o, ((8 & indexMember) != 0));
+		idx_requiredSeId.put(env, ((SDMSDependencyInstanceGeneric) o).requiredSeId, o, ((8 & indexMember) != 0));
+		idx_diIdOrig.put(env, ((SDMSDependencyInstanceGeneric) o).diIdOrig, o, ((16 & indexMember) != 0));
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSDependencyInstanceGeneric) o).ddId);
 		k.add(((SDMSDependencyInstanceGeneric) o).dependentId);
 		k.add(((SDMSDependencyInstanceGeneric) o).requiredId);
-		idx_ddId_dependentId_RequiredId.put(env, k, o, ((16 & indexMember) != 0));
+		idx_ddId_dependentId_RequiredId.put(env, k, o, ((32 & indexMember) != 0));
 		k = new SDMSKey();
 		k.add(((SDMSDependencyInstanceGeneric) o).dependentId);
 		k.add(((SDMSDependencyInstanceGeneric) o).requiredId);
 		k.add(((SDMSDependencyInstanceGeneric) o).state);
-		idx_dependentId_RequiredId_state.put(env, k, o, ((32 & indexMember) != 0));
+		idx_dependentId_RequiredId_state.put(env, k, o, ((64 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)
@@ -346,6 +361,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		idx_ddId.remove(env, ((SDMSDependencyInstanceGeneric) o).ddId, o);
 		idx_dependentId.remove(env, ((SDMSDependencyInstanceGeneric) o).dependentId, o);
 		idx_requiredId.remove(env, ((SDMSDependencyInstanceGeneric) o).requiredId, o);
+		idx_requiredSeId.remove(env, ((SDMSDependencyInstanceGeneric) o).requiredSeId, o);
 		idx_diIdOrig.remove(env, ((SDMSDependencyInstanceGeneric) o).diIdOrig, o);
 		SDMSKey k;
 		k = new SDMSKey();

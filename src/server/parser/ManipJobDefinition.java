@@ -953,6 +953,10 @@ public abstract class ManipJobDefinition extends Node
 		Integer stateSelection;
 		String condition = null;
 
+		Integer resolveMode = SDMSDependencyDefinition.INTERNAL;
+		WithHash expired;
+		String selectCondition = null;
+
 		rwh = (WithHash) wh.get(ParseStr.S_FULLNAME);
 		if(rwh == null) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "0220117156", "Missing Required Name"));
@@ -1001,6 +1005,20 @@ public abstract class ManipJobDefinition extends Node
 		mode = (Integer) wh.get(ParseStr.S_MODE);
 		if(mode == null) mode = new Integer(SDMSDependencyDefinition.ALL_FINAL);
 
+		resolveMode = (Integer) wh.get(ParseStr.S_RESOLVE);
+		if (resolveMode == null) resolveMode = SDMSDependencyDefinition.INTERNAL;
+
+		Integer expiredAmount = null;
+		Integer expiredBase = null;
+		expired = (WithHash) wh.get(ParseStr.S_EXPIRED);
+		if (expired != null) {
+			expiredAmount = (Integer) expired.get(ParseStr.S_MULT);
+			if(expiredAmount == null) expiredAmount = new Integer(1);
+			expiredBase = (Integer) expired.get(ParseStr.S_INTERVAL);
+		}
+
+		selectCondition = canonizeCondition(sysEnv, (String) wh.get(ParseStr.S_SELECT_CONDITION));
+
 		SDMSDependencyState ds;
 		if(isAdd) {
 			try {
@@ -1011,7 +1029,11 @@ public abstract class ManipJobDefinition extends Node
 					unresolved,
 					mode,
 					stateSelection,
-					condition
+				                condition,
+				                resolveMode,
+				                expiredAmount,
+				                expiredBase,
+				                selectCondition
 				);
 			} catch (DuplicateKeyException dke) {
 				if(processError) {
@@ -1020,8 +1042,12 @@ public abstract class ManipJobDefinition extends Node
 					dd.setName(sysEnv, rdName);
 					dd.setUnresolvedHandling(sysEnv, unresolved);
 					dd.setMode(sysEnv, mode);
-					dd.setCondition(sysEnv, condition);
 					dd.setStateSelection(sysEnv, stateSelection);
+					dd.setCondition(sysEnv, condition);
+					dd.setResolveMode(sysEnv, resolveMode);
+					dd.setExpiredAmount(sysEnv, expiredAmount);
+					dd.setExpiredBase(sysEnv, expiredBase);
+					dd.setSelectCondition(sysEnv, selectCondition);
 
 					Vector v = SDMSDependencyStateTable.idx_ddId.getVector(sysEnv, dd.getId(sysEnv));
 					for(int i = 0; i < v.size(); i++) {
@@ -1042,8 +1068,12 @@ public abstract class ManipJobDefinition extends Node
 				dd.setName(sysEnv, rdName);
 				dd.setUnresolvedHandling(sysEnv, unresolved);
 				dd.setMode(sysEnv, mode);
-				dd.setCondition(sysEnv, condition);
 				dd.setStateSelection(sysEnv, stateSelection);
+				dd.setCondition(sysEnv, condition);
+				dd.setResolveMode(sysEnv, resolveMode);
+				dd.setExpiredAmount(sysEnv, expiredAmount);
+				dd.setExpiredBase(sysEnv, expiredBase);
+				dd.setSelectCondition(sysEnv, selectCondition);
 
 				Vector v = SDMSDependencyStateTable.idx_ddId.getVector(sysEnv, dd.getId(sysEnv));
 				for(int i = 0; i < v.size(); i++) {

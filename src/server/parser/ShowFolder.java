@@ -427,6 +427,11 @@ public class ShowFolder extends ShowCommented
 		c_desc.add("CONDITION");
 		c_desc.add("STATES");
 
+		c_desc.add("RESOLVE_MODE");
+		c_desc.add("EXPIRED_AMOUNT");
+		c_desc.add("EXPIRED_BASE");
+		c_desc.add("SELECT_CONDITION");
+
 		SDMSOutputContainer c_container = new SDMSOutputContainer(sysEnv, null, c_desc);
 
 		SDMSSchedulingEntity se;
@@ -465,6 +470,11 @@ public class ShowFolder extends ShowCommented
 				sep = ",";
 			}
 			c_data.add(new String(states));
+
+			c_data.add(dd.getResolveModeAsString(sysEnv));
+			c_data.add(dd.getExpiredAmount(sysEnv));
+			c_data.add(dd.getExpiredBaseAsString(sysEnv));
+			c_data.add(dd.getSelectCondition(sysEnv));
 
 			c_container.addData(sysEnv, c_data);
 		}

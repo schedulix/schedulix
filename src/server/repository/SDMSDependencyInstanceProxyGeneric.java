@@ -168,6 +168,24 @@ public class SDMSDependencyInstanceProxyGeneric extends SDMSProxy
 		((SDMSDependencyInstanceGeneric)(object)).setRequiredId (env, p_requiredId);
 		return ;
 	}
+	public Long getRequiredSeId (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSDependencyInstanceGeneric)(object)).getRequiredSeId (env));
+	}
+
+	public void setRequiredSeId (SystemEnvironment env, Long p_requiredSeId)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSDependencyInstanceGeneric)(object)).setRequiredSeId (env, p_requiredSeId);
+		return ;
+	}
 	public Integer getState (SystemEnvironment env)
 	throws SDMSException
 	{

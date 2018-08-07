@@ -33,6 +33,7 @@ CREATE TABLE DEPENDENCY_INSTANCE (
     , DEPENDENT_ID_ORIG              decimal(20)     NOT NULL
     , DEPENDENCY_OPERATION           integer         NOT NULL
     , REQUIRED_ID                    decimal(20)     NOT NULL
+    , REQUIRED_SE_ID                 decimal(20)         NULL
     , STATE                          integer         NOT NULL
     , IGNORE                         integer         NOT NULL
     , DI_ID_ORIG                     decimal(20)     NOT NULL
@@ -52,6 +53,7 @@ SELECT
     , DEPENDENT_ID_ORIG              AS DEPENDENT_ID_ORIG
     , CASE DEPENDENCY_OPERATION WHEN 1 THEN 'AND' WHEN 2 THEN 'OR' END AS DEPENDENCY_OPERATION
     , REQUIRED_ID                    AS REQUIRED_ID
+    , REQUIRED_SE_ID                 AS REQUIRED_SE_ID
     , CASE STATE WHEN 0 THEN 'OPEN' WHEN 1 THEN 'FULFILLED' WHEN 2 THEN 'FAILED' WHEN 3 THEN 'BROKEN' WHEN 4 THEN 'DEFERRED' WHEN 8 THEN 'CANCELLED' END AS STATE
     , CASE IGNORE WHEN 0 THEN 'NO' WHEN 1 THEN 'YES' WHEN 2 THEN 'RECURSIVE' END AS IGNORE
     , DI_ID_ORIG                     AS DI_ID_ORIG
@@ -68,6 +70,7 @@ CREATE TABLE ARC_DEPENDENCY_INSTANCE (
     , DEPENDENT_ID_ORIG              decimal(20)      NULL
     , DEPENDENCY_OPERATION           integer          NULL
     , REQUIRED_ID                    decimal(20)      NULL
+    , REQUIRED_SE_ID                 decimal(20)      NULL
     , STATE                          integer          NULL
     , IGNORE                         integer          NULL
     , DI_ID_ORIG                     decimal(20)      NULL

@@ -45,25 +45,31 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 		super(p_object);
 	}
 
-	private int checkCondition(SystemEnvironment sysEnv, String condition, SDMSSubmittedEntity sme)
+	private int checkCondition(SystemEnvironment sysEnv, String condition, SDMSSubmittedEntity dsme, SDMSSubmittedEntity rsme)
 	throws SDMSException
 	{
 		try {
 			if(condition != null) {
 				final BoolExpr be = new BoolExpr(condition);
-				if(be.checkCondition(sysEnv, null, sme, null, null, null))
+				if(be.checkCondition(sysEnv, null, dsme, rsme, null, null, null))
 					return FULFILLED;
 				else
 					return FAILED;
 			} else	return FULFILLED;
 		} catch (CommonErrorException cee) {
-			sme.setToError(sysEnv, cee.toString());
+			dsme.setToError(sysEnv, cee.toString());
 			return BROKEN;
 		}
 	}
 
 	public int check(SystemEnvironment sysEnv, HashMap checkCache)
 		throws SDMSException
+	{
+		return check(sysEnv, checkCache, true);
+	}
+
+	public int check(SystemEnvironment sysEnv, HashMap checkCache, boolean reresolve)
+	throws SDMSException
 	{
 		if (getState(sysEnv).intValue() == SDMSDependencyInstance.DEFERRED)
 			return SDMSDependencyInstance.DEFERRED;
@@ -76,15 +82,28 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 		}
 		if (!(idOrig.equals(getId(sysEnv)))) {
 			SDMSDependencyInstance diOrig = SDMSDependencyInstanceTable.getObject(sysEnv, idOrig);
-			int checkResult = diOrig.check(sysEnv, checkCache);
+			int checkResult = diOrig.check(sysEnv, checkCache, reresolve);
 			setState(sysEnv, new Integer(checkResult));
 			return checkResult;
 		}
 
 		long actVersion = getSeVersion(sysEnv).longValue();
+		Long ddId = getDdId(sysEnv);
+		SDMSDependencyDefinition dd = SDMSDependencyDefinitionTable.getObject(sysEnv, ddId, actVersion);
 
-		SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, getRequiredId(sysEnv));
 		SDMSSubmittedEntity dsme = SDMSSubmittedEntityTable.getObject(sysEnv, getDependentId(sysEnv));
+		SDMSSubmittedEntity sme = null;
+		if (getRequiredSeId(sysEnv) != null && reresolve) {
+			sme = dsme.getExternalSubmittedEntity (sysEnv, dd);
+			if (sme == null) {
+				setState(sysEnv, SDMSDependencyInstance.DEFERRED);
+				setRequiredId(sysEnv, getRequiredSeId(sysEnv));
+				return SDMSDependencyInstance.DEFERRED;
+			}
+			setRequiredId(sysEnv, sme.getId(sysEnv));
+		} else
+			sme = SDMSSubmittedEntityTable.getObject(sysEnv, getRequiredId(sysEnv));
+
 		boolean jobIsFinal = sme.getJobIsFinal(sysEnv).booleanValue();
 		int state = sme.getState(sysEnv).intValue();
 		Long esdId = null;
@@ -100,9 +119,6 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 			return SDMSDependencyInstance.OPEN;
 		}
 
-		Long ddId = getDdId(sysEnv);
-		SDMSDependencyDefinition dd = SDMSDependencyDefinitionTable.getObject(sysEnv, ddId, actVersion);
-
 		int diState = SDMSDependencyInstance.OPEN;
 		switch (state) {
 			case SDMSSubmittedEntity.UNREACHABLE:
@@ -114,7 +130,7 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 				int mode = dd.getMode(sysEnv).intValue();
 				if ((state == SDMSSubmittedEntity.FINISHED && jobIsFinal && mode == SDMSDependencyDefinition.JOB_FINAL) || state == SDMSSubmittedEntity.FINAL) {
 					diState = FULFILLED;
-					diState = checkCondition(sysEnv, dd.getCondition(sysEnv), dsme);
+					diState = checkCondition(sysEnv, dd.getCondition(sysEnv), dsme, sme);
 					if(diState == SDMSDependencyInstance.FULFILLED) {
 						int stateSelection = dd.getStateSelection(sysEnv).intValue();
 						if (stateSelection == SDMSDependencyDefinition.FINAL) {
@@ -126,7 +142,7 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 									SDMSDependencyState ds = (SDMSDependencyState)i_ds.next();
 									if (ds.getEsdId(sysEnv).equals(esdId)) {
 										diState = FULFILLED;
-										diState = checkCondition(sysEnv, ds.getCondition(sysEnv), dsme);
+										diState = checkCondition(sysEnv, ds.getCondition(sysEnv), dsme, sme);
 										break;
 									}
 								}

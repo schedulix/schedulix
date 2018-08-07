@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -136,7 +134,6 @@ public class ListDependencyHierarchy
 			seId = sme.getSeId (sysEnv);
 			actVersion = sme.getSeVersion(sysEnv).longValue();
 		} catch (NotFoundException nfe) {
-
 			seId = smeId;
 		}
 
@@ -162,7 +159,6 @@ public class ListDependencyHierarchy
 	private Long cntRequired (final SystemEnvironment sysEnv, final SDMSSubmittedEntity sme)
 		throws SDMSException
 	{
-
 		if (sme.getState(sysEnv).intValue() != SDMSSubmittedEntity.DEPENDENCY_WAIT) {
 			return new Long(0);
 		}
@@ -202,7 +198,6 @@ public class ListDependencyHierarchy
 					version = sme.getSeVersion(env).longValue();
 					seId = sme.getSeId (env);
 				} catch (NotFoundException nfe) {
-
 					final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject (env, di.getDependentId (env));
 					version = sme.getSeVersion(env).longValue();
 					seId = ReqSmeId;
@@ -222,7 +217,6 @@ public class ListDependencyHierarchy
 
 		public int compare (Object o1, Object o2)
 		{
-
 			Long id1;
 			Long id2;
 			try {
@@ -269,7 +263,6 @@ public class ListDependencyHierarchy
 			try {
 				sme = SDMSSubmittedEntityTable.getObject (sysEnv, diReqSmeId);
 			} catch (NotFoundException nfe) {
-
 				sme = null;
 			}
 
@@ -283,7 +276,6 @@ public class ListDependencyHierarchy
 				actVersion = sme.getSeVersion(sysEnv).longValue();
 				seId = sme.getSeId (sysEnv);
 			} else {
-
 				actVersion = depSme.getSeVersion(sysEnv).longValue();
 				seId = diReqSmeId;
 			}
@@ -460,11 +452,15 @@ public class ListDependencyHierarchy
 
 				row.add (di.getIgnoreAsString (sysEnv));
 			}
+			row.add(dd.getResolveModeAsString(sysEnv));
+			row.add(dd.getExpiredAmount(sysEnv));
+			row.add(dd.getExpiredBaseAsString(sysEnv));
+			row.add(dd.getSelectCondition(sysEnv));
+
 			table.addData (sysEnv, row);
 
 			if (sme != null) {
 				if (expandIds == null || expandIds.contains (diReqSmeId)) {
-
 					if (!visited && sme.getState(sysEnv).intValue() == SDMSSubmittedEntity.DEPENDENCY_WAIT) {
 						visitedHash.add(diReqSmeId);
 						render_deps (sysEnv, diReqSmeId, path, table, visitedHash);
@@ -482,135 +478,76 @@ public class ListDependencyHierarchy
 		final Vector desc = new Vector();
 
 		desc.add ("ID");
-
 		desc.add ("DD_ID");
-
 		desc.add ("DEPENDENT_ID");
-
 		desc.add ("DEPENDENT_NAME");
-
 		desc.add ("REQUIRED_ID");
-
 		desc.add ("REQUIRED_NAME");
-
 		desc.add ("DEP_STATE");
-
 		desc.add ("DEPENDENCY_PATH");
-
 		desc.add ("SE_DEPENDENT_ID");
-
 		desc.add ("SE_DEPENDENT_NAME");
-
 		desc.add ("SE_REQUIRED_ID");
-
 		desc.add ("SE_REQUIRED_NAME");
-
 		desc.add ("DD_NAME");
-
 		desc.add ("UNRESOLVED_HANDLING");
-
 		desc.add ("MODE");
-
 		desc.add("STATE_SELECTION");
-
 		desc.add ("MASTER_ID");
-
 		desc.add ("SE_TYPE");
-
 		desc.add ("PARENT_ID");
-
 		desc.add ("PARENT_NAME");
 		desc.add ("OWNER");
-
 		desc.add ("SCOPE");
-
 		desc.add ("EXIT_CODE");
-
 		desc.add ("PID");
-
 		desc.add ("EXTPID");
-
 		desc.add ("JOB_STATE");
-
 		desc.add ("JOB_ESD");
-
 		desc.add ("FINAL_ESD");
-
 		desc.add ("JOB_IS_FINAL");
-
 		desc.add ("CNT_REQUIRED");
-
 		desc.add ("CNT_RESTARTABLE");
-
 		desc.add ("CNT_SUBMITTED");
-
 		desc.add ("CNT_DEPENDENCY_WAIT");
-
 		desc.add ("CNT_RESOURCE_WAIT");
-
 		desc.add ("CNT_RUNNABLE");
-
 		desc.add ("CNT_STARTING");
-
 		desc.add ("CNT_STARTED");
-
 		desc.add ("CNT_RUNNING");
-
 		desc.add ("CNT_TO_KILL");
-
 		desc.add ("CNT_KILLED");
-
 		desc.add ("CNT_CANCELLED");
-
 		desc.add ("CNT_FINAL");
-
 		desc.add ("CNT_BROKEN_ACTIVE");
-
 		desc.add ("CNT_BROKEN_FINISHED");
-
 		desc.add ("CNT_ERROR");
-
 		desc.add ("CNT_SYNCHRONIZE_WAIT");
-
 		desc.add ("CNT_FINISHED");
-
 		desc.add ("SUBMIT_TS");
-
 		desc.add ("SYNC_TS");
-
 		desc.add ("RESOURCE_TS");
-
 		desc.add ("RUNNABLE_TS");
-
 		desc.add ("START_TS");
-
 		desc.add ("FINSH_TS");
-
 		desc.add ("FINAL_TS");
-
 		desc.add ("ERROR_MSG");
-
 		desc.add ("DEPENDENT_ID_ORIG");
-
 		desc.add ("DEPENDENCY_OPERATION");
-
 		desc.add ("CHILD_TAG");
-
 		desc.add ("CHILDREN");
-
 		desc.add ("REQUIRED");
-
 		desc.add ("DD_STATES");
-
 		desc.add ("IS_SUSPENDED");
-
 		desc.add ("PARENT_SUSPENDED");
-
 		desc.add ("CNT_UNREACHABLE");
-
 		desc.add ("DEPENDENT_PATH_ORIG");
-
 		desc.add ("IGNORE");
+
+		desc.add("RESOLVE_MODE");
+		desc.add("EXPIRED_AMOUNT");
+		desc.add("EXPIRED_BASE");
+		desc.add("SELECT_CONDITION");
 
 		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "Dependency Hierarchy", desc);
 
@@ -699,6 +636,11 @@ public class ListDependencyHierarchy
 		row.add (sme.getCntUnreachable (sysEnv));
 		row.add (empty);
 		row.add (empty);
+
+		row.add(empty);
+		row.add(empty);
+		row.add(empty);
+		row.add(empty);
 
 		table.addData (sysEnv, row);
 

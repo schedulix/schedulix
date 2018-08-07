@@ -52,10 +52,20 @@ public class SDMSDependencyDefinitionProxyGeneric extends SDMSProxy
 	public static final int ALL_REACHABLE = 1;
 	public static final int UNREACHABLE = 2;
 	public static final int DEFAULT = 3;
+	public static final int INTERNAL = 0;
+	public static final int EXTERNAL = 1;
+	public static final int BOTH = 2;
+	public static final int MINUTE = SDMSInterval.MINUTE;
+	public static final int HOUR = SDMSInterval.HOUR;
+	public static final int DAY = SDMSInterval.DAY;
+	public static final int WEEK = SDMSInterval.WEEK;
+	public static final int MONTH = SDMSInterval.MONTH;
+	public static final int YEAR = SDMSInterval.YEAR;
 	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP;
 
 	static final public int name_size = 64;
 	static final public int condition_size = 1024;
+	static final public int selectCondition_size = 1024;
 
 	private static SDMSTable masterTables[] = null;
 
@@ -229,6 +239,96 @@ public class SDMSDependencyDefinitionProxyGeneric extends SDMSProxy
 		return ;
 	}
 	public static int getConditionMaxLength ()
+	{
+		return (1024);
+	}
+	public Integer getResolveMode (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSDependencyDefinitionGeneric)(object)).getResolveMode (env));
+	}
+
+	public String getResolveModeAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSDependencyDefinitionGeneric) object).getResolveModeAsString (env);
+	}
+
+	public void setResolveMode (SystemEnvironment env, Integer p_resolveMode)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSDependencyDefinitionGeneric)(object)).setResolveMode (env, p_resolveMode);
+		return ;
+	}
+	public Integer getExpiredAmount (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSDependencyDefinitionGeneric)(object)).getExpiredAmount (env));
+	}
+
+	public void setExpiredAmount (SystemEnvironment env, Integer p_expiredAmount)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSDependencyDefinitionGeneric)(object)).setExpiredAmount (env, p_expiredAmount);
+		return ;
+	}
+	public Integer getExpiredBase (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSDependencyDefinitionGeneric)(object)).getExpiredBase (env));
+	}
+
+	public String getExpiredBaseAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSDependencyDefinitionGeneric) object).getExpiredBaseAsString (env);
+	}
+
+	public void setExpiredBase (SystemEnvironment env, Integer p_expiredBase)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSDependencyDefinitionGeneric)(object)).setExpiredBase (env, p_expiredBase);
+		return ;
+	}
+	public String getSelectCondition (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSDependencyDefinitionGeneric)(object)).getSelectCondition (env));
+	}
+
+	public void setSelectCondition (SystemEnvironment env, String p_selectCondition)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSDependencyDefinitionGeneric)(object)).setSelectCondition (env, p_selectCondition);
+		return ;
+	}
+	public static int getSelectConditionMaxLength ()
 	{
 		return (1024);
 	}

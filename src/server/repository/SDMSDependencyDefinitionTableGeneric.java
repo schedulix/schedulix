@@ -50,6 +50,10 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 		, "DMODE"
 		, "STATE_SELECTION"
 		, "CONDITION"
+		, "RESOLVE_MODE"
+		, "EXPIRED_AMOUNT"
+		, "EXPIRED_BASE"
+		, "SELECT_CONDITION"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
 		, "CHANGER_U_ID"
@@ -83,6 +87,10 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 	                                       ,Integer p_mode
 	                                       ,Integer p_stateSelection
 	                                       ,String p_condition
+	                                       ,Integer p_resolveMode
+	                                       ,Integer p_expiredAmount
+	                                       ,Integer p_expiredBase
+	                                       ,String p_selectCondition
 	                                      )
 	throws SDMSException
 	{
@@ -101,6 +109,10 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 		         , p_mode
 		         , p_stateSelection
 		         , p_condition
+		         , p_resolveMode
+		         , p_expiredAmount
+		         , p_expiredBase
+		         , p_selectCondition
 		         , p_creatorUId
 		         , p_createTs
 		         , p_changerUId
@@ -116,6 +128,10 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 		                , p_mode
 		                , p_stateSelection
 		                , p_condition
+		                , p_resolveMode
+		                , p_expiredAmount
+		                , p_expiredBase
+		                , p_selectCondition
 		                , p_creatorUId
 		                , p_createTs
 		                , p_changerUId
@@ -160,6 +176,10 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 	                        ,Integer p_mode
 	                        ,Integer p_stateSelection
 	                        ,String p_condition
+	                        ,Integer p_resolveMode
+	                        ,Integer p_expiredAmount
+	                        ,Integer p_expiredBase
+	                        ,String p_selectCondition
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
 	                        ,Long p_changerUId
@@ -173,6 +193,10 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 			throw new FatalException(new SDMSMessage(env, "01110182023", "DependencyDefinition: $1 $2", "mode", p_mode));
 		if (!SDMSDependencyDefinitionGeneric.checkStateSelection(p_stateSelection))
 			throw new FatalException(new SDMSMessage(env, "01110182023", "DependencyDefinition: $1 $2", "stateSelection", p_stateSelection));
+		if (!SDMSDependencyDefinitionGeneric.checkResolveMode(p_resolveMode))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "DependencyDefinition: $1 $2", "resolveMode", p_resolveMode));
+		if (!SDMSDependencyDefinitionGeneric.checkExpiredBase(p_expiredBase))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "DependencyDefinition: $1 $2", "expiredBase", p_expiredBase));
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -186,6 +210,10 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 		Integer mode;
 		Integer stateSelection;
 		String condition;
+		Integer resolveMode;
+		Integer expiredAmount;
+		Integer expiredBase;
+		String selectCondition;
 		Long creatorUId;
 		Long createTs;
 		Long changerUId;
@@ -204,12 +232,19 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 			stateSelection = new Integer (r.getInt(7));
 			condition = r.getString(8);
 			if (r.wasNull()) condition = null;
-			creatorUId = new Long (r.getLong(9));
-			createTs = new Long (r.getLong(10));
-			changerUId = new Long (r.getLong(11));
-			changeTs = new Long (r.getLong(12));
-			validFrom = r.getLong(13);
-			validTo = r.getLong(14);
+			resolveMode = new Integer (r.getInt(9));
+			expiredAmount = new Integer (r.getInt(10));
+			if (r.wasNull()) expiredAmount = null;
+			expiredBase = new Integer (r.getInt(11));
+			if (r.wasNull()) expiredBase = null;
+			selectCondition = r.getString(12);
+			if (r.wasNull()) selectCondition = null;
+			creatorUId = new Long (r.getLong(13));
+			createTs = new Long (r.getLong(14));
+			changerUId = new Long (r.getLong(15));
+			changeTs = new Long (r.getLong(16));
+			validFrom = r.getLong(17);
+			validTo = r.getLong(18);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 			throw new FatalException(new SDMSMessage(env, "01110182045", "DependencyDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -223,6 +258,10 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 		                mode,
 		                stateSelection,
 		                condition,
+		                resolveMode,
+		                expiredAmount,
+		                expiredBase,
+		                selectCondition,
 		                creatorUId,
 		                createTs,
 		                changerUId,
@@ -249,6 +288,10 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 		                                   ", " + squote + "DMODE" + equote +
 		                                   ", " + squote + "STATE_SELECTION" + equote +
 		                                   ", " + squote + "CONDITION" + equote +
+		                                   ", " + squote + "RESOLVE_MODE" + equote +
+		                                   ", " + squote + "EXPIRED_AMOUNT" + equote +
+		                                   ", " + squote + "EXPIRED_BASE" + equote +
+		                                   ", " + squote + "SELECT_CONDITION" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +

@@ -57,14 +57,15 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	public final static int nr_dependentIdOrig = 4;
 	public final static int nr_dependencyOperation = 5;
 	public final static int nr_requiredId = 6;
-	public final static int nr_state = 7;
-	public final static int nr_ignore = 8;
-	public final static int nr_diIdOrig = 9;
-	public final static int nr_seVersion = 10;
-	public final static int nr_creatorUId = 11;
-	public final static int nr_createTs = 12;
-	public final static int nr_changerUId = 13;
-	public final static int nr_changeTs = 14;
+	public final static int nr_requiredSeId = 7;
+	public final static int nr_state = 8;
+	public final static int nr_ignore = 9;
+	public final static int nr_diIdOrig = 10;
+	public final static int nr_seVersion = 11;
+	public final static int nr_creatorUId = 12;
+	public final static int nr_createTs = 13;
+	public final static int nr_changerUId = 14;
+	public final static int nr_changeTs = 15;
 
 	public static String tableName = SDMSDependencyInstanceTableGeneric.tableName;
 
@@ -73,6 +74,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	protected Long dependentIdOrig;
 	protected Integer dependencyOperation;
 	protected Long requiredId;
+	protected Long requiredSeId;
 	protected Integer state;
 	protected Integer ignore;
 	protected Long diIdOrig;
@@ -93,6 +95,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	        Long p_dependentIdOrig,
 	        Integer p_dependencyOperation,
 	        Long p_requiredId,
+	        Long p_requiredSeId,
 	        Integer p_state,
 	        Integer p_ignore,
 	        Long p_diIdOrig,
@@ -110,6 +113,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		dependentIdOrig = p_dependentIdOrig;
 		dependencyOperation = p_dependencyOperation;
 		requiredId = p_requiredId;
+		requiredSeId = p_requiredSeId;
 		state = p_state;
 		ignore = p_ignore;
 		diIdOrig = p_diIdOrig;
@@ -142,7 +146,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			o.ddId = p_ddId;
 			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 17);
+			o.versions.table.index(env, o, 33);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -173,7 +177,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			o.dependentId = p_dependentId;
 			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 50);
+			o.versions.table.index(env, o, 98);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -268,7 +272,39 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			o.requiredId = p_requiredId;
 			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 52);
+			o.versions.table.index(env, o, 100);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return;
+	}
+
+	public Long getRequiredSeId (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (requiredSeId);
+	}
+
+	public	void setRequiredSeId (SystemEnvironment env, Long p_requiredSeId)
+	throws SDMSException
+	{
+		if(p_requiredSeId != null && p_requiredSeId.equals(requiredSeId)) return;
+		if(p_requiredSeId == null && requiredSeId == null) return;
+		SDMSDependencyInstanceGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(DependencyInstance) Change of system object not allowed")
+				);
+			}
+			o = (SDMSDependencyInstanceGeneric) change(env);
+			o.requiredSeId = p_requiredSeId;
+			o.changerUId = env.cEnv.uid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o, 8);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -323,7 +359,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			o.state = p_state;
 			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 32);
+			o.versions.table.index(env, o, 64);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -396,7 +432,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			o.diIdOrig = p_diIdOrig;
 			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 8);
+			o.versions.table.index(env, o, 16);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -577,6 +613,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	                                        Long p_dependentIdOrig,
 	                                        Integer p_dependencyOperation,
 	                                        Long p_requiredId,
+	                                        Long p_requiredSeId,
 	                                        Integer p_state,
 	                                        Integer p_ignore,
 	                                        Long p_diIdOrig,
@@ -593,6 +630,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		dependentIdOrig = p_dependentIdOrig;
 		dependencyOperation = p_dependencyOperation;
 		requiredId = p_requiredId;
+		requiredSeId = p_requiredSeId;
 		state = p_state;
 		ignore = p_ignore;
 		diIdOrig = p_diIdOrig;
@@ -627,6 +665,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 				        ", " + squote + "DEPENDENT_ID_ORIG" + equote +
 				        ", " + squote + "DEPENDENCY_OPERATION" + equote +
 				        ", " + squote + "REQUIRED_ID" + equote +
+				        ", " + squote + "REQUIRED_SE_ID" + equote +
 				        ", " + squote + "STATE" + equote +
 				        ", " + squote + "IGNORE" + equote +
 				        ", " + squote + "DI_ID_ORIG" + equote +
@@ -636,6 +675,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ") VALUES (?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -664,14 +704,18 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			myInsert.setLong (4, dependentIdOrig.longValue());
 			myInsert.setInt(5, dependencyOperation.intValue());
 			myInsert.setLong (6, requiredId.longValue());
-			myInsert.setInt(7, state.intValue());
-			myInsert.setInt(8, ignore.intValue());
-			myInsert.setLong (9, diIdOrig.longValue());
-			myInsert.setLong (10, seVersion.longValue());
-			myInsert.setLong (11, creatorUId.longValue());
-			myInsert.setLong (12, createTs.longValue());
-			myInsert.setLong (13, changerUId.longValue());
-			myInsert.setLong (14, changeTs.longValue());
+			if (requiredSeId == null)
+				myInsert.setNull(7, Types.INTEGER);
+			else
+				myInsert.setLong (7, requiredSeId.longValue());
+			myInsert.setInt(8, state.intValue());
+			myInsert.setInt(9, ignore.intValue());
+			myInsert.setLong (10, diIdOrig.longValue());
+			myInsert.setLong (11, seVersion.longValue());
+			myInsert.setLong (12, creatorUId.longValue());
+			myInsert.setLong (13, createTs.longValue());
+			myInsert.setLong (14, changerUId.longValue());
+			myInsert.setLong (15, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "DependencyInstance: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -718,6 +762,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 				        ", " + squote + "DEPENDENT_ID_ORIG" + equote + " = ? " +
 				        ", " + squote + "DEPENDENCY_OPERATION" + equote + " = ? " +
 				        ", " + squote + "REQUIRED_ID" + equote + " = ? " +
+				        ", " + squote + "REQUIRED_SE_ID" + equote + " = ? " +
 				        ", " + squote + "STATE" + equote + " = ? " +
 				        ", " + squote + "IGNORE" + equote + " = ? " +
 				        ", " + squote + "DI_ID_ORIG" + equote + " = ? " +
@@ -740,15 +785,19 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			myUpdate.setLong (3, dependentIdOrig.longValue());
 			myUpdate.setInt(4, dependencyOperation.intValue());
 			myUpdate.setLong (5, requiredId.longValue());
-			myUpdate.setInt(6, state.intValue());
-			myUpdate.setInt(7, ignore.intValue());
-			myUpdate.setLong (8, diIdOrig.longValue());
-			myUpdate.setLong (9, seVersion.longValue());
-			myUpdate.setLong (10, creatorUId.longValue());
-			myUpdate.setLong (11, createTs.longValue());
-			myUpdate.setLong (12, changerUId.longValue());
-			myUpdate.setLong (13, changeTs.longValue());
-			myUpdate.setLong(14, id.longValue());
+			if (requiredSeId == null)
+				myUpdate.setNull(6, Types.INTEGER);
+			else
+				myUpdate.setLong (6, requiredSeId.longValue());
+			myUpdate.setInt(7, state.intValue());
+			myUpdate.setInt(8, ignore.intValue());
+			myUpdate.setLong (9, diIdOrig.longValue());
+			myUpdate.setLong (10, seVersion.longValue());
+			myUpdate.setLong (11, creatorUId.longValue());
+			myUpdate.setLong (12, createTs.longValue());
+			myUpdate.setLong (13, changerUId.longValue());
+			myUpdate.setLong (14, changeTs.longValue());
+			myUpdate.setLong(15, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "DependencyInstance: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -797,6 +846,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "dependentIdOrig : " + dependentIdOrig, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "dependencyOperation : " + dependencyOperation, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "requiredId : " + requiredId, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "requiredSeId : " + requiredSeId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "state : " + state, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "ignore : " + ignore, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "diIdOrig : " + diIdOrig, SDMSThread.SEVERITY_MESSAGE);
@@ -822,6 +872,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		        indentString + "dependentIdOrig     : " + dependentIdOrig + "\n" +
 		        indentString + "dependencyOperation : " + dependencyOperation + "\n" +
 		        indentString + "requiredId          : " + requiredId + "\n" +
+		        indentString + "requiredSeId        : " + requiredSeId + "\n" +
 		        indentString + "state               : " + state + "\n" +
 		        indentString + "ignore              : " + ignore + "\n" +
 		        indentString + "diIdOrig            : " + diIdOrig + "\n" +

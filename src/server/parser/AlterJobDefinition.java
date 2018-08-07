@@ -73,6 +73,10 @@ public class AlterJobDefinition extends ManipJobDefinition
 		Integer stateSelection;
 		String condition;
 
+		Integer resolveMode = SDMSDependencyDefinition.INTERNAL;
+		WithHash expired;
+		String selectCondition = null;
+
 		Vector act_deps = SDMSDependencyDefinitionTable.idx_seDependentId.getVector(sysEnv, seId);
 
 		if(dependencydeflist != null) {
@@ -107,6 +111,19 @@ public class AlterJobDefinition extends ManipJobDefinition
 				mode = (Integer) wh.get(ParseStr.S_MODE);
 				condition = canonizeCondition(sysEnv, (String) wh.get(ParseStr.S_CONDITION));
 				if (condition != null) sysEnv.checkFeatureAvailability(SystemEnvironment.S_CONDITIONAL_DEPENDENCIES);
+				resolveMode = (Integer) wh.get(ParseStr.S_RESOLVE);
+				if (resolveMode == null) resolveMode = SDMSDependencyDefinition.INTERNAL;
+
+				Integer expiredAmount = null;
+				Integer expiredBase = null;
+				expired = (WithHash) wh.get(ParseStr.S_EXPIRED);
+				if (expired != null) {
+					expiredAmount = (Integer) expired.get(ParseStr.S_MULT);
+					if(expiredAmount == null) expiredAmount = new Integer(1);
+					expiredBase = (Integer) expired.get(ParseStr.S_INTERVAL);
+				}
+
+				selectCondition = canonizeCondition(sysEnv, (String) wh.get(ParseStr.S_SELECT_CONDITION));
 
 				SDMSSchedulingEntity rSe = SDMSSchedulingEntityTable.get(sysEnv, rPath, rName);
 				Long rId = rSe.getId(sysEnv);
@@ -123,12 +140,20 @@ public class AlterJobDefinition extends ManipJobDefinition
 						if(wh.containsKey(ParseStr.S_MODE))		dd.setMode(sysEnv, mode);
 						if(wh.containsKey(ParseStr.S_STATUS))		dd.setStateSelection(sysEnv, stateSelection);
 						if(wh.containsKey(ParseStr.S_CONDITION))	dd.setCondition(sysEnv, condition);
+						if(wh.containsKey(ParseStr.S_RESOLVE))		dd.setResolveMode(sysEnv, resolveMode);
+						if(wh.containsKey(ParseStr.S_EXPIRED)) {
+							dd.setExpiredAmount(sysEnv, expiredAmount);
+							dd.setExpiredBase(sysEnv, expiredBase);
+						}
+						if(wh.containsKey(ParseStr.S_SELECT_CONDITION))	dd.setSelectCondition(sysEnv, selectCondition);
+
 						break;
 					}
 				}
 				if(idx >= act_deps.size()) {
 					if(unresolved == null) unresolved = new Integer(SDMSDependencyDefinition.ERROR);
-					dd = SDMSDependencyDefinitionTable.table.create(sysEnv, seId, rId, rdName, unresolved, mode, stateSelection, condition);
+					dd = SDMSDependencyDefinitionTable.table.create(sysEnv, seId, rId, rdName, unresolved, mode, stateSelection, condition,
+					                resolveMode, expiredAmount, expiredBase, selectCondition);
 				}
 
 				if(wh.containsKey(ParseStr.S_STATUS)) {
