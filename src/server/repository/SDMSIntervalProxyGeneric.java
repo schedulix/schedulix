@@ -56,6 +56,41 @@ public class SDMSIntervalProxyGeneric extends SDMSProxy
 	public static final long WEEK_DUR_M =  10080L;
 	public static final long MONTH_DUR_M =  43200L;
 	public static final long YEAR_DUR_M = 525600L;
+	public static final int SYSTEM = 0;
+	public static final int SELECT = 99;
+	public static final int DISTRIBUTION = 25;
+	public static final int ENVIRONMENT = 1;
+	public static final int EXIT_STATE_DEFINITION = 2;
+	public static final int EXIT_STATE_PROFILE = 3;
+	public static final int EXIT_STATE_MAPPING = 4;
+	public static final int EXIT_STATE_TRANSLATION = 5;
+	public static final int FOLDER = 6;
+	public static final int FOOTPRINT = 7;
+	public static final int USER = 8;
+	public static final int JOB_DEFINITION = 9;
+	public static final int NAMED_RESOURCE = 10;
+	public static final int NICE_PROFILE = 31;
+	public static final int PARAMETER = 23;
+	public static final int POOL = 24;
+	public static final int RESOURCE = 11;
+	public static final int RESOURCE_STATE_MAPPING = 12;
+	public static final int RESOURCE_STATE_DEFINITION = 13;
+	public static final int RESOURCE_STATE_PROFILE = 14;
+	public static final int SCOPE = 15;
+	public static final int TRIGGER = 16;
+	public static final int JOB = 17;
+	public static final int EVENT = 18;
+	public static final int INTERVAL = 19;
+	public static final int SCHEDULE = 20;
+	public static final int GROUP = 21;
+	public static final int SCHEDULED_EVENT = 22;
+	public static final int COMMENT = 26;
+	public static final int GRANT = 27;
+	public static final int RESOURCE_TEMPLATE = 28;
+	public static final int WATCH_TYPE = 29;
+	public static final int OBJECT_MONITOR = 30;
+	public static final int DISPATCHER_DISPATCH = 88;
+	public static final int DISPATCHER_USE = 89;
 	public static final long MINUTE_MAX =              1*60*1000L;
 	public static final long HOUR_MAX =             60*60*1000L;
 	public static final long DAY_MAX =          25*60*60*1000L;
@@ -340,6 +375,47 @@ public class SDMSIntervalProxyGeneric extends SDMSProxy
 		((SDMSIntervalGeneric)(object)).setSeId (env, p_seId);
 		return ;
 	}
+	public Long getObjId (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSIntervalGeneric)(object)).getObjId (env));
+	}
+
+	public void setObjId (SystemEnvironment env, Long p_objId)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSIntervalGeneric)(object)).setObjId (env, p_objId);
+		return ;
+	}
+	public Integer getObjType (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSIntervalGeneric)(object)).getObjType (env));
+	}
+
+	public String getObjTypeAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSIntervalGeneric) object).getObjTypeAsString (env);
+	}
+
+	public void setObjType (SystemEnvironment env, Integer p_objType)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSIntervalGeneric)(object)).setObjType (env, p_objType);
+		return ;
+	}
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -420,6 +496,16 @@ public class SDMSIntervalProxyGeneric extends SDMSProxy
 	{
 		checkWrite(env);
 		((SDMSIntervalGeneric)(object)).setChangeTs (env, p_changeTs);
+		return (SDMSInterval)this;
+	}
+	public SDMSInterval set_NameObjId (SystemEnvironment env, String p_name, Long p_objId)
+	throws SDMSException
+	{
+		checkRead(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181242"));
+
+		((SDMSIntervalGeneric)(object)).set_NameObjId (env, p_name, p_objId);
 		return (SDMSInterval)this;
 	}
 

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -172,7 +170,7 @@ public class AlterInterval
 			if (embeddedName == null)
 				ival.setEmbeddedIntervalId (sysEnv, null);
 			else {
-				final SDMSInterval embeddedIval = SDMSIntervalTable.idx_name_getUnique (sysEnv, IntervalUtil.mapIdName (embeddedName, obj.seId));
+				final SDMSInterval embeddedIval = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(IntervalUtil.mapIdName (embeddedName, obj.seId), null));
 				final Long embeddedIvalId = embeddedIval.getId (sysEnv);
 
 				ival.setEmbeddedIntervalId (sysEnv, embeddedIvalId);
@@ -208,7 +206,7 @@ public class AlterInterval
 
 		if (with.containsKey (ParseStr.S_FILTER)) {
 			IntervalUtil.killFilter (sysEnv, ivalId);
-			duplicateFilterIgnore = IntervalUtil.createFilter (sysEnv, ivalId, obj.seSpec, with);
+			duplicateFilterIgnore = IntervalUtil.createFilter (sysEnv, ivalId, with);
 		}
 
 		ival.setSeId (sysEnv, obj.seId);

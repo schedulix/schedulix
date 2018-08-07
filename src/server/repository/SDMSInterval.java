@@ -152,7 +152,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		return "interval " + getURLName(sysEnv);
 	}
 
-	private long getHorizon(SystemEnvironment sysEnv, TimeZone tz)
+	public long getHorizon(SystemEnvironment sysEnv, TimeZone tz)
 		throws SDMSException
 	{
 		int gcUnit = Calendar.YEAR;
@@ -395,7 +395,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 	}
 
-	private long filter(SystemEnvironment sysEnv, long checkDate, long horizon, TimeZone tz, String indent)
+	public long filter(SystemEnvironment sysEnv, long checkDate, long horizon, TimeZone tz, String indent)
 		throws SDMSException
 	{
 		if(!seek(sysEnv, checkDate, horizon, tz, FILTER, indent)) return Long.MAX_VALUE;
@@ -629,7 +629,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				BlockState bs = (BlockState) fifo.remove(0);
 				long s = bs.blockStart;
 				if (s > horizon) return false;
-				if (checkSelection(sysEnv, startSeqNo, 0 , s, tz)) {
+				if (checkSelection(sysEnv, startSeqNo, 0, s, tz)) {
 					blockState.copyFrom(bs);
 					return true;
 				}
@@ -1244,6 +1244,23 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		retval = ceil(limit, floor, tz);
 		return retval;
+	}
+
+	public void delete (SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Long id = getId(sysEnv);
+		Vector ivv = SDMSIntervalTable.idx_objId.getVector(sysEnv, id);
+		Iterator i = ivv.iterator();
+		while (i.hasNext()) {
+			SDMSInterval iv = (SDMSInterval) i.next();
+			if (id.equals(iv.getId(sysEnv))) continue;
+			try {
+				iv.delete(sysEnv);
+			} catch (NotFoundException nfe) {
+			}
+		}
+		super.delete(sysEnv);
 	}
 
 	public long getPrivileges(SystemEnvironment sysEnv, long checkPrivs, boolean fastFail, Vector checkGroups)

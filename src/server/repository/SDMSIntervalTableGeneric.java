@@ -57,6 +57,8 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		, "IS_MERGE"
 		, "EMBEDDED_INT_ID"
 		, "SE_ID"
+		, "OBJ_ID"
+		, "OBJ_TYPE"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
 		, "CHANGER_U_ID"
@@ -66,6 +68,8 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 	public static SDMSIndex idx_ownerId;
 	public static SDMSIndex idx_embeddedIntervalId;
 	public static SDMSIndex idx_seId;
+	public static SDMSIndex idx_objId;
+	public static SDMSIndex idx_name_objId;
 
 	public SDMSIntervalTableGeneric(SystemEnvironment env)
 	throws SDMSException
@@ -77,10 +81,12 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		table = (SDMSIntervalTable) this;
 		SDMSIntervalTableGeneric.table = (SDMSIntervalTable) this;
 		isVersioned = false;
-		idx_name = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "name");
+		idx_name = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "name");
 		idx_ownerId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "ownerId");
 		idx_embeddedIntervalId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "embeddedIntervalId");
 		idx_seId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seId");
+		idx_objId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "objId");
+		idx_name_objId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "name_objId");
 	}
 	public SDMSInterval create(SystemEnvironment env
 	                           ,String p_name
@@ -97,6 +103,8 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 	                           ,Boolean p_isMerge
 	                           ,Long p_embeddedIntervalId
 	                           ,Long p_seId
+	                           ,Long p_objId
+	                           ,Integer p_objType
 	                          )
 	throws SDMSException
 	{
@@ -122,6 +130,8 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		         , p_isMerge
 		         , p_embeddedIntervalId
 		         , p_seId
+		         , p_objId
+		         , p_objType
 		         , p_creatorUId
 		         , p_createTs
 		         , p_changerUId
@@ -144,6 +154,8 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		                , p_isMerge
 		                , p_embeddedIntervalId
 		                , p_seId
+		                , p_objId
+		                , p_objType
 		                , p_creatorUId
 		                , p_createTs
 		                , p_changerUId
@@ -191,6 +203,8 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 	                        ,Boolean p_isMerge
 	                        ,Long p_embeddedIntervalId
 	                        ,Long p_seId
+	                        ,Long p_objId
+	                        ,Integer p_objType
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
 	                        ,Long p_changerUId
@@ -202,6 +216,8 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Interval: $1 $2", "baseInterval", p_baseInterval));
 		if (!SDMSIntervalGeneric.checkDuration(p_duration))
 			throw new FatalException(new SDMSMessage(env, "01110182023", "Interval: $1 $2", "duration", p_duration));
+		if (!SDMSIntervalGeneric.checkObjType(p_objType))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "Interval: $1 $2", "objType", p_objType));
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -222,6 +238,8 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		Boolean isMerge;
 		Long embeddedIntervalId;
 		Long seId;
+		Long objId;
+		Integer objType;
 		Long creatorUId;
 		Long createTs;
 		Long changerUId;
@@ -254,10 +272,14 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 			if (r.wasNull()) embeddedIntervalId = null;
 			seId = new Long (r.getLong(15));
 			if (r.wasNull()) seId = null;
-			creatorUId = new Long (r.getLong(16));
-			createTs = new Long (r.getLong(17));
-			changerUId = new Long (r.getLong(18));
-			changeTs = new Long (r.getLong(19));
+			objId = new Long (r.getLong(16));
+			if (r.wasNull()) objId = null;
+			objType = new Integer (r.getInt(17));
+			if (r.wasNull()) objType = null;
+			creatorUId = new Long (r.getLong(18));
+			createTs = new Long (r.getLong(19));
+			changerUId = new Long (r.getLong(20));
+			changeTs = new Long (r.getLong(21));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -280,6 +302,8 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		                               isMerge,
 		                               embeddedIntervalId,
 		                               seId,
+		                               objId,
+		                               objType,
 		                               creatorUId,
 		                               createTs,
 		                               changerUId,
@@ -313,6 +337,8 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		                                   ", " + squote + "IS_MERGE" + equote +
 		                                   ", " + squote + "EMBEDDED_INT_ID" + equote +
 		                                   ", " + squote + "SE_ID" + equote +
+		                                   ", " + squote + "OBJ_ID" + equote +
+		                                   ", " + squote + "OBJ_TYPE" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
@@ -340,6 +366,14 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		out = out + "idx_embeddedIntervalId: " + (ok ? "ok" : "missing") + "\n";
 		ok =  idx_seId.check(((SDMSIntervalGeneric) o).seId, o);
 		out = out + "idx_seId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_objId.check(((SDMSIntervalGeneric) o).objId, o);
+		out = out + "idx_objId: " + (ok ? "ok" : "missing") + "\n";
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSIntervalGeneric) o).name);
+		k.add(((SDMSIntervalGeneric) o).objId);
+		ok =  idx_name_objId.check(k, o);
+		out = out + "idx_name_objId: " + (ok ? "ok" : "missing") + "\n";
 		return out;
 	}
 
@@ -356,6 +390,12 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		idx_ownerId.put(env, ((SDMSIntervalGeneric) o).ownerId, o, ((2 & indexMember) != 0));
 		idx_embeddedIntervalId.put(env, ((SDMSIntervalGeneric) o).embeddedIntervalId, o, ((4 & indexMember) != 0));
 		idx_seId.put(env, ((SDMSIntervalGeneric) o).seId, o, ((8 & indexMember) != 0));
+		idx_objId.put(env, ((SDMSIntervalGeneric) o).objId, o, ((16 & indexMember) != 0));
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSIntervalGeneric) o).name);
+		k.add(((SDMSIntervalGeneric) o).objId);
+		idx_name_objId.put(env, k, o, ((32 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)
@@ -365,6 +405,12 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		idx_ownerId.remove(env, ((SDMSIntervalGeneric) o).ownerId, o);
 		idx_embeddedIntervalId.remove(env, ((SDMSIntervalGeneric) o).embeddedIntervalId, o);
 		idx_seId.remove(env, ((SDMSIntervalGeneric) o).seId, o);
+		idx_objId.remove(env, ((SDMSIntervalGeneric) o).objId, o);
+		SDMSKey k;
+		k = new SDMSKey();
+		k.add(((SDMSIntervalGeneric) o).name);
+		k.add(((SDMSIntervalGeneric) o).objId);
+		idx_name_objId.remove(env, k, o);
 	}
 
 	public static SDMSInterval getObject(SystemEnvironment env, Long id)
@@ -385,22 +431,22 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		return (SDMSInterval) table.get(env, id, version);
 	}
 
-	public static SDMSInterval idx_name_getUnique(SystemEnvironment env, Object key)
+	public static SDMSInterval idx_name_objId_getUnique(SystemEnvironment env, Object key)
 	throws SDMSException
 	{
-		return (SDMSInterval) SDMSIntervalTableGeneric.idx_name.getUnique(env, key);
+		return (SDMSInterval)  SDMSIntervalTableGeneric.idx_name_objId.getUnique(env, key);
 	}
 
-	public static SDMSInterval idx_name_getUniqueForUpdate(SystemEnvironment env, Object key)
+	public static SDMSInterval idx_name_objId_getUniqueForUpdate(SystemEnvironment env, Object key)
 	throws SDMSException
 	{
-		return (SDMSInterval) SDMSIntervalTableGeneric.idx_name.getUniqueForUpdate(env, key);
+		return (SDMSInterval)  SDMSIntervalTableGeneric.idx_name_objId.getUniqueForUpdate(env, key);
 	}
 
-	public static SDMSInterval idx_name_getUnique(SystemEnvironment env, Object key, long version)
+	public static SDMSInterval idx_name_objId_getUnique(SystemEnvironment env, Object key, long version)
 	throws SDMSException
 	{
-		return (SDMSInterval) SDMSIntervalTableGeneric.idx_name.getUnique(env, key, version);
+		return (SDMSInterval)  SDMSIntervalTableGeneric.idx_name_objId.getUnique(env, key, version);
 	}
 
 	public String tableName()

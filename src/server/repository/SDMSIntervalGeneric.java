@@ -57,6 +57,41 @@ public class SDMSIntervalGeneric extends SDMSObject
 	public static final long WEEK_DUR_M =  10080L;
 	public static final long MONTH_DUR_M =  43200L;
 	public static final long YEAR_DUR_M = 525600L;
+	public static final int SYSTEM = 0;
+	public static final int SELECT = 99;
+	public static final int DISTRIBUTION = 25;
+	public static final int ENVIRONMENT = 1;
+	public static final int EXIT_STATE_DEFINITION = 2;
+	public static final int EXIT_STATE_PROFILE = 3;
+	public static final int EXIT_STATE_MAPPING = 4;
+	public static final int EXIT_STATE_TRANSLATION = 5;
+	public static final int FOLDER = 6;
+	public static final int FOOTPRINT = 7;
+	public static final int USER = 8;
+	public static final int JOB_DEFINITION = 9;
+	public static final int NAMED_RESOURCE = 10;
+	public static final int NICE_PROFILE = 31;
+	public static final int PARAMETER = 23;
+	public static final int POOL = 24;
+	public static final int RESOURCE = 11;
+	public static final int RESOURCE_STATE_MAPPING = 12;
+	public static final int RESOURCE_STATE_DEFINITION = 13;
+	public static final int RESOURCE_STATE_PROFILE = 14;
+	public static final int SCOPE = 15;
+	public static final int TRIGGER = 16;
+	public static final int JOB = 17;
+	public static final int EVENT = 18;
+	public static final int INTERVAL = 19;
+	public static final int SCHEDULE = 20;
+	public static final int GROUP = 21;
+	public static final int SCHEDULED_EVENT = 22;
+	public static final int COMMENT = 26;
+	public static final int GRANT = 27;
+	public static final int RESOURCE_TEMPLATE = 28;
+	public static final int WATCH_TYPE = 29;
+	public static final int OBJECT_MONITOR = 30;
+	public static final int DISPATCHER_DISPATCH = 88;
+	public static final int DISPATCHER_USE = 89;
 	public static final long MINUTE_MAX =              1*60*1000L;
 	public static final long HOUR_MAX =             60*60*1000L;
 	public static final long DAY_MAX =          25*60*60*1000L;
@@ -79,10 +114,12 @@ public class SDMSIntervalGeneric extends SDMSObject
 	public final static int nr_isMerge = 13;
 	public final static int nr_embeddedIntervalId = 14;
 	public final static int nr_seId = 15;
-	public final static int nr_creatorUId = 16;
-	public final static int nr_createTs = 17;
-	public final static int nr_changerUId = 18;
-	public final static int nr_changeTs = 19;
+	public final static int nr_objId = 16;
+	public final static int nr_objType = 17;
+	public final static int nr_creatorUId = 18;
+	public final static int nr_createTs = 19;
+	public final static int nr_changerUId = 20;
+	public final static int nr_changeTs = 21;
 
 	public static String tableName = SDMSIntervalTableGeneric.tableName;
 
@@ -100,6 +137,8 @@ public class SDMSIntervalGeneric extends SDMSObject
 	protected Boolean isMerge;
 	protected Long embeddedIntervalId;
 	protected Long seId;
+	protected Long objId;
+	protected Integer objType;
 	protected Long creatorUId;
 	protected Long createTs;
 	protected Long changerUId;
@@ -125,6 +164,8 @@ public class SDMSIntervalGeneric extends SDMSObject
 	        Boolean p_isMerge,
 	        Long p_embeddedIntervalId,
 	        Long p_seId,
+	        Long p_objId,
+	        Integer p_objType,
 	        Long p_creatorUId,
 	        Long p_createTs,
 	        Long p_changerUId,
@@ -153,6 +194,8 @@ public class SDMSIntervalGeneric extends SDMSObject
 		isMerge = p_isMerge;
 		embeddedIntervalId = p_embeddedIntervalId;
 		seId = p_seId;
+		objId = p_objId;
+		objType = p_objType;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -187,7 +230,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			o.name = p_name;
 			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 1);
+			o.versions.table.index(env, o, 33);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -590,6 +633,103 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return;
 	}
 
+	public Long getObjId (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (objId);
+	}
+
+	public	void setObjId (SystemEnvironment env, Long p_objId)
+	throws SDMSException
+	{
+		if(p_objId != null && p_objId.equals(objId)) return;
+		if(p_objId == null && objId == null) return;
+		SDMSIntervalGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+				);
+			}
+			o = (SDMSIntervalGeneric) change(env);
+			o.objId = p_objId;
+			o.changerUId = env.cEnv.uid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o, 48);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return;
+	}
+
+	public Integer getObjType (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (objType);
+	}
+
+	public String getObjTypeAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		final Integer v = getObjType (env);
+		if (v == null)
+			return null;
+		switch (v.intValue()) {
+			case SDMSInterval.DISTRIBUTION:
+				return "DISTRIBUTION";
+			case SDMSInterval.USER:
+				return "USER";
+			case SDMSInterval.JOB_DEFINITION:
+				return "JOB_DEFINITION";
+			case SDMSInterval.RESOURCE:
+				return "RESOURCE";
+			case SDMSInterval.SCOPE:
+				return "SCOPE";
+			case SDMSInterval.TRIGGER:
+				return "TRIGGER";
+			case SDMSInterval.EVENT:
+				return "EVENT";
+			case SDMSInterval.INTERVAL:
+				return "INTERVAL";
+			case SDMSInterval.SCHEDULE:
+				return "SCHEDULE";
+			case SDMSInterval.SCHEDULED_EVENT:
+				return "SCHEDULED_EVENT";
+			case SDMSInterval.RESOURCE_TEMPLATE:
+				return "RESOURCE_TEMPLATE";
+			case SDMSInterval.DISPATCHER_DISPATCH:
+				return "DISPATCHER_DISPATCH";
+			case SDMSInterval.DISPATCHER_USE:
+				return "DISPATCHER_USE";
+		}
+		throw new FatalException (new SDMSMessage (env,
+		                          "01205252242",
+		                          "Unknown Interval.objType: $1",
+		                          getObjType (env)));
+	}
+
+	public	void setObjType (SystemEnvironment env, Integer p_objType)
+	throws SDMSException
+	{
+		if(p_objType != null && p_objType.equals(objType)) return;
+		if(p_objType == null && objType == null) return;
+		SDMSIntervalGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(Interval) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSIntervalGeneric) change(env);
+		o.objType = p_objType;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -673,6 +813,38 @@ public class SDMSIntervalGeneric extends SDMSObject
 		return;
 	}
 
+	public SDMSIntervalGeneric set_NameObjId (SystemEnvironment env, String p_name, Long p_objId)
+	throws SDMSException
+	{
+		SDMSIntervalGeneric o;
+
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141637", "(Interval) Change of system object not allowed")
+				);
+			}
+			o = (SDMSIntervalGeneric) change(env);
+			if (p_name != null && p_name.length() > 64) {
+				throw new CommonErrorException (
+				        new SDMSMessage(env, "01201290026",
+				                        "(Interval) Length of $1 exceeds maximum length $2", "changeTs", "64")
+				);
+			}
+			o.name = p_name;
+			o.objId = p_objId;
+			o.changerUId = env.cEnv.uid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return o;
+	}
+
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
 		return SDMSInterval.getProxy(sysEnv, this);
@@ -693,6 +865,8 @@ public class SDMSIntervalGeneric extends SDMSObject
 	                              Boolean p_isMerge,
 	                              Long p_embeddedIntervalId,
 	                              Long p_seId,
+	                              Long p_objId,
+	                              Integer p_objType,
 	                              Long p_creatorUId,
 	                              Long p_createTs,
 	                              Long p_changerUId,
@@ -714,6 +888,8 @@ public class SDMSIntervalGeneric extends SDMSObject
 		isMerge = p_isMerge;
 		embeddedIntervalId = p_embeddedIntervalId;
 		seId = p_seId;
+		objId = p_objId;
+		objType = p_objType;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -753,11 +929,15 @@ public class SDMSIntervalGeneric extends SDMSObject
 				        ", " + squote + "IS_MERGE" + equote +
 				        ", " + squote + "EMBEDDED_INT_ID" + equote +
 				        ", " + squote + "SE_ID" + equote +
+				        ", " + squote + "OBJ_ID" + equote +
+				        ", " + squote + "OBJ_TYPE" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ") VALUES (?" +
+				        ", ?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -827,10 +1007,18 @@ public class SDMSIntervalGeneric extends SDMSObject
 				myInsert.setNull(15, Types.INTEGER);
 			else
 				myInsert.setLong (15, seId.longValue());
-			myInsert.setLong (16, creatorUId.longValue());
-			myInsert.setLong (17, createTs.longValue());
-			myInsert.setLong (18, changerUId.longValue());
-			myInsert.setLong (19, changeTs.longValue());
+			if (objId == null)
+				myInsert.setNull(16, Types.INTEGER);
+			else
+				myInsert.setLong (16, objId.longValue());
+			if (objType == null)
+				myInsert.setNull(17, Types.INTEGER);
+			else
+				myInsert.setInt(17, objType.intValue());
+			myInsert.setLong (18, creatorUId.longValue());
+			myInsert.setLong (19, createTs.longValue());
+			myInsert.setLong (20, changerUId.longValue());
+			myInsert.setLong (21, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "Interval: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -886,6 +1074,8 @@ public class SDMSIntervalGeneric extends SDMSObject
 				        ", " + squote + "IS_MERGE" + equote + " = ? " +
 				        ", " + squote + "EMBEDDED_INT_ID" + equote + " = ? " +
 				        ", " + squote + "SE_ID" + equote + " = ? " +
+				        ", " + squote + "OBJ_ID" + equote + " = ? " +
+				        ", " + squote + "OBJ_TYPE" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +
 				        ", " + squote + "CREATE_TS" + equote + " = ? " +
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
@@ -940,11 +1130,19 @@ public class SDMSIntervalGeneric extends SDMSObject
 				myUpdate.setNull(14, Types.INTEGER);
 			else
 				myUpdate.setLong (14, seId.longValue());
-			myUpdate.setLong (15, creatorUId.longValue());
-			myUpdate.setLong (16, createTs.longValue());
-			myUpdate.setLong (17, changerUId.longValue());
-			myUpdate.setLong (18, changeTs.longValue());
-			myUpdate.setLong(19, id.longValue());
+			if (objId == null)
+				myUpdate.setNull(15, Types.INTEGER);
+			else
+				myUpdate.setLong (15, objId.longValue());
+			if (objType == null)
+				myUpdate.setNull(16, Types.INTEGER);
+			else
+				myUpdate.setInt(16, objType.intValue());
+			myUpdate.setLong (17, creatorUId.longValue());
+			myUpdate.setLong (18, createTs.longValue());
+			myUpdate.setLong (19, changerUId.longValue());
+			myUpdate.setLong (20, changeTs.longValue());
+			myUpdate.setLong(21, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "Interval: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -979,6 +1177,27 @@ public class SDMSIntervalGeneric extends SDMSObject
 		}
 		return false;
 	}
+	static public boolean checkObjType(Integer p)
+	{
+		if(p == null) return true;
+		switch (p.intValue()) {
+			case SDMSInterval.DISTRIBUTION:
+			case SDMSInterval.USER:
+			case SDMSInterval.JOB_DEFINITION:
+			case SDMSInterval.RESOURCE:
+			case SDMSInterval.SCOPE:
+			case SDMSInterval.TRIGGER:
+			case SDMSInterval.EVENT:
+			case SDMSInterval.INTERVAL:
+			case SDMSInterval.SCHEDULE:
+			case SDMSInterval.SCHEDULED_EVENT:
+			case SDMSInterval.RESOURCE_TEMPLATE:
+			case SDMSInterval.DISPATCHER_DISPATCH:
+			case SDMSInterval.DISPATCHER_USE:
+				return true;
+		}
+		return false;
+	}
 
 	public void print()
 	{
@@ -998,6 +1217,8 @@ public class SDMSIntervalGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "isMerge : " + isMerge, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "embeddedIntervalId : " + embeddedIntervalId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "seId : " + seId, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "objId : " + objId, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "objType : " + objType, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "changerUId : " + changerUId, SDMSThread.SEVERITY_MESSAGE);
@@ -1028,6 +1249,8 @@ public class SDMSIntervalGeneric extends SDMSObject
 		        indentString + "isMerge                : " + isMerge + "\n" +
 		        indentString + "embeddedIntervalId     : " + embeddedIntervalId + "\n" +
 		        indentString + "seId                   : " + seId + "\n" +
+		        indentString + "objId                  : " + objId + "\n" +
+		        indentString + "objType                : " + objType + "\n" +
 		        indentString + "creatorUId             : " + creatorUId + "\n" +
 		        indentString + "createTs               : " + createTs + "\n" +
 		        indentString + "changerUId             : " + changerUId + "\n" +

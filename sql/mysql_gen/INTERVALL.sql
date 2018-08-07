@@ -42,6 +42,8 @@ CREATE TABLE INTERVALL (
     , `IS_MERGE`                     integer         NOT NULL
     , `EMBEDDED_INT_ID`              decimal(20)         NULL
     , `SE_ID`                        decimal(20)         NULL
+    , `OBJ_ID`                       decimal(20)         NULL
+    , `OBJ_TYPE`                     integer             NULL
     , `CREATOR_U_ID`                 decimal(20)     NOT NULL
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
@@ -66,6 +68,8 @@ SELECT
     , CASE `IS_MERGE` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_MERGE`
     , `EMBEDDED_INT_ID`              AS `EMBEDDED_INT_ID`
     , `SE_ID`                        AS `SE_ID`
+    , `OBJ_ID`                       AS `OBJ_ID`
+    , CASE `OBJ_TYPE` WHEN 25 THEN 'DISTRIBUTION' WHEN 8 THEN 'USER' WHEN 9 THEN 'JOB_DEFINITION' WHEN 11 THEN 'RESOURCE' WHEN 15 THEN 'SCOPE' WHEN 16 THEN 'TRIGGER' WHEN 18 THEN 'EVENT' WHEN 19 THEN 'INTERVAL' WHEN 20 THEN 'SCHEDULE' WHEN 22 THEN 'SCHEDULED_EVENT' WHEN 28 THEN 'RESOURCE_TEMPLATE' WHEN 88 THEN 'DISPATCHER_DISPATCH' WHEN 89 THEN 'DISPATCHER_USE' END AS `OBJ_TYPE`
     , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`

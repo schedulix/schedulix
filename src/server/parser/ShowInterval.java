@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -80,47 +78,42 @@ public class ShowInterval
 	public void go (SystemEnvironment sysEnv)
 	throws SDMSException
 	{
-		ival = SDMSIntervalTable.idx_name_getUnique (sysEnv, name);
+		ival = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(name, null));
 		if(!ival.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411717", "Insufficient privileges"));
 		ivalId = ival.getId (sysEnv);
 
 		final long beginMillis = System.currentTimeMillis();
-
 		final long endMillis = System.currentTimeMillis();
 
 		seconds = ((float) (endMillis - beginMillis)) / 1000.0;
 
 		Vector desc = new Vector();
-
 		desc.add ("ID");
 		desc.add ("NAME");
 		desc.add ("OWNER");
-
 		desc.add ("STARTTIME");
-
 		desc.add ("ENDTIME");
-
 		desc.add ("BASE");
-
 		desc.add ("DURATION");
-
 		desc.add ("SYNCTIME");
-
 		desc.add ("INVERSE");
-
 		desc.add ("EMBEDDED");
-
 		desc.add ("SELECTION");
-
 		desc.add ("FILTER");
 		desc.add ("CREATOR");
 		desc.add ("CREATE_TIME");
 		desc.add ("CHANGER");
 		desc.add ("CHANGE_TIME");
 		desc.add ("PRIVS");
+		desc.add ("OWNER_OBJ_TYPE");
+		desc.add ("OWNER_OBJ_ID");
 		desc.add ("COMMENT");
 		desc.add ("COMMENTTYPE");
+
+		if (with != null) {
+			desc.add ("EDGES");
+		}
 
 		final Vector data = new Vector();
 		final Long ivalId = ival.getId (sysEnv);
@@ -192,6 +185,9 @@ public class ShowInterval
 		data.add(sysEnv.systemDateFormat.format(d));
 		data.add(ival.getPrivileges(sysEnv).toString());
 
+		data.add(ival.getObjTypeAsString(sysEnv));
+		data.add(ival.getObjId(sysEnv));
+
 		data.add(getCommentContainer(sysEnv, ivalId));
 		data.add(getCommentInfoType(sysEnv, ivalId));
 
@@ -208,13 +204,9 @@ public class ShowInterval
 	throws SDMSException
 	{
 		final Vector desc = new Vector();
-
 		desc.add ("ID");
-
 		desc.add ("VALUE");
-
 		desc.add ("PERIOD_FROM");
-
 		desc.add ("PERIOD_TO");
 
 		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "List of Interval Selections", desc);
@@ -259,9 +251,7 @@ public class ShowInterval
 	throws SDMSException
 	{
 		final Vector desc = new Vector();
-
 		desc.add ("ID");
-
 		desc.add ("CHILD");
 
 		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "List of Interval Filters", desc);

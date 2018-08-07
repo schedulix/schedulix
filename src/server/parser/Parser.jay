@@ -28,6 +28,10 @@ public class Parser
 	private final static Integer PLUS_ONE		= new Integer(1);
 	private final static Integer MINUS_ONE		= new Integer(-1);
 
+	private boolean inStatement = false;
+
+	public boolean inStatement() { return inStatement; }
+
 	public Parser() { /* nothing to do */ }
 %}
 
@@ -36,19 +40,20 @@ public class Parser
 
 %token <Token>	ACTION ACTIVATE ACTIVE ADD AFTER AFTER_FINAL AGING
 %token <Token>	ALIAS ALL ALL_FINAL ALTER AMOUNT AND ANY AT AUDIT AUTHENTICATED AVG
-%token <Token>	BACKLOG_HANDLING BACKUP BASE BATCH BEFORE BEFORE_FINAL BETWEEN BMULTICMD BROKEN BROKEN_ACTIVE BROKEN_FINISHED BY
+%token <Token>	BACKLOG_HANDLING BACKUP BASE BATCH BEFORE BEFORE_FINAL BETWEEN BMULTICMD BOTH BROKEN BROKEN_ACTIVE BROKEN_FINISHED BY
 %token <Token>	CALENDAR CANCEL CANCELLED CASCADE CATEGORY CHANGE_STATUS CHANGE CHILD CHECK CHILDREN CHILDSUSPEND CHILDTAG CLEANUP CLEAR CMPOP
 %token <Token>	COMMAND COMMENT CONDITION CONFIG CONNECT CONSTANT CONTENT CONTINUE COPY COUNT CREATE CYCLE
 %token <Token>	DAY DEFAULT DEFAULT_MAPPING DEFER DEFER_IGNORE DEFINITION DELAY DELETE DEPENDENCY DEPENDENCY_DEFINITION
-%token <Token>	DEPENDENCY_HIERARCHY DEPENDENCY_MODE DEPENDENCY_WAIT DEPLOY DEREGISTER DIR DISABLE DISCONNECT DISTRIBUTION DROP DUMP DURATION DYNAMIC
+%token <Token>	DEPENDENCY_HIERARCHY DEPENDENCY_MODE DEPENDENCY_WAIT DEPLOY DEREGISTER DIR DISABLE DISCONNECT DISPATCH DISTRIBUTION DROP DUMP DURATION DYNAMIC
 %token <Token>	EDIT EMBEDDED EMULTICMD ENABLE ENDTIME ENVIRONMENT ERRLOG ERROR_TEXT ERROR_TOKEN EQUIVALENT EVENT EXECUTE EXEC_PID
 %token <Token>	EXISTING EXIT_CODE EXIT_STATUS EXIT_STATUS_DEFINITION EXIT_STATUS_MAPPING EXIT_STATUS_PROFILE
-%token <Token>	EXIT_STATUS_TRANSLATION EXPAND EXPIRED EXPORT EXPR EXT_PID
-%token <Token>	FACTOR FAILURE FATAL FILTER FINAL FINISH FINISH_CHILD FINISHED FOLDER FOOTPRINT FOR FORCE FORCED_EOC FREE_AMOUNT FREEPCT FROM FUTURE
+%token <Token>	EXIT_STATUS_TRANSLATION EXPAND EXPIRED EXPORT EXPR EXT_PID EXTERNAL
+%token <Token>	FACTOR FAIL FAILURE FATAL FILTER FINAL FINISH FINISH_CHILD FINISHED FOLDER FOOTPRINT FOR FORCE FORCED_EOC FREE_AMOUNT FREEPCT FROM FUTURE
+%token <Token>	FACTOR FAIL FAILURE FATAL FILTER FINAL FINISH FINISH_CHILD FINISHED FOLDER FOOTPRINT FOR FORCE FORCED_EOC FREE_AMOUNT FREEPCT FROM FUTURE
 %token <Token>	GET GET_NEXT_JOB GLOBAL GRANT GROUP
 %token <Token>	HEADER HISTORY HORIZON HOUR
 %token <Token>	IDENTIFIED IDENTIFIER IGNORE IGNORE_DEPENDENCY IMMEDIATE IMMEDIATE_LOCAL IMMEDIATE_MERGE IMPORT IN INACTIVE
-%token <Token>	INFINITE INFO INHERIT INITIAL_STATUS INSTANCE INTERVAL INVERSE IS ISX IX
+%token <Token>	INFINITE INFO INHERIT INITIAL_STATUS INSTANCE INTERNAL INTERVAL INVERSE IS ISX IX
 %token <Token>	JOB JOB_DEFINITION JOB_DEFINITION_HIERARCHY JOB_FINAL JOB_SERVER JOB_STATUS JSON
 %token <Token>	KEEP KEEP_FINAL KILL KILLED KILL_PROGRAM
 %token <Token>	LAST LEVEL LIBERAL LIKE LIMIT LINE LINK LIST LOCAL LOCAL_CONSTANT LOCK LOCKMODE LOGFILE LOOPS
@@ -59,10 +64,10 @@ public class Parser
 %token <Token>	OBJECT OF OFFLINE ON ONLINE ONLY OPERATE OR OTHER OWNER
 %token <Token>	PARENT PARAMETERS PASSWORD PATH PENDING PERFORMANCE PERL PID PLAIN POOL PRIORITY PROFILE PROTOCOL PUBLIC PYTHON
 %token <Token>	QUOTED
-%token <Token>	RAWPASSWORD REACHABLE READ REASSURE RECREATE RECURSIVE REFERENCE REGISTER RENAME RENICE REQUIRED REQUESTABLE_AMOUNT RERUN RERUN_PROGRAM RESOURCE
+%token <Token>	RAWPASSWORD REACHABLE READ REASSURE RECREATE RECURSIVE REFERENCE REGISTER RENAME RENICE REQUIRED REQUESTABLE_AMOUNT RERUN RERUN_PROGRAM RESOLVE RESOURCE
 %token <Token>	RESOURCE_TEMPLATE RESOURCE_STATUS RESOURCE_STATUS_DEFINITION RESOURCE_STATUS_MAPPING RESOURCE_STATUS_PROFILE RESOURCE_WAIT
 %token <Token>	RESTARTABLE RESTRICT RESULT RESUME REVOKE ROLLBACK ROOT RUN RUNNABLE RUNNING RUNTIME RUN_PROGRAM
-%token <Token>	S SALT SC SCHEDULE SCHEDULED_EVENT SCOPE SELECT SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT SSL
+%token <Token>	S SALT SC SCHEDULE SCHEDULED_EVENT SCOPE SELECT SELECT_CONDITION SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT SSL
 %token <Token>	STARTED STARTING STARTTIME STATIC STATUS STATUS_MAPPING STATUS_PROFILE STICKY STOP STRICT STRING
 %token <Token>	SUBMIT SUBMITCOUNT SUBMITTAG SUBMITTED SUBMITTING_USER SUM SUSPEND SUSPEND_LIMIT SX SYNCHRONIZE_WAIT SYNCHRONIZING SYNCTIME SYSTEM
 %token <Token>	TAG TEST TEXT TIME TIMEOUT TIMESTAMP TO TO_KILL TOKEN TOUCH TRACE TRANSLATION TREE TRIGGER TRUNC TYPE
@@ -133,8 +138,8 @@ public class Parser
 
 %type <String>	aliasname
 %type <String>	cmdline, cmpop
-%type <String>	daliasname dependencyname, dirspec, distname, dumptype, dump_identifier
-%type <String>	environmentname, eventname
+%type <String>	daliasname dependencyname, dirspec, dispatchname, distname, dumptype, dump_identifier
+%type <String>	environmentname, eventname, expression
 %type <String>	filespec, foldername, footprintname
 %type <String>	gpmode, groupname
 %type <String>	history
@@ -156,7 +161,7 @@ public class Parser
 %type <Integer>	ct_event, ct_triggertype
 %type <Integer>	esp_state_type
 %type <Integer>	integer
-%type <Integer>	job_childdef_suspend, job_type, jobstate, jobstate2, jp_aggfunction, jrq_unresolved, jrq_mode
+%type <Integer>	job_childdef_suspend, job_type, jobstate, jobstate2, jp_aggfunction, jrq_mode, jrq_resolve, jrq_unresolved
 %type <Integer>	lj_mode, lockmode, jrd_keep
 %type <Integer>	mergemode
 %type <Integer>	opt_integer, opt_quoted, opt_sid, opt_signed_integer, om_recreate
@@ -182,7 +187,7 @@ public class Parser
 %type <Vector>	esm_maplist, esp_states, est_trans_list, est_with, est_withwith
 %type <Vector>	folderpathlist, filterexpression, filterterm
 %type <Vector>	gr_unlist
-%type <Vector>	ival_namelist, ival_sellist
+%type <Vector>	ival_namelist, ival_dispatchlist, ival_dispatchdef, ival_dispatchitem, ival_sellist
 %type <Vector>	job_childdeflist, jobdeflist, job_requiredlist, job_resource_definitionlist, jobid_list, jrd_statelist, jrq_statelist
 %type <Vector>	lc_filterexpression, lc_filterterm, lf_filterexpression, lf_filterterm, lj_exitstatelist, lj_jobserverlist, lj_nodelist, lj_parameterlist, lj_userlist 
 %type <Vector>	lnr_filterexpression, lnr_filterterm, lnr_usagelist
@@ -202,7 +207,7 @@ public class Parser
 %type <WithHash>	aj_withlist, aj_withwith, ajd_add_del_list, anr_with_clause, anr_with_list, aom_with_clause, aom_withitemlist, ar_parmlist, ar_with_clause, ar_with_list
 %type <WithHash>	cc_with, cev_withlist, cev_with_clause, cf_optwith, cf_parmlist, cf_with, cf_withwith, clf_optwith, clf_with
 %type <WithHash>	cnr_parmlist, cnr_with_clause, cnr_with_list, cpl_withlist, cpl_resource, connect_with, connect_withlist
-%type <WithHash>	cs_optwith, ct_withlist, ct_withwith
+%type <WithHash>	cs_optwith, ct_parmlist, ct_withlist, ct_withwith
 %type <WithHash>	dump_maplist, dump_with, dump_withlist
 %type <WithHash>	esp_with, esp_withwith, esp_state_optionlist
 %type <WithHash>	gr_add_dellist, gr_with, gr_withlist
@@ -212,17 +217,17 @@ public class Parser
 %type <WithHash>	lc_withlist, lf_withlist, lj_withlist, lnr_withlist, lnr_withwith
 %type <WithHash>	npwith, npentry
 %type <WithHash>	opt_connect_with, opt_dump_with, opt_event_submit_with, opt_ival_with, opt_gr_with, opt_lc_withlist, opt_lf_withlist, opt_lj_withlist, opt_lnr_withwith
-%type <WithHash>	opt_npwith, opt_om_instancelist, opt_period, opt_schevwith, opt_show_with, opt_schedwith, opt_sel_with, opt_sj_with, opt_sp_with, opt_stickyspec, opt_submit_with,
+%type <WithHash>	opt_npwith, opt_om_instancelist, opt_period, opt_schevwith, /* opt_show_with, */ opt_schedwith, opt_sel_with, opt_sj_with, opt_sp_with, opt_stickyspec, opt_submit_with,
 %type <WithHash>	om_parameterlist, om_period, om_with_clause, om_withitemlist, om_instancelist
 %type <WithHash>	period
 %type <WithHash>	system_resource_req, rsp_with_clause, rsp_withitemlist
 %type <WithHash>	schedwithlist, schedwithwith, schevwithlist, schevwithwith, scope_cfg, scope_cfg_list, scope_cfg_envlist, scope_parm, scope_parmlist, select_with
-%type <WithHash>	selwithlist, show_with_item, signed_period, sj_withlist, stickyspec, submit_with, submit_withlist, sp_with
+%type <WithHash>	selwithlist, /* show_with_item, */ signed_period, signed_period_rj, sj_withlist, stickyspec, submit_with, submit_withlist, sp_with
 %type <WithHash>	us_add_dellist, us_with, us_withlist, wt_with_clause, wt_withitemlist
 
 %type <WithItem>	aj_suspend, aj_withitem, ajd_add_del_item, anr_with_item, aom_withitem, ar_parm, ar_with_item
 %type <WithItem>	cc_withitem, cev_withitem, cf_withitem, cf_parm, clf_withitem, cnr_parm, cnr_with_item, connect_withitem
-%type <WithItem>	cpl_managed, cpl_res_item, cpl_withitem, ct_object, ct_rscstatusitem, ct_warn_nowarn, ct_withitem
+%type <WithItem>	cpl_managed, cpl_res_item, cpl_withitem, ct_object, ct_parm, ct_rscstatusitem, ct_warn_nowarn, ct_withitem
 %type <WithItem>	dump_mapitem, dump_withitem
 %type <WithItem>	esp_with_options, esp_state_option, env_resource
 %type <WithItem>	filteratom, filteritem
@@ -248,14 +253,14 @@ public class Parser
 %type <EspState>		esp_state
 %type <DumpRule>		dump_rule
 %type <StatusTranslation>	est_trans
-%type <Object>			rvalue, us_equiv_identifier
+%type <Object>			rvalue, us_equiv_identifier, cintervalname
 
 %start connect
 
 %%
 
 connect:									{ /* Empty input is OK */ }
-	|	connect_cmd SECO						{ if(!post($1)) return null; } optcmdlist
+	|	connect_cmd SECO						{ if (!post($1)) return null; } optcmdlist
 	|	sso_connect optcmdlist
 	|	error SECO							{ post(new Disconnect()); if(stop == 0) return null; }
 	|	error FORCED_EOC						{ post(new Disconnect()); if(stop == 0) return null; }
@@ -263,14 +268,14 @@ connect:									{ /* Empty input is OK */ }
 optcmdlist:
 	|	cmdlist								{ yyErrorFlag=0; }
 
-cmdlist:	cmd SECO							{ post($1); yyErrorFlag=0; }
-	|	error SECO							{ yyErrorFlag=0; /* yyerror is called automatically */ post(null); }
-	|	error FORCED_EOC						{ yyErrorFlag=0; /* yyerror is called automatically */ post(null); }
-	|	cmdlist cmd SECO						{ post($2); yyErrorFlag=0; }
-	|	cmdlist error SECO						{ yyErrorFlag=0; /* yyerror is called automatically */ post(null); }
-	|	cmdlist error FORCED_EOC					{ yyErrorFlag=0; /* yyerror is called automatically */ post(null); }
-	|	FORCED_EOC							{ /* do nothing */ }
-	|	cmdlist FORCED_EOC						{ /* do nothing */ }
+cmdlist:	cmd SECO							{ inStatement = false; post($1); yyErrorFlag=0; }
+	|	error SECO							{ inStatement = false; yyErrorFlag=0; /* yyerror is called automatically */ post(null); }
+	|	error FORCED_EOC						{ inStatement = false; yyErrorFlag=0; /* yyerror is called automatically */ post(null); }
+	|	cmdlist cmd SECO						{ inStatement = false; post($2); yyErrorFlag=0; }
+	|	cmdlist error SECO						{ inStatement = false; yyErrorFlag=0; /* yyerror is called automatically */ post(null); }
+	|	cmdlist error FORCED_EOC					{ inStatement = false; yyErrorFlag=0; /* yyerror is called automatically */ post(null); }
+	|	FORCED_EOC							{ inStatement = false; }
+	|	cmdlist FORCED_EOC						{ inStatement = false; }
 
 //D:NT=PARM
 //D:NT-ALIAS = sdms-command
@@ -599,7 +604,23 @@ connect_cont:	CONTINUE CONNECT connect_with					{ $$ = new SSOConnect($3, false)
 //D:NT-ALIAS = connect
 //D:PURPOSE P004
 //D:DESCRIPTION connect.tex
-connect_cmdu:	CONNECT username identified_by opt_connect_with 		{ $$ = new Connect($2, $3, $4); }
+connect_cmdu:	CONNECT username identified_by opt_connect_with 		{
+										  WithHash w = $4;
+										  Vector cmds = (Vector) w.get(ParseStr.S_COMMAND);
+										  boolean correct = true;
+										  if (cmds != null) {
+											for (int i = 0; i < cmds.size(); ++i) {
+												if (cmds.get(i) == null) {
+													yyerror(ParseStr.S_SYNTAX_ERROR, new String[]{""});
+													correct = false;
+												}
+											}
+										  }
+										  if (correct)
+											$$ = new Connect($2, $3, $4); 
+										  else
+											$$ = null;
+										}
 
 //D:MASTER SERVER NOUSER NOJOB
 //D:NT-ALIAS = connect
@@ -2380,10 +2401,37 @@ jrq_item:		DEPENDENCY dependencyname				{ $$ = new WithItem(ParseStr.map($1.toke
 	|		STATUS '=' ALL REACHABLE				{ $$ = new WithItem(ParseStr.map($1.token), ParseStr.map($4.token)); }
 	|		STATUS '=' DEFAULT					{ $$ = new WithItem(ParseStr.map($1.token), ParseStr.map($3.token)); }
 	|		MODE '=' jrq_mode					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
-	|		CONDITION '=' STRING					{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 			//D:DEFAULT
 	|		CONDITION '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
+	|		CONDITION '=' STRING					{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
+	|		RESOLVE '=' jrq_resolve					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
+	|		EXPIRED '=' signed_period_rj 				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
+	|		EXPIRED '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
+//	|		REFERENCE TIMESTAMP '=' jrq_sort			{ $$ = new WithItem(ParseStr.map($1.token), $4); }
+	|		SELECT CONDITION '=' STRING				{ $$ = new WithItem(ParseStr.S_SELECT_CONDITION, $4.textValue); }
+			//D:DEFAULT
+	|		SELECT CONDITION '=' NONE				{ $$ = new WithItem(ParseStr.S_SELECT_CONDITION, null); }
+//	|		SELECT MODE '=' jrq_selectmode				{ $$ = new WithItem(ParseStr.S_SELECT_MODE, $4); }
+//	|		FAIL MODE '=' jrq_failmode				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
 
+			//D:DEFAULT
+jrq_resolve:		INTERNAL						{ $$ = ParseStr.I_DD_INTERNAL; }
+	|		EXTERNAL						{ $$ = ParseStr.I_DD_EXTERNAL; }
+	|		BOTH							{ $$ = ParseStr.I_DD_BOTH; }
+
+//			//D:DEFAULT
+//jrq_sort:		SUBMIT							{ $$ = ParseStr.I_DD_SUBMIT; }
+//	|		ALL_FINAL						{ $$ = ParseStr.I_DD_ALL_FINAL; }
+//	|		JOB_FINAL						{ $$ = ParseStr.I_DD_JOB_FINAL; }
+//
+//			//D:DEFAULT
+//jrq_selectmode:		LAST							{ $$ = ParseStr.I_DD_LAST; }
+//	|		ALL							{ $$ = ParseStr.I_DD_ALL; }
+//			
+//			//D:DEFAULT
+//jrq_failmode:		WAIT							{ $$ = ParseStr.I_DD_WAIT; }
+//	|		FAIL							{ $$ = ParseStr.I_DD_FAIL; }
+//
 			//D:DEFAULT
 jrq_unresolved:		ERROR_TOKEN						{ $$ = ParseStr.I_DD_ERROR; }
 	|		IGNORE							{ $$ = ParseStr.I_DD_IGNORE; }
@@ -2662,6 +2710,7 @@ submit_withitem:	suspend							{ $$ = $1; }
 	|		with_group						{ $$ = $1; }
 	|		UNRESOLVED '=' jrq_unresolved				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|		resume							{ $$ = $1; }
+	|		MASTER							{ $$ = new WithItem(ParseStr.map($1.token), $1.textValue); }
 
 
 resume:			RESUME IN period					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
@@ -3131,13 +3180,10 @@ list_interval:		LIST INTERVAL						{ $$ = new ListInterval(); }
 //D:NT-ALIAS = show interval
 //D:PURPOSE P136
 //D:DESCRIPTION show_interval.tex
-show_interval:		SHOW INTERVAL intervalname opt_show_with		{ $$ = new ShowInterval($3, $4); }
-
-//D:LINEBREAK
-opt_show_with:									{ $$ = null; }
-	|		with show_with_item					{ $$ = $2; }
+show_interval:		SHOW INTERVAL intervalname 				{ $$ = new ShowInterval($3, null); }
 
 
+/*
 //D:NT-ALIAS = with_item
 show_with_item:		EXPAND							{ final WithHash w = new WithHash();
 										  w.addItem (new WithItem (ParseStr.S_SELECT_FROM, null));
@@ -3154,6 +3200,7 @@ show_with_item:		EXPAND							{ final WithHash w = new WithHash();
 										  w.addItem (new WithItem (ParseStr.S_SELECT_TO, $5));
 										  $$ = w;
 										}
+*/
 
 opt_ival_with:									{ $$ = null; }
 	|		ival_with						{ $$ = $1; }
@@ -3169,7 +3216,7 @@ ival_withitem:		STARTTIME '=' datetime_notz				{ $$ = new WithItem(ParseStr.map(
 	|		ENDTIME '=' datetime_notz				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|		ENDTIME '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
 	|		BASE '=' opt_period 					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
-	|		EMBEDDED '=' intervalname				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
+	|		EMBEDDED '=' cintervalname				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 			//D:DEFAULT
 	|		EMBEDDED '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
 	|		DURATION '=' opt_period					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
@@ -3188,6 +3235,9 @@ ival_withitem:		STARTTIME '=' datetime_notz				{ $$ = new WithItem(ParseStr.map(
 			//D:SUPPRESS
 	|		ival_merge						{ $$ = new WithItem(ParseStr.S_MERGE, $1); }
 	|		with_group						{ $$ = $1; }
+			//D:DEFAULT
+	|		DISPATCH '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
+	|		DISPATCH '=' '(' ival_dispatchlist ')'			{ $$ = new WithItem(ParseStr.map($1.token), $4); }
 
 ival_inverse:		INVERSE							{ $$ = new WithItem(ParseStr.S_INVERSE, Boolean.TRUE); }
 			//D:DEFAULT
@@ -3211,8 +3261,18 @@ ival_selitem:		signed_integer						{ $$ = new WithItem (ParseStr.S_SELECT_NUM, $
 										  $$ = new WithItem (ParseStr.S_SELECT_RANGE, w);
 										}
 
-ival_namelist:		intervalname						{ $$ = new Vector(); $<Vector>$.addElement($1); }
-	|		ival_namelist ',' intervalname				{ $1.addElement($3); }
+ival_namelist:		cintervalname						{ $$ = new Vector(); $<Vector>$.addElement($1); }
+	|		ival_namelist ',' cintervalname				{ $1.addElement($3); }
+
+ival_dispatchlist:	ival_dispatchitem					{ $$ = new Vector(); $<Vector>$.addElement($1); }
+	|		ival_dispatchlist ',' ival_dispatchitem			{ $1.addElement($3); }
+
+ival_dispatchitem:	dispatchname active ival_dispatchdef			{ $$ = new Vector(); $<Vector>$.addElement($1); $<Vector>$.addElement($2); $<Vector>$.addElement($3); }
+
+ival_dispatchdef:	cintervalname enable					{ $$ = new Vector(); $<Vector>$.addElement($1); $<Vector>$.addElement(null); $<Vector>$.addElement($2); }
+	|		cintervalname cintervalname enable			{ $$ = new Vector(); $<Vector>$.addElement($1); $<Vector>$.addElement($2); $<Vector>$.addElement($3); }
+	|		NONE cintervalname enable				{ $$ = new Vector(); $<Vector>$.addElement(null); $<Vector>$.addElement($2); $<Vector>$.addElement($3); }
+
 
 
 
@@ -3397,8 +3457,17 @@ ct_withitem:		STATUS '=' '(' ct_jobstatuslist ')'			{ $$ = new WithItem(ParseStr
 	|		MAIN folderpath						{ $$ = new WithItem(ParseStr.map($1.token), $2); }
 			//D:DEFAULT
 	|		MAIN NONE						{ $$ = new WithItem(ParseStr.map($1.token), null); }
-	|		LIMIT STATUS '=' statusname				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
+			//D:DEFAULT
 	|		LIMIT STATUS '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
+	|		LIMIT STATUS '=' statusname				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
+			//D:DEFAULT
+	|		PARAMETERS '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
+	|		PARAMETERS '=' '(' ct_parmlist ')'			{ $$ = new WithItem(ParseStr.map($1.token), $4); }
+
+ct_parmlist:		ct_parm							{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
+	|		ct_parmlist ',' ct_parm					{ $1.addItem($3); }
+
+ct_parm:		stridentifier '=' expression				{ $$ = new WithItem($1, $3); }
 
 opt_ival_inverse:								{ $$ = new WithItem(ParseStr.S_INVERSE, Boolean.FALSE); }
 	|		ival_inverse						{ $$ = $1; }
@@ -4155,6 +4224,15 @@ period:	integer baseinterval							{ $$ = new WithHash();
 										}
 
 //D:NT=PARM
+signed_period_rj:	signed_integer baseinterval 				{ $$ = new WithHash();
+										  $<WithHash>$.addItem(new WithItem(ParseStr.S_MULT, $1));
+										  $<WithHash>$.addItem(new WithItem(ParseStr.S_INTERVAL, $2));
+										}
+	| baseinterval 								{ $$ = new WithHash();
+										  $<WithHash>$.addItem(new WithItem(ParseStr.S_MULT, PLUS_ONE));
+										  $<WithHash>$.addItem(new WithItem(ParseStr.S_INTERVAL, $1));
+										}
+//D:NT=PARM
 signed_period:	signed_integer baseinterval opt_ignore				{ $$ = new WithHash();
 										  $<WithHash>$.addItem(new WithItem(ParseStr.S_MULT, $1));
 										  $<WithHash>$.addItem(new WithItem(ParseStr.S_INTERVAL, $2));
@@ -4178,22 +4256,22 @@ opt_period:	period								{ $$ = $1; }
 //	false: don't replace
 //	true : replace if exists
 //
-create:		CREATE								{ $$ = Boolean.FALSE; }
-	|	CREATE OR ALTER							{ $$ = Boolean.TRUE; }
+create:		CREATE								{ $$ = Boolean.FALSE; inStatement = true; }
+	|	CREATE OR ALTER							{ $$ = Boolean.TRUE; inStatement = true; }
 
 //
 //	alter existing:
 //	false: not found = error
 //	true:  ignore if not found	
-alter:		ALTER								{ $$ = Boolean.FALSE; }
-	|	ALTER EXISTING							{ $$ = Boolean.TRUE; }
+alter:		ALTER								{ $$ = Boolean.FALSE; inStatement = true; }
+	|	ALTER EXISTING							{ $$ = Boolean.TRUE; inStatement = true; }
 
 //
 //	drop existing:
 //	false: not found = error
 //	true:  ignore if not found
-drop:		DROP								{ $$ = Boolean.FALSE; }
-	|	DROP EXISTING							{ $$ = Boolean.TRUE; }
+drop:		DROP								{ $$ = Boolean.FALSE; inStatement = true; }
+	|	DROP EXISTING							{ $$ = Boolean.TRUE; inStatement = true; }
 
 //D:NT=PARM
 aliasname:	stridentifier							{ $$ = $1; }
@@ -4282,6 +4360,9 @@ instancename:	STRING								{ $$ = $1.textValue; }
 
 //D:NT=PARM
 intervalname:	stridentifier							{ $$ = $1; }
+
+cintervalname:	intervalname							{ $$ = $1; }
+	|	'(' intervalname ival_with ')'					{ $$ = new CreateInterval($2, $3); }
 
 //D:NT=PARM
 jobname:	stridentifier							{ $$ = $1; }
@@ -4454,8 +4535,14 @@ testid:		integer								{ $$ = $1; }
 filespec:	STRING								{ $$ = $1.textValue; }
 
 //D:NT=PARM
+expression:	STRING								{ $$ = $1.textValue; }
+
+//D:NT=PARM
 serverpath:	GLOBAL								{ $$ = new PathVector(); $<PathVector>$.addElement($1.value); }
 	|	serverpath '.' stridentifier					{ $1.addElement($3); }
+
+//D:NT=PARM
+dispatchname:	stridentifier							{ $$ = $1; }
 
 //D:NT=PARM
 foldername:	stridentifier							{ $$ = $1; }
@@ -4573,6 +4660,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	DIR								{ $$ = (String) $1.value; }
 	|	DISABLE								{ $$ = (String) $1.value; }
 	|	DISCONNECT							{ $$ = (String) $1.value; }
+	|	DISPATCH							{ $$ = (String) $1.value; }
 	|	DISTRIBUTION							{ $$ = (String) $1.value; }
 	|	DROP								{ $$ = (String) $1.value; }
 	|	DUMP								{ $$ = (String) $1.value; }

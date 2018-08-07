@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -50,6 +48,8 @@ public class IntervalUtil
 	private static final Pattern ID_PATH = Pattern.compile ("^S\\d+$");
 
 	private static final Pattern ID_REPLACE = Pattern.compile ("\\d+");
+
+	private static final Integer ivalType = new Integer(SDMSInterval.INTERVAL);
 
 	public static final boolean matchesIdName (final String name)
 	{
@@ -170,33 +170,51 @@ public class IntervalUtil
 		}
 	}
 
-	public static final boolean createFilter (final SystemEnvironment sysEnv, final Long ivalId, final WithItem seSpec, final WithHash with)
+	public static final boolean createFilter (final SystemEnvironment sysEnv, final Long ivalId, final WithHash with)
 		throws SDMSException
 	{
 		final Vector filtList = (Vector) with.get (ParseStr.S_FILTER);
 		if (filtList == null)
 			return false;
 
-		final Long seId = getCheckedSeId (sysEnv, seSpec);
-
 		final HashSet filtSet = new HashSet (filtList.size());
 		boolean duplicateFilterIgnore = false;
 
 		final Iterator filtIt = filtList.iterator();
 		while (filtIt.hasNext()) {
-			final String filtName = (String) filtIt.next();
-			final SDMSInterval filtIval = SDMSIntervalTable.idx_name_getUnique (sysEnv, mapIdName (filtName, seId));
-			final Long filtId = filtIval.getId (sysEnv);
+			Object filtItem = filtIt.next();
+			if (filtItem instanceof String) {
+				final String filtName = (String) filtItem;
+				SDMSInterval filtIval;
+				try {
+					filtIval  = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(filtName, ivalId));
+				} catch (NotFoundException nfe) {
+					filtIval  = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(filtName, null));
+				}
+				final Long filtId = filtIval.getId (sysEnv);
 
-			if (filtId.equals (ivalId))
-				throw new CommonErrorException (new SDMSMessage (sysEnv, "04209270132", "interval cannot filter itself"));
+				if (filtId.equals (ivalId))
+					throw new CommonErrorException (new SDMSMessage (sysEnv, "04209270132", "interval cannot filter itself"));
 
-			if (filtSet.contains (filtId))
-				duplicateFilterIgnore = true;
-			else {
-				filtSet.add (filtId);
+				if (filtSet.contains (filtId))
+					duplicateFilterIgnore = true;
+				else {
+					filtSet.add (filtId);
 
-				SDMSIntervalHierarchyTable.table.create (sysEnv, filtId, ivalId);
+					SDMSIntervalHierarchyTable.table.create (sysEnv, filtId, ivalId);
+				}
+			} else {
+				CreateInterval ci = (CreateInterval) filtItem;
+				ci.setEnv(sysEnv.cEnv);
+				ci.go(sysEnv);
+				SDMSInterval filterIval = ci.getIval();
+				Long filterIvalId = ci.getIvalId();
+				filterIval.setObjId(sysEnv, ivalId);
+				filterIval.setObjType(sysEnv, ivalType);
+
+				filtSet.add (filterIvalId);
+
+				SDMSIntervalHierarchyTable.table.create (sysEnv, filterIvalId, ivalId);
 			}
 		}
 
@@ -263,7 +281,6 @@ public class IntervalUtil
 				dtTo.fixToMaxDate();
 
 				final long comp = dtFrom.compareTo (dtTo);
-
 				if ((comp == 0) && (period.get (ParseStr.S_SELECT_TO) != null))
 					rc = Math.max (rc, IGNORED_UPPER_RANGE);
 
@@ -280,6 +297,5 @@ public class IntervalUtil
 
 	private IntervalUtil()
 	{
-
 	}
 }

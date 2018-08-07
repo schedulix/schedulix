@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -57,7 +55,6 @@ public class CreateSchedule
 		try {
 			obj.resolve(sysEnv);
 		} catch (final NotFoundException nfe) {
-
 		}
 		final Long seId = obj.seId;
 
@@ -88,7 +85,7 @@ public class CreateSchedule
 		if (intervalName == null)
 			ivalId = null;
 		else {
-			final SDMSInterval ival = SDMSIntervalTable.idx_name_getUnique (sysEnv, IntervalUtil.mapIdName (intervalName, seId));
+			final SDMSInterval ival = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(IntervalUtil.mapIdName (intervalName, seId), null));
 			ivalId = ival.getId (sysEnv);
 		}
 
@@ -119,7 +116,6 @@ public class CreateSchedule
 		if((parent.getPrivilegeMask() & lpriv) != lpriv) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061327", "Incompatible grant"));
 		}
-
 		inheritPrivs = new Long(lpriv);
 
 		if(!with.containsKey(ParseStr.S_ACTIVE)) active = Boolean.TRUE;

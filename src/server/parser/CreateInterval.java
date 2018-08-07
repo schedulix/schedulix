@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -44,6 +42,11 @@ public class CreateInterval
 	private final WithHash with;
 	private final boolean replace;
 
+	private Long ivalId;
+	private SDMSInterval ival;
+
+	private CreateInterval embeddedInterval;
+
 	private boolean secondsIgnore = false;
 
 	public CreateInterval (ObjectURL o, WithHash w, Boolean r)
@@ -52,6 +55,25 @@ public class CreateInterval
 		obj = o;
 		with = w;
 		replace = r.booleanValue();
+		embeddedInterval = null;
+	}
+
+	public CreateInterval (String n, WithHash w )
+	{
+		super();
+		obj = new ObjectURL(Parser.INTERVAL, n);
+		with = w;
+		replace = true;
+		embeddedInterval = null;
+	}
+
+	public Long getIvalId()
+	{
+		return ivalId;
+	}
+	public SDMSInterval getIval()
+	{
+		return ival;
 	}
 
 	public void go (SystemEnvironment sysEnv)
@@ -80,7 +102,6 @@ public class CreateInterval
 		try {
 			obj.resolve(sysEnv);
 		} catch (final NotFoundException nfe) {
-
 		}
 
 		if (with != null) {
@@ -133,16 +154,21 @@ public class CreateInterval
 			}
 
 			if (with.containsKey (ParseStr.S_EMBEDDED)) {
-				final String embeddedName = (String) with.get (ParseStr.S_EMBEDDED);
-				if (embeddedName != null) {
-					if (embeddedName.equals (obj.name))
-						throw new CommonErrorException (new SDMSMessage (sysEnv, "04207191734", "interval cannot embed itself"));
+				Object embeddedRef = with.get (ParseStr.S_EMBEDDED);
+				if (embeddedRef instanceof String) {
+					final String embeddedName = (String) embeddedRef;
+					if (embeddedName != null) {
+						if (embeddedName.equals (obj.name))
+							throw new CommonErrorException (new SDMSMessage (sysEnv, "04207191734", "interval cannot embed itself"));
 
-					final SDMSInterval embeddedIval = SDMSIntervalTable.idx_name_getUnique (sysEnv, IntervalUtil.mapIdName (embeddedName, obj.seId));
-					embeddedIntervalId = embeddedIval.getId (sysEnv);
+						final SDMSInterval embeddedIval = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey (IntervalUtil.mapIdName (embeddedName, obj.seId), null));
+						embeddedIntervalId = embeddedIval.getId (sysEnv);
 
-					if (duration != null)
-						throw new CommonErrorException (new SDMSMessage (sysEnv, "04311251854", "intervals with " + ParseStr.S_EMBEDDED + " cannot have " + ParseStr.S_DURATION));
+						if (duration != null)
+							throw new CommonErrorException (new SDMSMessage (sysEnv, "04311251854", "intervals with " + ParseStr.S_EMBEDDED + " cannot have " + ParseStr.S_DURATION));
+					}
+				} else {
+					embeddedInterval = (CreateInterval) embeddedRef;
 				}
 			}
 
@@ -173,11 +199,12 @@ public class CreateInterval
 			}
 		}
 
-		SDMSInterval ival;
 		try {
 			ival = SDMSIntervalTable.table.create (sysEnv,
-							       obj.mappedName, gId, startTime, endTime, delay, baseInterval, baseIntervalMultiplier,
-							       duration, durationMultiplier, syncTime, isInverse, isMerge, embeddedIntervalId, obj.seId);
+			                                       obj.mappedName, gId, startTime, endTime, delay, baseInterval, baseIntervalMultiplier,
+			                                       duration, durationMultiplier, syncTime, isInverse, isMerge, embeddedIntervalId, obj.seId,
+			                                       null,  null);
+			ivalId = ival.getId (sysEnv);
 		} catch (final DuplicateKeyException dke) {
 			if (replace) {
 				final AlterInterval ai = new AlterInterval (obj, with, Boolean.FALSE);
@@ -189,8 +216,16 @@ public class CreateInterval
 			throw dke;
 		}
 
+		if (embeddedInterval != null) {
+			embeddedInterval.setEnv(env);
+			embeddedInterval.go(sysEnv);
+			ival.setEmbeddedIntervalId(sysEnv, embeddedInterval.getIvalId());
+			SDMSInterval embIval = embeddedInterval.getIval();
+			embIval.setObjId(sysEnv, ivalId);
+			embIval.setObjType(sysEnv, new Integer(SDMSInterval.INTERVAL));
+		}
+
 		if (with != null) {
-			final Long ivalId = ival.getId (sysEnv);
 
 			if (with.containsKey (ParseStr.S_SELECTION))
 				switch (IntervalUtil.createSelections (sysEnv, ivalId, with)) {
@@ -202,7 +237,7 @@ public class CreateInterval
 				}
 
 			if (with.containsKey (ParseStr.S_FILTER))
-				duplicateFilterIgnore = IntervalUtil.createFilter (sysEnv, ivalId, obj.seSpec, with);
+				duplicateFilterIgnore = IntervalUtil.createFilter (sysEnv, ivalId, with);
 		}
 
 		if (duplicateFilterIgnore)

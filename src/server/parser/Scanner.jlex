@@ -41,6 +41,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("AGING",		new Integer(Parser.AGING));
 	tokens.put("ALIAS",		new Integer(Parser.ALIAS));
 	tokens.put("ALL",		new Integer(Parser.ALL));
+	tokens.put("ALL_FINAL",		new Integer(Parser.ALL_FINAL));
 	tokens.put("ALTER",		new Integer(Parser.ALTER));
 	tokens.put("AMOUNT",		new Integer(Parser.AMOUNT));
 	tokens.put("AND",		new Integer(Parser.AND));
@@ -55,6 +56,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("BEFORE",		new Integer(Parser.BEFORE));
 	tokens.put("BETWEEN",		new Integer(Parser.BETWEEN));
 	tokens.put("BROKEN",		new Integer(Parser.BROKEN));
+	tokens.put("BOTH",		new Integer(Parser.BOTH));
 	tokens.put("BY",		new Integer(Parser.BY));
 	tokens.put("CALENDAR",		new Integer(Parser.CALENDAR));
 	tokens.put("CANCEL",		new Integer(Parser.CANCEL));
@@ -97,6 +99,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("DIR",		new Integer(Parser.DIR));
 	tokens.put("DISABLE",		new Integer(Parser.DISABLE));
 	tokens.put("DISCONNECT",	new Integer(Parser.DISCONNECT));
+	tokens.put("DISPATCH",		new Integer(Parser.DISPATCH));
 	tokens.put("DISTRIBUTION",	new Integer(Parser.DISTRIBUTION));
 	tokens.put("DROP",		new Integer(Parser.DROP));
 	tokens.put("DUMP",		new Integer(Parser.DUMP));
@@ -121,6 +124,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("EXPIRED",		new Integer(Parser.EXPIRED));
 	tokens.put("EXPORT",		new Integer(Parser.EXPORT));
 	tokens.put("EXPR",		new Integer(Parser.EXPR));
+	tokens.put("EXTERNAL",		new Integer(Parser.EXTERNAL));
 	tokens.put("FACTOR",		new Integer(Parser.FACTOR));
 	tokens.put("FAILURE",		new Integer(Parser.FAILURE));
 	tokens.put("FATAL",		new Integer(Parser.FATAL));
@@ -160,6 +164,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("INFO",		new Integer(Parser.INFO));
 	tokens.put("INSTANCE",		new Integer(Parser.INSTANCE));
 	tokens.put("INSTANCES",		new Integer(Parser.INSTANCE));
+	tokens.put("INTERNAL",		new Integer(Parser.INTERNAL));
 	tokens.put("INTERVAL",		new Integer(Parser.INTERVAL));
 	tokens.put("INTERVALS",		new Integer(Parser.INTERVAL));
 	tokens.put("INVERSE",		new Integer(Parser.INVERSE));
@@ -167,6 +172,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("ISX",		new Integer(Parser.ISX));
 	tokens.put("IX",		new Integer(Parser.IX));
 	tokens.put("JOB",		new Integer(Parser.JOB));
+	tokens.put("JOB_FINAL",		new Integer(Parser.JOB_FINAL));
 	tokens.put("JOBS",		new Integer(Parser.JOB));
 	tokens.put("JSON",		new Integer(Parser.JSON));
 	tokens.put("KEEP",		new Integer(Parser.KEEP));
@@ -271,6 +277,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("RENICE",		new Integer(Parser.RENICE));
 	tokens.put("REQUIRED",		new Integer(Parser.REQUIRED));
 	tokens.put("RERUN",		new Integer(Parser.RERUN));
+	tokens.put("RESOLVE",		new Integer(Parser.RESOLVE));
 	tokens.put("RESOURCE",		new Integer(Parser.RESOURCE));
 	tokens.put("RESOURCES",		new Integer(Parser.RESOURCE));
 	tokens.put("RESTARTABLE",	new Integer(Parser.RESTARTABLE));
@@ -452,6 +459,13 @@ public void setEnv(ConnectionEnvironment p_env)
 	env = p_env;
 }
 
+public boolean inStatement()
+{
+	if (env == null) return false;
+	UserConnection c = (UserConnection) env.getMe();
+	return c.inStatement();
+}
+
 /** associated with current token
     should not be called after advance() returned false.
     @return value for token();
@@ -486,6 +500,7 @@ broken =	[Bb][Rr][Oo][Kk][Ee][Nn]
 change =	[Cc][Hh][Aa][Nn][Gg][Ee]
 child =		[Cc][Hh][Ii][Ll][Dd]
 code =		[Cc][Oo][Dd][Ee]
+condition =	[Cc][Oo][Nn][Dd][Ii][Tt][Ii][Oo][Nn]
 constant =	[Cc][Oo][Nn][Ss][Tt][Aa][Nn][Tt]
 default =	[Dd][Ee][Ff][Aa][Uu][Ll][Tt]
 defer	 =	[Dd][Ee][Ff][Ee][Rr]
@@ -704,6 +719,11 @@ until_finished =	{until}{uscore}{finished}
 <YYINITIAL>{run_program}		{ proto_input(yytext()); t = new Token(Parser.RUN_PROGRAM, yytext());			return Parser.RUN_PROGRAM; }
 <YYINITIAL>{scheduled_event}		{ proto_input(yytext()); t = new Token(Parser.SCHEDULED_EVENT, yytext());		return Parser.SCHEDULED_EVENT; }
 <YYINITIAL>{select}			{ proto_input(yytext());
+					  if (inStatement()) {
+						// we're in some statement where SELECT doesn't have a special meaning (it's not the start of a SELECT command)
+						t = new Token(Parser.SELECT, yytext());
+						return Parser.SELECT;
+					  }
 					  sel_stmt = new StringBuffer("SELECT ");
 					  yybegin(SELECT);
 					  selbrctr = 0;
