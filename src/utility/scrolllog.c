@@ -89,6 +89,7 @@ void usage(char *argv[], char *msg)
 	fprintf(stdout, "\t\tthe -e parameter is considered to be part of the commandline\n");
 	fprintf(stdout, "\t\tThe childprocess is started with the same environment as the calling process\n");
 	fprintf(stdout, "\t\tThe PATH environment variable is used\n");
+	fprintf(stdout, "\t\tWith the -D flag environment variables can be set\n");
 	exit(1);
 }
 
@@ -190,6 +191,14 @@ void getopts(int argc, char *argv[])
 			if(got_f)	usage(argv, (char*) "Nodaemonflag specified twice");
 			run_as_daemon = 0;
 			got_f = 1;
+		} else if(!strcmp(argv[i], "-D")) {
+			i++;
+			if(i >= argc)	{
+				usage(argv, (char*) "Expected another parameter (environment variable specification)");
+			}
+			if(parseAndSetEnvironment(argc, argv, &i))	{
+				usage(argv, (char*) "Invalid environment specification");
+			}
 		} else {
 			if(got_pn)	usage(argv, (char*) "Pipename specified twice");
 			if(check_pipename(argv[i]))	usage(argv, (char*) "Invalid pipename");
@@ -246,6 +255,42 @@ int getlognumber()
 
 	closedir(dir);
 
+	return 0;
+}
+
+int parseAndSetEnvironment(int argc, char *argv[], int *idx)
+{
+	char *arg;
+	int argptr = *idx;
+	int arglen;
+	int i;
+	char *key;
+	char *value;
+
+	arg = argv[argptr];
+	while (argptr < argc && arg[0] != '-') {
+
+		arglen = strlen(arg);
+		for (i = 0; i < arglen && arg[i] != '='; i++)
+			;
+		if (i >= arglen) {
+			return 1;
+		}
+		key = strndup(arg, i);
+		if (i+1 >= arglen) {
+
+			value = NULL;
+			unsetenv(key);
+		} else {
+			value = strdup((char *) &arg[i+1]);
+			setenv(key, value, 1 );
+		}
+		free(key);
+		if (value != NULL) free(value);
+		argptr++;
+		if (argptr < argc) arg = argv[argptr];
+	}
+	*idx = argptr - 1;
 	return 0;
 }
 

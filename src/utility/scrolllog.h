@@ -33,6 +33,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 extern void usage(char *argv[], char *msg);
+extern int parseAndSetEnvironment(int argc, char *argv[], int *idx);
 extern int check_basename(char *name);
 extern int check_pipename(char *name);
 extern void getopts(int argc, char *argv[]);
