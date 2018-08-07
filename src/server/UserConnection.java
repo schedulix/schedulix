@@ -158,6 +158,14 @@ public class UserConnection extends SDMSThread
 		return timeout;
 	}
 
+	public boolean inStatement()
+	{
+		if (parser != null)
+			return parser.inStatement();
+		else
+			return false;
+	}
+
 	public void SDMSrun()
 	{
 		doTrace(env, "UserConnection started", SEVERITY_MESSAGE);

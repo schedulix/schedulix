@@ -34,6 +34,8 @@ import javax.net.ssl.*;
 import java.security.*;
 import javax.xml.bind.DatatypeConverter;
 
+import java.nio.charset.Charset;
+
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
@@ -225,7 +227,7 @@ public class SDMSServerConnection
 		InputStream is = new DataInputStream(svrConnection.getInputStream());
 		checkSuperfluous(is);
 
-		out = new PrintStream(svrConnection.getOutputStream(), true);
+		out = new PrintStream(svrConnection.getOutputStream(), true, "UTF8");
 
 		String userSQuote = "'";
 		String userEQuote = "'";
