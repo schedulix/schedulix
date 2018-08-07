@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2000-2013 "independIT Integrative Technologies GmbH"
+# Copyright (c) 2000-2018 "independIT Integrative Technologies GmbH"
 # 
 # schedulix Enterprise Job Scheduling System
 # 
@@ -34,6 +34,8 @@ import threading
 import os
 import locale
 from zExceptions import Unauthorized
+from ZODB.POSException import ConflictError
+
 try:
 	import ldap
 	have_ldap = True
@@ -365,9 +367,11 @@ def getLdapGroups(server, userName, context):
 		if LdapServer == None or LdapBaseDn == None or LdapUsername == None or LdapPassword == None:
 			print 'getLdapGroups(): Missing or uncomplete LDAP settings!'
 		else:
-			ldap_filter='(&(objectClass=user)(cn=' + userName + '))'
+			ldap_filter='(&(objectClass=user)(sAMAccountName=' + userName + '))'
 			attrs = ['memberOf']
 			ldap_client = ldap.initialize(LdapServer)
+                        ldap_client.protocol_version = ldap.VERSION3
+                        ldap_client.set_option(ldap.OPT_REFERRALS, 0)
 			ldap_client.simple_bind_s(LdapUsername, LdapPassword)
 			result = ldap_client.search_s(LdapBaseDn, ldap.SCOPE_SUBTREE, ldap_filter,['memberOf'])
 			for elem in result:
@@ -419,11 +423,9 @@ def syncLdapGroups(server, userName, context):
 	if sdmsGroups['DEFAULT_GROUP'] != ldapGroups['DEFAULT_GROUP']:
 		cmd = cmd + "ALTER USER '" + userName + "' WITH DEFAULT GROUP = PUBLIC;\n"
 	if not sdmsGroups['GROUPS'] == ldapGroups['GROUPS']:
-		cmd = cmd + "ALTER USER '" + userName + "' WITH GROUP = ("
-		sep = ""
+		cmd = cmd + "ALTER USER '" + userName + "' WITH GROUP = (PUBLIC"
 		for grp in ldapGroups['GROUPS']:
-			cmd = cmd + sep + "'" + grp + "'"
-			sep = ", "
+			cmd = cmd + ",'" + grp + "'"
 		cmd = cmd + ");\n"
 		changed = True
 	if sdmsGroups['DEFAULT_GROUP'] != ldapGroups['DEFAULT_GROUP']:
@@ -557,6 +559,7 @@ def SDMSUserConnectCommandV2(server, user, pwd , command, repeatable=0, outdict=
 
 			executions = executions + 1
 			command = string.rstrip(command,'\n\t ;')
+			command = command + '\n' # important to avoid freeze if last line of command is a comment
 			repeats = 0
 			while repeats < 2:
 				repeats = repeats + 1
@@ -582,7 +585,7 @@ def SDMSUserConnectCommandV2(server, user, pwd , command, repeatable=0, outdict=
 					setUserCommand = setUserCommand + '; '
 					command = setUserCommand + command
 
-				connectCommand = connectCommand + ", COMMAND = (" + command + ");"
+				connectCommand = connectCommand + ", COMMAND = (" + command + "\n);" # \n is important to avoid freeze if last line of command is a comment
 				output = sendCommand(soc, connectCommand)
 				evalOutput = eval(output)
 				if sso and evalOutput.has_key('ERROR') and repeats == 1:
@@ -920,7 +923,12 @@ def readlog(fname):
 def changeOwnership(self, username, obj):
 	""" explicitly setup changeOwnership for TTW """
 	acl_users = getattr(self, 'acl_users')    #UserFolder source
-	user = acl_users.getUser(username).__of__(acl_users)
+	user = acl_users.getUser(username)
+	if user == None:
+		web = getattr(self,'web')
+		acl_users = getattr(web,'acl_users')
+		user = acl_users.getUser(username)
+	user = user.__of__(acl_users)
 	obj.changeOwnership(user)
 
 def clock():
@@ -1039,13 +1047,16 @@ docs = [
 def getDocs():
 	return docs
 
-def readDoc(index):
-	doc = docs[index]
-	filename = os.environ['BICSUITEHOME'] + '/doc/' + doc['FILE']
+def readFile(filename):
 	f = open (filename, 'r')
 	data = f.read()
 	f.close()
 	return data
+
+def readDoc(index):
+	doc = docs[index]
+	filename = os.environ['BICSUITEHOME'] + '/doc/' + doc['FILE']
+	return readFile(filename)
 
 def json_dumps(o):
 	if have_json:
@@ -1073,6 +1084,9 @@ def raiseUnauthorized(browserId):
 			# print 'raise Unauthorized'
 			raise Unauthorized
 
+def abortAndRetryTransaction():
+    raise ConflictError
+
 translations = None
 
 def translate(context, text, lang):
@@ -1081,6 +1095,9 @@ def translate(context, text, lang):
 	# print str(translations)
 	if translations == None:
 		translations = context.Common.translations()
+		customTranslations = getattr(context.Custom.aq_inner.aq_explicit, 'translations', None)
+		if customTranslations != None:
+			translations.update(customTranslations())
 	try:
 		return translations[text][lang]
 	except:
