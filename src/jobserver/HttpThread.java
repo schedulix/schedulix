@@ -204,9 +204,12 @@ public class HttpThread
 		if (status == 200 || status == 404) {
 			out.println("<!DOCTYPE HTML>");
 			out.println("<html>");
+			String encoding = (String) (cfg.get (Config.HTTP_LOGENCODING));
+			if (encoding == null)
+				encoding = "utf-8";
 			if (title != null) {
 				out.println("<head>");
-				out.println("<meta charset=\"utf-8\">");
+				out.println("<meta charset=\"" + encoding + "\">");
 				out.println("<title>" + title + "</title>");
 				out.println("</head>");
 			}

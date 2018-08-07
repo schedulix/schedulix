@@ -99,7 +99,7 @@ public class RepoIface
 	private static SSLContext sc;
 
 	private Socket repoSock = null;
-	private BufferedOutputStream repoOut = null;
+	private PrintStream repoOut = null;
 	private ObjectInputStream repoInp = null;
 
 	private boolean request_reconnect = false;
@@ -125,20 +125,19 @@ public class RepoIface
 				timeoutThread.setExecuting(true);
 				timeoutThread.start();
 
-				repoOut.write (cmd.getBytes());
-				repoOut.write ('\n');
-				repoOut.flush();
-				repoInp = new ObjectInputStream (repoSock.getInputStream());
+				repoOut.print(cmd);
+				if (! repoOut.checkError()) {
+					repoInp = new ObjectInputStream (repoSock.getInputStream());
 
-				final SDMSOutput retval = (SDMSOutput) repoInp.readObject();
+					final SDMSOutput retval = (SDMSOutput) repoInp.readObject();
 
-				Trace.debug ("< " + Trace.dump (retval));
+					Trace.debug ("< " + Trace.dump (retval));
 
-				timeoutThread.setExecuting(false);
+					timeoutThread.setExecuting(false);
 
-				timeoutThread.interrupt();
-
-				return retval;
+					timeoutThread.interrupt();
+					return retval;
+				}
 			} catch (final IOException ioe) {
 				timeoutThread.setExecuting(false);
 				timeoutThread.interrupt();
@@ -147,6 +146,13 @@ public class RepoIface
 				openConnection();
 			} catch (final ClassNotFoundException cnfe) {
 				Utils.abortProgram ("(04301271453) Cannot execute command (" + cmd + ")" + ": " + cnfe.getMessage() + " (" + cnfe.getClass().getName() + ")");
+			}
+			if (repoOut.checkError()) {
+				timeoutThread.setExecuting(false);
+				timeoutThread.interrupt();
+				Trace.error ("(04504092058) Error executing command (" + cmd + ")");
+				closeConnection();
+				openConnection();
 			}
 		}
 	}
@@ -320,7 +326,7 @@ public class RepoIface
 		}
 
 		try {
-			repoOut = new BufferedOutputStream (repoSock.getOutputStream());
+			repoOut = new PrintStream (repoSock.getOutputStream(), true, "UTF8");
 		} catch (final IOException ioe) {
 			Trace.error ("(04301271456) Cannot establish socket output stream: " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
 			isConnected = false;
@@ -382,14 +388,7 @@ public class RepoIface
 	private final void closeConnection()
 	{
 		if (repoOut != null) {
-			try {
-				repoOut.close();
-			}
-
-			catch (final IOException ioe) {
-				Trace.error ("(04504092249) Error closing output stream: " + ioe.getMessage() + " (" + ioe.getClass().getName() + ")");
-			}
-
+			repoOut.close();
 			repoOut = null;
 		}
 		if (repoInp != null) {

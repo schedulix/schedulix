@@ -31,6 +31,8 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 import java.nio.channels.FileChannel;
 import java.nio.channels.OverlappingFileLockException;
+import java.nio.charset.Charset;
+import java.nio.ByteBuffer;
 
 public class Feil
 {
@@ -270,8 +272,12 @@ public class Feil
 	private final String println (final String tag)
 		throws IOException
 	{
+		int l;
 		final String now = Utils.timestampNow();
-		rfil.writeBytes (now + " " + tag + "\n");
+		byte[] buffer = Charset.defaultCharset().encode(now + " " + tag + "\n").array();
+		l = buffer.length;
+		while (l > 0 && buffer[l-1] == 0) l--;
+		rfil.write(buffer, 0, l);
 
 		return now.substring (1, now.indexOf (Utils.TIMESTAMP_LEADOUT));
 	}
@@ -283,7 +289,10 @@ public class Feil
 			final StringBuffer tag = new StringBuffer (id);
 			if (NEWLINE_PATTERN.matcher (val).matches()) {
 				tag.append ("'");
-				tag.append (val.length());
+				byte[] buffer = Charset.defaultCharset().encode(val).array();
+				int l = buffer.length;
+				while (l > 0 && buffer[l-1] == 0) l--;
+				tag.append(l);
 			}
 			tag.append ("=");
 			tag.append (val);
