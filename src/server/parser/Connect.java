@@ -516,6 +516,9 @@ public class Connect extends Node
 	{
 		sysEnv.cEnv.setUid(validateJobConnect(sysEnv, jobid, passwd, false));
 		sysEnv.cEnv.setJob();
+		Long gId = SDMSSubmittedEntityTable.getObject(sysEnv, jobid).getOwnerId(sysEnv);
+		sysEnv.cEnv.addGid(gId);
+		sysEnv.cEnv.addGid(SDMSObject.publicGId);
 	}
 
 	public Node getNode()
@@ -526,8 +529,8 @@ public class Connect extends Node
 	public String getName()
 	{
 		String s = this.getClass().getName();
-		if (cmd != null)
-			s = cmd.getClass().getName();
+		if (actual_cmd != null)
+			s = actual_cmd.getClass().getName();
 		return s.substring(s.lastIndexOf('.')+1);
 	}
 
@@ -591,6 +594,7 @@ public class Connect extends Node
 				for (int i = 0; i < cmd.size(); ++i) {
 					stmtnr++;
 					Node n = (Node) cmd.get(i);
+					actual_cmd = n;
 			sysEnv.tx.beginSubTransaction(sysEnv);
 			while(true) {
 				if(env.isUser()) {
@@ -607,6 +611,7 @@ public class Connect extends Node
 			n.env = env;
 			n.go(sysEnv);
 					sysEnv.tx.commitSubTransaction(sysEnv);
+					actual_cmd = null;
 					result = n.result;
 				}
 			} catch (SDMSException e) {
