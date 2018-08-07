@@ -4,35 +4,6 @@
 //
 // Copyright (C) 2004 independIT Integrative Technologies GmbH
 //
-// $Log: ExprParser.jay,v $
-// Revision 1.8.14.1  2013/03/14 10:25:16  ronald
-// Umstellung auf standard konforme package bezeichnungen
-//
-// Revision 1.8  2007/12/04 10:57:38  ronald
-// Bugfixes and Trace Info
-//
-// Revision 1.7  2007/12/03 09:20:08  ronald
-// Small improvements. Start support for Datatype DATE. Version info
-//
-// Revision 1.6  2007/11/09 11:19:27  ronald
-// Doku verbesserungen
-// Conditional Resources
-//
-// Revision 1.5  2005/02/08 13:59:51  ronald
-// minor beautifying
-//
-// Revision 1.4  2004/10/06 06:51:38  ronald
-// WIP. Resource Variablen. Joblocal/Folderlocal Resources. Checkin wg. Abgleich
-//
-// Revision 1.3  2004/08/11 11:12:01  ronald
-// Variablen zugefuegt
-//
-// Revision 1.2  2004/07/23 09:32:49  ronald
-// #Issue 80: Expression Trigger. Einige grundsaetzliche Verbesserungen
-//
-// Revision 1.1  2004/07/14 21:27:59  ronald
-// Issue #80: Expression Trigger. Teil I Infrastruktur
-//
 //
 
 package de.independit.scheduler.server.parser.triggerexpr;
@@ -54,6 +25,7 @@ public class ExprParser
 
 	private int stop = 0;
 	private SDMSSubmittedEntity sme = null;
+	private SDMSSubmittedEntity requiredSme = null;
 	private SDMSResource r = null;
 	private SDMSTrigger t = null;
 	private SDMSTriggerQueue tq = null;
@@ -70,12 +42,12 @@ public class ExprParser
 
 %}
 
-%token <String>	STRING IDENTIFIER PARAMETER JPARAMETER RPARAMETER TPARAMETER
+%token <String>	STRING IDENTIFIER PARAMETER JPARAMETER RPARAMETER TPARAMETER RSPARAMETER DSPARAMETER
 %token <BigDecimal> NUMBER
 %token <Boolean> BOOLEAN
 %token EQ GT GE LT LE NE MATCHES NOMATCH
 %token DIV MINUS MOD PLUS TIMES
-%token ABS AND DATE FIELD INT LOWERCASE NOT OR ROUND SUBSTR STR TRIM UPPERCASE
+%token ABS AND DATE FIELD INT LOWERCASE NOT NVL OR ROUND SUBSTR STR TRIM UPPERCASE
 
 %type <ParseObject>	expression function literal
 %type <ParseObject>	operand term
@@ -128,14 +100,18 @@ operand:	'(' expression ')'			{ debuginfo("operand/(expression)"); $$ = $2; }
 	|	JPARAMETER				{ debuginfo("operand/JPARAMETER"); $$ = resolve($1, JPARAMETER); }
 	|	RPARAMETER				{ debuginfo("operand/RPARAMETER"); $$ = resolve($1, RPARAMETER); }
 	|	TPARAMETER				{ debuginfo("operand/TPARAMETER"); $$ = resolve($1, TPARAMETER); }
+	|	RSPARAMETER				{ debuginfo("operand/RSPARAMETER"); $$ = resolve($1, RSPARAMETER); }
+	|	DSPARAMETER				{ debuginfo("operand/DSPARAMETER"); $$ = resolve($1, DSPARAMETER); }
 	|	literal					{ debuginfo("operand/literal"); $$ = $1; }
 	|	function				{ debuginfo("operand/function"); $$ = $1; }
+	|	'(' boolexp '?' expression ':' expression ')'	{ debuginfo("operand/?:"); $$ = ParseObject.question($2, $4, $6); }
 
 function:	ABS '(' expression ')'						{ debuginfo("function/ABS(expression)"); $$ = $3.abs(checkOnly); }
 	|	INT '(' expression ')'						{ debuginfo("function/INT(expression)"); $$ = $3.to_int(checkOnly); }
 	|	DATE '(' expression ',' expression ')'				{ debuginfo("function/DATE(expression, expression)"); $$ = $3.to_date($5, checkOnly); }
 	|	FIELD '(' IDENTIFIER ')'					{ debuginfo("function/FIELD(expression)"); $$ = field(new ParseObject($3)); }
 	|	LOWERCASE '(' expression ')'					{ debuginfo("function/LOWERCASE(expression)"); $$ = $3.lowercase(checkOnly); }
+	|	NVL '(' expression ',' expression ')'				{ debuginfo("function/NVL(expression, expression)"); $$ = $3.nvl($5, checkOnly); }
 	|	ROUND '(' expression ')'					{ debuginfo("function/ROUND(expression)"); $$ = $3.round(checkOnly); }
 	|	STR '(' expression ')'						{ debuginfo("function/STR(expression)"); $$ = $3.adjust(ParseObject.STRING, checkOnly); }
 	|	SUBSTR '(' expression ',' expression ',' expression ')'		{ debuginfo("function/SUBSTR(expression, expression, expression)"); $$ = $3.substr($5, $7, checkOnly); }
@@ -144,12 +120,11 @@ function:	ABS '(' expression ')'						{ debuginfo("function/ABS(expression)"); $
 	|	UPPERCASE '(' expression ')'					{ debuginfo("function/UPPERCASE(expression)"); $$ = $3.uppercase(checkOnly); }
 
 literal:	NUMBER					{ debuginfo("literal/NUMBER"); $$ = new ParseObject($1); }
-	|	STRING					{ debuginfo("literal/STRING"); $$ = new ParseObject($1); }
+	|	STRING					{ debuginfo("literal/STRING"); $$ = new ParseObject($1, ParseObject.STRING); }
 %%
 
 private ParseObject field(ParseObject o)
 {
-	if(checkOnly) return new ParseObject(o);
 	return o;
 }
 
@@ -176,25 +151,38 @@ private ParseObject resolve(String o, int type)
 			p = resolveTriggerVariable(o);
 			if (p == null) p = emptyString;
 			break;
+		case RSPARAMETER:
+			if (requiredSme != null)
+				p = requiredSme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
+			else
+				p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
+			break;
+		case DSPARAMETER:
+			p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
+			break;
 		case PARAMETER:
 			p = resolveTriggerVariable(o);
 			if(p != null) return new ParseObject(p);
 			if(sme != null)
 				p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
 			else
-				if (r != null)
-					p = r.getVariableValue(sysEnv, o);
+				if (requiredSme != null) 
+					p = requiredSme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
 				else
-					p = emptyString;
+					if (r != null)
+						p = r.getVariableValue(sysEnv, o);
+					else
+						p = emptyString;
 			break;
 	}
 	return new ParseObject(p);
 }
 
-public void set(SystemEnvironment env, SDMSSubmittedEntity sme, SDMSResource rs, SDMSTrigger tr, SDMSTriggerQueue trq, SDMSScope s)
+public void set(SystemEnvironment env, SDMSSubmittedEntity sme, SDMSSubmittedEntity requiredSme, SDMSResource rs, SDMSTrigger tr, SDMSTriggerQueue trq, SDMSScope s)
 {
 	this.sysEnv = env;
 	this.sme = sme;
+	this.requiredSme = requiredSme;
 	this.r = rs;
 	this.t = tr;
 	this.tq = trq;
@@ -228,6 +216,7 @@ class ParseObject {
 	public static final int STRING = 1;
 	public static final int NUMBER = 2;
 	public static final int DATE   = 3;
+	public static final int INDETERMINED = 99;	// this is stored as string, but hasn't a definite type yet
 
 	public static final BigDecimal one = new BigDecimal("1");
 
@@ -272,7 +261,15 @@ class ParseObject {
 
 	public ParseObject(String s)
 	{
-		type = STRING;
+		type = INDETERMINED;
+		string = s;
+		number = null;
+	}
+
+	public ParseObject(String s, int t)
+	{
+		type = t;
+		if (type == NUMBER) type = INDETERMINED;
 		string = s;
 		number = null;
 	}
@@ -291,9 +288,15 @@ class ParseObject {
 		string = p.string;
 	}
 
+	public static ParseObject question(Boolean c, ParseObject t, ParseObject f)
+	{
+		if (c) return t;
+		return f;
+	}
+
 	public Object getValue()
 	{
-		if (type == STRING) return string;
+		if (type == STRING || type == INDETERMINED) return string;
 		if (type == NUMBER) {
 			if (number == null) return null;
 			long v;
@@ -310,44 +313,60 @@ class ParseObject {
 	}
 
 	public ParseObject adjust(ParseObject po, boolean checkOnly)
+		throws SDMSException
 	{
 		return adjust(po.type, checkOnly);
 	}
 
 	public ParseObject adjust(int t, boolean checkOnly)
+		throws SDMSException
 	{
 		if(checkOnly) return new ParseObject();
 		if(type == t) return new ParseObject(this);
-		ParseObject rc = new ParseObject();
-		switch(t) {
-			case STRING:
-				rc.type = STRING;
-				rc.number = null;
-				if(type == NUMBER)	rc.string = number.toString();
-				if(type == VOID)	rc.string = new String();
-				break;
-			case NUMBER:
-				rc.type = NUMBER;
-				rc.string = null;
-				if(type == STRING)	rc.number = new BigDecimal(string);
-				if(type == VOID)	rc.number = new BigDecimal("0");
-				break;
+		ParseObject rc = new ParseObject(this);
+		try {
+			switch(t) {
+				case INDETERMINED:
+				case STRING:
+					rc.type = STRING;
+					rc.number = null;
+					if(type == NUMBER)	rc.string = number.toString();
+					if(type == VOID)	rc.string = new String();
+					break;
+				case NUMBER:
+					rc.type = NUMBER;
+					rc.string = null;
+					if(type == STRING || type == INDETERMINED)	rc.number = new BigDecimal(string);
+					if(type == VOID)	rc.number = new BigDecimal("0");
+					break;
+			}
+		} catch (NumberFormatException nfe) {
+			// we'd like to convert into a number, but the format isn't valid :-(
+			// throwing an error here isn't exactly what we want, but we have no real alternative
+			throw new SDMSException(new SDMSMessage((SystemEnvironment) null, "03802071626", "Error evaluating expression. Invalid number format of $1", string));
 		}
 		return rc;
 	}
 
 	public ParseObject mult(ParseObject o2, Integer s, boolean checkOnly)
+		throws SDMSException
 	{
 		if(checkOnly) return new ParseObject();
 		int operator = s.intValue();
 		ParseObject op1 = adjust(ParseObject.NUMBER, checkOnly);
 		ParseObject op2 = o2.adjust(ParseObject.NUMBER, checkOnly);
 		switch(operator) {
-			case ExprParser.DIV:	op1.number = op1.number.divide(op2.number, BigDecimal.ROUND_HALF_UP); break;
+			case ExprParser.DIV:
+				if (op2.number.equals(0))
+					throw new SDMSException(new SDMSMessage((SystemEnvironment) null, "03802071627", "Error evaluating expression. Division by zero"));
+				op1.number = op1.number.divide(op2.number, BigDecimal.ROUND_HALF_UP);
+				break;
 			case ExprParser.TIMES:	op1.number = op1.number.multiply(op2.number); break;
 			case ExprParser.MOD:
 				BigInteger n1 = op1.number.toBigInteger();
 				BigInteger n2 = op2.number.toBigInteger();
+				if (n2.equals(0))
+					throw new SDMSException(new SDMSMessage((SystemEnvironment) null, "03802071628", "Error evaluating expression. Division by zero"));
 				op1.number = new BigDecimal(n1.mod(n2));
 				break;
 		}
@@ -355,16 +374,53 @@ class ParseObject {
 	}
 
 	public ParseObject add(ParseObject o2, Integer s, boolean checkOnly)
+		throws SDMSException
 	{
+		// adding two parameters (operator == PLUS) is an ambiguous operation
+		// a. if "this" is a number and the other operand is too, the result will be a number
+		// b. if "this" is a number and the other operand can be converted into a number, the result will be a number, else "this" is converted to a string
+		// c. if "this" is a string, the result will be a string
+		// d. if "this" is indeterminated, it is tried to interpret it as a number first
+		//
+		ParseObject op1 = this;
+		ParseObject op2 = null;
+
 		if(checkOnly) return new ParseObject();
 		int operator = s.intValue();
-		if(type == STRING && operator == ExprParser.PLUS) {
-			ParseObject str = o2.adjust(STRING, checkOnly);
-			str.string = string + str.string;
-			return str;
+		if (operator == ExprParser.PLUS) {
+			if (op1.type == INDETERMINED) {
+				// here we try to convert to a number format first.
+				// if that fails, it must be a string
+				// This is case d.
+				try {
+					op1 = adjust(NUMBER, checkOnly);
+				} catch (CommonErrorException cee) {
+					op1 = adjust(STRING, checkOnly);
+				}
+			}
+			if(op1.type == STRING) {
+				// Case c. or case d. in case of an invalid number format of "this"
+				op2 = o2.adjust(STRING, checkOnly);
+				op2.string = op1.string + op2.string;
+				return op2;
+			} else {
+				if (o2.type == NUMBER) {
+					// Case a.; nothing to do
+				} else {
+					// Case b.
+					try {
+						op2 = o2.adjust(NUMBER, checkOnly);
+					} catch (CommonErrorException cee) {
+						op1 = op1.adjust(STRING, checkOnly);
+						op2.string = op1.string + op2.string;
+						return op2;
+					}
+				}
+			}
 		}
-		ParseObject op1 = adjust(NUMBER, checkOnly);
-		ParseObject op2 = o2.adjust(NUMBER, checkOnly);
+		if (op1.type != NUMBER)
+			op1 = adjust(NUMBER, checkOnly);
+		op2 = o2.adjust(NUMBER, checkOnly);
 		switch(operator) {
 			case ExprParser.PLUS:	op1.number = op1.number.add(op2.number); break;
 			case ExprParser.MINUS:	op1.number = op1.number.add(op2.number.negate()); break;
@@ -373,17 +429,37 @@ class ParseObject {
 	}
 
 	public int compareTo(ParseObject o2, boolean checkOnly)
+		throws SDMSException
 	{
-		ParseObject op2 = o2.adjust(type, checkOnly);
+		ParseObject op1 = this;
+		if (type == INDETERMINED) {
+			// we don't know what this is, so we try to adjust to the type of the second operand
+			if (o2.type != INDETERMINED) {
+				try {
+					// this will work if o2 is a String, or "this" has a valid numerical format
+					op1 = adjust(o2.type, checkOnly);
+				} catch (CommonErrorException cee) {
+					// it is pretty certain that both aren't equal, but that doesn't play a role
+					// this method is simply not allowed to fail
+					op1 = adjust(STRING, checkOnly);
+				}
+			} else {
+				// both are undetermined
+				// hence we regard them to be strings
+				op1 = adjust(STRING, checkOnly);
+			}
+		}
+		ParseObject op2 = o2.adjust(op1.type, checkOnly);
 		int val = 0;
-		switch(type) {
-			case NUMBER: val = number.compareTo(op2.number); break;
-			case STRING: val = string.compareTo(op2.string); break;
+		switch(op1.type) {
+			case NUMBER: val = op1.number.compareTo(op2.number); break;
+			case STRING: val = op1.string.compareTo(op2.string); break;
 		}
 		return val;
 	}
 
 	public Boolean compare(ParseObject o2, Integer s, boolean checkOnly)
+		throws SDMSException
 	{
 		if(checkOnly) return Boolean.TRUE;
 		int operator = s.intValue();
@@ -408,6 +484,7 @@ class ParseObject {
 	}
 
 	public ParseObject changeSign(Integer s, boolean checkOnly)
+		throws SDMSException
 	{
 		if(checkOnly) return new ParseObject();
 		int operator = s.intValue();
@@ -424,6 +501,7 @@ class ParseObject {
 	}
 
 	public ParseObject to_int(boolean checkOnly)
+		throws SDMSException
 	{
 		if(checkOnly) return new ParseObject();
 		ParseObject retval = adjust(ParseObject.NUMBER, checkOnly);
@@ -432,6 +510,7 @@ class ParseObject {
 	}
 
 	public ParseObject to_date(ParseObject format, boolean checkOnly)
+		throws SDMSException
 	{
 		if(checkOnly) return new ParseObject();
 		if(type == NUMBER) return this.to_int(false);
@@ -456,6 +535,7 @@ class ParseObject {
 	}
 
 	public ParseObject abs(boolean checkOnly)
+		throws SDMSException
 	{
 		if(checkOnly) return new ParseObject();
 		ParseObject retval = adjust(ParseObject.NUMBER, checkOnly);
@@ -464,6 +544,7 @@ class ParseObject {
 	}
 
 	public ParseObject round(boolean checkOnly)
+		throws SDMSException
 	{
 		if(checkOnly) return new ParseObject();
 		ParseObject retval = adjust(ParseObject.NUMBER, checkOnly);
@@ -472,6 +553,7 @@ class ParseObject {
 	}
 
 	public ParseObject substr(ParseObject v, ParseObject b, boolean checkOnly)
+		throws SDMSException
 	{
 		if(checkOnly) return new ParseObject();
 		ParseObject retval = adjust(STRING, checkOnly);
@@ -486,6 +568,7 @@ class ParseObject {
 	}
 
 	public ParseObject trim(boolean checkOnly)
+		throws SDMSException
 	{
 		if(checkOnly) return new ParseObject();
 		ParseObject retval = adjust(STRING, checkOnly);
@@ -494,6 +577,7 @@ class ParseObject {
 	}
 
 	public ParseObject uppercase(boolean checkOnly)
+		throws SDMSException
 	{
 		if(checkOnly) return new ParseObject();
 		ParseObject retval = adjust(STRING, checkOnly);
@@ -502,11 +586,24 @@ class ParseObject {
 	}
 
 	public ParseObject lowercase(boolean checkOnly)
+		throws SDMSException
 	{
 		if(checkOnly) return new ParseObject();
 		ParseObject retval = adjust(STRING, checkOnly);
 		retval.string = retval.string.toLowerCase();
 		return retval;
+	}
+
+	public ParseObject nvl(ParseObject replacement, boolean checkOnly)
+		throws SDMSException
+	{
+		if(checkOnly) return new ParseObject();
+		if ((type == VOID) ||
+		    (type == STRING && (string == null || string.equals(""))) ||
+		    (type == NUMBER && number == null) ||
+		    (type == DATE && number == null))
+			return replacement;
+		return this;
 	}
 }
 

@@ -120,9 +120,12 @@ trim	=	[Tt][Rr][Ii][Mm]
 uppercase =	[Uu][Pp][Pp][Ee][Rr][Cc][Aa][Ss][Ee]
 lowercase =	[Ll][Oo][Ww][Ee][Rr][Cc][Aa][Ss][Ee]
 not	=	[Nn][Oo][Tt]
+nvl	=	[Nn][Vv][Ll]
 job     =	[Jj][Oo][Bb]
 resource =	[Rr][Ee][Ss][Oo][Uu][Rr][Cc][Ee]
 trigger =	[Tt][Rr][Ii][Gg][Gg][Ee][Rr]
+required =	[Rr][Ee][Qq][Uu][Ii][Rr][Ee][Dd]
+dependent =	[Dd][Ee][Pp][Ee][Nn][Dd][Ee][Nn][Tt]
 identifier =	{alpha}{alnum}*
 stridentifier = [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z|])?
 
@@ -158,6 +161,7 @@ stridentifier = [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z
 <YYINITIAL>{lowercase}		{ proto("LOWERCASE ");		return ExprParser.LOWERCASE; }
 <YYINITIAL>{number}		{ proto("NUMBER ");	value = new BigDecimal(yytext());	return ExprParser.NUMBER; }
 <YYINITIAL>{not}		{ proto("NOT ");		return ExprParser.NOT; }
+<YYINITIAL>{nvl}		{ proto("NVL ");		return ExprParser.NVL; }
 <YYINITIAL>{or}			{ proto("OR ");			return ExprParser.OR; }
 <YYINITIAL>{round}		{ proto("ROUND ");		return ExprParser.ROUND; }
 <YYINITIAL>{str}		{ proto("STR ");		return ExprParser.STR; }
@@ -218,6 +222,36 @@ stridentifier = [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z
 					proto("PARAM ");
 					value = yytext().substring(2 + 9 + 1, yytext().length() - 2); 
 					return ExprParser.RPARAMETER;
+				}
+<YYINITIAL>\${required}\.{identifier}	{ 
+					proto("PARAM ");
+					value = (yytext().substring(10)).toUpperCase(); 
+					return ExprParser.RSPARAMETER;
+				}
+<YYINITIAL>\$\{{required}\.{stridentifier}\}	{ 
+					proto("PARAM ");
+					value = yytext().substring(2 + 9, yytext().length() - 1).toUpperCase(); 
+					return ExprParser.RSPARAMETER;
+				}
+<YYINITIAL>\$\{{required}\.'{stridentifier}'\}	{ 
+					proto("PARAM ");
+					value = yytext().substring(2 + 9 + 1, yytext().length() - 2); 
+					return ExprParser.RSPARAMETER;
+				}
+<YYINITIAL>\${dependent}\.{identifier}	{ 
+					proto("PARAM ");
+					value = (yytext().substring(11)).toUpperCase(); 
+					return ExprParser.DSPARAMETER;
+				}
+<YYINITIAL>\$\{{dependent}\.{stridentifier}\}	{ 
+					proto("PARAM ");
+					value = yytext().substring(2 + 10, yytext().length() - 1).toUpperCase(); 
+					return ExprParser.DSPARAMETER;
+				}
+<YYINITIAL>\$\{{dependent}\.'{stridentifier}'\}	{ 
+					proto("PARAM ");
+					value = yytext().substring(2 + 10 + 1, yytext().length() - 2); 
+					return ExprParser.DSPARAMETER;
 				}
 <YYINITIAL>\${trigger}\.{identifier}	{ 
 					proto("PARAM ");

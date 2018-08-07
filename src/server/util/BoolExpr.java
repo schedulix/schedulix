@@ -57,7 +57,7 @@ public class BoolExpr
 		exprp = null;
 	}
 
-	private void initParser(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, SDMSResource r, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope s, boolean checkOnly)
+	private void initParser(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, SDMSSubmittedEntity requiredSme, SDMSResource r, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope s, boolean checkOnly)
 	throws SDMSException, IOException
 	{
 		if(exprs == null) {
@@ -67,7 +67,7 @@ public class BoolExpr
 			sr.reset();
 			exprs.yyreset(sr);
 		}
-		exprp.set(sysEnv, sme, r, t, tq, s);
+		exprp.set(sysEnv, sme, requiredSme, r, t, tq, s);
 		exprp.checkOnly = checkOnly;
 	}
 
@@ -78,7 +78,7 @@ public class BoolExpr
 		if(condition == null) return;
 
 		try {
-			initParser(sysEnv, null, null, null, null, null, true);
+			initParser(sysEnv, null, null, null, null, null, null, true);
 			exprp.yyparse(exprs);
 		} catch (Exception e) {
 			msg = new SDMSMessage(sysEnv, "03602151611", "Syntax Error ($1) while parsing '$2'", e.toString(), condition);
@@ -88,7 +88,7 @@ public class BoolExpr
 		if(msg != null) throw new CommonErrorException(msg);
 	}
 
-	public boolean checkCondition(SystemEnvironment sysEnv, SDMSResource r, SDMSSubmittedEntity sme, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope s)
+	public boolean checkCondition(SystemEnvironment sysEnv, SDMSResource r, SDMSSubmittedEntity sme, SDMSSubmittedEntity requiredSme, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope s)
 	throws SDMSException
 	{
 		Object retval;
@@ -96,7 +96,7 @@ public class BoolExpr
 
 		if(condition == null) return true;
 
-		retval = evalExpression(sysEnv, r, sme, t, tq, s);
+		retval = evalExpression(sysEnv, r, sme, requiredSme, t, tq, s);
 		if (retval == null) return false;
 		if (retval instanceof Boolean)
 			rc = ((Boolean)retval).booleanValue();
@@ -118,7 +118,7 @@ public class BoolExpr
 		return rc;
 	}
 
-	public Object evalExpression(SystemEnvironment sysEnv, SDMSResource r, SDMSSubmittedEntity sme, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope s)
+	public Object evalExpression(SystemEnvironment sysEnv, SDMSResource r, SDMSSubmittedEntity sme, SDMSSubmittedEntity requiredSme, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope s)
 	throws SDMSException
 	{
 		Object rc = null;
@@ -127,7 +127,7 @@ public class BoolExpr
 		if(condition == null) return null;
 
 		try {
-			initParser(sysEnv, sme, r, t, tq, s, false);
+			initParser(sysEnv, sme, requiredSme, r, t, tq, s, false);
 			rc = exprp.yyparse(exprs);
 		} catch (IOException ioe) {
 			msg = new SDMSMessage(sysEnv, "03506171435", "I/O Error parsing '$1'", condition);
