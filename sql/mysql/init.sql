@@ -35,14 +35,14 @@ INSERT INTO GROUPS (ID, NAME,     DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANG
 INSERT INTO GROUPS (ID, NAME,    DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
 	VALUES     (81, 'ADMIN', 0,              0,            0,         0,            0);
 
-INSERT INTO USERS (ID, NAME,     PASSWD,                                SALT, METHOD, IS_ENABLED, DEFAULT_G_ID, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
-	VALUES    (0,  'SYSTEM', 'ba143b7e 75dde00e 8f0fd6f4 6cf65faf', null, 0,      1,          81,           0,              0,            0,         0,            0);
+INSERT INTO USERS (ID, NAME,     PASSWD,                                SALT, METHOD, IS_ENABLED, DEFAULT_G_ID, CONNECTION_TYPE, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
+	VALUES    (0,  'SYSTEM', 'ba143b7e 75dde00e 8f0fd6f4 6cf65faf', null, 0,      1,          81,           0,               0,              0,            0,         0,            0);
 
-INSERT INTO USERS (ID, NAME,     PASSWD,                                SALT, METHOD, IS_ENABLED, DEFAULT_G_ID, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
-	VALUES    (1,  'NOBODY', 'xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx', null, 0,      0,          80,           0,              0,            0,         0,            0);
+INSERT INTO USERS (ID, NAME,     PASSWD,                                SALT, METHOD, IS_ENABLED, DEFAULT_G_ID, CONNECTION_TYPE, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
+	VALUES    (1,  'NOBODY', 'xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx', null, 0,      0,          80,           0,               0,              0,            0,         0,            0);
 
-INSERT INTO USERS (ID, NAME,       PASSWD,                              SALT, METHOD, IS_ENABLED, DEFAULT_G_ID, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
-	VALUES    (2,  'INTERNAL', 'xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx', null, 0,    0,          81,           0,              0,            0,         0,            0);
+INSERT INTO USERS (ID, NAME,       PASSWD,                              SALT, METHOD, IS_ENABLED, DEFAULT_G_ID, CONNECTION_TYPE, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
+	VALUES    (2,  'INTERNAL', 'xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx', null, 0,    0,          81,           0,               0,              0,            0,         0,            0);
 
 INSERT INTO SCHEDULING_HIERARCHY (
 	ID, SE_PARENT_ID, SE_CHILD_ID, ALIAS_NAME, IS_STATIC, IS_DISABLED, PRIORITY, SUSPEND, MERGE_MODE, ESTP_ID,
