@@ -113,7 +113,6 @@ public class RunTest extends Node
 		if(!SystemEnvironment.runMode.toUpperCase().equals("TEST")) {
 			return;
 		}
-
 		switch(testid) {
 		case 1:
 			do_test1(sysEnv);
@@ -154,6 +153,9 @@ public class RunTest extends Node
 		case 13:
 			do_test13(sysEnv);
 			break;
+			case 14:
+				do_test14(sysEnv);
+				break;
 		default:
 		}
 
@@ -644,6 +646,30 @@ public class RunTest extends Node
 		} else {
 			result.setFeedback(new SDMSMessage(sysEnv, "03711230834", "SME " + objectId + " OK"));
 		}
+	}
+
+	private void disableSme(SystemEnvironment sysEnv, Long smeId)
+	throws SDMSException
+	{
+		SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
+		if (sme.getIsDisabled(sysEnv).booleanValue()) return;
+		sme.setIsDisabled(sysEnv, Boolean.TRUE);
+		sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.DEPENDENCY_WAIT));
+		sme.checkDependencies(sysEnv);
+		Vector v = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, smeId);
+		Iterator i = v.iterator();
+		while (i.hasNext()) {
+			SDMSHierarchyInstance hi = (SDMSHierarchyInstance)(i.next());
+			Long childId = hi.getChildId(sysEnv);
+			disableSme(sysEnv, childId);
+		}
+	}
+
+	private void do_test14(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		disableSme(sysEnv, objectId);
+		result.setFeedback(new SDMSMessage(sysEnv, "03711230834", "SME " + objectId + " disabled"));
 	}
 }
 
