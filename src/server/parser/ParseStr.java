@@ -66,6 +66,7 @@ public class ParseStr
 	public static final String S_BEFORE		= "BEFORE";
 	public static final String S_BEFORE_FINAL	= "BEFORE_FINAL";
 	public static final String S_BMULTICMD		= "BEGIN MULTICOMMAND";
+	public static final String S_BOTH		= "BOTH";
 	public static final String S_BROKEN		= "BROKEN";
 	public static final String S_BROKEN_ACTIVE	= "BROKEN_ACTIVE";
 	public static final String S_BROKEN_FINISHED	= "BROKEN_FINISHED";
@@ -125,6 +126,7 @@ public class ParseStr
 	public static final String S_DIR		= "DIR";
 	public static final String S_DISABLE		= "DISABLE";
 	public static final String S_DISCONNECT		= "DISCONNECT";
+	public static final String S_DISPATCH		= "DISPATCH";
 	public static final String S_DISTRIBUTION	= "DISTRIBUTION";
 	public static final String S_DROP		= "DROP";
 	public static final String S_DUMP		= "DUMP";
@@ -154,8 +156,10 @@ public class ParseStr
 	public static final String S_EXPIRED		= "EXPIRED";
 	public static final String S_EXPORT		= "EXPORT";
 	public static final String S_EXPR		= "EXPR";
+	public static final String S_EXTERNAL		= "EXTERNAL";
 	public static final String S_EXT_PID		= "EXT_PID";
 	public static final String S_FACTOR		= "FACTOR";
+	public static final String S_FAIL		= "FAIL";
 	public static final String S_FAILURE		= "FAILURE";
 	public static final String S_FATAL		= "FATAL";
 	public static final String S_FILENAME		= "FILENAME";
@@ -204,6 +208,7 @@ public class ParseStr
 	public static final String S_INFO		= "INFO";
 	public static final String S_INITIAL_STATUS	= "INITIAL_STATUS";
 	public static final String S_INSTANCE		= "INSTANCE";
+	public static final String S_INTERNAL		= "INTERNAL";
 	public static final String S_INTERVAL		= "INTERVAL";
 	public static final String S_INVERSE		= "INVERSE";
 	public static final String S_IS			= "IS";
@@ -329,6 +334,7 @@ public class ParseStr
 	public static final String S_RERUN_PROGRAM	= "RERUN_PROGRAM";
 	public static final String S_RERUN_RECURSIVE	= "RERUN_RECURSIVE";
 	public static final String S_RESOURCE		= "RESOURCE";
+	public static final String S_RESOLVE		= "RESOLVE";
 	public static final String S_RESOURCE_STATUS	= "RESOURCE_STATUS";
 	public static final String S_RESOURCE_STATUS_DEFINITION = "RESOURCE_STATUS_DEFINITION";
 	public static final String S_RESOURCE_STATUS_MAPPING = "RESOURCE_STATUS_MAPPING";
@@ -354,6 +360,7 @@ public class ParseStr
 	public static final String S_SCHEDULED_EVENT	= "SCHEDULED_EVENT";
 	public static final String S_SCOPE		= "SCOPE";
 	public static final String S_SELECT		= "SELECT";
+	public static final String S_SELECT_CONDITION	= "SELECT_CONDIION";
 	public static final String S_SELECTION		= "SELECTION";
 	public static final String S_SELECT_FROM	= "FROM";
 	public static final String S_SELECT_NUM		= "NUM";
@@ -512,6 +519,9 @@ public class ParseStr
 
 	public final static Integer I_DD_ERROR		= new Integer(SDMSDependencyDefinition.ERROR);
 	public final static Integer I_DD_IGNORE		= new Integer(SDMSDependencyDefinition.IGNORE);
+	public final static Integer I_DD_INTERNAL	= new Integer(SDMSDependencyDefinition.INTERNAL);
+	public final static Integer I_DD_EXTERNAL	= new Integer(SDMSDependencyDefinition.EXTERNAL);
+	public final static Integer I_DD_BOTH		= new Integer(SDMSDependencyDefinition.BOTH);
 	public final static Integer I_DD_SUSPEND	= new Integer(SDMSDependencyDefinition.SUSPEND);
 	public final static Integer I_DD_DEFER		= new Integer(SDMSDependencyDefinition.DEFER);
 	public final static Integer I_DD_DEFER_IGNORE	= new Integer(SDMSDependencyDefinition.DEFER_IGNORE);
@@ -610,6 +620,7 @@ public class ParseStr
 		mapper.put(new Integer(Parser.DEREGISTER),		ParseStr.S_DEREGISTER);
 		mapper.put(new Integer(Parser.DIR),			ParseStr.S_DIR);
 		mapper.put(new Integer(Parser.DISABLE),			ParseStr.S_DISABLE);
+		mapper.put(new Integer(Parser.DISPATCH),		ParseStr.S_DISPATCH);
 		mapper.put(new Integer(Parser.DISCONNECT),		ParseStr.S_DISCONNECT);
 		mapper.put(new Integer(Parser.DROP),			ParseStr.S_DROP);
 		mapper.put(new Integer(Parser.DUMP),			ParseStr.S_DUMP);
@@ -641,6 +652,7 @@ public class ParseStr
 		mapper.put(new Integer(Parser.EXPR),			ParseStr.S_EXPR);
 		mapper.put(new Integer(Parser.EXT_PID),			ParseStr.S_EXT_PID);
 		mapper.put(new Integer(Parser.FACTOR),			ParseStr.S_FACTOR);
+		mapper.put(new Integer(Parser.FAIL),			ParseStr.S_FAIL);
 		mapper.put(new Integer(Parser.FAILURE),			ParseStr.S_FAILURE);
 		mapper.put(new Integer(Parser.FATAL),			ParseStr.S_FATAL);
 		mapper.put(new Integer(Parser.FILTER),			ParseStr.S_FILTER);
@@ -788,6 +800,7 @@ public class ParseStr
 		mapper.put(new Integer(Parser.REQUESTABLE_AMOUNT),	ParseStr.S_REQUESTABLE_AMOUNT);
 		mapper.put(new Integer(Parser.RERUN),			ParseStr.S_RERUN);
 		mapper.put(new Integer(Parser.RERUN_PROGRAM),		ParseStr.S_RERUN_PROGRAM);
+		mapper.put(new Integer(Parser.RESOLVE),			ParseStr.S_RESOLVE);
 		mapper.put(new Integer(Parser.RESOURCE),		ParseStr.S_RESOURCE);
 		mapper.put(new Integer(Parser.RESOURCE_STATUS),		ParseStr.S_RESOURCE_STATUS);
 		mapper.put(new Integer(Parser.RESOURCE_STATUS_DEFINITION),	ParseStr.S_RESOURCE_STATUS_DEFINITION);
@@ -812,6 +825,7 @@ public class ParseStr
 		mapper.put(new Integer(Parser.SCHEDULED_EVENT),		ParseStr.S_SCHEDULED_EVENT);
 		mapper.put(new Integer(Parser.SCOPE),			ParseStr.S_SCOPE);
 		mapper.put(new Integer(Parser.SELECT),			ParseStr.S_SELECT);
+		mapper.put(new Integer(Parser.SELECT_CONDITION),	ParseStr.S_SELECT_CONDITION);
 		mapper.put(new Integer(Parser.SELECTION),		ParseStr.S_SELECTION);
 		mapper.put(new Integer(Parser.SERIAL),			ParseStr.S_SERIAL);
 		mapper.put(new Integer(Parser.SERVER),			ParseStr.S_SERVER);

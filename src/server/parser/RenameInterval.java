@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import de.independit.scheduler.server.*;
@@ -49,7 +47,7 @@ public class RenameInterval
 	public void go (SystemEnvironment sysEnv)
 	throws SDMSException
 	{
-		final SDMSInterval ival = SDMSIntervalTable.idx_name_getUnique (sysEnv, name1);
+		final SDMSInterval ival = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(name1, null));
 		ival.setName (sysEnv, name2);
 
 		result.setFeedback (new SDMSMessage (sysEnv, "04207191924", "Interval renamed"));

@@ -446,7 +446,7 @@ public class ObjectURL
 	{
 		mappedName = getObjectName(sysEnv, name, seSpec);
 		SDMSInterval p = null;
-		p = SDMSIntervalTable.idx_name_getUnique(sysEnv, mappedName);
+		p = SDMSIntervalTable.idx_name_objId_getUnique(sysEnv, new SDMSKey(mappedName, null));
 		return p;
 	}
 
