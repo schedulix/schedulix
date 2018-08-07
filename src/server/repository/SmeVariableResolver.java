@@ -98,6 +98,11 @@ public class SmeVariableResolver extends VariableResolver
 	public final static String S_ACTIVE_TIME	= SDMSSubmittedEntity.S_ACTIVE_TIME;
 	public final static String S_IDLE_PCT		= SDMSSubmittedEntity.S_IDLE_PCT;
 
+	public final static String S_SUBMITTER		= SDMSSubmittedEntity.S_SUBMITTER;
+	public final static String S_SUBMITGROUP	= SDMSSubmittedEntity.S_SUBMITGROUP;
+	public final static String S_SEOWNER		= SDMSSubmittedEntity.S_SEOWNER;
+	public final static String S_ENVIRONMENT	= SDMSSubmittedEntity.S_ENVIRONMENT;
+
 	public final static int I_JOBID		= 1;
 	public final static int I_MASTERID	= 2;
 	public final static int I_KEY		= 3;
@@ -153,6 +158,10 @@ public class SmeVariableResolver extends VariableResolver
 	public final static int I_PROCESS_TIME		= 54;
 	public final static int I_ACTIVE_TIME		= 55;
 	public final static int I_IDLE_PCT		= 56;
+	public final static int I_SUBMITTER		= 57;
+	public final static int I_SUBMITGROUP		= 58;
+	public final static int I_ENVIRONMENT		= 59;
+	public final static int I_SEOWNER		= 60;
 
 	private final static HashMap specialNames = new HashMap();
 
@@ -213,6 +222,10 @@ public class SmeVariableResolver extends VariableResolver
 		specialNames.put(S_PROCESS_TIME,	new Integer(I_PROCESS_TIME));
 		specialNames.put(S_ACTIVE_TIME,	new Integer(I_ACTIVE_TIME));
 		specialNames.put(S_IDLE_PCT,	new Integer(I_IDLE_PCT));
+		specialNames.put(S_SUBMITTER,	new Integer(I_SUBMITTER));
+		specialNames.put(S_SUBMITGROUP,	new Integer(I_SUBMITGROUP));
+		specialNames.put(S_ENVIRONMENT,	new Integer(I_ENVIRONMENT));
+		specialNames.put(S_SEOWNER,	new Integer(I_SEOWNER));
 	}
 
 	protected String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, boolean fastAccess, String mode, boolean triggercontext, long version, SDMSScope evalScope)
@@ -276,7 +289,7 @@ public class SmeVariableResolver extends VariableResolver
 			}
 		}
 
-		if(specialNames.containsKey(key)) return getSpecialValue(sysEnv, thisSme, key, triggercontext, evalScope);
+		if(specialNames.containsKey(key) || SystemEnvironment.scopeSysVars.contains(key)) return getSpecialValue(sysEnv, thisSme, key, triggercontext, evalScope);
 		try {
 			ev = SDMSEntityVariableTable.idx_smeId_Name_getUnique(sysEnv, new SDMSKey(thisSme.getId(sysEnv), key));
 			Long evLink = ev.getEvLink(sysEnv);
@@ -383,7 +396,7 @@ public class SmeVariableResolver extends VariableResolver
 		throws SDMSException
 	{
 		long seVersion;
-		int varno = ((Integer) specialNames.get(key)).intValue();
+		int varno;
 		int trObjectType;
 		long sysdate;
 		String s;
@@ -404,314 +417,353 @@ public class SmeVariableResolver extends VariableResolver
 		Integer trSeq;
 		Boolean isRestartable;
 		int i;
+		Integer ivarno = ((Integer) specialNames.get(key));
+		if (ivarno != null) {
 
-		switch(varno) {
-			case I_JOBID:
-				return thisSme.getId(sysEnv).toString();
+			varno = ivarno.intValue();
 
-			case I_SEID:
-				return thisSme.getSeId(sysEnv).toString();
+			switch(varno) {
+				case I_JOBID:
+					return thisSme.getId(sysEnv).toString();
 
-			case I_MASTERID:
-				return thisSme.getMasterId(sysEnv).toString();
+				case I_SEID:
+					return thisSme.getSeId(sysEnv).toString();
 
-			case I_KEY:
-				return thisSme.getAccessKey(sysEnv).toString();
+				case I_MASTERID:
+					return thisSme.getMasterId(sysEnv).toString();
 
-			case I_PID:
-				s = thisSme.getExtPid(sysEnv);
-				if(s == null) return emptyString;
-				i = s.indexOf(SDMSSubmittedEntity.PID_SEP);
-				return s.substring(0, i);
+				case I_KEY:
+					return thisSme.getAccessKey(sysEnv).toString();
 
-			case I_LOGFILE:
-				s = thisSme.getLogfile(sysEnv);
-				return (s == null ? emptyString : s);
+				case I_PID:
+					s = thisSme.getExtPid(sysEnv);
+					if(s == null) return emptyString;
+					i = s.indexOf(SDMSSubmittedEntity.PID_SEP);
+					return s.substring(0, i);
 
-			case I_ERRORLOG:
-				s = thisSme.getErrlogfile(sysEnv);
-				return (s == null ? emptyString : s);
+				case I_LOGFILE:
+					s = thisSme.getLogfile(sysEnv);
+					return (s == null ? emptyString : s);
 
-			case I_WORKDIR:
-				s = thisSme.getWorkdir(sysEnv);
-				return (s == null ? emptyString : s);
+				case I_ERRORLOG:
+					s = thisSme.getErrlogfile(sysEnv);
+					return (s == null ? emptyString : s);
 
-			case I_SDMSHOST:
-				return SystemEnvironment.hostname;
+				case I_WORKDIR:
+					s = thisSme.getWorkdir(sysEnv);
+					return (s == null ? emptyString : s);
 
-			case I_SDMSPORT:
-				return emptyString + SystemEnvironment.port;
+				case I_SDMSHOST:
+					return SystemEnvironment.hostname;
 
-			case I_JOBNAME:
-				seVersion = thisSme.getSeVersion(sysEnv).longValue();
-				se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
-				return (se == null ? emptyString : se.pathString(sysEnv, seVersion));
+				case I_SDMSPORT:
+					return emptyString + SystemEnvironment.port;
 
-			case I_JOBTAG:
-				s = thisSme.getChildTag(sysEnv);
-				return (s == null ? emptyString : s);
+				case I_JOBNAME:
+					seVersion = thisSme.getSeVersion(sysEnv).longValue();
+					se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
+					return (se == null ? emptyString : se.pathString(sysEnv, seVersion));
 
-			case I_TRNAME:
-				trId = thisSme.getTrId(sysEnv);
-				if (trId == null) return emptyString;
-				t = SDMSTriggerTable.getObject(sysEnv, trId, thisSme.getSeVersion(sysEnv).longValue());
-				return t.getName(sysEnv);
+				case I_JOBTAG:
+					s = thisSme.getChildTag(sysEnv);
+					return (s == null ? emptyString : s);
 
-			case I_TRTYPE:
-				trId = thisSme.getTrId(sysEnv);
-				if (trId == null) return emptyString;
-				t = SDMSTriggerTable.getObject(sysEnv, trId, thisSme.getSeVersion(sysEnv).longValue());
-				return t.getObjectTypeAsString(sysEnv);
+				case I_TRNAME:
+					trId = thisSme.getTrId(sysEnv);
+					if (trId == null) return emptyString;
+					t = SDMSTriggerTable.getObject(sysEnv, trId, thisSme.getSeVersion(sysEnv).longValue());
+					return t.getName(sysEnv);
 
-			case I_TRBASE:
-				baseSmeId = thisSme.getBaseSmeId(sysEnv);
-				if (baseSmeId == null) return emptyString;
-				sme = SDMSSubmittedEntityTable.getObject(sysEnv, baseSmeId);
-				seVersion = sme.getSeVersion(sysEnv).longValue();
-				se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), seVersion);
-				return se.pathString(sysEnv, seVersion);
+				case I_TRTYPE:
+					trId = thisSme.getTrId(sysEnv);
+					if (trId == null) return emptyString;
+					t = SDMSTriggerTable.getObject(sysEnv, trId, thisSme.getSeVersion(sysEnv).longValue());
+					return t.getObjectTypeAsString(sysEnv);
 
-			case I_TRBASEID:
-				baseSmeId = thisSme.getBaseSmeId(sysEnv);
-				if (baseSmeId == null) return emptyString;
-				sme = SDMSSubmittedEntityTable.getObject(sysEnv, baseSmeId);
-				return (sme.getId(sysEnv)).toString();
+				case I_TRBASE:
+					baseSmeId = thisSme.getBaseSmeId(sysEnv);
+					if (baseSmeId == null) return emptyString;
+					sme = SDMSSubmittedEntityTable.getObject(sysEnv, baseSmeId);
+					seVersion = sme.getSeVersion(sysEnv).longValue();
+					se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), seVersion);
+					return se.pathString(sysEnv, seVersion);
 
-			case I_TRBASEJOBID:
-				baseSmeId = thisSme.getBaseSmeId(sysEnv);
-				if (baseSmeId == null) return emptyString;
-				return baseSmeId.toString();
+				case I_TRBASEID:
+					baseSmeId = thisSme.getBaseSmeId(sysEnv);
+					if (baseSmeId == null) return emptyString;
+					sme = SDMSSubmittedEntityTable.getObject(sysEnv, baseSmeId);
+					return (sme.getId(sysEnv)).toString();
 
-			case I_TRREASON:
-				reasonSmeId = thisSme.getReasonSmeId(sysEnv);
-				if (reasonSmeId == null) return emptyString;
-				sme = SDMSSubmittedEntityTable.getObject(sysEnv, reasonSmeId);
-				seVersion = sme.getSeVersion(sysEnv).longValue();
-				se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), seVersion);
-				return se.pathString(sysEnv, seVersion);
+				case I_TRBASEJOBID:
+					baseSmeId = thisSme.getBaseSmeId(sysEnv);
+					if (baseSmeId == null) return emptyString;
+					return baseSmeId.toString();
 
-			case I_TRREASONID:
-				reasonSmeId = thisSme.getReasonSmeId(sysEnv);
-				if (reasonSmeId == null) return emptyString;
-				sme = SDMSSubmittedEntityTable.getObject(sysEnv, reasonSmeId);
-				return (sme.getId(sysEnv)).toString();
+				case I_TRREASON:
+					reasonSmeId = thisSme.getReasonSmeId(sysEnv);
+					if (reasonSmeId == null) return emptyString;
+					sme = SDMSSubmittedEntityTable.getObject(sysEnv, reasonSmeId);
+					seVersion = sme.getSeVersion(sysEnv).longValue();
+					se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), seVersion);
+					return se.pathString(sysEnv, seVersion);
 
-			case I_TRREASONJOBID:
-				reasonSmeId = thisSme.getReasonSmeId(sysEnv);
-				if (reasonSmeId == null) return emptyString;
-				return reasonSmeId.toString();
+				case I_TRREASONID:
+					reasonSmeId = thisSme.getReasonSmeId(sysEnv);
+					if (reasonSmeId == null) return emptyString;
+					sme = SDMSSubmittedEntityTable.getObject(sysEnv, reasonSmeId);
+					return (sme.getId(sysEnv)).toString();
 
-			case I_TRORIGIN:
-				fireSmeId = thisSme.getFireSmeId(sysEnv);
-				if (fireSmeId == null) return emptyString;
-				sme = SDMSSubmittedEntityTable.getObject(sysEnv, fireSmeId);
-				seVersion = sme.getSeVersion(sysEnv).longValue();
-				se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), seVersion);
-				return se.pathString(sysEnv, seVersion);
+				case I_TRREASONJOBID:
+					reasonSmeId = thisSme.getReasonSmeId(sysEnv);
+					if (reasonSmeId == null) return emptyString;
+					return reasonSmeId.toString();
 
-			case I_TRORIGINID:
-				fireSmeId = thisSme.getFireSmeId(sysEnv);
-				if (fireSmeId == null) return emptyString;
-				sme = SDMSSubmittedEntityTable.getObject(sysEnv, fireSmeId);
-				return (sme.getId(sysEnv)).toString();
+				case I_TRORIGIN:
+					fireSmeId = thisSme.getFireSmeId(sysEnv);
+					if (fireSmeId == null) return emptyString;
+					sme = SDMSSubmittedEntityTable.getObject(sysEnv, fireSmeId);
+					seVersion = sme.getSeVersion(sysEnv).longValue();
+					se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), seVersion);
+					return se.pathString(sysEnv, seVersion);
 
-			case I_TRORIGINJOBID:
-				fireSmeId = thisSme.getFireSmeId(sysEnv);
-				if (fireSmeId == null) return emptyString;
-				return fireSmeId.toString();
+				case I_TRORIGINID:
+					fireSmeId = thisSme.getFireSmeId(sysEnv);
+					if (fireSmeId == null) return emptyString;
+					sme = SDMSSubmittedEntityTable.getObject(sysEnv, fireSmeId);
+					return (sme.getId(sysEnv)).toString();
 
-			case I_TRSEQ:
-				trSeq = thisSme.getTrSeq(sysEnv);
-				if (trSeq == null) return emptyString;
-				return trSeq.toString();
+				case I_TRORIGINJOBID:
+					fireSmeId = thisSme.getFireSmeId(sysEnv);
+					if (fireSmeId == null) return emptyString;
+					return fireSmeId.toString();
 
-			case I_TROSTATE:
-				trId = thisSme.getTrId(sysEnv);
-				if (trId == null) return emptyString;
-				t = SDMSTriggerTable.getObject(sysEnv, trId, thisSme.getSeVersion(sysEnv).longValue());
-				trObjectType = t.getObjectType(sysEnv).intValue();
-				if (trObjectType == SDMSTrigger.JOB_DEFINITION) {
-					return emptyString;
-				}
-				trSdIdOld = thisSme.getTrSdIdOld(sysEnv);
-				rsd = SDMSResourceStateDefinitionTable.getObject(sysEnv, trSdIdOld, thisSme.getSeVersion(sysEnv).longValue());
-				return rsd.getName(sysEnv);
+				case I_TRSEQ:
+					trSeq = thisSme.getTrSeq(sysEnv);
+					if (trSeq == null) return emptyString;
+					return trSeq.toString();
 
-			case I_TRNSTATE:
-				trId = thisSme.getTrId(sysEnv);
-				if (trId == null) return emptyString;
-				t = SDMSTriggerTable.getObject(sysEnv, trId, thisSme.getSeVersion(sysEnv).longValue());
-				trObjectType = t.getObjectType(sysEnv).intValue();
-				if (trObjectType == SDMSTrigger.JOB_DEFINITION) {
-					trSdIdNew = thisSme.getTrSdIdNew(sysEnv);
-					if (trSdIdNew == null) return emptyString;
-					esd = SDMSExitStateDefinitionTable.getObject(sysEnv, trSdIdNew, thisSme.getSeVersion(sysEnv).longValue());
-					return esd.getName(sysEnv);
-				} else {
-					trSdIdNew = thisSme.getTrSdIdNew(sysEnv);
-					rsd = SDMSResourceStateDefinitionTable.getObject(sysEnv, trSdIdNew, thisSme.getSeVersion(sysEnv).longValue());
+				case I_TROSTATE:
+					trId = thisSme.getTrId(sysEnv);
+					if (trId == null) return emptyString;
+					t = SDMSTriggerTable.getObject(sysEnv, trId, thisSme.getSeVersion(sysEnv).longValue());
+					trObjectType = t.getObjectType(sysEnv).intValue();
+					if (trObjectType == SDMSTrigger.JOB_DEFINITION) {
+						return emptyString;
+					}
+					trSdIdOld = thisSme.getTrSdIdOld(sysEnv);
+					rsd = SDMSResourceStateDefinitionTable.getObject(sysEnv, trSdIdOld, thisSme.getSeVersion(sysEnv).longValue());
 					return rsd.getName(sysEnv);
-				}
 
-			case I_TRWARNING:
-				return emptyString;
+				case I_TRNSTATE:
+					trId = thisSme.getTrId(sysEnv);
+					if (trId == null) return emptyString;
+					t = SDMSTriggerTable.getObject(sysEnv, trId, thisSme.getSeVersion(sysEnv).longValue());
+					trObjectType = t.getObjectType(sysEnv).intValue();
+					if (trObjectType == SDMSTrigger.JOB_DEFINITION) {
+						trSdIdNew = thisSme.getTrSdIdNew(sysEnv);
+						if (trSdIdNew == null) return emptyString;
+						esd = SDMSExitStateDefinitionTable.getObject(sysEnv, trSdIdNew, thisSme.getSeVersion(sysEnv).longValue());
+						return esd.getName(sysEnv);
+					} else {
+						trSdIdNew = thisSme.getTrSdIdNew(sysEnv);
+						rsd = SDMSResourceStateDefinitionTable.getObject(sysEnv, trSdIdNew, thisSme.getSeVersion(sysEnv).longValue());
+						return rsd.getName(sysEnv);
+					}
 
-			case I_EXPRUNTIME:
-				seVersion = thisSme.getSeVersion(sysEnv).longValue();
-				se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
-				Integer expRuntime = se.getExpectedRuntime(sysEnv);
-				if(expRuntime != null) return expRuntime.toString();
-				return emptyString;
+				case I_TRWARNING:
+					return emptyString;
 
-			case I_EXPFINALTIME:
-				seVersion = thisSme.getSeVersion(sysEnv).longValue();
-				se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
-				Integer expFinaltime = se.getExpectedFinaltime(sysEnv);
-				if(expFinaltime != null) return expFinaltime.toString();
-				return emptyString;
+				case I_EXPRUNTIME:
+					seVersion = thisSme.getSeVersion(sysEnv).longValue();
+					se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
+					Integer expRuntime = se.getExpectedRuntime(sysEnv);
+					if(expRuntime != null) return expRuntime.toString();
+					return emptyString;
 
-			case I_JOBSTATE:
-				jobState = thisSme.getJobEsdId(sysEnv);
-				if(jobState == null) return emptyString;
-				esd = SDMSExitStateDefinitionTable.getObject(sysEnv, jobState, thisSme.getSeVersion(sysEnv).longValue());
-				return esd.getName(sysEnv);
+				case I_EXPFINALTIME:
+					seVersion = thisSme.getSeVersion(sysEnv).longValue();
+					se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
+					Integer expFinaltime = se.getExpectedFinaltime(sysEnv);
+					if(expFinaltime != null) return expFinaltime.toString();
+					return emptyString;
 
-			case I_MERGEDSTATE:
-				jobState = thisSme.getFinalEsdId(sysEnv);
-				if(jobState == null) return emptyString;
-				esd = SDMSExitStateDefinitionTable.getObject(sysEnv, jobState, thisSme.getSeVersion(sysEnv).longValue());
-				return esd.getName(sysEnv);
+				case I_JOBSTATE:
+					jobState = thisSme.getJobEsdId(sysEnv);
+					if(jobState == null) return emptyString;
+					esd = SDMSExitStateDefinitionTable.getObject(sysEnv, jobState, thisSme.getSeVersion(sysEnv).longValue());
+					return esd.getName(sysEnv);
 
-			case I_PARENTID:
-				parentId = thisSme.getParentId(sysEnv);
-				if(parentId == null) return emptyString;
-				return parentId.toString();
+				case I_MERGEDSTATE:
+					jobState = thisSme.getFinalEsdId(sysEnv);
+					if(jobState == null) return emptyString;
+					esd = SDMSExitStateDefinitionTable.getObject(sysEnv, jobState, thisSme.getSeVersion(sysEnv).longValue());
+					return esd.getName(sysEnv);
 
-			case I_STATE:
-				return thisSme.getStateAsString(sysEnv);
+				case I_PARENTID:
+					parentId = thisSme.getParentId(sysEnv);
+					if(parentId == null) return emptyString;
+					return parentId.toString();
 
-			case I_ISRESTARTABLE:
-				isRestartable = thisSme.getJobIsRestartable(sysEnv);
-				if(isRestartable.booleanValue()) return "1";
-				return "0";
+				case I_STATE:
+					return thisSme.getStateAsString(sysEnv);
 
-			case I_SUBMITTS:
-				ts = thisSme.getSubmitTs(sysEnv);
-				if(ts != null) {
-					if(triggercontext) return emptyString + ts.longValue()/1000;
-					return myFormat.format(new java.util.Date(ts.longValue()));
-				}
-				return emptyString;
+				case I_ISRESTARTABLE:
+					isRestartable = thisSme.getJobIsRestartable(sysEnv);
+					if(isRestartable.booleanValue()) return "1";
+					return "0";
 
-			case I_SYNCTS:
-				ts = thisSme.getSyncTs(sysEnv);
-				if(ts != null) {
-					if(triggercontext) return emptyString + ts.longValue()/1000;
-					return myFormat.format(new java.util.Date(ts.longValue()));
-				}
-				return emptyString;
+				case I_SUBMITTS:
+					ts = thisSme.getSubmitTs(sysEnv);
+					if(ts != null) {
+						if(triggercontext) return emptyString + ts.longValue()/1000;
+						return myFormat.format(new java.util.Date(ts.longValue()));
+					}
+					return emptyString;
 
-			case I_RESOURCETS:
-				ts = thisSme.getResourceTs(sysEnv);
-				if(ts != null) {
-					if(triggercontext) return emptyString + ts.longValue()/1000;
-					return myFormat.format(new java.util.Date(ts.longValue()));
-				}
-				return emptyString;
+				case I_SYNCTS:
+					ts = thisSme.getSyncTs(sysEnv);
+					if(ts != null) {
+						if(triggercontext) return emptyString + ts.longValue()/1000;
+						return myFormat.format(new java.util.Date(ts.longValue()));
+					}
+					return emptyString;
 
-			case I_RUNNABLETS:
-				ts = thisSme.getRunnableTs(sysEnv);
-				if(ts != null) {
-					if(triggercontext) return emptyString + ts.longValue()/1000;
-					return myFormat.format(new java.util.Date(ts.longValue()));
-				}
-				return emptyString;
+				case I_RESOURCETS:
+					ts = thisSme.getResourceTs(sysEnv);
+					if(ts != null) {
+						if(triggercontext) return emptyString + ts.longValue()/1000;
+						return myFormat.format(new java.util.Date(ts.longValue()));
+					}
+					return emptyString;
 
-			case I_STARTTS:
-				ts = thisSme.getStartTs(sysEnv);
-				if(ts != null) {
-					if(triggercontext) return emptyString + ts.longValue()/1000;
-					return myFormat.format(new java.util.Date(ts.longValue()));
-				}
-				return emptyString;
+				case I_RUNNABLETS:
+					ts = thisSme.getRunnableTs(sysEnv);
+					if(ts != null) {
+						if(triggercontext) return emptyString + ts.longValue()/1000;
+						return myFormat.format(new java.util.Date(ts.longValue()));
+					}
+					return emptyString;
 
-			case I_FINISHTS:
-				ts = thisSme.getFinishTs(sysEnv);
-				if(ts != null) {
-					if(triggercontext) return emptyString + ts.longValue()/1000;
-					return myFormat.format(new java.util.Date(ts.longValue()));
-				}
-				return emptyString;
+				case I_STARTTS:
+					ts = thisSme.getStartTs(sysEnv);
+					if(ts != null) {
+						if(triggercontext) return emptyString + ts.longValue()/1000;
+						return myFormat.format(new java.util.Date(ts.longValue()));
+					}
+					return emptyString;
 
-			case I_SYSDATE:
-				sysdate = System.currentTimeMillis();
-				if(triggercontext) return emptyString + sysdate/1000;
-				return myFormat.format(new java.util.Date(sysdate));
+				case I_FINISHTS:
+					ts = thisSme.getFinishTs(sysEnv);
+					if(ts != null) {
+						if(triggercontext) return emptyString + ts.longValue()/1000;
+						return myFormat.format(new java.util.Date(ts.longValue()));
+					}
+					return emptyString;
 
-			case I_WARNING:
-				return emptyString;
+				case I_SYSDATE:
+					sysdate = System.currentTimeMillis();
+					if(triggercontext) return emptyString + sysdate/1000;
+					return myFormat.format(new java.util.Date(sysdate));
 
-			case I_RERUNSEQ:
-				return emptyString + thisSme.getRerunSeq(sysEnv);
+				case I_WARNING:
+					return emptyString;
 
-			case I_SCOPENAME:
-				SDMSScope scope;
-				Long scopeId = thisSme.getScopeId(sysEnv);
-				if (scopeId != null)
-					scope = SDMSScopeTable.getObject(sysEnv, scopeId);
-				else {
-					scope = evalScope;
-				}
-				return (scope == null ? emptyString : scope.pathString(sysEnv));
+				case I_RERUNSEQ:
+					return emptyString + thisSme.getRerunSeq(sysEnv);
 
-			case I_IDLE_TIME:
-				return thisSme.evaluateTime(sysEnv, thisSme.getIdleTime(sysEnv), thisSme.getIdleTs(sysEnv), -1).toString();
+				case I_SCOPENAME:
+					SDMSScope scope;
+					Long scopeId = thisSme.getScopeId(sysEnv);
+					if (scopeId != null)
+						scope = SDMSScopeTable.getObject(sysEnv, scopeId);
+					else {
+						scope = evalScope;
+					}
+					return (scope == null ? emptyString : scope.pathString(sysEnv));
 
-			case I_DEPENDENCY_WAIT_TIME:
-				return thisSme.evaluateTime(sysEnv, thisSme.getDependencyWaitTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_DEPENDENCY_WAIT).toString();
+				case I_IDLE_TIME:
+					return thisSme.evaluateTime(sysEnv, thisSme.getIdleTime(sysEnv), thisSme.getIdleTs(sysEnv), -1).toString();
 
-			case I_SUSPEND_TIME:
-				return thisSme.evaluateTime(sysEnv, thisSme.getSuspendTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SUSPEND).toString();
+				case I_DEPENDENCY_WAIT_TIME:
+					return thisSme.evaluateTime(sysEnv, thisSme.getDependencyWaitTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_DEPENDENCY_WAIT).toString();
 
-			case I_SYNC_TIME:
-				return thisSme.evaluateTime(sysEnv, thisSme.getSyncTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SYNCHRONIZE).toString();
+				case I_SUSPEND_TIME:
+					return thisSme.evaluateTime(sysEnv, thisSme.getSuspendTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SUSPEND).toString();
 
-			case I_RESOURCE_TIME:
-				return thisSme.evaluateTime(sysEnv, thisSme.getResourceTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_RESOURCE).toString();
+				case I_SYNC_TIME:
+					return thisSme.evaluateTime(sysEnv, thisSme.getSyncTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SYNCHRONIZE).toString();
 
-			case I_JOBSERVER_TIME:
-				return thisSme.evaluateTime(sysEnv, thisSme.getJobserverTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_JOBSERVER).toString();
+				case I_RESOURCE_TIME:
+					return thisSme.evaluateTime(sysEnv, thisSme.getResourceTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_RESOURCE).toString();
 
-			case I_RESTARTABLE_TIME:
-				return thisSme.evaluateTime(sysEnv, thisSme.getRestartableTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_RESTARTABLE).toString();
+				case I_JOBSERVER_TIME:
+					return thisSme.evaluateTime(sysEnv, thisSme.getJobserverTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_JOBSERVER).toString();
 
-			case I_CHILD_WAIT_TIME:
-				return thisSme.evaluateTime(sysEnv, thisSme.getChildWaitTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_CHILD_WAIT).toString();
+				case I_RESTARTABLE_TIME:
+					return thisSme.evaluateTime(sysEnv, thisSme.getRestartableTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_RESTARTABLE).toString();
 
-			case I_PROCESS_TIME:
-			case I_ACTIVE_TIME:
-			case I_IDLE_PCT: {
-				Integer dwTime = thisSme.evaluateTime(sysEnv, thisSme.getDependencyWaitTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_DEPENDENCY_WAIT);
-				Long finalTs = thisSme.getFinalTs(sysEnv);
-				int endTs;
-				if (finalTs != null)
-					endTs = (int)((finalTs.longValue() - thisSme.getSubmitTs(sysEnv).longValue()) / 1000);
-				else
-					endTs = (int)((sysEnv.cEnv.last() - thisSme.getSubmitTs(sysEnv).longValue()) / 1000);
-				int processTime = endTs - dwTime.intValue();
-				switch(varno) {
+				case I_CHILD_WAIT_TIME:
+					return thisSme.evaluateTime(sysEnv, thisSme.getChildWaitTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_CHILD_WAIT).toString();
+
 				case I_PROCESS_TIME:
-					return new Integer(processTime).toString();
 				case I_ACTIVE_TIME:
-				case I_IDLE_PCT:
-					Integer idleTime = thisSme.evaluateTime(sysEnv, thisSme.getIdleTime(sysEnv), thisSme.getIdleTs(sysEnv), -1);
-					if (varno == I_ACTIVE_TIME)
-						return new Integer(processTime  - idleTime.intValue()).toString();
-					else if (processTime == 0) return emptyString;
-					return new Integer(idleTime.intValue() * 100 / processTime).toString();
-				}
-			}
+				case I_IDLE_PCT: {
+						Integer dwTime = thisSme.evaluateTime(sysEnv, thisSme.getDependencyWaitTime(sysEnv), thisSme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_DEPENDENCY_WAIT);
+						Long finalTs = thisSme.getFinalTs(sysEnv);
+						int endTs;
+						if (finalTs != null)
+							endTs = (int)((finalTs.longValue() - thisSme.getSubmitTs(sysEnv).longValue()) / 1000);
+						else
+							endTs = (int)((sysEnv.cEnv.last() - thisSme.getSubmitTs(sysEnv).longValue()) / 1000);
+						int processTime = endTs - dwTime.intValue();
+						switch(varno) {
+							case I_PROCESS_TIME:
+								return new Integer(processTime).toString();
+							case I_ACTIVE_TIME:
+							case I_IDLE_PCT:
+								Integer idleTime = thisSme.evaluateTime(sysEnv, thisSme.getIdleTime(sysEnv), thisSme.getIdleTs(sysEnv), -1);
+								if (varno == I_ACTIVE_TIME)
+									return new Integer(processTime  - idleTime.intValue()).toString();
+								else if (processTime == 0) return emptyString;
+								return new Integer(idleTime.intValue() * 100 / processTime).toString();
+						}
+					}
+				case I_SUBMITTER:
+					Long submitter = thisSme.getCreatorUId(sysEnv);
+					SDMSUser u = SDMSUserTable.getObject(sysEnv, submitter);
+					return u.getName(sysEnv);
+				case I_SUBMITGROUP:
+					Long submitgroup = thisSme.getOwnerId(sysEnv);
+					SDMSGroup g = SDMSGroupTable.getObject(sysEnv, submitgroup);
+					return g.getName(sysEnv);
+				case I_ENVIRONMENT:
+					seVersion = thisSme.getSeVersion(sysEnv).longValue();
+					se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
+					SDMSNamedEnvironment ne = SDMSNamedEnvironmentTable.getObject(sysEnv, se.getNeId(sysEnv), seVersion);
+					return ne.getName(sysEnv);
+				case I_SEOWNER:
+					seVersion = thisSme.getSeVersion(sysEnv).longValue();
+					se = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
+					SDMSGroup og = SDMSGroupTable.getObject(sysEnv, se.getOwnerId(sysEnv));
+					return og.getName(sysEnv);
 
+			}
+		} else {
+			String result;
+			seVersion = thisSme.getSeVersion(sysEnv).longValue();
+			SDMSScope scope;
+			Long scopeId = thisSme.getScopeId(sysEnv);
+			if (scopeId != null)
+				scope = SDMSScopeTable.getObject(sysEnv, scopeId);
+			else {
+				scope = evalScope;
+			}
+			try {
+				result = (scope == null ? emptyString : scope.getVariableValue(sysEnv, key, seVersion));
+			} catch (NotFoundException nfe) {
+				return emptyString;
+			}
+			return result;
 		}
 		throw new FatalException(new SDMSMessage(sysEnv, "03208090953", "Unknown special Parameter : $1", key));
 	}
@@ -889,7 +941,7 @@ public class SmeVariableResolver extends VariableResolver
 											"Run into a loop while trying to resolve variable $1 of job $2", newKey, se.pathString(sysEnv, vers)));
 						} else {
 							if (baseSmeId != null && baseSmeId.equals(tsmeId) && pd != null) {
-								s = getVariableValue(sysEnv, tsme, baseSme, newKey, visited, true , mode, triggercontext, recursionCheck, evalScope);
+								s = getVariableValue(sysEnv, tsme, baseSme, newKey, visited, true, mode, triggercontext, recursionCheck, evalScope);
 							} else {
 								s = tsme.getVariableValue(sysEnv, newKey, true, ParseStr.S_LIBERAL, triggercontext, evalScope);
 							}

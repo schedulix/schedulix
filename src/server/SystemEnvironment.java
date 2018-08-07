@@ -68,10 +68,14 @@ public class SystemEnvironment implements Cloneable
 	private static final String S_LANGLEVEL28  = "2.8";
 	public static final int LANGLEVEL28 = 2;
 
+	private static final String S_LANGLEVEL29  = "2.9";
+	public static final int LANGLEVEL29 = 3;
+
 	private static final String LANGLEVELS[] = {
 		S_LANGLEVEL261,
 		S_LANGLEVEL27,
-		S_LANGLEVEL28
+		S_LANGLEVEL28,
+		S_LANGLEVEL29
 	};
 
 	private static final int DEFAULT_LANGLEVEL = LANGLEVELS.length - 1;
@@ -160,6 +164,7 @@ public class SystemEnvironment implements Cloneable
 	public static boolean strict_variables;
 	public static boolean warn_variables;
 	public static Vector exportVariables;
+	public static HashSet scopeSysVars;
 	public static Vector smeColumns;
 	public static Vector atColumns;
 	public static Vector diColumns;
@@ -224,6 +229,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_PRIORITYLB            = "PriorityLowerBound";
 	public static final String S_RUNMODE               = "RunMode";
 	public static final String S_SCHEDULEWAKEUP        = "ScheduleWakeup";
+	public static final String S_SCOPESYSVARS          = "ScopeSystemVariables";
 	public static final String S_SELECTGROUP           = "SelectGroup";
 	public static final String S_SERVICEPORT           = "ServicePort";
 	public static final String S_SESSIONTIMEOUT        = "SessionTimeout";
@@ -433,6 +439,7 @@ public class SystemEnvironment implements Cloneable
 		getWriterThreads();
 		getUserThreads();
 		getExportVariables();
+		getScopeSysVars();
 		getScheduleWakeup();
 		getGCWakeup();
 		getTTWakeup();
@@ -1138,6 +1145,7 @@ public class SystemEnvironment implements Cloneable
 	private void getExportVariables()
 	{
 		final String defaultVars =
+		        SDMSSubmittedEntity.S_ENVIRONMENT	+ "," +
 			SDMSSubmittedEntity.S_ERRORLOG		+ "," +
 			SDMSSubmittedEntity.S_EXPFINALTIME	+ "," +
 			SDMSSubmittedEntity.S_EXPRUNTIME	+ "," +
@@ -1160,8 +1168,11 @@ public class SystemEnvironment implements Cloneable
 			SDMSSubmittedEntity.S_SDMSHOST		+ "," +
 			SDMSSubmittedEntity.S_SDMSPORT		+ "," +
 			SDMSSubmittedEntity.S_SEID		+ "," +
+		        SDMSSubmittedEntity.S_SEOWNER		+ "," +
 			SDMSSubmittedEntity.S_STARTTS		+ "," +
 			SDMSSubmittedEntity.S_STATE		+ "," +
+		        SDMSSubmittedEntity.S_SUBMITGROUP	+ "," +
+		        SDMSSubmittedEntity.S_SUBMITTER		+ "," +
 			SDMSSubmittedEntity.S_SUBMITTS		+ "," +
 			SDMSSubmittedEntity.S_SYNCTS		+ "," +
 			SDMSSubmittedEntity.S_SYSDATE		+ "," +
@@ -1193,6 +1204,18 @@ public class SystemEnvironment implements Cloneable
 			if (i < exportVariables.size() - 1) ergebnis.append(",");
 		}
 		props.setProperty(S_EXPORTVARIABLES, ergebnis.toString());
+	}
+
+	private void getScopeSysVars()
+	{
+		String scopeSysVarsString = props.getProperty(S_SCOPESYSVARS, "");
+		if (scopeSysVarsString.length() != 0) {
+			scopeSysVars = new HashSet();
+			scopeSysVars.addAll(convertEntryToVector(scopeSysVarsString, "Defining Scope System Variables "));
+		} else {
+			scopeSysVars = new HashSet();
+		}
+		props.setProperty(S_SCOPESYSVARS, scopeSysVarsString);
 	}
 
 	private void getDumpLangLevel()
