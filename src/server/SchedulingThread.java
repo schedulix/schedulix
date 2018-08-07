@@ -1368,7 +1368,7 @@ public class SchedulingThread extends InternalSession
 				if (condition != null) {
 					final BoolExpr be = new BoolExpr(condition);
 					try {
-						if (! be.checkCondition(sysEnv, r, sme, null, null, evalScope)) {
+						if (! be.checkCondition(sysEnv, r, sme, sme, null, null, evalScope)) {
 							return false;
 						}
 					} catch (CommonErrorException cee) {
@@ -1423,7 +1423,7 @@ public class SchedulingThread extends InternalSession
 				if (condition != null) {
 					final BoolExpr be = new BoolExpr(condition);
 					try {
-						if (! be.checkCondition(sysEnv, r, sme, null, null, evalScope)) return false;
+						if (! be.checkCondition(sysEnv, r, sme, sme, null, null, evalScope)) return false;
 					} catch (CommonErrorException cee) {
 						SDMSNamedResource nr;
 						if (rr != null) {
