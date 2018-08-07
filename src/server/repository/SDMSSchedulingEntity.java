@@ -554,7 +554,11 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                                dd_o.getUnresolvedHandling(sysEnv),
 			                                dd_o.getMode(sysEnv),
 			                                dd_o.getStateSelection(sysEnv),
-			                                dd_o.getCondition(sysEnv)
+			                                dd_o.getCondition(sysEnv),
+			                                dd_o.getResolveMode(sysEnv),
+			                                dd_o.getExpiredAmount(sysEnv),
+			                                dd_o.getExpiredBase(sysEnv),
+			                                dd_o.getSelectCondition(sysEnv)
 			                                                                          );
 			Vector v_ds = SDMSDependencyStateTable.idx_ddId.getVector(sysEnv, dd_o.getId(sysEnv));
 			Iterator i_ds = v_ds.iterator();
@@ -626,15 +630,26 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 					                   tr_o.getCheckAmount(sysEnv),
 					                   tr_o.getCheckBase(sysEnv)
 					                                                );
+					Long tr_nId = tr_n.getId(sysEnv);
 					Vector v_trs = SDMSTriggerStateTable.idx_triggerId.getVector(sysEnv, tr_o.getId(sysEnv));
 					Iterator i_trs = v_trs.iterator();
 					while (i_trs.hasNext()) {
 						SDMSTriggerState trs = (SDMSTriggerState)i_trs.next();
 						SDMSTriggerStateTable.table.create(sysEnv,
-						                                   tr_n.getId(sysEnv),
+						                                   tr_nId,
 						                                   trs.getFromStateId(sysEnv),
 						                                   trs.getToStateId(sysEnv)
 						                                  );
+					}
+					Vector v_trp = SDMSTriggerParameterTable.idx_triggerId.getVector(sysEnv, tr_o.getId(sysEnv));
+					Iterator i_trp = v_trp.iterator();
+					while (i_trp.hasNext()) {
+						SDMSTriggerParameter trp = (SDMSTriggerParameter) i_trp.next();
+						SDMSTriggerParameterTable.table.create(sysEnv,
+						                                       trp.getName(sysEnv),
+						                                       trp.getExpression(sysEnv),
+						                                       tr_nId
+						                                      );
 					}
 				}
 			}
@@ -798,25 +813,45 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 	throws SDMSException
 	{
 		final Long uId = sysEnv.cEnv.uid();
-		if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
-			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId))) {
-				final SDMSUser  u = SDMSUserTable.getObject(sysEnv, uId);
-				final SDMSGroup g = SDMSGroupTable.getObject(sysEnv, gId);
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "02402180823",
-				                               "User $1 does not belong to Group $2", u.getName(sysEnv), g.getName(sysEnv)));
-			}
-			final Long oId = getOwnerId(sysEnv);
-			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(oId, uId))) {
-				Vector checkGroups = new Vector();
-				checkGroups.add(gId);
-				SDMSPrivilege grp = getPrivilegesForGroups(sysEnv, checkGroups);
-				if (!grp.can(SDMSPrivilege.SUBMIT)) {
+		if (sysEnv.cEnv.isUser()) {
+			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
+				if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId))) {
 					final SDMSUser  u = SDMSUserTable.getObject(sysEnv, uId);
 					final SDMSGroup g = SDMSGroupTable.getObject(sysEnv, gId);
-					throw new CommonErrorException(
-					        new SDMSMessage(sysEnv, "02402180938", "User $1 not allowed to submit $2 for group $3",
-					                        u.getName(sysEnv), pathString(sysEnv), g.getName(sysEnv)));
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "02402180823",
+					                               "User $1 does not belong to Group $2", u.getName(sysEnv), g.getName(sysEnv)));
 				}
+				final Long oId = getOwnerId(sysEnv);
+				if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(oId, uId))) {
+					Vector checkGroups = new Vector();
+					checkGroups.add(gId);
+					SDMSPrivilege grp = getPrivilegesForGroups(sysEnv, checkGroups);
+					if (!grp.can(SDMSPrivilege.SUBMIT)) {
+						final SDMSUser  u = SDMSUserTable.getObject(sysEnv, uId);
+						final SDMSGroup g = SDMSGroupTable.getObject(sysEnv, gId);
+						throw new CommonErrorException(
+						        new SDMSMessage(sysEnv, "02402180938", "User $1 not allowed to submit $2 for group $3",
+						                        u.getName(sysEnv), pathString(sysEnv), g.getName(sysEnv)));
+					}
+				}
+			}
+		} else {
+			Vector checkGroups = new Vector();
+			checkGroups.add(gId);
+			checkGroups.add(SDMSObject.publicGId);
+			sysEnv.cEnv.setUser();
+			try {
+				SDMSPrivilege grp = getPrivilegesForGroups(sysEnv, checkGroups);
+				if (!grp.can(SDMSPrivilege.SUBMIT)) {
+					final SDMSGroup g = SDMSGroupTable.getObject(sysEnv, gId);
+					throw new CommonErrorException(
+					        new SDMSMessage(sysEnv, "03801291413", "Job $1 not allowed to submit $2 from group $3",
+					                        uId, pathString(sysEnv), g.getName(sysEnv)));
+				}
+			} catch (SDMSException e) {
+				throw e;
+			} finally {
+				sysEnv.cEnv.setJob();
 			}
 		}
 	}
