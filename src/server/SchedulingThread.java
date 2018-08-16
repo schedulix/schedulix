@@ -730,11 +730,15 @@ public class SchedulingThread extends InternalSession
 		final Vector sv = new Vector();
 		for(int j = 0; j < rqv.size(); j++) {
 			SDMSRunnableQueue rq = (SDMSRunnableQueue) rqv.get(j);
-			s = SDMSScopeTable.getObject(sysEnv, rq.getScopeId(sysEnv));
-			sv.add(s);
-			doTrace(cEnv, ": added scope id " + s.getId(sysEnv), SEVERITY_DEBUG);
+			try {
+				s = SDMSScopeTable.getObject(sysEnv, rq.getScopeId(sysEnv));
+				sv.add(s);
+				doTrace(cEnv, ": added scope id " + s.getId(sysEnv), SEVERITY_DEBUG);
+			} catch (NotFoundException nfe) {
+				rq.delete(sysEnv);
+			}
 		}
-		doTrace(cEnv, ": we found " + sv.size() + " potential servers", SEVERITY_DEBUG);
+		doTrace(cEnv, ": we've found " + sv.size() + " potential servers", SEVERITY_DEBUG);
 
 		for(int j = 0; j < sv.size(); ++j) {
 			s = (SDMSScope) sv.get(j);
