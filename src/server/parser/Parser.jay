@@ -4303,7 +4303,16 @@ password:	PASSWORD '=' STRING						{ $$ = new WithItem (ParseStr.S_PASSWORD, $3.
 parametername:	stridentifier							{ $$ = $1; }
 
 //D:NT-ALIAS = parameterspec
-parm_is_string: parametername '=' STRING					{ $$ = new WithItem($1, $3.textValue); }
+parm_is_string: parametername '=' STRING					{ $$ = new WithItem($1, $3.textValue);
+										  if ($1.toUpperCase().equals(de.independit.scheduler.jobserver.Config.TRUSTSTOREPW) ||
+										      $1.toUpperCase().equals(de.independit.scheduler.jobserver.Config.KEYSTOREPW)) {
+										  	ConnectionEnvironment ce = getConnectionEnvironment();
+										 	if(ce != null) {
+												((UserConnection) ce.getMe()).scanner.unproto_input($3.textValue); 
+										  	}
+
+										  }
+										}
 	|	parametername '=' number					{ $$ = new WithItem($1, $3.toString()); }
 
 //D:NT=PARM
