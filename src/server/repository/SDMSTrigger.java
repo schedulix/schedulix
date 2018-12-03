@@ -542,6 +542,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		p = checkPrivs;
 		int objectType = getObjectType(env).intValue();
 		SDMSTable t;
+		boolean found = false;
 
 		switch (objectType) {
 			case JOB_DEFINITION:
@@ -554,6 +555,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 						sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 					}
 					p = p & sp;
+					found = true;
 				} catch (NotFoundException nfe) {
 					p = 0;
 				}
@@ -567,6 +569,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 						sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 					}
 					p = p & sp;
+					found = true;
 				} catch (NotFoundException nfe) {
 					p = 0;
 				}
@@ -580,10 +583,20 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 						sp |= SDMSPrivilege.CREATE | SDMSPrivilege.DROP | SDMSPrivilege.VIEW;
 					}
 					p = p & sp;
+					found = true;
 				} catch (NotFoundException nfe) {
 					p = 0;
 				}
 				break;
+		}
+		if (!found) {
+			if(env.tx.mode == SDMSTransaction.READONLY) {
+				throw new CommonErrorException (new SDMSMessage(env, "03809050935", "Orphan Trigger found, as ADMIN use 'drop trigger $1' to solve this problem", getId(env).toString()));
+			} else {
+				if (env.cEnv.gid().contains(SDMSObject.adminGId)) {
+					p = checkPrivs;
+				}
+			}
 		}
 		return p;
 	}
