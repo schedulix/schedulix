@@ -2087,7 +2087,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 
 		if (newState == DEPENDENCY_WAIT) {
-			if (se.getType(sysEnv).intValue() == SDMSSchedulingEntity.JOB) {
+			if (se.getType(sysEnv).intValue() == SDMSSchedulingEntity.JOB && !getIsDisabled(sysEnv)) {
 				this.setOldState(sysEnv, new Integer(oldState));
 				SystemEnvironment.sched.addToRequestList(sysEnv, mySmeId);
 			}
@@ -2594,6 +2594,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	public void setResourceState(SystemEnvironment sysEnv, SDMSResource r, Long rsmpId)
 		throws SDMSException
 	{
+		if (getJobEsdId(sysEnv) == null || getIsDisabled(sysEnv)) return;
+
 		final Long ts = new Long ((new Date()).getTime());
 		Vector v = SDMSResourceStateMappingTable.idx_rsmpId.getVector(sysEnv, rsmpId);
 		for(int i = 0; i < v.size(); i++) {
