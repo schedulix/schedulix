@@ -70,7 +70,7 @@ public class GetNextJob extends JobDistribution
 				data.add (RepoIface.CMD_ALTER);
 
 				desc.add (RepoIface.ALTER_CONFIG);
-				data.add (ScopeConfig.get (sysEnv, s));
+				data.add (ScopeConfig.get (sysEnv, s, false));
 
 				s = SDMSScopeTable.getObjectForUpdate(sysEnv, sysEnv.cEnv.uid());
 				s.setHasAlteredConfig (sysEnv, Boolean.FALSE);
