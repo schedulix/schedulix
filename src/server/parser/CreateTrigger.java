@@ -425,6 +425,8 @@ public class CreateTrigger extends ManipTrigger
 	throws SDMSException
 	{
 		WithHash parmHash = (WithHash) with.get(ParseStr.S_PARAMETERS);
+		if (parmHash == null) return;
+
 		Iterator i = parmHash.keySet().iterator();
 		while (i.hasNext()) {
 			String key = (String) i.next();
