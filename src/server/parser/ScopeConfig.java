@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -91,7 +89,6 @@ public class ScopeConfig
 	private static final void createConfig (final SystemEnvironment sysEnv, final Long sId, final String key, final String value)
 		throws SDMSException
 	{
-
 		final String sic = '=' + value;
 
 		SDMSScopeConfigTable.table.create (sysEnv, key, sic, sId);
@@ -104,7 +101,6 @@ public class ScopeConfig
 		final int size = keyList.size();
 		for (int i = 0; i < size; ++i) {
 			final String key = (String) keyList.get (i);
-
 			final String value = '=' + (String) mappings.get (key);
 
 			SDMSScopeConfigEnvMappingTable.table.create (sysEnv, key, value, sId);
@@ -211,7 +207,6 @@ public class ScopeConfig
 					}
 
 					if (key.startsWith (Config.NAME_PATTERN) && value != null) {
-
 						try {
 							((String) value).matches((String) value);
 						} catch (java.util.regex.PatternSyntaxException pse) {
@@ -228,10 +223,8 @@ public class ScopeConfig
 					}
 					String sic = null;
 					if (value != null) {
-
 						sic = '=' + (String) value;
 					}
-
 					if ((sic == null && sc == null) || (sic != null && sc != null && sic.equals(sc.getValue(sysEnv))))
 						continue;
 
@@ -294,17 +287,29 @@ public class ScopeConfig
 	public static final String getItem (final SystemEnvironment sysEnv, final SDMSScope s, final String item)
 		throws SDMSException
 	{
+		return getItem(sysEnv, s, item, true);
+	}
+
+	public static final String getItem (final SystemEnvironment sysEnv, final SDMSScope s, final String item, boolean restricted)
+	throws SDMSException
+	{
 		if (item == null) return null;
 
 		final HashMap config     = new HashMap();
 
-		collect (sysEnv, s, config, null, null);
+		collect (sysEnv, s, config, null, null, restricted);
 
 		return (String) config.get (item);
 	}
 
 	public static final SDMSOutputContainer get (final SystemEnvironment sysEnv, final SDMSScope s)
 		throws SDMSException
+	{
+		return get(sysEnv, s, true);
+	}
+
+	public static final SDMSOutputContainer get (final SystemEnvironment sysEnv, final SDMSScope s, boolean restricted)
+	throws SDMSException
 	{
 		final HashMap config     = new HashMap();
 		final HashMap envMapping = new HashMap();
@@ -316,7 +321,7 @@ public class ScopeConfig
 		if (pass != null)
 			config.put (Config.REPO_PASS, pass);
 
-		collect (sysEnv, s, config, envMapping, dynamic);
+		collect (sysEnv, s, config, envMapping, dynamic, restricted);
 
 		final Vector cfgDesc = new Vector();
 		final Vector cfgData = new Vector();
@@ -356,14 +361,14 @@ public class ScopeConfig
 		return path;
 	}
 
-	private static final void collect (final SystemEnvironment sysEnv, final SDMSScope s, final HashMap config, final HashMap envMapping, final HashSet dynamic)
+	private static final void collect (final SystemEnvironment sysEnv, final SDMSScope s, final HashMap config, final HashMap envMapping, final HashSet dynamic, boolean restricted)
 		throws SDMSException
 	{
 
 		final Long parentId = s.getParentId (sysEnv);
 		if (parentId != null) {
 			final SDMSScope parent = SDMSScopeTable.getObject (sysEnv, parentId);
-			collect (sysEnv, parent, config, envMapping, dynamic);
+			collect (sysEnv, parent, config, envMapping, dynamic, restricted);
 		}
 
 		final Long sId = s.getId (sysEnv);
@@ -378,14 +383,20 @@ public class ScopeConfig
 				final SDMSScopeConfig sc = (SDMSScopeConfig) list.get (i);
 
 				final String key = sc.getKey (sysEnv);
+				String value = sc.getValue (sysEnv).substring (1);
 
-				final String value = sc.getValue (sysEnv).substring (1);
-
-				if (config.containsKey (key)) {
-					config.put (PREFIX_ANCEST_VALUE + key, config.get (                 key));
-					config.put (PREFIX_ANCEST_SCOPE + key, config.get (PREFIX_SCOPEID + key));
+				if (restricted && (key.equals(Config.TRUSTSTOREPW) || key.equals(Config.KEYSTOREPW))) {
+					value = "";
+					if (config.containsKey (key)) {
+						config.put (PREFIX_ANCEST_VALUE + key, value);
+						config.put (PREFIX_ANCEST_SCOPE + key, config.get (PREFIX_SCOPEID + key));
+					}
+				} else {
+					if (config.containsKey (key)) {
+						config.put (PREFIX_ANCEST_VALUE + key, config.get (                 key));
+						config.put (PREFIX_ANCEST_SCOPE + key, config.get (PREFIX_SCOPEID + key));
+					}
 				}
-
 				config.put (                 key, value);
 				config.put (PREFIX_SCOPEID + key, sId);
 			}
@@ -398,7 +409,6 @@ public class ScopeConfig
 				final SDMSScopeConfigEnvMapping sce = (SDMSScopeConfigEnvMapping) list.get (i);
 
 				final String key = sce.getKey (sysEnv);
-
 				final String value = sce.getValue (sysEnv).substring (1);
 
 				if (envMapping.containsKey (key)) {
@@ -436,6 +446,5 @@ public class ScopeConfig
 
 	private ScopeConfig()
 	{
-
 	}
 }
