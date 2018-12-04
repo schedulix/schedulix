@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.output;
 
 import java.lang.*;
@@ -43,6 +41,55 @@ public class SDMSOutputUtil
 		int i = index(o.container, label);
 		if (i == -1) return null;
 		return (record.elementAt(i)).toString();
+	}
+
+	public static int getTableLength(SDMSOutput o)
+	{
+		return getTableLength(o, null);
+	}
+
+	public static int getTableLength(SDMSOutput o, String tableName)
+	{
+		SDMSOutputContainer tableContainer = getTable(o, tableName);
+		if (tableContainer == null)
+			return -1;
+		return tableContainer.lines;
+	}
+
+	public static String getFromTable(SDMSOutput o, int line, String label)
+	{
+		return getFromTable(o, null, line, label);
+	}
+
+	public static String getFromTable(SDMSOutput o, String tableName, int line, String label)
+	{
+		SDMSOutputContainer tableContainer = getTable(o, tableName);
+		if (tableContainer == null)
+			return null;
+		Vector record = (Vector)(tableContainer.dataset.elementAt(line));
+		int i = index(tableContainer, label);
+		if (i == -1) return null;
+		return (record.elementAt(i)).toString();
+	}
+
+	public static SDMSOutputContainer getTable(SDMSOutput o, String tableName)
+	{
+		if (o.container.columns == 0) {
+			Vector record = (Vector)(o.container.dataset.elementAt(0));
+			int i = index(o.container, tableName);
+			if (i == -1)
+				return null;
+			SDMSOutputContainer tableContainer = null;
+			try {
+				return (SDMSOutputContainer)(record.elementAt(i));
+			} catch (Exception e) {
+				return null;
+			}
+		} else {
+			if (tableName != null)
+				return null;
+			return o.container;
+		}
 	}
 
 	public static int index(SDMSOutputContainer c, String label)
