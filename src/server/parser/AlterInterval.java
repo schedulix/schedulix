@@ -36,7 +36,7 @@ import de.independit.scheduler.server.util.*;
 public class AlterInterval
 	extends Node
 {
-	public static final String __version = "@(#) $Id: AlterInterval.java,v 2.12.2.1 2013/03/14 10:24:21 ronald Exp $";
+	private static final Long ZERO = new Long(0);
 
 	private final ObjectURL obj;
 	private final WithHash with;

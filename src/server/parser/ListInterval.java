@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -42,43 +40,47 @@ public class ListInterval
 	public static final String __version = "@(#) $Id: ListInterval.java,v 2.8.2.2 2013/06/18 09:49:33 ronald Exp $";
 
 	private static final String empty = "";
+	private boolean all;
 
-	public ListInterval()
+	public ListInterval(boolean all)
 	{
 		super();
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
+		this.all = all;
 	}
 
 	public void go (SystemEnvironment sysEnv)
 	throws SDMSException
 	{
-		Vector desc = new Vector();
+		Long oId = null;
+		SDMSInterval ival = null;
 
+		Vector desc = new Vector();
 		desc.add ("ID");
 		desc.add ("NAME");
 		desc.add ("OWNER");
-
 		desc.add ("STARTTIME");
-
 		desc.add ("ENDTIME");
-
 		desc.add ("BASE");
-
 		desc.add ("DURATION");
-
 		desc.add ("SYNCTIME");
-
 		desc.add ("INVERSE");
-
 		desc.add ("EMBEDDED");
+		desc.add ("OBJ_TYPE");
+		desc.add ("OBJ_ID");
 		desc.add ("PRIVS");
+		desc.add ("SE_ID");
 
 		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "List of Intervals", desc);
 
 		final Iterator ivalIter = SDMSIntervalTable.table.iterator (sysEnv);
 		while (ivalIter.hasNext()) {
-			final SDMSInterval ival = (SDMSInterval) ivalIter.next();
+			ival = (SDMSInterval) ivalIter.next();
+			oId = ival.getObjId(sysEnv);
+			if (!all) {
+				if (oId != null) continue;
+			}
 
 			final Vector row = new Vector();
 
@@ -126,7 +128,11 @@ public class ListInterval
 				row.add (embeddedInterval.getName (sysEnv));
 			}
 
+			row.add (ival.getObjTypeAsString(sysEnv));
+			row.add (oId);
+
 			row.add (ival.getPrivileges(sysEnv).toString());
+			row.add (ival.getSeId(sysEnv));
 
 			table.addData (sysEnv, row);
 		}

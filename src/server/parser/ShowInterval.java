@@ -46,13 +46,20 @@ public class ShowInterval
 
 	private static final String empty = "";
 
+	private static final String ROLE_HEAD		= "HEAD";
+	private static final String ROLE_FILTER		= "FILTER";
+	private static final String ROLE_EMBED		= "EMBEDDED";
+	private static final String ROLE_DISPATCH	= "DISPATCH";
+	private static final String ROLE_DISP_SELECT	= "DISPATCH_SELECT";
+	private static final String ROLE_DISP_FILTER	= "DISPATCH_FILTER";
+
+	private static final int cmpList[] = {1, 2, 3};
+
 	private final String name;
 	private final WithHash with;
+	private final Long ownerObject;
 
 	private final TimerDate edgePlusOne = new TimerDate();
-
-	private SDMSInterval ival;
-	private Long ivalId;
 
 	private boolean secondsIgnore;
 
@@ -71,6 +78,17 @@ public class ShowInterval
 		super();
 		name = n;
 		with = w;
+		ownerObject = null;
+		txMode = SDMSTransaction.READONLY;
+		auditFlag = false;
+	}
+
+	public ShowInterval (String n, Long oid)
+	{
+		super();
+		name = n;
+		with = null;
+		ownerObject = oid;
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
 	}
@@ -78,10 +96,11 @@ public class ShowInterval
 	public void go (SystemEnvironment sysEnv)
 	throws SDMSException
 	{
-		ival = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(name, null));
+
+		SDMSInterval ival = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(name, ownerObject));
 		if(!ival.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411717", "Insufficient privileges"));
-		ivalId = ival.getId (sysEnv);
+		Long ivalId = ival.getId (sysEnv);
 
 		final long beginMillis = System.currentTimeMillis();
 		final long endMillis = System.currentTimeMillis();
@@ -101,6 +120,8 @@ public class ShowInterval
 		desc.add ("EMBEDDED");
 		desc.add ("SELECTION");
 		desc.add ("FILTER");
+		desc.add ("DISPATCHER");
+		desc.add ("HIERARCHY");
 		desc.add ("CREATOR");
 		desc.add ("CREATE_TIME");
 		desc.add ("CHANGER");
@@ -116,7 +137,6 @@ public class ShowInterval
 		}
 
 		final Vector data = new Vector();
-		final Long ivalId = ival.getId (sysEnv);
 
 		data.add (ivalId);
 
@@ -162,9 +182,13 @@ public class ShowInterval
 			data.add (embeddedInterval.getName (sysEnv));
 		}
 
-		data.add (getSelectionList (sysEnv));
+		data.add (getSelectionList (sysEnv, ivalId));
 
-		data.add (getFilterList (sysEnv));
+		data.add (getFilterList (sysEnv, ivalId));
+
+		data.add (getDispatcherList (sysEnv, ivalId));
+
+		data.add (getHierarchyList (sysEnv, ivalId));
 
 		secondsIgnore = false;
 
@@ -200,7 +224,7 @@ public class ShowInterval
 			result.setFeedback (new SDMSMessage (sysEnv, "04207192249", "Interval shown"));
 	}
 
-	private SDMSOutputContainer getSelectionList (SystemEnvironment sysEnv)
+	private SDMSOutputContainer getSelectionList (SystemEnvironment sysEnv, Long ivalId)
 	throws SDMSException
 	{
 		final Vector desc = new Vector();
@@ -247,7 +271,7 @@ public class ShowInterval
 		return table;
 	}
 
-	private SDMSOutputContainer getFilterList (SystemEnvironment sysEnv)
+	private SDMSOutputContainer getFilterList (SystemEnvironment sysEnv, Long ivalId)
 	throws SDMSException
 	{
 		final Vector desc = new Vector();
@@ -276,6 +300,282 @@ public class ShowInterval
 		Collections.sort (table.dataset, table.getComparator (sysEnv, 1));
 
 		return table;
+	}
+
+	private SDMSOutputContainer getDispatcherList (SystemEnvironment sysEnv, Long ivalId)
+	throws SDMSException
+	{
+		final Vector desc = new Vector();
+		desc.add ("ID");
+		desc.add ("SEQNO");
+		desc.add ("NAME");
+		desc.add ("SELECT_INTERVAL_ID");
+		desc.add ("SELECT_INTERVAL_NAME");
+		desc.add ("FILTER_INTERVAL_ID");
+		desc.add ("FILTER_INTERVAL_NAME");
+		desc.add ("IS_ENABLED");
+		desc.add ("IS_ACTIVE");
+
+		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "List of Dispatch Rules", desc);
+
+		Vector drv = SDMSIntervalDispatcherTable.idx_intId.getVector(sysEnv, ivalId);
+		for (int i = 0; i < drv.size(); ++i) {
+			SDMSIntervalDispatcher intD = (SDMSIntervalDispatcher) drv.get(i);
+			Vector row = new Vector();
+
+			row.add(intD.getId(sysEnv));
+			row.add(intD.getSeqNo(sysEnv));
+			row.add(intD.getName(sysEnv));
+			Long selIntId = intD.getSelectIntId(sysEnv);
+			row.add(selIntId);
+			if (selIntId != null) {
+				SDMSInterval ival = SDMSIntervalTable.getObject(sysEnv, selIntId);
+				row.add(ival.getName(sysEnv));
+			} else {
+				row.add(null);
+			}
+			Long fltIntId = intD.getFilterIntId(sysEnv);
+			row.add(fltIntId);
+			if (fltIntId != null) {
+				SDMSInterval ival = SDMSIntervalTable.getObject(sysEnv, fltIntId);
+				row.add(ival.getName(sysEnv));
+			} else {
+				row.add(null);
+			}
+			row.add(intD.getIsEnabled(sysEnv));
+			row.add(intD.getIsActive(sysEnv));
+
+			table.addData (sysEnv, row);
+		}
+
+		Collections.sort (table.dataset, table.getComparator (sysEnv, 1));
+
+		return table;
+	}
+
+	private SDMSOutputContainer getHierarchyList (SystemEnvironment sysEnv, Long ivalId)
+	throws SDMSException
+	{
+		final Vector desc = new Vector();
+		desc.add ("ID");
+		desc.add ("LEVEL");
+		desc.add ("ROLE");
+		desc.add ("PARENT");
+		desc.add ("NAME");
+
+		desc.add ("SEQNO");
+		desc.add ("SELECT_INTERVAL_NAME");
+		desc.add ("FILTER_INTERVAL_NAME");
+		desc.add ("IS_ENABLED");
+		desc.add ("IS_ACTIVE");
+
+		desc.add ("OWNER");
+		desc.add ("STARTTIME");
+		desc.add ("ENDTIME");
+		desc.add ("BASE");
+		desc.add ("DURATION");
+		desc.add ("SYNCTIME");
+		desc.add ("INVERSE");
+		desc.add ("EMBEDDED");
+		desc.add ("SELECTION");
+		desc.add ("FILTER");
+		desc.add ("DISPATCHER");
+		desc.add ("OWNER_OBJ_TYPE");
+		desc.add ("OWNER_OBJ_ID");
+
+		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "Interval Hierarchy", desc);
+
+		collectHierarchy(sysEnv, ivalId, ROLE_HEAD, null, table, 0);
+
+		return table;
+	}
+
+	private void collectHierarchy(SystemEnvironment sysEnv, Long ivalId, String role, Long parentId, SDMSOutputContainer table, int level)
+	throws SDMSException
+	{
+		SDMSInterval ival = SDMSIntervalTable.getObject(sysEnv, ivalId);
+		SDMSInterval embeddedInterval = null;
+		Integer iLevel = new Integer(level);
+		Vector row = new Vector();
+
+		row.add (ivalId);
+		row.add (iLevel);
+		row.add (role);
+		row.add (parentId);
+		row.add (ival.getName(sysEnv));
+		row.add (null);
+		row.add (null);
+		row.add (null);
+		row.add (null);
+		row.add (null);
+		final Long ownerId = ival.getOwnerId (sysEnv);
+		final SDMSGroup g = SDMSGroupTable.getObject (sysEnv, ownerId);
+		row.add (g.getName (sysEnv));
+
+		final Long startTime = ival.getStartTime (sysEnv);
+		if (startTime == null)
+			row.add (empty);
+		else
+			row.add (new DateTime (startTime, false).toString(null));
+
+		final Long endTime = ival.getEndTime (sysEnv);
+		if (endTime == null)
+			row.add (empty);
+		else
+			row.add (new DateTime (endTime, false).toString(null));
+
+		final TimerUnit base = new TimerUnit (ival.getBaseIntervalMultiplier (sysEnv), ival.getBaseInterval (sysEnv));
+		if (base.isINF())
+			row.add (empty);
+		else
+			row.add (base.asString());
+
+		final TimerUnit duration = new TimerUnit (ival.getDurationMultiplier (sysEnv), ival.getDuration (sysEnv));
+		if (duration.isINF())
+			row.add (empty);
+		else
+			row.add (duration.asString());
+
+		row.add (new DateTime (ival.getSyncTime (sysEnv), false).toString(null));
+
+		row.add (ival.getIsInverse (sysEnv));
+
+		final Long embeddedIntervalId = ival.getEmbeddedIntervalId (sysEnv);
+		if (embeddedIntervalId == null)
+			row.add (empty);
+		else {
+			embeddedInterval = SDMSIntervalTable.getObject (sysEnv, embeddedIntervalId);
+			row.add (embeddedInterval.getName (sysEnv));
+		}
+
+		final StringBuffer selStr = new StringBuffer();
+		String sep = "";
+		final Vector selList = SDMSIntervalSelectionTable.idx_intId.getVector (sysEnv, ivalId);
+		final Iterator selIt = selList.iterator();
+		while (selIt.hasNext()) {
+			final SDMSIntervalSelection sel = (SDMSIntervalSelection) selIt.next();
+
+			final Integer value = sel.getValue (sysEnv);
+			if (value != null) {
+				selStr.append (sep);
+				selStr.append (value);
+			}
+
+			final Long periodFrom = sel.getPeriodFrom (sysEnv);
+			if (periodFrom != null) {
+				selStr.append (sep);
+				selStr.append (new DateTime (periodFrom, false).toString());
+			}
+
+			final Long periodTo = sel.getPeriodTo (sysEnv);
+			if (periodTo != null) {
+				if (periodFrom != null)
+					selStr.append (" - ");
+				else
+					selStr.append (sep);
+				selStr.append (new DateTime (periodTo, false).toString());
+			}
+			sep = ", ";
+		}
+		row.add (selStr.toString());
+
+		final Vector filtList = SDMSIntervalHierarchyTable.idx_parentId.getVector (sysEnv, ivalId);
+		Iterator filtIt = filtList.iterator();
+		final StringBuffer filtStr = new StringBuffer();
+		sep = empty;
+		while (filtIt.hasNext()) {
+			final SDMSIntervalHierarchy filt = (SDMSIntervalHierarchy) filtIt.next();
+
+			final Long childId = filt.getChildId (sysEnv);
+			final SDMSInterval childIval = SDMSIntervalTable.getObject (sysEnv, childId);
+			filtStr.append (sep);
+			filtStr.append (childIval.getName (sysEnv));
+			sep = ", ";
+		}
+		row.add (filtStr.toString());
+
+		Vector drv = SDMSIntervalDispatcherTable.idx_intId.getSortedVector(sysEnv, ivalId);
+		final StringBuffer dispStr = new StringBuffer();
+		sep = empty;
+		for (int i = 0; i < drv.size(); ++i) {
+			SDMSIntervalDispatcher intD = (SDMSIntervalDispatcher) drv.get(i);
+			dispStr.append(sep);
+			dispStr.append(intD.getName(sysEnv));
+			sep = ", ";
+		}
+		row.add (dispStr.toString());
+		row.add(ival.getObjTypeAsString(sysEnv));
+		row.add(ival.getObjId(sysEnv));
+
+		table.addData (sysEnv, row);
+
+		if (embeddedIntervalId != null)
+			collectHierarchy(sysEnv, embeddedIntervalId, ROLE_EMBED, ivalId, table, level + 1);
+		filtIt = filtList.iterator();
+		while (filtIt.hasNext()) {
+			final SDMSIntervalHierarchy filt = (SDMSIntervalHierarchy) filtIt.next();
+			final Long childId = filt.getChildId (sysEnv);
+			collectHierarchy(sysEnv, childId, ROLE_FILTER, ivalId, table, level + 1);
+		}
+		for (int i = 0; i < drv.size(); ++i) {
+			SDMSIntervalDispatcher intD = (SDMSIntervalDispatcher) drv.get(i);
+			collectDspHierarchy (sysEnv, intD.getId(sysEnv), ROLE_DISPATCH, ivalId, table, level + 1);
+		}
+	}
+
+	private void collectDspHierarchy(SystemEnvironment sysEnv, Long drId, String role, Long parentId, SDMSOutputContainer table, int level)
+	throws SDMSException
+	{
+		SDMSIntervalDispatcher dr = SDMSIntervalDispatcherTable.getObject(sysEnv, drId);
+		Vector row = new Vector();
+		Integer iLevel = new Integer(level);
+
+		row.add (drId);
+		row.add (iLevel);
+		row.add (role);
+		row.add (parentId);
+		row.add (dr.getName(sysEnv));
+		row.add (dr.getSeqNo(sysEnv));
+
+		Long selIntId = dr.getSelectIntId(sysEnv);
+		if (selIntId != null) {
+			SDMSInterval ival = SDMSIntervalTable.getObject(sysEnv, selIntId);
+			row.add(ival.getName(sysEnv));
+		} else {
+			row.add(null);
+		}
+		Long fltIntId = dr.getFilterIntId(sysEnv);
+		if (fltIntId != null) {
+			SDMSInterval ival = SDMSIntervalTable.getObject(sysEnv, fltIntId);
+			row.add(ival.getName(sysEnv));
+		} else {
+			row.add(null);
+		}
+		row.add(dr.getIsEnabled(sysEnv));
+		row.add(dr.getIsActive(sysEnv));
+
+		row.add(null);
+		row.add(null);
+		row.add(null);
+		row.add(null);
+		row.add(null);
+		row.add(null);
+		row.add(null);
+		row.add(null);
+		row.add(null);
+		row.add(null);
+		row.add(null);
+		row.add(null);
+		row.add(null);
+
+		table.addData (sysEnv, row);
+
+		if (selIntId != null) {
+			collectHierarchy(sysEnv, selIntId, ROLE_DISP_SELECT, drId, table, level + 1);
+		}
+		if (fltIntId != null) {
+			collectHierarchy(sysEnv, fltIntId, ROLE_DISP_FILTER, drId, table, level + 1);
+		}
 	}
 
 }

@@ -76,8 +76,25 @@ public class CreateInterval
 		return ival;
 	}
 
+	public String toString()
+	{
+		StringBuffer result = new StringBuffer();
+
+		result.append(obj.toString());
+		result.append("\n");
+		result.append(with.toString());
+
+		return result.toString();
+	}
+
 	public void go (SystemEnvironment sysEnv)
 		throws SDMSException
+	{
+		go (sysEnv, 0);
+	}
+
+	protected void go (SystemEnvironment sysEnv, int recursionLevel)
+	throws SDMSException
 	{
 		Long startTime = null;
 		Long endTime = null;
@@ -174,13 +191,28 @@ public class CreateInterval
 
 			if (with.containsKey (ParseStr.S_DELAY)) {
 				warning = "DELAY is not longer supported";
+				with.remove (ParseStr.S_DELAY);
 			}
 
 			if (with.containsKey (ParseStr.S_INVERSE))
 				isInverse = (Boolean) with.get (ParseStr.S_INVERSE);
 
-			if (with.containsKey (ParseStr.S_MERGE))
+			if (with.containsKey (ParseStr.S_MERGE)) {
 				warning = "MERGE is not longer supported";
+				with.remove(ParseStr.S_MERGE);
+			}
+
+			if (with.containsKey(ParseStr.S_DISPATCH)) {
+				int maxcnt = 1;
+				if (with.containsKey(ParseStr.S_STARTTIME)) maxcnt++;
+				if (with.containsKey(ParseStr.S_ENDTIME)) maxcnt++;
+				if (with.containsKey(ParseStr.S_GROUP)) maxcnt++;
+				if (with.size() > maxcnt) {
+					throw new CommonErrorException (new SDMSMessage (sysEnv, "03808211116",
+					                                "Dispatch interval definitions are not allowed to specify other attributes than STARTTIME, ENDTIME and GROUP"));
+				}
+			}
+
 		}
 
 		final Long uId = env.uid();
@@ -200,10 +232,13 @@ public class CreateInterval
 		}
 
 		try {
+			Long tmp_objId = null;
+			if (recursionLevel != 0)
+				tmp_objId = new Long(recursionLevel);
 			ival = SDMSIntervalTable.table.create (sysEnv,
 			                                       obj.mappedName, gId, startTime, endTime, delay, baseInterval, baseIntervalMultiplier,
 			                                       duration, durationMultiplier, syncTime, isInverse, isMerge, embeddedIntervalId, obj.seId,
-			                                       null,  null);
+			                                       tmp_objId,  null);
 			ivalId = ival.getId (sysEnv);
 		} catch (final DuplicateKeyException dke) {
 			if (replace) {
@@ -218,7 +253,7 @@ public class CreateInterval
 
 		if (embeddedInterval != null) {
 			embeddedInterval.setEnv(env);
-			embeddedInterval.go(sysEnv);
+			embeddedInterval.go(sysEnv, recursionLevel + 1);
 			ival.setEmbeddedIntervalId(sysEnv, embeddedInterval.getIvalId());
 			SDMSInterval embIval = embeddedInterval.getIval();
 			embIval.setObjId(sysEnv, ivalId);
@@ -227,17 +262,24 @@ public class CreateInterval
 
 		if (with != null) {
 
-			if (with.containsKey (ParseStr.S_SELECTION))
+			if (with.containsKey (ParseStr.S_SELECTION)) {
 				switch (IntervalUtil.createSelections (sysEnv, ivalId, with)) {
 				case IntervalUtil.IGNORED_SECONDS:
 					secondsIgnore = true;
 					break;
 				case IntervalUtil.IGNORED_UPPER_RANGE:
 					ignoreUpperRange = true;
+						break;
+				}
+			}
+
+			if (with.containsKey (ParseStr.S_FILTER)) {
+				duplicateFilterIgnore = IntervalUtil.createFilter (sysEnv, ivalId, with, obj.seId, recursionLevel + 1);
 				}
 
-			if (with.containsKey (ParseStr.S_FILTER))
-				duplicateFilterIgnore = IntervalUtil.createFilter (sysEnv, ivalId, with);
+			if (with.containsKey (ParseStr.S_DISPATCH)) {
+				IntervalUtil.createDispatcher (sysEnv, ivalId, with, recursionLevel + 1);
+			}
 		}
 
 		if (duplicateFilterIgnore)

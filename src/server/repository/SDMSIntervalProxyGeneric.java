@@ -89,8 +89,7 @@ public class SDMSIntervalProxyGeneric extends SDMSProxy
 	public static final int RESOURCE_TEMPLATE = 28;
 	public static final int WATCH_TYPE = 29;
 	public static final int OBJECT_MONITOR = 30;
-	public static final int DISPATCHER_DISPATCH = 88;
-	public static final int DISPATCHER_USE = 89;
+	public static final int INTERVAL_DISPATCHER = 88;
 	public static final long MINUTE_MAX =              1*60*1000L;
 	public static final long HOUR_MAX =             60*60*1000L;
 	public static final long DAY_MAX =          25*60*60*1000L;

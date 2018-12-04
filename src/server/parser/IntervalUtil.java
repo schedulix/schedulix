@@ -50,6 +50,7 @@ public class IntervalUtil
 	private static final Pattern ID_REPLACE = Pattern.compile ("\\d+");
 
 	private static final Integer ivalType = new Integer(SDMSInterval.INTERVAL);
+	private static final Integer dispType = new Integer(SDMSInterval.INTERVAL_DISPATCHER);
 
 	public static final boolean matchesIdName (final String name)
 	{
@@ -89,12 +90,14 @@ public class IntervalUtil
 			seId = se.getId (sysEnv);
 		}
 
-		try {
-			SDMSSchedulingEntityTable.getObject (sysEnv, seId);
-		}
+		if (seId != 0) {
+			try {
+				SDMSSchedulingEntityTable.getObject (sysEnv, seId);
+			}
 
-		catch (final NotFoundException nfe) {
-			throw new CommonErrorException (new SDMSMessage (sysEnv, "04410300037", "No Batch or Job with id $1 exists", seId));
+			catch (final NotFoundException nfe) {
+				throw new CommonErrorException (new SDMSMessage (sysEnv, "04410300037", "No Batch or Job with id $1 exists", seId));
+			}
 		}
 
 		return seId;
@@ -159,6 +162,67 @@ public class IntervalUtil
 		return secondsIgnore;
 	}
 
+	public static final void killDispatcher (final SystemEnvironment sysEnv, final Long ivalId)
+	throws SDMSException
+	{
+		final Vector drList = SDMSIntervalDispatcherTable.idx_intId.getVector (sysEnv, ivalId);
+		final Iterator drIt = drList.iterator();
+		while (drIt.hasNext()) {
+			final SDMSIntervalDispatcher dr = (SDMSIntervalDispatcher) drIt.next();
+			dr.delete (sysEnv);
+		}
+	}
+
+	public static final void createDispatcher (final SystemEnvironment sysEnv, final Long ivalId, final WithHash with, int recursionLevel)
+	throws SDMSException
+	{
+		SDMSInterval iv = null;
+		final Vector dispatchList = (Vector) with.get (ParseStr.S_DISPATCH);
+		if (dispatchList == null) {
+			return;
+		}
+
+		for (int seqNo = 0; seqNo < dispatchList.size(); ++seqNo) {
+			Vector v = (Vector) dispatchList.get(seqNo);
+			String name = (String) v.get(0);
+			Boolean isActive = (Boolean) v.get(1);
+			Vector dispRule = (Vector) v.get(2);
+			Object selectIval = dispRule.get(0);
+			Object filterIval = dispRule.get(1);
+			Boolean isEnabled = (Boolean) dispRule.get(2);
+			SDMSIntervalDispatcher intDisp = SDMSIntervalDispatcherTable.table.create(sysEnv, ivalId, new Integer(seqNo), name, null, null, isEnabled, isActive);
+			Long intDispId = intDisp.getId(sysEnv);
+			if (selectIval != null) {
+				if (selectIval instanceof String) {
+					iv = (SDMSInterval) SDMSIntervalTable.idx_name_objId.getUnique(sysEnv, new SDMSKey((String) selectIval, null));
+				} else {
+					CreateInterval ci = (CreateInterval) selectIval;
+					ci.setEnv(sysEnv.cEnv);
+					ci.go(sysEnv, recursionLevel);
+					iv = ci.getIval();
+					iv.setObjId(sysEnv, intDispId);
+					iv.setObjType(sysEnv, dispType);
+				}
+				intDisp.setSelectIntId(sysEnv, iv.getId(sysEnv));
+			} else {
+			}
+			if (filterIval != null) {
+				if (filterIval instanceof String) {
+					iv = (SDMSInterval) SDMSIntervalTable.idx_name_objId.getUnique(sysEnv, new SDMSKey((String) filterIval, null));
+				} else {
+					CreateInterval ci = (CreateInterval) filterIval;
+					ci.setEnv(sysEnv.cEnv);
+					ci.go(sysEnv, recursionLevel);
+					iv = ci.getIval();
+					iv.setObjId(sysEnv, intDispId);
+					iv.setObjType(sysEnv, dispType);
+				}
+				intDisp.setFilterIntId(sysEnv, iv.getId(sysEnv));
+			} else {
+			}
+		}
+	}
+
 	public static final void killFilter (final SystemEnvironment sysEnv, final Long ivalId)
 		throws SDMSException
 	{
@@ -170,7 +234,13 @@ public class IntervalUtil
 		}
 	}
 
-	public static final boolean createFilter (final SystemEnvironment sysEnv, final Long ivalId, final WithHash with)
+	public static final boolean createFilter (final SystemEnvironment sysEnv, final Long ivalId, final WithHash with, int recursionLevel)
+	throws SDMSException
+	{
+		return createFilter (sysEnv, ivalId, with, null, recursionLevel);
+	}
+
+	public static final boolean createFilter (final SystemEnvironment sysEnv, final Long ivalId, final WithHash with, Long se_id, int recursionLevel)
 		throws SDMSException
 	{
 		final Vector filtList = (Vector) with.get (ParseStr.S_FILTER);
@@ -184,7 +254,10 @@ public class IntervalUtil
 		while (filtIt.hasNext()) {
 			Object filtItem = filtIt.next();
 			if (filtItem instanceof String) {
-				final String filtName = (String) filtItem;
+				String filtName = (String) filtItem;
+				if (se_id != null) {
+					filtName =  IntervalUtil.mapIdName (filtName, se_id);
+				}
 				SDMSInterval filtIval;
 				try {
 					filtIval  = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(filtName, ivalId));
@@ -206,7 +279,7 @@ public class IntervalUtil
 			} else {
 				CreateInterval ci = (CreateInterval) filtItem;
 				ci.setEnv(sysEnv.cEnv);
-				ci.go(sysEnv);
+				ci.go(sysEnv, recursionLevel);
 				SDMSInterval filterIval = ci.getIval();
 				Long filterIvalId = ci.getIvalId();
 				filterIval.setObjId(sysEnv, ivalId);

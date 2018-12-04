@@ -69,6 +69,8 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	private boolean isInfinite = false;
 	private SDMSInterval embeddedInterval = null;
 
+	private Vector<DispatchRule> dispatchRules = null;
+
 	private long startTime = 0;
 	private long endTime = Long.MAX_VALUE;
 
@@ -109,6 +111,8 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		isInfinite = false;
 		embeddedInterval = null;
 
+		dispatchRules = null;
+
 		startTime = 0;
 		endTime = Long.MAX_VALUE;
 
@@ -133,6 +137,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		initBaseAndDuration(sysEnv);
 		initLimits(sysEnv, tz);
 		initEmbeddedInterval(sysEnv);
+		initDispatcher(sysEnv);
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
@@ -197,6 +202,8 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		if (filter == null) {
 			initialize(sysEnv, tz);
 		}
+		if (dispatchRules != null)
+			return getNextDispatchTriggerDate(sysEnv, lMinDate, horizon, tz);
 		if (!seek(sysEnv, lMinDate, horizon, tz, DRIVER, "")) return null;
 		if (blockState.blockStart < lMinDate) {
 			if (blockState.blockEnd == Long.MAX_VALUE) return null;
@@ -204,6 +211,68 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 
 		return new Long(blockState.blockStart);
+	}
+
+	private Long getNextDispatchTriggerDate(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz)
+	throws SDMSException
+	{
+		int drSize = dispatchRules.size();
+		long candidate = Long.MAX_VALUE;
+		long testCandidate;
+		long tcOk;
+		Long tmp;
+
+		if (minDate < startTime) minDate = startTime;
+
+		for (int i = 0; i < drSize; ++i) {
+
+			testCandidate = minDate;
+			boolean found = false;
+			DispatchRule dr = dispatchRules.get(i);
+
+			while (!found && (testCandidate < candidate)) {
+				if (dr.isActive) {
+					tcOk = testCandidate;
+					do {
+						if (dr.fltInterval != null) {
+							tmp = dr.fltInterval.getNextTriggerDate(sysEnv, new Long(tcOk), horizon, tz);
+							testCandidate = (tmp == null ? Long.MAX_VALUE : tmp.longValue());
+						}
+						if (dr.selInterval != null) {
+							tcOk = dr.selInterval.filter(sysEnv, testCandidate, horizon, tz, "");
+						} else
+							tcOk = testCandidate;
+					} while ((tcOk < Long.MAX_VALUE) && (testCandidate < tcOk) && (testCandidate < candidate));
+				} else {
+					tcOk = Long.MAX_VALUE;
+					testCandidate = Long.MAX_VALUE;
+				}
+
+				found = true;
+				if (tcOk == Long.MAX_VALUE)
+					testCandidate = Long.MAX_VALUE;
+				if ((tcOk < Long.MAX_VALUE) && (testCandidate < candidate)) {
+					for (int j = i - 1; j >= 0; --j) {
+						if (dispatchRules.get(j).selInterval != null) {
+							tcOk = dispatchRules.get(j).selInterval.filter(sysEnv, testCandidate, horizon, tz, "");
+						} else {
+							tcOk = testCandidate;
+						}
+						if (tcOk <= testCandidate) {
+							found = false;
+							testCandidate++;
+							break;
+						}
+					}
+				}
+				if ((testCandidate < candidate) && found)
+					candidate = testCandidate;
+			}
+		}
+
+		if (candidate > endTime) candidate = Long.MAX_VALUE;
+
+		return new Long(candidate);
 	}
 
 	private boolean advanceBlock(SystemEnvironment sysEnv, long horizon, TimeZone tz)
@@ -398,9 +467,48 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	public long filter(SystemEnvironment sysEnv, long checkDate, long horizon, TimeZone tz, String indent)
 		throws SDMSException
 	{
-		if(!seek(sysEnv, checkDate, horizon, tz, FILTER, indent)) return Long.MAX_VALUE;
-		if (checkDate < startTime && blockState.blockStart < startTime) return startTime;
+		if (dispatchRules != null)
+			return dispatchFilter(sysEnv, checkDate, horizon, tz, indent);
+		if(!seek(sysEnv, checkDate, horizon, tz, FILTER, indent)) {
+			return Long.MAX_VALUE;
+		}
+		if (checkDate < startTime && blockState.blockStart < startTime) {
+			return startTime;
+		}
 		return blockState.blockStart;
+	}
+
+	private long dispatchFilter(SystemEnvironment sysEnv, long checkDate, long horizon, TimeZone tz, String indent)
+	throws SDMSException
+	{
+		long blockStart;
+		long selBlockStart;
+		for (int i = 0; i < dispatchRules.size(); ++i) {
+			DispatchRule dr = dispatchRules.get(i);
+			if (dr.selInterval == null)
+				selBlockStart = 0;
+			else
+				selBlockStart = dr.selInterval.filter(sysEnv, checkDate, horizon, tz, indent);
+			if (selBlockStart <= checkDate) {
+				if (dr.isActive) {
+					blockStart = dr.fltInterval.filter(sysEnv, checkDate, horizon, tz, indent);
+					if (blockStart <= checkDate) {
+						if (checkDate < startTime) return startTime;
+						return blockStart;
+					}
+				} else {
+					blockStart = Long.MAX_VALUE;
+				}
+
+				if (dr.selInterval != null) {
+					long tmp = dr.selInterval.filter(sysEnv, blockStart, horizon, tz, indent);
+					if (tmp == selBlockStart) return blockStart;
+				} else
+					return blockStart;
+				return getNextTriggerDate(sysEnv, checkDate, horizon, tz);
+			}
+		}
+		return Long.MAX_VALUE;
 	}
 
 	private boolean checkSelection (SystemEnvironment sysEnv, int blockIdx, int negIdx, long ts, TimeZone tz)
@@ -897,6 +1005,22 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 	}
 
+	private void initDispatcher(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Vector drv = SDMSIntervalDispatcherTable.idx_intId.getSortedVector(sysEnv, getId(sysEnv));
+		if (drv.size() != 0) {
+			dispatchRules = new Vector<DispatchRule>();
+			for (int i = 0; i < drv.size(); ++i) {
+				DispatchRule dr = new DispatchRule(sysEnv, (SDMSIntervalDispatcher) drv.get(i));
+				if (dr.isEnabled)
+					dispatchRules.add(dr);
+				if (dr.selInterval == null)
+					break;
+			}
+		}
+	}
+
 	private GregorianCalendar localGcFromGMT(SystemEnvironment sysEnv, Long time, TimeZone tz)
 		throws SDMSException
 	{
@@ -1249,6 +1373,13 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	public void delete (SystemEnvironment sysEnv)
 	throws SDMSException
 	{
+		deleteDependingObjects(sysEnv);
+		super.delete(sysEnv);
+	}
+
+	public void deleteDependingObjects(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
 		Long id = getId(sysEnv);
 		Vector ivv = SDMSIntervalTable.idx_objId.getVector(sysEnv, id);
 		Iterator i = ivv.iterator();
@@ -1260,7 +1391,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			} catch (NotFoundException nfe) {
 			}
 		}
-		super.delete(sysEnv);
 	}
 
 	public long getPrivileges(SystemEnvironment sysEnv, long checkPrivs, boolean fastFail, Vector checkGroups)
@@ -1273,7 +1403,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		p = SDMSPrivilege.NOPRIVS;
 		seId = getSeId(sysEnv);
-		if (seId == null) {
+		if (seId == null || seId == 0) {
 			p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
 			return p & checkPrivs;
 		}
@@ -1363,5 +1493,67 @@ class BlockState implements Cloneable
 			indent + "\tblockEnd  : " + new TimerDate((int)(blockEnd / 60000)).toString() + "\n" +
 			indent + "\tblockIdx  : " + blockIdx + "\n" +
 			indent + "]";
+	}
+}
+
+class DispatchRule
+{
+
+	public SDMSInterval selInterval;
+	public SDMSInterval fltInterval;
+	public String drName;
+	public String selName;
+	public String fltName;
+	public boolean isActive;
+	public boolean isEnabled;
+	public int seqNo;
+
+	public DispatchRule ()
+	{
+		selInterval = null;
+		fltInterval = null;
+		drName = null;
+		selName = null;
+		fltName = null;
+		isActive = false;
+		isEnabled = false;
+	}
+
+	public DispatchRule (SystemEnvironment sysEnv, SDMSIntervalDispatcher dr)
+	throws SDMSException
+	{
+		Long selIntervalId = dr.getSelectIntId(sysEnv);
+		if (selIntervalId == null) {
+			selInterval = null;
+			selName = null;
+		} else {
+			selInterval = SDMSIntervalTable.getObject(sysEnv, selIntervalId);
+			selName = selInterval.getName(sysEnv);
+		}
+
+		Long fltIntervalId = dr.getFilterIntId(sysEnv);
+		if (fltIntervalId == null) {
+			fltInterval = null;
+			fltName = null;
+		} else {
+			fltInterval = SDMSIntervalTable.getObject(sysEnv, fltIntervalId);
+			fltName = fltInterval.getName(sysEnv);
+		}
+
+		isActive = dr.getIsActive(sysEnv).booleanValue();
+		isEnabled = dr.getIsEnabled(sysEnv).booleanValue();
+
+		seqNo = dr.getSeqNo(sysEnv).intValue();
+		drName = dr.getName(sysEnv);
+	}
+
+	public String toString()
+	{
+		return	"DispatchRule " + drName +
+		        ": seqNo = " + seqNo +
+		        ", sel = " + selName +
+		        ", flt = " + fltName +
+		        ", isActive = " + isActive +
+		        ", isEnabled = " + isEnabled;
 	}
 }

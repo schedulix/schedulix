@@ -90,8 +90,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 	public static final int RESOURCE_TEMPLATE = 28;
 	public static final int WATCH_TYPE = 29;
 	public static final int OBJECT_MONITOR = 30;
-	public static final int DISPATCHER_DISPATCH = 88;
-	public static final int DISPATCHER_USE = 89;
+	public static final int INTERVAL_DISPATCHER = 88;
 	public static final long MINUTE_MAX =              1*60*1000L;
 	public static final long HOUR_MAX =             60*60*1000L;
 	public static final long DAY_MAX =          25*60*60*1000L;
@@ -700,10 +699,8 @@ public class SDMSIntervalGeneric extends SDMSObject
 				return "SCHEDULED_EVENT";
 			case SDMSInterval.RESOURCE_TEMPLATE:
 				return "RESOURCE_TEMPLATE";
-			case SDMSInterval.DISPATCHER_DISPATCH:
-				return "DISPATCHER_DISPATCH";
-			case SDMSInterval.DISPATCHER_USE:
-				return "DISPATCHER_USE";
+			case SDMSInterval.INTERVAL_DISPATCHER:
+				return "INTERVAL_DISPATCHER";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -1192,8 +1189,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 			case SDMSInterval.SCHEDULE:
 			case SDMSInterval.SCHEDULED_EVENT:
 			case SDMSInterval.RESOURCE_TEMPLATE:
-			case SDMSInterval.DISPATCHER_DISPATCH:
-			case SDMSInterval.DISPATCHER_USE:
+			case SDMSInterval.INTERVAL_DISPATCHER:
 				return true;
 		}
 		return false;

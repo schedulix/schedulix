@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -52,22 +50,31 @@ public class DropInterval
 	public void go (SystemEnvironment sysEnv)
 	throws SDMSException
 	{
-		final SDMSInterval ival = (SDMSInterval) obj.resolve(sysEnv);
-		final Long ivalId = obj.objId;
+		try {
+			final SDMSInterval ival = (SDMSInterval) obj.resolve(sysEnv);
+			final Long ivalId = obj.objId;
 
-		if (SDMSIntervalTable.idx_embeddedIntervalId.containsKey (sysEnv, ivalId))
-			throw new CommonErrorException (new SDMSMessage (sysEnv, "04209111937", "Interval in use by Interval(s)"));
+			if (SDMSIntervalTable.idx_embeddedIntervalId.containsKey (sysEnv, ivalId))
+				throw new CommonErrorException (new SDMSMessage (sysEnv, "04209111937", "Interval in use by Interval(s)"));
 
-		if (SDMSScheduleTable.idx_intId.containsKey (sysEnv, ivalId))
-			throw new CommonErrorException (new SDMSMessage (sysEnv, "04207191907", "Interval in use by Schedule(s)"));
+			if (SDMSScheduleTable.idx_intId.containsKey (sysEnv, ivalId))
+				throw new CommonErrorException (new SDMSMessage (sysEnv, "04207191907", "Interval in use by Schedule(s)"));
 
-		if (SDMSIntervalHierarchyTable.idx_childId.containsKey (sysEnv, ivalId))
-			throw new CommonErrorException (new SDMSMessage (sysEnv, "04209112049", "Interval in use by Interval(s)"));
+			if (SDMSIntervalHierarchyTable.idx_childId.containsKey (sysEnv, ivalId))
+				throw new CommonErrorException (new SDMSMessage (sysEnv, "04209112049", "Interval in use by Interval(s)"));
 
-		IntervalUtil.killFilter (sysEnv, ivalId);
-		IntervalUtil.killSelections (sysEnv, ivalId);
+			if (SDMSSchedulingHierarchyTable.idx_intId.containsKey (sysEnv, ivalId))
+				throw new CommonErrorException (new SDMSMessage (sysEnv, "04r81161006", "Interval in use by SchedulingHierarchy(s)"));
 
-		ival.delete (sysEnv);
+			IntervalUtil.killFilter (sysEnv, ivalId);
+			IntervalUtil.killSelections (sysEnv, ivalId);
+			IntervalUtil.killDispatcher (sysEnv, ivalId);
+
+			ival.delete (sysEnv);
+		} catch (NotFoundException nfe) {
+			if (!noerr)
+				throw nfe;
+		}
 
 		result.setFeedback (new SDMSMessage (sysEnv, "04207181908", "Interval dropped"));
 	}
