@@ -901,6 +901,10 @@ public class ParseStr
 
 	public static String map(Integer k)
 	{
-		return (String) mapper.get(k);
+		String rc = (String) mapper.get(k);
+		if (rc == null) {
+			System.out.println(Here.at() + "\nCouldn't find a matching string for symbol " + k.toString());
+		}
+		return rc;
 	}
 }
