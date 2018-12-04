@@ -586,6 +586,12 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			r.delete(sysEnv, force);
 		}
 
+		Vector lt = SDMSTriggerTable.idx_fireId.getVector(sysEnv, rId);
+		for (int i = 0; i < lt.size(); ++i) {
+			SDMSTrigger t  = (SDMSTrigger) lt.get(i);
+			t.delete(sysEnv);
+		}
+
 		killVariables(sysEnv);
 		super.delete(sysEnv);
 		try {
