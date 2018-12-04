@@ -23,5 +23,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-def myeval(string):
-	return eval(string)
+def myeval(string, context = None):
+	if context == None:
+		return eval(string)
+	else:
+		return eval(string, { 'context' : context } )
