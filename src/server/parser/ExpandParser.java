@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -84,38 +82,39 @@ public class ExpandParser
 	public static final int O_CHILDREN        = 1000;
 	public static final int O_COMMENT         = 1001;
 	public static final int O_DEPENDENT       = 1002;
-	public static final int O_DISTRIBUTION    = 1003;
-	public static final int O_EMBEDDED        = 1004;
-	public static final int O_ENVIRONMENT     = 1005;
-	public static final int O_ESD             = 1006;
-	public static final int O_ESM             = 1007;
-	public static final int O_ESP             = 1008;
-	public static final int O_EST             = 1009;
-	public static final int O_EVENT           = 1010;
-	public static final int O_FOLDER          = 1011;
-	public static final int O_FOOTPRINT       = 1012;
-	public static final int O_GRANT           = 1013;
-	public static final int O_GROUP           = 1014;
-	public static final int O_INTERVAL        = 1015;
-	public static final int O_JOB_DEFINITION  = 1016;
-	public static final int O_NAMED_RESOURCE  = 1017;
-	public static final int O_OBJECT_MONITOR  = 1018;
-	public static final int O_OWNER           = 1019;
-	public static final int O_PARENTS         = 1020;
-	public static final int O_POOL            = 1021;
-	public static final int O_REQUIRED        = 1022;
-	public static final int O_RESOURCE        = 1023;
-	public static final int O_RESOURCE_TMPL   = 1024;
-	public static final int O_RSD             = 1025;
-	public static final int O_RSM             = 1026;
-	public static final int O_RSP             = 1027;
-	public static final int O_SCHEDULE        = 1028;
-	public static final int O_SCHEDULED_EVENT = 1029;
-	public static final int O_SCOPE           = 1030;
-	public static final int O_STOP            = 1031;
-	public static final int O_TRIGGER         = 1032;
-	public static final int O_USER            = 1033;
-	public static final int O_WATCH_TYPE      = 1034;
+	public static final int O_DISPATCH        = 1003;
+	public static final int O_DISTRIBUTION    = 1004;
+	public static final int O_EMBEDDED        = 1005;
+	public static final int O_ENVIRONMENT     = 1006;
+	public static final int O_ESD             = 1007;
+	public static final int O_ESM             = 1008;
+	public static final int O_ESP             = 1009;
+	public static final int O_EST             = 1010;
+	public static final int O_EVENT           = 1011;
+	public static final int O_FOLDER          = 1012;
+	public static final int O_FOOTPRINT       = 1013;
+	public static final int O_GRANT           = 1014;
+	public static final int O_GROUP           = 1015;
+	public static final int O_INTERVAL        = 1016;
+	public static final int O_JOB_DEFINITION  = 1017;
+	public static final int O_NAMED_RESOURCE  = 1018;
+	public static final int O_OBJECT_MONITOR  = 1019;
+	public static final int O_OWNER           = 1020;
+	public static final int O_PARENTS         = 1021;
+	public static final int O_POOL            = 1022;
+	public static final int O_REQUIRED        = 1023;
+	public static final int O_RESOURCE        = 1024;
+	public static final int O_RESOURCE_TMPL   = 1025;
+	public static final int O_RSD             = 1026;
+	public static final int O_RSM             = 1027;
+	public static final int O_RSP             = 1028;
+	public static final int O_SCHEDULE        = 1029;
+	public static final int O_SCHEDULED_EVENT = 1030;
+	public static final int O_SCOPE           = 1031;
+	public static final int O_STOP            = 1032;
+	public static final int O_TRIGGER         = 1033;
+	public static final int O_USER            = 1034;
+	public static final int O_WATCH_TYPE      = 1035;
 
 	static final int O_CONTENT         = 2000;
 	static final int O_TIME_SCHEDULES  = 2001;
@@ -154,6 +153,7 @@ public class ExpandParser
 	final static String SO_CHILDREN		= "CHILDREN";
 	final static String SO_COMMENT		= "COMMENT";
 	final static String SO_DEPENDENT	= "DEPENDENT";
+	final static String SO_DISPATCH		= "DISPATCH";
 	final static String SO_DISTRIBUTION	= "DISTRIBUTION";
 	final static String SO_EMBEDDED		= "EMBEDDED";
 	final static String SO_ENVIRONMENT	= "ENVIRONMENT";
@@ -198,70 +198,71 @@ public class ExpandParser
 	final static int C_SS_CHILDREN          =  5;
 	final static int C_ALLCMT_COMMENT       =  6;
 	final static int C_SESE_DEPENDENT       =  7;
-	final static int C_PLD_DISTRIBUTION     =  8;
-	final static int C_INTINT_EMBEDDED      =  9;
-	final static int C_FENV_ENVIRONMENT     = 10;
-	final static int C_SEENV_ENVIRONMENT    = 11;
-	final static int C_NRENV_ENVIRONMENT    = 12;
-	final static int C_ESMESD_ESD           = 13;
-	final static int C_ESPESD_ESD           = 14;
-	final static int C_RSMESD_ESD           = 15;
-	final static int C_ESPESM_ESM           = 16;
-	final static int C_SEESM_ESM            = 17;
-	final static int C_SEESP_ESP            = 18;
-	final static int C_SEEST_EST            = 19;
-	final static int C_SEEVT_EVENT          = 20;
-	final static int C_SEVEVT_EVENT         = 21;
-	final static int C_SEF_FOLDER           = 22;
-	final static int C_RF_FOLDER            = 23;
-	final static int C_SEFP_FOOTPRINT       = 24;
-	final static int C_ALLGR_GRANT          = 25;
-	final static int C_GRG_GROUP            = 26;
-	final static int C_SCINT_INTERVAL       = 27;
-	final static int C_FSE_JOB_DEFINITION   = 28;
-	final static int C_OT_JOB_DEFINITION	= 29;
-	final static int C_TRSE_JOB_DEFINITION  = 30;
-	final static int C_ENVNR_NAMED_RESOURCE = 31;
-	final static int C_FNR_NAMED_RESOURCE   = 32;
-	final static int C_FPNR_NAMED_RESOURCE  = 33;
-	final static int C_SENR_NAMED_RESOURCE  = 34;
-	final static int C_PLNR_NAMED_RESOURCE  = 35;
-	final static int C_RNR_NAMED_RESOURCE   = 36;
-	final static int C_RTNR_NAMED_RESOURCE  = 37;
-	final static int C_WT_OBJECT_MONITOR	= 38;
-	final static int C_ALLG_OWNER           = 39;
-	final static int C_FF_PARENTS           = 40;
-	final static int C_INTINT_PARENTS       = 41;
-	final static int C_SESE_PARENTS         = 42;
-	final static int C_NRNR_PARENTS         = 43;
-	final static int C_SCSC_PARENTS         = 44;
-	final static int C_SS_PARENTS           = 45;
-	final static int C_NRPL_POOL            = 46;
-	final static int C_PLPL_POOL            = 47;
-	final static int C_SPL_POOL             = 48;
-	final static int C_SESE_REQUIRED        = 49;
-	final static int C_FR_RESOURCE          = 50;
-	final static int C_NRR_RESOURCE         = 51;
-	final static int C_PLR_RESOURCE         = 52;
-	final static int C_SR_RESOURCE          = 53;
-	final static int C_SERT_RESOURCE_TMPL   = 54;
-	final static int C_RRSD_RSD             = 55;
-	final static int C_RTRSD_RSD            = 56;
-	final static int C_RSMRSD_RSD           = 57;
-	final static int C_RSPRSD_RSD           = 58;
-	final static int C_SERSM_RSM            = 59;
-	final static int C_NRRSP_RSP            = 60;
-	final static int C_SEVSC_SCHEDULE       = 61;
-	final static int C_EVSEV_SCHEDULED_EVENT= 62;
-	final static int C_PLS_SCOPE            = 63;
-	final static int C_RS_SCOPE             = 64;
-	final static int C_ALLNONE_STOP         = 65;
-	final static int C_SETR_TRIGGER         = 66;
-	final static int C_NRTR_TRIGGER         = 67;
-	final static int C_OT_TRIGGER		= 68;
-	final static int C_RTR_TRIGGER          = 69;
-	final static int C_GU_USER              = 70;
-	final static int C_OT_WATCH_TYPE	= 71;
+	final static int C_INT_DISPATCH		=  8;
+	final static int C_PLD_DISTRIBUTION     =  9;
+	final static int C_INTINT_EMBEDDED      = 10;
+	final static int C_FENV_ENVIRONMENT     = 11;
+	final static int C_SEENV_ENVIRONMENT    = 12;
+	final static int C_NRENV_ENVIRONMENT    = 13;
+	final static int C_ESMESD_ESD           = 14;
+	final static int C_ESPESD_ESD           = 15;
+	final static int C_RSMESD_ESD           = 16;
+	final static int C_ESPESM_ESM           = 17;
+	final static int C_SEESM_ESM            = 18;
+	final static int C_SEESP_ESP            = 19;
+	final static int C_SEEST_EST            = 20;
+	final static int C_SEEVT_EVENT          = 21;
+	final static int C_SEVEVT_EVENT         = 22;
+	final static int C_SEF_FOLDER           = 23;
+	final static int C_RF_FOLDER            = 24;
+	final static int C_SEFP_FOOTPRINT       = 25;
+	final static int C_ALLGR_GRANT          = 26;
+	final static int C_GRG_GROUP            = 27;
+	final static int C_SCINT_INTERVAL       = 28;
+	final static int C_FSE_JOB_DEFINITION   = 29;
+	final static int C_OT_JOB_DEFINITION	= 30;
+	final static int C_TRSE_JOB_DEFINITION  = 31;
+	final static int C_ENVNR_NAMED_RESOURCE = 32;
+	final static int C_FNR_NAMED_RESOURCE   = 33;
+	final static int C_FPNR_NAMED_RESOURCE  = 34;
+	final static int C_SENR_NAMED_RESOURCE  = 35;
+	final static int C_PLNR_NAMED_RESOURCE  = 36;
+	final static int C_RNR_NAMED_RESOURCE   = 37;
+	final static int C_RTNR_NAMED_RESOURCE  = 38;
+	final static int C_WT_OBJECT_MONITOR	= 39;
+	final static int C_ALLG_OWNER           = 40;
+	final static int C_FF_PARENTS           = 41;
+	final static int C_INTINT_PARENTS       = 42;
+	final static int C_SESE_PARENTS         = 43;
+	final static int C_NRNR_PARENTS         = 44;
+	final static int C_SCSC_PARENTS         = 45;
+	final static int C_SS_PARENTS           = 46;
+	final static int C_NRPL_POOL            = 47;
+	final static int C_PLPL_POOL            = 48;
+	final static int C_SPL_POOL             = 49;
+	final static int C_SESE_REQUIRED        = 50;
+	final static int C_FR_RESOURCE          = 51;
+	final static int C_NRR_RESOURCE         = 52;
+	final static int C_PLR_RESOURCE         = 53;
+	final static int C_SR_RESOURCE          = 54;
+	final static int C_SERT_RESOURCE_TMPL   = 55;
+	final static int C_RRSD_RSD             = 56;
+	final static int C_RTRSD_RSD            = 57;
+	final static int C_RSMRSD_RSD           = 58;
+	final static int C_RSPRSD_RSD           = 59;
+	final static int C_SERSM_RSM            = 60;
+	final static int C_NRRSP_RSP            = 61;
+	final static int C_SEVSC_SCHEDULE       = 62;
+	final static int C_EVSEV_SCHEDULED_EVENT= 63;
+	final static int C_PLS_SCOPE            = 64;
+	final static int C_RS_SCOPE             = 65;
+	final static int C_ALLNONE_STOP         = 66;
+	final static int C_SETR_TRIGGER         = 67;
+	final static int C_NRTR_TRIGGER         = 68;
+	final static int C_OT_TRIGGER		= 69;
+	final static int C_RTR_TRIGGER          = 70;
+	final static int C_GU_USER              = 71;
+	final static int C_OT_WATCH_TYPE	= 72;
 
 	static
 	{
@@ -298,6 +299,7 @@ public class ExpandParser
 		validOps.put(SO_CHILDREN,          new Integer(O_CHILDREN));
 		validOps.put(SO_COMMENT,           new Integer(O_COMMENT));
 		validOps.put(SO_DEPENDENT,         new Integer(O_DEPENDENT));
+		validOps.put(SO_DISPATCH,          new Integer(O_DISPATCH));
 		validOps.put(SO_DISTRIBUTION,      new Integer(O_DISTRIBUTION));
 		validOps.put(SO_EMBEDDED,          new Integer(O_EMBEDDED));
 		validOps.put(SO_ENVIRONMENT,       new Integer(O_ENVIRONMENT));
@@ -343,6 +345,7 @@ public class ExpandParser
 		expandClasses.put(new Integer(C_ALLCMT_COMMENT),	new AllComment());
 		expandClasses.put(new Integer(C_SESE_DEPENDENT),	new SEDependent());
 		expandClasses.put(new Integer(C_PLD_DISTRIBUTION),	new PLDistribution());
+		expandClasses.put(new Integer(C_INT_DISPATCH),		new IntervalDispatch());
 		expandClasses.put(new Integer(C_INTINT_EMBEDDED),	new IntervalEmbedded());
 		expandClasses.put(new Integer(C_FENV_ENVIRONMENT),	new FolderEnvironment());
 		expandClasses.put(new Integer(C_SEENV_ENVIRONMENT),	new SEEnvironment());
@@ -417,6 +420,7 @@ public class ExpandParser
 		{O_CHILDREN,		T_SCOPE,		T_SCOPE},
 		{O_COMMENT,		T_ALL,			T_COMMENT},
 		{O_DEPENDENT,		T_JOB_DEFINITION,	T_JOB_DEFINITION},
+		{O_DISPATCH,		T_INTERVAL,		T_INTERVAL},
 		{O_DISTRIBUTION,	T_POOL,			T_DISTRIBUTION},
 		{O_EMBEDDED,		T_INTERVAL,		T_INTERVAL},
 		{O_ENVIRONMENT,		T_FOLDER,		T_ENVIRONMENT},
@@ -530,6 +534,7 @@ public class ExpandParser
 		new DumpExpandItem(ST_SCHEDULE,        CA_TSX,	new PathVector().addThis(new DumpRule(SO_INTERVAL,        CA_TS))),
 		new DumpExpandItem(ST_INTERVAL,        CA_TS,	new PathVector().addThis(new DumpRule(SO_CHILDREN,        CA_TS))),
 		new DumpExpandItem(ST_INTERVAL,        CA_TS,	new PathVector().addThis(new DumpRule(SO_EMBEDDED,        CA_TS))),
+		new DumpExpandItem(ST_INTERVAL,        CA_TS,	new PathVector().addThis(new DumpRule(SO_DISPATCH,        CA_TS))),
 		new DumpExpandItem(ST_INTERVAL,        CA_TS,	new PathVector().addThis(new DumpRule(SO_PARENTS,         CA_TSX))),
 		new DumpExpandItem(ST_INTERVAL,        CA_TSX,	new PathVector().addThis(new DumpRule(SO_PARENTS,         CA_TSX))),
 		new DumpExpandItem(ST_ALL,             CA_TSX,	new PathVector().addThis(new DumpRule(SO_COMMENT,         CA_TS))),
