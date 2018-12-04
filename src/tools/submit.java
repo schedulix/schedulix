@@ -57,7 +57,7 @@ class submit extends App
 	{
 		addOption("J", "job"    , null, JOB    , null, "jobname"  , true , "Name or alias of job to submit");
 		addOption("T", "tag"    , null, TAG    , null, "tag"      , false, "Child tag for dynamic child submits");
-		addOption("m", "master" , null, MASTER , null, null       , false, "Ignored option for backward compatibility reasons");
+		addOption("m", "master" , null, MASTER , null, null       , false, "The job will be submitted as master (job option only)");
 		addOption("N", "nice"   , null, NICE   , null, "nice"     , false, "Nice value of the job or batch");
 		addOption("S", "suspend", null, SUSPEND, null, null       , false, "Submit job [not] suspended");
 		addOption("D", "delay"  , null, DELAY  , null, "delay"    , false, "Delay after Job will be resumed (only valid with suspend option)");
