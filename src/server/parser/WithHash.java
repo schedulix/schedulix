@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -57,7 +55,9 @@ public class WithHash extends HashMap
 		final Iterator i = entrySet().iterator();
 		while (i.hasNext()) {
 			final Map.Entry m = (Map.Entry) i.next();
-			s = s + c + m.getKey().toString() + " = " + m.getValue().toString();
+			Object key = m.getKey();
+			Object value = m.getValue();
+			s = s + c + (key == null ? "null" : key.toString()) + " = " + (value == null ? "null" : value.toString());
 			c = ", ";
 		}
 		return s;
