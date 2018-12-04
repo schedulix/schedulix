@@ -51,7 +51,7 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 	static final public int passwd_size = 64;
 	static final public int salt_size = 64;
 	static final public int pid_size = 32;
-	static final public int node_size = 32;
+	static final public int node_size = 64;
 	static final public int errmsg_size = 256;
 
 	protected SDMSScopeProxyGeneric(SDMSObject p_object)
@@ -366,7 +366,7 @@ public class SDMSScopeProxyGeneric extends SDMSProxy
 	}
 	public static int getNodeMaxLength ()
 	{
-		return (32);
+		return (64);
 	}
 	public String getErrmsg (SystemEnvironment env)
 	throws SDMSException

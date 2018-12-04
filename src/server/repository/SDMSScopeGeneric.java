@@ -166,10 +166,10 @@ public class SDMSScopeGeneric extends SDMSObject
 			);
 		}
 		pid = p_pid;
-		if (p_node != null && p_node.length() > 32) {
+		if (p_node != null && p_node.length() > 64) {
 			throw new CommonErrorException (
 			        new SDMSMessage(env, "01112141528",
-			                        "(Scope) Length of $1 exceeds maximum length $2", "node", "32")
+			                        "(Scope) Length of $1 exceeds maximum length $2", "node", "64")
 			);
 		}
 		node = p_node;
@@ -650,10 +650,10 @@ public class SDMSScopeGeneric extends SDMSObject
 				);
 			}
 			o = (SDMSScopeGeneric) change(env);
-			if (p_node != null && p_node.length() > 32) {
+			if (p_node != null && p_node.length() > 64) {
 				throw new CommonErrorException (
 				        new SDMSMessage(env, "01112141510",
-				                        "(Scope) Length of $1 exceeds maximum length $2", "node", "32")
+				                        "(Scope) Length of $1 exceeds maximum length $2", "node", "64")
 				);
 			}
 			o.node = p_node;
