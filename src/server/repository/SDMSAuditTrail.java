@@ -73,6 +73,8 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 				return new Integer(JOB_UNREACHABLE);
 			case Parser.IGNORE_DEPENDENCY:
 				return new Integer(IGNORE_DEPENDENCY);
+			case Parser.DISABLE:
+				return new Integer(DISABLE);
 		}
 		return null;
 	}

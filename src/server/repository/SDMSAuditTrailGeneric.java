@@ -89,6 +89,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	public static final int SET_WARNING = 27;
 	public static final int JOB_UNREACHABLE = 28;
 	public static final int SET_PARAMETERS = 29;
+	public static final int DISABLE = 30;
 
 	public final static int nr_id = 1;
 	public final static int nr_userId = 2;
@@ -317,6 +318,8 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				return "JOB_UNREACHABLE";
 			case SDMSAuditTrail.SET_PARAMETERS:
 				return "SET_PARAMETERS";
+			case SDMSAuditTrail.DISABLE:
+				return "DISABLE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -845,6 +848,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			case SDMSAuditTrail.SET_WARNING:
 			case SDMSAuditTrail.JOB_UNREACHABLE:
 			case SDMSAuditTrail.SET_PARAMETERS:
+			case SDMSAuditTrail.DISABLE:
 				return true;
 		}
 		return false;

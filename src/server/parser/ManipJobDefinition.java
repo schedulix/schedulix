@@ -487,8 +487,10 @@ public abstract class ManipJobDefinition extends Node
 		Integer shResumeIn;
 		Integer shResumeBase;
 		String estpName;
+		String intName;
 		Integer mergeMode;
 		Long estpId;
+		Long intId;
 		Vector depNames;
 		String aliasName;
 		int parentType;
@@ -553,6 +555,7 @@ public abstract class ManipJobDefinition extends Node
 		if(mergeMode == null) mergeMode = new Integer(SDMSSchedulingHierarchy.NOMERGE);
 
 		estpName = (String) wh.get(ParseStr.S_TRANSLATION);
+		intName = (String) wh.get(ParseStr.S_INTERVAL);
 		depNames = (Vector) wh.get(ParseStr.S_IGNORE);
 
 		aliasName = (String) wh.get(ParseStr.S_ALIAS);
@@ -573,6 +576,16 @@ public abstract class ManipJobDefinition extends Node
 
 			checkTranslation(sysEnv, seChild, seParent, estp);
 		}
+		intId = null;
+		if(intName != null) {
+			SDMSInterval iv = null;
+			try {
+				iv = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(intName, 0));
+			} catch(NotFoundException nfe) {
+				iv = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(intName, null));
+			}
+			intId = iv.getId(sysEnv);
+		}
 
 		if (parentId.equals(childId)) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "02112201726", "Cannot have itself as child"));
@@ -588,7 +601,7 @@ public abstract class ManipJobDefinition extends Node
 		if(isAdd) {
 			try {
 				sh = SDMSSchedulingHierarchyTable.table.create(sysEnv, parentId, childId, aliasName, isStatic, isDisabled, prio,
-								suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId);
+				                suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId, intId);
 			} catch (DuplicateKeyException dke) {
 				if(processError) {
 					sh = SDMSSchedulingHierarchyTable.idx_parentId_childId_getUnique(sysEnv, new SDMSKey(parentId, childId));
@@ -602,6 +615,7 @@ public abstract class ManipJobDefinition extends Node
 					sh.setResumeBase(sysEnv, shResumeBase);
 					sh.setMergeMode(sysEnv, mergeMode);
 					sh.setEstpId(sysEnv, estpId);
+					sh.setIntId(sysEnv, intId);
 
 					Vector v = SDMSIgnoredDependencyTable.idx_shId.getVector(sysEnv, sh.getId(sysEnv));
 					for(int i = 0; i < v.size(); i++) ((SDMSIgnoredDependency) v.get(i)).delete(sysEnv);
@@ -622,6 +636,7 @@ public abstract class ManipJobDefinition extends Node
 				sh.setResumeBase(sysEnv, shResumeBase);
 				sh.setMergeMode(sysEnv, mergeMode);
 				sh.setEstpId(sysEnv, estpId);
+				sh.setIntId(sysEnv, intId);
 
 				Vector v = SDMSIgnoredDependencyTable.idx_shId.getVector(sysEnv, sh.getId(sysEnv));
 				for(int i = 0; i < v.size(); i++) ((SDMSIgnoredDependency) v.get(i)).delete(sysEnv);

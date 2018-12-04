@@ -171,7 +171,7 @@ public class Parser
 %type <Integer>	us_connect_type
 
 %type <Long>	id, jobid, longg
-%type <Long> 	privilege, privilege_list
+%type <Long> 	opt_ivowner, privilege, privilege_list
 
 %type <Float>	signed_float
 
@@ -222,7 +222,7 @@ public class Parser
 %type <WithHash>	period
 %type <WithHash>	system_resource_req, rsp_with_clause, rsp_withitemlist
 %type <WithHash>	schedwithlist, schedwithwith, schevwithlist, schevwithwith, scope_cfg, scope_cfg_list, scope_cfg_envlist, scope_parm, scope_parmlist, select_with
-%type <WithHash>	selwithlist, /* show_with_item, */ signed_period, signed_period_rj, sj_withlist, stickyspec, submit_with, submit_withlist, sp_with
+%type <WithHash>	selwithlist, signed_period, signed_period_rj, sj_withlist, stickyspec, submit_with, submit_withlist, sp_with
 %type <WithHash>	us_add_dellist, us_with, us_withlist, wt_with_clause, wt_withitemlist
 
 %type <WithItem>	aj_suspend, aj_withitem, ajd_add_del_item, anr_with_item, aom_withitem, ar_parm, ar_with_item
@@ -1473,7 +1473,8 @@ show_resource:		SHOW resource_url					{ $$ = new ShowResource($2); }
 ar_path:		serverpath						{ $$ = $1; }
 	|		folderpath						{ $$ = $1; }
 
-ar_with_clause:		with ar_with_list					{ $$ = $2; }
+ar_with_clause:									{ $$ = new WithHash(); }
+	|		with ar_with_list					{ $$ = $2; }
 
 ar_with_list:		ar_with_item						{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
 	|		ar_with_list ',' ar_with_item				{ $1.addItem($3); }
@@ -2352,6 +2353,8 @@ jcd_item:		folderpath '.' jobname					{ final WithHash w = new WithHash();
 	|		job_childdef_suspend					{ $$ = new WithItem(ParseStr.S_SUSPEND, $1); }
 	|		resume							{ $$ = $1; }
 	|		TRANSLATION '=' jw_transname				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
+	|		INTERVAL '=' intervalname				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
+	|		INTERVAL '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
 	|		MERGE_MODE '=' mergemode				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|		IGNORE_DEPENDENCY '=' '(' depnamelist ')'		{ $$ = new WithItem(ParseStr.S_IGNORE, $4); }
 			//D:DEFAULT
@@ -2758,6 +2761,7 @@ aj_withlist:	aj_withitem							{ $$ = new WithHash(); $<WithHash>$.addItem($1); 
 
 //D:NT-ALIAS = withitem
 aj_withitem:	CANCEL								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
+	|	DISABLE								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
 	|	CLEAR WARNING							{ $$ = new WithItem(ParseStr.S_CLEAR_WARN, Boolean.TRUE); }
 	|	COMMENT '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 	|	ERROR_TEXT '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
@@ -3034,6 +3038,7 @@ sj_filteritem:  RERUN								{ $$ = SDMSAuditTrail.convert($1); }
 	|	SET WARNING							{ $$ = SDMSAuditTrail.convert($1, $2); }
 	|	SET PARAMETERS							{ $$ = SDMSAuditTrail.convert($1, $2); }
 	|	UNREACHABLE							{ $$ = SDMSAuditTrail.convert($1); }
+	|	DISABLE								{ $$ = SDMSAuditTrail.convert($1); }
 
 
 //-----------------------------------------------------------------------------
@@ -3174,33 +3179,17 @@ rename_interval:	RENAME INTERVAL intervalname TO intervalname		{ $$ = new Rename
 //D:NT-ALIAS = list interval
 //D:DESCRIPTION list_interval.tex
 //D:PURPOSE P135
-list_interval:		LIST INTERVAL						{ $$ = new ListInterval(); }
+list_interval:		LIST INTERVAL						{ $$ = new ListInterval(false); }
+	|		LIST INTERVAL ALL					{ $$ = new ListInterval(true); }
 
 //D:MASTER
 //D:NT-ALIAS = show interval
 //D:PURPOSE P136
 //D:DESCRIPTION show_interval.tex
-show_interval:		SHOW INTERVAL intervalname 				{ $$ = new ShowInterval($3, null); }
+show_interval:		SHOW INTERVAL intervalname opt_ivowner			{ $$ = new ShowInterval($3, $4); }
 
-
-/*
-//D:NT-ALIAS = with_item
-show_with_item:		EXPAND							{ final WithHash w = new WithHash();
-										  w.addItem (new WithItem (ParseStr.S_SELECT_FROM, null));
-										  w.addItem (new WithItem (ParseStr.S_SELECT_TO, null));
-										  $$ = w;
-										}
-	|		EXPAND '=' datetime					{ final WithHash w = new WithHash();
-										  w.addItem (new WithItem (ParseStr.S_SELECT_FROM, $3));
-										  w.addItem (new WithItem (ParseStr.S_SELECT_TO, null));
-										  $$ = w;
-										}
-	|		EXPAND '=' datetime '-' datetime			{ final WithHash w = new WithHash();
-										  w.addItem (new WithItem (ParseStr.S_SELECT_FROM, $3));
-										  w.addItem (new WithItem (ParseStr.S_SELECT_TO, $5));
-										  $$ = w;
-										}
-*/
+opt_ivowner:									{ $$ = null; }
+	|		'(' id ')'						{ $$ = $2; }
 
 opt_ival_with:									{ $$ = null; }
 	|		ival_with						{ $$ = $1; }
@@ -4408,7 +4397,16 @@ password:	PASSWORD '=' STRING						{ $$ = new WithItem (ParseStr.S_PASSWORD, $3.
 parametername:	stridentifier							{ $$ = $1; }
 
 //D:NT-ALIAS = parameterspec
-parm_is_string: parametername '=' STRING					{ $$ = new WithItem($1, $3.textValue); }
+parm_is_string: parametername '=' STRING					{ $$ = new WithItem($1, $3.textValue); 
+										  if ($1.toUpperCase().equals(de.independit.scheduler.jobserver.Config.TRUSTSTOREPW) ||
+										      $1.toUpperCase().equals(de.independit.scheduler.jobserver.Config.KEYSTOREPW)) {
+										  	ConnectionEnvironment ce = getConnectionEnvironment();
+										 	if(ce != null) {
+												((UserConnection) ce.getMe()).scanner.unproto_input($3.textValue); 
+										  	}
+
+										  }
+										}
 	|	parametername '=' number					{ $$ = new WithItem($1, $3.toString()); }
 
 //D:NT=PARM

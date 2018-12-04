@@ -101,6 +101,7 @@ public class ListJobDefinitionHierarchy extends Node
 		desc.add("SH_ID");
 		desc.add("IS_STATIC");
 		desc.add("IS_DISABLED");
+		desc.add("INT_NAME");
 		desc.add("SH_PRIORITY");
 		desc.add("SH_SUSPEND");
 		desc.add("SH_ALIAS_NAME");
@@ -187,6 +188,7 @@ public class ListJobDefinitionHierarchy extends Node
 		v.add(empty);
 		v.add(empty);
 		v.add(empty);
+		v.add(empty);
 
 		v.add(sePath);
 
@@ -225,6 +227,8 @@ public class ListJobDefinitionHierarchy extends Node
 		SDMSFootprint fp;
 		SDMSKey key;
 		String	states;
+		SDMSInterval iv;
+		Long intId;
 
 		Iterator i_c = vc.iterator();
 		while (i_c.hasNext()) {
@@ -286,6 +290,13 @@ public class ListJobDefinitionHierarchy extends Node
 			v.add(shId);
 			v.add(sh.getIsStatic(sysEnv));
 			v.add(sh.getIsDisabled(sysEnv));
+			intId = sh.getIntId(sysEnv);
+			if (intId != null) {
+				iv = SDMSIntervalTable.getObject(sysEnv, intId);
+				v.add(iv.getName(sysEnv));
+			} else {
+				v.add(SystemEnvironment.nullString);
+			}
 			v.add(sh.getPriority(sysEnv));
 			v.add(sh.getSuspendAsString(sysEnv));
 			v.add(sh.getAliasName(sysEnv));
@@ -327,7 +338,7 @@ public class ListJobDefinitionHierarchy extends Node
 
 			oc.addData(sysEnv, v);
 
-			if(expand && p.can(SDMSPrivilege.VIEW) && !sh.getIsDisabled(sysEnv).booleanValue()) {
+			if(expand && p.can(SDMSPrivilege.VIEW)) {
 				if(expandIds == null || expandIds.contains(shId)) {
 					add_childs(sysEnv, oc, v1, shPath);
 				}

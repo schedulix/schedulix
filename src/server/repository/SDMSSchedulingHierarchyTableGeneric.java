@@ -55,6 +55,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		, "RESUME_BASE"
 		, "MERGE_MODE"
 		, "ESTP_ID"
+		, "INT_ID"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
 		, "CHANGER_U_ID"
@@ -63,6 +64,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 	public static SDMSIndex idx_seParentId;
 	public static SDMSIndex idx_seChildId;
 	public static SDMSIndex idx_estpId;
+	public static SDMSIndex idx_intId;
 	public static SDMSIndex idx_parentId_childId;
 	public static SDMSIndex idx_parentId_aliasName;
 
@@ -79,6 +81,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		idx_seParentId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seParentId");
 		idx_seChildId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "seChildId");
 		idx_estpId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "estpId");
+		idx_intId = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "intId");
 		idx_parentId_childId = new SDMSIndex(env, SDMSIndex.UNIQUE, isVersioned, table, "parentId_childId");
 		idx_parentId_aliasName = new SDMSIndex(env, SDMSIndex.ORDINARY, isVersioned, table, "parentId_aliasName");
 	}
@@ -95,6 +98,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 	                                      ,Integer p_resumeBase
 	                                      ,Integer p_mergeMode
 	                                      ,Long p_estpId
+	                                      ,Long p_intId
 	                                     )
 	throws SDMSException
 	{
@@ -118,6 +122,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		         , p_resumeBase
 		         , p_mergeMode
 		         , p_estpId
+		         , p_intId
 		         , p_creatorUId
 		         , p_createTs
 		         , p_changerUId
@@ -138,6 +143,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		                , p_resumeBase
 		                , p_mergeMode
 		                , p_estpId
+		                , p_intId
 		                , p_creatorUId
 		                , p_createTs
 		                , p_changerUId
@@ -187,6 +193,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 	                        ,Integer p_resumeBase
 	                        ,Integer p_mergeMode
 	                        ,Long p_estpId
+	                        ,Long p_intId
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
 	                        ,Long p_changerUId
@@ -222,6 +229,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		Integer resumeBase;
 		Integer mergeMode;
 		Long estpId;
+		Long intId;
 		Long creatorUId;
 		Long createTs;
 		Long changerUId;
@@ -250,12 +258,14 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 			mergeMode = new Integer (r.getInt(12));
 			estpId = new Long (r.getLong(13));
 			if (r.wasNull()) estpId = null;
-			creatorUId = new Long (r.getLong(14));
-			createTs = new Long (r.getLong(15));
-			changerUId = new Long (r.getLong(16));
-			changeTs = new Long (r.getLong(17));
-			validFrom = r.getLong(18);
-			validTo = r.getLong(19);
+			intId = new Long (r.getLong(14));
+			if (r.wasNull()) intId = null;
+			creatorUId = new Long (r.getLong(15));
+			createTs = new Long (r.getLong(16));
+			changerUId = new Long (r.getLong(17));
+			changeTs = new Long (r.getLong(18));
+			validFrom = r.getLong(19);
+			validTo = r.getLong(20);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 			throw new FatalException(new SDMSMessage(env, "01110182045", "SchedulingHierarchy: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -274,6 +284,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		                resumeBase,
 		                mergeMode,
 		                estpId,
+		                intId,
 		                creatorUId,
 		                createTs,
 		                changerUId,
@@ -305,6 +316,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		                                   ", " + squote + "RESUME_BASE" + equote +
 		                                   ", " + squote + "MERGE_MODE" + equote +
 		                                   ", " + squote + "ESTP_ID" + equote +
+		                                   ", " + squote + "INT_ID" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
@@ -334,6 +346,8 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		out = out + "idx_seChildId: " + (ok ? "ok" : "missing") + "\n";
 		ok =  idx_estpId.check(((SDMSSchedulingHierarchyGeneric) o).estpId, o);
 		out = out + "idx_estpId: " + (ok ? "ok" : "missing") + "\n";
+		ok =  idx_intId.check(((SDMSSchedulingHierarchyGeneric) o).intId, o);
+		out = out + "idx_intId: " + (ok ? "ok" : "missing") + "\n";
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSSchedulingHierarchyGeneric) o).seParentId);
@@ -360,15 +374,16 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		idx_seParentId.put(env, ((SDMSSchedulingHierarchyGeneric) o).seParentId, o, ((1 & indexMember) != 0));
 		idx_seChildId.put(env, ((SDMSSchedulingHierarchyGeneric) o).seChildId, o, ((2 & indexMember) != 0));
 		idx_estpId.put(env, ((SDMSSchedulingHierarchyGeneric) o).estpId, o, ((4 & indexMember) != 0));
+		idx_intId.put(env, ((SDMSSchedulingHierarchyGeneric) o).intId, o, ((8 & indexMember) != 0));
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSSchedulingHierarchyGeneric) o).seParentId);
 		k.add(((SDMSSchedulingHierarchyGeneric) o).seChildId);
-		idx_parentId_childId.put(env, k, o, ((8 & indexMember) != 0));
+		idx_parentId_childId.put(env, k, o, ((16 & indexMember) != 0));
 		k = new SDMSKey();
 		k.add(((SDMSSchedulingHierarchyGeneric) o).seParentId);
 		k.add(((SDMSSchedulingHierarchyGeneric) o).aliasName);
-		idx_parentId_aliasName.put(env, k, o, ((16 & indexMember) != 0));
+		idx_parentId_aliasName.put(env, k, o, ((32 & indexMember) != 0));
 	}
 
 	protected  void unIndex(SystemEnvironment env, SDMSObject o)
@@ -377,6 +392,7 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		idx_seParentId.remove(env, ((SDMSSchedulingHierarchyGeneric) o).seParentId, o);
 		idx_seChildId.remove(env, ((SDMSSchedulingHierarchyGeneric) o).seChildId, o);
 		idx_estpId.remove(env, ((SDMSSchedulingHierarchyGeneric) o).estpId, o);
+		idx_intId.remove(env, ((SDMSSchedulingHierarchyGeneric) o).intId, o);
 		SDMSKey k;
 		k = new SDMSKey();
 		k.add(((SDMSSchedulingHierarchyGeneric) o).seParentId);

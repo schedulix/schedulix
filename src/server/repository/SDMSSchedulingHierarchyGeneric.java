@@ -70,10 +70,11 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	public final static int nr_resumeBase = 11;
 	public final static int nr_mergeMode = 12;
 	public final static int nr_estpId = 13;
-	public final static int nr_creatorUId = 14;
-	public final static int nr_createTs = 15;
-	public final static int nr_changerUId = 16;
-	public final static int nr_changeTs = 17;
+	public final static int nr_intId = 14;
+	public final static int nr_creatorUId = 15;
+	public final static int nr_createTs = 16;
+	public final static int nr_changerUId = 17;
+	public final static int nr_changeTs = 18;
 
 	public static String tableName = SDMSSchedulingHierarchyTableGeneric.tableName;
 
@@ -89,6 +90,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	protected Integer resumeBase;
 	protected Integer mergeMode;
 	protected Long estpId;
+	protected Long intId;
 	protected Long creatorUId;
 	protected Long createTs;
 	protected Long changerUId;
@@ -112,6 +114,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	        Integer p_resumeBase,
 	        Integer p_mergeMode,
 	        Long p_estpId,
+	        Long p_intId,
 	        Long p_creatorUId,
 	        Long p_createTs,
 	        Long p_changerUId,
@@ -144,6 +147,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 		resumeBase = p_resumeBase;
 		mergeMode = p_mergeMode;
 		estpId = p_estpId;
+		intId = p_intId;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -173,7 +177,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			o.seParentId = p_seParentId;
 			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 25);
+			o.versions.table.index(env, o, 49);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -205,7 +209,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			o.seChildId = p_seChildId;
 			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 10);
+			o.versions.table.index(env, o, 18);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -243,7 +247,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			o.aliasName = p_aliasName;
 			o.changerUId = env.cEnv.uid();
 			o.changeTs = env.txTime();
-			o.versions.table.index(env, o, 16);
+			o.versions.table.index(env, o, 32);
 			env.tx.commitSubTransaction(env);
 		} catch (SDMSException e) {
 			env.tx.rollbackSubTransaction(env);
@@ -579,6 +583,38 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 		return;
 	}
 
+	public Long getIntId (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (intId);
+	}
+
+	public	void setIntId (SystemEnvironment env, Long p_intId)
+	throws SDMSException
+	{
+		if(p_intId != null && p_intId.equals(intId)) return;
+		if(p_intId == null && intId == null) return;
+		SDMSSchedulingHierarchyGeneric o;
+		env.tx.beginSubTransaction(env);
+		try {
+			if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+				throw new CommonErrorException(
+				        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
+				);
+			}
+			o = (SDMSSchedulingHierarchyGeneric) change(env);
+			o.intId = p_intId;
+			o.changerUId = env.cEnv.uid();
+			o.changeTs = env.txTime();
+			o.versions.table.index(env, o, 8);
+			env.tx.commitSubTransaction(env);
+		} catch (SDMSException e) {
+			env.tx.rollbackSubTransaction(env);
+			throw e;
+		}
+		return;
+	}
+
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -738,6 +774,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	                Integer p_resumeBase,
 	                Integer p_mergeMode,
 	                Long p_estpId,
+	                Long p_intId,
 	                Long p_creatorUId,
 	                Long p_createTs,
 	                Long p_changerUId,
@@ -757,6 +794,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 		resumeBase = p_resumeBase;
 		mergeMode = p_mergeMode;
 		estpId = p_estpId;
+		intId = p_intId;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -794,12 +832,14 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 				        ", " + squote + "RESUME_BASE" + equote +
 				        ", " + squote + "MERGE_MODE" + equote +
 				        ", " + squote + "ESTP_ID" + equote +
+				        ", " + squote + "INT_ID" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ", VALID_FROM, VALID_TO" +
 				        ") VALUES (?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -860,12 +900,16 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 				myInsert.setNull(13, Types.INTEGER);
 			else
 				myInsert.setLong (13, estpId.longValue());
-			myInsert.setLong (14, creatorUId.longValue());
-			myInsert.setLong (15, createTs.longValue());
-			myInsert.setLong (16, changerUId.longValue());
-			myInsert.setLong (17, changeTs.longValue());
-			myInsert.setLong(18, env.tx.versionId);
-			myInsert.setLong(19, Long.MAX_VALUE);
+			if (intId == null)
+				myInsert.setNull(14, Types.INTEGER);
+			else
+				myInsert.setLong (14, intId.longValue());
+			myInsert.setLong (15, creatorUId.longValue());
+			myInsert.setLong (16, createTs.longValue());
+			myInsert.setLong (17, changerUId.longValue());
+			myInsert.setLong (18, changeTs.longValue());
+			myInsert.setLong(19, env.tx.versionId);
+			myInsert.setLong(20, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "SchedulingHierarchy: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -985,6 +1029,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "resumeBase : " + resumeBase, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "mergeMode : " + mergeMode, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "estpId : " + estpId, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "intId : " + intId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "changerUId : " + changerUId, SDMSThread.SEVERITY_MESSAGE);
@@ -1013,6 +1058,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 		        indentString + "resumeBase : " + resumeBase + "\n" +
 		        indentString + "mergeMode  : " + mergeMode + "\n" +
 		        indentString + "estpId     : " + estpId + "\n" +
+		        indentString + "intId      : " + intId + "\n" +
 		        indentString + "creatorUId : " + creatorUId + "\n" +
 		        indentString + "createTs   : " + createTs + "\n" +
 		        indentString + "changerUId : " + changerUId + "\n" +

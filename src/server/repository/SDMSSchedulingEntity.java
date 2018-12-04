@@ -354,7 +354,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			}
 		}
 
-		sme.submitChilds(sysEnv, suspended.intValue() == SDMSSubmittedEntity.NOSUSPEND ? 0 : 1, ownerId, null, nice.intValue() * 100);
+		sme.submitChilds(sysEnv, suspended.intValue() == SDMSSubmittedEntity.NOSUSPEND ? 0 : 1, ownerId, null, nice.intValue() * 100, false );
 
 		sme.resolveDependencies(sysEnv, true );
 
@@ -591,7 +591,8 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                sh.getResumeIn(sysEnv),
 			                sh.getResumeBase(sysEnv),
 			                sh.getMergeMode(sysEnv),
-			                sh.getEstpId(sysEnv)
+			                sh.getEstpId(sysEnv),
+			                sh.getIntId(sysEnv)
 			                                         );
 		}
 		boolean testInverse = false;

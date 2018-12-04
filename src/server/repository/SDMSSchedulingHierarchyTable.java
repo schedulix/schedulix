@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -60,14 +59,15 @@ public class SDMSSchedulingHierarchyTable extends SDMSSchedulingHierarchyTableGe
 	                                      ,Integer p_resumeBase
 	                                      ,Integer p_mergeMode
 	                                      ,Long p_estpId
+	                                      ,Long p_intId
 	                                     )
 	throws SDMSException
 	{
 		SDMSSchedulingHierarchy p = super.create(
-		                                    env ,p_seParentId, p_seChildId, p_aliasName,
+		                                    env, p_seParentId, p_seChildId, p_aliasName,
 		                                    p_isStatic, p_isDisabled, p_priority, p_suspend,
 		                                    p_resumeAt, p_resumeIn, p_resumeBase,
-		                                    p_mergeMode, p_estpId
+		                                    p_mergeMode, p_estpId, p_intId
 		                            );
 
 		checkHierarchyCycles(env, p_seParentId);
@@ -84,16 +84,13 @@ public class SDMSSchedulingHierarchyTable extends SDMSSchedulingHierarchyTableGe
 	private static void checkHierarchyCycles(SystemEnvironment sysEnv, Long seId, Vector path)
 	throws SDMSException
 	{
-
 		int len;
 		len = path.size();
 		for (int idx = 0; idx < len; idx ++) {
 			Long p_seId = (Long)path.get(idx);
 			if (p_seId.equals(seId)) {
-
 				String cycleString = p_seId.toString();
 				idx ++;
-
 				while (idx < len) {
 					p_seId = (Long)path.get(idx);
 					cycleString = cycleString + "->" + p_seId.toString();
@@ -107,20 +104,15 @@ public class SDMSSchedulingHierarchyTable extends SDMSSchedulingHierarchyTableGe
 				                        cycleString));
 			}
 		}
-
 		path.add(seId);
-
 		Vector v_seParents = SDMSSchedulingHierarchyTable.idx_seChildId.getVector(sysEnv, seId);
-
 		len = v_seParents.size();
 		Set<Long> parentsSet = new HashSet();
 		for (int idx = 0; idx < len; ++idx) {
 			SDMSSchedulingHierarchy sh = (SDMSSchedulingHierarchy)v_seParents.get(idx);
 			parentsSet.add(sh.getSeParentId(sysEnv));
 		}
-
 		Vector v_triggers = SDMSTriggerTable.idx_seId.getVector(sysEnv, seId);
-
 		for (int idx = 0; idx < v_triggers.size(); ++idx) {
 			SDMSTrigger t = (SDMSTrigger) v_triggers.get(idx);
 			if (t.getIsMaster(sysEnv).booleanValue()) continue;

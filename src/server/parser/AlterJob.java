@@ -64,6 +64,7 @@ public class AlterJob extends Node
 	private Integer rerunSeq	= null;
 	private Boolean kill		= null;
 	private Boolean cancel		= null;
+	private Boolean disable		= null;
 	private Long tsLong		= null;
 	private Vector depsToIgnore	= null;
 	private Integer priority	= null;
@@ -99,9 +100,10 @@ public class AlterJob extends Node
 	private static final int CW = 0x100000;
 	private static final int SW = 0x200000;
 	private static final int RS = 0x400000;
+	private static final int DA = 0x800000;
 
 	private static final int JS_ACTION = EP|EX|ST|TS|EC|ET|RU;
-	private static final int OP_ACTION = RP|RR|SU|RE|ID|ET|PR|NV|IR|IN|CW|SW|RS;
+	private static final int OP_ACTION = RP|RR|SU|RE|ID|ET|PR|NV|IR|IN|CW|SW|RS|DA;
 	private static final int ES_ACTION = ES|ET|RU;
 	private static final int KI_ACTION = KI|ET;
 	private static final int CN_ACTION = CN|ET;
@@ -144,6 +146,7 @@ public class AlterJob extends Node
 		if(exitState      != null) v += ES;
 		if(kill           != null) v += KI;
 		if(cancel         != null) v += CN;
+		if(disable        != null) v += DA;
 		if(priority       != null) v += PR;
 		if(nicevalue      != null) v += NV;
 		if(renice         != null) v += RN;
@@ -194,7 +197,6 @@ public class AlterJob extends Node
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03205061602", "Error in date format: $1\nPosition: $2",
 								ts, pp.toString()));
 					}
-					
 				}
 			}
 			final GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
@@ -250,6 +252,7 @@ public class AlterJob extends Node
 		rerunSeq = (Integer) with.get(ParseStr.S_RUN);
 		kill = (Boolean) with.get(ParseStr.S_KILL);
 		cancel = (Boolean) with.get(ParseStr.S_CANCEL);
+		disable = (Boolean) with.get(ParseStr.S_DISABLE);
 		depsToIgnore = (Vector) with.get(ParseStr.S_IGNORE_DEPENDENCY);
 		priority = (Integer) with.get(ParseStr.S_PRIORITY);
 		nicevalue = (Integer) with.get(ParseStr.S_NICEVALUE);
@@ -510,6 +513,11 @@ public class AlterJob extends Node
 		if(cancel != null) {
 			if(cancel.booleanValue()) {
 				sme.cancel(sysEnv);
+			}
+		}
+		if(disable != null) {
+			if(disable.booleanValue()) {
+				sme.disable(sysEnv);
 			}
 		}
 		if(depsToIgnore != null) {

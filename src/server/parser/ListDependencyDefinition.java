@@ -132,9 +132,6 @@ public class ListDependencyDefinition extends Node
 			}
 		}
 
-		if (disabled)
-			return;
-
 		Vector v = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, id);
 		Iterator iv = v.iterator();
 		while (iv.hasNext()) {
@@ -266,9 +263,6 @@ public class ListDependencyDefinition extends Node
 				d_container.addData(sysEnv, v);
 			}
 		}
-
-		if (disabled)
-			return;
 
 		Vector v_sh = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, id);
 		i = v_sh.iterator();

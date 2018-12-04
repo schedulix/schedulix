@@ -339,6 +339,24 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 		((SDMSSchedulingHierarchyGeneric)(object)).setEstpId (env, p_estpId);
 		return ;
 	}
+	public Long getIntId (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingHierarchyGeneric)(object)).getIntId (env));
+	}
+
+	public void setIntId (SystemEnvironment env, Long p_intId)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSSchedulingHierarchyGeneric)(object)).setIntId (env, p_intId);
+		return ;
+	}
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{
