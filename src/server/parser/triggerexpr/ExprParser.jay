@@ -40,14 +40,29 @@ public class ExprParser
 
 	private static final String emptyString = "";
 
+	private static Integer I_PLUS = new Integer(278);
+	private static Integer I_MINUS = new Integer(276);
+
+	private static Integer I_TIMES = new Integer(279);
+	private static Integer I_DIV = new Integer(275);
+	private static Integer I_MOD = new Integer(277);
+
+	private static Integer I_GT = new Integer(268);
+	private static Integer I_GE = new Integer(269);
+	private static Integer I_LT = new Integer(270);
+	private static Integer I_LE = new Integer(271);
+	private static Integer I_EQ = new Integer(267);
+	private static Integer I_NE = new Integer(272);
+	private static Integer I_MATCHES = new Integer(273);
+	private static Integer I_NOMATCH = new Integer(274);
 %}
 
-%token <String>	STRING IDENTIFIER PARAMETER JPARAMETER RPARAMETER TPARAMETER RSPARAMETER DSPARAMETER
-%token <BigDecimal> NUMBER
-%token <Boolean> BOOLEAN
-%token EQ GT GE LT LE NE MATCHES NOMATCH
-%token DIV MINUS MOD PLUS TIMES
-%token ABS AND DATE FIELD INT LOWERCASE NOT NVL OR ROUND SUBSTR STR TRIM UPPERCASE
+%token <String>	STRING 257 IDENTIFIER 258 PARAMETER 259 JPARAMETER 260 RPARAMETER 261 TPARAMETER 262 RSPARAMETER 263 DSPARAMETER 264
+%token <BigDecimal> NUMBER 265
+%token <Boolean> BOOLEAN 266
+%token EQ 267 GT 268 GE 269 LT 270 LE 271 NE 272 MATCHES 273 NOMATCH 274
+%token DIV 275 MINUS 276 MOD 277 PLUS 278 TIMES 279
+%token ABS 280 AND 281 DATE 282 FIELD 283 INT 284 LOWERCASE 285 NOT 286 NVL 287 OR 288 ROUND 289 SUBSTR 290 STR 291 TRIM 292 UPPERCASE 293
 
 %type <ParseObject>	expression function literal
 %type <ParseObject>	operand term
@@ -78,21 +93,21 @@ expression:	term					{ debuginfo("expression/term"); $$ = $1; }
 term:		operand					{ debuginfo("term/operand"); $$ = $1; }
 	|	term multop operand			{ debuginfo("term/term multop operand"); $$ = $1.mult($3, $2, checkOnly); }
 
-addop:		PLUS					{ debuginfo("addop/PLUS"); $$ = new Integer(PLUS); }
-	|	MINUS					{ debuginfo("addop/MINUS"); $$ = new Integer(MINUS); }
+addop:		PLUS					{ debuginfo("addop/PLUS");         $$ = I_PLUS; }
+	|	MINUS					{ debuginfo("addop/MINUS");        $$ = I_MINUS; }
 
-multop:		TIMES					{ debuginfo("multop/TIMES"); $$ = new Integer(TIMES); }
-	|	DIV					{ debuginfo("multop/DIV"); $$ = new Integer(DIV); }
-	|	MOD					{ debuginfo("multop/MOD"); $$ = new Integer(MOD); }
+multop:		TIMES					{ debuginfo("multop/TIMES");       $$ = I_TIMES; }
+	|	DIV					{ debuginfo("multop/DIV");         $$ = I_DIV; }
+	|	MOD					{ debuginfo("multop/MOD");         $$ = I_MOD; }
 
-comparison:	GT					{ debuginfo("comparison/GT"); $$ = new Integer(GT); }
-	|	GE					{ debuginfo("comparison/GE"); $$ = new Integer(GE); }
-	|	LT					{ debuginfo("comparison/LT"); $$ = new Integer(LT); }
-	|	LE					{ debuginfo("comparison/LE"); $$ = new Integer(LE); }
-	|	EQ					{ debuginfo("comparison/EQ"); $$ = new Integer(EQ); }
-	|	NE					{ debuginfo("comparison/NE"); $$ = new Integer(NE); }
-	|	MATCHES					{ debuginfo("comparison/MATCHES"); $$ = new Integer(MATCHES); }
-	|	NOMATCH					{ debuginfo("comparison/NOMATCH"); $$ = new Integer(NOMATCH); }
+comparison:	GT					{ debuginfo("comparison/GT");      $$ = I_GT; }
+	|	GE					{ debuginfo("comparison/GE");      $$ = I_GE; }
+	|	LT					{ debuginfo("comparison/LT");      $$ = I_LT; }
+	|	LE					{ debuginfo("comparison/LE");      $$ = I_LE; }
+	|	EQ					{ debuginfo("comparison/EQ");      $$ = I_EQ; }
+	|	NE					{ debuginfo("comparison/NE");      $$ = I_NE; }
+	|	MATCHES					{ debuginfo("comparison/MATCHES"); $$ = I_MATCHES; }
+	|	NOMATCH					{ debuginfo("comparison/NOMATCH"); $$ = I_NOMATCH; }
 
 operand:	'(' expression ')'			{ debuginfo("operand/(expression)"); $$ = $2; }
 	|	addop operand				{ debuginfo("operand/addop operand)"); $$ = $2.changeSign($1, checkOnly); }
