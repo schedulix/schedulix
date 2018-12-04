@@ -241,6 +241,8 @@ public class AlterJobDefinition extends ManipJobDefinition
 	{
 		SDMSSchedulingHierarchy sh;
 		SDMSExitStateTranslationProfile estp;
+		SDMSInterval iv;
+
 		int idx;
 		WithHash cwh;
 		String cName;
@@ -257,7 +259,9 @@ public class AlterJobDefinition extends ManipJobDefinition
 		Integer mergeMode;
 		Vector depNames;
 		String aliasName;
+		String intName;
 		Long estpId;
+		Long intId;
 
 		Long parentId = se.getId(sysEnv);
 
@@ -297,6 +301,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 
 				mergeMode = (Integer) wh.get(ParseStr.S_MERGE_MODE);
 				estpName = (String) wh.get(ParseStr.S_TRANSLATION);
+				intName = (String) wh.get(ParseStr.S_INTERVAL);
 				depNames = (Vector) wh.get(ParseStr.S_IGNORE);
 				aliasName = (String) wh.get(ParseStr.S_ALIAS);
 				estpId = null;
@@ -347,6 +352,21 @@ public class AlterJobDefinition extends ManipJobDefinition
 							else	estp = null;
 						}
 						checkTranslation(sysEnv, seChild, se, estp);
+						if(wh.containsKey(ParseStr.S_INTERVAL)) {
+							if(intName != null) {
+								try {
+									iv = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(intName, 0));
+								} catch(NotFoundException nfe) {
+									iv = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(intName, null));
+								}
+								intId = iv.getId(sysEnv);
+							} else {
+								intId = null;
+							}
+							sh.setIntId(sysEnv, intId);
+						} else {
+							intId = sh.getIntId(sysEnv);
+						}
 						break;
 					}
 				}
@@ -386,13 +406,24 @@ public class AlterJobDefinition extends ManipJobDefinition
 					} else {
 						estp = null;
 					}
+					intId = null;
+					if(intName != null) {
+						try {
+							iv = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(intName, 0));
+						} catch(NotFoundException nfe) {
+							iv = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(intName, null));
+						}
+						intId = iv.getId(sysEnv);
+					} else {
+						iv = null;
+					}
 					if (parentId.equals(newChildId)) {
 						throw new CommonErrorException (new SDMSMessage(sysEnv, "03204292208",
 							"A job or batch cannot have itself as child"));
 					}
 
 					sh = SDMSSchedulingHierarchyTable.table.create(sysEnv, parentId, newChildId, aliasName, isStatic, isDisabled, prio,
-							suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId);
+							suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId, intId);
 					checkTranslation(sysEnv, seChild, se, estp);
 				}
 				if(aliasName != null) {

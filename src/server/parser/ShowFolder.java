@@ -327,6 +327,7 @@ public class ShowFolder extends ShowCommented
 		c_desc.add("ALIAS_NAME");
 		c_desc.add("IS_STATIC");
 		c_desc.add("IS_DISABLED");
+		c_desc.add("INT_NAME");
 		c_desc.add("PRIORITY");
 		c_desc.add("SUSPEND");
 		c_desc.add("RESUME_AT");
@@ -342,6 +343,8 @@ public class ShowFolder extends ShowCommented
 		SDMSSchedulingEntity cse;
 		Long estpId;
 		SDMSExitStateTranslationProfile estp;
+		SDMSInterval iv;
+		Long intId;
 
 		Vector c_data;
 		Iterator i = sh_v.iterator();
@@ -361,6 +364,13 @@ public class ShowFolder extends ShowCommented
 			c_data.add(sh.getAliasName(sysEnv));
 			c_data.add(sh.getIsStatic(sysEnv));
 			c_data.add(sh.getIsDisabled(sysEnv));
+			intId = sh.getIntId(sysEnv);
+			if (intId != null) {
+				iv = SDMSIntervalTable.getObject(sysEnv, intId);
+				c_data.add(iv.getName(sysEnv));
+			} else {
+				c_data.add(null);
+			}
 			c_data.add(sh.getPriority(sysEnv));
 			c_data.add(sh.getSuspendAsString(sysEnv));
 			c_data.add(sh.getResumeAt(sysEnv));
@@ -374,7 +384,6 @@ public class ShowFolder extends ShowCommented
 			} else {
 				c_data.add(null);
 			}
-
 			Vector ids_v = SDMSIgnoredDependencyTable.idx_shId.getVector(sysEnv, sh.getId(sysEnv));
 			String sep = "";
 			StringBuffer deps = new StringBuffer();
