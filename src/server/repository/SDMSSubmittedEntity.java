@@ -1325,7 +1325,6 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 					if (!be.checkCondition(sysEnv, null, this, sme, null, null, null))
 						continue;
 				} catch (CommonErrorException ce) {
-					setWarn (sysEnv, new Integer(SDMSAuditTrail.JOB_IN_ERROR), "error evaluating select condition", new Long ((new java.util.Date()).getTime()));
 					continue;
 				}
 			}
@@ -2619,7 +2618,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 
 		if (newState == DEPENDENCY_WAIT) {
-			if (se.getType(sysEnv).intValue() == SDMSSchedulingEntity.JOB) {
+			if (se.getType(sysEnv).intValue() == SDMSSchedulingEntity.JOB && !getIsDisabled(sysEnv)) {
 				this.setOldState(sysEnv, new Integer(oldState));
 				SystemEnvironment.sched.addToRequestList(sysEnv, mySmeId);
 			} else
