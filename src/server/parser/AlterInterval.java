@@ -181,7 +181,7 @@ public class AlterInterval
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "04311251855", "intervals with " + ParseStr.S_EMBEDDED + " cannot have " + ParseStr.S_DURATION));
 
 		if (with.containsKey (ParseStr.S_DELAY)) {
-			warning = "DELAY not longer supported";
+			warning = "DELAY not longer supported; option ignored";
 		}
 
 		if (with.containsKey (ParseStr.S_INVERSE)) {
@@ -190,7 +190,7 @@ public class AlterInterval
 		}
 
 		if (with.containsKey (ParseStr.S_MERGE)) {
-			warning = "MERGE not longer supported";
+			warning = "MERGE not longer supported; option ignored";
 		}
 
 		if (with.containsKey (ParseStr.S_SELECTION)) {
@@ -206,7 +206,11 @@ public class AlterInterval
 
 		if (with.containsKey (ParseStr.S_FILTER)) {
 			IntervalUtil.killFilter (sysEnv, ivalId);
-			duplicateFilterIgnore = IntervalUtil.createFilter (sysEnv, ivalId, with);
+			duplicateFilterIgnore = IntervalUtil.createFilter (sysEnv, ivalId, with, obj.seId, 0);
+		}
+
+		if (with.containsKey (ParseStr.S_DISPATCH)) {
+			IntervalUtil.createDispatcher (sysEnv, ivalId, with, 0);
 		}
 
 		ival.setSeId (sysEnv, obj.seId);
@@ -218,8 +222,7 @@ public class AlterInterval
 
 		if(with.containsKey(ParseStr.S_GROUP)) {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
-			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(gName, ZERO)).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId);
 			ival.setOwnerId(sysEnv, gId);
 		}
