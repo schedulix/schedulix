@@ -237,6 +237,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 						if (dr.fltInterval != null) {
 							tmp = dr.fltInterval.getNextTriggerDate(sysEnv, new Long(tcOk), horizon, tz);
 							testCandidate = (tmp == null ? Long.MAX_VALUE : tmp.longValue());
+							blockState.copyFrom(dr.fltInterval.blockState);
 						}
 						if (dr.selInterval != null) {
 							tcOk = dr.selInterval.filter(sysEnv, testCandidate, horizon, tz, "");
@@ -272,6 +273,8 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		if (candidate > endTime) candidate = Long.MAX_VALUE;
 
+		if (candidate == Long.MAX_VALUE)
+			return null;
 		return new Long(candidate);
 	}
 
@@ -296,7 +299,9 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			gc.setTimeZone(tz);
 
 			if (embeddedInterval != null) {
-				if (embeddedInterval.getNextTriggerDate(sysEnv, blockState.blockEnd + 1, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz) == null) return false;
+				if (embeddedInterval.getNextTriggerDate(sysEnv, blockState.blockEnd + 1, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz) == null) {
+					return false;
+				}
 				blockState.blockStart = embeddedInterval.blockState.blockStart;
 				blockState.blockEnd = embeddedInterval.blockState.blockEnd;
 				if (blockState.blockStart > blockState.baseEnd) {
@@ -467,6 +472,10 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	public long filter(SystemEnvironment sysEnv, long checkDate, long horizon, TimeZone tz, String indent)
 		throws SDMSException
 	{
+		if (filter == null) {
+			initialize(sysEnv, tz);
+		}
+
 		if (dispatchRules != null)
 			return dispatchFilter(sysEnv, checkDate, horizon, tz, indent);
 		if(!seek(sysEnv, checkDate, horizon, tz, FILTER, indent)) {
@@ -505,7 +514,8 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 					if (tmp == selBlockStart) return blockStart;
 				} else
 					return blockStart;
-				return getNextTriggerDate(sysEnv, checkDate, horizon, tz);
+				Long ntd = getNextTriggerDate(sysEnv, checkDate, horizon, tz);
+				return (ntd == null ? Long.MAX_VALUE : ntd);
 			}
 		}
 		return Long.MAX_VALUE;

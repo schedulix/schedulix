@@ -503,6 +503,24 @@ public class TimerThread
 				collectIvals (sysEnv, parentId);
 		}
 
+		final Vector dsList = SDMSIntervalDispatcherTable.idx_selectIntId.getVector(sysEnv, ivalId);
+		final int dsSize = dsList.size();
+		for (int i = 0; i < dsSize; ++i) {
+			final SDMSIntervalDispatcher idp = (SDMSIntervalDispatcher) dsList.get (i);
+			final Long idpId = idp.getIntId(sysEnv);
+			if (! ivalIds.contains (idpId))
+				collectIvals (sysEnv, idpId);
+		}
+
+		final Vector dfList = SDMSIntervalDispatcherTable.idx_filterIntId.getVector(sysEnv, ivalId);
+		final int dfSize = dfList.size();
+		for (int i = 0; i < dfSize; ++i) {
+			final SDMSIntervalDispatcher idp = (SDMSIntervalDispatcher) dfList.get (i);
+			final Long idpId = idp.getIntId(sysEnv);
+			if (! ivalIds.contains (idpId))
+				collectIvals (sysEnv, idpId);
+		}
+
 	}
 
 	public final void notifyChange (final SystemEnvironment sysEnv, final SDMSSchedule sce, final int action)

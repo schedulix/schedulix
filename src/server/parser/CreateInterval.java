@@ -172,20 +172,22 @@ public class CreateInterval
 
 			if (with.containsKey (ParseStr.S_EMBEDDED)) {
 				Object embeddedRef = with.get (ParseStr.S_EMBEDDED);
-				if (embeddedRef instanceof String) {
-					final String embeddedName = (String) embeddedRef;
-					if (embeddedName != null) {
-						if (embeddedName.equals (obj.name))
-							throw new CommonErrorException (new SDMSMessage (sysEnv, "04207191734", "interval cannot embed itself"));
+				if (embeddedRef != null) {
+					if (embeddedRef instanceof String) {
+						final String embeddedName = (String) embeddedRef;
+						if (embeddedName != null) {
+							if (embeddedName.equals (obj.name))
+								throw new CommonErrorException (new SDMSMessage (sysEnv, "04207191734", "interval cannot embed itself"));
 
-						final SDMSInterval embeddedIval = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey (IntervalUtil.mapIdName (embeddedName, obj.seId), null));
-						embeddedIntervalId = embeddedIval.getId (sysEnv);
+							final SDMSInterval embeddedIval = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey (IntervalUtil.mapIdName (embeddedName, obj.seId), null));
+							embeddedIntervalId = embeddedIval.getId (sysEnv);
 
-						if (duration != null)
-							throw new CommonErrorException (new SDMSMessage (sysEnv, "04311251854", "intervals with " + ParseStr.S_EMBEDDED + " cannot have " + ParseStr.S_DURATION));
+							if (duration != null)
+								throw new CommonErrorException (new SDMSMessage (sysEnv, "04311251854", "intervals with " + ParseStr.S_EMBEDDED + " cannot have " + ParseStr.S_DURATION));
+						}
+					} else {
+						embeddedInterval = (CreateInterval) embeddedRef;
 					}
-				} else {
-					embeddedInterval = (CreateInterval) embeddedRef;
 				}
 			}
 
@@ -202,14 +204,43 @@ public class CreateInterval
 				with.remove(ParseStr.S_MERGE);
 			}
 
-			if (with.containsKey(ParseStr.S_DISPATCH)) {
+			if (with.containsKey(ParseStr.S_DISPATCH) && with.get(ParseStr.S_DISPATCH) != null) {
 				int maxcnt = 1;
 				if (with.containsKey(ParseStr.S_STARTTIME)) maxcnt++;
 				if (with.containsKey(ParseStr.S_ENDTIME)) maxcnt++;
 				if (with.containsKey(ParseStr.S_GROUP)) maxcnt++;
+
+				if (with.containsKey(ParseStr.S_FILTER)) {
+					Object o = with.get(ParseStr.S_FILTER);
+					if (o == null) maxcnt++;
+				}
+				if (with.containsKey(ParseStr.S_EMBEDDED)) {
+					Object o = with.get(ParseStr.S_EMBEDDED);
+					if (o == null) maxcnt++;
+				}
+				if (with.containsKey(ParseStr.S_SELECTION)) {
+					Object o = with.get(ParseStr.S_SELECTION);
+					if (o == null) maxcnt++;
+				}
+				if (with.containsKey(ParseStr.S_BASE)) {
+					Object o = with.get(ParseStr.S_BASE);
+					if (o == null) maxcnt++;
+				}
+				if (with.containsKey(ParseStr.S_DURATION)) {
+					Object o = with.get(ParseStr.S_DURATION);
+					if (o == null) maxcnt++;
+				}
 				if (with.size() > maxcnt) {
+					StringBuffer sb = new StringBuffer();
+					Iterator it = with.keySet().iterator();
+					String sep = "";
+					while (it.hasNext()) {
+						sb.append(sep);
+						sb.append(it.next().toString());
+						sep = ",";
+					}
 					throw new CommonErrorException (new SDMSMessage (sysEnv, "03808211116",
-					                                "Dispatch interval definitions are not allowed to specify other attributes than STARTTIME, ENDTIME and GROUP"));
+					                                "Dispatch interval definitions are not allowed to specify other attributes than STARTTIME, ENDTIME and GROUP; found " + sb.toString()));
 				}
 			}
 

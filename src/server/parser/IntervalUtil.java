@@ -230,6 +230,11 @@ public class IntervalUtil
 		final Iterator ihIt = ihList.iterator();
 		while (ihIt.hasNext()) {
 			final SDMSIntervalHierarchy ih = (SDMSIntervalHierarchy) ihIt.next();
+			Long filterIvalId = ih.getChildId(sysEnv);
+			SDMSInterval filterIval = SDMSIntervalTable.getObject(sysEnv, filterIvalId);
+			Long objId = filterIval.getObjId(sysEnv);
+			if (ivalId.equals(objId))
+				filterIval.delete(sysEnv);
 			ih.delete (sysEnv);
 		}
 	}

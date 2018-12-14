@@ -43,7 +43,6 @@ public class AlterInterval
 	private final boolean noerr;
 
 	private Long ivalId;
-	private HashSet checkSet;
 
 	public AlterInterval (ObjectURL o, WithHash w, Boolean ne)
 	{
@@ -53,21 +52,42 @@ public class AlterInterval
 		noerr = ne.booleanValue();
 	}
 
-	private void checkStructure (final SystemEnvironment sysEnv, final Long checkId)
-		throws SDMSException
+	private void checkIntegrity(SystemEnvironment sysEnv, SDMSInterval checkIval)
+	throws SDMSException
 	{
-		if (checkSet.contains (checkId))
-			return;
+		String msg = null;
+		Long checkId = checkIval.getId(sysEnv);
+		if (SDMSIntervalDispatcherTable.idx_intId.containsKey (sysEnv, checkId)) {
+			if (checkIval.getBaseIntervalMultiplier(sysEnv) != null) {
+				msg = "Dispatcher can't have a base";
+			} else if (checkIval.getDurationMultiplier(sysEnv) != null) {
+				msg = "Dispatcher can't have a duration";
+			} else if (checkIval.getEmbeddedIntervalId(sysEnv) != null) {
+				msg = "Dispatcher can't have an embedded interval";
+			} else if (SDMSIntervalSelectionTable.idx_intId.containsKey (sysEnv, checkId)) {
+				msg = "Dispatcher can't have a selection";
+			} else if (SDMSIntervalHierarchyTable.idx_parentId.containsKey (sysEnv, checkId)) {
+				msg = "Dispatcher can't have a filter";
+			}
+		}
+		if (msg != null)
+			throw new CommonErrorException (new SDMSMessage (sysEnv, "03812101356", "Inconsistency in definition: " + msg));
+	}
+
+	private void checkStructure (final SystemEnvironment sysEnv, SDMSInterval checkIval, HashSet checkSet)
+	throws SDMSException
+	{
+		Long checkId = checkIval.getId(sysEnv);
+		if (checkSet.contains(checkId)) {
+			throw new CommonErrorException (new SDMSMessage (sysEnv, "04209121544", "cyclic references not allowed"));
+		}
 		checkSet.add (checkId);
 
-		final SDMSInterval checkIval = SDMSIntervalTable.getObject (sysEnv, checkId);
 		final Long embeddedIntervalId = checkIval.getEmbeddedIntervalId (sysEnv);
 
 		if (embeddedIntervalId != null) {
-			if (embeddedIntervalId.equals (ivalId))
-				throw new CommonErrorException (new SDMSMessage (sysEnv, "04209121544", "cyclic references not allowed"));
-
-			checkStructure (sysEnv, embeddedIntervalId);
+			SDMSInterval embeddedIval = SDMSIntervalTable.getObject(sysEnv, embeddedIntervalId);
+			checkStructure (sysEnv, embeddedIval, checkSet);
 		}
 
 		final Vector ihList = SDMSIntervalHierarchyTable.idx_parentId.getVector (sysEnv, checkId);
@@ -75,12 +95,29 @@ public class AlterInterval
 		while (ihIt.hasNext()) {
 			final SDMSIntervalHierarchy ih = (SDMSIntervalHierarchy) ihIt.next();
 			final Long childId = ih.getChildId (sysEnv);
-
-			if (childId.equals (ivalId))
-				throw new CommonErrorException (new SDMSMessage (sysEnv, "04209121547", "cyclic references not allowed"));
-
-			checkStructure (sysEnv, childId);
+			SDMSInterval childIval = SDMSIntervalTable.getObject(sysEnv, childId);
+			checkStructure (sysEnv, childIval, checkSet);
 		}
+
+		final Vector dpList = SDMSIntervalDispatcherTable.idx_intId.getVector (sysEnv, checkId);
+		final Iterator dpIt = dpList.iterator();
+		while (dpIt.hasNext()) {
+			final SDMSIntervalDispatcher dp = (SDMSIntervalDispatcher) dpIt.next();
+
+			if (!dp.getIsActive(sysEnv).booleanValue()) continue;
+			Long selIvId = dp.getSelectIntId(sysEnv);
+			if (selIvId != null) {
+				SDMSInterval selectIval = SDMSIntervalTable.getObject(sysEnv, selIvId);
+				checkStructure (sysEnv, selectIval, checkSet);
+			}
+			Long filterIvId = dp.getFilterIntId(sysEnv);
+			if (filterIvId != null) {
+				SDMSInterval filterIval = SDMSIntervalTable.getObject(sysEnv, filterIvId);
+				checkStructure (sysEnv, filterIval, checkSet);
+			}
+		}
+
+		checkSet.remove(checkId);
 	}
 
 	public void go (SystemEnvironment sysEnv)
@@ -195,6 +232,9 @@ public class AlterInterval
 
 		if (with.containsKey (ParseStr.S_SELECTION)) {
 			IntervalUtil.killSelections (sysEnv, ivalId);
+			if (with.get (ParseStr.S_SELECTION) != null) {
+				IntervalUtil.killDispatcher (sysEnv, ivalId);
+			}
 			switch (IntervalUtil.createSelections (sysEnv, ivalId, with)) {
 			case IntervalUtil.IGNORED_SECONDS:
 				secondsIgnore = true;
@@ -206,17 +246,29 @@ public class AlterInterval
 
 		if (with.containsKey (ParseStr.S_FILTER)) {
 			IntervalUtil.killFilter (sysEnv, ivalId);
+			if (with.get (ParseStr.S_FILTER) != null) {
+				IntervalUtil.killDispatcher (sysEnv, ivalId);
+			}
 			duplicateFilterIgnore = IntervalUtil.createFilter (sysEnv, ivalId, with, obj.seId, 0);
 		}
 
 		if (with.containsKey (ParseStr.S_DISPATCH)) {
-			IntervalUtil.createDispatcher (sysEnv, ivalId, with, 0);
+			IntervalUtil.killDispatcher (sysEnv, ivalId);
+			if ((with.get (ParseStr.S_FILTER) != null || with.get (ParseStr.S_SELECTION) != null) && with.get (ParseStr.S_DISPATCH) != null) {
+				throw new CommonErrorException (new SDMSMessage (sysEnv, "03812111214", "An interval can't be both a filter/selection and a dispatcher"));
+			} else {
+				if (with.get (ParseStr.S_DISPATCH) != null) {
+					IntervalUtil.killSelections (sysEnv, ivalId);
+					IntervalUtil.killFilter (sysEnv, ivalId);
+					IntervalUtil.createDispatcher (sysEnv, ivalId, with, 0);
+				}
+			}
 		}
 
 		ival.setSeId (sysEnv, obj.seId);
 
-		checkSet = new HashSet();
-		checkStructure (sysEnv, ivalId);
+		checkIntegrity (sysEnv, ival);
+		checkStructure (sysEnv, ival, new HashSet());
 
 		SystemEnvironment.timer.notifyChange (sysEnv, ival, TimerThread.ALTER);
 

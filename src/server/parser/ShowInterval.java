@@ -129,6 +129,7 @@ public class ShowInterval
 		desc.add ("PRIVS");
 		desc.add ("OWNER_OBJ_TYPE");
 		desc.add ("OWNER_OBJ_ID");
+		desc.add ("SE_ID");
 		desc.add ("COMMENT");
 		desc.add ("COMMENTTYPE");
 
@@ -211,6 +212,7 @@ public class ShowInterval
 
 		data.add(ival.getObjTypeAsString(sysEnv));
 		data.add(ival.getObjId(sysEnv));
+		data.add(ival.getSeId(sysEnv));
 
 		data.add(getCommentContainer(sysEnv, ivalId));
 		data.add(getCommentInfoType(sysEnv, ivalId));
