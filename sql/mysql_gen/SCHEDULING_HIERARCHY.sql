@@ -40,6 +40,7 @@ CREATE TABLE SCHEDULING_HIERARCHY (
     , `RESUME_BASE`                  integer             NULL
     , `MERGE_MODE`                   integer         NOT NULL
     , `ESTP_ID`                      decimal(20)         NULL
+    , `INT_ID`                       decimal(20)         NULL
     , `CREATOR_U_ID`                 decimal(20)     NOT NULL
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
@@ -64,6 +65,7 @@ SELECT
     , CASE `RESUME_BASE` WHEN 0 THEN 'MINUTE' WHEN 1 THEN 'HOUR' WHEN 2 THEN 'DAY' WHEN 3 THEN 'WEEK' WHEN 4 THEN 'MONTH' WHEN 5 THEN 'YEAR' END AS `RESUME_BASE`
     , CASE `MERGE_MODE` WHEN 1 THEN 'MERGE_LOCAL' WHEN 2 THEN 'MERGE_GLOBAL' WHEN 3 THEN 'NOMERGE' WHEN 4 THEN 'FAILURE' END AS `MERGE_MODE`
     , `ESTP_ID`                      AS `ESTP_ID`
+    , `INT_ID`                       AS `INT_ID`
     , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
@@ -85,6 +87,7 @@ SELECT
     , CASE `RESUME_BASE` WHEN 0 THEN 'MINUTE' WHEN 1 THEN 'HOUR' WHEN 2 THEN 'DAY' WHEN 3 THEN 'WEEK' WHEN 4 THEN 'MONTH' WHEN 5 THEN 'YEAR' END AS `RESUME_BASE`
     , CASE `MERGE_MODE` WHEN 1 THEN 'MERGE_LOCAL' WHEN 2 THEN 'MERGE_GLOBAL' WHEN 3 THEN 'NOMERGE' WHEN 4 THEN 'FAILURE' END AS `MERGE_MODE`
     , `ESTP_ID`                      AS `ESTP_ID`
+    , `INT_ID`                       AS `INT_ID`
     , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`

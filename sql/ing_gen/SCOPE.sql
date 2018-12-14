@@ -42,7 +42,7 @@ CREATE TABLE SCOPE (
     , SALT                           varchar(64)     WITH NULL
     , METHOD                         integer         NOT NULL
     , PID                            varchar(32)     WITH NULL
-    , NODE                           varchar(32)     WITH NULL
+    , NODE                           varchar(64)     WITH NULL
     , ERRMSG                         varchar(256)    WITH NULL
     , LAST_ACTIVE                    decimal(20)     WITH NULL
     , CREATOR_U_ID                   decimal(20)     NOT NULL
