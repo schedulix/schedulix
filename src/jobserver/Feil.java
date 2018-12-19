@@ -100,48 +100,19 @@ public class Feil
 	private String run         = "";
 
 	private StringBuffer error = new StringBuffer();
-	private Charset charset = null;
-	private String  charsetName = null;
 
 	private boolean complete   = false;
 
 	public boolean doEmergencyRename = false;
 
-	private void printEncoding(String s)
-	{
-		int l;
-		byte[] buffer = charset.encode(s).array();
-		l = buffer.length;
-		while (l > 0 && buffer[l-1] == 0) l--;
-		System.out.println("charsetName = " + charsetName);
-		System.out.println("String (not encoded) ='" + s + "'");
-		System.out.print  ("String (    encoded) ='");
-		System.out.write(buffer, 0, l);
-		System.out.println ("'");
-	}
-
-	private void setCharset()
-	{
-		charsetName = System.getenv("SDMSCHARSET");
-		if (charsetName != null) {
-			try {
-				this.charset = Charset.forName(charsetName);
-			} catch (Exception e) {
-				this.charset = null;
-			}
-		}
-	}
-
 	public Feil (final File prefix, final String jid)
 	{
-		setCharset();
 		filnam   = new File (prefix.toString() + jid);
 		this.jid = jid;
 	}
 
 	public Feil (final String taskfileName)
 	{
-		setCharset();
 		filnam   = new File (taskfileName);
 		this.jid = "0";
 	}
@@ -303,14 +274,11 @@ public class Feil
 	{
 		int l;
 		final String now = Utils.timestampNow();
-		if (charset != null) {
-			byte[] buffer = charset.encode(now + " " + tag + "\n").array();
-			l = buffer.length;
-			while (l > 0 && buffer[l-1] == 0) l--;
-			rfil.write(buffer, 0, l);
-		} else {
-			rfil.writeBytes(now + " " + tag + "\n");
-		}
+		byte[] buffer = Charset.defaultCharset().encode(now + " " + tag + "\n").array();
+		l = buffer.length;
+		while (l > 0 && buffer[l-1] == 0) l--;
+		rfil.write(buffer, 0, l);
+
 		return now.substring (1, now.indexOf (Utils.TIMESTAMP_LEADOUT));
 	}
 
@@ -321,13 +289,10 @@ public class Feil
 			final StringBuffer tag = new StringBuffer (id);
 			if (NEWLINE_PATTERN.matcher (val).matches()) {
 				tag.append ("'");
-				if (charset != null) {
-					byte[] buffer = charset.encode(val).array();
-					int l = buffer.length;
-					while (l > 0 && buffer[l-1] == 0) l--;
-					tag.append(l);
-				} else
-					tag.append (val.length());
+				byte[] buffer = Charset.defaultCharset().encode(val).array();
+				int l = buffer.length;
+				while (l > 0 && buffer[l-1] == 0) l--;
+				tag.append(l);
 			}
 			tag.append ("=");
 			tag.append (val);
