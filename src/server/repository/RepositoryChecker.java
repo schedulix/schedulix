@@ -51,6 +51,7 @@ public class RepositoryChecker
 	private static boolean smeDead(SystemEnvironment env, Long smeId) throws SDMSException
 	{
 		boolean dead = false;
+		if (smeId.longValue() < 0) smeId = new Long(- smeId.longValue());
 		try {
 			SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(env, smeId);
 			Integer state = sme.getState(env);
