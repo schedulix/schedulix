@@ -49,6 +49,7 @@ set autocommit on;
 \i ing_gen/HIERARCHY_INSTANCE.sql
 \i ing_gen/IGNORED_DEPENDENCY.sql
 \i ing_gen/INSTANCE_VALUE.sql
+\i ing_gen/INTERVAL_DISPATCHER.sql
 \i ing_gen/INTERVAL_HIERARCHY.sql
 \i ing_gen/INTERVALL.sql
 \i ing_gen/INTERVAL_SELECTION.sql
@@ -95,6 +96,7 @@ set autocommit on;
 \i ing_gen/TEMPLATE_VARIABLE.sql
 \i ing_gen/TRIGGER_DEFINITION.sql
 \i ing_gen/TRIGGER_QUEUE.sql
+\i ing_gen/TRIGGER_PARAMETER.sql
 \i ing_gen/TRIGGER_STATE.sql
 \i ing_gen/USER_EQUIV.sql
 \i ing_gen/USERS.sql

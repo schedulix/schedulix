@@ -47,6 +47,7 @@ source mysql_gen/GROUPS.sql
 source mysql_gen/HIERARCHY_INSTANCE.sql
 source mysql_gen/IGNORED_DEPENDENCY.sql
 source mysql_gen/INSTANCE_VALUE.sql
+source mysql_gen/INTERVAL_DISPATCHER.sql
 source mysql_gen/INTERVAL_HIERARCHY.sql
 source mysql_gen/INTERVALL.sql
 source mysql_gen/INTERVAL_SELECTION.sql
@@ -92,6 +93,7 @@ source mysql_gen/SUBMITTED_ENTITY.sql
 source mysql_gen/SUBMITTED_ENTITY_STATS.sql
 source mysql_gen/TEMPLATE_VARIABLE.sql
 source mysql_gen/TRIGGER_DEFINITION.sql
+source mysql_gen/TRIGGER_PARAMETER.sql
 source mysql_gen/TRIGGER_QUEUE.sql
 source mysql_gen/TRIGGER_STATE.sql
 source mysql_gen/USER_EQUIV.sql

@@ -47,6 +47,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 \i pg_gen/HIERARCHY_INSTANCE.sql
 \i pg_gen/IGNORED_DEPENDENCY.sql
 \i pg_gen/INSTANCE_VALUE.sql
+\i pg_gen/INTERVAL_DISPATCHER.sql
 \i pg_gen/INTERVAL_HIERARCHY.sql
 \i pg_gen/INTERVALL.sql
 \i pg_gen/INTERVAL_SELECTION.sql
@@ -92,6 +93,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 \i pg_gen/SUBMITTED_ENTITY_STATS.sql
 \i pg_gen/TEMPLATE_VARIABLE.sql
 \i pg_gen/TRIGGER_DEFINITION.sql
+\i pg_gen/TRIGGER_PARAMETER.sql
 \i pg_gen/TRIGGER_QUEUE.sql
 \i pg_gen/TRIGGER_STATE.sql
 \i pg_gen/USER_EQUIV.sql
