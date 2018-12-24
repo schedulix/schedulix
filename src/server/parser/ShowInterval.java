@@ -257,13 +257,13 @@ public class ShowInterval
 			if (periodFrom == null)
 				row.add (empty);
 			else
-				row.add (new DateTime (periodFrom, false).toString());
+				row.add (new DateTime (periodFrom, false).toString(null));
 
 			final Long periodTo = sel.getPeriodTo (sysEnv);
 			if (periodTo == null)
 				row.add (empty);
 			else
-				row.add (new DateTime (periodTo, false).toString());
+				row.add (new DateTime (periodTo, false).toString(null));
 
 			table.addData (sysEnv, row);
 		}
@@ -466,7 +466,7 @@ public class ShowInterval
 			final Long periodFrom = sel.getPeriodFrom (sysEnv);
 			if (periodFrom != null) {
 				selStr.append (sep);
-				selStr.append (new DateTime (periodFrom, false).toString());
+				selStr.append (new DateTime (periodFrom, false).toString(null));
 			}
 
 			final Long periodTo = sel.getPeriodTo (sysEnv);
@@ -475,7 +475,7 @@ public class ShowInterval
 					selStr.append (" - ");
 				else
 					selStr.append (sep);
-				selStr.append (new DateTime (periodTo, false).toString());
+				selStr.append (new DateTime (periodTo, false).toString(null));
 			}
 			sep = ", ";
 		}
