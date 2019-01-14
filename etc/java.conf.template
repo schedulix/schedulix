@@ -44,7 +44,7 @@ MEMCONF="$MEMSIZES $MEMFLAGS $MEMDEBUG"
 #
 BICSUITEJAVAFLAGS_BS="$MEMCONF"
 # java flags used for BICsuite Jobserver
-BICSUITEJAVAFLAGS_JS="-client -XX:ParallelGCThreads=2"
+BICSUITEJAVAFLAGS_JS="-XX:ParallelGCThreads=2"
 # java flags used for BICsuite Tools
 # used to be "-client", but OpenJDK doesn't understand that
 BICSUITEJAVAFLAGS_TL=""
