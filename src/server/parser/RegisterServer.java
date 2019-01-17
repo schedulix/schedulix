@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -61,10 +59,8 @@ public class RegisterServer extends Node
 	{
 		SDMSScope s;
 		if(name == null) {
-
 			s = registerByServer(sysEnv);
 		} else {
-
 			if(pid != null) {
 				s = registerByOperator(sysEnv);
 			} else {
@@ -123,7 +119,6 @@ public class RegisterServer extends Node
 				case SDMSSubmittedEntity.KILLED:
 				case SDMSSubmittedEntity.BROKEN_ACTIVE:
 					sme.releaseResources(sysEnv, newState);
-
 					sme.setErrorMsg(sysEnv, "Jobserver deregistered");
 					sme.setState(sysEnv, new Integer(newState));
 					break;
@@ -148,7 +143,7 @@ public class RegisterServer extends Node
 		s.setPid(sysEnv, pid);
 		s.setHasAlteredConfig (sysEnv, Boolean.FALSE);
 
-		result.setOutputContainer (ScopeConfig.get (sysEnv, s));
+		result.setOutputContainer (ScopeConfig.get (sysEnv, s, false));
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03201292824", "Server registered"));
 
