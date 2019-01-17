@@ -1696,6 +1696,29 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 	}
 
+	public TimeZone getEffectiveTimeZone(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		String tz = null;
+		Long masterId = getMasterId(sysEnv);
+		if (getId(sysEnv).equals(masterId))
+			tz = getTimeZone(sysEnv);
+		else {
+			SDMSSubmittedEntity msme = SDMSSubmittedEntityTable.getObject(sysEnv, masterId);
+			tz = msme.getTimeZone(sysEnv);
+		}
+		if (tz == null)
+			return TimeZone.getDefault();
+		else
+			return TimeZone.getTimeZone(tz);
+	}
+
+	public String getEffectiveTimeZoneName(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		return getEffectiveTimeZone(sysEnv).getID();
+	}
+
 	private boolean evaluateDisable(SystemEnvironment sysEnv, SDMSSchedulingHierarchy sh)
 	throws SDMSException
 	{
@@ -1704,7 +1727,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		Long intId = sh.getIntId(sysEnv);
 		if (!disable && intId != null) {
 			SDMSInterval iVal = SDMSIntervalTable.getObject (sysEnv, intId, seVersion);
-			TimeZone tz = TimeZone.getDefault();
+			TimeZone tz = getEffectiveTimeZone(sysEnv);
 			Long submitTs = getSubmitTs(sysEnv);
 			Long nextTs = iVal.filter(sysEnv, submitTs, iVal.getHorizon(sysEnv, tz), tz, "");
 			if (nextTs > getSubmitTs(sysEnv)) {
@@ -1772,13 +1795,13 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		Boolean suspended = Boolean.FALSE;
 		switch (suspend) {
 			case SDMSSchedulingHierarchy.CHILDSUSPEND:
-				resumeTs = SubmitJob.evalResumeObj(sysEnv, se.getResumeAt(sysEnv), se.getResumeIn(sysEnv), se.getResumeBase(sysEnv), submitTs, true );
+				resumeTs = SubmitJob.evalResumeObj(sysEnv, se.getResumeAt(sysEnv), se.getResumeIn(sysEnv), se.getResumeBase(sysEnv), submitTs, true, getEffectiveTimeZone(sysEnv));
 				break;
 			case SDMSSchedulingHierarchy.NOSUSPEND:
 				resumeTs = null;
 				break;
 			case SDMSSchedulingHierarchy.SUSPEND:
-				resumeTs = SubmitJob.evalResumeObj(sysEnv, sh.getResumeAt(sysEnv), sh.getResumeIn(sysEnv), sh.getResumeBase(sysEnv), submitTs, true );
+				resumeTs = SubmitJob.evalResumeObj(sysEnv, sh.getResumeAt(sysEnv), sh.getResumeIn(sysEnv), sh.getResumeBase(sysEnv), submitTs, true, getEffectiveTimeZone(sysEnv));
 				break;
 		}
 		return resumeTs;
@@ -1965,7 +1988,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (submit) {
 			checkValidESP(sysEnv, se, seVersion);
 
-			sme = createSme(sysEnv, se, sh, childTag, ownerId, isStatic, isDisabled, (suspended.booleanValue() ? (forceSuspend == null ? new Integer(SUSPEND) : forceSuspend) : new Integer(NOSUSPEND)), parentSuspended, myResumeTs, replaceSmeId, submitTag, submitTs);
+			sme = createSme(sysEnv, se, sh, childTag, ownerId, isStatic, isDisabled, (suspended.booleanValue() ? (forceSuspend == null ? new Integer(SUSPEND) : forceSuspend) : new Integer(NOSUSPEND)), parentSuspended, myResumeTs, replaceSmeId, submitTag, submitTs, null );
 		}
 		SDMSHierarchyInstance hi = SDMSHierarchyInstanceTable.table.create(sysEnv,
 					   id,
@@ -2251,7 +2274,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			releaseResources(sysEnv, getState(sysEnv).intValue());
 
 		if (getJobIsRestartable(sysEnv).booleanValue() &&
-		    getState(sysEnv).intValue() != ERROR &&
+		    getState(sysEnv).intValue() != ERROR && getState(sysEnv).intValue() != BROKEN_FINISHED &&
 		    evalRerunTrigger &&
 		    (getIsSuspended(sysEnv).intValue() == NOSUSPEND)) {
 			trigger (sysEnv, SDMSTrigger.IMMEDIATE_LOCAL, true );
@@ -2607,6 +2630,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 		if (newState == FINAL ) {
 			setFinalTs(sysEnv, ts);
+			setJobIsRestartable(sysEnv, Boolean.FALSE);
 		}
 
 		if (newState == UNREACHABLE) {
@@ -3260,7 +3284,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 	private SDMSSubmittedEntity createSme(SystemEnvironment sysEnv, SDMSSchedulingEntity se, SDMSSchedulingHierarchy sh,
 	                                      String childTag, Long ownerId, boolean isStatic, boolean isDisabled, Integer suspended, int parentSuspended,
-					      Long resumeTs, Long replaceSmeId, String submitTag, Long submitTs)
+	                                      Long resumeTs, Long replaceSmeId, String submitTag, Long submitTs, String timeZone)
 		throws SDMSException
 	{
 		SDMSSubmittedEntity sme;
@@ -3406,7 +3430,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				zero,
 				zero,
 		                opSusresTs,
-				null
+		                null,
+		                timeZone
 		);
 
 		if (replaceSmeId != null) {
