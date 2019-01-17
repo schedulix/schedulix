@@ -534,7 +534,7 @@ public class Config
 	public static final String quoted (final String str)
 	{
 		final String result = str.replaceAll ("\\\"", "\\\\\"");
-		if (result.matches (".*[^0-9].*"))
+		if (result.matches (".*[^0-9].*") || result.length() == 0)
 			return "\"" + result + "\"";
 
 		return result;
