@@ -122,6 +122,7 @@ CREATE TABLE SUBMITTED_ENTITY (
     , CHILD_WAIT_TIME                integer             NULL
     , OP_SUSRES_TS                   decimal(20)         NULL
     , NPE_ID                         decimal(20)         NULL
+    , TIME_ZONE                      varchar(32)         NULL
     , CREATOR_U_ID                   decimal(20)     NOT NULL
     , CREATE_TS                      decimal(20)     NOT NULL
     , CHANGER_U_ID                   decimal(20)     NOT NULL
@@ -203,6 +204,7 @@ SELECT
     , CHILD_WAIT_TIME                AS CHILD_WAIT_TIME
     , OP_SUSRES_TS                   AS OP_SUSRES_TS
     , NPE_ID                         AS NPE_ID
+    , TIME_ZONE                      AS TIME_ZONE
     , CREATOR_U_ID                   AS CREATOR_U_ID
     , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
     , CHANGER_U_ID                   AS CHANGER_U_ID
@@ -305,6 +307,7 @@ CREATE TABLE ARC_SUBMITTED_ENTITY (
     , CHILD_WAIT_TIME                integer          NULL
     , OP_SUSRES_TS                   decimal(20)      NULL
     , NPE_ID                         decimal(20)      NULL
+    , TIME_ZONE                      varchar(32)      NULL
     , CREATOR_U_ID                   decimal(20)      NULL
     , CREATE_TS                      decimal(20)      NULL
     , CHANGER_U_ID                   decimal(20)      NULL
