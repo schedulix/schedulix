@@ -39,6 +39,7 @@ class auto_restart extends App
 	public final static String DELAY  = App.DELAY;
 	public final static String MAX    = "MAX";
 	public final static String WARN   = App.WARNING;
+	public final static String FORCE  = "FORCE";
 
 	public auto_restart()
 	{
@@ -51,6 +52,7 @@ class auto_restart extends App
 		addOption("d", "delay",   null, DELAY,   null, "minutes",   false, "Default number of minutes the job should be delayed if job does not define AUTORESTART_DELAY");
 		addOption("m", "max",     null, MAX,     null, "number",    false, "Default max number of times the job should be restarted if job does not define AUTORESTART_MAX");
 		addOption("W", "warn",    null, WARN,    null, null,        false, "[Don't] Set Warning if maximum number of restarts was reached");
+		addOption("F", "force", null, FORCE, null, null, false, "[Don't] Restart Jobs with state ERROR or BROKEN_FINISHED");
 	}
 	public String getName() { return "auto_restart"; }
 	public boolean userOnly() { return true; }
@@ -76,6 +78,20 @@ class auto_restart extends App
 		}
 		if (!autorestart) return 0;
 
+		if (!options.isSet(FORCE) || !options.getOption(FORCE).getBValue()) {
+			cmd = "SHOW JOB " + failedJob;
+			o = execute(cmd);
+			if (o.error != null) {
+				System.err.println("Error executing: " + cmd);
+				printError(o.error);
+				return 1;
+			}
+			String state = SDMSOutputUtil.getFromRecord(o,"STATE");
+			if (!state.equals("FINISHED")) {
+				System.err.println("Can't restart job " + failedJob + " because it is not in a state FINISHED, but in state " + state);
+				return 1;
+			}
+		}
 		int max_restarts = -1;
 		if (options.isSet(MAX)) max_restarts = Integer.parseInt(options.getValue(MAX));
 		cmd = "GET PARAMETER OF " + failedJob + " AUTORESTART_MAX LIBERAL";
