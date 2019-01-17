@@ -143,6 +143,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 	                                  ,Integer p_childWaitTime
 	                                  ,Long	 p_opSusresTs
 	                                  ,Long	 p_npeId
+	                                  ,String  p_timeZone
 	                                 )
 	throws SDMSException
 	{
@@ -241,6 +242,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       ,p_childWaitTime
 		                                       ,p_opSusresTs
 		                                       ,p_npeId
+		                                       ,p_timeZone
 		                                      );
 
 		final Long smeId = sme.getId(env);
@@ -361,6 +363,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       ,null,null,zero,null,zero
 		                                       ,zero,zero,zero,zero,zero
 		                                       , null, null
+		                                       , null
 		                                      );
 
 		final Long smeId = sme.getId(env);

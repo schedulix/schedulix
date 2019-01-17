@@ -469,7 +469,7 @@ public class AlterJob extends Node
 		}
 		Long resumeTs = null;
 		if(resumeObj != null) {
-			resumeTs = SubmitJob.evalResumeObj(sysEnv, resumeObj, null, true);
+			resumeTs = SubmitJob.evalResumeObj(sysEnv, resumeObj, null, true, sme.getEffectiveTimeZone(sysEnv));
 
 			if (resumeTs == null || resumeTs.longValue() == -1l) {
 				if (sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND)

@@ -63,7 +63,7 @@ public class SubmitJob extends Node
 		with = w;
 	}
 
-	public static Long evalResumeObj(SystemEnvironment sysEnv, Object resumeObj, Long refTime, boolean adjust)
+	public static Long evalResumeObj(SystemEnvironment sysEnv, Object resumeObj, Long refTime, boolean adjust, TimeZone tz)
 		throws SDMSException
 	{
 		Long resumeTs = null;
@@ -71,12 +71,12 @@ public class SubmitJob extends Node
 		if (resumeObj == null) return resumeTs;
 		if (resumeObj instanceof WithHash) {
 			WithHash wh = (WithHash) resumeObj;
-			return evalResumeObj(sysEnv, null, (Integer) wh.get(ParseStr.S_MULT), (Integer) wh.get(ParseStr.S_INTERVAL), refTime, adjust);
+			return evalResumeObj(sysEnv, null, (Integer) wh.get(ParseStr.S_MULT), (Integer) wh.get(ParseStr.S_INTERVAL), refTime, adjust, tz);
 		}
-		return evalResumeObj(sysEnv, (String) resumeObj, null, null, refTime, adjust);
+		return evalResumeObj(sysEnv, (String) resumeObj, null, null, refTime, adjust, tz);
 	}
 
-	public static Long evalResumeObj(SystemEnvironment sysEnv, String resumeAt, Integer resumeIn, Integer resumeBase, Long refTime, boolean adjust)
+	public static Long evalResumeObj(SystemEnvironment sysEnv, String resumeAt, Integer resumeIn, Integer resumeBase, Long refTime, boolean adjust, TimeZone tz)
 		throws SDMSException
 	{
 		Long resumeTs = null;
@@ -113,7 +113,7 @@ public class SubmitJob extends Node
 			resumeTs = new Long (now + no_msecs);
 		} else {
 			if (resumeAt != null) {
-				DateTime dt = new DateTime(resumeAt);
+				DateTime dt = new DateTime(resumeAt, tz);
 				if(dt.year == -1) {
 					dt.setMissingFieldsFromReference(new Date(now), adjust);
 				} else {
@@ -129,7 +129,7 @@ public class SubmitJob extends Node
 		return resumeTs;
 	}
 
-	public Long master_submit(SystemEnvironment sysEnv, String submitTag)
+	public Long master_submit(SystemEnvironment sysEnv, String submitTag, String timeZone)
 		throws SDMSException
 	{
 		SDMSSchedulingEntity se = (SDMSSchedulingEntity)SDMSSchedulingEntityTable.get(sysEnv, path, name);
@@ -190,7 +190,7 @@ public class SubmitJob extends Node
 		se.checkSubmitForGroup(sysEnv, gId);
 
 		if (suspend != null && suspend.booleanValue()) {
-			resumeTs = evalResumeObj(sysEnv, resumeObj, null, true );
+			resumeTs = evalResumeObj(sysEnv, resumeObj, null, true, TimeZone.getTimeZone(timeZone));
 
 			if (resumeTs != null && resumeTs.longValue() == -1l) {
 				suspend = new Boolean(false);
@@ -200,7 +200,7 @@ public class SubmitJob extends Node
 
 		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, params, suspend == null ? null : new Integer(suspend ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
 		                                resumeTs, gId, niceValue,
-		                                auditMsg, submitTag, childTag, unresolvedHandling);
+		                                auditMsg, submitTag, childTag, unresolvedHandling, timeZone);
 		return sme.getId(sysEnv);
 	}
 
@@ -229,7 +229,7 @@ public class SubmitJob extends Node
 			}
 			se = SDMSSchedulingEntityTable.getObject(sysEnv, ((SDMSSchedulingHierarchy) v.get(0)).getSeChildId(sysEnv), version);
 		}
-		resumeTs = evalResumeObj(sysEnv, resumeObj, null, true);
+		resumeTs = evalResumeObj(sysEnv, resumeObj, null, true, sme.getEffectiveTimeZone(sysEnv));
 
 		Integer state = sme.getState(sysEnv);
 		if (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED || state == SDMSSubmittedEntity.RUNNING) {
@@ -259,6 +259,18 @@ public class SubmitJob extends Node
 			}
 		}
 
+		String tz;
+		if (with.containsKey(ParseStr.S_TIME)) {
+			tz = (String) with.get(ParseStr.S_TIME);
+			TimeZone tmp = TimeZone.getTimeZone(tz);
+			if (!tz.equals(tmp.getID())) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03207031503", "Time Zone " + tz + " unknown"));
+			}
+		} else {
+			TimeZone tmp = TimeZone.getDefault();
+			tz = tmp.getID();
+		}
+
 		Long id;
 		if(sysEnv.cEnv.isUser()) {
 			Boolean checkOnly = (Boolean) with.get(ParseStr.S_CHECK_ONLY);
@@ -267,7 +279,7 @@ public class SubmitJob extends Node
 			if(path == null)
 				throw new CommonErrorException( new SDMSMessage(sysEnv, "03212060119", "You cannot submit by alias as a user"));
 			if(co) sysEnv.tx.beginSubTransaction(sysEnv);
-			id = master_submit(sysEnv, submitTag);
+			id = master_submit(sysEnv, submitTag, tz);
 			if(co) {
 				sysEnv.tx.rollbackSubTransaction(sysEnv);
 				result.setFeedback(new SDMSMessage(sysEnv, "03304141142","Job submit checked successfully"));
@@ -278,7 +290,7 @@ public class SubmitJob extends Node
 				if (path == null) {
 					throw new CommonErrorException( new SDMSMessage(sysEnv, "03801291249", "A master submit by alias is not supported"));
 				}
-				id = master_submit(sysEnv, submitTag);
+				id = master_submit(sysEnv, submitTag, tz);
 			} else {
 				id = child_submit(sysEnv, submitTag);
 			}

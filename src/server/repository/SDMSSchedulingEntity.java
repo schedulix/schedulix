@@ -149,21 +149,22 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 	}
 
 	public SDMSSubmittedEntity submitMaster (SystemEnvironment sysEnv, Vector params, Integer suspended, Long resumeTs, Long ownerId,
-	                Integer niceValue, String auditEintrag)
+	                Integer niceValue, String auditEintrag, String timeZone)
 	throws SDMSException
 	{
-		return submitMaster (sysEnv,params,suspended,resumeTs,ownerId,niceValue,auditEintrag,null,null);
+		return submitMaster (sysEnv,params,suspended,resumeTs,ownerId,niceValue,auditEintrag,null,null,timeZone);
 	}
 
 	public SDMSSubmittedEntity submitMaster (SystemEnvironment sysEnv, Vector params, Integer suspended, Long resumeTs, Long ownerId,
-	                Integer niceValue, String auditEintrag, String submitTag, Integer unresolvedHandling)
+	                Integer niceValue, String auditEintrag, String submitTag, Integer unresolvedHandling, String timeZone)
 	throws SDMSException
 	{
-		return submitMaster (sysEnv, params, suspended, resumeTs, ownerId, niceValue, auditEintrag, submitTag, null, unresolvedHandling);
+		return submitMaster (sysEnv, params, suspended, resumeTs, ownerId, niceValue, auditEintrag, submitTag, null, unresolvedHandling, timeZone);
 	}
 
 	public SDMSSubmittedEntity submitMaster (SystemEnvironment sysEnv, Vector params, Integer suspended, Long resumeTs, Long ownerId,
-	                Integer niceValue, String auditEintrag, String submitTag, String childTag, Integer unresolvedHandling)
+	                Integer niceValue, String auditEintrag, String submitTag, String childTag, Integer unresolvedHandling,
+	                String timeZone)
 	throws SDMSException
 	{
 		Long seId = getId(sysEnv);
@@ -185,7 +186,12 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		if (suspended == null) {
 			suspended = new Integer(getSubmitSuspended(sysEnv) ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND);
 			if (suspended.intValue() == SDMSSubmittedEntity.SUSPEND) {
-				resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv), submitTs, true );
+				TimeZone evalTz = null;
+				if (timeZone == null)
+					evalTz = TimeZone.getDefault();
+				else
+					evalTz = TimeZone.getTimeZone(timeZone);
+				resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv), submitTs, true, evalTz);
 			}
 		}
 		Long opSusresTs = null;
@@ -342,7 +348,8 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 						zero,
 						zero,
 		                                opSusresTs,
-						null
+		                                null,
+		                                timeZone
 		);
 
 		Long smeId = sme.getId(sysEnv);

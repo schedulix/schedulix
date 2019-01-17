@@ -146,6 +146,7 @@ public class ShowSubmitted extends Node
 		desc.add("SE_FP_NAME");
 
 		desc.add("MASTER_ID");
+		desc.add("TIME_ZONE");
 		desc.add("CHILD_TAG");
 		desc.add("SE_VERSION");
 		desc.add("OWNER");
@@ -316,6 +317,7 @@ public class ShowSubmitted extends Node
 		}
 
 		data.add(sme.getMasterId(sysEnv));
+		data.add(sme.getEffectiveTimeZoneName(sysEnv));
 		data.add(sme.getChildTag(sysEnv));
 		data.add(new Long(actVersion));
 		group = SDMSGroupTable.getObject(sysEnv, sme.getOwnerId(sysEnv));

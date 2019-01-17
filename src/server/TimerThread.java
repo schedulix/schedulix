@@ -168,7 +168,7 @@ public class TimerThread
 		return stx;
 	}
 
-	private final void doSubmit (final SystemEnvironment sysEnv, final SDMSEvent evt, final Long ownerId, final TimerDate triggerDate, final TimerDate suspendNow)
+	private final void doSubmit (final SystemEnvironment sysEnv, final SDMSEvent evt, final Long ownerId, final TimerDate triggerDate, final TimerDate suspendNow, String timeZone)
 		throws SDMSException
 	{
 
@@ -197,7 +197,7 @@ public class TimerThread
 
 		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, parmList, new Integer(doSuspend.booleanValue() ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
 		                                null,
-						ownerId, null, "Event " + evt.getName (sysEnv));
+		                                ownerId, null, "Event " + evt.getName (sysEnv), timeZone);
 
 		if (forceSuspend) {
 
@@ -329,7 +329,8 @@ public class TimerThread
 	{
 		boolean setLastStartTime = true;
 		try {
-			doSubmit (sysEnv, evt, ownerId, triggerDate, suspendNow);
+			SDMSSchedule sce = SDMSScheduleTable.getObject(sysEnv, scev.getSceId(sysEnv));
+			doSubmit (sysEnv, evt, ownerId, triggerDate, suspendNow, sce.getTimeZone(sysEnv));
 		} catch (SerializationException e) {
 			setLastStartTime = false;
 			throw e;

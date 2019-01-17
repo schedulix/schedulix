@@ -300,7 +300,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				if (getIsSuspend(sysEnv).booleanValue()) {
 					Long submitTs = sme.getSubmitTs(sysEnv);
 					resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv),
-							submitTs, true );
+					                                   submitTs, true, sme.getEffectiveTimeZone(sysEnv));
 					sme.setResumeTs(sysEnv, resumeTs);
 				}
 			} else {
@@ -310,7 +310,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 					thisSme.suspend(sysEnv, true, false);
 					Long finishTs = thisSme.getFinishTs(sysEnv);
 					resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv),
-							finishTs, true );
+					                                   finishTs, true, thisSme.getEffectiveTimeZone(sysEnv));
 					thisSme.setResumeTs(sysEnv, resumeTs);
 				}
 			}
@@ -390,13 +390,15 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			else				     doSuspend = new Integer(SDMSSubmittedEntity.SUSPEND);
 			if(isMasterTrigger) {
 				final SDMSSchedulingEntity thisSe = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
+				final SDMSSubmittedEntity masterSme = SDMSSubmittedEntityTable.getObject(sysEnv, thisSme.getMasterId(sysEnv));
 				sme = se.submitMaster(sysEnv,
 				                      params,
 					doSuspend,
 					null,
 					getSubmitOwnerId(sysEnv),
 					new Integer(0),
-					"Triggered by " + thisSe.pathString(sysEnv, seVersion) + "(" + getName(sysEnv) + "), Job " + thisSme.getId(sysEnv).toString());
+				                      "Triggered by " + thisSe.pathString(sysEnv, seVersion) + "(" + getName(sysEnv) + "), Job " + thisSme.getId(sysEnv).toString(),
+				                      masterSme.getTimeZone(sysEnv));
 			} else {
 				Long replaceId = null;
 				if (submitSeId.equals(fireSeId)) {
@@ -490,7 +492,8 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 					null,
 					getSubmitOwnerId(sysEnv),
 					new Integer(0),
-					"Triggered by Resource " + r.getId(sysEnv).toString() + "(" + getName(sysEnv) + ")");
+				                      "Triggered by Resource " + r.getId(sysEnv).toString() + "(" + getName(sysEnv) + ")",
+				                      null );
 
 			} catch (NonRecoverableException nre) {
 				sysEnv.tx.rollbackSubTransaction(sysEnv);
@@ -509,7 +512,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				if (getIsSuspend(sysEnv).booleanValue()) {
 					Long submitTs = sme.getSubmitTs(sysEnv);
 					resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv),
-							submitTs, true );
+					                                   submitTs, true, sme.getEffectiveTimeZone(sysEnv));
 					sme.setResumeTs(sysEnv, resumeTs);
 				}
 			}
@@ -531,7 +534,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		if (getIsSuspend(sysEnv).booleanValue()) {
 			Long submitTs = sme.getSubmitTs(sysEnv);
 			resumeTs = SubmitJob.evalResumeObj(sysEnv, getResumeAt(sysEnv), getResumeIn(sysEnv), getResumeBase(sysEnv),
-							   submitTs, true );
+			                                   submitTs, true, sme.getEffectiveTimeZone(sysEnv));
 			sme.setResumeTs(sysEnv, resumeTs);
 		}
 

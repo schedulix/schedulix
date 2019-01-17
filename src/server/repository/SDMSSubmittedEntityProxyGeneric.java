@@ -84,6 +84,7 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 	static final public int pid_size = 32;
 	static final public int extPid_size = 32;
 	static final public int errorMsg_size = 256;
+	static final public int timeZone_size = 32;
 
 	protected SDMSSubmittedEntityProxyGeneric(SDMSObject p_object)
 	{
@@ -1768,6 +1769,27 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 
 		((SDMSSubmittedEntityGeneric)(object)).setNpeId (env, p_npeId);
 		return ;
+	}
+	public String getTimeZone (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSubmittedEntityGeneric)(object)).getTimeZone (env));
+	}
+
+	public void setTimeZone (SystemEnvironment env, String p_timeZone)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSubmittedEntityGeneric)(object)).setTimeZone (env, p_timeZone);
+		return ;
+	}
+	public static int getTimeZoneMaxLength ()
+	{
+		return (32);
 	}
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException

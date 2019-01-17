@@ -41,7 +41,7 @@ public class DateTime
 
 	private boolean isDuration;
 	private boolean isFixed = false;
-	private TimeZone tz;
+	private TimeZone tz = null;
 	private final GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
 	private boolean gcValid = false;
 	private boolean secondsSuppressed = false;
@@ -122,7 +122,8 @@ public class DateTime
 	private final boolean parseStr (final String str, final String pattern, boolean ignoreTz)
 		throws SDMSEscape
 	{
-		tz     = ignoreTz ? GMT : TimeZone.getDefault();
+		if (tz == null || ignoreTz)
+			tz = ignoreTz ? GMT : TimeZone.getDefault();
 		year   = -1;
 		month  = -1;
 		week   = -1;
@@ -248,6 +249,13 @@ public class DateTime
 	{
 		this.isDuration = isDuration;
 		interpretStr(str, isDuration, false);
+	}
+
+	public DateTime (final String str, TimeZone tz)
+	throws SDMSEscape
+	{
+		this.tz = tz;
+		interpretStr(str, false, false);
 	}
 
 	public DateTime (final String str, final boolean isDuration, final boolean ignoreTz)

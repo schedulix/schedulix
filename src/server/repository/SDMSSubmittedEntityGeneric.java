@@ -169,10 +169,11 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	public final static int nr_childWaitTime = 93;
 	public final static int nr_opSusresTs = 94;
 	public final static int nr_npeId = 95;
-	public final static int nr_creatorUId = 96;
-	public final static int nr_createTs = 97;
-	public final static int nr_changerUId = 98;
-	public final static int nr_changeTs = 99;
+	public final static int nr_timeZone = 96;
+	public final static int nr_creatorUId = 97;
+	public final static int nr_createTs = 98;
+	public final static int nr_changerUId = 99;
+	public final static int nr_changeTs = 100;
 
 	public static String tableName = SDMSSubmittedEntityTableGeneric.tableName;
 
@@ -270,6 +271,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	protected Integer childWaitTime;
 	protected Long opSusresTs;
 	protected Long npeId;
+	protected String timeZone;
 	protected Long creatorUId;
 	protected Long createTs;
 	protected Long changerUId;
@@ -375,6 +377,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	        Integer p_childWaitTime,
 	        Long p_opSusresTs,
 	        Long p_npeId,
+	        String p_timeZone,
 	        Long p_creatorUId,
 	        Long p_createTs,
 	        Long p_changerUId,
@@ -519,6 +522,13 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		childWaitTime = p_childWaitTime;
 		opSusresTs = p_opSusresTs;
 		npeId = p_npeId;
+		if (p_timeZone != null && p_timeZone.length() > 32) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141528",
+			                        "(SubmittedEntity) Length of $1 exceeds maximum length $2", "timeZone", "32")
+			);
+		}
+		timeZone = p_timeZone;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -3053,6 +3063,37 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		return;
 	}
 
+	public String getTimeZone (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (timeZone);
+	}
+
+	public	void setTimeZone (SystemEnvironment env, String p_timeZone)
+	throws SDMSException
+	{
+		if(p_timeZone != null && p_timeZone.equals(timeZone)) return;
+		if(p_timeZone == null && timeZone == null) return;
+		SDMSSubmittedEntityGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityGeneric) change(env);
+		if (p_timeZone != null && p_timeZone.length() > 32) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(SubmittedEntity) Length of $1 exceeds maximum length $2", "timeZone", "32")
+			);
+		}
+		o.timeZone = p_timeZone;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -3401,6 +3442,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	                                     Integer p_childWaitTime,
 	                                     Long p_opSusresTs,
 	                                     Long p_npeId,
+	                                     String p_timeZone,
 	                                     Long p_creatorUId,
 	                                     Long p_createTs,
 	                                     Long p_changerUId,
@@ -3502,6 +3544,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		childWaitTime = p_childWaitTime;
 		opSusresTs = p_opSusresTs;
 		npeId = p_npeId;
+		timeZone = p_timeZone;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -3621,11 +3664,13 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        ", " + squote + "CHILD_WAIT_TIME" + equote +
 				        ", " + squote + "OP_SUSRES_TS" + equote +
 				        ", " + squote + "NPE_ID" + equote +
+				        ", " + squote + "TIME_ZONE" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ") VALUES (?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -3975,10 +4020,14 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				myInsert.setNull(95, Types.INTEGER);
 			else
 				myInsert.setLong (95, npeId.longValue());
-			myInsert.setLong (96, creatorUId.longValue());
-			myInsert.setLong (97, createTs.longValue());
-			myInsert.setLong (98, changerUId.longValue());
-			myInsert.setLong (99, changeTs.longValue());
+			if (timeZone == null)
+				myInsert.setNull(96, Types.VARCHAR);
+			else
+				myInsert.setString(96, timeZone);
+			myInsert.setLong (97, creatorUId.longValue());
+			myInsert.setLong (98, createTs.longValue());
+			myInsert.setLong (99, changerUId.longValue());
+			myInsert.setLong (100, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "SubmittedEntity: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -4114,6 +4163,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        ", " + squote + "CHILD_WAIT_TIME" + equote + " = ? " +
 				        ", " + squote + "OP_SUSRES_TS" + equote + " = ? " +
 				        ", " + squote + "NPE_ID" + equote + " = ? " +
+				        ", " + squote + "TIME_ZONE" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +
 				        ", " + squote + "CREATE_TS" + equote + " = ? " +
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
@@ -4368,11 +4418,15 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				myUpdate.setNull(94, Types.INTEGER);
 			else
 				myUpdate.setLong (94, npeId.longValue());
-			myUpdate.setLong (95, creatorUId.longValue());
-			myUpdate.setLong (96, createTs.longValue());
-			myUpdate.setLong (97, changerUId.longValue());
-			myUpdate.setLong (98, changeTs.longValue());
-			myUpdate.setLong(99, id.longValue());
+			if (timeZone == null)
+				myUpdate.setNull(95, Types.VARCHAR);
+			else
+				myUpdate.setString(95, timeZone);
+			myUpdate.setLong (96, creatorUId.longValue());
+			myUpdate.setLong (97, createTs.longValue());
+			myUpdate.setLong (98, changerUId.longValue());
+			myUpdate.setLong (99, changeTs.longValue());
+			myUpdate.setLong(100, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "SubmittedEntity: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -4534,6 +4588,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "childWaitTime : " + childWaitTime, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "opSusresTs : " + opSusresTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "npeId : " + npeId, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "timeZone : " + timeZone, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "changerUId : " + changerUId, SDMSThread.SEVERITY_MESSAGE);
@@ -4644,6 +4699,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		        indentString + "childWaitTime      : " + childWaitTime + "\n" +
 		        indentString + "opSusresTs         : " + opSusresTs + "\n" +
 		        indentString + "npeId              : " + npeId + "\n" +
+		        indentString + "timeZone           : " + timeZone + "\n" +
 		        indentString + "creatorUId         : " + creatorUId + "\n" +
 		        indentString + "createTs           : " + createTs + "\n" +
 		        indentString + "changerUId         : " + changerUId + "\n" +

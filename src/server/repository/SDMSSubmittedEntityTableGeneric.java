@@ -137,6 +137,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		, "CHILD_WAIT_TIME"
 		, "OP_SUSRES_TS"
 		, "NPE_ID"
+		, "TIME_ZONE"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
 		, "CHANGER_U_ID"
@@ -275,6 +276,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                                  ,Integer p_childWaitTime
 	                                  ,Long p_opSusresTs
 	                                  ,Long p_npeId
+	                                  ,String p_timeZone
 	                                 )
 	throws SDMSException
 	{
@@ -380,6 +382,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		         , p_childWaitTime
 		         , p_opSusresTs
 		         , p_npeId
+		         , p_timeZone
 		         , p_creatorUId
 		         , p_createTs
 		         , p_changerUId
@@ -482,6 +485,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                , p_childWaitTime
 		                , p_opSusresTs
 		                , p_npeId
+		                , p_timeZone
 		                , p_creatorUId
 		                , p_createTs
 		                , p_changerUId
@@ -609,6 +613,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                        ,Integer p_childWaitTime
 	                        ,Long p_opSusresTs
 	                        ,Long p_npeId
+	                        ,String p_timeZone
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
 	                        ,Long p_changerUId
@@ -724,6 +729,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		Integer childWaitTime;
 		Long opSusresTs;
 		Long npeId;
+		String timeZone;
 		Long creatorUId;
 		Long createTs;
 		Long changerUId;
@@ -876,10 +882,12 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 			if (r.wasNull()) opSusresTs = null;
 			npeId = new Long (r.getLong(95));
 			if (r.wasNull()) npeId = null;
-			creatorUId = new Long (r.getLong(96));
-			createTs = new Long (r.getLong(97));
-			changerUId = new Long (r.getLong(98));
-			changeTs = new Long (r.getLong(99));
+			timeZone = r.getString(96);
+			if (r.wasNull()) timeZone = null;
+			creatorUId = new Long (r.getLong(97));
+			createTs = new Long (r.getLong(98));
+			changerUId = new Long (r.getLong(99));
+			changeTs = new Long (r.getLong(100));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -982,6 +990,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                      childWaitTime,
 		                                      opSusresTs,
 		                                      npeId,
+		                                      timeZone,
 		                                      creatorUId,
 		                                      createTs,
 		                                      changerUId,
@@ -1095,6 +1104,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                   ", " + squote + "CHILD_WAIT_TIME" + equote +
 		                                   ", " + squote + "OP_SUSRES_TS" + equote +
 		                                   ", " + squote + "NPE_ID" + equote +
+		                                   ", " + squote + "TIME_ZONE" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +

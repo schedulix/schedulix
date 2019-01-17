@@ -2714,6 +2714,7 @@ submit_withitem:	suspend							{ $$ = $1; }
 	|		UNRESOLVED '=' jrq_unresolved				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|		resume							{ $$ = $1; }
 	|		MASTER							{ $$ = new WithItem(ParseStr.map($1.token), $1.textValue); }
+	|		TIME ZONE '=' STRING					{ $$ = new WithItem(ParseStr.map($1.token), $4.textValue); }
 
 
 resume:			RESUME IN period					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
