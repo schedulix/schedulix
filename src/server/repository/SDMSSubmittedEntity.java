@@ -1947,7 +1947,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			releaseResources(sysEnv, getState(sysEnv).intValue());
 
 		if (getJobIsRestartable(sysEnv).booleanValue() &&
-		    getState(sysEnv).intValue() != ERROR &&
+		    getState(sysEnv).intValue() != ERROR && getState(sysEnv).intValue() != BROKEN_FINISHED &&
 		    evalRerunTrigger &&
 		    (getIsSuspended(sysEnv).intValue() == NOSUSPEND)) {
 			trigger (sysEnv, SDMSTrigger.IMMEDIATE_LOCAL, true );
@@ -2303,6 +2303,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 		if (newState == FINAL ) {
 			setFinalTs(sysEnv, ts);
+			setJobIsRestartable(sysEnv, Boolean.FALSE);
 		}
 
 		if (newState == UNREACHABLE) {
