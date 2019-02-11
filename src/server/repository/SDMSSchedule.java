@@ -88,7 +88,7 @@ public class SDMSSchedule
 					gc.setTimeZone(tz);
 					md = gc.getTimeInMillis();
 
-					Long next = interval.getNextTriggerDate(sysEnv, new Long(md), 0 , tz);
+					Long next = interval.getNextTriggerDate(sysEnv, new Long(md), 0, tz, false);
 
 					TimerDate result = new TimerDate();
 					if (next != null) {

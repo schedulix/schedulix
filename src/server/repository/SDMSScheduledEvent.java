@@ -119,7 +119,7 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 			Long cDate = c.getStarttime(sysEnv);
 			DateTime dtcDate = new DateTime(cDate);
 			TimerDate tcDate = new TimerDate(dtcDate.toDate());
-			if (!tcDate.gt(nextTime) || tcDate.gt(lastTime)) {
+			if (tcDate.lt(nextTime) || tcDate.gt(lastTime)) {
 				i.remove();
 				c.delete(sysEnv);
 			}
@@ -183,7 +183,7 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 		if (v.size() > 0)
 			last = new TimerDate(new DateTime(((SDMSCalendar) v.get(v.size() - 1)).getStarttime(sysEnv)).toDate());
 		else
-			last = next;
+			last = new TimerDate(next.plus(nextTime == null ? 0 : -1));
 		TimerDate trigDate = new TimerDate (last);
 		TimerDate baseDate = new TimerDate(trigDate.plus(1));
 
