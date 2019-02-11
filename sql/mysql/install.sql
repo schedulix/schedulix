@@ -103,7 +103,7 @@ source mysql_gen/WATCH_TYPE_PARAMETER.sql
 source mysql_gen/WATCH_TYPE.sql
 source mysql/OBJECTCOUNTER.sql
 source mysql/VERSIONCOUNTER.sql
-source REPOSITORY_LOCK.sql
+source mysql/REPOSITORY_LOCK.sql
 source MASTER_STATE.sql
 source mysql/SME2LOAD.sql
 source mysql/index.sql
