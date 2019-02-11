@@ -3,11 +3,11 @@
 #
 Name:		schedulix
 Version:	2.8
-Release:	18%{?dist}
+Release:	19%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
-License:	AGPL
+License:	AGPLv1
 URL:		http://www.schedulix.org
 Source0:	file://localhost/%{_topdir}/SOURCES/schedulix-%{version}.tgz
 
@@ -122,9 +122,9 @@ echo "executing preun base -- %version-%release"
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/guava-20.0.jar
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/jna-platform-4.3.0.jar
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/waffle-jna-1.8.3.jar
-%ghost %config %attr(644, schedulix, schedulix) /opt/schedulix/etc/bicsuite.conf
-%ghost %config %attr(644, schedulix, schedulix) /opt/schedulix/etc/java.conf 
-%ghost %config %attr(644, schedulix, schedulix) /opt/schedulix/etc/SETTINGS
+%ghost %config(noreplace) %attr(644, schedulix, schedulix) /opt/schedulix/etc/bicsuite.conf
+%ghost %config(noreplace) %attr(644, schedulix, schedulix) /opt/schedulix/etc/java.conf 
+%ghost %config(noreplace) %attr(644, schedulix, schedulix) /opt/schedulix/etc/SETTINGS
 #
 # exclude this spec file as it isn't required in any binary package
 #
@@ -202,8 +202,8 @@ fi
 %attr(0744, root, root)             /etc/init.d/schedulix-server-pg
 /opt/schedulix/schedulix-%{version}/sql/pg
 /opt/schedulix/schedulix-%{version}/sql/pg_gen
-%ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/etc/server.conf
-%ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/.sdmshrc
+%ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/etc/server.conf
+%ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/.sdmshrc
 %ghost %attr(-, root, root) /etc/init.d/schedulix-server
 %ghost %attr(0600, schedulix, schedulix) /opt/schedulix/.pgpass
 
@@ -277,8 +277,8 @@ fi
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/install/convenience.sdms
 /opt/schedulix/schedulix-%{version}/sql/mysql
 /opt/schedulix/schedulix-%{version}/sql/mysql_gen
-%ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/etc/server.conf
-%ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/.sdmshrc
+%ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/etc/server.conf
+%ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/.sdmshrc
 %ghost %attr(-, root, root) /etc/init.d/schedulix-server
 
 #
@@ -503,9 +503,9 @@ echo "executing postun examples -- %version-%release"
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/host_1.conf.template
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/host_2.conf.template
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/localhost.conf.template
-%ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/etc/host_1.conf
-%ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/etc/host_2.conf
-%ghost %config %attr(0600, schedulix, schedulix) /opt/schedulix/etc/localhost.conf
+%ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/etc/host_1.conf
+%ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/etc/host_2.conf
+%ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/etc/localhost.conf
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/install/setup_example_jobservers.sh
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/install/setup_examples.sdms
 %attr(0744, root, root)             /etc/init.d/schedulix-examples
