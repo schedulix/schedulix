@@ -1729,7 +1729,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			SDMSInterval iVal = SDMSIntervalTable.getObject (sysEnv, intId, seVersion);
 			TimeZone tz = getEffectiveTimeZone(sysEnv);
 			Long submitTs = getSubmitTs(sysEnv);
-			Long nextTs = iVal.filter(sysEnv, submitTs, iVal.getHorizon(sysEnv, tz), tz, "");
+			Long nextTs = iVal.filter(sysEnv, submitTs, iVal.getHorizon(sysEnv, tz), tz, true, 0);
 			if (nextTs > getSubmitTs(sysEnv)) {
 				disable = true;
 			}
