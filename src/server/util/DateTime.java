@@ -254,6 +254,7 @@ public class DateTime
 	public DateTime (final String str, TimeZone tz)
 	throws SDMSEscape
 	{
+		this.isDuration = false;
 		this.tz = tz;
 		interpretStr(str, false, false);
 	}
