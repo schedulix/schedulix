@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -121,7 +119,7 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 			Long cDate = c.getStarttime(sysEnv);
 			DateTime dtcDate = new DateTime(cDate);
 			TimerDate tcDate = new TimerDate(dtcDate.toDate());
-			if (!tcDate.gt(nextTime) || tcDate.gt(lastTime)) {
+			if (tcDate.lt(nextTime) || tcDate.gt(lastTime)) {
 				i.remove();
 				c.delete(sysEnv);
 			}
@@ -185,7 +183,7 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 		if (v.size() > 0)
 			last = new TimerDate(new DateTime(((SDMSCalendar) v.get(v.size() - 1)).getStarttime(sysEnv)).toDate());
 		else
-			last = next;
+			last = new TimerDate(next.plus(nextTime == null ? 0 : -1));
 		TimerDate trigDate = new TimerDate (last);
 		TimerDate baseDate = new TimerDate(trigDate.plus(1));
 
@@ -196,11 +194,9 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 			if (trigDate == null) break;
 			if (trigDate.isNaD()) break;
 			if (trigDate.lt(finalDate)) {
-
 				try {
 					SDMSCalendarTable.table.create (sysEnv, scevId, TimerThread.dateToDateTimeLong(trigDate));
 				} catch (DuplicateKeyException dke) {
-
 				}
 				++nrEntries;
 			}

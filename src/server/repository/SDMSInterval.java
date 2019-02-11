@@ -48,7 +48,12 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	public static final boolean FILTER = true;
 	public static final boolean DRIVER = false;
 
+	protected static final String HT = "    ";
+	private static boolean debug = false;
+
 	private Vector filter = null;
+	private SDMSInterval embedFilter = null;
+	private boolean seenDriver = false;
 
 	private Vector selectedBlocksPos = null;
 	private Vector selectedBlocksNeg = null;
@@ -79,12 +84,21 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	GregorianCalendar floorGc = null;
 	GregorianCalendar nextFloorGc = null;
 
+	private void debugmsg(SystemEnvironment sysEnv, int indent, String msg)
+	throws SDMSException
+	{
+		if (!debug) return;
+		for (int i = 0; i < indent; ++i)
+			System.out.print(HT);
+		System.out.println(this.getName(sysEnv) + "/" + this.getId(sysEnv) + " : " + Here.atc() + msg);
+	}
+
 	protected SDMSInterval(SDMSObject p_object)
 	{
 		super(p_object);
 	}
 
-	private void initialize(SystemEnvironment sysEnv, TimeZone tz)
+	private void initialize(SystemEnvironment sysEnv, TimeZone tz, int indent)
 		throws SDMSException
 	{
 		Vector v = SDMSIntervalHierarchyTable.idx_parentId.getVector(sysEnv, getId(sysEnv));
@@ -93,8 +107,8 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			SDMSIntervalHierarchy ih = (SDMSIntervalHierarchy) v.get(i);
 			filter.add(SDMSIntervalTable.getObject(sysEnv, ih.getChildId(sysEnv)));
 		}
-		initSelection(sysEnv);
-		initBaseAndDuration(sysEnv);
+		initSelection(sysEnv, indent + 1);
+		initBaseAndDuration(sysEnv, indent + 1);
 		initLimits(sysEnv, tz);
 		initEmbeddedInterval(sysEnv);
 	}
@@ -116,17 +130,29 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		return "interval " + getURLName(sysEnv);
 	}
 
-	private long getHorizon(SystemEnvironment sysEnv, TimeZone tz)
+	public long getHorizon(SystemEnvironment sysEnv, TimeZone tz)
 		throws SDMSException
 	{
 		int gcUnit = Calendar.YEAR;
 		switch (SystemEnvironment.timerHorizon.unit()) {
-			case YEAR:	gcUnit = Calendar.YEAR;		break;
-			case MONTH:	gcUnit = Calendar.MONTH;	break;
-			case WEEK:	gcUnit = Calendar.WEEK_OF_YEAR;	break;
-			case DAY:	gcUnit = Calendar.DAY_OF_MONTH;	break;
-			case HOUR:	gcUnit = Calendar.HOUR_OF_DAY;	break;
-			case MINUTE:	gcUnit = Calendar.MINUTE;	break;
+			case YEAR:
+				gcUnit = Calendar.YEAR;
+				break;
+			case MONTH:
+				gcUnit = Calendar.MONTH;
+				break;
+			case WEEK:
+				gcUnit = Calendar.WEEK_OF_YEAR;
+				break;
+			case DAY:
+				gcUnit = Calendar.DAY_OF_MONTH;
+				break;
+			case HOUR:
+				gcUnit = Calendar.HOUR_OF_DAY;
+				break;
+			case MINUTE:
+				gcUnit = Calendar.MINUTE;
+				break;
 		}
 		GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
 		gc.setTimeInMillis(System.currentTimeMillis());
@@ -136,9 +162,19 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		return gc.getTimeInMillis();
 	}
 
-	public Long getNextTriggerDate(SystemEnvironment sysEnv, Long minDate, long horizon, TimeZone tz)
+	public Long getNextTriggerDate(SystemEnvironment sysEnv, Long minDate, long horizon, TimeZone tz, boolean p_seenDriver)
 		throws SDMSException
 	{
+		return getNextTriggerDate(sysEnv, minDate, horizon, tz, p_seenDriver, 0);
+	}
+
+	public Long getNextTriggerDate(SystemEnvironment sysEnv, Long minDate, long horizon, TimeZone tz, boolean p_seenDriver, int indent)
+	throws SDMSException
+	{
+		if (p_seenDriver) {
+			this.seenDriver = true;
+		}
+
 		if (minDate == null) return null;
 		long lMinDate = minDate.longValue();
 		if (startTime > lMinDate) {
@@ -147,18 +183,24 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		if (horizon == 0)
 			horizon = getHorizon(sysEnv, tz);
 		if (filter == null) {
-			initialize(sysEnv, tz);
+			initialize(sysEnv, tz, indent + 1);
 		}
-		if (!seek(sysEnv, lMinDate, horizon, tz, DRIVER, "")) return null;
+		if (!seek(sysEnv, lMinDate, horizon, tz, DRIVER, indent + 1)) {
+			return null;
+		}
 		if (blockState.blockStart < lMinDate) {
-			if (blockState.blockEnd == Long.MAX_VALUE) return null;
-			if (!seek(sysEnv, blockState.blockEnd + 1, horizon, tz, DRIVER, "")) return null;
+			if (blockState.blockEnd == Long.MAX_VALUE) {
+				return null;
+			}
+			if (!seek(sysEnv, blockState.blockEnd + 1, horizon, tz, DRIVER, indent + 1)) {
+				return null;
+			}
 		}
 
 		return new Long(blockState.blockStart);
 	}
 
-	private boolean advanceBlock(SystemEnvironment sysEnv, long horizon, TimeZone tz)
+	private boolean advanceBlock(SystemEnvironment sysEnv, long horizon, TimeZone tz, int indent)
 		throws SDMSException
 	{
 		if (Thread.currentThread().isInterrupted()) {
@@ -170,7 +212,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			long minDate = 0;
 			minDate = blockState.blockEnd + 1;
 
-			if (getNextRange(sysEnv, minDate, tz) && blockState.blockStart < endTime && blockState.blockStart < horizon) {
+			if (getNextRange(sysEnv, minDate, tz, indent + 1) && blockState.blockStart < endTime && blockState.blockStart < horizon) {
 				return true;
 			}
 			return false;
@@ -179,7 +221,9 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			gc.setTimeZone(tz);
 
 			if (embeddedInterval != null) {
-				if (embeddedInterval.getNextTriggerDate(sysEnv, blockState.blockEnd + 1, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz) == null) return false;
+				if (embeddedInterval.getNextTriggerDate(sysEnv, blockState.blockEnd + 1, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz, seenDriver, indent + 1) == null) {
+					return false;
+				}
 				blockState.blockStart = embeddedInterval.blockState.blockStart;
 				blockState.blockEnd = embeddedInterval.blockState.blockEnd;
 				if (blockState.blockStart > blockState.baseEnd) {
@@ -242,7 +286,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 	}
 
-	private boolean seekBlock(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz)
+	private boolean seekBlock(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, int indent)
 		throws SDMSException
 	{
 		GregorianCalendar gc;
@@ -286,7 +330,9 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				gc.add(gcDurationInterval, durationMultiplier);
 				blockState.blockEnd = gc.getTimeInMillis() - 1;
 			} else {
-				if (embeddedInterval.getNextTriggerDate(sysEnv, blockState.baseStart, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz) == null) return false;
+				if (embeddedInterval.getNextTriggerDate(sysEnv, blockState.baseStart, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz, seenDriver, indent + 1) == null) {
+					return false;
+				}
 				blockState.blockStart = embeddedInterval.blockState.blockStart;
 				blockState.blockEnd = embeddedInterval.blockState.blockEnd;
 				if (blockState.blockStart > blockState.baseEnd) {
@@ -295,51 +341,72 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 					gc.add(gcBaseInterval, baseMultiplier);
 					blockState.baseEnd = gc.getTimeInMillis() - 1;
 				}
+				if (blockState.blockEnd > blockState.baseEnd) {
+					blockState.blockEnd = blockState.baseEnd;
+				}
 			}
 			blockState.blockIdx = 1;
 		} else {
 			blockState.blockStart = blockState.baseStart;
-			blockState.blockEnd = getStartingPoint(sysEnv, minDate, tz);
-			if (!advanceBlock(sysEnv, horizon, tz)) return false;
+			blockState.blockEnd = getStartingPoint(sysEnv, minDate, tz, indent + 1);
+			if (!advanceBlock(sysEnv, horizon, tz, indent + 1)) return false;
 		}
 
 		while (blockState.blockEnd <= minDate && blockState.blockStart < endTime && blockState.blockStart < horizon) {
-			if (!advanceBlock(sysEnv, horizon, tz)) return false;
+			if (!advanceBlock(sysEnv, horizon, tz, indent + 1)) return false;
 		}
 		if (blockState.blockStart >= endTime) return false;
 
 		return true;
 	}
 
-	private boolean seek(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, boolean isFilter, String indent)
+	private boolean seek(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, boolean isFilter, int indent)
 		throws SDMSException
 	{
 		if (filter == null) {
-			initialize(sysEnv, tz);
+			initialize(sysEnv, tz, indent + 1);
 		}
 
+		final int filterSize = filter.size();
 		while(true) {
 			long minNext = Long.MAX_VALUE;
-			if (!seekLocal(sysEnv, minDate, horizon, tz)) {
+			if (!seekLocal(sysEnv, minDate, horizon, tz, indent + 1)) {
 				return false;
 			}
-			if (filter.size() == 0) return true;
+			if ((filterSize == 0) && (embedFilter == null)) {
+				return true;
+			}
 
 			long checkDate = isFilter ? (minDate < blockState.blockStart ? blockState.blockStart : minDate) : blockState.blockStart;
-			for (int i = 0; i < filter.size(); ++i) {
-				long next;
-				SDMSInterval f = (SDMSInterval) filter.get(i);
-				next = f.filter(sysEnv, checkDate, horizon, tz, indent + "\t");
-				if (next != Long.MAX_VALUE) {
-					if (next <= checkDate) {
-						if (isFilter) blockState.blockStart = checkDate;
-						return true;
-					}
-					if (minNext > next) minNext = next;
-				} else {
-				}
+			long next;
+
+			if (embedFilter != null) {
+				next = embedFilter.filter(sysEnv, checkDate, horizon, tz, seenDriver, indent + 1);
+			} else {
+				next = checkDate;
 			}
-			if (minNext == Long.MAX_VALUE || (!isFilter && (blockState.blockEnd == Long.MAX_VALUE))) return false;
+			if (next <= checkDate && next != Long.MAX_VALUE) {
+				if (filterSize == 0) {
+					if (isFilter) blockState.blockStart = checkDate;
+					return true;
+				}
+				for (int i = 0; i < filterSize; ++i) {
+					SDMSInterval f = (SDMSInterval) filter.get(i);
+					next = f.filter(sysEnv, checkDate, horizon, tz, seenDriver, indent + 1);
+					if (next != Long.MAX_VALUE) {
+						if (next <= checkDate) {
+							if (isFilter) blockState.blockStart = checkDate;
+							return true;
+						}
+						if (minNext > next) minNext = next;
+					}
+				}
+			} else {
+				if (minNext > next) minNext = next;
+			}
+			if (minNext == Long.MAX_VALUE || (!isFilter && (blockState.blockEnd == Long.MAX_VALUE))) {
+				return false;
+			}
 			if (isFilter)
 				minDate = minNext;
 			else
@@ -347,63 +414,92 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 	}
 
-	private long filter(SystemEnvironment sysEnv, long checkDate, long horizon, TimeZone tz, String indent)
+	public long filter(SystemEnvironment sysEnv, long checkDate, long horizon, TimeZone tz, boolean p_seenDriver, int indent)
 		throws SDMSException
 	{
-		if(!seek(sysEnv, checkDate, horizon, tz, FILTER, indent)) return Long.MAX_VALUE;
-		if (checkDate < startTime && blockState.blockStart < startTime) return startTime;
+		if (p_seenDriver) {
+			this.seenDriver = true;
+		}
+
+		if (filter == null) {
+			initialize(sysEnv, tz, indent + 1);
+		}
+
+		if(!seek(sysEnv, checkDate, horizon, tz, FILTER, indent + 1)) {
+			return Long.MAX_VALUE;
+		}
+		if (checkDate < startTime && blockState.blockStart < startTime) {
+			return startTime;
+		}
 		return blockState.blockStart;
 	}
 
-	private boolean checkSelection (SystemEnvironment sysEnv, int blockIdx, int negIdx, long ts, TimeZone tz)
+	private boolean checkSelection (SystemEnvironment sysEnv, int blockIdx, int negIdx, long ts, TimeZone tz, int indent)
 		throws SDMSException
 	{
-		if (!(posSelected || negSelected || rangeSelected)) return true;
+		if (!(posSelected || negSelected || rangeSelected)) {
+			return true;
+		}
 
-		boolean positiveCheck = (posSelected && indexCheckPos(sysEnv, blockIdx)) ||
-					(negSelected && indexCheckNeg(sysEnv, negIdx))   ||
-					(rangeSelected && rangeCheck(sysEnv, ts, tz));
+		boolean positiveCheck = (posSelected && indexCheckPos(sysEnv, blockIdx, indent + 1)) ||
+		                        (negSelected && indexCheckNeg(sysEnv, negIdx, indent + 1))   ||
+		                        (rangeSelected && rangeCheck(sysEnv, ts, tz, indent + 1));
 
 		return positiveCheck ^ isInverse;
 	}
 
-	private boolean indexCheckPos (SystemEnvironment sysEnv, int seqNo)
+	private boolean indexCheckPos (SystemEnvironment sysEnv, int seqNo, int indent)
 		throws SDMSException
 	{
-		if (!posSelected)
+		if (!posSelected) {
 			return true;
-		if (seqNo <= 0) return false;
+		}
+		if (seqNo <= 0) {
+			return false;
+		}
 
 		for (; selBlPos < selectedBlocksPos.size(); selBlPos ++) {
 			int sel = ((Integer)selectedBlocksPos.get(selBlPos)).intValue();
-			if (sel == seqNo)	return true;
-			if (sel > seqNo)	return false;
+			if (sel == seqNo) {
+				return true;
+			}
+			if (sel > seqNo) {
+				return false;
+			}
 		}
 
 		return false;
 	}
 
-	private boolean indexCheckNeg (SystemEnvironment sysEnv, int seqNo)
+	private boolean indexCheckNeg (SystemEnvironment sysEnv, int seqNo, int indent)
 		throws SDMSException
 	{
-		if (!negSelected)
+		if (!negSelected) {
 			return true;
-		if (seqNo >= 0) return false;
+		}
+		if (seqNo >= 0) {
+			return false;
+		}
 
 		for (; selBlNeg < selectedBlocksNeg.size(); selBlNeg ++) {
 			int sel = ((Integer)selectedBlocksNeg.get(selBlNeg)).intValue();
-			if (sel == seqNo)	return true;
-			if (sel > seqNo)	return false;
+			if (sel == seqNo) {
+				return true;
+			}
+			if (sel > seqNo) {
+				return false;
+			}
 		}
 
 		return false;
 	}
 
-	private boolean rangeCheck(SystemEnvironment sysEnv, long date, TimeZone tz)
+	private boolean rangeCheck(SystemEnvironment sysEnv, long date, TimeZone tz, int indent)
 		throws SDMSException
 	{
-		if (!rangeSelected)
+		if (!rangeSelected) {
 			return true;
+		}
 
 		for (int i = 0; i < selectedRanges.size(); i ++) {
 			DateTime a[] = (DateTime[])(selectedRanges.get(i));
@@ -423,7 +519,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		return false;
 	}
 
-	private boolean getNextRange(SystemEnvironment sysEnv, long date, TimeZone tz)
+	private boolean getNextRange(SystemEnvironment sysEnv, long date, TimeZone tz, int indent)
 		throws SDMSException
 	{
 		if (!rangeSelected) {
@@ -435,7 +531,9 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 		if (!isInverse) {
 			BlockState nextBlock = getNextPositiveRange(sysEnv, date, tz);
-			if (nextBlock == null) return false;
+			if (nextBlock == null) {
+				return false;
+			}
 			blockState.copyFrom(nextBlock);
 			return true;
 		} else {
@@ -470,7 +568,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 	}
 
-	private long getStartingPoint(SystemEnvironment sysEnv, long date, TimeZone tz)
+	private long getStartingPoint(SystemEnvironment sysEnv, long date, TimeZone tz, int indent)
 		throws SDMSException
 	{
 		long maxFloor = startTime;
@@ -546,13 +644,15 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		return result;
 	}
 
-	private boolean seekLocal(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz)
+	private boolean seekLocal(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, int indent)
 		throws SDMSException
 	{
 		long currentBaseStart = 0;
 		long currentBaseEnd = Long.MAX_VALUE;
 
-		if (!seekBlock(sysEnv, minDate, horizon, tz)) return false;
+		if (!seekBlock(sysEnv, minDate, horizon, tz, indent + 1)) {
+			return false;
+		}
 
 		Vector fifo = new Vector();
 		int startSeqNo = UNINITIALIZED;
@@ -563,7 +663,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				for (int i = 0; i < fifoSize; ++i) {
 					BlockState bs = (BlockState) fifo.get(i);
 					long t = bs.blockStart;
-					if (checkSelection(sysEnv, startSeqNo + i, i - fifoSize, t, tz)) {
+					if (checkSelection(sysEnv, startSeqNo + i, i - fifoSize, t, tz, indent + 1)) {
 						blockState.copyFrom(bs);
 						return true;
 					}
@@ -581,18 +681,18 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				BlockState bs = (BlockState) fifo.remove(0);
 				long s = bs.blockStart;
 				if (s > horizon) return false;
-				if (checkSelection(sysEnv, startSeqNo, 0, s, tz)) {
+				if (checkSelection(sysEnv, startSeqNo, 0, s, tz, indent + 1)) {
 					blockState.copyFrom(bs);
 					return true;
 				}
 				startSeqNo++;
 			}
-			if(!advanceBlock(sysEnv, horizon, tz) || blockState.blockStart > horizon) {
+			if(!advanceBlock(sysEnv, horizon, tz, indent + 1) || blockState.blockStart > horizon) {
 				int fifoSize = fifo.size();
 				for (int i = 0; i < fifoSize; ++i) {
 					BlockState bs = (BlockState) fifo.get(i);
 					long t = bs.blockStart;
-					if (checkSelection(sysEnv, startSeqNo + i, i - fifoSize, t, tz)) {
+					if (checkSelection(sysEnv, startSeqNo + i, i - fifoSize, t, tz, indent + 1)) {
 						blockState.copyFrom(bs);
 						return true;
 					}
@@ -678,7 +778,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		selBlNeg = 0;
 	}
 
-	private void initSelection(SystemEnvironment sysEnv)
+	private void initSelection(SystemEnvironment sysEnv, int indent)
 		throws SDMSException
 	{
 		resetPositions();
@@ -725,10 +825,13 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 		if (selectedRanges.size() > 0) {
 			rangeSelected = true;
+			if (!(negSelected || posSelected)) {
+				seenDriver = true;
+			}
 		}
 	}
 
-	private void initBaseAndDuration(SystemEnvironment sysEnv)
+	private void initBaseAndDuration(SystemEnvironment sysEnv, int indent)
 		throws SDMSException
 	{
 		if(baseMultiplier != UNINITIALIZED) return;
@@ -740,12 +843,24 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			baseMultiplier = baseMult.intValue();
 
 			switch (bi) {
-				case YEAR:	gcBaseInterval = Calendar.YEAR;		break;
-				case MONTH:	gcBaseInterval = Calendar.MONTH;	break;
-				case WEEK:	gcBaseInterval = Calendar.WEEK_OF_YEAR;	break;
-				case DAY:	gcBaseInterval = Calendar.DAY_OF_MONTH;	break;
-				case HOUR:	gcBaseInterval = Calendar.HOUR_OF_DAY;	break;
-				case MINUTE:	gcBaseInterval = Calendar.MINUTE;	break;
+				case YEAR:
+					gcBaseInterval = Calendar.YEAR;
+					break;
+				case MONTH:
+					gcBaseInterval = Calendar.MONTH;
+					break;
+				case WEEK:
+					gcBaseInterval = Calendar.WEEK_OF_YEAR;
+					break;
+				case DAY:
+					gcBaseInterval = Calendar.DAY_OF_MONTH;
+					break;
+				case HOUR:
+					gcBaseInterval = Calendar.HOUR_OF_DAY;
+					break;
+				case MINUTE:
+					gcBaseInterval = Calendar.MINUTE;
+					break;
 			}
 		} else {
 			baseMultiplier = 0;
@@ -758,12 +873,24 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			durationMultiplier = durationMult.intValue();
 
 			switch (di) {
-				case YEAR:	gcDurationInterval = Calendar.YEAR;	break;
-				case MONTH:	gcDurationInterval = Calendar.MONTH;	break;
-				case WEEK:	gcDurationInterval = Calendar.WEEK_OF_YEAR;	break;
-				case DAY:	gcDurationInterval = Calendar.DAY_OF_MONTH;	break;
-				case HOUR:	gcDurationInterval = Calendar.HOUR_OF_DAY;	break;
-				case MINUTE:	gcDurationInterval = Calendar.MINUTE;	break;
+				case YEAR:
+					gcDurationInterval = Calendar.YEAR;
+					break;
+				case MONTH:
+					gcDurationInterval = Calendar.MONTH;
+					break;
+				case WEEK:
+					gcDurationInterval = Calendar.WEEK_OF_YEAR;
+					break;
+				case DAY:
+					gcDurationInterval = Calendar.DAY_OF_MONTH;
+					break;
+				case HOUR:
+					gcDurationInterval = Calendar.HOUR_OF_DAY;
+					break;
+				case MINUTE:
+					gcDurationInterval = Calendar.MINUTE;
+					break;
 			}
 		} else {
 			durationMultiplier = 0;
@@ -772,6 +899,10 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		if (durationMultiplier == 0 && baseMultiplier == 0)
 			isInfinite = true;
 		else {
+			if (durationMultiplier != 0) {
+				seenDriver = true;
+			}
+
 			if (durationMultiplier == 0) {
 				durationMultiplier = baseMultiplier;
 				gcDurationInterval = gcBaseInterval;
@@ -781,12 +912,24 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				gcBaseInterval = gcDurationInterval;
 			}
 			switch (gcBaseInterval) {
-				case Calendar.YEAR:		maxBaseLength = YEAR_MAX;	break;
-				case Calendar.MONTH:		maxBaseLength = MONTH_MAX;	break;
-				case Calendar.WEEK_OF_YEAR:	maxBaseLength = WEEK_MAX;	break;
-				case Calendar.DAY_OF_MONTH:	maxBaseLength = DAY_MAX;	break;
-				case Calendar.HOUR_OF_DAY:	maxBaseLength = HOUR_MAX;	break;
-				case Calendar.MINUTE:		maxBaseLength = MINUTE_MAX;	break;
+				case Calendar.YEAR:
+					maxBaseLength = YEAR_MAX;
+					break;
+				case Calendar.MONTH:
+					maxBaseLength = MONTH_MAX;
+					break;
+				case Calendar.WEEK_OF_YEAR:
+					maxBaseLength = WEEK_MAX;
+					break;
+				case Calendar.DAY_OF_MONTH:
+					maxBaseLength = DAY_MAX;
+					break;
+				case Calendar.HOUR_OF_DAY:
+					maxBaseLength = HOUR_MAX;
+					break;
+				case Calendar.MINUTE:
+					maxBaseLength = MINUTE_MAX;
+					break;
 			}
 		}
 	}
@@ -809,7 +952,11 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	{
 		Long embeddedIntervalId = getEmbeddedIntervalId(sysEnv);
 		if (embeddedIntervalId != null) {
-			embeddedInterval = SDMSIntervalTable.getObject(sysEnv, embeddedIntervalId);
+			if (posSelected || negSelected || !seenDriver) {
+				embeddedInterval = SDMSIntervalTable.getObject(sysEnv, embeddedIntervalId);
+			} else {
+				embedFilter = SDMSIntervalTable.getObject(sysEnv, embeddedIntervalId);
+			}
 		}
 	}
 
@@ -1250,11 +1397,14 @@ class BlockState implements Cloneable
 
 	public String toString()
 	{
-		return toString("");
+		return toString(0);
 	}
 
-	public String toString(String indent)
+	public String toString(int iindent)
 	{
+		String indent = "";
+		for (int i = 0; i < iindent; ++i)
+			indent = indent + SDMSInterval.HT;
 		return  indent + "blockState [\n" +
 			indent + "\tbaseStart : " + new TimerDate((int)(baseStart / 60000)).toString() + "\n" +
 			indent + "\tbaseEnd   : " + new TimerDate((int)(baseEnd / 60000)).toString() + "\n" +
