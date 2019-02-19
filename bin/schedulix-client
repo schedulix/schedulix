@@ -51,8 +51,8 @@ case "${1:-''}" in
 						[ -f \$HOME/.bashrc ] && . \$HOME/.bashrc;
 						if [ -f \$HOME/etc/$SVR.init ]; then 
 							. \$HOME/etc/$SVR.init;
-							$BICSUITEHOME/bin/jobserver-run \$HOME/etc/$SVR.conf \$HOME/log/$SVR.out;
 						fi
+						$BICSUITEHOME/bin/jobserver-run \$HOME/etc/$SVR.conf \$HOME/log/$SVR.out;
 					"
 				done
 				cd ..;
