@@ -54,16 +54,16 @@ ENDMYSQL
 
 	su - schedulix -c "
 	echo 'User=SYSTEM
-	Password=G0H0ME
-	Timeout=0' > /opt/schedulix/.sdmshrc
+Password=G0H0ME
+Timeout=0' > /opt/schedulix/.sdmshrc
 	chmod 600 /opt/schedulix/.sdmshrc
 	"
 
 	echo "Setting up /opt/schedulix/etc/sdmshrc"
 
 	su - schedulix -c "
-	echo 'Host=$HOSTNAME
-	Port=2506' > /opt/schedulix/etc/sdmshrc
+	echo 'Host=localhost
+Port=2506' > /opt/schedulix/etc/sdmshrc
 	chmod 644 /opt/schedulix/etc/sdmshrc
 	"
 

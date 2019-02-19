@@ -34,7 +34,6 @@ else
 	ECHO_FAILURE=echo
 fi
 
-
 SELF=$(cd $(dirname $0); pwd -P)/$(basename $0)
 
 # Safeguard (relative paths, core dumps..)
@@ -55,7 +54,7 @@ case "${1:-''}" in
 	    then
 	        $ECHO_SUCCESS
 	    else
-                log_end_msg 1
+                $ECHO_FAILURE
 	        $LOG_FAILURE_MSG "Please take a look at the /opt/schedulix/log/BICserver.out.* files"
 	    fi
 	fi
@@ -94,7 +93,7 @@ case "${1:-''}" in
 
   'reload'|'force-reload')
   	$LOG_WARNING_MSG "Reloading schedulix!server not supported; use 'restart' instead"
-	log_end_msg 0
+	$ECHO_SUCCESS
 	;;
 
   'status')
