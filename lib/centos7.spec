@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.8
-Release:	19%{?dist}
+Release:	20%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -147,7 +147,7 @@ echo "executing preun base -- %version-%release"
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix server pg package installs a schedulix server based on an underlying Postgres RDBMS
 Group:			Applications/System
-Requires:		schedulix-base = %{version}-%{release} postgresql-server postgresql-jdbc coreutils
+Requires:		schedulix-base = %{version}-%{release} postgresql-server postgresql-jdbc coreutils psmisc
 Provides:		schedulix-server %{version}-%{release}
 Conflicts:		schedulix-server-mariadb
 
@@ -218,7 +218,7 @@ fi
 Summary:		The schedulix server mariadb package installs a schedulix server based on an underlying MariaDB od MySQL RDBMS
 Group:			Applications/System
 # Requires: schedulix-base mysql-server mysql-connector-java
-Requires:		schedulix-base = %{version}-%{release} mariadb mariadb-libs mariadb-server mysql-connector-java coreutils 
+Requires:		schedulix-base = %{version}-%{release} mariadb mariadb-libs mariadb-server mysql-connector-java coreutils psmisc
 Provides:		schedulix-server %{version}-%{release}
 Conflicts:		schedulix-server-pg
 
@@ -301,7 +301,7 @@ fi
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix client package installs everything needed to setup a jobserver
 Group:			Applications/System
-Requires:		schedulix-base = %{version}-%{release} coreutils
+Requires:		schedulix-base = %{version}-%{release} coreutils psmisc
 
 %description client
 %commonDescription
