@@ -238,10 +238,9 @@ public class AlterTrigger extends ManipTrigger
 				if (itt != SDMSTrigger.IMMEDIATE_LOCAL && iaction == SDMSTrigger.RERUN)
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03108111248", "Only immediate local triggers can be used for automatic restarts"));
 			}
+		} else {
+			itt = t.getType(sysEnv).intValue();
 		}
-
-		if (condition != null && !(condition.equals("")))
-			sysEnv.checkFeatureAvailability(SystemEnvironment.S_EXTENDED_TRIGGERS);
 
 		if (objType == SDMSTrigger.JOB_DEFINITION) {
 			isWarnOnLimit = (Boolean) with.get(ParseStr.S_WARN);
@@ -262,6 +261,8 @@ public class AlterTrigger extends ManipTrigger
 			isWarnOnLimit = null;
 
 		condition = (String) with.get(ParseStr.S_CONDITION);
+		if (condition == null)
+			condition = t.getCondition(sysEnv);
 
 		maxRetry = (Integer) with.get(ParseStr.S_SUBMITCOUNT);
 		if(maxRetry != null) {
