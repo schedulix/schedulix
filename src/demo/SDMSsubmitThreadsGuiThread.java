@@ -291,7 +291,11 @@ public class SDMSsubmitThreadsGuiThread extends Thread
 					} catch (InterruptedException e) { }
 					done = true;
 				} else {
-					int d = SDMSpopup.rndConf(SDMSsubmitThreads.delay);
+					int d;
+					if (SDMSsubmitThreads.delay.equals(""))
+						d = 0;
+					else
+						d = SDMSpopup.rndConf(SDMSsubmitThreads.delay);
 					if (d > 0) {
 						status.setText("Thread " + cntSubmitted + " submitted, Waiting " + d + " seconds...");
 						display.timerExec(d * 1000, this);
