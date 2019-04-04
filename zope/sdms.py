@@ -35,6 +35,7 @@ import os
 import locale
 from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
+import copy
 
 try:
 	import ldap
@@ -59,6 +60,22 @@ try:
 except:
 	pass
 	# print "Warning: M2Crypto not installed, SSL not available"
+
+try:
+	import customcrypt
+	have_customcrypt = True
+except:
+	have_customcrypt = False
+
+try:
+	import requests
+except:
+	pass
+
+try:
+	import urllib
+except:
+	pass
 
 lock = threading.Lock()
 socketCache = {}
@@ -493,7 +510,7 @@ def createSsoUser(server, userName, context = None):
 	return True
 
 def printCommand(command):
-	command = re.sub(r"([Pp][Aa][Ss][Ss][Ww][Oo][Rr]['Dd] *= *')[^']*'", r"\1******'", command)
+	command = re.sub(r"([Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]'* *= *')[^']*'", r"\1******'", command)
 	print command
 
 #
@@ -1060,7 +1077,10 @@ def readDoc(index):
 
 def json_dumps(o):
 	if have_json:
-		return json.dumps(o)
+		try:
+			return json.dumps(o)
+		except:
+			return json.dumps(o, ensure_ascii=False)
 	else:
 		return '{ "ERROR" : { "ERRORCODE" : "WSI-0001", "ERRORMESSAGE" : "Web Service not available" }}'
 
@@ -1102,3 +1122,31 @@ def translate(context, text, lang):
 		return translations[text][lang]
 	except:
 		return text
+
+def do_encrypt(s):
+    if have_customcrypt:
+        return encrypt(s)
+    else:
+        return s
+
+def do_decrypt(s):
+    if have_customcrypt:
+        return decrypt(s)
+    else:
+        return s
+
+def deepcopy(dict):
+	return copy.deepcopy(dict)
+
+def getLog(url):
+        try:
+                r = requests.get(url)
+                return r.text
+        except: 
+                return 'Error retrieving ' + url
+                
+def urlEncode(s):
+        return urllib.quote(s)
+
+def reMatch(pattern, string):
+	return re.match(pattern, string)
