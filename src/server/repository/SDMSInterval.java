@@ -40,8 +40,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	implements SDMSOwnedObject
 {
 
-	public final static String __version = "SDMSInterval $Revision: 2.37.2.1 $ / @(#) $Id: SDMSInterval.java,v 2.37.2.1 2013/03/14 10:25:19 ronald Exp $";
-
 	public static final int UNINITIALIZED = -1;
 	public static final int N_A = 0;
 
@@ -53,7 +51,9 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 	private Vector filter = null;
 	private SDMSInterval embedFilter = null;
-	private boolean seenDriver = false;
+
+	private GntdCache gntdCache = null;
+	private GntdCache fltrCache = null;
 
 	private Vector selectedBlocksPos = null;
 	private Vector selectedBlocksNeg = null;
@@ -106,7 +106,8 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		filter = null;
 		embedFilter = null;
-		seenDriver = false;
+		gntdCache = null;
+		fltrCache = null;
 
 		selectedBlocksPos = null;
 		selectedBlocksNeg = null;
@@ -143,6 +144,8 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	private void initialize(SystemEnvironment sysEnv, TimeZone tz, int indent)
 		throws SDMSException
 	{
+		gntdCache = new GntdCache();
+		fltrCache = new GntdCache();
 		Vector v = SDMSIntervalHierarchyTable.idx_parentId.getVector(sysEnv, getId(sysEnv));
 		filter = new Vector();
 		for (int i = 0; i < v.size(); ++i) {
@@ -152,8 +155,19 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		initSelection(sysEnv, indent + 1);
 		initBaseAndDuration(sysEnv, indent + 1);
 		initLimits(sysEnv, tz);
-		initEmbeddedInterval(sysEnv);
+		initEmbeddedInterval(sysEnv, tz, indent + 1);
 		initDispatcher(sysEnv);
+	}
+
+	private void restoreState(gntd val)
+	{
+		blockState.copyFrom(val.bs);
+		selBlPos = val.selBlPos;
+		selBlNeg = val.selBlNeg;
+		prevCeilGc = (val.prevCeilGc == null ? null : (GregorianCalendar) (val.prevCeilGc.clone()));
+		ceilGc = (val.ceilGc == null ? null : (GregorianCalendar) (val.ceilGc.clone()));
+		floorGc = (val.floorGc == null ? null : (GregorianCalendar) (val.floorGc.clone()));
+		nextFloorGc = (val.nextFloorGc == null ? null : (GregorianCalendar) (val.nextFloorGc.clone()));
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
@@ -205,113 +219,144 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		return gc.getTimeInMillis();
 	}
 
-	public Long getNextTriggerDate(SystemEnvironment sysEnv, Long minDate, long horizon, TimeZone tz, boolean p_seenDriver)
+	public Long getNextTriggerDate(SystemEnvironment sysEnv, Long minDate, long horizon, TimeZone tz, boolean mode)
 	throws SDMSException
 	{
-		return getNextTriggerDate(sysEnv, minDate, horizon, tz, p_seenDriver, 0);
+		return getNextTriggerDate(sysEnv, minDate, horizon, tz, mode, 0);
 	}
 
-	public Long getNextTriggerDate(SystemEnvironment sysEnv, Long minDate, long horizon, TimeZone tz, boolean p_seenDriver, int indent)
+	public Long getNextTriggerDate(SystemEnvironment sysEnv, Long minDate, long horizon, TimeZone tz, boolean mode, int indent)
 	throws SDMSException
 	{
-		if (p_seenDriver) {
-			this.seenDriver = true;
+		if (filter == null) {
+			initialize(sysEnv, tz, indent + 1);
+		}
+		gntd result = gntdCache.get(minDate, horizon, tz);
+		if (result != null) {
+			restoreState(result);
+			return result.retVal;
 		}
 
 		if (minDate == null) return null;
+
 		long lMinDate = minDate.longValue();
 		if (startTime > lMinDate) {
 			lMinDate = startTime;
 		}
 		if (horizon == 0)
 			horizon = getHorizon(sysEnv, tz);
-		if (filter == null) {
-			initialize(sysEnv, tz, indent + 1);
-		}
 		if (dispatchRules != null) {
-			return getNextDispatchTriggerDate(sysEnv, lMinDate, horizon, tz, indent + 1);
+			Long dispTD = getNextDispatchTriggerDate(sysEnv, lMinDate, horizon, tz, mode, indent + 1);
+			gntdCache.add(new gntd(minDate, horizon, tz, blockState, dispTD, selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, mode));
+			return dispTD;
 		}
-		if (!seek(sysEnv, lMinDate, horizon, tz, DRIVER, indent + 1)) {
+		if (!seek(sysEnv, lMinDate, horizon, tz, mode, indent + 1)) {
+			gntdCache.add(new gntd(minDate, horizon, tz, blockState, null, selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, mode));
 			return null;
 		}
-		if (blockState.blockStart < lMinDate) {
+		if (blockState.blockStart < lMinDate && (mode == DRIVER)) {
 			if (blockState.blockEnd == Long.MAX_VALUE) {
+				gntdCache.add(new gntd(minDate, horizon, tz, blockState, null, selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, mode));
 				return null;
 			}
-			if (!seek(sysEnv, blockState.blockEnd + 1, horizon, tz, DRIVER, indent + 1)) {
+			if (!seek(sysEnv, blockState.blockEnd + 1, horizon, tz, mode, indent + 1)) {
+				gntdCache.add(new gntd(minDate, horizon, tz, blockState, null, selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, mode));
 				return null;
 			}
 		}
 
+		gntdCache.add(new gntd(minDate, horizon, tz, blockState, new Long(blockState.blockStart), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, mode));
 		return new Long(blockState.blockStart);
 	}
 
-	private Long getNextDispatchTriggerDate(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, int indent)
+	private Long getNextDispatchTriggerDate(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, boolean mode, int indent)
 	throws SDMSException
 	{
 		int drSize = dispatchRules.size();
-		long candidate = Long.MAX_VALUE;
-		long testCandidate;
-		long tcOk;
-		Long tmp;
 
 		if (minDate < startTime) minDate = startTime;
 
+		Long ntd[] = new Long[drSize];
+		long nextTriggerDate = Long.MAX_VALUE;
+		int best = Integer.MAX_VALUE;
+
 		for (int i = 0; i < drSize; ++i) {
-
-			testCandidate = minDate;
-			boolean found = false;
 			DispatchRule dr = dispatchRules.get(i);
-
-			while (!found && (testCandidate < candidate)) {
-				if (dr.isActive) {
-					tcOk = testCandidate;
-					do {
-						if (dr.fltInterval != null) {
-							tmp = dr.fltInterval.getNextTriggerDate(sysEnv, new Long(tcOk), horizon, tz, seenDriver, indent + 1);
-							testCandidate = (tmp == null ? Long.MAX_VALUE : tmp.longValue());
-							blockState.copyFrom(dr.fltInterval.blockState);
-						}
-						if (dr.selInterval != null) {
-							tcOk = dr.selInterval.filter(sysEnv, testCandidate, horizon, tz, seenDriver, indent + 1);
-						} else
-							tcOk = testCandidate;
-					} while ((tcOk < Long.MAX_VALUE) && (testCandidate < tcOk) && (testCandidate < candidate));
+			Long tmp;
+			if (dr.isActive) {
+				if (dr.fltInterval != null) {
+					tmp = dr.fltInterval.getNextTriggerDate(sysEnv, minDate, horizon, tz, mode, indent + 1);
 				} else {
-					tcOk = Long.MAX_VALUE;
-					testCandidate = Long.MAX_VALUE;
+					tmp = new Long(minDate);
 				}
+				if (best == Integer.MAX_VALUE || (tmp != null && tmp < ntd[best])) {
+					best = i;
+				}
+			} else {
+				tmp = null;
+			}
+			ntd[i] = (tmp == null ? Long.MAX_VALUE : (tmp < minDate ? minDate : tmp));
 
-				found = true;
-				if (tcOk == Long.MAX_VALUE)
-					testCandidate = Long.MAX_VALUE;
-				if ((tcOk < Long.MAX_VALUE) && (testCandidate < candidate)) {
-					for (int j = i - 1; j >= 0; --j) {
-						if (dispatchRules.get(j).selInterval != null) {
-							tcOk = dispatchRules.get(j).selInterval.filter(sysEnv, testCandidate, horizon, tz, seenDriver, indent + 1);
-						} else {
-							tcOk = testCandidate;
+		}
+		while (true) {
+			if (ntd[best] > horizon) {
+				return null;
+			}
+			for (int i = 0; i <= best ; ++i) {
+				DispatchRule dr = dispatchRules.get(i);
+				Long tmp;
+				if (dr.selInterval != null) {
+					tmp = dr.selInterval.filter(sysEnv, ntd[best].longValue(), horizon, tz, indent + 1);
+				} else {
+					tmp = ntd[best];
+				}
+				if (tmp <= ntd[best]) {
+					if (i == best) {
+						SDMSInterval bestFlt = dispatchRules.get(best).fltInterval;
+						if (bestFlt != null) {
+							blockState.copyFrom(bestFlt.blockState);
+							for (int j = 0; j < drSize; ++j) {
+								if (ntd[j] > ntd[best] && ntd[j] < blockState.blockEnd) {
+									blockState.blockEnd = ntd[j] - 1;
+								}
+							}
+						} else {  }
+						return ntd[best];
+					} else {
+						DispatchRule warBest = dispatchRules.get(best);
+						Long bestTmp = 0L;
+						if (warBest.fltInterval != null) {
+							bestTmp = warBest.fltInterval.getNextTriggerDate(sysEnv, ntd[best] + 1, horizon, tz, mode, indent + 1);
+							ntd[best] = (bestTmp == null ? Long.MAX_VALUE : bestTmp);
+						} else {  }
+						for (int j = 0; j < drSize; ++j) {
+							if (ntd[j] < bestTmp) {
+								best = j;
+								bestTmp = ntd[j];
+							}
 						}
-						if (tcOk <= testCandidate) {
-							found = false;
-							testCandidate++;
-							break;
+					}
+					break;
+				} else {
+					if (i == best) {
+						if (dr.fltInterval != null) {
+							tmp = dr.fltInterval.getNextTriggerDate(sysEnv, dr.fltInterval.blockState.blockEnd + 1, horizon, tz, mode, indent + 1);
+							ntd[best] = (tmp == null ? Long.MAX_VALUE : tmp);
+						} else {
+						}
+						for (int j = 0; j < drSize; ++j) {
+							if (ntd[j] < tmp) {
+								best = j;
+								tmp = ntd[j];
+							}
 						}
 					}
 				}
-				if ((testCandidate < candidate) && found)
-					candidate = testCandidate;
 			}
 		}
-
-		if (candidate > endTime) candidate = Long.MAX_VALUE;
-
-		if (candidate == Long.MAX_VALUE)
-			return null;
-		return new Long(candidate);
 	}
 
-	private boolean advanceBlock(SystemEnvironment sysEnv, long horizon, TimeZone tz, int indent)
+	private boolean advanceBlock(SystemEnvironment sysEnv, long horizon, TimeZone tz, boolean mode, int indent)
 		throws SDMSException
 	{
 		if (Thread.currentThread().isInterrupted()) {
@@ -331,18 +376,45 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
 			gc.setTimeZone(tz);
 
+			long tmp = Long.MAX_VALUE;
 			if (embeddedInterval != null) {
-				if (embeddedInterval.getNextTriggerDate(sysEnv, blockState.blockEnd + 1, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz, seenDriver, indent + 1) == null) {
-					return false;
+				long checkDate = blockState.blockEnd;
+				if (checkDate < Long.MAX_VALUE) checkDate = checkDate + 1;
+				Long tmp2 = null;
+				if (mode == FILTER) {
+					tmp = embeddedInterval.filter(sysEnv, checkDate, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz, indent + 1);
+					if (tmp > checkDate) {
+						blockState.blockStart = tmp;
+						tmp2 = embeddedInterval.getNextTriggerDate(sysEnv, blockState.blockStart, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz, DRIVER, indent + 1);
+						if (tmp2 == null) {
+							blockState.blockEnd = blockState.baseEnd;
+						} else {
+							blockState.blockEnd = embeddedInterval.blockState.blockEnd;
+						}
+					} else {
+						blockState.blockStart = checkDate;
+						blockState.blockEnd = embeddedInterval.blockState.blockEnd;
+					}
+					tmp2 = blockState.blockEnd;
+				} else {
+					if (embeddedInterval.getNextTriggerDate(sysEnv, checkDate, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz, DRIVER, indent + 1) == null) {
+						return false;
+					}
 				}
-				blockState.blockStart = embeddedInterval.blockState.blockStart;
-				blockState.blockEnd = embeddedInterval.blockState.blockEnd;
+
+				if (mode == DRIVER) {
+					blockState.blockStart = embeddedInterval.blockState.blockStart;
+					blockState.blockEnd = embeddedInterval.blockState.blockEnd;
+				}
 				if (blockState.blockStart > blockState.baseEnd) {
 					blockState.baseStart = sync(sysEnv, blockState.blockStart, tz);
 					gc.setTimeInMillis(blockState.baseStart);
 					gc.add(gcBaseInterval, baseMultiplier);
 					blockState.baseEnd = gc.getTimeInMillis() - 1;
 					blockState.blockIdx = 0;
+					if (blockState.blockEnd < blockState.blockStart) {
+						blockState.blockEnd = tmp2;
+					}
 				}
 			} else {
 				blockState.blockStart = blockState.blockEnd + 1;
@@ -391,13 +463,15 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 			blockState.blockIdx++;
 
-			if (blockState.blockStart >= endTime) return false;
+			if (blockState.blockStart >= endTime) {
+				return false;
+			}
 
 			return true;
 		}
 	}
 
-	private boolean seekBlock(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, int indent)
+	private boolean seekBlock(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, boolean mode, int indent)
 		throws SDMSException
 	{
 		GregorianCalendar gc;
@@ -441,8 +515,12 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				gc.add(gcDurationInterval, durationMultiplier);
 				blockState.blockEnd = gc.getTimeInMillis() - 1;
 			} else {
-				if (embeddedInterval.getNextTriggerDate(sysEnv, blockState.baseStart, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz, seenDriver, indent + 1) == null) {
-					return false;
+				if (mode == FILTER) {
+					long tmp = embeddedInterval.filter(sysEnv, blockState.baseStart, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz, indent + 1);
+				} else {
+					if (embeddedInterval.getNextTriggerDate(sysEnv, blockState.baseStart, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz, DRIVER, indent + 1) == null) {
+						return false;
+					}
 				}
 				blockState.blockStart = embeddedInterval.blockState.blockStart;
 				blockState.blockEnd = embeddedInterval.blockState.blockEnd;
@@ -460,18 +538,20 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		} else {
 			blockState.blockStart = blockState.baseStart;
 			blockState.blockEnd = getStartingPoint(sysEnv, minDate, tz, indent + 1);
-			if (!advanceBlock(sysEnv, horizon, tz, indent + 1)) return false;
+			if (!advanceBlock(sysEnv, horizon, tz, mode, indent + 1)) {
+				return false;
+			}
 		}
 
 		while (blockState.blockEnd <= minDate && blockState.blockStart < endTime && blockState.blockStart < horizon) {
-			if (!advanceBlock(sysEnv, horizon, tz, indent + 1)) return false;
+			if (!advanceBlock(sysEnv, horizon, tz, mode, indent + 1)) return false;
 		}
 		if (blockState.blockStart >= endTime) return false;
 
 		return true;
 	}
 
-	private boolean seek(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, boolean isFilter, int indent)
+	private boolean seek(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, boolean mode, int indent)
 		throws SDMSException
 	{
 		if (filter == null) {
@@ -481,71 +561,96 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		final int filterSize = filter.size();
 		while(true) {
 			long minNext = Long.MAX_VALUE;
-			if (!seekLocal(sysEnv, minDate, horizon, tz, indent + 1)) {
+			if (!seekLocal(sysEnv, minDate, horizon, tz, mode, indent + 1)) {
 				return false;
 			}
-			if ((filterSize == 0) && (embedFilter == null)) {
+			if ((filterSize == 0) && (embeddedInterval == null)) {
 				return true;
 			}
 
-			long checkDate = isFilter ? (minDate < blockState.blockStart ? blockState.blockStart : minDate) : blockState.blockStart;
+			long checkDate = (mode == FILTER) ? (minDate < blockState.blockStart ? blockState.blockStart : minDate) : blockState.blockStart;
 			long next;
 
-			if (embedFilter != null) {
-				next = embedFilter.filter(sysEnv, checkDate, horizon, tz, seenDriver, indent + 1);
+			long maxBlockEnd = blockState.blockEnd;
+			if (embeddedInterval != null) {
+				next = embeddedInterval.filter(sysEnv, checkDate, horizon, tz, indent + 1);
+				if (maxBlockEnd > embeddedInterval.blockState.blockEnd)
+					maxBlockEnd = embeddedInterval.blockState.blockEnd;
 			} else {
 				next = checkDate;
 			}
 			if (next <= checkDate && next != Long.MAX_VALUE) {
 				if (filterSize == 0) {
-					if (isFilter) blockState.blockStart = checkDate;
+					if (mode == FILTER) {
+						blockState.blockStart = checkDate;
+						blockState.blockEnd = maxBlockEnd;
+					}
 					return true;
 				}
+				boolean ok = false;
 				for (int i = 0; i < filterSize; ++i) {
 					SDMSInterval f = (SDMSInterval) filter.get(i);
-					next = f.filter(sysEnv, checkDate, horizon, tz, seenDriver, indent + 1);
+					next = f.filter(sysEnv, checkDate, horizon, tz, indent + 1);
 					if (next != Long.MAX_VALUE) {
 						if (next <= checkDate) {
-							if (isFilter) blockState.blockStart = checkDate;
-							return true;
+							if (mode == FILTER) {
+								blockState.blockStart = checkDate;
+								blockState.blockEnd = f.blockState.blockEnd;
+							}
+							if (blockState.blockEnd > maxBlockEnd) {
+								blockState.blockEnd = maxBlockEnd;
+							}
+							maxBlockEnd = blockState.blockEnd;
+							ok = true;
 						}
 						if (minNext > next) minNext = next;
 					}
 				}
+				if (ok) {
+					return true;
+				}
 			} else {
 				if (minNext > next) minNext = next;
 			}
-			if (minNext == Long.MAX_VALUE || (!isFilter && (blockState.blockEnd == Long.MAX_VALUE))) {
+			if (minNext == Long.MAX_VALUE || ((mode == DRIVER) && (blockState.blockEnd == Long.MAX_VALUE))) {
 				return false;
 			}
-			if (isFilter)
+			if (mode == FILTER)
 				minDate = minNext;
 			else
 				minDate = blockState.blockEnd >= minNext ? blockState.blockEnd + 1 : minNext;
 		}
 	}
 
-	public long filter(SystemEnvironment sysEnv, long checkDate, long horizon, TimeZone tz, boolean p_seenDriver, int indent)
+	public long filter(SystemEnvironment sysEnv, long checkDate, long horizon, TimeZone tz, int indent)
 		throws SDMSException
 	{
-		if (p_seenDriver) {
-			this.seenDriver = true;
-		}
 
 		if (filter == null) {
 			initialize(sysEnv, tz, indent + 1);
 		}
+		Long lCheckDate = new Long(checkDate);
+
+		gntd result = fltrCache.get(lCheckDate, horizon, tz);
+		if (result != null) {
+			restoreState(result);
+			return result.retVal.longValue();
+		}
 
 		if (dispatchRules != null) {
 			long tmp = dispatchFilter(sysEnv, checkDate, horizon, tz, indent + 1);
+			fltrCache.add(new gntd(lCheckDate, horizon, tz, blockState, new Long(tmp), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, FILTER));
 			return tmp;
 		}
 		if(!seek(sysEnv, checkDate, horizon, tz, FILTER, indent + 1)) {
+			fltrCache.add(new gntd(lCheckDate, horizon, tz, blockState, new Long(Long.MAX_VALUE), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, FILTER));
 			return Long.MAX_VALUE;
 		}
 		if (checkDate < startTime && blockState.blockStart < startTime) {
+			fltrCache.add(new gntd(lCheckDate, horizon, tz, blockState, new Long(startTime), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, FILTER));
 			return startTime;
 		}
+		fltrCache.add(new gntd(lCheckDate, horizon, tz, blockState, new Long(blockState.blockStart), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, FILTER));
 		return blockState.blockStart;
 	}
 
@@ -554,34 +659,53 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	{
 		long blockStart;
 		long selBlockStart;
+		BlockState selBs[] = new BlockState[dispatchRules.size()];
+
+		if (checkDate < startTime) {
+			return startTime;
+		}
 		for (int i = 0; i < dispatchRules.size(); ++i) {
 			DispatchRule dr = dispatchRules.get(i);
-			if (dr.selInterval == null)
+			if (dr.selInterval == null) {
 				selBlockStart = 0;
-			else
-				selBlockStart = dr.selInterval.filter(sysEnv, checkDate, horizon, tz, true, indent + 1);
+				selBs[i] = new BlockState();
+				selBs[i].baseStart = 0;
+				selBs[i].baseEnd = Long.MAX_VALUE;
+				selBs[i].blockStart = 0;
+				selBs[i].blockEnd = Long.MAX_VALUE;
+			} else {
+				selBlockStart = dr.selInterval.filter(sysEnv, checkDate, horizon, tz, indent + 1);
+				selBs[i] = new BlockState(dr.selInterval.blockState);
+			}
 			if (selBlockStart <= checkDate) {
 				if (dr.isActive) {
-					blockStart = dr.fltInterval.filter(sysEnv, checkDate, horizon, tz, seenDriver, indent + 1);
+					blockStart = dr.fltInterval.filter(sysEnv, checkDate, horizon, tz, indent + 1);
 					blockState.copyFrom(dr.fltInterval.blockState);
 					if (blockStart <= checkDate) {
-						if (checkDate < startTime) {
-							return startTime;
+						long blockEnd = blockState.blockEnd;
+						if (selBs[i].blockEnd < blockEnd)
+							blockEnd = selBs[i].blockEnd;
+						for (int j = i - 1; j >= 0; --j) {
+							if (selBs[j].blockStart < blockEnd && selBs[j].blockStart > blockStart)
+								blockEnd = selBs[j].blockStart;
 						}
+						blockState.blockEnd = blockEnd;
 						return blockStart;
 					}
 				} else {
 					blockStart = Long.MAX_VALUE;
+					blockState.copyFrom(dr.selInterval.blockState);
 				}
-
-				if (dr.selInterval != null) {
-					long tmp = dr.selInterval.filter(sysEnv, blockStart, horizon, tz, true, indent + 1);
-					if (tmp == selBlockStart) return blockStart;
-				} else {
-					return blockStart;
+				long nextBlockStart = dr.selInterval.blockState.blockEnd;
+				if (blockStart < nextBlockStart) {
+					nextBlockStart = blockStart;
 				}
-				Long ntd = getNextTriggerDate(sysEnv, checkDate, horizon, tz, seenDriver, indent + 1);
-				return (ntd == null ? Long.MAX_VALUE : ntd);
+				for (int j = i - 1; j >= 0; j --) {
+					if (selBs[j].blockStart < nextBlockStart) {
+						nextBlockStart = selBs[j].blockStart;
+					}
+				}
+				return nextBlockStart;
 			}
 		}
 		return Long.MAX_VALUE;
@@ -797,13 +921,13 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		return result;
 	}
 
-	private boolean seekLocal(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, int indent)
+	private boolean seekLocal(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, boolean mode, int indent)
 		throws SDMSException
 	{
 		long currentBaseStart = 0;
 		long currentBaseEnd = Long.MAX_VALUE;
 
-		if (!seekBlock(sysEnv, minDate, horizon, tz, indent + 1)) {
+		if (!seekBlock(sysEnv, minDate, horizon, tz, mode, indent + 1)) {
 			return false;
 		}
 
@@ -840,7 +964,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				}
 				startSeqNo++;
 			}
-			if(!advanceBlock(sysEnv, horizon, tz, indent + 1) || blockState.blockStart > horizon) {
+			if(!advanceBlock(sysEnv, horizon, tz, mode, indent + 1) || blockState.blockStart > horizon) {
 				int fifoSize = fifo.size();
 				for (int i = 0; i < fifoSize; ++i) {
 					BlockState bs = (BlockState) fifo.get(i);
@@ -978,9 +1102,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 		if (selectedRanges.size() > 0) {
 			rangeSelected = true;
-			if (!(negSelected || posSelected)) {
-				seenDriver = true;
-			}
 		}
 	}
 
@@ -1052,10 +1173,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		if (durationMultiplier == 0 && baseMultiplier == 0)
 			isInfinite = true;
 		else {
-			if (durationMultiplier != 0) {
-				seenDriver = true;
-			}
-
 			if (durationMultiplier == 0) {
 				durationMultiplier = baseMultiplier;
 				gcDurationInterval = gcBaseInterval;
@@ -1100,16 +1217,15 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 	}
 
-	private void initEmbeddedInterval(SystemEnvironment sysEnv)
+	private void initEmbeddedInterval(SystemEnvironment sysEnv, TimeZone tz, int indent)
 		throws SDMSException
 	{
 		Long embeddedIntervalId = getEmbeddedIntervalId(sysEnv);
+
 		if (embeddedIntervalId != null) {
-			if (posSelected || negSelected || !seenDriver) {
-				embeddedInterval = SDMSIntervalTable.getObject(sysEnv, embeddedIntervalId);
-			} else {
-				embedFilter = SDMSIntervalTable.getObject(sysEnv, embeddedIntervalId);
-			}
+			SDMSInterval emb = SDMSIntervalTable.getObject(sysEnv, embeddedIntervalId);
+			embeddedInterval = emb;
+			embedFilter = null;
 		}
 	}
 
@@ -1126,6 +1242,8 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				if (dr.selInterval == null)
 					break;
 			}
+		} else {
+			dispatchRules = null;
 		}
 	}
 
@@ -1605,6 +1723,15 @@ class BlockState implements Cloneable
 			indent + "\tblockIdx  : " + blockIdx + "\n" +
 			indent + "]";
 	}
+
+	public boolean equals(BlockState other)
+	{
+		return	((baseStart == other.baseStart)	&&
+		         (baseEnd == other.baseEnd)	&&
+		         (blockStart == other.blockStart) &&
+		         (blockEnd == other.blockEnd)	&&
+		         (blockIdx == other.blockIdx));
+	}
 }
 
 class DispatchRule
@@ -1668,3 +1795,171 @@ class DispatchRule
 		        ", isEnabled = " + isEnabled;
 	}
 }
+
+class gntd
+{
+	Long minDate;
+	long horizon;
+	TimeZone tz;
+	BlockState bs;
+	Long retVal;
+	int selBlPos;
+	int selBlNeg;
+	GregorianCalendar prevCeilGc;
+	GregorianCalendar ceilGc;
+	GregorianCalendar floorGc;
+	GregorianCalendar nextFloorGc;
+	boolean mode;
+
+	public gntd(Long p_minDate, long p_horizon, TimeZone p_tz, BlockState p_bs, Long p_retVal, int p_selBlPos, int p_selBlNeg,
+	            GregorianCalendar p_prevCeilGc, GregorianCalendar p_ceilGc, GregorianCalendar p_floorGc, GregorianCalendar p_nextFloorGc, boolean mode)
+	{
+		minDate = p_minDate;
+		horizon = p_horizon;
+		tz = p_tz;
+		bs = (p_bs == null ? null : new BlockState(p_bs));
+		retVal = p_retVal;
+		selBlPos = p_selBlPos;
+		selBlNeg = p_selBlNeg;
+		prevCeilGc = (p_prevCeilGc == null ? null :(GregorianCalendar) (p_prevCeilGc.clone()));
+		ceilGc = (p_ceilGc == null ? null : (GregorianCalendar) (p_ceilGc.clone()));
+		floorGc = (p_floorGc == null ? null : (GregorianCalendar) (p_floorGc.clone()));
+		nextFloorGc = (p_nextFloorGc == null ? null : (GregorianCalendar) (p_nextFloorGc.clone()));
+		mode = mode;
+	}
+
+	public boolean equals(gntd other)
+	{
+		return tz.equals(other.tz) && (horizon == other.horizon) && minDate.equals(other.minDate);
+	}
+}
+
+class CacheKey
+{
+	Long minDate;
+	long horizon;
+	TimeZone tz;
+
+	public CacheKey(Long p_minDate, long p_horizon, TimeZone p_tz)
+	{
+		minDate = p_minDate;
+		horizon = p_horizon;
+		tz = p_tz;
+	}
+}
+
+class GntdCache
+{
+	private static final int ROUND_ROBIN = 0;
+	private static final int HASH = 1;
+	private static final int LRU = 2;
+	private static final int NOCACHE = 99;
+
+	private static final int cacheStrategy = NOCACHE;
+
+	private static final int maxEntries = 40;
+	Vector<gntd> cache = null;
+
+	HashMap<CacheKey, gntd> hashCache = null;
+
+	public GntdCache()
+	{
+		if (cacheStrategy == ROUND_ROBIN || cacheStrategy == LRU)
+			cache = new Vector<gntd>();
+		if (cacheStrategy == HASH)
+			hashCache = new HashMap<CacheKey, gntd>();
+	}
+
+	public gntd get(Long p_minDate, long p_horizon, TimeZone p_tz)
+	{
+		gntd result = null;
+
+		if (cacheStrategy == NOCACHE)
+			return null;
+		if (cacheStrategy == ROUND_ROBIN) {
+			gntd tstObj = new gntd(p_minDate, p_horizon, p_tz, null, null, 0, 0, null, null, null, null, false);
+			Iterator<gntd> i = cache.iterator();
+			while (i.hasNext()) {
+				gntd cacheObj = i.next();
+				if (cacheObj.equals(tstObj)) {
+					result = cacheObj;
+					break;
+				}
+			}
+		}
+		if (cacheStrategy == LRU) {
+			gntd tstObj = new gntd(p_minDate, p_horizon, p_tz, null, null, 0, 0, null, null, null, null, false);
+			for (int i = cache.size() - 1; i >= 0; --i) {
+				gntd cacheObj = cache.get(i);
+				if (cacheObj.equals(tstObj)) {
+					cache.remove(i);
+					cache.add(cacheObj);
+					result = cacheObj;
+					break;
+				}
+			}
+		}
+		if (cacheStrategy == HASH) {
+			CacheKey key = new CacheKey (p_minDate, p_horizon, p_tz);
+			result = hashCache.get(key);
+		}
+
+		return result;
+	}
+
+	private gntd privateGet(gntd key)
+	{
+		Iterator<gntd> i = cache.iterator();
+		while (i.hasNext()) {
+			gntd cacheObj = i.next();
+			if (cacheObj.equals(key)) return cacheObj;
+		}
+		return null;
+	}
+
+	public void add(gntd result)
+	{
+		gntd old = null;
+		CacheKey key = null;
+
+		if (cacheStrategy == NOCACHE)
+			return;
+		if (cacheStrategy == ROUND_ROBIN || cacheStrategy == LRU) {
+			old = privateGet(result);
+		}
+		if (cacheStrategy == HASH) {
+			key = new CacheKey(result.minDate, result.horizon, result.tz);
+			old = hashCache.get(key);
+		}
+		if (old != null) {
+			if ((result.retVal != null && !result.retVal.equals(old.retVal)) ||
+			    (result.retVal == null && old.retVal != null) ||
+			    (!result.bs.equals(old.bs)) ||
+			    (result.selBlPos != old.selBlPos) ||
+			    (result.selBlNeg != old.selBlNeg) ||
+			    (result.prevCeilGc != null && !result.prevCeilGc.equals(old.prevCeilGc)) ||
+			    (result.ceilGc != null && !result.ceilGc.equals(old.ceilGc)) ||
+			    (result.floorGc != null && !result.floorGc.equals(old.floorGc)) ||
+			    (result.nextFloorGc != null && !result.nextFloorGc.equals(old.nextFloorGc)) ||
+			    (result.prevCeilGc == null && old.prevCeilGc != null) ||
+			    (result.ceilGc == null && old.ceilGc != null) ||
+			    (result.floorGc == null && old.floorGc != null) ||
+			    (result.nextFloorGc == null && old.nextFloorGc != null) ||
+			    (result.mode != old.mode)
+			   ) {
+				System.out.println ("Cache Diskrepanz");
+			}
+			return;
+		}
+
+		if (cacheStrategy == ROUND_ROBIN || cacheStrategy == LRU) {
+			while (cache.size() >= maxEntries)
+				cache.removeElementAt(0);
+			cache.add(result);
+		}
+		if (cacheStrategy == HASH) {
+			hashCache.put(key, result);
+		}
+	}
+}
+
