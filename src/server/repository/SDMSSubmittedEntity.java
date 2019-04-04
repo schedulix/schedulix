@@ -1729,7 +1729,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			SDMSInterval iVal = SDMSIntervalTable.getObject (sysEnv, intId, seVersion);
 			TimeZone tz = getEffectiveTimeZone(sysEnv);
 			Long submitTs = getSubmitTs(sysEnv);
-			Long nextTs = iVal.filter(sysEnv, submitTs, iVal.getHorizon(sysEnv, tz), tz, true, 0);
+			Long nextTs = iVal.filter(sysEnv, submitTs, iVal.getHorizon(sysEnv, tz), tz, 0);
 			if (nextTs > getSubmitTs(sysEnv)) {
 				disable = true;
 			}
@@ -2590,7 +2590,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (newState == CANCELLED) {
 			setFinalTs(sysEnv, ts);
 			int type = se.getType(sysEnv).intValue();
-			if (type != SDMSSchedulingEntity.BATCH) {
+			if (type != SDMSSchedulingEntity.BATCH && getFinishTs(sysEnv) == null) {
 				setFinishTs(sysEnv, ts);
 			}
 			setJobIsRestartable(sysEnv, Boolean.FALSE);
