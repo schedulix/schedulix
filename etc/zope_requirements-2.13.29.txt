@@ -30,8 +30,11 @@ ZConfig==2.9.3
 ZODB3==3.10.7
 ZServer==3.0
 ZopeUndo==2.12.0
+certifi>=2017.4.17
+chardet>=3.0.2,<3.1.0
 docutils==0.12
 filelock==3.0.10
+idna>=2.5,<2.9
 initgroups==2.13.0
 mechanize==0.2.5
 mr.developer==1.34
@@ -41,11 +44,13 @@ pytz==2017.2
 repoze.retry==1.2
 repoze.tm2==1.0
 repoze.who==2.0
+requests==2.21.0
 six==1.12.0
 tempstorage==2.12.2
 toml==0.10.0
 tox==3.7.0
 transaction==1.1.1
+urllib3>=1.21.1,<1.25
 z3c.checkversions==1.1
 zExceptions==2.13.0
 zLOG==2.11.2
