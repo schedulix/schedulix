@@ -12,10 +12,10 @@ All the progress will be twittered (https://twitter.com/schedulix).
 
 -------------------------------------------------------------------------------------------
 
-The last stable branch is v2.8
+The last stable branch is v2.9
 It can be obtained by doing a
 
-git clone https://github.com/schedulix/schedulix.git -b v2.8
+git clone https://github.com/schedulix/schedulix.git -b v2.9
 
 -------------------------------------------------------------------------------------------
 
