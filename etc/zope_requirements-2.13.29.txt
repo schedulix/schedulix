@@ -56,7 +56,7 @@ zExceptions==2.13.0
 zLOG==2.11.2
 zc.buildout==2.3.1
 zc.lockfile==1.0.2
-zc.recipe.egg==2.0.5
+zc.recipe.egg==2.0.5 --no-binary=zc.recipe.egg
 zc.recipe.testrunner==1.2.1
 zdaemon==2.0.7
 zope.annotation==3.5.0

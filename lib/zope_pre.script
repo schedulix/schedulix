@@ -15,7 +15,10 @@ if [ "$1" == "1" ]; then
 	retryctr=1
 	maxretry=10
 	while true; do
-		su schedulix -c "bin/pip install -r /opt/schedulix/schedulix/etc/zope_requirements-%{zope2version}.txt"
+		su schedulix -c "
+		bin/pip install --upgrade pip
+		bin/pip install zc.recipe.egg==2.0.5 --no-binary=zc.recipe.egg
+		bin/pip install -r /opt/schedulix/schedulix/etc/zope_requirements-%{zope2version}.txt"
 		ret=$?
 		if [ $ret != 0 ]; then
 			echo "Error during easy_install of Zope2 version %{zope2version}"
