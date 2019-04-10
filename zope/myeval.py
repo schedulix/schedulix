@@ -24,7 +24,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 def myeval(string, context = None):
-	if context == None:
-		return eval(string)
-	else:
-		return eval(string, { 'context' : context } )
+	try:
+		if context == None:
+			return eval(string)
+		else:
+			return eval(string, { 'context' : context } )
+	except:
+		string = string.replace('\xc2\xa0', '')
+		if context == None:
+			return eval(string)
+		else:
+			return eval(string, { 'context' : context } )
