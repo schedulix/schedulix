@@ -1039,6 +1039,11 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		sd = startDate.getTimeInMillis();
 		while (sd < targetDate) {
+			if (sd < 0) {
+				sd = Long.MAX_VALUE;
+				startDate.setTimeInMillis(sd);
+				return;
+			}
 			startDate.add(gcInterval, multiplier);
 			sd = startDate.getTimeInMillis();
 		}
