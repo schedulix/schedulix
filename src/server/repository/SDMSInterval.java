@@ -828,6 +828,9 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 			while (nextBlock.blockStart < date || prevBlock.blockEnd + 1 < date || prevBlock.blockEnd + 1 == nextBlock.blockStart) {
 				prevBlock = nextBlock;
+				if (prevBlock.blockEnd + 1 > date) {
+					date = prevBlock.blockEnd + 1;
+				}
 				nextBlock = getNextPositiveRange(sysEnv, prevBlock.blockEnd, tz);
 				if (nextBlock == null) {
 					if (prevBlock.blockEnd + 1 == date) {
