@@ -1066,8 +1066,14 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			if (!eDi.getDependentIdOrig(sysEnv).equals(dSmeId))
 				continue;
 			SDMSSubmittedEntity eSme = SDMSSubmittedEntityTable.getObject(sysEnv, dSmeId);
+			int eSmeState = eSme.getState(sysEnv);
+			if (eSmeState == FINAL || eSmeState == CANCELLED)
+				continue;
 			Long eSeVersion = eSme.getSeVersion(sysEnv);
 			SDMSDependencyDefinition dd = SDMSDependencyDefinitionTable.getObject(sysEnv, eDi.getDdId(sysEnv), eSeVersion);
+			int resolveMode = dd.getResolveMode(sysEnv).intValue();
+			if (resolveMode == SDMSDependencyDefinition.INTERNAL)
+				continue;
 			dependencyDefinitionList.add(new DependencyDefinitionListElement(eSeVersion, dd));
 		}
 
