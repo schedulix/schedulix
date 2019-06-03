@@ -389,13 +389,16 @@ public class DBCleanupThread extends SDMSThread
 			long maxFinalTs = System.currentTimeMillis() - sysEnv.dbPreserveTime;
 			if (master.finalTs <= maxFinalTs) {
 				if (processMaster(master.id)) {
+					doTrace(null, "removing master " + master.id, SEVERITY_DEBUG);
 					masterList.remove(0);
 					deleted = true;
 					mastersRemoved++;
 				} else {
+					doTrace(null, "processMasters failed, sleeping TX_RETRY_TIME before retry ...", SEVERITY_MESSAGE);
 					sleep(TX_RETRY_TIME);
 				}
 			} else {
+				doTrace(null, "First master to young detected, start sleeping for " + (master.finalTs - maxFinalTs)/1000 + " seconds", SEVERITY_DEBUG);
 				sleep(master.finalTs - maxFinalTs);
 			}
 		}
