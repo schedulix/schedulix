@@ -92,7 +92,7 @@ else
 	CNT=0
 	QUIET="--quiet"
 	while [ $CNT -lt 5 ]; do
-		wget --verbose --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_renameObjects?ids:list=SDMS&new_ids:list=SDMS_$TS"
+		wget $QUIET --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_renameObjects?ids:list=SDMS&new_ids:list=SDMS_$TS"
 		ret=$?
 		if [ $ret != 0 ]; then
 			echo "Error renaming SDMS folder"
