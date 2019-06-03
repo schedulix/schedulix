@@ -29,8 +29,13 @@ else
 	ECHO_FAILURE=echo
 fi
 
-HOSTNAME=`hostname | tr [a-z.-] [A-Z__]`
-
+#
+# There were some issues with the length of full qualified hostnames (too long)
+# This is why we now use the abbreviated hostname instead
+# In order to preserve the compatibility with previously created jobservers
+# we check both variants here
+HOSTNAME=`hostname -s | tr [a-z.-] [A-Z__]`
+ALTHOSTNAME=`hostname | tr [a-z.-] [A-Z__]`
 
 SELF=$(cd $(dirname $0); pwd -P)/$(basename $0)
 
@@ -43,6 +48,24 @@ case "${1:-''}" in
 	echo -n "Starting schedulix Enterprise Job Scheduling jobservers"
 	if [ -d /opt/schedulix/taskfiles/$HOSTNAME ]; then
 		cd /opt/schedulix/taskfiles/$HOSTNAME
+		for USR in *; do
+			if grep $USR /etc/passwd >/dev/null 2>&1; then
+				cd $USR;
+				for SVR in *; do
+					su - $USR -c "
+						[ -f \$HOME/.bashrc ] && . \$HOME/.bashrc;
+						if [ -f \$HOME/etc/$SVR.init ]; then 
+							. \$HOME/etc/$SVR.init;
+						fi
+						$BICSUITEHOME/bin/jobserver-run \$HOME/etc/$SVR.conf \$HOME/log/$SVR.out;
+					"
+				done
+				cd ..;
+			fi
+		done
+	fi
+	if [ -d /opt/schedulix/taskfiles/$ALTHOSTNAME ]; then
+		cd /opt/schedulix/taskfiles/$ALTHOSTNAME
 		for USR in *; do
 			if grep $USR /etc/passwd >/dev/null 2>&1; then
 				cd $USR;
@@ -82,6 +105,24 @@ case "${1:-''}" in
 			fi
 		done
 	fi
+	if [ -d /opt/schedulix/taskfiles/$ALTHOSTNAME ]; then
+		cd /opt/schedulix/taskfiles/$ALTHOSTNAME
+		for USR in *; do
+			if grep $USR /etc/passwd >/dev/null 2>&1; then
+				cd $USR;
+				for SVR in *; do
+					PNAME="~$USR/log/$SVR.out"
+					PNAME=`eval "ls $PNAME"`
+					if [ -n "$PNAME" -a -p "$PNAME" ]; then
+						if fuser -s $PNAME >/dev/null 2>&1; then
+							fuser -k $PNAME >/dev/null 2>&1;
+						fi
+					fi
+				done
+				cd ..;
+			fi
+		done
+	fi
 	$ECHO_SUCCESS
 	;;
 
@@ -97,6 +138,7 @@ case "${1:-''}" in
 	;;
 
   'status')
+	NOTFOUND=0
 	if [ -d /opt/schedulix/taskfiles/$HOSTNAME ]; then
 		cd /opt/schedulix/taskfiles/$HOSTNAME
 		for USR in *; do
@@ -115,6 +157,29 @@ case "${1:-''}" in
 			fi
 		done
 	else
+		NOTFOUND=`expr $NOTFOUND + 1`
+	fi
+	if [ -d /opt/schedulix/taskfiles/$ALTHOSTNAME ]; then
+		cd /opt/schedulix/taskfiles/$ALTHOSTNAME
+		for USR in *; do
+			if grep $USR /etc/passwd >/dev/null 2>&1; then
+				cd $USR;
+				for SVR in *; do
+					PNAME="~$USR/log/$SVR.out"
+					PNAME=`eval "ls $PNAME"`
+					if fuser -s $PNAME >/dev/null 2>&1; then
+						echo "GLOBAL.$ALTHOSTNAME.$USR.$SVR is up"
+					else
+						echo "GLOBAL.$ALTHOSTNAME.$USR.$SVR is down"
+					fi
+				done
+				cd ..;
+			fi
+		done
+	else
+		NOTFOUND=`expr $NOTFOUND + 1`
+	fi
+	if [ $NOTFOUND -ge 2 ]; then
 		echo "No installed jobservers found"
 	fi
   	;;
