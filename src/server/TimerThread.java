@@ -314,7 +314,7 @@ public class TimerThread
 		else {
 			scev.setNextActivityTime      (sysEnv, dateToDateTimeLong (trigDate));
 			scev.setNextActivityIsTrigger (sysEnv, Boolean.TRUE);
-			scev.updateCalendar(sysEnv, now, sce);
+			scev.updateCalendar(sysEnv, new TimerDate(trigDate.plus(-1)), sce);
 		}
 
 		long endTimeInMillis = new Date().getTime();
