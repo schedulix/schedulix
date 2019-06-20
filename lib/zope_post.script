@@ -107,7 +107,8 @@ else
 	CNT=0
 	QUIET="--quiet"
 	while [ $CNT -lt 5 ]; do
-		wget $QUIET --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_importObject?file=SDMS.zexp"
+		# Note: the last parameter "set_owner=" is filled with an empty string which evaluates to false in Python
+		wget $QUIET --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_importObject?file=SDMS.zexp&set_owner="
 		ret=$?
 		if [ $ret != 0 ]; then
 			echo "Error importing SDMS.zexp"
