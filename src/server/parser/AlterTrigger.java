@@ -427,6 +427,8 @@ public class AlterTrigger extends ManipTrigger
 				if (i == v.size()) throw new NotFoundException();
 			} else {
 				t = (SDMSTrigger) url.resolve(sysEnv);
+				if (t == null)
+					throw new NotFoundException(new SDMSMessage(sysEnv, "03906060937", "Couldn't resolve the trigger"));
 				fireId = t.getFireId(sysEnv);
 				fireType = t.getObjectType(sysEnv).intValue();
 
@@ -443,7 +445,7 @@ public class AlterTrigger extends ManipTrigger
 				}
 
 			}
-		} catch ( NotFoundException nfe) {
+		} catch (NotFoundException nfe) {
 			if(noerr) {
 				result.setFeedback(new SDMSMessage(sysEnv, "03311130107", "No Trigger altered"));
 				return;
