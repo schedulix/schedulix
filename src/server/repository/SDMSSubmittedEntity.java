@@ -1466,15 +1466,17 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				long actVersion = di.getSeVersion(sysEnv).longValue();
 				Long ddId = di.getDdId(sysEnv);
 				SDMSDependencyDefinition dd = SDMSDependencyDefinitionTable.getObject(sysEnv, ddId, actVersion);
-				SDMSSubmittedEntity sme = getExternalSubmittedEntity (sysEnv, dd);
-				if (sme == null) {
-					di.setState(sysEnv, SDMSDependencyInstance.DEFERRED);
-					di.setRequiredId(sysEnv, di.getRequiredSeId(sysEnv));
-				} else {
-					if (!sme.getId(sysEnv).equals(id)) {
-						di.setState(sysEnv, SDMSDependencyInstance.OPEN);
-						di.setRequiredId(sysEnv, sme.getId(sysEnv));
-						di.check(sysEnv, checkCache);
+				if (dd.getResolveMode(sysEnv) != SDMSDependencyDefinition.INTERNAL) {
+					SDMSSubmittedEntity sme = getExternalSubmittedEntity (sysEnv, dd);
+					if (sme == null) {
+						di.setState(sysEnv, SDMSDependencyInstance.DEFERRED);
+						di.setRequiredId(sysEnv, di.getRequiredSeId(sysEnv));
+					} else {
+						if (!sme.getId(sysEnv).equals(id)) {
+							di.setState(sysEnv, SDMSDependencyInstance.OPEN);
+							di.setRequiredId(sysEnv, sme.getId(sysEnv));
+							di.check(sysEnv, checkCache);
+						}
 					}
 				}
 			}
