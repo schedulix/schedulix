@@ -59,7 +59,7 @@ if [ "$1" == "1" ]; then
 		. ~/.bashrc;
 		cd $BICSUITEHOME/sql
 		createdb schedulixdb
-		psql -f pg/install.sql schedulixdb
+		psql -h 127.0.0.1 -f pg/install.sql schedulixdb
 		ret=$?
 		if [ $ret != 0 ]
 		then
@@ -68,7 +68,7 @@ if [ "$1" == "1" ]; then
 		fi
 		echo "create table schema_version (version char(10), release char(20));
 		      insert into schema_version (version, release) values ('"'"'%{version}'"'"', '"'"'%{release}'"'"');
-		" | psql schedulixdb
+		" | psql -h 127.0.0.1 schedulixdb
 	'
 
 	echo "Setting up /opt/schedulix/.sdmshrc"
@@ -116,7 +116,7 @@ else
 	# add the new one
 	echo "127.0.0.1:5432:schedulixdb:schedulix:$DBPASSWD" >> /opt/schedulix/.pgpass
 
-	su - schedulix -c 'echo -e "\\\\t on\nselect version from schema_version;" | psql -q schedulixdb | head -1 | sed "s/ //g"' > /tmp/ver.$$
+	su - schedulix -c 'echo -e "\\\\t on\nselect version from schema_version;" | psql -q -h 127.0.0.1 schedulixdb | head -1 | sed "s/ //g"' > /tmp/ver.$$
 	OLDVERSION=`cat /tmp/ver.$$`
 	rm -f /tmp/ver.$$
 	echo "currently installed: '$OLDVERSION', target: '%{version}'"
@@ -130,13 +130,13 @@ else
 		OLDVERSION=`basename $UPGRADESCRIPT .sql | sed 's/.*-to-//'`
 		echo "changing schema version to '$OLDVERSION' ..."
 		echo "executing $UPGRADESCRIPT ..."
-		su - schedulix -c "cd /opt/schedulix/schedulix-%{version}/sql/pg_gen; psql -f $UPGRADESCRIPT schedulixdb"
+		su - schedulix -c "cd /opt/schedulix/schedulix-%{version}/sql/pg_gen; psql -h 127.0.0.1 -f $UPGRADESCRIPT schedulixdb"
 	done
 	su - schedulix -c '
 		echo   "begin;
 			delete from schema_version;
 			insert into schema_version (version, release) values ('"'"'%{version}'"'"', '"'"'%{release}'"'"');
 			commit;
-		" | psql schedulixdb'
+		" | psql -h 127.0.0.1 schedulixdb'
 	service schedulix-server start
 fi

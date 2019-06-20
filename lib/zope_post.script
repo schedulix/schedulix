@@ -1,8 +1,10 @@
 echo "executing post zope -- %version-%release"
 if [ "$1" == "1" ]; then
 	echo "building zope instance"
+	ZOPEADMINUSER=sdmsadm
+	ZOPEADMINPASSWORD=sdmsadm
 	cd /opt/schedulix/software/Zope
-	su schedulix -c "bin/mkzopeinstance -d /opt/schedulix/schedulixweb -u sdmsadm:sdmsadm"
+	su schedulix -c "bin/mkzopeinstance -d /opt/schedulix/schedulixweb -u $ZOPEADMINUSER:$ZOPEADMINPASSWORD"
 	ret=$?
 	if [ $ret != 0 ]; then
 		echo "Error creating Zope instance for schedulix!web"
@@ -33,7 +35,7 @@ if [ "$1" == "1" ]; then
 	CNT=0
 	QUIET="--quiet"
 	while [ $CNT -lt 5 ]; do
-		wget $QUIET --user=sdmsadm --password=sdmsadm --output-document=/dev/null "http://localhost:8080/manage_importObject?file=SDMS.zexp"
+		wget $QUIET --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_importObject?file=SDMS.zexp"
 		ret=$?
 		if [ $ret != 0 ]; then
 			echo "Error importing SDMS.zexp"
@@ -46,14 +48,14 @@ if [ "$1" == "1" ]; then
 	done
 	rm -f cookies.txt
 
-	wget --quiet --user=sdmsadm --password=sdmsadm --output-document=/dev/null --keep-session-cookies --save-cookies cookies.txt "http://localhost:8080/SDMS/Install?manage_copyObjects:method=Copy&ids:list=User&ids:list=Custom"
+	wget --quiet --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null --keep-session-cookies --save-cookies cookies.txt "http://localhost:8080/SDMS/Install?manage_copyObjects:method=Copy&ids:list=User&ids:list=Custom"
 	ret=$?
 	if [ $ret != 0 ]; then
 		echo "Error copying User and Custom Zope template folders from Zope /SDMS/install"
 		exit 1
 	fi
 
-	wget --quiet --user=sdmsadm --password=sdmsadm --output-document=/dev/null --load-cookies cookies.txt "http://localhost:8080?manage_pasteObjects:method=Paste"
+	wget --quiet --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null --load-cookies cookies.txt "http://localhost:8080?manage_pasteObjects:method=Paste"
 	ret=$?
 	if [ $ret != 0 ]; then
 		echo "Error pasting User and Custom Zope folders into Zope"
@@ -90,7 +92,7 @@ else
 	CNT=0
 	QUIET="--quiet"
 	while [ $CNT -lt 5 ]; do
-		wget --verbose --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_renameObjects?ids:list=SDMS&new_ids:list=SDMS_$TS"
+		wget $QUIET --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_renameObjects?ids:list=SDMS&new_ids:list=SDMS_$TS"
 		ret=$?
 		if [ $ret != 0 ]; then
 			echo "Error renaming SDMS folder"
@@ -105,7 +107,8 @@ else
 	CNT=0
 	QUIET="--quiet"
 	while [ $CNT -lt 5 ]; do
-		wget $QUIET --user=sdmsadm --password=sdmsadm --output-document=/dev/null "http://localhost:8080/manage_importObject?file=SDMS.zexp"
+		# Note: the last parameter "set_owner=" is filled with an empty string which evaluates to false in Python
+		wget $QUIET --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_importObject?file=SDMS.zexp&set_owner="
 		ret=$?
 		if [ $ret != 0 ]; then
 			echo "Error importing SDMS.zexp"
