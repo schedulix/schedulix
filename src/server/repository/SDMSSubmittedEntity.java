@@ -1066,8 +1066,14 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			if (!eDi.getDependentIdOrig(sysEnv).equals(dSmeId))
 				continue;
 			SDMSSubmittedEntity eSme = SDMSSubmittedEntityTable.getObject(sysEnv, dSmeId);
+			int eSmeState = eSme.getState(sysEnv);
+			if (eSmeState == FINAL || eSmeState == CANCELLED)
+				continue;
 			Long eSeVersion = eSme.getSeVersion(sysEnv);
 			SDMSDependencyDefinition dd = SDMSDependencyDefinitionTable.getObject(sysEnv, eDi.getDdId(sysEnv), eSeVersion);
+			int resolveMode = dd.getResolveMode(sysEnv).intValue();
+			if (resolveMode == SDMSDependencyDefinition.INTERNAL)
+				continue;
 			dependencyDefinitionList.add(new DependencyDefinitionListElement(eSeVersion, dd));
 		}
 
@@ -1441,6 +1447,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		throws SDMSException
 	{
 		int s = getState(sysEnv).intValue();
+		boolean diDeleted = false;
+
 		if (s != SDMSSubmittedEntity.SUBMITTED &&
 		    s != SDMSSubmittedEntity.DEPENDENCY_WAIT &&
 		    s != SDMSSubmittedEntity.UNREACHABLE) {
@@ -1596,8 +1604,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				} else {
 					if (ue.unresolvedHandling == SDMSDependencyDefinition.SUSPEND)
 						result = UNRESOLVED_SUSPEND;
-					if (ue.unresolvedHandling == SDMSDependencyDefinition.SUSPEND || ue.unresolvedHandling == SDMSDependencyDefinition.IGNORE)
+					if (ue.unresolvedHandling == SDMSDependencyDefinition.SUSPEND || ue.unresolvedHandling == SDMSDependencyDefinition.IGNORE) {
 						ue.di.delete(sysEnv);
+						diDeleted = true;
+					}
 				}
 			}
 		}
@@ -1658,6 +1668,9 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			case BROKEN:
 				setToError(sysEnv, errorMessage);
 				break;
+		}
+		if (diDeleted) {
+			this.testDependencies(sysEnv);
 		}
 	}
 
