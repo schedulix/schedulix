@@ -468,7 +468,7 @@ public class SDMSGrantGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO GRANTS (" +
+				        "INSERT INTO " + squote + "GRANTS" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "OBJECT_ID" + equote +
 				        ", " + squote + "G_ID" + equote +
@@ -524,8 +524,10 @@ public class SDMSGrantGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM GRANTS WHERE ID = ?";
+				        "DELETE FROM " + squote + "GRANTS" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Grant: $1\n$2", stmt, sqle.toString()));
@@ -551,7 +553,7 @@ public class SDMSGrantGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE GRANTS SET " +
+				        "UPDATE " + squote + "GRANTS" + equote + " SET " +
 				        "" + squote + "OBJECT_ID" + equote + " = ? " +
 				        ", " + squote + "G_ID" + equote + " = ? " +
 				        ", " + squote + "OBJECT_TYPE" + equote + " = ? " +

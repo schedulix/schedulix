@@ -234,7 +234,7 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "NR_ID" + equote +
 		                                   ", " + squote + "SE_ID" + equote +
 		                                   ", " + squote + "OWNER_ID" + equote +
@@ -247,7 +247,7 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
 		                                   ", VALID_FROM, VALID_TO " +
-		                                   " FROM " + tableName() +
+		                                   " FROM " + squote + tableName() + equote +
 		                                   " WHERE VALID_TO >= " + (postgres ?
 		                                                   "CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
 		                                                   "" + env.lowestActiveVersion) +

@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE EXIT_STATE (
+CREATE TABLE `EXIT_STATE` (
     `ID`                           decimal(20) NOT NULL
     , `PREFERENCE`                   integer         NOT NULL
     , `IS_FINAL`                     integer         NOT NULL
@@ -45,7 +45,7 @@ CREATE TABLE EXIT_STATE (
     , `VALID_TO`                   decimal(20) NOT NULL
 ) ENGINE = INNODB;
 CREATE INDEX PK_EXIT_STATE
-ON EXIT_STATE(`ID`);
+ON `EXIT_STATE`(`ID`);
 CREATE VIEW SCI_C_EXIT_STATE AS
 SELECT
     ID
@@ -62,7 +62,7 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM EXIT_STATE
+  FROM `EXIT_STATE`
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_EXIT_STATE AS
 SELECT
@@ -82,4 +82,4 @@ SELECT
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , VALID_FROM
     , VALID_TO
-  FROM EXIT_STATE;
+  FROM `EXIT_STATE`;

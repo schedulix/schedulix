@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE NAMED_RESOURCE (
+CREATE TABLE `NAMED_RESOURCE` (
     `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `OWNER_ID`                     decimal(20)     NOT NULL
@@ -41,7 +41,7 @@ CREATE TABLE NAMED_RESOURCE (
     , `INHERIT_PRIVS`                decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_NAMED_RESOURCE
-ON NAMED_RESOURCE(`ID`);
+ON `NAMED_RESOURCE`(`ID`);
 CREATE VIEW SCI_NAMED_RESOURCE AS
 SELECT
     ID
@@ -56,4 +56,4 @@ SELECT
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , `INHERIT_PRIVS`                AS `INHERIT_PRIVS`
-  FROM NAMED_RESOURCE;
+  FROM `NAMED_RESOURCE`;

@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE SME_COUNTER (
+CREATE TABLE `SME_COUNTER` (
     `ID`                           decimal(20) NOT NULL
     , `JAHR`                         integer         NOT NULL
     , `MONAT`                        integer         NOT NULL
@@ -39,7 +39,7 @@ CREATE TABLE SME_COUNTER (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_SME_COUNTER
-ON SME_COUNTER(`ID`);
+ON `SME_COUNTER`(`ID`);
 CREATE VIEW SCI_SME_COUNTER AS
 SELECT
     ID
@@ -51,4 +51,4 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM SME_COUNTER;
+  FROM `SME_COUNTER`;

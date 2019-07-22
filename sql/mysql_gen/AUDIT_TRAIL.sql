@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE AUDIT_TRAIL (
+CREATE TABLE `AUDIT_TRAIL` (
     `ID`                           decimal(20) NOT NULL
     , `USER_ID`                      decimal(20)     NOT NULL
     , `TS`                           decimal(20)     NOT NULL
@@ -44,7 +44,7 @@ CREATE TABLE AUDIT_TRAIL (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_AUDIT_TRAIL
-ON AUDIT_TRAIL(`ID`);
+ON `AUDIT_TRAIL`(`ID`);
 CREATE VIEW SCI_AUDIT_TRAIL AS
 SELECT
     ID
@@ -62,7 +62,7 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM AUDIT_TRAIL;
+  FROM `AUDIT_TRAIL`;
 CREATE TABLE ARC_AUDIT_TRAIL (
     ID                             decimal(20) NOT NULL
     , `USER_ID`                      decimal(20)      NULL

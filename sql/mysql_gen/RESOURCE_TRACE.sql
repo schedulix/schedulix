@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE RESOURCE_TRACE (
+CREATE TABLE `RESOURCE_TRACE` (
     `R_ID`                         decimal(20)     NOT NULL
     , `TAG`                          varchar(64)         NULL
     , `TRACE_INTERVAL`               integer             NULL
@@ -52,4 +52,4 @@ SELECT
     , `LW_AVG`                       AS `LW_AVG`
     , from_unixtime((`WRITE_TIME` & ~1125899906842624)/1000) AS `WRITE_TIME`
     , from_unixtime((`LAST_WRITE` & ~1125899906842624)/1000) AS `LAST_WRITE`
-  FROM RESOURCE_TRACE;
+  FROM `RESOURCE_TRACE`;

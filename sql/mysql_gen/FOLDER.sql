@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE FOLDER (
+CREATE TABLE `FOLDER` (
     `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `OWNER_ID`                     decimal(20)     NOT NULL
@@ -41,7 +41,7 @@ CREATE TABLE FOLDER (
     , `VALID_TO`                   decimal(20) NOT NULL
 ) ENGINE = INNODB;
 CREATE INDEX PK_FOLDER
-ON FOLDER(`ID`);
+ON `FOLDER`(`ID`);
 CREATE VIEW SCI_C_FOLDER AS
 SELECT
     ID
@@ -54,7 +54,7 @@ SELECT
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , `INHERIT_PRIVS`                AS `INHERIT_PRIVS`
-  FROM FOLDER
+  FROM `FOLDER`
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_FOLDER AS
 SELECT
@@ -70,4 +70,4 @@ SELECT
     , `INHERIT_PRIVS`                AS `INHERIT_PRIVS`
     , VALID_FROM
     , VALID_TO
-  FROM FOLDER;
+  FROM `FOLDER`;

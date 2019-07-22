@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE INTERVAL_DISPATCHER (
+CREATE TABLE `INTERVAL_DISPATCHER` (
     `ID`                           decimal(20) NOT NULL
     , `INT_ID`                       decimal(20)     NOT NULL
     , `SEQ_NO`                       integer         NOT NULL
@@ -41,7 +41,7 @@ CREATE TABLE INTERVAL_DISPATCHER (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_INTERVAL_DISPATCHER
-ON INTERVAL_DISPATCHER(`ID`);
+ON `INTERVAL_DISPATCHER`(`ID`);
 CREATE VIEW SCI_INTERVAL_DISPATCHER AS
 SELECT
     ID
@@ -56,4 +56,4 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM INTERVAL_DISPATCHER;
+  FROM `INTERVAL_DISPATCHER`;

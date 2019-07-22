@@ -196,7 +196,7 @@ public class SDMSEventTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "NAME" + equote +
 		                                   ", " + squote + "OWNER_ID" + equote +
 		                                   ", " + squote + "SE_ID" + equote +
@@ -204,7 +204,7 @@ public class SDMSEventTableGeneric extends SDMSTable
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
-		                                   " FROM " + tableName() +
+		                                   " FROM " + squote + tableName() + equote +
 		                                   ""						  );
 		while(rset.next()) {
 			if(loadObject(env, rset)) ++loaded;

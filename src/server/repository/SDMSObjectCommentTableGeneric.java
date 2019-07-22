@@ -226,7 +226,7 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "OBJECT_ID" + equote +
 		                                   ", " + squote + "OBJECT_TYPE" + equote +
 		                                   ", " + squote + "INFO_TYPE" + equote +
@@ -238,7 +238,7 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
 		                                   ", VALID_FROM, VALID_TO " +
-		                                   " FROM " + tableName() +
+		                                   " FROM " + squote + tableName() + equote +
 		                                   " WHERE VALID_TO >= " + (postgres ?
 		                                                   "CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
 		                                                   "" + env.lowestActiveVersion) +

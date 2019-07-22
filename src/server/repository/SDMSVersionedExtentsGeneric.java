@@ -300,7 +300,7 @@ public class SDMSVersionedExtentsGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO VERSIONED_EXTENTS (" +
+				        "INSERT INTO " + squote + "VERSIONED_EXTENTS" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "O_ID" + equote +
 				        ", " + squote + "SEQUENCE" + equote +
@@ -366,8 +366,10 @@ public class SDMSVersionedExtentsGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE VERSIONED_EXTENTS " +
+				        "UPDATE " + squote + "VERSIONED_EXTENTS" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

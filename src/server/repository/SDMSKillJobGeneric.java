@@ -764,7 +764,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO KILL_JOB (" +
+				        "INSERT INTO " + squote + "KILL_JOB" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "SE_ID" + equote +
 				        ", " + squote + "SE_VERSION" + equote +
@@ -877,8 +877,10 @@ public class SDMSKillJobGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM KILL_JOB WHERE ID = ?";
+				        "DELETE FROM " + squote + "KILL_JOB" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "KillJob: $1\n$2", stmt, sqle.toString()));
@@ -904,7 +906,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE KILL_JOB SET " +
+				        "UPDATE " + squote + "KILL_JOB" + equote + " SET " +
 				        "" + squote + "SE_ID" + equote + " = ? " +
 				        ", " + squote + "SE_VERSION" + equote + " = ? " +
 				        ", " + squote + "SME_ID" + equote + " = ? " +

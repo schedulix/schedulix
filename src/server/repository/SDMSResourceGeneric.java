@@ -1027,7 +1027,7 @@ public class SDMSResourceGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO RESSOURCE (" +
+				        "INSERT INTO " + squote + "RESSOURCE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NR_ID" + equote +
 				        ", " + squote + "SCOPE_ID" + equote +
@@ -1182,8 +1182,10 @@ public class SDMSResourceGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM RESSOURCE WHERE ID = ?";
+				        "DELETE FROM " + squote + "RESSOURCE" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Resource: $1\n$2", stmt, sqle.toString()));
@@ -1209,7 +1211,7 @@ public class SDMSResourceGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE RESSOURCE SET " +
+				        "UPDATE " + squote + "RESSOURCE" + equote + " SET " +
 				        "" + squote + "NR_ID" + equote + " = ? " +
 				        ", " + squote + "SCOPE_ID" + equote + " = ? " +
 				        ", " + squote + "MASTER_ID" + equote + " = ? " +

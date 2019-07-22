@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE RESSOURCE (
+CREATE TABLE `RESSOURCE` (
     `ID`                           decimal(20) NOT NULL
     , `NR_ID`                        decimal(20)     NOT NULL
     , `SCOPE_ID`                     decimal(20)         NULL
@@ -58,7 +58,7 @@ CREATE TABLE RESSOURCE (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_RESSOURCE
-ON RESSOURCE(`ID`);
+ON `RESSOURCE`(`ID`);
 CREATE VIEW SCI_RESSOURCE AS
 SELECT
     ID
@@ -90,4 +90,4 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM RESSOURCE;
+  FROM `RESSOURCE`;

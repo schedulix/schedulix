@@ -308,7 +308,7 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO EXIT_STATE_PROFILE (" +
+				        "INSERT INTO " + squote + "EXIT_STATE_PROFILE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "DEFAULT_ESMP_ID" + equote +
@@ -377,8 +377,10 @@ public class SDMSExitStateProfileGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE EXIT_STATE_PROFILE " +
+				        "UPDATE " + squote + "EXIT_STATE_PROFILE" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

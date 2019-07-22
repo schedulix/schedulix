@@ -337,7 +337,7 @@ public class SDMSExtentsGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO EXTENTS (" +
+				        "INSERT INTO " + squote + "EXTENTS" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "O_ID" + equote +
 				        ", " + squote + "SME_ID" + equote +
@@ -387,8 +387,10 @@ public class SDMSExtentsGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM EXTENTS WHERE ID = ?";
+				        "DELETE FROM " + squote + "EXTENTS" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Extents: $1\n$2", stmt, sqle.toString()));
@@ -414,7 +416,7 @@ public class SDMSExtentsGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE EXTENTS SET " +
+				        "UPDATE " + squote + "EXTENTS" + equote + " SET " +
 				        "" + squote + "O_ID" + equote + " = ? " +
 				        ", " + squote + "SME_ID" + equote + " = ? " +
 				        ", " + squote + "SEQUENCE" + equote + " = ? " +

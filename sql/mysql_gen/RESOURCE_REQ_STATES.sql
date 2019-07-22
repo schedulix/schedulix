@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE RESOURCE_REQ_STATES (
+CREATE TABLE `RESOURCE_REQ_STATES` (
     `ID`                           decimal(20) NOT NULL
     , `RR_ID`                        decimal(20)     NOT NULL
     , `RSD_ID`                       decimal(20)     NOT NULL
@@ -38,7 +38,7 @@ CREATE TABLE RESOURCE_REQ_STATES (
     , `VALID_TO`                   decimal(20) NOT NULL
 ) ENGINE = INNODB;
 CREATE INDEX PK_RESOURCE_REQ_STATES
-ON RESOURCE_REQ_STATES(`ID`);
+ON `RESOURCE_REQ_STATES`(`ID`);
 CREATE VIEW SCI_C_RESOURCE_REQ_STATES AS
 SELECT
     ID
@@ -48,7 +48,7 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM RESOURCE_REQ_STATES
+  FROM `RESOURCE_REQ_STATES`
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_RESOURCE_REQ_STATES AS
 SELECT
@@ -61,4 +61,4 @@ SELECT
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , VALID_FROM
     , VALID_TO
-  FROM RESOURCE_REQ_STATES;
+  FROM `RESOURCE_REQ_STATES`;

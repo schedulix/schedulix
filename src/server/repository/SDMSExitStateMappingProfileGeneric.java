@@ -240,7 +240,7 @@ public class SDMSExitStateMappingProfileGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO EXIT_STATE_MAPPING_PROFILE (" +
+				        "INSERT INTO " + squote + "EXIT_STATE_MAPPING_PROFILE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
@@ -300,8 +300,10 @@ public class SDMSExitStateMappingProfileGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE EXIT_STATE_MAPPING_PROFILE " +
+				        "UPDATE " + squote + "EXIT_STATE_MAPPING_PROFILE" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

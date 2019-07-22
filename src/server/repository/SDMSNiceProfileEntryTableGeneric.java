@@ -224,7 +224,7 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "NP_ID" + equote +
 		                                   ", " + squote + "PREFERENCE" + equote +
 		                                   ", " + squote + "FOLDER_ID" + equote +
@@ -235,7 +235,7 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
-		                                   " FROM " + tableName() +
+		                                   " FROM " + squote + tableName() + equote +
 		                                   ""						  );
 		while(rset.next()) {
 			if(loadObject(env, rset)) ++loaded;

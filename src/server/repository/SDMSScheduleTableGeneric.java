@@ -248,7 +248,7 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "NAME" + equote +
 		                                   ", " + squote + "OWNER_ID" + equote +
 		                                   ", " + squote + "INT_ID" + equote +
@@ -261,7 +261,7 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
 		                                   ", " + squote + "INHERIT_PRIVS" + equote +
-		                                   " FROM " + tableName() +
+		                                   " FROM " + squote + tableName() + equote +
 		                                   ""						  );
 		while(rset.next()) {
 			if(loadObject(env, rset)) ++loaded;

@@ -312,7 +312,7 @@ public class SDMSGroupGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO GROUPS (" +
+				        "INSERT INTO " + squote + "GROUPS" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "DELETE_VERSION" + equote +
@@ -356,8 +356,10 @@ public class SDMSGroupGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM GROUPS WHERE ID = ?";
+				        "DELETE FROM " + squote + "GROUPS" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Group: $1\n$2", stmt, sqle.toString()));
@@ -383,7 +385,7 @@ public class SDMSGroupGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE GROUPS SET " +
+				        "UPDATE " + squote + "GROUPS" + equote + " SET " +
 				        "" + squote + "NAME" + equote + " = ? " +
 				        ", " + squote + "DELETE_VERSION" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +

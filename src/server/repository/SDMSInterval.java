@@ -24,6 +24,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -47,7 +48,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	public static final boolean DRIVER = false;
 
 	protected static final String HT = "    ";
-	private static boolean debug = false;
+	private static boolean debug = true;
 
 	private Vector filter = null;
 	private SDMSInterval embedFilter = null;
@@ -142,7 +143,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private void initialize(SystemEnvironment sysEnv, TimeZone tz, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		gntdCache = new GntdCache();
 		fltrCache = new GntdCache();
@@ -171,7 +172,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
-		throws SDMSException
+	throws SDMSException
 	{
 		Long seId = getSeId(sysEnv);
 		String se = null;
@@ -182,13 +183,13 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	public String getURL(SystemEnvironment sysEnv)
-		throws SDMSException
+	throws SDMSException
 	{
 		return "interval " + getURLName(sysEnv);
 	}
 
 	public long getHorizon(SystemEnvironment sysEnv, TimeZone tz)
-		throws SDMSException
+	throws SDMSException
 	{
 		int gcUnit = Calendar.YEAR;
 		switch (SystemEnvironment.timerHorizon.unit()) {
@@ -357,7 +358,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private boolean advanceBlock(SystemEnvironment sysEnv, long horizon, TimeZone tz, boolean mode, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		if (Thread.currentThread().isInterrupted()) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "02205091100", "Thread Interrupted"));
@@ -472,7 +473,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private boolean seekBlock(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, boolean mode, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		GregorianCalendar gc;
 
@@ -552,7 +553,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private boolean seek(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, boolean mode, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		if (filter == null) {
 			initialize(sysEnv, tz, indent + 1);
@@ -623,7 +624,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	public long filter(SystemEnvironment sysEnv, long checkDate, long horizon, TimeZone tz, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 
 		if (filter == null) {
@@ -712,7 +713,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private boolean checkSelection (SystemEnvironment sysEnv, int blockIdx, int negIdx, long ts, TimeZone tz, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		if (!(posSelected || negSelected || rangeSelected)) {
 			return true;
@@ -726,7 +727,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private boolean indexCheckPos (SystemEnvironment sysEnv, int seqNo, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		if (!posSelected) {
 			return true;
@@ -749,7 +750,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private boolean indexCheckNeg (SystemEnvironment sysEnv, int seqNo, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		if (!negSelected) {
 			return true;
@@ -772,7 +773,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private boolean rangeCheck(SystemEnvironment sysEnv, long date, TimeZone tz, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		if (!rangeSelected) {
 			return true;
@@ -797,7 +798,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private boolean getNextRange(SystemEnvironment sysEnv, long date, TimeZone tz, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		if (!rangeSelected) {
 			if (date == blockState.blockStart) {
@@ -849,7 +850,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private long getStartingPoint(SystemEnvironment sysEnv, long date, TimeZone tz, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		long maxFloor = startTime;
 		long maxCeil = -1;
@@ -879,7 +880,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private BlockState getNextPositiveRange(SystemEnvironment sysEnv, long date, TimeZone tz)
-		throws SDMSException
+	throws SDMSException
 	{
 		long firstFloor = Long.MAX_VALUE;
 		long secondFloor = Long.MAX_VALUE;
@@ -925,7 +926,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private boolean seekLocal(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, boolean mode, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		long currentBaseStart = 0;
 		long currentBaseEnd = Long.MAX_VALUE;
@@ -983,7 +984,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private long sync(SystemEnvironment sysEnv, long minDate, TimeZone tz)
-		throws SDMSException
+	throws SDMSException
 	{
 		GregorianCalendar gc = null;
 		if (! isInfinite) {
@@ -999,7 +1000,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private void truncToUnit(SystemEnvironment sysEnv, GregorianCalendar gc, int gcInterval)
-		throws SDMSException
+	throws SDMSException
 	{
 		switch (gcInterval) {
 			case Calendar.YEAR:
@@ -1027,7 +1028,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private void determineBoundary(SystemEnvironment sysEnv, GregorianCalendar startDate, long targetDate, int multiplier, int gcInterval)
-		throws SDMSException
+	throws SDMSException
 	{
 		truncToUnit(sysEnv, startDate, gcInterval);
 
@@ -1064,7 +1065,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private void initSelection(SystemEnvironment sysEnv, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		resetPositions();
 		if (selectedBlocksPos != null) return;
@@ -1114,7 +1115,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private void initBaseAndDuration(SystemEnvironment sysEnv, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		if(baseMultiplier != UNINITIALIZED) return;
 
@@ -1213,7 +1214,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private void initLimits(SystemEnvironment sysEnv, TimeZone tz)
-		throws SDMSException
+	throws SDMSException
 	{
 		Long st = this.getStartTime (sysEnv);
 		if (st != null) {
@@ -1226,7 +1227,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private void initEmbeddedInterval(SystemEnvironment sysEnv, TimeZone tz, int indent)
-		throws SDMSException
+	throws SDMSException
 	{
 		Long embeddedIntervalId = getEmbeddedIntervalId(sysEnv);
 
@@ -1256,7 +1257,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	}
 
 	private GregorianCalendar localGcFromGMT(SystemEnvironment sysEnv, Long time, TimeZone tz)
-		throws SDMSException
+	throws SDMSException
 	{
 		long t = new DateTime (time, false).getTimeInMillis();
 
@@ -1724,12 +1725,12 @@ class BlockState implements Cloneable
 		for (int i = 0; i < iindent; ++i)
 			indent = indent + SDMSInterval.HT;
 		return  indent + "blockState [\n" +
-			indent + "\tbaseStart : " + new TimerDate((int)(baseStart / 60000)).toString() + "\n" +
-			indent + "\tbaseEnd   : " + new TimerDate((int)(baseEnd / 60000)).toString() + "\n" +
-			indent + "\tblockStart: " + new TimerDate((int)(blockStart / 60000)).toString() + "\n" +
-			indent + "\tblockEnd  : " + new TimerDate((int)(blockEnd / 60000)).toString() + "\n" +
-			indent + "\tblockIdx  : " + blockIdx + "\n" +
-			indent + "]";
+		        indent + "\tbaseStart : " + new TimerDate((int)(baseStart / 60000)).toString() + "\n" +
+		        indent + "\tbaseEnd   : " + new TimerDate((int)(baseEnd / 60000)).toString() + "\n" +
+		        indent + "\tblockStart: " + new TimerDate((int)(blockStart / 60000)).toString() + "\n" +
+		        indent + "\tblockEnd  : " + new TimerDate((int)(blockEnd / 60000)).toString() + "\n" +
+		        indent + "\tblockIdx  : " + blockIdx + "\n" +
+		        indent + "]";
 	}
 
 	public boolean equals(BlockState other)

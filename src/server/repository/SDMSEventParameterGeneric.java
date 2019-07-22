@@ -351,7 +351,7 @@ public class SDMSEventParameterGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO EVENT_PARAMETER (" +
+				        "INSERT INTO " + squote + "EVENT_PARAMETER" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "KEY" + equote +
 				        ", " + squote + "VALUE" + equote +
@@ -398,8 +398,10 @@ public class SDMSEventParameterGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM EVENT_PARAMETER WHERE ID = ?";
+				        "DELETE FROM " + squote + "EVENT_PARAMETER" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "EventParameter: $1\n$2", stmt, sqle.toString()));
@@ -425,7 +427,7 @@ public class SDMSEventParameterGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE EVENT_PARAMETER SET " +
+				        "UPDATE " + squote + "EVENT_PARAMETER" + equote + " SET " +
 				        "" + squote + "KEY" + equote + " = ? " +
 				        ", " + squote + "VALUE" + equote + " = ? " +
 				        ", " + squote + "EVT_ID" + equote + " = ? " +

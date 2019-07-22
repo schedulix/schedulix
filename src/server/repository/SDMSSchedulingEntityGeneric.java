@@ -1752,7 +1752,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO SCHEDULING_ENTITY (" +
+				        "INSERT INTO " + squote + "SCHEDULING_ENTITY" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "FOLDER_ID" + equote +
@@ -1998,8 +1998,10 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE SCHEDULING_ENTITY " +
+				        "UPDATE " + squote + "SCHEDULING_ENTITY" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

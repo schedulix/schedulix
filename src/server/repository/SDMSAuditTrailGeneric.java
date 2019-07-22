@@ -664,7 +664,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO AUDIT_TRAIL (" +
+				        "INSERT INTO " + squote + "AUDIT_TRAIL" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "USER_ID" + equote +
 				        ", " + squote + "TS" + equote +
@@ -738,8 +738,10 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM AUDIT_TRAIL WHERE ID = ?";
+				        "DELETE FROM " + squote + "AUDIT_TRAIL" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "AuditTrail: $1\n$2", stmt, sqle.toString()));
@@ -765,7 +767,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE AUDIT_TRAIL SET " +
+				        "UPDATE " + squote + "AUDIT_TRAIL" + equote + " SET " +
 				        "" + squote + "USER_ID" + equote + " = ? " +
 				        ", " + squote + "TS" + equote + " = ? " +
 				        ", " + squote + "TXID" + equote + " = ? " +

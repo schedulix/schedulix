@@ -291,7 +291,7 @@ public class SDMSMemberGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO MEMBER (" +
+				        "INSERT INTO " + squote + "MEMBER" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "G_ID" + equote +
 				        ", " + squote + "U_ID" + equote +
@@ -335,8 +335,10 @@ public class SDMSMemberGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM MEMBER WHERE ID = ?";
+				        "DELETE FROM " + squote + "MEMBER" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Member: $1\n$2", stmt, sqle.toString()));
@@ -362,7 +364,7 @@ public class SDMSMemberGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE MEMBER SET " +
+				        "UPDATE " + squote + "MEMBER" + equote + " SET " +
 				        "" + squote + "G_ID" + equote + " = ? " +
 				        ", " + squote + "U_ID" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +
