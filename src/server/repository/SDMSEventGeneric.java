@@ -315,7 +315,7 @@ public class SDMSEventGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO EVENT (" +
+				        "INSERT INTO " + squote + "EVENT" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "OWNER_ID" + equote +
@@ -365,8 +365,10 @@ public class SDMSEventGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM EVENT WHERE ID = ?";
+				        "DELETE FROM " + squote + "EVENT" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Event: $1\n$2", stmt, sqle.toString()));
@@ -392,7 +394,7 @@ public class SDMSEventGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE EVENT SET " +
+				        "UPDATE " + squote + "EVENT" + equote + " SET " +
 				        "" + squote + "NAME" + equote + " = ? " +
 				        ", " + squote + "OWNER_ID" + equote + " = ? " +
 				        ", " + squote + "SE_ID" + equote + " = ? " +

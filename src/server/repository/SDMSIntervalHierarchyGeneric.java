@@ -265,7 +265,7 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO INTERVAL_HIERARCHY (" +
+				        "INSERT INTO " + squote + "INTERVAL_HIERARCHY" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "CHILD_ID" + equote +
 				        ", " + squote + "PARENT_ID" + equote +
@@ -309,8 +309,10 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM INTERVAL_HIERARCHY WHERE ID = ?";
+				        "DELETE FROM " + squote + "INTERVAL_HIERARCHY" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "IntervalHierarchy: $1\n$2", stmt, sqle.toString()));
@@ -336,7 +338,7 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE INTERVAL_HIERARCHY SET " +
+				        "UPDATE " + squote + "INTERVAL_HIERARCHY" + equote + " SET " +
 				        "" + squote + "CHILD_ID" + equote + " = ? " +
 				        ", " + squote + "PARENT_ID" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +

@@ -351,7 +351,7 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO SCOPE_CONFIG (" +
+				        "INSERT INTO " + squote + "SCOPE_CONFIG" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "KEY" + equote +
 				        ", " + squote + "VALUE" + equote +
@@ -398,8 +398,10 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM SCOPE_CONFIG WHERE ID = ?";
+				        "DELETE FROM " + squote + "SCOPE_CONFIG" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "ScopeConfig: $1\n$2", stmt, sqle.toString()));
@@ -425,7 +427,7 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE SCOPE_CONFIG SET " +
+				        "UPDATE " + squote + "SCOPE_CONFIG" + equote + " SET " +
 				        "" + squote + "KEY" + equote + " = ? " +
 				        ", " + squote + "VALUE" + equote + " = ? " +
 				        ", " + squote + "S_ID" + equote + " = ? " +

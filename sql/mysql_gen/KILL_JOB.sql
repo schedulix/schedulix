@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE KILL_JOB (
+CREATE TABLE `KILL_JOB` (
     `ID`                           decimal(20) NOT NULL
     , `SE_ID`                        decimal(20)     NOT NULL
     , `SE_VERSION`                   decimal(20)     NOT NULL
@@ -49,7 +49,7 @@ CREATE TABLE KILL_JOB (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_KILL_JOB
-ON KILL_JOB(`ID`);
+ON `KILL_JOB`(`ID`);
 CREATE VIEW SCI_KILL_JOB AS
 SELECT
     ID
@@ -72,7 +72,7 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM KILL_JOB;
+  FROM `KILL_JOB`;
 CREATE TABLE ARC_KILL_JOB (
     ID                             decimal(20) NOT NULL
     , `SE_ID`                        decimal(20)      NULL

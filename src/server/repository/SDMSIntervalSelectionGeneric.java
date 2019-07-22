@@ -321,7 +321,7 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO INTERVAL_SELECTION (" +
+				        "INSERT INTO " + squote + "INTERVAL_SELECTION" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "INT_ID" + equote +
 				        ", " + squote + "VALUE" + equote +
@@ -380,8 +380,10 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM INTERVAL_SELECTION WHERE ID = ?";
+				        "DELETE FROM " + squote + "INTERVAL_SELECTION" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "IntervalSelection: $1\n$2", stmt, sqle.toString()));
@@ -407,7 +409,7 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE INTERVAL_SELECTION SET " +
+				        "UPDATE " + squote + "INTERVAL_SELECTION" + equote + " SET " +
 				        "" + squote + "INT_ID" + equote + " = ? " +
 				        ", " + squote + "VALUE" + equote + " = ? " +
 				        ", " + squote + "PERIOD_FROM" + equote + " = ? " +

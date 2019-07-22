@@ -107,7 +107,7 @@ CREATE TABLE ARC_KILL_JOB (
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE NICE_PROFILE (
+CREATE TABLE `NICE_PROFILE` (
     `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `IS_ACTIVE`                    integer         NOT NULL
@@ -118,7 +118,7 @@ CREATE TABLE NICE_PROFILE (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_NICE_PROFILE
-ON NICE_PROFILE(`ID`);
+ON `NICE_PROFILE`(`ID`);
 DROP VIEW SCI_NICE_PROFILE;
 CREATE VIEW SCI_NICE_PROFILE AS
 SELECT
@@ -130,11 +130,11 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM NICE_PROFILE;
+  FROM `NICE_PROFILE`;
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE NICE_PROFILE_ENTRY (
+CREATE TABLE `NICE_PROFILE_ENTRY` (
     `ID`                           decimal(20) NOT NULL
     , `NP_ID`                        decimal(20)     NOT NULL
     , `PREFERENCE`                   integer         NOT NULL
@@ -148,7 +148,7 @@ CREATE TABLE NICE_PROFILE_ENTRY (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_NICE_PROFILE_ENTRY
-ON NICE_PROFILE_ENTRY(`ID`);
+ON `NICE_PROFILE_ENTRY`(`ID`);
 DROP VIEW SCI_NICE_PROFILE_ENTRY;
 CREATE VIEW SCI_NICE_PROFILE_ENTRY AS
 SELECT
@@ -163,7 +163,7 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM NICE_PROFILE_ENTRY;
+  FROM `NICE_PROFILE_ENTRY`;
 CREATE TABLE ARC_SUBMITTED_ENTITY (
     ID                             decimal(20) NOT NULL
     , `ACCESS_KEY`                   decimal(20)      NULL
@@ -263,7 +263,7 @@ CREATE TABLE ARC_SUBMITTED_ENTITY (
     , `CHANGER_U_ID`                 decimal(20)      NULL
     , `CHANGE_TS`                    decimal(20)      NULL
 ) ENGINE = INNODB;
-ALTER TABLE SUBMITTED_ENTITY
+ALTER TABLE `SUBMITTED_ENTITY`
     ADD `RAW_PRIORITY` integer NOT NULL DEFAULT 0,
     ADD `NP_NICE` integer NOT NULL DEFAULT 0,
     ADD `IDLE_TS` integer,
@@ -356,5 +356,5 @@ SELECT
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , ((IFNULL(`FINAL_TS`, UNIX_TIMESTAMP(NOW()) * 1000) - `SUBMIT_TS`) / 1000) - `DEPENDENCY_WAIT_TIME` AS `PROCESS_TIME`
-  FROM SUBMITTED_ENTITY;
+  FROM `SUBMITTED_ENTITY`;
 UPDATE SUBMITTED_ENTITY SET `RAW_PRIORITY` = `PRIORITY`;

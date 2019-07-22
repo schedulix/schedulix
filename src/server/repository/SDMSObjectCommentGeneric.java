@@ -530,7 +530,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO OBJECT_COMMENT (" +
+				        "INSERT INTO " + squote + "OBJECT_COMMENT" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "OBJECT_ID" + equote +
 				        ", " + squote + "OBJECT_TYPE" + equote +
@@ -608,8 +608,10 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE OBJECT_COMMENT " +
+				        "UPDATE " + squote + "OBJECT_COMMENT" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

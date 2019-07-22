@@ -301,7 +301,7 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO NICE_PROFILE (" +
+				        "INSERT INTO " + squote + "NICE_PROFILE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "IS_ACTIVE" + equote +
@@ -351,8 +351,10 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM NICE_PROFILE WHERE ID = ?";
+				        "DELETE FROM " + squote + "NICE_PROFILE" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "NiceProfile: $1\n$2", stmt, sqle.toString()));
@@ -378,7 +380,7 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE NICE_PROFILE SET " +
+				        "UPDATE " + squote + "NICE_PROFILE" + equote + " SET " +
 				        "" + squote + "NAME" + equote + " = ? " +
 				        ", " + squote + "IS_ACTIVE" + equote + " = ? " +
 				        ", " + squote + "ACTIVE_TS" + equote + " = ? " +

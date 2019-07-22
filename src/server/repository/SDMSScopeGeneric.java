@@ -932,7 +932,7 @@ public class SDMSScopeGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO SCOPE (" +
+				        "INSERT INTO " + squote + "SCOPE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "OWNER_ID" + equote +
@@ -1063,8 +1063,10 @@ public class SDMSScopeGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM SCOPE WHERE ID = ?";
+				        "DELETE FROM " + squote + "SCOPE" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Scope: $1\n$2", stmt, sqle.toString()));
@@ -1090,7 +1092,7 @@ public class SDMSScopeGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE SCOPE SET " +
+				        "UPDATE " + squote + "SCOPE" + equote + " SET " +
 				        "" + squote + "NAME" + equote + " = ? " +
 				        ", " + squote + "OWNER_ID" + equote + " = ? " +
 				        ", " + squote + "PARENT_ID" + equote + " = ? " +

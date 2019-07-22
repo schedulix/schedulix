@@ -735,7 +735,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO DEPENDENCY_DEFINITION (" +
+				        "INSERT INTO " + squote + "DEPENDENCY_DEFINITION" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "SE_DEPENDENT_ID" + equote +
 				        ", " + squote + "SE_REQUIRED_ID" + equote +
@@ -840,8 +840,10 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE DEPENDENCY_DEFINITION " +
+				        "UPDATE " + squote + "DEPENDENCY_DEFINITION" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

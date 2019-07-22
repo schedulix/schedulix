@@ -100,7 +100,6 @@ public class SDMSCalendarTableGeneric extends SDMSTable
 
 		SDMSCalendar p;
 		try {
-
 			env.tx.addToTouchSet(env, o.versions, true);
 			table.put(env, o.id, o.versions);
 			env.tx.commitSubTransaction(env);
@@ -190,14 +189,14 @@ public class SDMSCalendarTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "SCEV_ID" + equote +
 		                                   ", " + squote + "STARTTIME" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
-		                                   " FROM " + tableName() +
+		                                   " FROM " + squote + tableName() + equote +
 		                                   ""						  );
 		while(rset.next()) {
 			if(loadObject(env, rset)) ++loaded;

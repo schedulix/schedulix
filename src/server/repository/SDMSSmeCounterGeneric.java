@@ -389,7 +389,7 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO SME_COUNTER (" +
+				        "INSERT INTO " + squote + "SME_COUNTER" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "JAHR" + equote +
 				        ", " + squote + "MONAT" + equote +
@@ -442,8 +442,10 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM SME_COUNTER WHERE ID = ?";
+				        "DELETE FROM " + squote + "SME_COUNTER" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "SmeCounter: $1\n$2", stmt, sqle.toString()));
@@ -469,7 +471,7 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE SME_COUNTER SET " +
+				        "UPDATE " + squote + "SME_COUNTER" + equote + " SET " +
 				        "" + squote + "JAHR" + equote + " = ? " +
 				        ", " + squote + "MONAT" + equote + " = ? " +
 				        ", " + squote + "TAG" + equote + " = ? " +

@@ -219,7 +219,7 @@ public class SDMSFolderTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "NAME" + equote +
 		                                   ", " + squote + "OWNER_ID" + equote +
 		                                   ", " + squote + "ENV_ID" + equote +
@@ -230,7 +230,7 @@ public class SDMSFolderTableGeneric extends SDMSTable
 		                                   ", " + squote + "CHANGE_TS" + equote +
 		                                   ", " + squote + "INHERIT_PRIVS" + equote +
 		                                   ", VALID_FROM, VALID_TO " +
-		                                   " FROM " + tableName() +
+		                                   " FROM " + squote + tableName() + equote +
 		                                   " WHERE VALID_TO >= " + (postgres ?
 		                                                   "CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
 		                                                   "" + env.lowestActiveVersion) +

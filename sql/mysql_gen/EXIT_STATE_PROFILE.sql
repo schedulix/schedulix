@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE EXIT_STATE_PROFILE (
+CREATE TABLE `EXIT_STATE_PROFILE` (
     `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `DEFAULT_ESMP_ID`              decimal(20)         NULL
@@ -39,7 +39,7 @@ CREATE TABLE EXIT_STATE_PROFILE (
     , `VALID_TO`                   decimal(20) NOT NULL
 ) ENGINE = INNODB;
 CREATE INDEX PK_EXIT_STATE_PROFILE
-ON EXIT_STATE_PROFILE(`ID`);
+ON `EXIT_STATE_PROFILE`(`ID`);
 CREATE VIEW SCI_C_EXIT_STATE_PROFILE AS
 SELECT
     ID
@@ -50,7 +50,7 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM EXIT_STATE_PROFILE
+  FROM `EXIT_STATE_PROFILE`
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_EXIT_STATE_PROFILE AS
 SELECT
@@ -64,4 +64,4 @@ SELECT
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , VALID_FROM
     , VALID_TO
-  FROM EXIT_STATE_PROFILE;
+  FROM `EXIT_STATE_PROFILE`;

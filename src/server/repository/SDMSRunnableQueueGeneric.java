@@ -383,7 +383,7 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO RUNNABLE_QUEUE (" +
+				        "INSERT INTO " + squote + "RUNNABLE_QUEUE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "SME_ID" + equote +
 				        ", " + squote + "SCOPE_ID" + equote +
@@ -433,8 +433,10 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM RUNNABLE_QUEUE WHERE ID = ?";
+				        "DELETE FROM " + squote + "RUNNABLE_QUEUE" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "RunnableQueue: $1\n$2", stmt, sqle.toString()));
@@ -460,7 +462,7 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE RUNNABLE_QUEUE SET " +
+				        "UPDATE " + squote + "RUNNABLE_QUEUE" + equote + " SET " +
 				        "" + squote + "SME_ID" + equote + " = ? " +
 				        ", " + squote + "SCOPE_ID" + equote + " = ? " +
 				        ", " + squote + "STATE" + equote + " = ? " +
