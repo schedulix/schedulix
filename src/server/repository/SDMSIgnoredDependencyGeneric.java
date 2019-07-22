@@ -309,7 +309,7 @@ public class SDMSIgnoredDependencyGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO IGNORED_DEPENDENCY (" +
+				        "INSERT INTO " + squote + "IGNORED_DEPENDENCY" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "SH_ID" + equote +
 				        ", " + squote + "DD_NAME" + equote +
@@ -372,8 +372,10 @@ public class SDMSIgnoredDependencyGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE IGNORED_DEPENDENCY " +
+				        "UPDATE " + squote + "IGNORED_DEPENDENCY" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

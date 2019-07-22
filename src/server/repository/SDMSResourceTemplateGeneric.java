@@ -458,7 +458,7 @@ public class SDMSResourceTemplateGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO RESOURCE_TEMPLATE (" +
+				        "INSERT INTO " + squote + "RESOURCE_TEMPLATE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NR_ID" + equote +
 				        ", " + squote + "SE_ID" + equote +
@@ -545,8 +545,10 @@ public class SDMSResourceTemplateGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE RESOURCE_TEMPLATE " +
+				        "UPDATE " + squote + "RESOURCE_TEMPLATE" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

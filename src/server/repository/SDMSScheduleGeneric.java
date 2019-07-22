@@ -533,7 +533,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO SCHEDULE (" +
+				        "INSERT INTO " + squote + "SCHEDULE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "OWNER_ID" + equote +
@@ -604,8 +604,10 @@ public class SDMSScheduleGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM SCHEDULE WHERE ID = ?";
+				        "DELETE FROM " + squote + "SCHEDULE" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Schedule: $1\n$2", stmt, sqle.toString()));
@@ -631,7 +633,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE SCHEDULE SET " +
+				        "UPDATE " + squote + "SCHEDULE" + equote + " SET " +
 				        "" + squote + "NAME" + equote + " = ? " +
 				        ", " + squote + "OWNER_ID" + equote + " = ? " +
 				        ", " + squote + "INT_ID" + equote + " = ? " +

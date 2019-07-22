@@ -240,7 +240,7 @@ public class SDMSFootprintGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO FOOTPRINT (" +
+				        "INSERT INTO " + squote + "FOOTPRINT" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
@@ -281,8 +281,10 @@ public class SDMSFootprintGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM FOOTPRINT WHERE ID = ?";
+				        "DELETE FROM " + squote + "FOOTPRINT" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Footprint: $1\n$2", stmt, sqle.toString()));
@@ -308,7 +310,7 @@ public class SDMSFootprintGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE FOOTPRINT SET " +
+				        "UPDATE " + squote + "FOOTPRINT" + equote + " SET " +
 				        "" + squote + "NAME" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +
 				        ", " + squote + "CREATE_TS" + equote + " = ? " +

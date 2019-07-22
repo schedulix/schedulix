@@ -291,7 +291,7 @@ public class SDMSCalendarGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO CALENDAR (" +
+				        "INSERT INTO " + squote + "CALENDAR" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "SCEV_ID" + equote +
 				        ", " + squote + "STARTTIME" + equote +
@@ -335,8 +335,10 @@ public class SDMSCalendarGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM CALENDAR WHERE ID = ?";
+				        "DELETE FROM " + squote + "CALENDAR" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Calendar: $1\n$2", stmt, sqle.toString()));
@@ -362,7 +364,7 @@ public class SDMSCalendarGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE CALENDAR SET " +
+				        "UPDATE " + squote + "CALENDAR" + equote + " SET " +
 				        "" + squote + "SCEV_ID" + equote + " = ? " +
 				        ", " + squote + "STARTTIME" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +

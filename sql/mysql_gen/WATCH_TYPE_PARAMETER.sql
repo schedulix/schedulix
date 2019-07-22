@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE WATCH_TYPE_PARAMETER (
+CREATE TABLE `WATCH_TYPE_PARAMETER` (
     `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `DEFAULTVALUE`                 varchar(256)        NULL
@@ -39,7 +39,7 @@ CREATE TABLE WATCH_TYPE_PARAMETER (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_WATCH_TYPE_PARAMETER
-ON WATCH_TYPE_PARAMETER(`ID`);
+ON `WATCH_TYPE_PARAMETER`(`ID`);
 CREATE VIEW SCI_WATCH_TYPE_PARAMETER AS
 SELECT
     ID
@@ -52,4 +52,4 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM WATCH_TYPE_PARAMETER;
+  FROM `WATCH_TYPE_PARAMETER`;

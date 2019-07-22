@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE OBJECT_MONITOR_PARAMETER (
+CREATE TABLE `OBJECT_MONITOR_PARAMETER` (
     `ID`                           decimal(20) NOT NULL
     , `VALUE`                        varchar(256)        NULL
     , `OM_ID`                        decimal(20)     NOT NULL
@@ -37,7 +37,7 @@ CREATE TABLE OBJECT_MONITOR_PARAMETER (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_OBJECT_MONITOR_PARAMETER
-ON OBJECT_MONITOR_PARAMETER(`ID`);
+ON `OBJECT_MONITOR_PARAMETER`(`ID`);
 CREATE VIEW SCI_OBJECT_MONITOR_PARAMETER AS
 SELECT
     ID
@@ -48,4 +48,4 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM OBJECT_MONITOR_PARAMETER;
+  FROM `OBJECT_MONITOR_PARAMETER`;

@@ -270,7 +270,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "DD_ID" + equote +
 		                                   ", " + squote + "DEPENDENT_ID" + equote +
 		                                   ", " + squote + "DEPENDENT_ID_ORIG" + equote +
@@ -285,9 +285,9 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
-		                                   "  FROM " + tableName() + ", " +
+		                                   "  FROM " + squote + tableName() + equote + ", " +
 		                                   "       SME2LOAD " +
-		                                   " WHERE " + tableName() + ".DEPENDENT_ID = SME2LOAD.ID"
+		                                   " WHERE " + squote + tableName() + equote + ".DEPENDENT_ID = SME2LOAD.ID"
 		                                  );
 		while(rset.next()) {
 			if(loadObject(env, rset)) ++loaded;

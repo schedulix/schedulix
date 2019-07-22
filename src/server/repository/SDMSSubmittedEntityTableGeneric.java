@@ -1009,7 +1009,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "ACCESS_KEY" + equote +
 		                                   ", " + squote + "MASTER_ID" + equote +
 		                                   ", " + squote + "SUBMIT_TAG" + equote +
@@ -1109,9 +1109,9 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
-		                                   "  FROM " + tableName() + ", " +
+		                                   "  FROM " + squote + tableName() + equote + ", " +
 		                                   "       SME2LOAD " +
-		                                   " WHERE " + tableName() + ".ID = SME2LOAD.ID"
+		                                   " WHERE " + squote + tableName() + equote + ".ID = SME2LOAD.ID"
 		                                  );
 		while(rset.next()) {
 			if(loadObject(env, rset)) ++loaded;

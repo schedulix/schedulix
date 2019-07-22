@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE SCHEDULING_ENTITY (
+CREATE TABLE `SCHEDULING_ENTITY` (
     `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `FOLDER_ID`                    decimal(20)     NOT NULL
@@ -72,7 +72,7 @@ CREATE TABLE SCHEDULING_ENTITY (
     , `VALID_TO`                   decimal(20) NOT NULL
 ) ENGINE = INNODB;
 CREATE INDEX PK_SCHEDULING_ENTITY
-ON SCHEDULING_ENTITY(`ID`);
+ON `SCHEDULING_ENTITY`(`ID`);
 CREATE VIEW SCI_C_SCHEDULING_ENTITY AS
 SELECT
     ID
@@ -113,7 +113,7 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM SCHEDULING_ENTITY
+  FROM `SCHEDULING_ENTITY`
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_SCHEDULING_ENTITY AS
 SELECT
@@ -157,4 +157,4 @@ SELECT
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , VALID_FROM
     , VALID_TO
-  FROM SCHEDULING_ENTITY;
+  FROM `SCHEDULING_ENTITY`;

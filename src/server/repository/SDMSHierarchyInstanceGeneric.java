@@ -443,7 +443,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO HIERARCHY_INSTANCE (" +
+				        "INSERT INTO " + squote + "HIERARCHY_INSTANCE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "PARENT_ID" + equote +
 				        ", " + squote + "CHILD_ID" + equote +
@@ -508,8 +508,10 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM HIERARCHY_INSTANCE WHERE ID = ?";
+				        "DELETE FROM " + squote + "HIERARCHY_INSTANCE" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "HierarchyInstance: $1\n$2", stmt, sqle.toString()));
@@ -535,7 +537,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE HIERARCHY_INSTANCE SET " +
+				        "UPDATE " + squote + "HIERARCHY_INSTANCE" + equote + " SET " +
 				        "" + squote + "PARENT_ID" + equote + " = ? " +
 				        ", " + squote + "CHILD_ID" + equote + " = ? " +
 				        ", " + squote + "SH_ID" + equote + " = ? " +

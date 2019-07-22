@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE SCHEDULING_HIERARCHY (
+CREATE TABLE `SCHEDULING_HIERARCHY` (
     `ID`                           decimal(20) NOT NULL
     , `SE_PARENT_ID`                 decimal(20)         NULL
     , `SE_CHILD_ID`                  decimal(20)         NULL
@@ -49,7 +49,7 @@ CREATE TABLE SCHEDULING_HIERARCHY (
     , `VALID_TO`                   decimal(20) NOT NULL
 ) ENGINE = INNODB;
 CREATE INDEX PK_SCHEDULING_HIERARCHY
-ON SCHEDULING_HIERARCHY(`ID`);
+ON `SCHEDULING_HIERARCHY`(`ID`);
 CREATE VIEW SCI_C_SCHEDULING_HIERARCHY AS
 SELECT
     ID
@@ -70,7 +70,7 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM SCHEDULING_HIERARCHY
+  FROM `SCHEDULING_HIERARCHY`
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_SCHEDULING_HIERARCHY AS
 SELECT
@@ -94,4 +94,4 @@ SELECT
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , VALID_FROM
     , VALID_TO
-  FROM SCHEDULING_HIERARCHY;
+  FROM `SCHEDULING_HIERARCHY`;

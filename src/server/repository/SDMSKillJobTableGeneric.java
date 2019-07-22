@@ -309,7 +309,7 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "SE_ID" + equote +
 		                                   ", " + squote + "SE_VERSION" + equote +
 		                                   ", " + squote + "SME_ID" + equote +
@@ -329,7 +329,7 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
-		                                   "  FROM " + tableName() +
+		                                   "  FROM " + squote + tableName() + equote +
 		                                   " WHERE SE_VERSION >= " + (postgres ?
 		                                                   "CAST (\'" + env.lowestActiveVersion + "\' as DECIMAL)" :
 		                                                   "" + env.lowestActiveVersion) +

@@ -1375,7 +1375,7 @@ public class SDMSTriggerGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO TRIGGER_DEFINITION (" +
+				        "INSERT INTO " + squote + "TRIGGER_DEFINITION" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "FIRE_ID" + equote +
@@ -1552,8 +1552,10 @@ public class SDMSTriggerGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE TRIGGER_DEFINITION " +
+				        "UPDATE " + squote + "TRIGGER_DEFINITION" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

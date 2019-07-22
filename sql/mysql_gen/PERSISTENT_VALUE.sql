@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE PERSISTENT_VALUE (
+CREATE TABLE `PERSISTENT_VALUE` (
     `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `INT_VALUE`                    integer             NULL
@@ -36,7 +36,7 @@ CREATE TABLE PERSISTENT_VALUE (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_PERSISTENT_VALUE
-ON PERSISTENT_VALUE(`ID`);
+ON `PERSISTENT_VALUE`(`ID`);
 CREATE VIEW SCI_PERSISTENT_VALUE AS
 SELECT
     ID
@@ -46,4 +46,4 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM PERSISTENT_VALUE;
+  FROM `PERSISTENT_VALUE`;

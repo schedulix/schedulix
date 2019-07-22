@@ -240,7 +240,7 @@ public class SDMSResourceStateMappingProfileGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO RESOURCE_STATE_MAP_PROF (" +
+				        "INSERT INTO " + squote + "RESOURCE_STATE_MAP_PROF" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
@@ -300,8 +300,10 @@ public class SDMSResourceStateMappingProfileGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE RESOURCE_STATE_MAP_PROF " +
+				        "UPDATE " + squote + "RESOURCE_STATE_MAP_PROF" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

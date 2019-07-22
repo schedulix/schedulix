@@ -334,7 +334,7 @@ public class SDMSDependencyStateGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO DEPENDENCY_STATE (" +
+				        "INSERT INTO " + squote + "DEPENDENCY_STATE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "DD_ID" + equote +
 				        ", " + squote + "ESD_ID" + equote +
@@ -403,8 +403,10 @@ public class SDMSDependencyStateGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE DEPENDENCY_STATE " +
+				        "UPDATE " + squote + "DEPENDENCY_STATE" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

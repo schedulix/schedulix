@@ -469,7 +469,7 @@ public class SDMSIntervalDispatcherGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO INTERVAL_DISPATCHER (" +
+				        "INSERT INTO " + squote + "INTERVAL_DISPATCHER" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "INT_ID" + equote +
 				        ", " + squote + "SEQ_NO" + equote +
@@ -534,8 +534,10 @@ public class SDMSIntervalDispatcherGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM INTERVAL_DISPATCHER WHERE ID = ?";
+				        "DELETE FROM " + squote + "INTERVAL_DISPATCHER" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "IntervalDispatcher: $1\n$2", stmt, sqle.toString()));
@@ -561,7 +563,7 @@ public class SDMSIntervalDispatcherGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE INTERVAL_DISPATCHER SET " +
+				        "UPDATE " + squote + "INTERVAL_DISPATCHER" + equote + " SET " +
 				        "" + squote + "INT_ID" + equote + " = ? " +
 				        ", " + squote + "SEQ_NO" + equote + " = ? " +
 				        ", " + squote + "NAME" + equote + " = ? " +

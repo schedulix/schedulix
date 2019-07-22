@@ -340,7 +340,7 @@ public class SDMSUserEquivGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO USER_EQUIV (" +
+				        "INSERT INTO " + squote + "USER_EQUIV" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "U_ID" + equote +
 				        ", " + squote + "ALT_U_TYPE" + equote +
@@ -387,8 +387,10 @@ public class SDMSUserEquivGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM USER_EQUIV WHERE ID = ?";
+				        "DELETE FROM " + squote + "USER_EQUIV" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "UserEquiv: $1\n$2", stmt, sqle.toString()));
@@ -414,7 +416,7 @@ public class SDMSUserEquivGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE USER_EQUIV SET " +
+				        "UPDATE " + squote + "USER_EQUIV" + equote + " SET " +
 				        "" + squote + "U_ID" + equote + " = ? " +
 				        ", " + squote + "ALT_U_TYPE" + equote + " = ? " +
 				        ", " + squote + "ALT_U_ID" + equote + " = ? " +

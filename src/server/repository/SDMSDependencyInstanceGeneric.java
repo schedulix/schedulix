@@ -658,7 +658,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO DEPENDENCY_INSTANCE (" +
+				        "INSERT INTO " + squote + "DEPENDENCY_INSTANCE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "DD_ID" + equote +
 				        ", " + squote + "DEPENDENT_ID" + equote +
@@ -729,8 +729,10 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM DEPENDENCY_INSTANCE WHERE ID = ?";
+				        "DELETE FROM " + squote + "DEPENDENCY_INSTANCE" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "DependencyInstance: $1\n$2", stmt, sqle.toString()));
@@ -756,7 +758,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE DEPENDENCY_INSTANCE SET " +
+				        "UPDATE " + squote + "DEPENDENCY_INSTANCE" + equote + " SET " +
 				        "" + squote + "DD_ID" + equote + " = ? " +
 				        ", " + squote + "DEPENDENT_ID" + equote + " = ? " +
 				        ", " + squote + "DEPENDENT_ID_ORIG" + equote + " = ? " +

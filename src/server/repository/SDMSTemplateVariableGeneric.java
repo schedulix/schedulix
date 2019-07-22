@@ -333,7 +333,7 @@ public class SDMSTemplateVariableGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO TEMPLATE_VARIABLE (" +
+				        "INSERT INTO " + squote + "TEMPLATE_VARIABLE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "PD_ID" + equote +
 				        ", " + squote + "RT_ID" + equote +
@@ -399,8 +399,10 @@ public class SDMSTemplateVariableGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE TEMPLATE_VARIABLE " +
+				        "UPDATE " + squote + "TEMPLATE_VARIABLE" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

@@ -291,7 +291,7 @@ public class SDMSResourceReqStatesGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO RESOURCE_REQ_STATES (" +
+				        "INSERT INTO " + squote + "RESOURCE_REQ_STATES" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "RR_ID" + equote +
 				        ", " + squote + "RSD_ID" + equote +
@@ -354,8 +354,10 @@ public class SDMSResourceReqStatesGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE RESOURCE_REQ_STATES " +
+				        "UPDATE " + squote + "RESOURCE_REQ_STATES" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

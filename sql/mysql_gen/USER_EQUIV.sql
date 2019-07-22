@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE USER_EQUIV (
+CREATE TABLE `USER_EQUIV` (
     `ID`                           decimal(20) NOT NULL
     , `U_ID`                         decimal(20)     NOT NULL
     , `ALT_U_TYPE`                   integer         NOT NULL
@@ -37,7 +37,7 @@ CREATE TABLE USER_EQUIV (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_USER_EQUIV
-ON USER_EQUIV(`ID`);
+ON `USER_EQUIV`(`ID`);
 CREATE VIEW SCI_USER_EQUIV AS
 SELECT
     ID
@@ -48,4 +48,4 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM USER_EQUIV;
+  FROM `USER_EQUIV`;

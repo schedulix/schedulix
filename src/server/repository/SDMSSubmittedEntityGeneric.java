@@ -3568,7 +3568,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO SUBMITTED_ENTITY (" +
+				        "INSERT INTO " + squote + "SUBMITTED_ENTITY" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "ACCESS_KEY" + equote +
 				        ", " + squote + "MASTER_ID" + equote +
@@ -4041,8 +4041,10 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM SUBMITTED_ENTITY WHERE ID = ?";
+				        "DELETE FROM " + squote + "SUBMITTED_ENTITY" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "SubmittedEntity: $1\n$2", stmt, sqle.toString()));
@@ -4068,7 +4070,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE SUBMITTED_ENTITY SET " +
+				        "UPDATE " + squote + "SUBMITTED_ENTITY" + equote + " SET " +
 				        "" + squote + "ACCESS_KEY" + equote + " = ? " +
 				        ", " + squote + "MASTER_ID" + equote + " = ? " +
 				        ", " + squote + "SUBMIT_TAG" + equote + " = ? " +

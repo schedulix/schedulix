@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE SUBMITTED_ENTITY_STATS (
+CREATE TABLE `SUBMITTED_ENTITY_STATS` (
     `ID`                           decimal(20) NOT NULL
     , `SME_ID`                       decimal(20)     NOT NULL
     , `RERUN_SEQ`                    integer         NOT NULL
@@ -49,7 +49,7 @@ CREATE TABLE SUBMITTED_ENTITY_STATS (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_SUBMITTED_ENTITY_STATS
-ON SUBMITTED_ENTITY_STATS(`ID`);
+ON `SUBMITTED_ENTITY_STATS`(`ID`);
 CREATE VIEW SCI_SUBMITTED_ENTITY_STATS AS
 SELECT
     ID
@@ -72,7 +72,7 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM SUBMITTED_ENTITY_STATS;
+  FROM `SUBMITTED_ENTITY_STATS`;
 CREATE TABLE ARC_SUBMITTED_ENTITY_STATS (
     ID                             decimal(20) NOT NULL
     , `SME_ID`                       decimal(20)      NULL

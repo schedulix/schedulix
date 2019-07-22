@@ -240,7 +240,7 @@ public class SDMSNamedEnvironmentGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO NAMED_ENVIRONMENT (" +
+				        "INSERT INTO " + squote + "NAMED_ENVIRONMENT" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
@@ -300,8 +300,10 @@ public class SDMSNamedEnvironmentGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE NAMED_ENVIRONMENT " +
+				        "UPDATE " + squote + "NAMED_ENVIRONMENT" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

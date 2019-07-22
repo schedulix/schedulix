@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE TRIGGER_QUEUE (
+CREATE TABLE `TRIGGER_QUEUE` (
     `ID`                           decimal(20) NOT NULL
     , `SME_ID`                       decimal(20)     NOT NULL
     , `TR_ID`                        decimal(20)     NOT NULL
@@ -39,7 +39,7 @@ CREATE TABLE TRIGGER_QUEUE (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_TRIGGER_QUEUE
-ON TRIGGER_QUEUE(`ID`);
+ON `TRIGGER_QUEUE`(`ID`);
 CREATE VIEW SCI_TRIGGER_QUEUE AS
 SELECT
     ID
@@ -52,4 +52,4 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM TRIGGER_QUEUE;
+  FROM `TRIGGER_QUEUE`;
