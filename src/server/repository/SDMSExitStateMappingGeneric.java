@@ -432,7 +432,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE " + squote + "EXIT_STATE_MAPPING" + equote +
-				        "SET VALID_TO = ?, " +
+				        " SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +
 				        "WHERE ID = ?" +

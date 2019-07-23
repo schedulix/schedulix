@@ -370,7 +370,7 @@ public class SDMSVersionedExtentsGeneric extends SDMSObject
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE " + squote + "VERSIONED_EXTENTS" + equote +
-				        "SET VALID_TO = ?, " +
+				        " SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +
 				        "WHERE ID = ?" +

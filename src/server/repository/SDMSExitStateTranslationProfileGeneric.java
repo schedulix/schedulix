@@ -304,7 +304,7 @@ public class SDMSExitStateTranslationProfileGeneric extends SDMSObject
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE " + squote + "EXIT_STATE_TRANS_PROFILE" + equote +
-				        "SET VALID_TO = ?, " +
+				        " SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +
 				        "WHERE ID = ?" +

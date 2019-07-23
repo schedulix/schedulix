@@ -407,7 +407,7 @@ public class SDMSEnvironmentGeneric extends SDMSObject
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE " + squote + "ENVIRONMENT" + equote +
-				        "SET VALID_TO = ?, " +
+				        " SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +
 				        "WHERE ID = ?" +
