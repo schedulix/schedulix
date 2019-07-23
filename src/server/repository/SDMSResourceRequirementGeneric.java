@@ -867,7 +867,7 @@ public class SDMSResourceRequirementGeneric extends SDMSObject
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
 				        "UPDATE " + squote + "RESOURCE_REQUIREMENT" + equote +
-				        "SET VALID_TO = ?, " +
+				        " SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +
 				        "WHERE ID = ?" +
