@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -64,7 +62,7 @@ public class CreateResourceStatus extends Node
 			}
 		}
 
-		result.setFeedback(new SDMSMessage(sysEnv, "03201100049", "Exit State Definition created"));
+		result.setFeedback(new SDMSMessage(sysEnv, "03201100049", "Resource State Definition created"));
 	}
 }
 
