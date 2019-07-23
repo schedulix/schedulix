@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -60,7 +58,7 @@ public class DropResourceStatus extends Node
 			rsd = SDMSResourceStateDefinitionTable.idx_name_getUnique(sysEnv, name);
 		} catch (NotFoundException nfe) {
 			if(noerr) {
-				result.setFeedback(new SDMSMessage(sysEnv, "03311122323", "Resource Status Profile dropped"));
+				result.setFeedback(new SDMSMessage(sysEnv, "03311122323", "No Resource State Definition dropped"));
 				return;
 			}
 			throw nfe;
@@ -68,7 +66,7 @@ public class DropResourceStatus extends Node
 
 		rsd.delete(sysEnv);
 
-		result.setFeedback(new SDMSMessage(sysEnv, "03201100113", "Resource Status Profile dropped"));
+		result.setFeedback(new SDMSMessage(sysEnv, "03201100113", "Resource State Definition dropped"));
 	}
 }
 
