@@ -1303,6 +1303,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 		long depSubmitTs = getSubmitTs(sysEnv);
 		String selCond = dd.getSelectCondition(sysEnv);
+		int resolveMode = dd.getResolveMode(sysEnv).intValue();
+		long masterId = this.getMasterId(sysEnv);
 		Vector grps = new Vector();
 		grps.add(getOwnerId(sysEnv));
 
@@ -1312,6 +1314,9 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		Iterator i = v_sme.iterator();
 		while (i.hasNext()) {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity)i.next();
+			if (resolveMode == SDMSDependencyDefinition.EXTERNAL && masterId == sme.getMasterId(sysEnv)) {
+				continue;
+			}
 			long reqSubmitTs = sme.getSubmitTs(sysEnv).longValue();
 			if (sme.getState(sysEnv).intValue() == SDMSSubmittedEntity.CANCELLED)
 				continue;
