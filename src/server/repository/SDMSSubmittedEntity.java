@@ -1125,7 +1125,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 								       true
 								      );
 				if (rSme == null && resolveMode != SDMSDependencyDefinition.INTERNAL)
-					rSme = getExternalSubmittedEntity (sysEnv, dd);
+					rSme = dSme.getExternalSubmittedEntity (sysEnv, dd);
 				if (rSme == null)
 					if (dMasterId.equals(masterId))
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "02201111122",
