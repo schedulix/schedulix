@@ -1125,7 +1125,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 								       true
 								      );
 				if (rSme == null && resolveMode != SDMSDependencyDefinition.INTERNAL)
-					rSme = getExternalSubmittedEntity (sysEnv, dd);
+					rSme = dSme.getExternalSubmittedEntity (sysEnv, dd);
 				if (rSme == null)
 					if (dMasterId.equals(masterId))
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "02201111122",
@@ -1304,7 +1304,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		long depSubmitTs = getSubmitTs(sysEnv);
 		String selCond = dd.getSelectCondition(sysEnv);
 		int resolveMode = dd.getResolveMode(sysEnv).intValue();
-		long masterId = this.getMasterId(sysEnv);
+		Long masterId = this.getMasterId(sysEnv);
 		Vector grps = new Vector();
 		grps.add(getOwnerId(sysEnv));
 
@@ -1314,7 +1314,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		Iterator i = v_sme.iterator();
 		while (i.hasNext()) {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity)i.next();
-			if (resolveMode == SDMSDependencyDefinition.EXTERNAL && masterId == sme.getMasterId(sysEnv)) {
+			if (resolveMode == SDMSDependencyDefinition.EXTERNAL && masterId.equals(sme.getMasterId(sysEnv))) {
 				continue;
 			}
 			long reqSubmitTs = sme.getSubmitTs(sysEnv).longValue();
