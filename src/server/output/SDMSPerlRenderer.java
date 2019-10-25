@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.output;
 
 import java.lang.*;
@@ -94,7 +92,7 @@ public class SDMSPerlRenderer extends SDMSScriptRenderer
 			}
 			first = false;
 			SDMSOutputLabel l = (SDMSOutputLabel)i.next();
-			sb.append("'" + l.name.toUpperCase() + "'\n");
+			sb.append("'" + maskQuotes(l.name.toUpperCase()) + "'\n");
 		}
 		sb.append("],\n");
 		if (p_container.columns == 0) {
@@ -124,7 +122,7 @@ public class SDMSPerlRenderer extends SDMSScriptRenderer
 					sb.append(",\n");
 				}
 				first = false;
-				sb.append("'" + name  + "' => ");
+				sb.append("'" + maskQuotes(name)  + "' => ");
 				if (!(v.elementAt(i) instanceof SDMSOutputContainer)) {
 					sb.append("'" + maskQuotes((v.elementAt(i)).toString()) + "'");
 				} else {
@@ -162,7 +160,7 @@ public class SDMSPerlRenderer extends SDMSScriptRenderer
 				}
 				rfirst = false;
 				name = ((SDMSOutputLabel)(p_container.desc.elementAt(i))).name.toUpperCase();
-				sb.append("'" + name + "' => '");
+				sb.append("'" + maskQuotes(name) + "' => '");
 				sb.append( maskQuotes((v.elementAt(i)).toString()));
 				sb.append("'");
 			}

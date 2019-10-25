@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.output;
 
 import java.lang.*;
@@ -125,7 +123,7 @@ public class SDMSJsonRenderer extends SDMSScriptRenderer
 			}
 			first = false;
 			SDMSOutputLabel l = (SDMSOutputLabel)i.next();
-			sb.append("\"" + l.name + "\"\n");
+			sb.append("\"" + maskJsonQuotes(l.name) + "\"\n");
 		}
 		sb.append("],\n");
 		if (p_container.columns == 0) {
@@ -154,7 +152,7 @@ public class SDMSJsonRenderer extends SDMSScriptRenderer
 			}
 			first = false;
 			name = ((SDMSOutputLabel)(p_container.desc.elementAt(i))).name;
-			sb.append("\"" + name  + "\" : ");
+			sb.append("\"" + maskJsonQuotes(name)  + "\" : ");
 			if(v.elementAt(i) != null) {
 				if (!(v.elementAt(i) instanceof SDMSOutputContainer)) {
 					sb.append("\"" + maskJsonQuotes((v.elementAt(i)).toString()) + "\"");
@@ -192,7 +190,7 @@ public class SDMSJsonRenderer extends SDMSScriptRenderer
 				}
 				rfirst = false;
 				name = ((SDMSOutputLabel)(p_container.desc.elementAt(i))).name;
-				sb.append("\"" + name + "\" : ");
+				sb.append("\"" + maskJsonQuotes(name) + "\" : ");
 				if(v.elementAt(i) == null) {
 					sb.append("null");
 				} else {
@@ -236,7 +234,7 @@ public class SDMSJsonRenderer extends SDMSScriptRenderer
 			}
 			first = false;
 			SDMSOutputLabel l = (SDMSOutputLabel)i.next();
-			sb.print("\"" + l.name + "\"\n");
+			sb.print("\"" + maskJsonQuotes(l.name) + "\"\n");
 		}
 		sb.print("],\n");
 		if (p_container.columns == 0) {
@@ -265,7 +263,7 @@ public class SDMSJsonRenderer extends SDMSScriptRenderer
 			}
 			first = false;
 			name = ((SDMSOutputLabel)(p_container.desc.elementAt(i))).name;
-			sb.print("\"" + name  + "\" : ");
+			sb.print("\"" + maskJsonQuotes(name)  + "\" : ");
 			if(v.elementAt(i) != null) {
 				if (!(v.elementAt(i) instanceof SDMSOutputContainer)) {
 					sb.print("\"" + maskJsonQuotes((v.elementAt(i)).toString()) + "\"");
@@ -303,7 +301,7 @@ public class SDMSJsonRenderer extends SDMSScriptRenderer
 				}
 				rfirst = false;
 				name = ((SDMSOutputLabel)(p_container.desc.elementAt(i))).name;
-				sb.append("\"" + name + "\" : ");
+				sb.append("\"" + maskJsonQuotes(name) + "\" : ");
 				if(v.elementAt(i) == null) {
 					sb.print("null");
 				} else {
