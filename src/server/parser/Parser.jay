@@ -45,7 +45,7 @@ public class Parser
 %token <Token>	COMMAND COMMENT CONDITION CONFIG CONNECT CONSTANT CONTENT CONTINUE COPY COUNT CREATE CYCLE
 %token <Token>	DAY DEFAULT DEFAULT_MAPPING DEFER DEFER_IGNORE DEFINITION DELAY DELETE DEPENDENCY DEPENDENCY_DEFINITION
 %token <Token>	DEPENDENCY_HIERARCHY DEPENDENCY_MODE DEPENDENCY_WAIT DEPLOY DEREGISTER DIR DISABLE DISCONNECT DISPATCH DISTRIBUTION DROP DUMP DURATION DYNAMIC
-%token <Token>	EDIT EMBEDDED EMULTICMD ENABLE ENDTIME ENVIRONMENT ERRLOG ERROR_TEXT ERROR_TOKEN EQUIVALENT EVENT EXECUTE EXEC_PID
+%token <Token>	EDIT EMBEDDED EMULTICMD ENABLE ENABLED ENDTIME ENVIRONMENT ERRLOG ERROR_TEXT ERROR_TOKEN EQUIVALENT EVENT EXECUTE EXEC_PID
 %token <Token>	EXISTING EXIT_CODE EXIT_STATUS EXIT_STATUS_DEFINITION EXIT_STATUS_MAPPING EXIT_STATUS_PROFILE
 %token <Token>	EXIT_STATUS_TRANSLATION EXPAND EXPIRED EXPORT EXPR EXT_PID EXTERNAL
 %token <Token>	FACTOR FAIL FAILURE FATAL FILTER FINAL FINISH FINISH_CHILD FINISHED FOLDER FOOTPRINT FOR FORCE FORCED_EOC FREE_AMOUNT FREEPCT FROM FUTURE
@@ -225,7 +225,7 @@ public class Parser
 %type <WithHash>	selwithlist, signed_period, signed_period_rj, sj_withlist, stickyspec, submit_with, submit_withlist, sp_with
 %type <WithHash>	us_add_dellist, us_with, us_withlist, wt_with_clause, wt_withitemlist
 
-%type <WithItem>	aj_suspend, aj_withitem, ajd_add_del_item, anr_with_item, aom_withitem, ar_parm, ar_with_item
+%type <WithItem>	aj_disable, aj_suspend, aj_withitem, ajd_add_del_item, anr_with_item, aom_withitem, ar_parm, ar_with_item
 %type <WithItem>	cc_withitem, cev_withitem, cf_withitem, cf_parm, clf_withitem, cnr_parm, cnr_with_item, connect_withitem
 %type <WithItem>	cpl_managed, cpl_res_item, cpl_withitem, ct_object, ct_parm, ct_rscstatusitem, ct_warn_nowarn, ct_withitem
 %type <WithItem>	dump_mapitem, dump_withitem
@@ -2762,7 +2762,7 @@ aj_withlist:	aj_withitem							{ $$ = new WithHash(); $<WithHash>$.addItem($1); 
 
 //D:NT-ALIAS = withitem
 aj_withitem:	CANCEL								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
-	|	DISABLE								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
+	|	aj_disable							{ $$ = $1; }
 	|	CLEAR WARNING							{ $$ = new WithItem(ParseStr.S_CLEAR_WARN, Boolean.TRUE); }
 	|	COMMENT '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 	|	ERROR_TEXT '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
@@ -2796,6 +2796,9 @@ aj_suspend:	SUSPEND								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.T
 	|	SUSPEND RESTRICT						{ $$ = new WithItem(ParseStr.map($1.token), ParseStr.I_ADMINSUSPEND); }
 	|	SUSPEND LOCAL							{ $$ = new WithItem(ParseStr.map($1.token), ParseStr.I_LOCALSUSPEND); }
 	|	SUSPEND LOCAL RESTRICT						{ $$ = new WithItem(ParseStr.map($1.token), ParseStr.I_LOCALADMINSUSPEND); }
+
+aj_disable:	DISABLE								{ $$ = new WithItem(ParseStr.S_DISABLE, Boolean.TRUE); }
+	|	ENABLE								{ $$ = new WithItem(ParseStr.S_DISABLE, Boolean.FALSE); }
 
 jobstate:	STARTING							{ $$ = SDMSSubmittedEntity.map($1.token); }
 	|	STARTED								{ $$ = SDMSSubmittedEntity.map($1.token); }
@@ -2919,6 +2922,7 @@ lj_withlist:		lj_withitem						{ $$ = new WithHash(); $<WithHash>$.addItem($1); 
 //D:NT-ALIAS = withitem
 lj_withitem:		filterexpression					{ $$ = new WithItem(ParseStr.S_FILTER, $1);	}
 	|		MODE '=' lj_mode					{ $$ = new WithItem(ParseStr.map($1.token), $3);	}
+	|		ENABLED ONLY						{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
 	|		expand							{ $$ = new WithItem(ParseStr.S_EXPAND, $1);	}
 	|		PARAMETERS '=' '(' lj_parameterlist ')'			{ $$ = new WithItem(ParseStr.map($1.token), $4);	}
 
@@ -2956,6 +2960,7 @@ filteratom:		EXIT_STATUS IN '(' lj_exitstatelist ')'			{ $$ = new WithItem(Parse
 										}
 	|		JOB IN '(' jobid_list ')'				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
 	|		WARNING							{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
+	|		enable							{ $$ = new WithItem(ParseStr.S_ENABLE, $1); }
 
 history:		HISTORY							{ $$ = ParseStr.map($1.token); }
 	|		FUTURE							{ $$ = ParseStr.map($1.token); }
@@ -3040,6 +3045,7 @@ sj_filteritem:  RERUN								{ $$ = SDMSAuditTrail.convert($1); }
 	|	SET PARAMETERS							{ $$ = SDMSAuditTrail.convert($1, $2); }
 	|	UNREACHABLE							{ $$ = SDMSAuditTrail.convert($1); }
 	|	DISABLE								{ $$ = SDMSAuditTrail.convert($1); }
+	|	ENABLE								{ $$ = SDMSAuditTrail.convert($1); }
 
 
 //-----------------------------------------------------------------------------

@@ -516,9 +516,7 @@ public class AlterJob extends Node
 			}
 		}
 		if(disable != null) {
-			if(disable.booleanValue()) {
-				sme.disable(sysEnv);
-			}
+			sme.disable(disable, sysEnv);
 		}
 		if(depsToIgnore != null) {
 			ignoreDeps(sysEnv, sme);

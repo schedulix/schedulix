@@ -136,6 +136,7 @@ public class ParseStr
 	public static final String S_EMBEDDED		= "EMBEDDED";
 	public static final String S_EMULTICMD		= "END MULTICOMMAND";
 	public static final String S_ENABLE		= "ENABLE";
+	public static final String S_ENABLED		= "ENABLED";
 	public static final String S_ENDTIME		= "ENDTIME";
 	public static final String S_ENVIRONMENT	= "ENVIRONMENT";
 	public static final String S_ERRLOG		= "ERRLOG";
@@ -630,6 +631,7 @@ public class ParseStr
 		mapper.put(new Integer(Parser.EMBEDDED),		ParseStr.S_EMBEDDED);
 		mapper.put(new Integer(Parser.EMULTICMD),		ParseStr.S_EMULTICMD);
 		mapper.put(new Integer(Parser.ENABLE),			ParseStr.S_ENABLE);
+		mapper.put(new Integer(Parser.ENABLED),			ParseStr.S_ENABLED);
 		mapper.put(new Integer(Parser.ENDTIME),			ParseStr.S_ENDTIME);
 		mapper.put(new Integer(Parser.ENVIRONMENT),		ParseStr.S_ENVIRONMENT);
 		mapper.put(new Integer(Parser.ERRLOG),			ParseStr.S_ERRLOG);
