@@ -158,6 +158,7 @@ public class SystemEnvironment implements Cloneable
 	public static boolean fatalIsError;
 	public static String selectGroup;
 	public static String auditFile;
+	public static int auditEntries;
 	public static de.independit.scheduler.server.util.Authenticator auth;
 	public static boolean enhancedCmdParsing;
 
@@ -203,6 +204,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_ARCKJCOLS             = "ArchiveKillJobColumns";
 	public static final String S_ARCSMESCOLS           = "ArchiveStatsColumns";
 	public static final String S_AUDITFILE             = "AuditFile";
+	public static final String S_AUDITENTRIES          = "AuditEntries";
 	public static final String S_AUTHCLASS             = "AuthenticationClass";
 	public static final String S_CALHORIZON            = "CalendarHorizon";
 	public static final String S_CALENTRIES            = "CalendarEntries";
@@ -459,9 +461,7 @@ public class SystemEnvironment implements Cloneable
 		getTriggerSoftLimit();
 		getTriggerHardLimit();
 
-		if (checkCompatLevel(S_ENTERPRISE)) {
 			getAuditFile();
-		}
 
 		getSSLproperties();
 
@@ -610,6 +610,9 @@ public class SystemEnvironment implements Cloneable
 	private void getAuditFile()
 	{
 		auditFile = props.getProperty(S_AUDITFILE);
+		String s_auditEntries = props.getProperty(S_AUDITENTRIES, "100000");
+		auditEntries = checkIntProperty(s_auditEntries, S_AUDITENTRIES, 1, 100000, 0, "Invalid Audit Chunk Size : ");
+		props.setProperty(S_AUDITENTRIES, "" + auditEntries);
 	}
 
 	private void getArchive()
