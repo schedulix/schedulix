@@ -158,6 +158,7 @@ public class ShowSubmitted extends Node
 		desc.add("MERGE_MODE");
 		desc.add("STATE");
 		desc.add("IS_DISABLED");
+		desc.add("IS_PARENT_DISABLED");
 		desc.add("IS_CANCELLED");
 		desc.add("JOB_ESD_ID");
 		desc.add("JOB_ESD_PREF");
@@ -350,6 +351,7 @@ public class ShowSubmitted extends Node
 			else
 				isCancelled = Boolean.FALSE;
 		data.add(sme.getIsDisabled(sysEnv));
+		data.add(sme.getIsParentDisabled(sysEnv));
 		data.add(isCancelled);
 		esdId = sme.getJobEsdId(sysEnv);
 		if(esdId != null) {
@@ -825,9 +827,8 @@ public class ShowSubmitted extends Node
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getRequiredId(sysEnv));
 				} catch(NotFoundException nfe) {
 					sme = null;
-				}
-			else
-				sme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getDependentId(sysEnv));
+				} else
+					sme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getDependentId(sysEnv));
 
 			if (sme == null) {
 				SDMSSchedulingEntity se_def = SDMSSchedulingEntityTable.getObject(sysEnv, dd.getSeRequiredId(sysEnv), actVersion);
@@ -897,9 +898,21 @@ public class ShowSubmitted extends Node
 				c_data.add(sme.getJobIsFinal(sysEnv));
 				c_data.add(sme.getChildTag(sysEnv));
 
-				if (sme.getState(sysEnv).intValue() == SDMSSubmittedEntity.FINAL) {
-					SDMSExitStateDefinition esd = SDMSExitStateDefinitionTable.getObject(sysEnv, sme.getFinalEsdId(sysEnv));
-					c_data.add(esd.getName(sysEnv));
+				if (sme.getState(sysEnv).intValue() == SDMSSubmittedEntity.FINAL ||
+				    (dd.getMode(sysEnv).intValue() == SDMSDependencyDefinition.JOB_FINAL && sme.getJobIsFinal(sysEnv).booleanValue())
+				   ) {
+					Long finalEsdId;
+					if (dd.getMode(sysEnv).intValue() == SDMSDependencyDefinition.JOB_FINAL) {
+						finalEsdId = sme.getJobEsdId(sysEnv);
+					} else {
+						finalEsdId = sme.getFinalEsdId(sysEnv);
+					}
+					if (finalEsdId != null) {
+						SDMSExitStateDefinition esd = SDMSExitStateDefinitionTable.getObject(sysEnv, finalEsdId);
+						c_data.add(esd.getName(sysEnv));
+					} else {
+						c_data.add(null);
+					}
 				} else {
 					c_data.add(null);
 				}
@@ -1143,7 +1156,6 @@ public class ShowSubmitted extends Node
 
 		return c_container;
 	}
-
 	private	SDMSOutputContainer runs (SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
 	throws SDMSException
 	{
