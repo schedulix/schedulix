@@ -52,16 +52,22 @@ public class SDMSIntervalDispatcher extends SDMSIntervalDispatcherProxyGeneric
 		Long filterIntId = getFilterIntId(sysEnv);
 		SDMSInterval ival;
 		if (selectIntId != null) {
-			ival = SDMSIntervalTable.getObject(sysEnv, selectIntId);
-			oId = ival.getObjId(sysEnv);
-			if (oId != null && oId.equals(id))
-				ival.delete(sysEnv);
+			try {
+				ival = SDMSIntervalTable.getObject(sysEnv, selectIntId);
+				oId = ival.getObjId(sysEnv);
+				if (oId != null && oId.equals(id))
+					ival.delete(sysEnv);
+			} catch (NotFoundException nfe) {
+			}
 		}
 		if (filterIntId != null) {
-			ival = SDMSIntervalTable.getObject(sysEnv, filterIntId);
-			oId = ival.getObjId(sysEnv);
-			if (oId != null && oId.equals(id))
-				ival.delete(sysEnv);
+			try {
+				ival = SDMSIntervalTable.getObject(sysEnv, filterIntId);
+				oId = ival.getObjId(sysEnv);
+				if (oId != null && oId.equals(id))
+					ival.delete(sysEnv);
+			} catch ( NotFoundException nfe) {
+			}
 		}
 		super.delete(sysEnv);
 	}

@@ -36,6 +36,7 @@ import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.timer.*;
+import de.independit.scheduler.server.parser.IntervalUtil;
 
 public class SDMSInterval extends SDMSIntervalProxyGeneric
 	implements SDMSOwnedObject
@@ -300,7 +301,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		}
 		while (true) {
-			if (ntd[best] > horizon) {
+			if (best == Integer.MAX_VALUE || ntd[best] > horizon) {
 				return null;
 			}
 			for (int i = 0; i <= best ; ++i) {
@@ -1622,6 +1623,11 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			SDMSInterval iv = (SDMSInterval) i.next();
 			if (id.equals(iv.getId(sysEnv))) continue;
 			try {
+				Long ivalId = iv.getId(sysEnv);
+				IntervalUtil.killFilter (sysEnv, ivalId);
+				IntervalUtil.killSelections (sysEnv, ivalId);
+				IntervalUtil.killDispatcher (sysEnv, ivalId);
+
 				iv.delete(sysEnv);
 			} catch (NotFoundException nfe) {
 			}

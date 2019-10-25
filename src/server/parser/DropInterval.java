@@ -60,11 +60,27 @@ public class DropInterval
 			if (SDMSScheduleTable.idx_intId.containsKey (sysEnv, ivalId))
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "04207191907", "Interval in use by Schedule(s)"));
 
-			if (SDMSIntervalHierarchyTable.idx_childId.containsKey (sysEnv, ivalId))
-				throw new CommonErrorException (new SDMSMessage (sysEnv, "04209112049", "Interval in use by Interval(s)"));
+			if (SDMSIntervalHierarchyTable.idx_childId.containsKey (sysEnv, ivalId)) {
+				Vector ihv = SDMSIntervalHierarchyTable.idx_childId.getVector(sysEnv, ivalId);
+				SDMSIntervalHierarchy ih;
+				for (int i = 0; i < ihv.size(); ++i) {
+					ih = (SDMSIntervalHierarchy) ihv.get(i);
+					Long parentId = ih.getParentId(sysEnv);
+					try {
+						SDMSIntervalTable.getObject(sysEnv, parentId);
+						throw new CommonErrorException (new SDMSMessage (sysEnv, "04209112049", "Interval in use by Interval(s)"));
+					} catch(NotFoundException nfe) {
+						ih.delete(sysEnv);
+					}
+				}
+			}
 
 			if (SDMSSchedulingHierarchyTable.idx_intId.containsKey (sysEnv, ivalId))
-				throw new CommonErrorException (new SDMSMessage (sysEnv, "04r81161006", "Interval in use by SchedulingHierarchy(s)"));
+				throw new CommonErrorException (new SDMSMessage (sysEnv, "04811061006", "Interval in use by SchedulingHierarchy(s)"));
+			if (SDMSIntervalDispatcherTable.idx_selectIntId.containsKey (sysEnv, ivalId))
+				throw new CommonErrorException (new SDMSMessage (sysEnv, "03910070933", "Interval in use as select interval by Dispatcher(s)"));
+			if (SDMSIntervalDispatcherTable.idx_filterIntId.containsKey (sysEnv, ivalId))
+				throw new CommonErrorException (new SDMSMessage (sysEnv, "03910070934", "Interval in use as filter by Dispatcher(s)"));
 
 			IntervalUtil.killFilter (sysEnv, ivalId);
 			IntervalUtil.killSelections (sysEnv, ivalId);
