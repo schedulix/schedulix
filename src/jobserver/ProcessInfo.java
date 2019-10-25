@@ -43,7 +43,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 public class ProcessInfo
 {
 	static final long BOOTTIME_JITTER  = 90;
-	static final long STARTTIME_JITTER = 2;
+	static final long STARTTIME_JITTER = 10;
 
 	public static final char BOOTTIME_NONE   = 'N';
 	public static final char BOOTTIME_SYSTEM = 'S';
@@ -203,9 +203,13 @@ public class ProcessInfo
 		   || os.contains("nix")
 		   || os.contains("nux")
 		   || os.contains("aix")
+		   || os.contains("hp-ux")
 		  ) {
 			try {
 				ProcessBuilder pb = new ProcessBuilder("ps", "-e", "-o", "pid=", "-o", "etime=");
+				Map<String, String> psEnv = pb.environment();
+				if (os.contains("hp-ux"))
+					psEnv.put("UNIX95", "1");
 				pb.redirectOutput(new File(tmpfilename));
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
@@ -331,6 +335,8 @@ public class ProcessInfo
 
 		if (Math.abs(startTimeJob - startTimePid) > STARTTIME_JITTER) {
 			System.err.println("startTimeJob = " + new Long(startTimeJob).toString() + " startTimePid = " + starttime);
+			String os = System.getProperty("os.name").toLowerCase();
+			if (!os.contains("hp-ux"))
 			return false;
 		}
 
