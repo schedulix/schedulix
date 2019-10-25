@@ -68,6 +68,24 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 		return check(sysEnv, checkCache, true);
 	}
 
+	public Long getRequiredSeId (SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Long requiredSeId = super.getRequiredSeId (sysEnv);
+		if (requiredSeId != null) {
+			Long ddId = getDdId(sysEnv);
+			long actVersion = getSeVersion(sysEnv).longValue();
+			SDMSDependencyDefinition dd = SDMSDependencyDefinitionTable.getObject(sysEnv, ddId, actVersion);
+			if (dd.getResolveMode(sysEnv) == SDMSDependencyDefinition.INTERNAL) {
+				if (sysEnv.tx.mode == SDMSTransaction.READWRITE) {
+					setRequiredSeId(sysEnv, null);
+				}
+				return null;
+			}
+		}
+		return (requiredSeId);
+	}
+
 	public int check(SystemEnvironment sysEnv, HashMap checkCache, boolean reresolve)
 	throws SDMSException
 	{
@@ -94,26 +112,45 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 		SDMSSubmittedEntity dsme = SDMSSubmittedEntityTable.getObject(sysEnv, getDependentId(sysEnv));
 		SDMSSubmittedEntity sme = null;
 		if (getRequiredSeId(sysEnv) != null && reresolve) {
-			sme = dsme.getExternalSubmittedEntity (sysEnv, dd);
-			if (sme == null) {
-				setState(sysEnv, SDMSDependencyInstance.DEFERRED);
-				setRequiredId(sysEnv, getRequiredSeId(sysEnv));
-				return SDMSDependencyInstance.DEFERRED;
+			if (dd.getResolveMode(sysEnv) != SDMSDependencyDefinition.INTERNAL) {
+				boolean resolvedInternally = false;
+				if (dd.getResolveMode(sysEnv) == SDMSDependencyDefinition.BOTH) {
+					Long requiredId = getRequiredId(sysEnv);
+					if (requiredId != null) {
+						try {
+							SDMSSubmittedEntity requiredSme = SDMSSubmittedEntityTable.getObject(sysEnv, requiredId);
+							if (requiredSme.getMasterId(sysEnv).equals(dsme.getMasterId(sysEnv))) {
+								resolvedInternally = true;
+							}
+						} catch (NotFoundException nfe) {
+						}
+					}
+				}
+				if (!resolvedInternally) {
+					sme = dsme.getExternalSubmittedEntity (sysEnv, dd);
+					if (sme == null) {
+						setState(sysEnv, SDMSDependencyInstance.DEFERRED);
+						setRequiredId(sysEnv, getRequiredSeId(sysEnv));
+						return SDMSDependencyInstance.DEFERRED;
+					}
+					setRequiredId(sysEnv, sme.getId(sysEnv));
+				}
 			}
-			setRequiredId(sysEnv, sme.getId(sysEnv));
 		} else
 			sme = SDMSSubmittedEntityTable.getObject(sysEnv, getRequiredId(sysEnv));
 
 		boolean jobIsFinal = sme.getJobIsFinal(sysEnv).booleanValue();
 		int state = sme.getState(sysEnv).intValue();
 		Long esdId = null;
-		switch (state) {
-			case SDMSSubmittedEntity.FINAL:
+		int mode = dd.getMode(sysEnv).intValue();
+		if (state == SDMSSubmittedEntity.FINISHED || (state == SDMSSubmittedEntity.FINAL &&  mode == SDMSDependencyDefinition.JOB_FINAL)) {
+			esdId = sme.getJobEsdId(sysEnv);
+			if (esdId == null && state == SDMSSubmittedEntity.FINAL)
 				esdId = sme.getFinalEsdId(sysEnv);
-				break;
-			case SDMSSubmittedEntity.FINISHED:
-				esdId = sme.getJobEsdId(sysEnv);
-				break;
+		} else {
+			if (state == SDMSSubmittedEntity.FINAL) {
+				esdId = sme.getFinalEsdId(sysEnv);
+			}
 		}
 		if ((esdId == null) && (state != SDMSSubmittedEntity.CANCELLED)) {
 			return SDMSDependencyInstance.OPEN;
@@ -127,7 +164,6 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 				diState = SDMSDependencyInstance.CANCELLED;
 				break;
 			default:
-				int mode = dd.getMode(sysEnv).intValue();
 				if ((state == SDMSSubmittedEntity.FINISHED && jobIsFinal && mode == SDMSDependencyDefinition.JOB_FINAL) || state == SDMSSubmittedEntity.FINAL) {
 					diState = FULFILLED;
 					diState = checkCondition(sysEnv, dd.getCondition(sysEnv), dsme, sme);
