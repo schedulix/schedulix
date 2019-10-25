@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -95,10 +93,8 @@ public class ObjectFilter
 					item.addElement(new WarningFilter(sysEnv, (Boolean) w.value));
 				} else if(((String) w.key).equals(ParseStr.S_MASTER)) {
 					item.addElement(new MasterFilter(sysEnv, (Boolean) w.value));
-
 					if(level == 0 && fi.size() == 1) {
 						mastersFirst = true;
-
 						for (int k = 0; k < restartableVector.size(); ++k) {
 							RestartableFilter r = (RestartableFilter) restartableVector.get(k);
 							r.mastersFirst = true;
@@ -106,7 +102,6 @@ public class ObjectFilter
 					}
 				} else if(((String) w.key).equals(ParseStr.S_MASTER_ID)) {
 					item.addElement(new MasterIdFilter(sysEnv, (Vector) w.value));
-
 					if(level == 0 && fi.size() == 1)
 						masterVector = (Vector) w.value;
 				} else if(((String) w.key).equals(ParseStr.S_FUTURE)) {
@@ -148,6 +143,8 @@ public class ObjectFilter
 					item.addElement(new UsageFilter(sysEnv, (Vector) w.value));
 				} else if(((String) w.key).equals(ParseStr.S_NRNAME)) {
 					item.addElement(new NrNameFilter(sysEnv, (String) w.value));
+				} else if(((String) w.key).equals(ParseStr.S_ENABLE)) {
+					item.addElement(new SmeDisabledFilter(sysEnv, (Boolean) w.value));
 				} else {
 
 				}
@@ -166,7 +163,6 @@ public class ObjectFilter
 	public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p)
 		throws SDMSException
 	{
-
 		SDMSPrivilege priv = p.getPrivileges(sysEnv);
 		if (priv.can(SDMSPrivilege.VIEW) || priv.can(SDMSPrivilege.CREATE_PARENT_CONTENT)) return true;
 		return false;
@@ -187,7 +183,6 @@ public class ObjectFilter
 		if (!checkPrivileges(sysEnv, p)) return false;
 
 		if(subFilter == null || subFilter.size() == 0) return true;
-
 		boolean dir = ((Boolean) subFilter.get(0)).booleanValue();
 		for(i = 1; i < subFilter.size(); i++) {
 			Vector item = (Vector) subFilter.get(i);

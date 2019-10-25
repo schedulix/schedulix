@@ -33,54 +33,39 @@ import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 
-public class RestartableFilter extends Filter
+public class SmeDisabledFilter extends Filter
 {
-	Integer stateType;
-	public boolean mastersFirst;
+	boolean isEnabled;
 
-	public RestartableFilter(SystemEnvironment sysEnv, Integer type, boolean mastersFirst)
+	public SmeDisabledFilter(SystemEnvironment sysEnv, Boolean isEnabled)
 	{
 		super();
-		stateType = type;
-		this.mastersFirst = mastersFirst;
+		this.isEnabled = isEnabled.booleanValue();
 	}
 
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
-		throws SDMSException
+	throws SDMSException
 	{
+		boolean isValid = true;
 		try {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
-			if (sme.getCntRestartable(sysEnv).intValue() > 0) return true;
-			int s = sme.getState(sysEnv).intValue();
-			if(stateType.intValue() == SDMSExitState.RESTARTABLE) {
-				if(sme.getJobIsRestartable(sysEnv).booleanValue()) return true;
-				if(s == SDMSSubmittedEntity.BROKEN_ACTIVE ||
-				   s == SDMSSubmittedEntity.BROKEN_FINISHED ||
-				   s == SDMSSubmittedEntity.ERROR) return true;
-			}
-			if(s != SDMSSubmittedEntity.FINAL &&
-			   s != SDMSSubmittedEntity.FINISHED) return false;
-			if(stateType.intValue() == SDMSExitState.FINAL) {
-				if(!sme.getJobIsFinal(sysEnv).booleanValue()) return false;
-				return true;
-			}
-			if(stateType.intValue() == SDMSExitState.PENDING) {
-				if(sme.getJobIsFinal(sysEnv).booleanValue()) return false;
-				if(sme.getJobIsRestartable(sysEnv).booleanValue()) return false;
-				return true;
-			}
+			if (sme.getIsDisabled(sysEnv).booleanValue())
+				isValid = (isEnabled ? false : true);
+			else
+				isValid = (isEnabled ? true : false);
+			if (!isValid && sme.getState(sysEnv) == SDMSSubmittedEntity.ERROR)
+				isValid = true;
 		} catch (Exception e) { }
-		return false;
+		return isValid;
 	}
 
 	public boolean equals(Object o)
 	{
 		if (o == this) return true;
-		if (!(o instanceof RestartableFilter)) return false;
-		RestartableFilter f;
-		f = (RestartableFilter) o;
-		if (mastersFirst != f.mastersFirst) return false;
-		return (stateType.equals(f.stateType));
+		if (!(o instanceof SmeDisabledFilter)) return false;
+		SmeDisabledFilter f;
+		f = (SmeDisabledFilter) o;
+		return (isEnabled == f.isEnabled);
 	}
 }
 
