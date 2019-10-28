@@ -41,7 +41,7 @@ public class Parser
 %token <Token>	ACTION ACTIVATE ACTIVE ADD AFTER AFTER_FINAL AGING
 %token <Token>	ALIAS ALL ALL_FINAL ALTER AMOUNT AND ANY AT AUDIT AUTHENTICATED AVG
 %token <Token>	BACKLOG_HANDLING BACKUP BASE BATCH BEFORE BEFORE_FINAL BETWEEN BMULTICMD BOTH BROKEN BROKEN_ACTIVE BROKEN_FINISHED BY
-%token <Token>	CALENDAR CANCEL CANCELLED CASCADE CATEGORY CHANGE_STATUS CHANGE CHILD CHECK CHILDREN CHILDSUSPEND CHILDTAG CLEANUP CLEAR CMPOP
+%token <Token>	CALENDAR CANCEL CANCELLED CASCADE CATEGORY CHANGE_STATUS CHANGE CHILD CHECK CHILDREN CHILDSUSPEND CHILDTAG CLEANUP CLEAR CLONE CMPOP
 %token <Token>	COMMAND COMMENT CONDITION CONFIG CONNECT CONSTANT CONTENT CONTINUE COPY COUNT CREATE CYCLE
 %token <Token>	DAY DEFAULT DEFAULT_MAPPING DEFER DEFER_IGNORE DEFINITION DELAY DELETE DEPENDENCY DEPENDENCY_DEFINITION
 %token <Token>	DEPENDENCY_HIERARCHY DEPENDENCY_MODE DEPENDENCY_WAIT DEPLOY DEREGISTER DIR DISABLE DISCONNECT DISPATCH DISTRIBUTION DROP DUMP DURATION DYNAMIC
@@ -69,7 +69,7 @@ public class Parser
 %token <Token>	RESTARTABLE RESTRICT RESULT RESUME REVOKE ROLLBACK ROOT RUN RUNNABLE RUNNING RUNTIME RUN_PROGRAM
 %token <Token>	S SALT SC SCHEDULE SCHEDULED_EVENT SCOPE SELECT SELECT_CONDITION SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT SSL
 %token <Token>	STARTED STARTING STARTTIME STATIC STATUS STATUS_MAPPING STATUS_PROFILE STICKY STOP STRICT STRING
-%token <Token>	SUBMIT SUBMITCOUNT SUBMITTAG SUBMITTED SUBMITTING_USER SUM SUSPEND SUSPEND_LIMIT SX SYNCHRONIZE_WAIT SYNCHRONIZING SYNCTIME SYSTEM
+%token <Token>	SUBMIT SUBMITCOUNT SUBMITTAG SUBMITTED SUBMITTING_USER SUM SUSPEND SUSPEND_LIMIT SX SUSPENDED SYNCHRONIZE_WAIT SYNCHRONIZING SYNCTIME SYSTEM
 %token <Token>	TAG TEST TEXT TIME TIMEOUT TIMESTAMP TO TO_KILL TOKEN TOUCH TRACE TRANSLATION TREE TRIGGER TRUNC TYPE
 %token <Token>	UNREACHABLE UNRESOLVED UNTIL_FINAL UNTIL_FINISHED UPDATE URL USAGE USE USER
 %token <Token>	VALUE VERSION VIEW
@@ -2764,6 +2764,7 @@ aj_withlist:	aj_withitem							{ $$ = new WithHash(); $<WithHash>$.addItem($1); 
 aj_withitem:	CANCEL								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
 	|	aj_disable							{ $$ = $1; }
 	|	CLEAR WARNING							{ $$ = new WithItem(ParseStr.S_CLEAR_WARN, Boolean.TRUE); }
+	|	CLONE 								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
 	|	COMMENT '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 	|	ERROR_TEXT '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 	|	EXEC_PID '=' pid						{ $$ = new WithItem(ParseStr.map($1.token), $3); }
@@ -2813,6 +2814,7 @@ jobstate:	STARTING							{ $$ = SDMSSubmittedEntity.map($1.token); }
 
 jobstate2:	SUBMITTED							{ $$ = SDMSSubmittedEntity.map($1.token); }
 	|	RUNNABLE							{ $$ = SDMSSubmittedEntity.map($1.token); }
+	|	SUSPENDED							{ $$ = SDMSSubmittedEntity.map($1.token); }
 	|	TO_KILL								{ $$ = SDMSSubmittedEntity.map($1.token); }
 	|	KILLED								{ $$ = SDMSSubmittedEntity.map($1.token); }
 	|	CANCELLED							{ $$ = SDMSSubmittedEntity.map($1.token); }
@@ -4643,6 +4645,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	CHILDSUSPEND							{ $$ = (String) $1.value; }
 	|	CHILDTAG							{ $$ = (String) $1.value; }
 	|	CLEAR								{ $$ = (String) $1.value; }
+	|	CLONE								{ $$ = (String) $1.value; }
 	|	COMMAND								{ $$ = (String) $1.value; }
 	|	COMMENT								{ $$ = (String) $1.value; }
 	|	CONDITION							{ $$ = (String) $1.value; }
@@ -4839,6 +4842,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	SUBMITTED							{ $$ = (String) $1.value; }
 	|	SUM								{ $$ = (String) $1.value; }
 	|	SUSPEND								{ $$ = (String) $1.value; }
+	|	SUSPENDED							{ $$ = (String) $1.value; }
 	|	SX								{ $$ = (String) $1.value; }
 	|	SYNCHRONIZING							{ $$ = (String) $1.value; }
 	|	SYNCTIME							{ $$ = (String) $1.value; }

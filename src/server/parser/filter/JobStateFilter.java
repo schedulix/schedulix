@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser.filter;
 
 import java.io.*;
@@ -48,10 +46,17 @@ public class JobStateFilter extends Filter
 	public boolean valid(SystemEnvironment sysEnv, SDMSProxy p)
 		throws SDMSException
 	{
+		SDMSSubmittedEntity sme = null;
 		try {
-			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
+			sme = (SDMSSubmittedEntity) p;
 			if(jobStates.contains(sme.getState(sysEnv))) return true;
 		} catch (Exception e) { }
+		if (sme != null && jobStates.contains(SDMSSubmittedEntity.SUSPENDED)) {
+			if (!sme.getIsSuspended(sysEnv).equals(SDMSSubmittedEntity.NOSUSPEND))
+				return true;
+			if (sme.getChildSuspended(sysEnv).intValue() > 0)
+				return true;
+		}
 		return false;
 	}
 

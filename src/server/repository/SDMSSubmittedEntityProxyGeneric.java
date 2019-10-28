@@ -55,6 +55,7 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 	public static final int BROKEN_FINISHED = 14;
 	public static final int ERROR = 15;
 	public static final int UNREACHABLE = 16;
+	public static final int SUSPENDED   = 99;
 	public static final int SUSPEND = 1;
 	public static final int NOSUSPEND = 0;
 	public static final int ADMINSUSPEND = 2;

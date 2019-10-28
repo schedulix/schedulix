@@ -87,6 +87,7 @@ public class ParseStr
 	public static final String S_CLEANUP		= "CLEANUP";
 	public static final String S_CLEAR		= "CLEAR";
 	public static final String S_CLEAR_WARN		= "CLEAR_WARN";
+	public static final String S_CLONE		= "CLONE";
 	public static final String S_CMPOP		= "CMPOP";
 	public static final String S_COMMAND		= "COMMAND";
 	public static final String S_COMMENT		= "COMMENT";
@@ -394,6 +395,7 @@ public class ParseStr
 	public static final String S_SUM		= "SUM";
 	public static final String S_SUSPEND		= "SUSPEND";
 	public static final String S_SUSPEND_LIMIT	= "SUSPEND_LIMIT";
+	public static final String S_SUSPENDED		= "SUSPENDED";
 	public static final String S_SX			= "SX";
 	public static final String S_SYNCHRONIZE_WAIT	= "SYNCHRONIZE_WAIT";
 	public static final String S_SYNCHRONIZING	= "SYNCHRONIZING";
@@ -593,6 +595,7 @@ public class ParseStr
 		mapper.put(new Integer(Parser.CHILDTAG),		ParseStr.S_CHILDTAG);
 		mapper.put(new Integer(Parser.CLEANUP),			ParseStr.S_CLEANUP);
 		mapper.put(new Integer(Parser.CLEAR),			ParseStr.S_CLEAR);
+		mapper.put(new Integer(Parser.CLONE),			ParseStr.S_CLONE);
 		mapper.put(new Integer(Parser.CMPOP),			ParseStr.S_CMPOP);
 		mapper.put(new Integer(Parser.COMMAND),			ParseStr.S_COMMAND);
 		mapper.put(new Integer(Parser.COMMENT),			ParseStr.S_COMMENT);
@@ -855,6 +858,7 @@ public class ParseStr
 		mapper.put(new Integer(Parser.SUM),			ParseStr.S_SUM);
 		mapper.put(new Integer(Parser.SUSPEND),			ParseStr.S_SUSPEND);
 		mapper.put(new Integer(Parser.SUSPEND_LIMIT),		ParseStr.S_SUSPEND_LIMIT);
+		mapper.put(new Integer(Parser.SUSPENDED),		ParseStr.S_SUSPENDED);
 		mapper.put(new Integer(Parser.SX),			ParseStr.S_SX);
 		mapper.put(new Integer(Parser.SYNCHRONIZE_WAIT),	ParseStr.S_SYNCHRONIZE_WAIT);
 		mapper.put(new Integer(Parser.SYNCHRONIZING),		ParseStr.S_SYNCHRONIZING);
