@@ -365,7 +365,7 @@ class ParseObject {
 		} catch (NumberFormatException nfe) {
 			// we'd like to convert into a number, but the format isn't valid :-(
 			// throwing an error here isn't exactly what we want, but we have no real alternative
-			if (string.equals("")) {
+			if (string == null || string.equals("") || string.toUpperCase().equals("NONE")) {
 				rc.number = new BigDecimal("0");
 			} else {
 				throw new SDMSException(new SDMSMessage((SystemEnvironment) null, "03802071626", "Error evaluating expression. Invalid number format of $1", string));
