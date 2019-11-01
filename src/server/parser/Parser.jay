@@ -2764,7 +2764,8 @@ aj_withlist:	aj_withitem							{ $$ = new WithHash(); $<WithHash>$.addItem($1); 
 aj_withitem:	CANCEL								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
 	|	aj_disable							{ $$ = $1; }
 	|	CLEAR WARNING							{ $$ = new WithItem(ParseStr.S_CLEAR_WARN, Boolean.TRUE); }
-	|	CLONE 								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
+	|	CLONE RESUME							{ $$ = new WithItem(ParseStr.map($1.token), Boolean.FALSE); }
+	|	CLONE SUSPEND							{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
 	|	COMMENT '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 	|	ERROR_TEXT '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 	|	EXEC_PID '=' pid						{ $$ = new WithItem(ParseStr.map($1.token), $3); }

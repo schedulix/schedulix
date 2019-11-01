@@ -1254,6 +1254,16 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 								if (di_r.getState(sysEnv).intValue() == SDMSDependencyInstance.OPEN || di_r.getRequiredSeId(sysEnv) != null) {
 									di_r.setRequiredId(sysEnv, id);
 									di_r.setState(sysEnv, SDMSDependencyInstance.OPEN);
+								} else {
+									if (di_r.getIgnore(sysEnv).intValue() == SDMSDependencyInstance.NO) {
+										Long depSmeId = di_r.getDependentId(sysEnv);
+										SDMSSubmittedEntity dsme = SDMSSubmittedEntityTable.getObject(sysEnv, depSmeId);
+										int dState = dsme.getState(sysEnv).intValue();
+										if (dState == SDMSSubmittedEntity.DEPENDENCY_WAIT || dsme.getJobIsRestartable(sysEnv)) {
+											di_r.setRequiredId(sysEnv, id);
+											di_r.setState(sysEnv, SDMSDependencyInstance.OPEN);
+										}
+									}
 								}
 							}
 						}
@@ -2110,7 +2120,9 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (submit) {
 			checkValidESP(sysEnv, se, seVersion);
 
-			sme = createSme(sysEnv, se, sh, childTag, ownerId, isStatic, isDisabled, (suspended.booleanValue() ? (forceSuspend == null ? new Integer(SUSPEND) : forceSuspend) : new Integer(NOSUSPEND)), parentSuspended, myResumeTs, replaceSmeId, submitTag, submitTs, null );
+			sme = createSme(sysEnv, se, sh, childTag, ownerId, isStatic, isDisabled,
+			                (suspended.booleanValue() ? (forceSuspend == null ? new Integer(SUSPEND) : forceSuspend) : new Integer(NOSUSPEND)),
+			                parentSuspended, myResumeTs, replaceSmeId, submitTag, submitTs, null );
 		}
 		SDMSHierarchyInstance hi = SDMSHierarchyInstanceTable.table.create(sysEnv,
 					   id,

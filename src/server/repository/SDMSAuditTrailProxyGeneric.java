@@ -90,6 +90,7 @@ public class SDMSAuditTrailProxyGeneric extends SDMSProxy
 	public static final int SET_PARAMETERS = 29;
 	public static final int DISABLE = 30;
 	public static final int ENABLE = 31;
+	public static final int CLONE = 32;
 	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW;
 
 	static final public int actionInfo_size = 1024;

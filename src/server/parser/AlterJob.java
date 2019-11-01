@@ -554,6 +554,41 @@ public class AlterJob extends Node
 			int nv = renice.intValue() + sme.getNice(sysEnv).intValue();
 			sme.renice(sysEnv, new Integer(nv), null, comment);
 		}
+		if (clone != null) {
+			if (sme.getIsReplaced(sysEnv).booleanValue()) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311420", "Cannot clone an already replaced job or batch"));
+			}
+			if (sme.getState(sysEnv) != SDMSSubmittedEntity.FINAL) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311421", "Cannot clone a job or batch that is stil active"));
+			}
+			Long parentId = sme.getParentId(sysEnv);
+			if (parentId == null) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311422", "Cannot clone a master job or batch"));
+			} else {
+				SDMSSubmittedEntity psme = SDMSSubmittedEntityTable.getObject(sysEnv, parentId);
+				String childTag = "C_" + sysEnv.tx.txId;
+				Long replaceId = sme.getId (sysEnv);
+				Long submitSeId = sme.getSeId(sysEnv);
+				SDMSSubmittedEntity childSme = psme.submitChild(sysEnv,
+				                               null,
+				                               new Integer (SDMSSubmittedEntity.SUSPEND),
+				                               null,
+				                               submitSeId,
+				                               childTag,
+				                               replaceId,
+				                               null,
+				                               true
+				                                               );
+				if (childSme.getIsDisabled(sysEnv).booleanValue()) {
+					childSme.disable(Boolean.FALSE, sysEnv);
+				} else {
+					if (clone.booleanValue()) {
+						sme.resume(sysEnv, true);
+					}
+				}
+			}
+		}
+
 		if(with.containsKey(ParseStr.S_ERROR_TEXT))	sme.setErrorMsg(sysEnv, errText);
 
 	}
