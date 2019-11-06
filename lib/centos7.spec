@@ -508,6 +508,8 @@ echo "executing postun examples -- %version-%release"
 %ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/etc/host_2.conf
 %ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/etc/localhost.conf
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/install/setup_example_jobservers.sh
+%attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/dog.sh
+%attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/frosch.sh
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/install/setup_examples.sdms
 %attr(0744, root, root)             /etc/init.d/schedulix-examples
 
