@@ -275,7 +275,7 @@ public class SDMSEventGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSEvent.getProxy(sysEnv, this);
+		return new SDMSEvent(this);
 	}
 
 	protected SDMSEventGeneric(Long p_id,

@@ -673,7 +673,7 @@ public class SDMSSubmittedEntityStatsGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSSubmittedEntityStats.getProxy(sysEnv, this);
+		return new SDMSSubmittedEntityStats(this);
 	}
 
 	protected SDMSSubmittedEntityStatsGeneric(Long p_id,

@@ -204,7 +204,7 @@ public class SDMSResourceStateDefinitionGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSResourceStateDefinition.getProxy(sysEnv, this);
+		return new SDMSResourceStateDefinition(this);
 	}
 
 	protected SDMSResourceStateDefinitionGeneric(Long p_id,

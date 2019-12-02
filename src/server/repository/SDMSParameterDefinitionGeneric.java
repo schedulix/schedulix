@@ -577,7 +577,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSParameterDefinition.getProxy(sysEnv, this);
+		return new SDMSParameterDefinition(this);
 	}
 
 	protected SDMSParameterDefinitionGeneric(Long p_id,

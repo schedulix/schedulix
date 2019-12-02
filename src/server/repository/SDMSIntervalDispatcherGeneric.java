@@ -421,7 +421,7 @@ public class SDMSIntervalDispatcherGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSIntervalDispatcher.getProxy(sysEnv, this);
+		return new SDMSIntervalDispatcher(this);
 	}
 
 	protected SDMSIntervalDispatcherGeneric(Long p_id,

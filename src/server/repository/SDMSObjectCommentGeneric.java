@@ -484,7 +484,7 @@ public class SDMSObjectCommentGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSObjectComment.getProxy(sysEnv, this);
+		return new SDMSObjectComment(this);
 	}
 
 	protected SDMSObjectCommentGeneric(Long p_id,

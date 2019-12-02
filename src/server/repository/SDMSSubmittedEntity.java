@@ -1532,6 +1532,21 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 	}
 
+	public void finishDisabledOrBatch(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		if (getJobEsdId(sysEnv) == null) {
+			setJobEsdId(sysEnv, getDefaultEsdId(sysEnv));
+		}
+		setJobIsFinal(sysEnv, Boolean.TRUE);
+		checkDependents(sysEnv);
+		setState(sysEnv, new Integer(FINISHED));
+		trigger (sysEnv, SDMSTrigger.UNTIL_FINISHED);
+		trigger (sysEnv, SDMSTrigger.UNTIL_FINAL);
+		mergeExitStates(sysEnv);
+		checkFinal(sysEnv);
+	}
+
 	protected void testDependencies(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
@@ -1543,7 +1558,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		    s != SDMSSubmittedEntity.UNREACHABLE) {
 			return;
 		}
-		if (s == SDMSSubmittedEntity.DEPENDENCY_WAIT && getOldState(sysEnv) != null && !getIsDisabled(sysEnv).booleanValue()) {
+		if (s == SDMSSubmittedEntity.DEPENDENCY_WAIT && getOldState(sysEnv) != null) {
 			return;
 		}
 		long seVersion = getSeVersion(sysEnv).longValue();
@@ -1737,32 +1752,21 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				switch (type) {
 					case SDMSSchedulingEntity.JOB:
 						boolean isRR = (getOldState(sysEnv) == null);
-						if (!getIsDisabled(sysEnv).booleanValue()) {
-							if (isRR) {
-								if ((getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND &&
-								     getParentSuspended(sysEnv).intValue() == 0) ||
-								    getRerunSeq(sysEnv).intValue() > 0) {
-									setState(sysEnv, new Integer(SYNCHRONIZE_WAIT));
-								}
+						if (isRR) {
+							if ((getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND &&
+							     getParentSuspended(sysEnv).intValue() == 0) ||
+							    getRerunSeq(sysEnv).intValue() > 0) {
+								setState(sysEnv, new Integer(SYNCHRONIZE_WAIT));
 							}
-							break;
 						}
+							break;
 					case SDMSSchedulingEntity.BATCH:
 					case SDMSSchedulingEntity.MILESTONE:
 
 						if ((getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND &&
 						     getParentSuspended(sysEnv).intValue() == 0) ||
 						    getRerunSeq(sysEnv).intValue() > 0) {
-							if (getJobEsdId(sysEnv) == null) {
-								setJobEsdId(sysEnv, getDefaultEsdId(sysEnv));
-							}
-							setJobIsFinal(sysEnv, Boolean.TRUE);
-							checkDependents(sysEnv);
-							setState(sysEnv, new Integer(FINISHED));
-							trigger (sysEnv, SDMSTrigger.UNTIL_FINISHED);
-							trigger (sysEnv, SDMSTrigger.UNTIL_FINAL);
-							mergeExitStates(sysEnv);
-							checkFinal(sysEnv);
+							finishDisabledOrBatch(sysEnv);
 						}
 						break;
 				}
@@ -2818,9 +2822,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		return;
 	}
 
-	private void checkDependents(SystemEnvironment sysEnv)
-		throws SDMSException
+	private HashSet<Long> collectDependents(SystemEnvironment sysEnv)
+	throws SDMSException
 	{
+		HashSet<Long> result = new HashSet<Long>();
 		Long id = getId(sysEnv);
 		Vector v_di = SDMSDependencyInstanceTable.idx_requiredId.getVectorForUpdate(sysEnv, id);
 		HashMap checkCache = new HashMap();
@@ -2831,10 +2836,22 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			int newDiState = di.check(sysEnv, checkCache);
 			if (newDiState != SDMSDependencyInstance.OPEN ||
 			    (oldDiState == SDMSDependencyInstance.FAILED && newDiState != SDMSDependencyInstance.FAILED)) {
-				Long dSmeId = di.getDependentId(sysEnv);
-				SDMSSubmittedEntity dSme = SDMSSubmittedEntityTable.getObject(sysEnv, dSmeId);
-				dSme.testDependencies(sysEnv);
+				result.add(di.getDependentId(sysEnv));
 			}
+		}
+
+		return result;
+	}
+
+	private void checkDependents(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		HashSet<Long> smesToTest = collectDependents(sysEnv);
+		Iterator<Long> i = smesToTest.iterator();
+		while (i.hasNext()) {
+			Long dSmeId = i.next();
+			SDMSSubmittedEntity dSme = SDMSSubmittedEntityTable.getObject(sysEnv, dSmeId);
+			dSme.testDependencies(sysEnv);
 		}
 	}
 
@@ -3194,7 +3211,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			for(int i = 0; i < v.size(); i++) {
 				ra = (SDMSResourceAllocation) v.get(i);
 				state = newState;
-				if(ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.IGNORE) {
+				int allocType = ra.getAllocationType(sysEnv).intValue();
+				if(allocType != SDMSResourceAllocation.IGNORE) {
 					int keepMode = ra.getKeepMode(sysEnv).intValue();
 					if(keepMode != SDMSResourceRequirement.NOKEEP) {
 						if(state == FINISHED) {
@@ -3215,10 +3233,11 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 							skip = true;
 						}
 					}
-					if(state == FINISHED || state == FINAL)
-						if((ra.getRsmpId(sysEnv) != null) && (ra.getLockmode(sysEnv).intValue() == Lockmode.X)) {
+					if(state == FINISHED || state == FINAL) {
+						if((allocType == SDMSResourceAllocation.ALLOCATION) && (ra.getRsmpId(sysEnv) != null) && (ra.getLockmode(sysEnv).intValue() == Lockmode.X)) {
 							setResourceState(sysEnv, r, ra.getRsmpId(sysEnv));
 						}
+					}
 					if (skip) continue;
 				}
 				ra.delete(sysEnv, false, true);

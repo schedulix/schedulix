@@ -271,7 +271,7 @@ public class SDMSnpJobFootprintGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSnpJobFootprint.getProxy(sysEnv, this);
+		return new SDMSnpJobFootprint(this);
 	}
 
 	protected SDMSnpJobFootprintGeneric(Long p_id,

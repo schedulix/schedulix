@@ -700,7 +700,7 @@ public class SDMSKillJobGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSKillJob.getProxy(sysEnv, this);
+		return new SDMSKillJob(this);
 	}
 
 	protected SDMSKillJobGeneric(Long p_id,

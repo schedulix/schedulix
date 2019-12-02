@@ -311,7 +311,7 @@ public class SDMSScopeConfigEnvMappingGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSScopeConfigEnvMapping.getProxy(sysEnv, this);
+		return new SDMSScopeConfigEnvMapping(this);
 	}
 
 	protected SDMSScopeConfigEnvMappingGeneric(Long p_id,

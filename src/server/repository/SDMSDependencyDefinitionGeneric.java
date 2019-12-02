@@ -679,7 +679,7 @@ public class SDMSDependencyDefinitionGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSDependencyDefinition.getProxy(sysEnv, this);
+		return new SDMSDependencyDefinition(this);
 	}
 
 	protected SDMSDependencyDefinitionGeneric(Long p_id,

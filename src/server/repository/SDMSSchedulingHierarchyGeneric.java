@@ -758,7 +758,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSSchedulingHierarchy.getProxy(sysEnv, this);
+		return new SDMSSchedulingHierarchy(this);
 	}
 
 	protected SDMSSchedulingHierarchyGeneric(Long p_id,

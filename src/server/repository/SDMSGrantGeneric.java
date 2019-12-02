@@ -424,7 +424,7 @@ public class SDMSGrantGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSGrant.getProxy(sysEnv, this);
+		return new SDMSGrant(this);
 	}
 
 	protected SDMSGrantGeneric(Long p_id,

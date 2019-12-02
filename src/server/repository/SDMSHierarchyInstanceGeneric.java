@@ -395,7 +395,7 @@ public class SDMSHierarchyInstanceGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSHierarchyInstance.getProxy(sysEnv, this);
+		return new SDMSHierarchyInstance(this);
 	}
 
 	protected SDMSHierarchyInstanceGeneric(Long p_id,

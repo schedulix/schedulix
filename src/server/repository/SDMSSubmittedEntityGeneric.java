@@ -3345,7 +3345,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSSubmittedEntity.getProxy(sysEnv, this);
+		return new SDMSSubmittedEntity(this);
 	}
 
 	protected SDMSSubmittedEntityGeneric(Long p_id,

@@ -616,7 +616,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSAuditTrail.getProxy(sysEnv, this);
+		return new SDMSAuditTrail(this);
 	}
 
 	protected SDMSAuditTrailGeneric(Long p_id,

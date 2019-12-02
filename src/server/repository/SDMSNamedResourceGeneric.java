@@ -456,7 +456,7 @@ public class SDMSNamedResourceGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSNamedResource.getProxy(sysEnv, this);
+		return new SDMSNamedResource(this);
 	}
 
 	protected SDMSNamedResourceGeneric(Long p_id,

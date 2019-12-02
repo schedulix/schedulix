@@ -460,7 +460,11 @@ public class SchedulingThread extends InternalSession
 			   sme.getParentSuspended(sysEnv).intValue() > 0			  ||
 			   sme.getOldState(sysEnv) != null)
 				continue;
-			syncScheduleSme(sysEnv, sme, resourceChain);
+			if (sme.getIsDisabled(sysEnv) || sme.getIsParentDisabled(sysEnv)) {
+				sme.finishDisabledOrBatch(sysEnv);
+			} else {
+				syncScheduleSme(sysEnv, sme, resourceChain);
+			}
 		}
 	}
 

@@ -279,7 +279,7 @@ public class SDMSIntervalSelectionGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSIntervalSelection.getProxy(sysEnv, this);
+		return new SDMSIntervalSelection(this);
 	}
 
 	protected SDMSIntervalSelectionGeneric(Long p_id,

@@ -366,7 +366,7 @@ public class SDMSFolderGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSFolder.getProxy(sysEnv, this);
+		return new SDMSFolder(this);
 	}
 
 	protected SDMSFolderGeneric(Long p_id,

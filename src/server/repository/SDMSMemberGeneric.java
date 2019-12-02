@@ -253,7 +253,7 @@ public class SDMSMemberGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSMember.getProxy(sysEnv, this);
+		return new SDMSMember(this);
 	}
 
 	protected SDMSMemberGeneric(Long p_id,

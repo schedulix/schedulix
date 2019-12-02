@@ -240,7 +240,7 @@ public class SDMSResourceStateProfileGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSResourceStateProfile.getProxy(sysEnv, this);
+		return new SDMSResourceStateProfile(this);
 	}
 
 	protected SDMSResourceStateProfileGeneric(Long p_id,

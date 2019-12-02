@@ -410,7 +410,7 @@ public class SDMSResourceTemplateGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSResourceTemplate.getProxy(sysEnv, this);
+		return new SDMSResourceTemplate(this);
 	}
 
 	protected SDMSResourceTemplateGeneric(Long p_id,

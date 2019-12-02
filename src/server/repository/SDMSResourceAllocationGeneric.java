@@ -747,7 +747,7 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSResourceAllocation.getProxy(sysEnv, this);
+		return new SDMSResourceAllocation(this);
 	}
 
 	protected SDMSResourceAllocationGeneric(Long p_id,

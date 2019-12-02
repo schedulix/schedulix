@@ -1646,7 +1646,7 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSSchedulingEntity.getProxy(sysEnv, this);
+		return new SDMSSchedulingEntity(this);
 	}
 
 	protected SDMSSchedulingEntityGeneric(Long p_id,
