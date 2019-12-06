@@ -144,6 +144,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		throws SDMSException
 	{
 		if (!getIsActive(sysEnv).booleanValue()) return false;
+		if (thisSme.getIsDisabled(sysEnv).booleanValue()) return false;
 
 		SDMSSubmittedEntity sme;
 		long seVersion = thisSme.getSeVersion(sysEnv).longValue();
@@ -205,7 +206,6 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			}
 
 			tq.setNextTriggerTime(sysEnv, new Long(now + checkAmount));
-
 		}
 		int maxTrSeq = 0;
 		Vector v_f_sme;

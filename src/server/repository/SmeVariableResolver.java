@@ -304,7 +304,9 @@ public class SmeVariableResolver extends VariableResolver
 			try {
 				long seVersion = thisSme.getSeVersion(sysEnv).longValue();
 				pd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(thisSme.getSeId(sysEnv), key), seVersion);
-				if(pd.getType(sysEnv).intValue() == SDMSParameterDefinition.IMPORT) fastAccess = false;
+				if(pd.getType(sysEnv).intValue() != SDMSParameterDefinition.RESULT &&
+				    pd.getType(sysEnv).intValue() != SDMSParameterDefinition.EXPRESSION)
+					fastAccess = false;
 			} catch (NotFoundException nfe2) {
 				pd = null;
 				if(fastAccess) return emptyString;
