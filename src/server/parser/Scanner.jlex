@@ -72,8 +72,10 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("CHILDTAG",		new Integer(Parser.CHILDTAG));
 	tokens.put("CLEANUP",		new Integer(Parser.CLEANUP));
 	tokens.put("CLEAR",		new Integer(Parser.CLEAR));
+	tokens.put("CLONE",		new Integer(Parser.CLONE));
 	tokens.put("COMMAND",		new Integer(Parser.COMMAND));
 	tokens.put("COMMENT",		new Integer(Parser.COMMENT));
+	tokens.put("CONDENSED",		new Integer(Parser.CONDENSED));
 	tokens.put("CONDITION",		new Integer(Parser.CONDITION));
 	tokens.put("CONFIG",		new Integer(Parser.CONFIG));
 	tokens.put("CONNECT",		new Integer(Parser.CONNECT));
@@ -108,6 +110,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("EDIT",		new Integer(Parser.EDIT));
 	tokens.put("EMBEDDED",		new Integer(Parser.EMBEDDED));
 	tokens.put("ENABLE",		new Integer(Parser.ENABLE));
+	tokens.put("ENABLED",		new Integer(Parser.ENABLED));
 	tokens.put("ENDTIME",		new Integer(Parser.ENDTIME));
 	tokens.put("ENVIRONMENT",	new Integer(Parser.ENVIRONMENT));
 	tokens.put("ENVIRONMENTS",	new Integer(Parser.ENVIRONMENT));
@@ -326,6 +329,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("SUBMITTED",		new Integer(Parser.SUBMITTED));
 	tokens.put("SUM",		new Integer(Parser.SUM));
 	tokens.put("SUSPEND",		new Integer(Parser.SUSPEND));
+	tokens.put("SUSPENDED",		new Integer(Parser.SUSPENDED));
 	tokens.put("SX",		new Integer(Parser.SX));
 	tokens.put("SYNCHRONIZING",	new Integer(Parser.SYNCHRONIZING));
 	tokens.put("SYNCTIME",		new Integer(Parser.SYNCTIME));
@@ -500,7 +504,6 @@ broken =	[Bb][Rr][Oo][Kk][Ee][Nn]
 change =	[Cc][Hh][Aa][Nn][Gg][Ee]
 child =		[Cc][Hh][Ii][Ll][Dd]
 code =		[Cc][Oo][Dd][Ee]
-condition =	[Cc][Oo][Nn][Dd][Ii][Tt][Ii][Oo][Nn]
 constant =	[Cc][Oo][Nn][Ss][Tt][Aa][Nn][Tt]
 default =	[Dd][Ee][Ff][Aa][Uu][Ll][Tt]
 defer	 =	[Dd][Ee][Ff][Ee][Rr]
