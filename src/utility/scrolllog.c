@@ -93,6 +93,22 @@ void usage(char *argv[], char *msg)
 	exit(1);
 }
 
+#ifdef HPUX
+char * strndup(char *src, size_t len)
+{
+	int i;
+	char *result = malloc(len + 1);
+	if (result == NULL)
+		return NULL;
+
+	for (i = 0; i < len && src[i]; ++i)
+		result[i] = src[i];
+	result[i] = '\0';
+
+	return result;
+}
+#endif
+
 void exit_handler(int p)
 {
 
@@ -347,7 +363,7 @@ int mylock(int fd)
 #ifdef LINUX
 	rc = flock(fd, LOCK_EX|LOCK_NB);
 #endif
-#if defined(BSD) || defined(AIX)
+#if defined(BSD) || defined(AIX) || defined(HPUX)
 
 	struct stat buf;
 	static FILE *shadowfile=NULL;

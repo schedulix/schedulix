@@ -53,7 +53,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef WINDOWS
 #define NULLDEVICE   "/dev/null"
 #define SIGNUM_MIN SIGHUP
+#ifdef HPUX
+#define SIGNUM_MAX 30
+#else
 #define SIGNUM_MAX SIGSYS
+#endif
 #else
 #define NULLDEVICE   "NUL"
 #endif
@@ -169,7 +173,7 @@ errmsg_t message[] = {
 #define CHLDWAIT_FAILED	22
 	{ "Wait for child process failed", T_NONE },
 #define SET_SIGNAL_FAILED 23
-	{ "Set signal handler failed", T_NONE }
+	{ "Set signal handler failed (%d / %s)", T_BOTH }
 };
 
 const char *ARG_VERSION1 = "--version";
@@ -257,17 +261,21 @@ struct _global {
 HANDLE myLog = NULL;
 
 /* prototypes */
-const char *getUsage();
-const char *getVersion();
-void initFields();
+const char *getUsage(void);
+const char *getVersion(void);
+void initFields(void);
 int checkArgs(callstatus *status, int argc, char *argv[]);
 HANDLE openTaskfile(callstatus *status);
 void closeTaskfile(callstatus *status, HANDLE taskfile);
 #ifndef WINDOWS
 void createErrorTaskfileName(char *tfn);
-void createTfLink();
+void createTfLink(void);
 void reportSysUse(callstatus *status, struct rusage usage);
 #endif
+void addArgument(callstatus *status, char *value);
+void processEntry(callstatus *status);
+void closeLog(callstatus *status);
+char *getTimestamp(time_t tim, int local);
 void advance(callstatus *status);
 void readTimestamp(callstatus *status);
 void readWhiteSpace(callstatus *status);
@@ -282,7 +290,7 @@ void redirect(callstatus *status);
 void openLog(callstatus *status);
 char *getUniquePid(callstatus *status, pid_t pid);
 void run(callstatus *status);
-void printJobFields();
+void printJobFields(void);
 void default_all_signals(callstatus *status);
 void ignore_all_signals(callstatus *status);
 #ifndef WINDOWS
@@ -545,11 +553,16 @@ void set_all_signals (struct sigaction aktschn, callstatus *status)
 	int signum;
 
 	for (signum = SIGNUM_MIN; signum <= SIGNUM_MAX; ++signum) {
-		if ((signum != SIGKILL) && (signum != SIGSTOP) && (signum != SIGCHLD)) {
+		if ((signum != SIGKILL) && (signum != SIGSTOP) && (signum != SIGCHLD) &&
+		    (signum != SIGTSTP) && (signum != SIGTTIN) && (signum != SIGTTOU)
+		) {
 			rc = sigaction (signum, &aktschn, NULL);
 			if (rc) {
 				status->severity = SEVERITY_WARNING;
 				status->msg = SET_SIGNAL_FAILED;
+				status->syserror = errno;
+				if (myLog != NULL) Hprintf(myLog, "Tried to set signal handler for %d\n", signum);
+				if (myLog != NULL) Hprintf(myLog, "%s\n", renderError(status));
 			}
 		}
 	}
@@ -559,7 +572,7 @@ void ignore_all_signals (callstatus *status)
 {
 	struct sigaction aktschn;
 
-#ifdef BSD
+#if defined(BSD) || defined(HPUX)
 	sigemptyset (&aktschn.sa_mask);
 
 	aktschn.sa_flags   = 0;
@@ -572,7 +585,7 @@ void ignore_all_signals (callstatus *status)
 void default_all_signals (callstatus *status)
 {
 	struct sigaction aktschn;
-#ifdef BSD
+#if defined(BSD) || defined(HPUX)
 	sigemptyset (&aktschn.sa_mask);
 
 	aktschn.sa_flags   = 0;
@@ -1222,7 +1235,7 @@ void processTaskfile(callstatus *status)
 char *getTimestamp(time_t tim, int local)
 {
 	static char buf [64];
-#if !defined SOLARIS && !defined AIX
+#if !defined SOLARIS && !defined AIX && !defined(HPUX)
   #ifdef WINDOWS
 	_tzset();
   #endif
