@@ -227,7 +227,7 @@ public class SDMSIntervalHierarchyGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSIntervalHierarchy.getProxy(sysEnv, this);
+		return new SDMSIntervalHierarchy(this);
 	}
 
 	protected SDMSIntervalHierarchyGeneric(Long p_id,

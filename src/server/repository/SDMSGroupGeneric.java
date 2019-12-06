@@ -274,7 +274,7 @@ public class SDMSGroupGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSGroup.getProxy(sysEnv, this);
+		return new SDMSGroup(this);
 	}
 
 	protected SDMSGroupGeneric(Long p_id,

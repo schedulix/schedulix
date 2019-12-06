@@ -204,7 +204,7 @@ public class SDMSExitStateTranslationProfileGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSExitStateTranslationProfile.getProxy(sysEnv, this);
+		return new SDMSExitStateTranslationProfile(this);
 	}
 
 	protected SDMSExitStateTranslationProfileGeneric(Long p_id,

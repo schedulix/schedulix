@@ -260,7 +260,7 @@ public class SDMSVersionedExtentsGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSVersionedExtents.getProxy(sysEnv, this);
+		return new SDMSVersionedExtents(this);
 	}
 
 	protected SDMSVersionedExtentsGeneric(Long p_id,

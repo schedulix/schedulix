@@ -233,7 +233,7 @@ public class SDMSPersistentValueGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSPersistentValue.getProxy(sysEnv, this);
+		return new SDMSPersistentValue(this);
 	}
 
 	protected SDMSPersistentValueGeneric(Long p_id,

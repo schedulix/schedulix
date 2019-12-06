@@ -264,7 +264,7 @@ public class SDMSTriggerStateGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSTriggerState.getProxy(sysEnv, this);
+		return new SDMSTriggerState(this);
 	}
 
 	protected SDMSTriggerStateGeneric(Long p_id,

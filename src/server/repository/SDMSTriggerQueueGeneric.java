@@ -337,7 +337,7 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSTriggerQueue.getProxy(sysEnv, this);
+		return new SDMSTriggerQueue(this);
 	}
 
 	protected SDMSTriggerQueueGeneric(Long p_id,

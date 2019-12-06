@@ -862,7 +862,7 @@ public class SDMSScopeGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSScope.getProxy(sysEnv, this);
+		return new SDMSScope(this);
 	}
 
 	protected SDMSScopeGeneric(Long p_id,

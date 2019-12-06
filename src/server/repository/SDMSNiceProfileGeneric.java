@@ -261,7 +261,7 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSNiceProfile.getProxy(sysEnv, this);
+		return new SDMSNiceProfile(this);
 	}
 
 	protected SDMSNiceProfileGeneric(Long p_id,

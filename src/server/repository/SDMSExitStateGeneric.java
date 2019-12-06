@@ -454,7 +454,7 @@ public class SDMSExitStateGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSExitState.getProxy(sysEnv, this);
+		return new SDMSExitState(this);
 	}
 
 	protected SDMSExitStateGeneric(Long p_id,

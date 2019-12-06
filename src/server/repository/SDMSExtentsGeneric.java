@@ -295,7 +295,7 @@ public class SDMSExtentsGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSExtents.getProxy(sysEnv, this);
+		return new SDMSExtents(this);
 	}
 
 	protected SDMSExtentsGeneric(Long p_id,

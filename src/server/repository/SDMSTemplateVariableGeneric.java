@@ -293,7 +293,7 @@ public class SDMSTemplateVariableGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSTemplateVariable.getProxy(sysEnv, this);
+		return new SDMSTemplateVariable(this);
 	}
 
 	protected SDMSTemplateVariableGeneric(Long p_id,

@@ -300,7 +300,7 @@ public class SDMSUserEquivGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSUserEquiv.getProxy(sysEnv, this);
+		return new SDMSUserEquiv(this);
 	}
 
 	protected SDMSUserEquivGeneric(Long p_id,

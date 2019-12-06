@@ -483,7 +483,7 @@ public class SDMSScheduleGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSSchedule.getProxy(sysEnv, this);
+		return new SDMSSchedule(this);
 	}
 
 	protected SDMSScheduleGeneric(Long p_id,

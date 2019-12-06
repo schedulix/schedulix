@@ -488,7 +488,7 @@ public class SDMSUserGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSUser.getProxy(sysEnv, this);
+		return new SDMSUser(this);
 	}
 
 	protected SDMSUserGeneric(Long p_id,

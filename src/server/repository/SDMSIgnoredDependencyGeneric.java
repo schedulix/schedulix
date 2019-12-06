@@ -271,7 +271,7 @@ public class SDMSIgnoredDependencyGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSIgnoredDependency.getProxy(sysEnv, this);
+		return new SDMSIgnoredDependency(this);
 	}
 
 	protected SDMSIgnoredDependencyGeneric(Long p_id,

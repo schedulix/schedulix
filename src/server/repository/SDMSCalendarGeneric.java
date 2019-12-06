@@ -253,7 +253,7 @@ public class SDMSCalendarGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSCalendar.getProxy(sysEnv, this);
+		return new SDMSCalendar(this);
 	}
 
 	protected SDMSCalendarGeneric(Long p_id,

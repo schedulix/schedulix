@@ -244,7 +244,7 @@ public class SDMSnpSrvrSRFootprintGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSnpSrvrSRFootprint.getProxy(sysEnv, this);
+		return new SDMSnpSrvrSRFootprint(this);
 	}
 
 	protected SDMSnpSrvrSRFootprintGeneric(Long p_id,

@@ -343,7 +343,7 @@ public class SDMSRunnableQueueGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSRunnableQueue.getProxy(sysEnv, this);
+		return new SDMSRunnableQueue(this);
 	}
 
 	protected SDMSRunnableQueueGeneric(Long p_id,

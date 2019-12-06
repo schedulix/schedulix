@@ -753,7 +753,7 @@ public class SDMSScheduledEventGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSScheduledEvent.getProxy(sysEnv, this);
+		return new SDMSScheduledEvent(this);
 	}
 
 	protected SDMSScheduledEventGeneric(Long p_id,

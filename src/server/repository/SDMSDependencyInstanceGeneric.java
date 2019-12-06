@@ -604,7 +604,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSDependencyInstance.getProxy(sysEnv, this);
+		return new SDMSDependencyInstance(this);
 	}
 
 	protected SDMSDependencyInstanceGeneric(Long p_id,

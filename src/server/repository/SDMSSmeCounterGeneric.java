@@ -345,7 +345,7 @@ public class SDMSSmeCounterGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSSmeCounter.getProxy(sysEnv, this);
+		return new SDMSSmeCounter(this);
 	}
 
 	protected SDMSSmeCounterGeneric(Long p_id,

@@ -397,7 +397,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSEntityVariable.getProxy(sysEnv, this);
+		return new SDMSEntityVariable(this);
 	}
 
 	protected SDMSEntityVariableGeneric(Long p_id,

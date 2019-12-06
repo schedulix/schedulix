@@ -311,7 +311,7 @@ public class SDMSEventParameterGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSEventParameter.getProxy(sysEnv, this);
+		return new SDMSEventParameter(this);
 	}
 
 	protected SDMSEventParameterGeneric(Long p_id,

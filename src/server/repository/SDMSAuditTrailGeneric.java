@@ -90,6 +90,8 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	public static final int JOB_UNREACHABLE = 28;
 	public static final int SET_PARAMETERS = 29;
 	public static final int DISABLE = 30;
+	public static final int ENABLE = 31;
+	public static final int CLONE = 32;
 
 	public final static int nr_id = 1;
 	public final static int nr_userId = 2;
@@ -320,6 +322,10 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				return "SET_PARAMETERS";
 			case SDMSAuditTrail.DISABLE:
 				return "DISABLE";
+			case SDMSAuditTrail.ENABLE:
+				return "ENABLE";
+			case SDMSAuditTrail.CLONE:
+				return "CLONE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -610,7 +616,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSAuditTrail.getProxy(sysEnv, this);
+		return new SDMSAuditTrail(this);
 	}
 
 	protected SDMSAuditTrailGeneric(Long p_id,
@@ -851,6 +857,8 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			case SDMSAuditTrail.JOB_UNREACHABLE:
 			case SDMSAuditTrail.SET_PARAMETERS:
 			case SDMSAuditTrail.DISABLE:
+			case SDMSAuditTrail.ENABLE:
+			case SDMSAuditTrail.CLONE:
 				return true;
 		}
 		return false;

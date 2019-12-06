@@ -294,7 +294,7 @@ public class SDMSDependencyStateGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSDependencyState.getProxy(sysEnv, this);
+		return new SDMSDependencyState(this);
 	}
 
 	protected SDMSDependencyStateGeneric(Long p_id,

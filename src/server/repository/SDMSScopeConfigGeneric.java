@@ -311,7 +311,7 @@ public class SDMSScopeConfigGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSScopeConfig.getProxy(sysEnv, this);
+		return new SDMSScopeConfig(this);
 	}
 
 	protected SDMSScopeConfigGeneric(Long p_id,

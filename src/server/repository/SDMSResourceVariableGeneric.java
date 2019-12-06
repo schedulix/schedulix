@@ -293,7 +293,7 @@ public class SDMSResourceVariableGeneric extends SDMSObject
 
 	protected SDMSProxy toProxy(SystemEnvironment sysEnv)
 	{
-		return SDMSResourceVariable.getProxy(sysEnv, this);
+		return new SDMSResourceVariable(this);
 	}
 
 	protected SDMSResourceVariableGeneric(Long p_id,
