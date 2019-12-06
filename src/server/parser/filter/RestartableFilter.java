@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser.filter;
 
 import java.io.*;
@@ -52,7 +50,7 @@ public class RestartableFilter extends Filter
 	{
 		try {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
-			if (mastersFirst && sme.getCntRestartable(sysEnv).intValue() > 0) return true;
+			if (sme.getCntRestartable(sysEnv).intValue() > 0) return true;
 			int s = sme.getState(sysEnv).intValue();
 			if(stateType.intValue() == SDMSExitState.RESTARTABLE) {
 				if(sme.getJobIsRestartable(sysEnv).booleanValue()) return true;
