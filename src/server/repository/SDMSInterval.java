@@ -36,6 +36,7 @@ import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.timer.*;
+import de.independit.scheduler.server.parser.IntervalUtil;
 
 public class SDMSInterval extends SDMSIntervalProxyGeneric
 	implements SDMSOwnedObject
@@ -300,7 +301,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		}
 		while (true) {
-			if (ntd[best] > horizon) {
+			if (best == Integer.MAX_VALUE || ntd[best] > horizon) {
 				return null;
 			}
 			for (int i = 0; i <= best ; ++i) {
@@ -387,7 +388,6 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 					if (tmp > checkDate) {
 						blockState.blockStart = tmp;
 						tmp2 = embeddedInterval.getNextTriggerDate(sysEnv, blockState.blockStart, blockState.baseEnd > horizon ? blockState.baseEnd : horizon, tz, DRIVER, indent + 1);
-
 						if (tmp2 == null) {
 							blockState.blockEnd = blockState.baseEnd;
 						} else {
@@ -830,10 +830,13 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 			while (nextBlock.blockStart < date || prevBlock.blockEnd + 1 < date || prevBlock.blockEnd + 1 == nextBlock.blockStart) {
 				prevBlock = nextBlock;
+				if (prevBlock.blockEnd + 1 > date) {
+					date = prevBlock.blockEnd + 1;
+				}
 				nextBlock = getNextPositiveRange(sysEnv, prevBlock.blockEnd, tz);
 				if (nextBlock == null) {
-					if (prevBlock.blockEnd + 1 >= date) {
-						blockState.blockStart = prevBlock.blockEnd + 1;
+					if (prevBlock.blockEnd + 1 == date) {
+						blockState.blockStart = date;
 						blockState.blockEnd = endTime;
 						return true;
 					}
@@ -1620,6 +1623,11 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			SDMSInterval iv = (SDMSInterval) i.next();
 			if (id.equals(iv.getId(sysEnv))) continue;
 			try {
+				Long ivalId = iv.getId(sysEnv);
+				IntervalUtil.killFilter (sysEnv, ivalId);
+				IntervalUtil.killSelections (sysEnv, ivalId);
+				IntervalUtil.killDispatcher (sysEnv, ivalId);
+
 				iv.delete(sysEnv);
 			} catch (NotFoundException nfe) {
 			}
