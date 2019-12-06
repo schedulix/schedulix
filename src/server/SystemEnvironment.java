@@ -47,7 +47,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_PROFESSIONAL = "PROFESSIONAL";
 	public static final String S_ENTERPRISE   = "ENTERPRISE";
 
-	public static final String programVersion = "2.9";
+	public static final String programVersion = "3.0";
 	public static String programLevel = null;
 
 	public static final long SYSTEM_OBJECTS_BOUNDARY = 1000;
@@ -71,11 +71,15 @@ public class SystemEnvironment implements Cloneable
 	private static final String S_LANGLEVEL29  = "2.9";
 	public static final int LANGLEVEL29 = 3;
 
+	private static final String S_LANGLEVEL30  = "3.0";
+	public static final int LANGLEVEL30 = 4;
+
 	private static final String LANGLEVELS[] = {
 		S_LANGLEVEL261,
 		S_LANGLEVEL27,
 		S_LANGLEVEL28,
-		S_LANGLEVEL29
+		S_LANGLEVEL29,
+		S_LANGLEVEL30
 	};
 
 	private static final int DEFAULT_LANGLEVEL = LANGLEVELS.length - 1;
@@ -158,6 +162,7 @@ public class SystemEnvironment implements Cloneable
 	public static boolean fatalIsError;
 	public static String selectGroup;
 	public static String auditFile;
+	public static int auditEntries;
 	public static de.independit.scheduler.server.util.Authenticator auth;
 	public static boolean enhancedCmdParsing;
 
@@ -203,6 +208,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_ARCKJCOLS             = "ArchiveKillJobColumns";
 	public static final String S_ARCSMESCOLS           = "ArchiveStatsColumns";
 	public static final String S_AUDITFILE             = "AuditFile";
+	public static final String S_AUDITENTRIES          = "AuditEntries";
 	public static final String S_AUTHCLASS             = "AuthenticationClass";
 	public static final String S_CALHORIZON            = "CalendarHorizon";
 	public static final String S_CALENTRIES            = "CalendarEntries";
@@ -459,9 +465,7 @@ public class SystemEnvironment implements Cloneable
 		getTriggerSoftLimit();
 		getTriggerHardLimit();
 
-		if (checkCompatLevel(S_ENTERPRISE)) {
-			getAuditFile();
-		}
+		getAuditFile();
 
 		getSSLproperties();
 
@@ -610,6 +614,9 @@ public class SystemEnvironment implements Cloneable
 	private void getAuditFile()
 	{
 		auditFile = props.getProperty(S_AUDITFILE);
+		String s_auditEntries = props.getProperty(S_AUDITENTRIES, "100000");
+		auditEntries = checkIntProperty(s_auditEntries, S_AUDITENTRIES, 1, 100000, 0, "Invalid Audit Chunk Size : ");
+		props.setProperty(S_AUDITENTRIES, "" + auditEntries);
 	}
 
 	private void getArchive()
