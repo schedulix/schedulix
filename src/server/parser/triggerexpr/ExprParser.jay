@@ -77,10 +77,10 @@ triggerexp:						{ debuginfo("triggerexp --> true"); if(stop == 0) return new Bo
 	|	expression				{ debuginfo("triggerexp/expression --> " + $1.getValue()); if(stop == 0) return($1.getValue()); }
 
 boolexp:	boolterm				{ debuginfo("boolexp/boolterm"); $$ = $1; }
-	|	boolexp OR boolterm			{ debuginfo("boolexp/boolexp OR boolterm"); $$ = new Boolean($1.booleanValue() || $3.booleanValue()); }
+	|	boolexp OR boolterm			{ debuginfo("boolexp/boolexp OR boolterm"); Boolean b = $1; if (b.booleanValue()) $$ = new Boolean(b.booleanValue()); else $$ = new Boolean($3.booleanValue()); }
 
 boolterm:	booloperand				{ debuginfo("boolterm/booloperand"); $$ = $1; }
-	|	boolterm AND booloperand		{ debuginfo("boolterm/boolterm AND booloperand"); $$ = new Boolean($1.booleanValue() && $3.booleanValue()); }
+	|	boolterm AND booloperand		{ debuginfo("boolterm/boolterm AND booloperand"); Boolean b = $1; if (b.booleanValue()) $$ = new Boolean($3.booleanValue()); else $$ = new Boolean(b.booleanValue()); }
 
 booloperand:	'(' boolexp ')'				{ debuginfo("booloperand/(boolexp)"); $$ = $2; }
 	|	NOT booloperand				{ debuginfo("booloperand/NOT booloperand"); $$ = new Boolean(! $2.booleanValue()); }
@@ -190,6 +190,7 @@ private ParseObject resolve(String o, int type)
 						p = emptyString;
 			break;
 	}
+	debuginfo(o + " -> " + p.toString());
 	return new ParseObject(p);
 }
 
@@ -251,9 +252,15 @@ class ParseObject {
 			string = null;
 		} else
 		if(o instanceof String) {
-			type = STRING;
 			string = (String) o;
-			number = null;
+			try {
+				number = new BigDecimal(string);
+				type = NUMBER;
+				string = null;
+			} catch (NumberFormatException nfe) {
+				number = null;
+				type = STRING;
+			}
 		} else
 		if(o.getClass().getName().endsWith("Something date like")) {
 			type = DATE;
@@ -358,7 +365,11 @@ class ParseObject {
 		} catch (NumberFormatException nfe) {
 			// we'd like to convert into a number, but the format isn't valid :-(
 			// throwing an error here isn't exactly what we want, but we have no real alternative
-			throw new SDMSException(new SDMSMessage((SystemEnvironment) null, "03802071626", "Error evaluating expression. Invalid number format of $1", string));
+			if (string == null || string.equals("") || string.toUpperCase().equals("NONE")) {
+				rc.number = new BigDecimal("0");
+			} else {
+				throw new SDMSException(new SDMSMessage((SystemEnvironment) null, "03802071626", "Error evaluating expression. Invalid number format of $1", string));
+			}
 		}
 		return rc;
 	}
