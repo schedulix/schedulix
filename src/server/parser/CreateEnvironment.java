@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -48,14 +46,13 @@ public class CreateEnvironment extends Node
 	{
 		super();
 		name = n;
-		resourceList = (r == null ? new Vector() : r);
+		resourceList = r;
 		replace = rep.booleanValue();
 	}
 
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-
 		SDMSNamedEnvironment ne;
 		try {
 			ne = SDMSNamedEnvironmentTable.table.create(sysEnv, name);
@@ -70,6 +67,7 @@ public class CreateEnvironment extends Node
 				throw dke;
 			}
 		}
+		if (resourceList == null) resourceList = new Vector();
 
 		Long neId = ne.getId(sysEnv);
 

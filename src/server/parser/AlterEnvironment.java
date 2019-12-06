@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -80,23 +78,23 @@ public class AlterEnvironment extends Node
 		SDMSNamedResource nr;
 
 		if(add == null) {
+			if (resourceList != null) {
+				Vector v = SDMSEnvironmentTable.idx_neId.getVector(sysEnv, neId);
+				for(int i = 0; i < v.size(); i++) {
+					e = (SDMSEnvironment) v.get(i);
+					e.delete(sysEnv);
+				}
+				for(int i = 0; i < resourceList.size(); i++) {
+					WithItem w = (WithItem) resourceList.get(i);
+					String condition = (String) w.value;
+					if (condition != null && condition.trim().equals("")) condition = null;
 
-			Vector v = SDMSEnvironmentTable.idx_neId.getVector(sysEnv, neId);
-			for(int i = 0; i < v.size(); i++) {
-				e = (SDMSEnvironment) v.get(i);
-				e.delete(sysEnv);
-			}
-			for(int i = 0; i < resourceList.size(); i++) {
-				WithItem w = (WithItem) resourceList.get(i);
-				String condition = (String) w.value;
-				if (condition != null && condition.trim().equals("")) condition = null;
-
-				nr = SDMSNamedResourceTable.getNamedResource(sysEnv, (Vector) w.key);
-				SDMSEnvironmentTable.table.create(sysEnv, neId, nr.getId(sysEnv), condition);
+					nr = SDMSNamedResourceTable.getNamedResource(sysEnv, (Vector) w.key);
+					SDMSEnvironmentTable.table.create(sysEnv, neId, nr.getId(sysEnv), condition);
+				}
 			}
 		} else {
 			if(add.booleanValue()) {
-
 				for(int i = 0; i < resourceList.size(); i++) {
 					WithItem w = (WithItem) resourceList.get(i);
 					String condition = (String) w.value;
@@ -105,7 +103,6 @@ public class AlterEnvironment extends Node
 					SDMSEnvironmentTable.table.create(sysEnv, neId, nr.getId(sysEnv), condition);
 				}
 			} else {
-
 				for(int i = 0; i < resourceList.size(); i++) {
 					nr = SDMSNamedResourceTable.getNamedResource(sysEnv, (Vector) resourceList.get(i));
 					Long nrId = nr.getId(sysEnv);
@@ -115,7 +112,6 @@ public class AlterEnvironment extends Node
 					for(int j = 0; i < v.size(); j++) {
 						final SDMSSchedulingEntity se = (SDMSSchedulingEntity) v.get(j);
 						if(se.checkParameterRI(sysEnv, nrId)) {
-
 							throw new CommonErrorException(
 								new SDMSMessage(sysEnv, "0340911291423", "A parameter of Resource $1 is referenced by $2",
 									nr.pathString(sysEnv), se.pathString(sysEnv))
