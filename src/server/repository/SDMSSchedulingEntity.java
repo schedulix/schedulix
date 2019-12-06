@@ -915,6 +915,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 				if (SDMSIntervalHierarchyTable.idx_childId.containsKey (sysEnv, iId)) continue;
 				IntervalUtil.killFilter (sysEnv, iId);
 				IntervalUtil.killSelections (sysEnv, iId);
+				IntervalUtil.killDispatcher (sysEnv, iId);
 				i.delete(sysEnv);
 				done = false;
 			}
