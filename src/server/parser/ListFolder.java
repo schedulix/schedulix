@@ -45,6 +45,7 @@ public class ListFolder extends Node
 	HashMap mseCache = new HashMap();
 	WithHash with;
 	FolderLister fl;
+	boolean isCondensed;
 
 	public ListFolder(Vector p)
 	{
@@ -64,7 +65,7 @@ public class ListFolder extends Node
 		auditFlag = false;
 	}
 
-	public ListFolder(Vector p, WithHash w)
+	public ListFolder(Vector p, WithHash w, Boolean condensed)
 	{
 		super();
 		path = p;
@@ -73,6 +74,7 @@ public class ListFolder extends Node
 		else
 			expandIds = new HashSet();
 		with = w;
+		isCondensed = condensed.booleanValue();
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
 	}
@@ -84,30 +86,32 @@ public class ListFolder extends Node
 		desc.add("NAME");
 		desc.add("OWNER");
 		desc.add("TYPE");
-		desc.add("RUN_PROGRAM");
-		desc.add("RERUN_PROGRAM");
-		desc.add("KILL_PROGRAM");
-		desc.add("WORKDIR");
-		desc.add("LOGFILE");
-		desc.add("TRUNC_LOG");
-		desc.add("ERRLOGFILE");
-		desc.add("TRUNC_ERRLOG");
-		desc.add("EXPECTED_RUNTIME");
-		desc.add("EXPECTED_FINALTIME");
-		desc.add("GET_EXPECTED_RUNTIME");
-		desc.add("PRIORITY");
-		desc.add("MIN_PRIORITY");
-		desc.add("AGING_AMOUNT");
-		desc.add("AGING_BASE");
-		desc.add("SUBMIT_SUSPENDED");
-		desc.add("MASTER_SUBMITTABLE");
-		desc.add("SAME_NODE");
-		desc.add("GANG_SCHEDULE");
-		desc.add("DEPENDENCY_MODE");
-		desc.add("ESP_NAME");
-		desc.add("ESM_NAME");
-		desc.add("ENV_NAME");
-		desc.add("FP_NAME");
+		if (!isCondensed) {
+			desc.add("RUN_PROGRAM");
+			desc.add("RERUN_PROGRAM");
+			desc.add("KILL_PROGRAM");
+			desc.add("WORKDIR");
+			desc.add("LOGFILE");
+			desc.add("TRUNC_LOG");
+			desc.add("ERRLOGFILE");
+			desc.add("TRUNC_ERRLOG");
+			desc.add("EXPECTED_RUNTIME");
+			desc.add("EXPECTED_FINALTIME");
+			desc.add("GET_EXPECTED_RUNTIME");
+			desc.add("PRIORITY");
+			desc.add("MIN_PRIORITY");
+			desc.add("AGING_AMOUNT");
+			desc.add("AGING_BASE");
+			desc.add("SUBMIT_SUSPENDED");
+			desc.add("MASTER_SUBMITTABLE");
+			desc.add("SAME_NODE");
+			desc.add("GANG_SCHEDULE");
+			desc.add("DEPENDENCY_MODE");
+			desc.add("ESP_NAME");
+			desc.add("ESM_NAME");
+			desc.add("ENV_NAME");
+			desc.add("FP_NAME");
+		}
 		desc.add("SUBFOLDERS");
 		desc.add("ENTITIES");
 		desc.add("HAS_MSE");
@@ -226,14 +230,16 @@ public class ListFolder extends Node
 		SDMSGroup g = SDMSGroupTable.getObject(sysEnv, f.getOwnerId(sysEnv));
 		v.add(g.getName(sysEnv));
 		v.add("FOLDER");
-		add_empties(v);
-		Long envId = f.getEnvId(sysEnv);
-		if(envId != null) {
-			v.add(SDMSNamedEnvironmentTable.getObject(sysEnv, envId).getName(sysEnv));
-		} else {
+		if (!isCondensed) {
+			add_empties(v);
+			Long envId = f.getEnvId(sysEnv);
+			if(envId != null) {
+				v.add(SDMSNamedEnvironmentTable.getObject(sysEnv, envId).getName(sysEnv));
+			} else {
+				v.add(null);
+			}
 			v.add(null);
 		}
-		v.add(null);
 		Vector v1 = SDMSFolderTable.idx_parentId.getVector(sysEnv, fId);
 		Vector v2 = SDMSSchedulingEntityTable.idx_folderId.getVector(sysEnv, fId);
 		v.add(new Integer(v1.size()));
@@ -275,49 +281,51 @@ public class ListFolder extends Node
 		SDMSGroup g = SDMSGroupTable.getObject(sysEnv, se.getOwnerId(sysEnv));
 		v.add(g.getName(sysEnv));
 		v.add(se.getTypeAsString(sysEnv));
-		v.add(se.getRunProgram(sysEnv));
-		v.add(se.getRerunProgram(sysEnv));
-		v.add(se.getKillProgram(sysEnv));
-		v.add(se.getWorkdir(sysEnv));
-		v.add(se.getLogfile(sysEnv));
-		v.add(se.getTruncLog(sysEnv));
-		v.add(se.getErrlogfile(sysEnv));
-		v.add(se.getTruncErrlog(sysEnv));
-		v.add(se.getExpectedRuntime(sysEnv));
-		v.add(se.getExpectedFinaltime(sysEnv));
-		v.add(se.getGetExpectedRuntime(sysEnv));
-		v.add(se.getPriority(sysEnv));
-		v.add(se.getMinPriority(sysEnv));
-		v.add(se.getAgingAmount(sysEnv));
-		v.add(se.getAgingBaseAsString(sysEnv));
-		v.add(se.getSubmitSuspended(sysEnv));
-		v.add(se.getMasterSubmittable(sysEnv));
-		v.add(se.getSameNode(sysEnv));
-		v.add(se.getGangSchedule(sysEnv));
-		v.add(se.getDependencyOperationAsString(sysEnv));
-		espId = se.getEspId(sysEnv);
-		esp = SDMSExitStateProfileTable.getObject(sysEnv, espId);
-		v.add(esp.getName(sysEnv));
-		esmpId = se.getEsmpId(sysEnv);
-		if (esmpId != null) {
-			esmp = SDMSExitStateMappingProfileTable.getObject(sysEnv, esmpId);
-			v.add(esmp.getName(sysEnv));
-		} else {
-			v.add(SystemEnvironment.defaultString);
-		}
-		neId = se.getNeId(sysEnv);
-		if (neId != null) {
-			ne = SDMSNamedEnvironmentTable.getObject(sysEnv, neId);
-			v.add(ne.getName(sysEnv));
-		} else {
-			v.add(SystemEnvironment.nullString);
-		}
-		fpId = se.getFpId(sysEnv);
-		if (fpId != null) {
-			fp = SDMSFootprintTable.getObject(sysEnv, fpId);
-			v.add(fp.getName(sysEnv));
-		} else {
-			v.add(SystemEnvironment.nullString);
+		if (!isCondensed) {
+			v.add(se.getRunProgram(sysEnv));
+			v.add(se.getRerunProgram(sysEnv));
+			v.add(se.getKillProgram(sysEnv));
+			v.add(se.getWorkdir(sysEnv));
+			v.add(se.getLogfile(sysEnv));
+			v.add(se.getTruncLog(sysEnv));
+			v.add(se.getErrlogfile(sysEnv));
+			v.add(se.getTruncErrlog(sysEnv));
+			v.add(se.getExpectedRuntime(sysEnv));
+			v.add(se.getExpectedFinaltime(sysEnv));
+			v.add(se.getGetExpectedRuntime(sysEnv));
+			v.add(se.getPriority(sysEnv));
+			v.add(se.getMinPriority(sysEnv));
+			v.add(se.getAgingAmount(sysEnv));
+			v.add(se.getAgingBaseAsString(sysEnv));
+			v.add(se.getSubmitSuspended(sysEnv));
+			v.add(se.getMasterSubmittable(sysEnv));
+			v.add(se.getSameNode(sysEnv));
+			v.add(se.getGangSchedule(sysEnv));
+			v.add(se.getDependencyOperationAsString(sysEnv));
+			espId = se.getEspId(sysEnv);
+			esp = SDMSExitStateProfileTable.getObject(sysEnv, espId);
+			v.add(esp.getName(sysEnv));
+			esmpId = se.getEsmpId(sysEnv);
+			if (esmpId != null) {
+				esmp = SDMSExitStateMappingProfileTable.getObject(sysEnv, esmpId);
+				v.add(esmp.getName(sysEnv));
+			} else {
+				v.add(SystemEnvironment.defaultString);
+			}
+			neId = se.getNeId(sysEnv);
+			if (neId != null) {
+				ne = SDMSNamedEnvironmentTable.getObject(sysEnv, neId);
+				v.add(ne.getName(sysEnv));
+			} else {
+				v.add(SystemEnvironment.nullString);
+			}
+			fpId = se.getFpId(sysEnv);
+			if (fpId != null) {
+				fp = SDMSFootprintTable.getObject(sysEnv, fpId);
+				v.add(fp.getName(sysEnv));
+			} else {
+				v.add(SystemEnvironment.nullString);
+			}
 		}
 		v.add(new Integer(0));
 
