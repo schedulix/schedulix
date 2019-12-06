@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.util;
 
 import java.lang.*;
@@ -40,12 +38,11 @@ import de.independit.scheduler.server.repository.*;
 
 public class AuditWriter
 {
-
-	public final static String __version = "@(#) $Id: AuditWriter.java,v 2.1.8.1 2013/03/14 10:25:28 ronald Exp $";
-
 	private static final SimpleDateFormat sysDateFmt = (SimpleDateFormat) SystemEnvironment.staticSystemDateFormat.clone();
+	private static final SimpleDateFormat fileExtFmt = new SimpleDateFormat ("yyyyMMddHHmmss", SystemEnvironment.systemLocale);
 
 	private static PrintStream audit = null;
+	private static int nrLinesWritten = 0;
 
 	private static void openAuditFile(SystemEnvironment sysEnv)
 		throws IOException
@@ -54,23 +51,11 @@ public class AuditWriter
 		File base = new File(sysEnv.auditFile);
 		String dir = base.getParent();
 		String child = base.getName() + ".";
-		String files[] = new File(dir).list();
-		for (int i = 0; i < files.length; ++i) {
-			if (files[i].startsWith(child)) {
-				String nr = files[i].substring(child.length());
-				try {
-					int tmp;
-					tmp = Integer.parseInt(nr);
-					if (tmp > fileno) fileno = tmp;
-				} catch (NumberFormatException nfe) {
-
-				}
-			}
-		}
-		fileno++;
-		child = child + fileno;
+		String dt = fileExtFmt.format (new java.util.Date (System.currentTimeMillis()));
+		child = child + dt;
 		File auditFile = new File(dir, child);
 		audit = new PrintStream(auditFile);
+		nrLinesWritten = 0;
 	}
 
 	private static final String getHeader (SystemEnvironment sysEnv, Long versionId)
@@ -98,7 +83,7 @@ public class AuditWriter
 		}
 	}
 
-	public static void write (SystemEnvironment sysEnv, Long versionId, String stmt)
+	public static synchronized void write (SystemEnvironment sysEnv, Long versionId, String stmt)
 		throws SDMSException
 	{
 		try {
@@ -106,8 +91,12 @@ public class AuditWriter
 				openAuditFile(sysEnv);
 			}
 			audit.println(getHeader(sysEnv, versionId) + stmt);
+			nrLinesWritten++;
+			if (nrLinesWritten >= SystemEnvironment.auditEntries) {
+				audit.close();
+				audit = null;
+			}
 		} catch (IOException ioe) {
-
 			if (audit != null) {
 				audit.close();
 				audit = null;
@@ -115,7 +104,6 @@ public class AuditWriter
 		} catch (SerializationException e) {
 			throw e;
 		} catch (SDMSException e) {
-
 		}
 	}
 
