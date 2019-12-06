@@ -201,8 +201,11 @@ public class SchedulingThread extends InternalSession
 						    os == SDMSSubmittedEntity.ERROR ||
 						    os == SDMSSubmittedEntity.UNREACHABLE)
 							sme.checkDependencies(sysEnv);
-						else
+						else if ((sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND &&
+						          sme.getParentSuspended(sysEnv).intValue() == 0) ||
+						         sme.getRerunSeq(sysEnv).intValue() > 0) {
 							sme.setState(sysEnv, SDMSSubmittedEntity.SYNCHRONIZE_WAIT);
+						}
 					}
 				} else {
 					if (state == SDMSSubmittedEntity.SYNCHRONIZE_WAIT) {
@@ -457,7 +460,11 @@ public class SchedulingThread extends InternalSession
 			   sme.getParentSuspended(sysEnv).intValue() > 0			  ||
 			   sme.getOldState(sysEnv) != null)
 				continue;
-			syncScheduleSme(sysEnv, sme, resourceChain);
+			if (sme.getIsDisabled(sysEnv) || sme.getIsParentDisabled(sysEnv)) {
+				sme.finishDisabledOrBatch(sysEnv);
+			} else {
+				syncScheduleSme(sysEnv, sme, resourceChain);
+			}
 		}
 	}
 
