@@ -46,6 +46,7 @@ public class AlterJob extends Node
 
 	private Long jobId		= null;
 	private WithHash with		= null;
+	private Boolean clone		= null;
 	private String execPid		= null;
 	private String extPid		= null;
 	private Integer status		= null;
@@ -76,38 +77,41 @@ public class AlterJob extends Node
 	private Boolean clearWarning	= null;
 	private String warning		= null;
 
-	private static final int EP = 0x000001;
-	private static final int EX = 0x000002;
-	private static final int ST = 0x000004;
-	private static final int TS = 0x000008;
-	private static final int EC = 0x000010;
-	private static final int RP = 0x000020;
-	private static final int RR = 0x000040;
-	private static final int SU = 0x000080;
-	private static final int RE = 0x000100;
-	private static final int ID = 0x000200;
-	private static final int ES = 0x000400;
-	private static final int KI = 0x000800;
-	private static final int CN = 0x001000;
-	private static final int RC = 0x002000;
-	private static final int ET = 0x004000;
-	private static final int PR = 0x008000;
-	private static final int NV = 0x010000;
-	private static final int RN = 0x020000;
-	private static final int IR = 0x040000;
-	private static final int IN = 0x040000;
-	private static final int RU = 0x080000;
-	private static final int CW = 0x100000;
-	private static final int SW = 0x200000;
-	private static final int RS = 0x400000;
-	private static final int DA = 0x800000;
+	private static final int EP = 0x0000001;
+	private static final int EX = 0x0000002;
+	private static final int ST = 0x0000004;
+	private static final int TS = 0x0000008;
+	private static final int EC = 0x0000010;
+	private static final int RP = 0x0000020;
+	private static final int RR = 0x0000040;
+	private static final int SU = 0x0000080;
+	private static final int RE = 0x0000100;
+	private static final int ID = 0x0000200;
+	private static final int ES = 0x0000400;
+	private static final int KI = 0x0000800;
+	private static final int CN = 0x0001000;
+	private static final int RC = 0x0002000;
+	private static final int ET = 0x0004000;
+	private static final int PR = 0x0008000;
+	private static final int NV = 0x0010000;
+	private static final int RN = 0x0020000;
+	private static final int IR = 0x0040000;
+	private static final int IN = 0x0040000;
+	private static final int RU = 0x0080000;
+	private static final int CW = 0x0100000;
+	private static final int SW = 0x0200000;
+	private static final int RS = 0x0400000;
+	private static final int DA = 0x0800000;
+	private static final int CL = 0x1000000;
 
 	private static final int JS_ACTION = EP|EX|ST|TS|EC|ET|RU;
 	private static final int OP_ACTION = RP|RR|SU|RE|ID|ET|PR|NV|IR|IN|CW|SW|RS|DA;
 	private static final int ES_ACTION = ES|ET|RU;
 	private static final int KI_ACTION = KI|ET;
 	private static final int CN_ACTION = CN|ET;
+	private static final int DA_ACTION = DA|ET;
 	private static final int RC_ACTION = RC|ET;
+	private static final int CL_ACTION = CL|ET;
 
 	public AlterJob(Long id, WithHash w)
 	{
@@ -129,6 +133,7 @@ public class AlterJob extends Node
 		throws SDMSException
 	{
 		int v = 0;
+		if(clone          != null) v += CL;
 		if(execPid        != null) v += EP;
 		if(extPid         != null) v += EX;
 		if(status         != null) v += ST;
@@ -160,6 +165,8 @@ public class AlterJob extends Node
 		   ((v & ~OP_ACTION) == 0) ||
 		   ((v & ~ES_ACTION) == 0) ||
 		   ((v & ~KI_ACTION) == 0) ||
+		    ((v & ~DA_ACTION) == 0) ||
+		    ((v & ~CL_ACTION) == 0) ||
 		   ((v & ~CN_ACTION) == 0) ||
 		   ((v & ~RC_ACTION) == 0)) {
 			if(nicevalue != null && renice != null) return false;
@@ -174,6 +181,7 @@ public class AlterJob extends Node
 		throws SDMSException
 	{
 		Vector tmp;
+		clone = (Boolean) with.get(ParseStr.S_CLONE);
 		execPid = (String) with.get(ParseStr.S_EXEC_PID);
 		extPid = (String) with.get(ParseStr.S_EXT_PID);
 		status = (Integer) with.get(ParseStr.S_STATUS);
@@ -516,9 +524,7 @@ public class AlterJob extends Node
 			}
 		}
 		if(disable != null) {
-			if(disable.booleanValue()) {
-				sme.disable(sysEnv);
-			}
+			sme.disable(disable, sysEnv);
 		}
 		if(depsToIgnore != null) {
 			ignoreDeps(sysEnv, sme);
@@ -548,6 +554,41 @@ public class AlterJob extends Node
 			int nv = renice.intValue() + sme.getNice(sysEnv).intValue();
 			sme.renice(sysEnv, new Integer(nv), null, comment);
 		}
+		if (clone != null) {
+			if (sme.getIsReplaced(sysEnv).booleanValue()) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311420", "Cannot clone an already replaced job or batch"));
+			}
+			if (sme.getState(sysEnv) != SDMSSubmittedEntity.FINAL) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311421", "Cannot clone a job or batch that is stil active"));
+			}
+			Long parentId = sme.getParentId(sysEnv);
+			if (parentId == null) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311422", "Cannot clone a master job or batch"));
+			} else {
+				SDMSSubmittedEntity psme = SDMSSubmittedEntityTable.getObject(sysEnv, parentId);
+				String childTag = "C_" + sysEnv.tx.txId;
+				Long replaceId = sme.getId (sysEnv);
+				Long submitSeId = sme.getSeId(sysEnv);
+				SDMSSubmittedEntity childSme = psme.submitChild(sysEnv,
+				                               null,
+				                               new Integer (SDMSSubmittedEntity.SUSPEND),
+				                               null,
+				                               submitSeId,
+				                               childTag,
+				                               replaceId,
+				                               null,
+				                               true
+				                                               );
+				if (childSme.getIsDisabled(sysEnv).booleanValue()) {
+					childSme.disable(Boolean.FALSE, sysEnv);
+				} else {
+					if (clone.booleanValue()) {
+						sme.resume(sysEnv, true);
+					}
+				}
+			}
+		}
+
 		if(with.containsKey(ParseStr.S_ERROR_TEXT))	sme.setErrorMsg(sysEnv, errText);
 
 	}
