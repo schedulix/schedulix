@@ -17,7 +17,7 @@ git clone https://github.com/schedulix/schedulix.git -b v2.9
 
 -------------------------------------------------------------------------------------------
 
-The jflex issues seem to be resolved. But please advise if anyone runs into jflex related
+All the jflex issues are resolved. But please advise if anyone runs into jflex related
 problems.
 
 -------------------------------------------------------------------------------------------
