@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	3.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -130,6 +130,7 @@ echo "executing preun base -- %version-%release"
 # exclude this spec file as it isn't required in any binary package
 #
 %exclude /opt/schedulix/schedulix-%{version}/lib/centos7.spec
+%exclude /opt/schedulix/schedulix-%{version}/lib/centos8.spec
 %exclude /opt/schedulix/schedulix-%{version}/lib/base_pre.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/base_post.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/server-mariadb_post.script
@@ -508,6 +509,8 @@ echo "executing postun examples -- %version-%release"
 %ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/etc/host_2.conf
 %ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/etc/localhost.conf
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/install/setup_example_jobservers.sh
+%attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/dog.sh
+%attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/frosch.sh
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/install/setup_examples.sdms
 %attr(0744, root, root)             /etc/init.d/schedulix-examples
 
