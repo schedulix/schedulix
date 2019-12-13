@@ -6,7 +6,7 @@ gpgcheck=1
 gpgkey=https://www.independit.de/repo/rpm-gpg/RPM-GPG-KEY-schedulix
 #
 [schedulix-noarch]
-name=schedulix
+name=schedulix-noarch
 baseurl=https://www.independit.de/repo/centos/$releasever/noarch/
 enabled=1
 gpgcheck=1
@@ -27,7 +27,7 @@ gpgcheck=1
 gpgkey=https://www.independit.de/repo/rpm-gpg/RPM-GPG-KEY-schedulix
 #
 [schedulix-2.8-noarch]
-name=schedulix-2.8
+name=schedulix-2.8-noarch
 baseurl=https://www.independit.de/repo/schedulix-2.8/centos/$releasever/noarch/
 enabled=0
 gpgcheck=1
