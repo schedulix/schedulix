@@ -130,6 +130,7 @@ echo "executing preun base -- %version-%release"
 # exclude this spec file as it isn't required in any binary package
 #
 %exclude /opt/schedulix/schedulix-%{version}/lib/centos7.spec
+%exclude /opt/schedulix/schedulix-%{version}/lib/centos8.spec
 %exclude /opt/schedulix/schedulix-%{version}/lib/base_pre.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/base_post.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/server-mariadb_post.script
