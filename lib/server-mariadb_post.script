@@ -4,6 +4,14 @@ R="'%{release}'"
 if [ "$1" == "1" ]; then
 	echo "creating server.conf file"
 	HOSTNAME=`hostname`
+	RHVER=`cat /etc/redhat-release | sed 's/.* release \([0-9][0-9]*\)\..*/\1/g'`
+	if [ $RHVER -ge 8 ]; then
+		MARIAJAR=/usr/lib/java/mariadb-java-client.jar
+		MARIAJDBC=org.mariadb.jdbc.Driver
+	else
+		MARIAJAR=/usr/share/java/mysql-connector-java.jar
+		MARIAJDBC=com.mysql.jdbc.Driver
+	fi
 	su - schedulix -c "
 	. ~/.bashrc;
 	sed '
@@ -11,28 +19,25 @@ if [ "$1" == "1" ]; then
 		s:DbUrl=.*:DbUrl=jdbc\:mysql\:///schedulixdb:
 		s:DbUser=.*:DbUser=schedulix:
 		s:Hostname=.*:Hostname=$HOSTNAME:
-		s:JdbcDriver=.*:JdbcDriver=com.mysql.jdbc.Driver:
+		s:JdbcDriver=.*:JdbcDriver=$MARIAJDBC:
 	' < /opt/schedulix/schedulix/etc/server.conf.template > /opt/schedulix/etc/server.conf;
 	chmod 600 /opt/schedulix/etc/server.conf;
 	cp /opt/schedulix/etc/java.conf /tmp/$$.tmp;
 	sed '
-		s:JDBCJAR=.*:JDBCJAR=/usr/share/java/mysql-connector-java.jar:
+		s:JDBCJAR=.*:JDBCJAR=$MARIAJAR:
 	' < /tmp/$$.tmp > /opt/schedulix/etc/java.conf;
 	rm -f /tmp/$$.tmp
 	"
 
 	echo "creating database"
-	chkconfig mariadb on
-	service mariadb start
+	systemctl enable mariadb.service
+	systemctl start mariadb
 	mysql --user=root << ENDMYSQL
 	create user schedulix@localhost identified by 'schedulix';
 	create database schedulixdb;
-	grant all on schedulixdb.* to schedulix;
+	grant all on schedulixdb.* to schedulix@localhost;
 	quit
 ENDMYSQL
-
-	# we enable the service. We need it
-	systemctl enable mariadb
 
 	echo "populating database"
 	su - schedulix -c "

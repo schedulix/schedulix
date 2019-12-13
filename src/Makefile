@@ -61,6 +61,7 @@ COPYRIGHT = $(shell grep 'public static final String copyright' jobserver/Libjni
 COMPANY = $(shell grep 'public static final String company' jobserver/Libjni.java | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
 BUILD = $(shell if [ -d ../.git ]; then git log | awk '/commit/ { print $$2; exit }' | tee $(SDMSHOME)/buildhash; else cat ../buildhash; fi)
 SWDIR = $(shell basename $(SDMSHOME))
+RHREL = $(shell cat /etc/redhat-release | sed 's/.* release \([0-9][0-9]*\)\..*/\1/g')
 
 JAR_FILE = $(SDMSHOME)/lib/BICsuite.jar
 MANIFEST = /tmp/sdms.manifest
@@ -82,7 +83,7 @@ rpmstructure:
 	tar czf $(HOME)/rpmbuild/SOURCES/schedulix-$(PROGRAM_VERSION).tgz --exclude .git $(SWDIR)/*
 
 rpmbuild:
-	if [ -x ~/bin/buildrpm ]; then ~/bin/buildrpm ../lib/centos7.spec; else rpmbuild -ba ../lib/centos7.spec; fi
+	if [ -x ~/bin/buildrpm ]; then ~/bin/buildrpm ../lib/centos$(RHREL).spec; else rpmbuild -ba ../lib/centos$(RHREL).spec; fi
 
 jar:
 	rm $(JAR_FILE)
