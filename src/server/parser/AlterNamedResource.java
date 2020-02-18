@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -107,15 +105,19 @@ public class AlterNamedResource extends Node
 			allTypes = true;
 
 		SDMSResourceStateProfile rsp = null;
+		Long rsdId;
 		if(rspName != null) {
-			Long rsdId;
-
 			rsp = SDMSResourceStateProfileTable.idx_name_getUnique(sysEnv, rspName);
-
 			rspId = rsp.getId(sysEnv);
+		} else {
+			rspId = null;
+		}
 
-			if (nr.getRspId(sysEnv) == null) {
+		Long oldRspId = nr.getRspId(sysEnv);
 
+		if (rspId != null) {
+			nr.setRspId(sysEnv, rspId);
+			if (oldRspId == null) {
 				Long initialRsdId = rsp.getInitialRsdId(sysEnv);
 				Vector v = SDMSResourceTable.idx_nrId.getVector(sysEnv, nr.getId(sysEnv));
 				for(int j = 0; j < v.size(); j++) {
@@ -123,42 +125,40 @@ public class AlterNamedResource extends Node
 					r.setRsdId(sysEnv, initialRsdId);
 				}
 			} else {
-
-				Vector v = SDMSResourceTable.idx_nrId.getVector(sysEnv, nr.getId(sysEnv));
-				for(int j = 0; j < v.size(); j++) {
-					SDMSResource r = ((SDMSResource) v.get(j));
-					rsdId = r.getRsdId(sysEnv);
-					if(rsdId.equals(rsp.getInitialRsdId(sysEnv))) continue;
-					if(!SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(rsdId, rspId))) {
-						String path;
-						try {
-							SDMSScope fs = SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv));
-							path = fs.pathString(sysEnv);
-						} catch (NotFoundException nfe) {
-							SDMSFolder ff = SDMSFolderTable.getObject(sysEnv, r.getScopeId(sysEnv));
-							path = ff.pathString(sysEnv);
+				if (!oldRspId.equals(rspId)) {
+					Vector v = SDMSResourceTable.idx_nrId.getVector(sysEnv, nr.getId(sysEnv));
+					for(int j = 0; j < v.size(); j++) {
+						SDMSResource r = ((SDMSResource) v.get(j));
+						rsdId = r.getRsdId(sysEnv);
+						if(rsdId.equals(rsp.getInitialRsdId(sysEnv))) continue;
+						if(!SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(rsdId, rspId))) {
+							String path;
+							try {
+								SDMSScope fs = SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv));
+								path = fs.pathString(sysEnv);
+							} catch (NotFoundException nfe) {
+								SDMSFolder ff = SDMSFolderTable.getObject(sysEnv, r.getScopeId(sysEnv));
+								path = ff.pathString(sysEnv);
+							}
+							throw new CommonErrorException(new SDMSMessage(sysEnv, "03709071000",
+							                               "Profile does not contain state $1 of resource $2->$3",
+							                               SDMSResourceStateDefinitionTable.getObject(sysEnv, r.getRsdId(sysEnv)).getName(sysEnv),
+							                               path,
+							                               SDMSNamedResourceTable.getObject(sysEnv, ((SDMSResource) v.get(j)).getNrId(sysEnv)).pathString(sysEnv)));
 						}
-						throw new CommonErrorException(new SDMSMessage(sysEnv, "03709071000",
-						                               "Profile does not contain state $1 of resource $2->$3",
-						                               SDMSResourceStateDefinitionTable.getObject(sysEnv, r.getRsdId(sysEnv)).getName(sysEnv),
-						                               path,
-						                               SDMSNamedResourceTable.getObject(sysEnv, ((SDMSResource) v.get(j)).getNrId(sysEnv)).pathString(sysEnv)));
 					}
 				}
 			}
 		} else {
-			rspId = null;
-
-			if (nr.getRspId(sysEnv) != null) {
-
+			if (oldRspId != null && with.containsKey(ParseStr.S_STATUS_PROFILE)) {
+				nr.setRspId(sysEnv, rspId);
 				Vector v = SDMSResourceTable.idx_nrId.getVector(sysEnv, nr.getId(sysEnv));
 				for(int j = 0; j < v.size(); j++) {
 					SDMSResource r = ((SDMSResource) v.get(j));
-
 					Vector a = SDMSResourceAllocationTable.idx_rId.getVector(sysEnv, r.getId(sysEnv));
 					if (a.size() > 0) {
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03709071020",
-						                               "Resource $1->$2 currently allocated, cannet set resource state to null",
+						                               "Resource $1->$2 currently allocated, cannot set resource state to null",
 						                               SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv)),
 						                               nr.pathVector(sysEnv)));
 					}
@@ -166,9 +166,6 @@ public class AlterNamedResource extends Node
 				}
 			}
 		}
-
-		if (with.containsKey(ParseStr.S_STATUS_PROFILE))
-			nr.setRspId(sysEnv, rspId);
 
 		Vector v = SDMSResourceRequirementTable.idx_nrId.getVector(sysEnv, nr.getId(sysEnv));
 		for(int i = 0; i < v.size(); i++) {
@@ -190,7 +187,6 @@ public class AlterNamedResource extends Node
 			if((nr.getPrivilegeMask() & lpriv) != lpriv) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061132", "Incompatible grant"));
 			}
-
 			nr.setInheritPrivs(sysEnv, inheritPrivs);
 		}
 
@@ -214,7 +210,6 @@ public class AlterNamedResource extends Node
 			try {
 				nr.setOwnerId(sysEnv, groupId);
 			} catch (AccessViolationException ave) {
-
 			}
 			changeChildGroup(sysEnv, nr.getId(sysEnv), groupId);
 		}
