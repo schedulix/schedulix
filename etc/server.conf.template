@@ -25,6 +25,16 @@ ArchiveKillJobColumns=ALL
 ArchiveStatsColumns=ALL
 
 #
+# AuditFile
+# Filename of audit trail file
+# If set all commands changing data will be logged in the AuditFile.
+# On each startup of the scheduling server, a new file with a sequencial number extension is created.
+# AuditTrail=/tmp/auditfile will create files /tmp/audittrail.1 .. /tmp/audittrail.N
+# On heavy used systems have a look at the filesize and restart the server to start a new one from time to time and clean up or archive files no longer used.
+#
+# AuditFile=<full pathname of audir trail file to write>
+
+#
 # AuthenticationClass
 # The class, derived from de.independit.scheduler.server.util.Authenticator, which is configured
 # here is responsible for authentication agains some external system like LDAP, AD or PAM

@@ -2,8 +2,8 @@
 # Common description and properties of the schedulix packages
 #
 Name:		schedulix
-Version:	3.0
-Release:	2%{?dist}
+Version:	2.9
+Release:	15%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -14,7 +14,7 @@ Source0:	file://localhost/%{_topdir}/SOURCES/schedulix-%{version}.tgz
 Vendor:		independIT Integrative Technologies GmbH
 Packager:	Ronald Jeninga <ronald.jeninga@schedulix.org>
 
-BuildRequires:	jna gcc-c++ java-1.7.0-openjdk-devel rpm-build rpm-libs rpmdevtools rpm-sign
+BuildRequires:	jna gcc-c++ java-1.8.0-openjdk-devel rpm-build rpm-libs rpmdevtools rpm-sign
 
 # disable debug package
 %global debug_package %{nil}
@@ -71,7 +71,7 @@ your security concept). \
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix base package installs all files that are used both by the server and the client
 Group:			Applications/System
-Requires:		java-1.8.0-openjdk jna
+Requires:		java-1.8.0-openjdk
 
 %description base
 %commonDescription
@@ -220,7 +220,7 @@ fi
 Summary:		The schedulix server mariadb package installs a schedulix server based on an underlying MariaDB od MySQL RDBMS
 Group:			Applications/System
 # Requires: schedulix-base mysql-server mysql-connector-java
-Requires:		schedulix-base = %{version}-%{release} mariadb mariadb-libs mariadb-server mysql-connector-java coreutils psmisc
+Requires:		schedulix-base = %{version}-%{release} mariadb mariadb-common mariadb-server mariadb-java-client coreutils psmisc
 Provides:		schedulix-server %{version}-%{release}
 Conflicts:		schedulix-server-pg
 
@@ -368,7 +368,7 @@ echo "executing postun client -- %version-%release"
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix zope package installs the zope application server and configures it to access a locally installed server
 Group:			Applications/System
-Requires:		schedulix-base = %{version}-%{release} gcc python python-devel python-setuptools python-virtualenv wget
+Requires:		schedulix-base = %{version}-%{release} gcc python2 python2-devel python2-setuptools python2-virtualenv wget
 
 %description zope
 %commonDescription
@@ -457,7 +457,8 @@ fi
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix examples package installs a few local jobservers and loads a bunch of examples into the system
 Group:			Applications/System
-Requires:		schedulix-base >= %{version} schedulix-server >= %{version} schedulix-client eclipse-swt
+Requires:		schedulix-base >= %{version} schedulix-server >= %{version} schedulix-client
+# Requires:		schedulix-base >= %{version} schedulix-server >= %{version} schedulix-client eclipse-swt
 BuildArch:		noarch
 
 %description examples
