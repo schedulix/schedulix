@@ -50,13 +50,17 @@ MiniScanner.java:       MiniScanner.jlex MiniParser.java
 
 include $(SDMSHOME)/src/Makefile.CommonRules
 
-ifneq ($(shell $(JLEX) -version | grep "1.7"),)
-	JFLEXSKELETON = skeleton.nested.1.7
+ifneq ($(shell $(JLEX) -version | grep "1.8"),)
+	JFLEXSKELETON = skeleton.nested.1.8.2
 else
-	ifneq ($(shell $(JLEX) -version | grep "1.6.1"),)
-		JFLEXSKELETON = skeleton.nested.1.6.1
+	ifneq ($(shell $(JLEX) -version | grep "1.7"),)
+		JFLEXSKELETON = skeleton.nested.1.7
 	else
-		JFLEXSKELETON = skeleton.nested
+		ifneq ($(shell $(JLEX) -version | grep "1.6.1"),)
+			JFLEXSKELETON = skeleton.nested.1.6.1
+		else
+			JFLEXSKELETON = skeleton.nested
+		endif
 	endif
 endif
 
