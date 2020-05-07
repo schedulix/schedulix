@@ -1,7 +1,9 @@
 echo "executing pre base -- %version-%release"
 if [ "$1" == "1" ]; then
-	SELINUX_SETTING=`getenforce`
-	setenforce 0
+	if [ -x /sbin/getenforce ]; then
+		SELINUX_SETTING=`getenforce`
+		setenforce 0
+	fi
 	if ! grep schedulix /etc/passwd >/dev/null 2>&1; then
 		useradd schedulix -d /opt/schedulix -m -s /bin/bash -U -p "RJteetpJ9UFeQ";
 	fi; \
@@ -10,7 +12,9 @@ if [ "$1" == "1" ]; then
 	fi; \
 	chmod 755 /opt/schedulix;
 	chown schedulix.schedulix /opt/schedulix
-	setenforce $SELINUX_SETTING
+	if [ -n "$SELINUX_SETTING" ]; then
+		setenforce $SELINUX_SETTING
+	fi
 else
 	echo "Upgrading schedulix-base";
 	# if there is some server installed, stop it (if it's running, but the server-stop utility is forgiving if not)
