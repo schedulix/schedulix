@@ -230,7 +230,7 @@ Summary:		The schedulix server pg package installs a schedulix server based on a
 Group:			Applications/System
 Requires:		schedulix-base = %{version}-%{release} postgresql-server postgresql-jdbc coreutils psmisc
 Provides:		schedulix-server %{version}-%{release}
-Conflicts:		schedulix-server-mariadb
+Conflicts:		schedulix-server-mariadb schedulix-server-rmt
 
 %description server-pg
 %commonDescription
@@ -301,7 +301,7 @@ Group:			Applications/System
 # Requires: schedulix-base mysql-server mysql-connector-java
 Requires:		schedulix-base = %{version}-%{release} mariadb mariadb-common mariadb-server mariadb-java-client coreutils psmisc
 Provides:		schedulix-server %{version}-%{release}
-Conflicts:		schedulix-server-pg
+Conflicts:		schedulix-server-pg schedulix-server-rmt
 
 %description server-mariadb
 %commonDescription
