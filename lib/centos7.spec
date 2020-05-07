@@ -174,8 +174,10 @@ These steps have to be performed by the user himself. The installation guide des
 echo "executing preun server-rmt -- %version-%release"
 if [ "$1" == "0" ]; then
 	echo "Stopping server ..."
-	service schedulix-server stop || true
-	chkconfig schedulix-server off
+	if service schedulix-server status; then
+		service schedulix-server stop || true
+		chkconfig schedulix-server off
+	fi
 fi
 
 %postun server-rmt

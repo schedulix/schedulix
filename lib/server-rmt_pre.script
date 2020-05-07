@@ -2,5 +2,7 @@ echo "executing pre server-rmt -- %version-%release"
 if [ "$1" == "1" ]; then
 	:
 else
-	service schedulix-server stop || true
+	if service schedulix-server status; then
+		service schedulix-server stop || true
+	fi
 fi
