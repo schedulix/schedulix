@@ -137,8 +137,87 @@ echo "executing preun base -- %version-%release"
 %exclude /opt/schedulix/schedulix-%{version}/lib/server-mariadb_pre.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/server-pg_post.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/server-pg_pre.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/server-rmt_post.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/server-rmt_pre.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/zope_post.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/zope_pre.script
+
+%package server-rmt
+# ----------------------------------------------------------------------------------------
+#
+# server without setup of a database
+#
+# ----------------------------------------------------------------------------------------
+Summary:		The schedulix server rmt package installs the schedulix server software but omits the creation of a database
+Group:			Applications/System
+Requires:		schedulix-base = %{version}-%{release} coreutils psmisc
+Provides:		schedulix-server %{version}-%{release}
+Conflicts:		schedulix-server-mariadb schedulix-server-pg
+
+%description server-rmt
+%commonDescription
+
+The schedulix server rmt package installs a schedulix server without any initialisation or configuration of a database system.
+These steps have to be performed by the user himself. The installation guide describes all required steps.
+
+%serverNotes
+
+
+%pre server-rmt
+%include ../lib/server-rmt_pre.script
+
+%post server-rmt
+%include ../lib/server-rmt_post.script
+
+
+%preun server-rmt
+echo "executing preun server-rmt -- %version-%release"
+if [ "$1" == "0" ]; then
+	echo "Stopping server ..."
+	service schedulix-server stop || true
+	chkconfig schedulix-server off
+fi
+
+%postun server-rmt
+echo "executing postun server-rmt -- %version-%release"
+if [ "$1" == "0" ]; then
+	echo "Don't forget to manually clean up the database"
+fi
+
+
+%files server-rmt
+%defattr(644, schedulix, schedulix, 755)
+%dir /opt/schedulix/schedulix-%{version}/sql
+%attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/server-restart
+%attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/server-start
+%attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/server-stop
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/server.conf.template
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/sql/MASTER_STATE.sql
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/sql/REPOSITORY_LOCK.sql
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/sql/init.sql
+%dir %attr(0755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/install
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/install/convenience.sdms
+%attr(0744, root, root)             /etc/init.d/schedulix-server-pg
+%attr(0744, root, root)             /etc/init.d/schedulix-server-mariadb
+/opt/schedulix/schedulix-%{version}/sql/pg
+/opt/schedulix/schedulix-%{version}/sql/pg_gen
+/opt/schedulix/schedulix-%{version}/sql/mysql
+/opt/schedulix/schedulix-%{version}/sql/mysql_gen
+%ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/etc/server.conf
+%ghost %config(noreplace) %attr(0600, schedulix, schedulix) /opt/schedulix/.sdmshrc
+%ghost %attr(-, root, root) /etc/init.d/schedulix-server
+
+#
+# exclude ingres sql files for now
+#
+%exclude   /opt/schedulix/schedulix-%{version}/sql/ing
+%exclude   /opt/schedulix/schedulix-%{version}/sql/ing_gen
+
+#
+# exclude the buildhash file
+# This file is only required to get a correct build outside of a git repository
+#
+%exclude /opt/schedulix/schedulix-%{version}/buildhash
 
 
 %package server-pg

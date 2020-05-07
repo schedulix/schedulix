@@ -1,0 +1,31 @@
+echo "executing post server-rmt -- %version-%release"
+if [ "$1" == "1" ]; then
+	echo "---------------------------------------------------------------------------------------------------"
+	echo "Don't forget to edit the server.conf (Database related configuration) and java.conf (JDBC jar) file"
+	echo "The convenience package can be loaded after setting up the database"
+	echo "The init.d scripts weren't copied yet. And the schedulix-server service has to be enabled manually"
+	echo "---------------------------------------------------------------------------------------------------"
+
+	echo "Setting up /opt/schedulix/.sdmshrc"
+	su - schedulix -c "
+	echo 'User=SYSTEM
+Password=G0H0ME
+Timeout=0' > /opt/schedulix/.sdmshrc
+	chmod 600 /opt/schedulix/.sdmshrc
+	"
+
+	echo "Setting up /opt/schedulix/etc/sdmshrc"
+
+	su - schedulix -c "
+	echo 'Host=localhost
+Port=2506' > /opt/schedulix/etc/sdmshrc
+	chmod 644 /opt/schedulix/etc/sdmshrc
+	"
+else
+	echo "---------------------------------------------------------------------------------------------------"
+	echo "Don't forget to modify the schema, if necessary, to match the installed software release"
+	echo "For example, if you are upgrading from schedulix 2.8 to schedulix 2.9, the SQL script"
+	echo "generated-upgrade-2.8-to-2.9.sql which can be found in the \$BICSUITEHOME/sql/*_gen directory"
+	echo "will have to be executed"
+	echo "---------------------------------------------------------------------------------------------------"
+fi
