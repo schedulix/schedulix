@@ -1,0 +1,110 @@
+echo "executing post zope -- %version-%release"
+if [ "$1" == "1" ]; then
+	export ZOPEADMINUSER=sdmsadm
+	export ZOPEADMINPASSWORD=sdmsadm
+	/etc/init.d/schedulix-zope4 start
+	ret=$?
+	if [ $ret != 0 ]; then
+		echo "Error starting Zope instance"
+		exit 1	
+	fi
+	sleep 5
+
+	CNT=0
+	QUIET="--quiet"
+	while [ $CNT -lt 5 ]; do
+		wget $QUIET --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_importObject?file=SDMS.zexp"
+		ret=$?
+		if [ $ret != 0 ]; then
+			echo "Error importing SDMS.zexp"
+			QUIET="--verbose"
+		else
+			break;
+		fi
+		CNT=`expr $CNT + 1`
+		sleep 2
+	done
+	rm -f cookies.txt
+
+	wget --quiet --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null --keep-session-cookies --save-cookies cookies.txt "http://localhost:8080/SDMS/Install?manage_copyObjects:method=Copy&ids:list=User&ids:list=Custom"
+	ret=$?
+	if [ $ret != 0 ]; then
+		echo "Error copying User and Custom Zope template folders from Zope /SDMS/install"
+		exit 1
+	fi
+
+	wget --quiet --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null --load-cookies cookies.txt "http://localhost:8080?manage_pasteObjects:method=Paste"
+	ret=$?
+	if [ $ret != 0 ]; then
+		echo "Error pasting User and Custom Zope folders into Zope"
+		exit 1
+	fi
+	rm -f cookies.txt
+	# we shut the server down in order to use the service/systemd infrastructure
+	/etc/init.d/schedulix-zope4 stop
+
+	# now we enable the service an start it
+	chkconfig schedulix-zope4 on
+	service schedulix-zope4 start
+else
+	# TODO: upgrade
+	# create a temporary zope admin user
+	ZOPEADMINUSER=schedulix_zau
+	ZOPEADMINPASSWORD=sdms$RANDOM$RANDOM
+	export ZOPEADMINUSER ZOPEADMINPASSWORD
+
+	# stop zope and create access file
+	service schedulix-zope4 stop || true
+	echo ""
+	su - schedulix -c "
+	. /opt/schedulix/etc/SETTINGS;
+	cd /opt/schedulix/schedulixweb4;
+	OLDUMASK=`umask`;
+	umask 077;
+	echo "$ZOPEADMINUSER:$ZOPEADMINPASSWORD" > access;
+	chmod 0600 access;
+	umask $OLDUMASK
+	"
+	# start Zope again
+	service schedulix-zope4 start
+	sleep 10		# zope seems to need a little time to reflect about life, the universe and everything
+	echo ""
+
+	# exchange SDMS.zexp
+	TS=`date +%Y%m%d%H%M%S`
+	CNT=0
+	QUIET="--quiet"
+	while [ $CNT -lt 5 ]; do
+		wget $QUIET --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_renameObjects?ids:list=SDMS&new_ids:list=SDMS_$TS";
+		ret=$?;
+		if [ $ret != 0 ]; then
+			echo "Error renaming SDMS folder";
+			QUIET="--verbose";
+		else
+			break;
+		fi;
+		CNT=`expr $CNT + 1`;
+		sleep 2;
+	done
+
+	CNT=0
+	QUIET="--quiet"
+	while [ $CNT -lt 5 ]; do
+		# Note: the last parameter "set_owner=" is filled with an empty string which evaluates to false in Python
+		wget $QUIET --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_importObject?file=SDMS.zexp&set_owner=";
+		ret=$?;
+		if [ $ret != 0 ]; then
+			echo "Error importing SDMS.zexp";
+			QUIET="--verbose";
+		else
+			break;
+		fi;
+		CNT=`expr $CNT + 1`;
+		sleep 2;
+	done
+
+	# stop Zope, remove "backdoor" and start it again
+	service schedulix-zope4 stop
+	rm -f /opt/schedulix/schedulixweb4/access
+	service schedulix-zope4 start
+fi

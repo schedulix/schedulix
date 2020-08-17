@@ -1,0 +1,44 @@
+echo "executing pre zope -- %version-%release"
+if [ "$1" == "1" ]; then
+	export INSTALLHOME=/opt/schedulix;
+	export PYTHONVENV=$INSTALLHOME/Zope4;
+	export ZOPEVERSION=4.4.2;
+	export ZOPEINSTANCE=$INSTALLHOME/schedulixweb4;
+	# we set the umask such that the allowed access is user-only (if not overridden)
+	# nobody needs to read the zope directories at filesystem level, except for zope itself
+	umask 077
+	echo "fetching zope4"
+	su schedulix -c "mkdir -p /opt/schedulix/Zope4;
+	cd /opt/schedulix/Zope4;
+	python3 -m venv $PYTHONVENV;
+	$PYTHONVENV/bin/pip install -U pip;
+	$PYTHONVENV/bin/pip install "Zope[wsgi]==$ZOPEVERSION" -c https://zopefoundation.github.io/Zope/releases/$ZOPEVERSION/constraints.txt;
+	$PYTHONVENV/bin/pip install Products.ExternalMethod;
+	$PYTHONVENV/bin/pip install Products.Sessions;
+	$PYTHONVENV/bin/pip install Products.SiteErrorLog;
+	$PYTHONVENV/bin/pip install Products.PythonScripts;
+	$PYTHONVENV/bin/pip install Products.TemporaryFolder;
+	$PYTHONVENV/bin/mkwsgiinstance -d $ZOPEINSTANCE -u sdmsadm:sdmsadm;
+	echo '<zodb_db temporary>
+    <mappingstorage>
+    </mappingstorage>
+    mount-point /temp_folder
+    container-class Products.TemporaryFolder.TemporaryContainer
+</zodb_db>
+' >> $ZOPEINSTANCE/etc/zope.conf;
+	cd $ZOPEINSTANCE/etc;
+	mv zope.ini zope.ini.$$;
+	sed 's/^\(host[ 	]*=[ 	]*127.0.0.1\)/# \1/
+	     s/^\(^port[ 	]*=[ 	]*8080\)/# \1/i
+	     /port[ 	]*=[ 	]*8080/a listen = *:8080' < zope.ini.$$ > zope.ini;
+	rm -f zope.ini.$$;
+	ln -s /opt/schedulix/schedulix-%{version}/zope4/Extensions $ZOPEINSTANCE;
+	ln -s /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory $PYTHONVENV/lib/python3.6/site-packages/Products;
+	ln -s /opt/schedulix/schedulix-%{version}/zope4/StringFixer $PYTHONVENV/lib/python3.6/site-packages/Products;
+	mkdir $ZOPEINSTANCE/import;
+	ln -s /opt/schedulix/schedulix-%{version}/zope4/import/SDMS.zexp $ZOPEINSTANCE/import
+	"
+else
+	echo "upgrading... software is already there"
+	service schedulix-zope4 stop || true
+fi

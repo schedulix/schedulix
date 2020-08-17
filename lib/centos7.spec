@@ -2,7 +2,7 @@
 # Common description and properties of the schedulix packages
 #
 Name:		schedulix
-Version:	3.0
+Version:	2.10
 Release:	2%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
@@ -530,6 +530,103 @@ fi
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/schedulixweb
 %attr(0744, root, root)             /etc/init.d/schedulix-zope
 
+%package zope4
+# ----------------------------------------------------------------------------------------
+#
+# zope4 FE package
+#
+# ----------------------------------------------------------------------------------------
+Summary:		The schedulix zope4 package installs the zope4 application server and configures it to access a locally installed server
+Group:			Applications/System
+Requires:		schedulix-base = %{version}-%{release} gcc python3 python3-devel python3-setuptools wget
+
+%description zope4
+%commonDescription
+
+The schedulix zope4 package installs the zope application server and configures 
+it to access a locally installed server.
+Note: installing this package requires a working Internet connection as the Zope4 
+software will be downloaded from http://download.zope.org.
+
+The initial user is 'sdmsadm' with a password that equals the user name.
+The Zope server will listen on port 8080.
+
+Due to the nature of the Zope software, there will be some messages like
+
+warning: no previously-included files matching '*.dll' found anywhere in distribution
+warning: no previously-included files matching '*.pyc' found anywhere in distribution
+warning: no previously-included files matching '*.pyo' found anywhere in distribution
+warning: no previously-included files matching '*.so' found anywhere in distribution
+
+which can be ignored. (Or, even better, tell me how to circumvent these).
+
+Another issue can be firewall related. In order to be able to access the Zope
+server you might need to add a rule to the iptables like:
+
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 8080 -j ACCEPT
+
+This will make the port 8080 accessible from other computers.
+(We don't do this, because we don't want to automagically introduce holes into
+your security concept).
+
+%pre zope4
+%include ../lib/zope4_pre.script
+
+
+%post zope4
+%include ../lib/zope4_post.script
+
+
+%preun zope4
+echo "executing preun zope4 -- %version-%release"
+if [ "$1" == "0" ]; then
+	/etc/init.d/schedulix-zope4 stop || true
+	chkconfig schedulix-zope4 off
+fi
+
+
+%postun zope4
+echo "executing postun zope -- %version-%release"
+if [ "$1" == "0" ]; then
+	rm -rf /opt/schedulix/Zope4
+	rm -rf /opt/schedulix/schedulixweb4
+fi
+
+
+%files zope4
+%defattr(0644, schedulix, schedulix, 0755)
+%dir /opt/schedulix/schedulix-%{version}/zope4
+%dir /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory
+%dir /opt/schedulix/schedulix-%{version}/zope4/import
+%dir /opt/schedulix/schedulix-%{version}/zope4/Extensions
+%dir /opt/schedulix/schedulix-%{version}/zope4/StringFixer
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/import/SDMS.zexp
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/Extensions/bicsuite_tx.py
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/Extensions/myeval.py
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/Extensions/sdms.py
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/StringFixer/__init__.py
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory/BICsuiteSubmitMemory.py
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory/__init__.py
+%ghost %attr(0755, schedulix, schedulix) /opt/schedulix/Zope4
+%ghost %attr(0755, schedulix, schedulix) /opt/schedulix/schedulixweb4
+%attr(0744, root, root)             /etc/init.d/schedulix-zope4
+# exclude all compiled python files
+%exclude   /opt/schedulix/schedulix-2.9/lib/zope4_post.script
+%exclude   /opt/schedulix/schedulix-2.9/lib/zope4_pre.script
+%exclude   /opt/schedulix/schedulix-2.9/zope4/BICsuiteSubmitMemory/BICsuiteSubmitMemory.pyc
+%exclude   /opt/schedulix/schedulix-2.9/zope4/BICsuiteSubmitMemory/BICsuiteSubmitMemory.pyo
+%exclude   /opt/schedulix/schedulix-2.9/zope4/BICsuiteSubmitMemory/__init__.pyc
+%exclude   /opt/schedulix/schedulix-2.9/zope4/BICsuiteSubmitMemory/__init__.pyo
+%exclude   /opt/schedulix/schedulix-2.9/zope4/Extensions/bicsuite_tx.pyc
+%exclude   /opt/schedulix/schedulix-2.9/zope4/Extensions/bicsuite_tx.pyo
+%exclude   /opt/schedulix/schedulix-2.9/zope4/Extensions/myeval.pyc
+%exclude   /opt/schedulix/schedulix-2.9/zope4/Extensions/myeval.pyo
+%exclude   /opt/schedulix/schedulix-2.9/zope4/Extensions/sdms.pyc
+%exclude   /opt/schedulix/schedulix-2.9/zope4/Extensions/sdms.pyo
+%exclude   /opt/schedulix/schedulix-2.9/zope4/StringFixer/__init__.pyc
+%exclude   /opt/schedulix/schedulix-2.9/zope4/StringFixer/__init__.pyo
+
+
 %package examples
 # ----------------------------------------------------------------------------------------
 #
@@ -654,7 +751,7 @@ cd ..
 %install
 echo "starting the installation of schedulix"
 mkdir -p %{buildroot}/opt/schedulix/schedulix-%{version}
-cp -r bin etc install lib sql zope LICENSE README.md CONTRIBUTING.md buildhash %{buildroot}/opt/schedulix/schedulix-%{version}
+cp -r bin etc install lib sql zope LICENSE README.md CONTRIBUTING.md buildhash zope4 %{buildroot}/opt/schedulix/schedulix-%{version}
 mkdir %{buildroot}/opt/schedulix/etc
 mkdir %{buildroot}/opt/schedulix/bin
 mkdir %{buildroot}/opt/schedulix/log
@@ -667,6 +764,7 @@ mkdir -p %{buildroot}/etc/yum.repos.d
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-server-mariadb %{buildroot}/etc/init.d/schedulix-server-mariadb
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-server-pg %{buildroot}/etc/init.d/schedulix-server-pg
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-zope %{buildroot}/etc/init.d/schedulix-zope
+mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-zope4 %{buildroot}/etc/init.d/schedulix-zope4
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-examples %{buildroot}/etc/init.d/schedulix-examples
 mv %{buildroot}/opt/schedulix/schedulix-%{version}/bin/schedulix-client %{buildroot}/etc/init.d/schedulix-client
 # 

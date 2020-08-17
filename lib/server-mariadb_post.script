@@ -16,7 +16,7 @@ if [ "$1" == "1" ]; then
 	. ~/.bashrc;
 	sed '
 		s:DbPasswd=.*:DbPasswd=schedulix:
-		s:DbUrl=.*:DbUrl=jdbc\:mysql\:///schedulixdb:
+		s:DbUrl=.*:DbUrl=jdbc\:mysql\://localhost:3306/schedulixdb:
 		s:DbUser=.*:DbUser=schedulix:
 		s:Hostname=.*:Hostname=$HOSTNAME:
 		s:JdbcDriver=.*:JdbcDriver=$MARIAJDBC:
