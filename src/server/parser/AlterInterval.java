@@ -203,14 +203,32 @@ public class AlterInterval
 		}
 
 		if (with.containsKey (ParseStr.S_EMBEDDED)) {
-			final String embeddedName = (String) with.get (ParseStr.S_EMBEDDED);
-			if (embeddedName == null)
+			Long embIvalId = ival.getEmbeddedIntervalId(sysEnv);
+			if (embIvalId != null) {
+				SDMSInterval embIval = SDMSIntervalTable.getObject(sysEnv, embIvalId);
+				Long parentObjId = embIval.getObjId(sysEnv);
+				System.out.println("embIval = " + embIvalId + ", parentObjId = " + parentObjId + ", ivalId = " + ivalId);
+				if (ivalId.equals(parentObjId)) {
+					embIval.delete(sysEnv);
+				}
 				ival.setEmbeddedIntervalId (sysEnv, null);
-			else {
-				final SDMSInterval embeddedIval = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(IntervalUtil.mapIdName (embeddedName, obj.seId), null));
-				final Long embeddedIvalId = embeddedIval.getId (sysEnv);
 
-				ival.setEmbeddedIntervalId (sysEnv, embeddedIvalId);
+			}
+			final Object embeddedName = with.get (ParseStr.S_EMBEDDED);
+			if (embeddedName != null) {
+				if (embeddedName instanceof String) {
+					final SDMSInterval embeddedIval = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(IntervalUtil.mapIdName ((String) embeddedName, obj.seId), null));
+					final Long embeddedIvalId = embeddedIval.getId (sysEnv);
+
+					ival.setEmbeddedIntervalId (sysEnv, embeddedIvalId);
+				} else {
+					CreateInterval ci = (CreateInterval) embeddedName;
+					ci.setEnv(sysEnv.cEnv);
+					ci.go(sysEnv, 1);
+					SDMSInterval iv = ci.getIval();
+					iv.setObjId(sysEnv, ivalId);
+					iv.setObjType(sysEnv, new Integer(SDMSInterval.INTERVAL));
+				}
 			}
 		}
 
