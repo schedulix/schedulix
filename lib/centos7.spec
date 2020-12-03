@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.9
-Release:	20%{?dist}
+Release:	21%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -536,7 +536,7 @@ fi
 # zope4 FE package
 #
 # ----------------------------------------------------------------------------------------
-Summary:		The schedulix zope package installs the zope application server and configures it to access a locally installed server
+Summary:		The schedulix zope4 package installs the zope4 application server and configures it to access a locally installed server
 Group:			Applications/System
 Requires:		schedulix-base = %{version}-%{release} gcc python3 python3-devel python3-setuptools wget
 
