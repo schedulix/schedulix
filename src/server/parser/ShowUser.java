@@ -98,6 +98,7 @@ public class ShowUser extends ShowCommented
 		desc.add("MANAGE_PRIVS");
 		desc.add("GROUPS");
 		desc.add("EQUIVALENT_USERS");
+		desc.add("PARAMETERS");
 		desc.add("COMMENTTYPE");
 		desc.add("COMMENT");
 		c_desc.add("TAG");
@@ -129,6 +130,7 @@ public class ShowUser extends ShowCommented
 		data.add(getManageList(sysEnv, uId));
 		data.add(getGroupList(sysEnv, uId));
 		data.add(getEquivUserList(sysEnv, uId));
+		data.add(getParms(sysEnv, uId));
 
 		data.add(getCommentInfoType(sysEnv, uId));
 		data.add(getCommentContainer(sysEnv, uId));
@@ -217,7 +219,7 @@ public class ShowUser extends ShowCommented
 		for(int i = 0; i < v.size(); i++) {
 			SDMSMember m = (SDMSMember) v.get(i);
 			try {
-				SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , m.getGId(sysEnv)));
+				SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO, m.getGId(sysEnv)));
 				p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 			} catch (NotFoundException nfe) {
 			}
@@ -300,5 +302,35 @@ public class ShowUser extends ShowCommented
 
 		return dc;
 	}
+
+	public static final SDMSOutputContainer getParms (final SystemEnvironment sysEnv, final Long id)
+	throws SDMSException
+	{
+		final Vector c_desc = new Vector();
+		c_desc.add ("ID");
+		c_desc.add ("NAME");
+		c_desc.add ("VALUE");
+
+		final SDMSOutputContainer c_container = new SDMSOutputContainer (sysEnv, null, c_desc);
+
+		final Vector up_v = SDMSUserParameterTable.idx_uId.getVector (sysEnv, id);
+
+		for (int i = 0; i < up_v.size(); ++i) {
+			final SDMSUserParameter up = (SDMSUserParameter) up_v.get (i);
+
+			final Vector c_data = new Vector();
+			final Long upId = up.getId (sysEnv);
+			c_data.add (upId);
+			c_data.add (up.getName (sysEnv));
+			c_data.add (up.getValue (sysEnv));
+
+			c_container.addData (sysEnv, c_data);
+		}
+
+		Collections.sort (c_container.dataset, c_container.getComparator (sysEnv, 1));
+
+		return c_container;
+	}
+
 }
 

@@ -76,7 +76,7 @@ public class CreateUser extends ManipUser
 				while (it.hasNext()) {
 					Long gId = (Long) it.next();
 					try {
-						SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
+						SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO, gId));
 						p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 					} catch (NotFoundException nfe) {
 					}
@@ -151,6 +151,12 @@ public class CreateUser extends ManipUser
 			if (suActive) {
 				sysEnv.cEnv.popGid(sysEnv);
 				suActive = false;
+			}
+
+			if (with.containsKey(ParseStr.S_PARAMETERS)) {
+				WithHash w = (WithHash) with.get(ParseStr.S_PARAMETERS);
+				if (w != null)
+					createParameters(sysEnv, w, u);
 			}
 		} catch (Throwable t) {
 			if (suActive) {

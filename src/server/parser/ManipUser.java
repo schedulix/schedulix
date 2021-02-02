@@ -116,8 +116,9 @@ public abstract class ManipUser extends Node
 				passwd = CheckSum.mkstr(CheckSum.md5((txtPasswd + salt).getBytes()), true);
 			else
 				passwd = CheckSum.mkstr(CheckSum.sha256((txtPasswd + salt).getBytes()), false);
+			with.remove(ParseStr.S_PASSWORD);
 		}
-		if (with.containsKey (ParseStr.S_RAWPASSWORD))
+		if (with.containsKey (ParseStr.S_RAWPASSWORD)) {
 			if (passwd == null) {
 				Vector v = (Vector) with.get (ParseStr.S_RAWPASSWORD);
 				passwd = (String) v.get(0);
@@ -127,6 +128,8 @@ public abstract class ManipUser extends Node
 					method = new Integer(SDMSUser.MD5);
 			} else
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "04312181625", "Both " + ParseStr.S_PASSWORD + " and " + ParseStr.S_RAWPASSWORD + " are not allowed"));
+			with.remove(ParseStr.S_RAWPASSWORD);
+		}
 
 		if(!with.containsKey(ParseStr.S_ENABLE))
 			enable = Boolean.TRUE;
@@ -181,5 +184,75 @@ public abstract class ManipUser extends Node
 
 		withEvaluated = true;
 	}
+
+	public void delParameters(SystemEnvironment sysEnv, SDMSUser u, Vector arg, boolean ignoreNotFound)
+	throws SDMSException
+	{
+		int i;
+		Long uId = u.getId(sysEnv);
+
+		try {
+			for(i = 0; i < arg.size(); i++) {
+				String n = (String) arg.get(i);
+				SDMSUserParameter up = SDMSUserParameterTable.idx_uId_Name_getUnique(sysEnv, new SDMSKey(uId, n));
+				up.delete(sysEnv);
+			}
+		} catch(NotFoundException nfe) {
+			if(!ignoreNotFound) throw nfe;
+		}
+	}
+
+	public void createParameters(SystemEnvironment sysEnv, WithHash wh, SDMSUser u)
+	throws SDMSException
+	{
+
+		Vector v = SDMSUserParameterTable.idx_uId.getVector(sysEnv, u.getId(sysEnv));
+		for (int i = 0; i < v.size(); ++i) {
+			SDMSUserParameter up = (SDMSUserParameter) v.get(i);
+			System.out.println("Deleting Parameter " + up.getName(sysEnv));
+			up.delete(sysEnv);
+		}
+
+		addOrAlterParameters(sysEnv, wh, u, true, false);
+	}
+
+	public void addOrAlterParameters(SystemEnvironment sysEnv, WithHash wh, SDMSUser u, boolean isAdd, boolean processError)
+	throws SDMSException
+	{
+		String lpn;
+		Long uId = u.getId(sysEnv);
+
+		if (wh == null) return;
+		Set s = wh.keySet();
+		Iterator i = s.iterator();
+		while(i.hasNext()) {
+			String pn = (String) i.next();
+			String pv = (String) wh.get(pn);
+			if(isAdd) {
+				try {
+					SDMSUserParameterTable.table.create(sysEnv, u.getId(sysEnv), pn, pv);
+					System.out.println("Createing parameter " + pn + " with value '" + pv + "'");
+				} catch(DuplicateKeyException dke) {
+					if(processError) {
+						SDMSUserParameter up =
+						        SDMSUserParameterTable.idx_uId_Name_getUnique(sysEnv, new SDMSKey(uId, pn));
+						up.setValue(sysEnv, pv);
+					} else {
+						throw dke;
+					}
+				}
+			} else {
+				try {
+					SDMSUserParameter up =
+					        SDMSUserParameterTable.idx_uId_Name_getUnique(sysEnv, new SDMSKey(uId, pn));
+					up.setValue(sysEnv, pv);
+				} catch (NotFoundException nfe) {
+					if(processError) return;
+					throw nfe;
+				}
+			}
+		}
+	}
+
 }
 
