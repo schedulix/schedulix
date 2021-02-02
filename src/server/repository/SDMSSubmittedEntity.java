@@ -463,7 +463,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 	}
 
-	public void disable(Boolean isDisable, SystemEnvironment sysEnv)
+	public void disable(SystemEnvironment sysEnv, Boolean isDisable)
 	throws SDMSException
 	{
 		if (isDisable.booleanValue()) {
@@ -599,7 +599,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			sme.getIsSuspended(sysEnv).intValue()		== NOSUSPEND	&&
 			sme.getChildSuspended(sysEnv).intValue()	<= 0		&&
 			sme.getJobIsFinal(sysEnv).booleanValue()	== true		&&
-			sme.getCntSubmitted(sysEnv).intValue()		== 0 		&&
+			sme.getCntSubmitted(sysEnv).intValue()		== 0		&&
 			sme.getCntDependencyWait(sysEnv).intValue()	> 0 		&&
 			sme.getCntSynchronizeWait(sysEnv).intValue()	== 0		&&
 			sme.getCntResourceWait(sysEnv).intValue()	== 0		&&
@@ -696,8 +696,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		return false;
 	}
 
-	private Long getDefaultEsdId(SystemEnvironment sysEnv)
-	throws SDMSException
+	private Long getDefaultEsdId(SystemEnvironment sysEnv, boolean disable)
+		throws SDMSException
 	{
 		int pref = 0;
 		int pref1 = 0;
@@ -706,7 +706,20 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		long actVersion = getSeVersion(sysEnv).longValue();
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, getSeId(sysEnv), actVersion);
 		Vector v = SDMSExitStateTable.idx_espId.getVector(sysEnv, se.getEspId(sysEnv), actVersion);
-		Iterator i = v.iterator();
+		Iterator i;
+		if (disable) {
+			i = v.iterator();
+			while (i.hasNext()) {
+				SDMSExitState es = (SDMSExitState)i.next();
+				if (disable && es.getIsDisabled(sysEnv).booleanValue()) {
+					esdId1 = es.getEsdId(sysEnv);
+					break;
+				}
+			}
+			if (esdId1 != null)
+				return esdId1;
+		}
+		i = v.iterator();
 		while (i.hasNext()) {
 			SDMSExitState es = (SDMSExitState)i.next();
 			if (es.getIsBatchDefault(sysEnv).booleanValue()) {
@@ -739,7 +752,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 		if (cf) {
 			if (getFinalEsdId(sysEnv) == null) {
-				setFinalEsdId(sysEnv, getDefaultEsdId(sysEnv));
+				setFinalEsdId(sysEnv, getDefaultEsdId(sysEnv, false));
 			}
 			trigger (sysEnv, SDMSTrigger.BEFORE_FINAL);
 			cf = canFinalize(sysEnv);
@@ -936,7 +949,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			} catch (NotFoundException nfe) {
 				final SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, getSeId(sysEnv), seVersion);
 				throw new NotFoundException (new SDMSMessage(sysEnv, "03606211020", "Couldn't resolve parameter $1 of $2",
-							 pd.getName(sysEnv), se.pathString(sysEnv)));
+							pd.getName(sysEnv), se.pathString(sysEnv)));
 			}
 		}
 	}
@@ -1192,11 +1205,11 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				SDMSSubmittedEntity rSme = null;
 				Long dMasterId = dSme.getMasterId(sysEnv);
 				if (resolveMode != SDMSDependencyDefinition.EXTERNAL)
-				rSme = dSme.getNearestSubmittedEntity (sysEnv, seId,
-								       false,
-								       false,
-								       true
-								      );
+					rSme = dSme.getNearestSubmittedEntity (sysEnv, seId,
+										false,
+										false,
+										true
+									);
 				if (rSme == null && resolveMode != SDMSDependencyDefinition.INTERNAL)
 					rSme = dSme.getExternalSubmittedEntity (sysEnv, dd);
 				if (rSme == null)
@@ -1536,7 +1549,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	throws SDMSException
 	{
 		if (getJobEsdId(sysEnv) == null) {
-			setJobEsdId(sysEnv, getDefaultEsdId(sysEnv));
+			setJobEsdId(sysEnv, getDefaultEsdId(sysEnv, true));
 		}
 		setJobIsFinal(sysEnv, Boolean.TRUE);
 		checkDependents(sysEnv);
@@ -1858,16 +1871,47 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	private boolean evaluateDisable(SystemEnvironment sysEnv, SDMSSchedulingHierarchy sh)
 	throws SDMSException
 	{
-		boolean disable = sh.getIsDisabled(sysEnv);
+		return evaluateDisable(sysEnv, sh, false);
+	}
+
+	private boolean evaluateDisable(SystemEnvironment sysEnv, SDMSSchedulingHierarchy sh, boolean hint)
+	throws SDMSException
+	{
+		if(sh.getIsDisabled(sysEnv)) return true;
 		long seVersion = getSeVersion(sysEnv).longValue();
 		Long intId = sh.getIntId(sysEnv);
-		if (!disable && intId != null) {
+		String enableCondition = sh.getEnableCondition(sysEnv);
+		Integer enableMode = sh.getEnableMode(sysEnv);
+
+		boolean disable = false;
+		if (enableCondition != null) {
+			final BoolExpr be = new BoolExpr(enableCondition);
+
+			if (!be.checkCondition(sysEnv, null, this, null, null, null, null)) {
+				disable = true;
+				if (enableMode == SDMSSchedulingHierarchy.AND)
+					return true;
+			} else {
+				if (enableMode == SDMSSchedulingHierarchy.OR)
+					return false;
+			}
+		}
+
+		if (enableMode == SDMSSchedulingHierarchy.AND && disable == false && hint == true)
+			return false;
+
+		if (intId != null) {
 			SDMSInterval iVal = SDMSIntervalTable.getObject (sysEnv, intId, seVersion);
 			TimeZone tz = getEffectiveTimeZone(sysEnv);
 			Long submitTs = getSubmitTs(sysEnv);
 			Long nextTs = iVal.filter(sysEnv, submitTs, iVal.getHorizon(sysEnv, tz), tz, 0);
 			if (nextTs > getSubmitTs(sysEnv)) {
 				disable = true;
+				if (enableMode == SDMSSchedulingHierarchy.AND)
+					return true;
+			} else {
+				if (enableMode == SDMSSchedulingHierarchy.OR)
+					return false;
 			}
 		}
 		return disable;
@@ -2232,7 +2276,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	private void inheritDependencies(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, long seVersion,
-					   SDMSHierarchyInstance hi)
+					 SDMSHierarchyInstance hi)
 		throws SDMSException
 	{
 		int smeState = sme.getState(sysEnv).intValue();
@@ -3108,14 +3152,14 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public SDMSSubmittedEntity submitChild (SystemEnvironment sysEnv,
-			Vector params, Integer suspended, Long resumeTs, Long childId, String childTag, Long replaceSmeId, String submitTag)
+			Vector params, Integer suspended, Long resumeTs, Long childId, String childTag, Long replaceSmeId, String submitTag, boolean enabled)
 		throws SDMSException
 	{
-		return submitChild (sysEnv, params, suspended, resumeTs, childId, childTag, replaceSmeId, submitTag, true);
+		return submitChild (sysEnv, params, suspended, resumeTs, childId, childTag, replaceSmeId, submitTag, true, enabled);
 	}
 
 	public SDMSSubmittedEntity submitChild (SystemEnvironment sysEnv,
-			Vector params, Integer suspended, Long resumeTs, Long childId, String childTag, Long replaceSmeId, String submitTag, boolean forceChildDef)
+			Vector params, Integer suspended, Long resumeTs, Long childId, String childTag, Long replaceSmeId, String submitTag, boolean forceChildDef, boolean enabled)
 		throws SDMSException
 	{
 		long seVersion = getSeVersion(sysEnv).longValue();
@@ -3151,7 +3195,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 
 		int parentNiceX100 = getParentNiceX100(sysEnv) + getNice(sysEnv).intValue();
 		SDMSSubmittedEntity sme = doSubmitChild(sysEnv, childId, parentSuspended, resumeTs, ownerId,
-		                                        sh, seVersion, replaceSmeId, suspended, childTag, submitTag, evaluateDisable(sysEnv, sh), false, parentNiceX100);
+		                                        sh, seVersion, replaceSmeId, suspended, childTag, submitTag, evaluateDisable(sysEnv, sh), !enabled, parentNiceX100);
 
 		if(params != null) {
 			Iterator i = params.iterator();
@@ -3550,42 +3594,42 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				null,
 				submitTs,
 				resumeTs,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
-				zero,
 		                null,
+				null,
+		                null,
+				null,
+		                null,
+				null,
 				zero,
 				zero,
 				zero,
-				zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
+		                null,
 		                zero,
 				zero,
 				zero,
 				zero,
 				zero,
+		                zero,
+		                zero,
+		                zero,
+		                zero,
 		                opSusresTs,
 		                null,
 		                timeZone

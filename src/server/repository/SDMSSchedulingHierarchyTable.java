@@ -60,14 +60,17 @@ public class SDMSSchedulingHierarchyTable extends SDMSSchedulingHierarchyTableGe
 	                                      ,Integer p_mergeMode
 	                                      ,Long p_estpId
 	                                      ,Long p_intId
+	                                      ,String p_enableCondition
+	                                      ,Integer p_enableMode
 	                                     )
 	throws SDMSException
 	{
 		SDMSSchedulingHierarchy p = super.create(
-		                                    env, p_seParentId, p_seChildId, p_aliasName,
+		                                    env,p_seParentId, p_seChildId, p_aliasName,
 		                                    p_isStatic, p_isDisabled, p_priority, p_suspend,
 		                                    p_resumeAt, p_resumeIn, p_resumeBase,
-		                                    p_mergeMode, p_estpId, p_intId
+		                                    p_mergeMode, p_estpId, p_intId, p_enableCondition,
+		                                    p_enableMode
 		                            );
 
 		checkHierarchyCycles(env, p_seParentId);

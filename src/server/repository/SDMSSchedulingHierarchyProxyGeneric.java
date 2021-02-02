@@ -49,6 +49,8 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 	public static final boolean DYNAMIC = false;
 	public static final boolean ENABLED = false;
 	public static final boolean DISABLED = true;
+	public static final int AND = 1;
+	public static final int OR = 2;
 	public static final int MINUTE = SDMSInterval.MINUTE;
 	public static final int HOUR = SDMSInterval.HOUR;
 	public static final int DAY = SDMSInterval.DAY;
@@ -59,6 +61,7 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 
 	static final public int aliasName_size = 64;
 	static final public int resumeAt_size = 20;
+	static final public int enableCondition_size = 2048;
 
 	private static SDMSTable masterTables[] = null;
 
@@ -355,6 +358,53 @@ public class SDMSSchedulingHierarchyProxyGeneric extends SDMSProxy
 
 		touchMaster(env);
 		((SDMSSchedulingHierarchyGeneric)(object)).setIntId (env, p_intId);
+		return ;
+	}
+	public String getEnableCondition (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingHierarchyGeneric)(object)).getEnableCondition (env));
+	}
+
+	public void setEnableCondition (SystemEnvironment env, String p_enableCondition)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSSchedulingHierarchyGeneric)(object)).setEnableCondition (env, p_enableCondition);
+		return ;
+	}
+	public static int getEnableConditionMaxLength ()
+	{
+		return (2048);
+	}
+	public Integer getEnableMode (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingHierarchyGeneric)(object)).getEnableMode (env));
+	}
+
+	public String getEnableModeAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingHierarchyGeneric) object).getEnableModeAsString (env);
+	}
+
+	public void setEnableMode (SystemEnvironment env, Integer p_enableMode)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSSchedulingHierarchyGeneric)(object)).setEnableMode (env, p_enableMode);
 		return ;
 	}
 	public Long getCreatorUId (SystemEnvironment env)

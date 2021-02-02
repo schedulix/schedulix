@@ -56,6 +56,8 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		, "MERGE_MODE"
 		, "ESTP_ID"
 		, "INT_ID"
+		, "ENABLE_CONDITION"
+		, "ENABLE_MODE"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
 		, "CHANGER_U_ID"
@@ -99,6 +101,8 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 	                                      ,Integer p_mergeMode
 	                                      ,Long p_estpId
 	                                      ,Long p_intId
+	                                      ,String p_enableCondition
+	                                      ,Integer p_enableMode
 	                                     )
 	throws SDMSException
 	{
@@ -123,6 +127,8 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		         , p_mergeMode
 		         , p_estpId
 		         , p_intId
+		         , p_enableCondition
+		         , p_enableMode
 		         , p_creatorUId
 		         , p_createTs
 		         , p_changerUId
@@ -144,6 +150,8 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		                , p_mergeMode
 		                , p_estpId
 		                , p_intId
+		                , p_enableCondition
+		                , p_enableMode
 		                , p_creatorUId
 		                , p_createTs
 		                , p_changerUId
@@ -194,6 +202,8 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 	                        ,Integer p_mergeMode
 	                        ,Long p_estpId
 	                        ,Long p_intId
+	                        ,String p_enableCondition
+	                        ,Integer p_enableMode
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
 	                        ,Long p_changerUId
@@ -211,6 +221,8 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingHierarchy: $1 $2", "resumeBase", p_resumeBase));
 		if (!SDMSSchedulingHierarchyGeneric.checkMergeMode(p_mergeMode))
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingHierarchy: $1 $2", "mergeMode", p_mergeMode));
+		if (!SDMSSchedulingHierarchyGeneric.checkEnableMode(p_enableMode))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingHierarchy: $1 $2", "enableMode", p_enableMode));
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -230,6 +242,8 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		Integer mergeMode;
 		Long estpId;
 		Long intId;
+		String enableCondition;
+		Integer enableMode;
 		Long creatorUId;
 		Long createTs;
 		Long changerUId;
@@ -260,12 +274,15 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 			if (r.wasNull()) estpId = null;
 			intId = new Long (r.getLong(14));
 			if (r.wasNull()) intId = null;
-			creatorUId = new Long (r.getLong(15));
-			createTs = new Long (r.getLong(16));
-			changerUId = new Long (r.getLong(17));
-			changeTs = new Long (r.getLong(18));
-			validFrom = r.getLong(19);
-			validTo = r.getLong(20);
+			enableCondition = r.getString(15);
+			if (r.wasNull()) enableCondition = null;
+			enableMode = new Integer (r.getInt(16));
+			creatorUId = new Long (r.getLong(17));
+			createTs = new Long (r.getLong(18));
+			changerUId = new Long (r.getLong(19));
+			changeTs = new Long (r.getLong(20));
+			validFrom = r.getLong(21);
+			validTo = r.getLong(22);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 			throw new FatalException(new SDMSMessage(env, "01110182045", "SchedulingHierarchy: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -285,6 +302,8 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		                mergeMode,
 		                estpId,
 		                intId,
+		                enableCondition,
+		                enableMode,
 		                creatorUId,
 		                createTs,
 		                changerUId,
@@ -317,6 +336,8 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		                                   ", " + squote + "MERGE_MODE" + equote +
 		                                   ", " + squote + "ESTP_ID" + equote +
 		                                   ", " + squote + "INT_ID" + equote +
+		                                   ", " + squote + "ENABLE_CONDITION" + equote +
+		                                   ", " + squote + "ENABLE_MODE" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +

@@ -41,6 +41,8 @@ CREATE TABLE `SCHEDULING_HIERARCHY` (
     , `MERGE_MODE`                   integer         NOT NULL
     , `ESTP_ID`                      decimal(20)         NULL
     , `INT_ID`                       decimal(20)         NULL
+    , `ENABLE_CONDITION`             varchar(2048)       NULL
+    , `ENABLE_MODE`                  integer         NOT NULL
     , `CREATOR_U_ID`                 decimal(20)     NOT NULL
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
@@ -66,6 +68,8 @@ SELECT
     , CASE `MERGE_MODE` WHEN 1 THEN 'MERGE_LOCAL' WHEN 2 THEN 'MERGE_GLOBAL' WHEN 3 THEN 'NOMERGE' WHEN 4 THEN 'FAILURE' END AS `MERGE_MODE`
     , `ESTP_ID`                      AS `ESTP_ID`
     , `INT_ID`                       AS `INT_ID`
+    , `ENABLE_CONDITION`             AS `ENABLE_CONDITION`
+    , CASE `ENABLE_MODE` WHEN 1 THEN 'AND' WHEN 2 THEN 'OR' END AS `ENABLE_MODE`
     , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
@@ -88,6 +92,8 @@ SELECT
     , CASE `MERGE_MODE` WHEN 1 THEN 'MERGE_LOCAL' WHEN 2 THEN 'MERGE_GLOBAL' WHEN 3 THEN 'NOMERGE' WHEN 4 THEN 'FAILURE' END AS `MERGE_MODE`
     , `ESTP_ID`                      AS `ESTP_ID`
     , `INT_ID`                       AS `INT_ID`
+    , `ENABLE_CONDITION`             AS `ENABLE_CONDITION`
+    , CASE `ENABLE_MODE` WHEN 1 THEN 'AND' WHEN 2 THEN 'OR' END AS `ENABLE_MODE`
     , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`

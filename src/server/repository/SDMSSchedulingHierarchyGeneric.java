@@ -50,6 +50,8 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	public static final boolean DYNAMIC = false;
 	public static final boolean ENABLED = false;
 	public static final boolean DISABLED = true;
+	public static final int AND = 1;
+	public static final int OR = 2;
 	public static final int MINUTE = SDMSInterval.MINUTE;
 	public static final int HOUR = SDMSInterval.HOUR;
 	public static final int DAY = SDMSInterval.DAY;
@@ -71,10 +73,12 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	public final static int nr_mergeMode = 12;
 	public final static int nr_estpId = 13;
 	public final static int nr_intId = 14;
-	public final static int nr_creatorUId = 15;
-	public final static int nr_createTs = 16;
-	public final static int nr_changerUId = 17;
-	public final static int nr_changeTs = 18;
+	public final static int nr_enableCondition = 15;
+	public final static int nr_enableMode = 16;
+	public final static int nr_creatorUId = 17;
+	public final static int nr_createTs = 18;
+	public final static int nr_changerUId = 19;
+	public final static int nr_changeTs = 20;
 
 	public static String tableName = SDMSSchedulingHierarchyTableGeneric.tableName;
 
@@ -91,6 +95,8 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	protected Integer mergeMode;
 	protected Long estpId;
 	protected Long intId;
+	protected String enableCondition;
+	protected Integer enableMode;
 	protected Long creatorUId;
 	protected Long createTs;
 	protected Long changerUId;
@@ -115,6 +121,8 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	        Integer p_mergeMode,
 	        Long p_estpId,
 	        Long p_intId,
+	        String p_enableCondition,
+	        Integer p_enableMode,
 	        Long p_creatorUId,
 	        Long p_createTs,
 	        Long p_changerUId,
@@ -148,6 +156,14 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 		mergeMode = p_mergeMode;
 		estpId = p_estpId;
 		intId = p_intId;
+		if (p_enableCondition != null && p_enableCondition.length() > 2048) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141528",
+			                        "(SchedulingHierarchy) Length of $1 exceeds maximum length $2", "enableCondition", "2048")
+			);
+		}
+		enableCondition = p_enableCondition;
+		enableMode = p_enableMode;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -615,6 +631,77 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 		return;
 	}
 
+	public String getEnableCondition (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (enableCondition);
+	}
+
+	public	void setEnableCondition (SystemEnvironment env, String p_enableCondition)
+	throws SDMSException
+	{
+		if(p_enableCondition != null && p_enableCondition.equals(enableCondition)) return;
+		if(p_enableCondition == null && enableCondition == null) return;
+		SDMSSchedulingHierarchyGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		if (p_enableCondition != null && p_enableCondition.length() > 2048) {
+			throw new CommonErrorException (
+			        new SDMSMessage(env, "01112141510",
+			                        "(SchedulingHierarchy) Length of $1 exceeds maximum length $2", "enableCondition", "2048")
+			);
+		}
+		o.enableCondition = p_enableCondition;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
+	public Integer getEnableMode (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (enableMode);
+	}
+
+	public String getEnableModeAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		final Integer v = getEnableMode (env);
+		switch (v.intValue()) {
+			case SDMSSchedulingHierarchy.AND:
+				return "AND";
+			case SDMSSchedulingHierarchy.OR:
+				return "OR";
+		}
+		throw new FatalException (new SDMSMessage (env,
+		                          "01205252242",
+		                          "Unknown SchedulingHierarchy.enableMode: $1",
+		                          getEnableMode (env)));
+	}
+
+	public	void setEnableMode (SystemEnvironment env, Integer p_enableMode)
+	throws SDMSException
+	{
+		if(enableMode.equals(p_enableMode)) return;
+		SDMSSchedulingHierarchyGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(SchedulingHierarchy) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingHierarchyGeneric) change(env);
+		o.enableMode = p_enableMode;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -775,6 +862,8 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 	                Integer p_mergeMode,
 	                Long p_estpId,
 	                Long p_intId,
+	                String p_enableCondition,
+	                Integer p_enableMode,
 	                Long p_creatorUId,
 	                Long p_createTs,
 	                Long p_changerUId,
@@ -795,6 +884,8 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 		mergeMode = p_mergeMode;
 		estpId = p_estpId;
 		intId = p_intId;
+		enableCondition = p_enableCondition;
+		enableMode = p_enableMode;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -833,12 +924,16 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 				        ", " + squote + "MERGE_MODE" + equote +
 				        ", " + squote + "ESTP_ID" + equote +
 				        ", " + squote + "INT_ID" + equote +
+				        ", " + squote + "ENABLE_CONDITION" + equote +
+				        ", " + squote + "ENABLE_MODE" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ", VALID_FROM, VALID_TO" +
 				        ") VALUES (?" +
+				        ", ?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -904,12 +999,17 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 				myInsert.setNull(14, Types.INTEGER);
 			else
 				myInsert.setLong (14, intId.longValue());
-			myInsert.setLong (15, creatorUId.longValue());
-			myInsert.setLong (16, createTs.longValue());
-			myInsert.setLong (17, changerUId.longValue());
-			myInsert.setLong (18, changeTs.longValue());
-			myInsert.setLong(19, env.tx.versionId);
-			myInsert.setLong(20, Long.MAX_VALUE);
+			if (enableCondition == null)
+				myInsert.setNull(15, Types.VARCHAR);
+			else
+				myInsert.setString(15, enableCondition);
+			myInsert.setInt(16, enableMode.intValue());
+			myInsert.setLong (17, creatorUId.longValue());
+			myInsert.setLong (18, createTs.longValue());
+			myInsert.setLong (19, changerUId.longValue());
+			myInsert.setLong (20, changeTs.longValue());
+			myInsert.setLong(21, env.tx.versionId);
+			myInsert.setLong(22, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "SchedulingHierarchy: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -1014,6 +1114,15 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 		}
 		return false;
 	}
+	static public boolean checkEnableMode(Integer p)
+	{
+		switch (p.intValue()) {
+			case SDMSSchedulingHierarchy.AND:
+			case SDMSSchedulingHierarchy.OR:
+				return true;
+		}
+		return false;
+	}
 
 	public void print()
 	{
@@ -1032,6 +1141,8 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "mergeMode : " + mergeMode, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "estpId : " + estpId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "intId : " + intId, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "enableCondition : " + enableCondition, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "enableMode : " + enableMode, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "changerUId : " + changerUId, SDMSThread.SEVERITY_MESSAGE);
@@ -1048,23 +1159,25 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 		String indentString = new String(sb);
 		String result =
 		        indentString + "id : " + id + "\n" +
-		        indentString + "seParentId : " + seParentId + "\n" +
-		        indentString + "seChildId  : " + seChildId + "\n" +
-		        indentString + "aliasName  : " + aliasName + "\n" +
-		        indentString + "isStatic   : " + isStatic + "\n" +
-		        indentString + "isDisabled : " + isDisabled + "\n" +
-		        indentString + "priority   : " + priority + "\n" +
-		        indentString + "suspend    : " + suspend + "\n" +
-		        indentString + "resumeAt   : " + resumeAt + "\n" +
-		        indentString + "resumeIn   : " + resumeIn + "\n" +
-		        indentString + "resumeBase : " + resumeBase + "\n" +
-		        indentString + "mergeMode  : " + mergeMode + "\n" +
-		        indentString + "estpId     : " + estpId + "\n" +
-		        indentString + "intId      : " + intId + "\n" +
-		        indentString + "creatorUId : " + creatorUId + "\n" +
-		        indentString + "createTs   : " + createTs + "\n" +
-		        indentString + "changerUId : " + changerUId + "\n" +
-		        indentString + "changeTs   : " + changeTs + "\n" +
+		        indentString + "seParentId      : " + seParentId + "\n" +
+		        indentString + "seChildId       : " + seChildId + "\n" +
+		        indentString + "aliasName       : " + aliasName + "\n" +
+		        indentString + "isStatic        : " + isStatic + "\n" +
+		        indentString + "isDisabled      : " + isDisabled + "\n" +
+		        indentString + "priority        : " + priority + "\n" +
+		        indentString + "suspend         : " + suspend + "\n" +
+		        indentString + "resumeAt        : " + resumeAt + "\n" +
+		        indentString + "resumeIn        : " + resumeIn + "\n" +
+		        indentString + "resumeBase      : " + resumeBase + "\n" +
+		        indentString + "mergeMode       : " + mergeMode + "\n" +
+		        indentString + "estpId          : " + estpId + "\n" +
+		        indentString + "intId           : " + intId + "\n" +
+		        indentString + "enableCondition : " + enableCondition + "\n" +
+		        indentString + "enableMode      : " + enableMode + "\n" +
+		        indentString + "creatorUId      : " + creatorUId + "\n" +
+		        indentString + "createTs        : " + createTs + "\n" +
+		        indentString + "changerUId      : " + changerUId + "\n" +
+		        indentString + "changeTs        : " + changeTs + "\n" +
 		        indentString + "validFrom : " + validFrom + "\n" +
 		        indentString + "validTo : " + validTo + "\n";
 		return result;
