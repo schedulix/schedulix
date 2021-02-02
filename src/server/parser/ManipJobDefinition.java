@@ -274,7 +274,7 @@ public abstract class ManipJobDefinition extends Node
 		if(esp == null) {
 			throw new CommonErrorException(
 				new SDMSMessage(sysEnv, "02112140955",
-						 "Missing Exit State Profile"
+						"Missing Exit State Profile"
 				)
 			);
 		}
@@ -493,6 +493,8 @@ public abstract class ManipJobDefinition extends Node
 		Long intId;
 		Vector depNames;
 		String aliasName;
+		String enableCondition;
+		Integer enableMode;
 		int parentType;
 
 		Long parentId = seParent.getId(sysEnv);
@@ -503,7 +505,7 @@ public abstract class ManipJobDefinition extends Node
 				new SDMSMessage(sysEnv, "03112141754",
 					"Missing Child Name"
 					)
-				);
+			);
 		}
 		cName = (String) cwh.get(ParseStr.S_NAME);
 		cPath = (Vector) cwh.get(ParseStr.S_PATH);
@@ -560,11 +562,16 @@ public abstract class ManipJobDefinition extends Node
 
 		aliasName = (String) wh.get(ParseStr.S_ALIAS);
 
+		enableCondition = canonizeCondition(sysEnv, (String) wh.get(ParseStr.S_CONDITION));
+		enableMode = (Integer) wh.get(ParseStr.S_MODE);
+		if (enableMode == null)
+			enableMode = SDMSSchedulingHierarchyGeneric.AND;
+
 		SDMSSchedulingEntity seChild = SDMSSchedulingEntityTable.get(sysEnv, cPath, cName);
 		if(!seChild.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
 			throw new AccessViolationException(
-					new SDMSMessage(sysEnv, "03402131121", "Execute privilege missing for $1", seChild.pathString(sysEnv))
-				);
+				new SDMSMessage(sysEnv, "03402131121", "Execute privilege missing for $1", seChild.pathString(sysEnv))
+			);
 		childId = seChild.getId(sysEnv);
 
 		estpId = null;
@@ -601,7 +608,7 @@ public abstract class ManipJobDefinition extends Node
 		if(isAdd) {
 			try {
 				sh = SDMSSchedulingHierarchyTable.table.create(sysEnv, parentId, childId, aliasName, isStatic, isDisabled, prio,
-				                suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId, intId);
+				                suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId, intId, enableCondition, enableMode);
 			} catch (DuplicateKeyException dke) {
 				if(processError) {
 					sh = SDMSSchedulingHierarchyTable.idx_parentId_childId_getUnique(sysEnv, new SDMSKey(parentId, childId));
@@ -616,6 +623,8 @@ public abstract class ManipJobDefinition extends Node
 					sh.setMergeMode(sysEnv, mergeMode);
 					sh.setEstpId(sysEnv, estpId);
 					sh.setIntId(sysEnv, intId);
+					sh.setEnableCondition(sysEnv, enableCondition);
+					sh.setEnableMode(sysEnv, enableMode);
 
 					Vector v = SDMSIgnoredDependencyTable.idx_shId.getVector(sysEnv, sh.getId(sysEnv));
 					for(int i = 0; i < v.size(); i++) ((SDMSIgnoredDependency) v.get(i)).delete(sysEnv);
@@ -637,6 +646,8 @@ public abstract class ManipJobDefinition extends Node
 				sh.setMergeMode(sysEnv, mergeMode);
 				sh.setEstpId(sysEnv, estpId);
 				sh.setIntId(sysEnv, intId);
+				sh.setEnableCondition(sysEnv, enableCondition);
+				sh.setEnableMode(sysEnv, enableMode);
 
 				Vector v = SDMSIgnoredDependencyTable.idx_shId.getVector(sysEnv, sh.getId(sysEnv));
 				for(int i = 0; i < v.size(); i++) ((SDMSIgnoredDependency) v.get(i)).delete(sysEnv);
@@ -1038,12 +1049,12 @@ public abstract class ManipJobDefinition extends Node
 		if(isAdd) {
 			try {
 				dd = SDMSDependencyDefinitionTable.table.create(sysEnv,
-					seDependent.getId(sysEnv),
-					rId,
-					rdName,
-					unresolved,
-					mode,
-					stateSelection,
+						seDependent.getId(sysEnv),
+						rId,
+						rdName,
+						unresolved,
+						mode,
+						stateSelection,
 				                condition,
 				                resolveMode,
 				                expiredAmount,

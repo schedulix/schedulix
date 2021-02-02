@@ -129,7 +129,7 @@ public class Parser
 %type <Boolean>	gr_cascforce
 %type <Boolean>	ival_merge
 %type <Boolean>	jp_optlocal, js_fatal
-%type <Boolean>	list
+%type <Boolean>	list, show
 %type <Boolean>	master
 %type <Boolean>	opt_cascade, opt_force, opt_ignore, opt_suspended, opttrunc
 %type <Boolean>	active, staticdynamic
@@ -223,7 +223,7 @@ public class Parser
 %type <WithHash>	system_resource_req, rsp_with_clause, rsp_withitemlist
 %type <WithHash>	schedwithlist, schedwithwith, schevwithlist, schevwithwith, scope_cfg, scope_cfg_list, scope_cfg_envlist, scope_parm, scope_parmlist, select_with
 %type <WithHash>	selwithlist, signed_period, signed_period_rj, sj_withlist, stickyspec, submit_with, submit_withlist, sp_with
-%type <WithHash>	us_add_dellist, us_with, us_withlist, wt_with_clause, wt_withitemlist
+%type <WithHash>	us_add_dellist, us_parmlist, us_with, us_withlist, wt_with_clause, wt_withitemlist
 
 %type <WithItem>	aj_disable, aj_suspend, aj_withitem, ajd_add_del_item, anr_with_item, aom_withitem, ar_parm, ar_with_item
 %type <WithItem>	cc_withitem, cev_withitem, cf_withitem, cf_parm, clf_withitem, cnr_parm, cnr_with_item, connect_withitem
@@ -820,6 +820,9 @@ us_withitem:	password							{ $$ = $1; }
 		//D:DEFAULT
 	|	EQUIVALENT '=' NONE						{ $$ = new WithItem(ParseStr.S_EQUIVALENT, null); }
 	|	EQUIVALENT '=' '(' us_equiv_list ')'				{ $$ = new WithItem(ParseStr.S_EQUIVALENT, $4); }
+		//D:DEFAULT
+	|	PARAMETERS '=' NONE						{ $$ = new WithItem(ParseStr.S_PARAMETERS, null); }
+	|	PARAMETERS '=' '(' us_parmlist ')'				{ $$ = new WithItem(ParseStr.S_PARAMETERS, $4); }
 
 us_connect_type:	PLAIN							{ $$ = ParseStr.I_PLAIN; }
 	|		SSL							{ $$ = ParseStr.I_SSL; }
@@ -830,7 +833,10 @@ us_add_dellist: us_add_delitem							{ $$ = new WithHash(); $<WithHash>$.addItem
 	|	us_add_dellist ',' us_add_delitem				{ $1.addItem($3); }
 	
 //D:NT-ALIAS = add_delitem
-us_add_delitem:	add_or_delete GROUP '=' '(' us_grlist ')'			{ $$ = new WithItem($1.booleanValue() ? ParseStr.S_ADDGROUP:ParseStr.S_DELGROUP, $5); }
+us_add_delitem:	add_or_delete GROUP '=' '(' us_grlist ')'			{ $$ = new WithItem($1.booleanValue() ? ParseStr.S_ADDGROUP : ParseStr.S_DELGROUP, $5); }
+	|	add_or_alter PARAMETERS '=' '(' us_parmlist ')'			{ $$ = new WithItem($1.booleanValue() ? ParseStr.S_XADDPARM : ParseStr.S_ADDPARM, $5); }
+	|	delete PARAMETERS '=' '(' parmlist ')'				{ $$ = new WithItem($1.booleanValue() ? ParseStr.S_XDELPARM : ParseStr.S_DELPARM, $5); }
+	|	alter PARAMETERS '=' '(' us_parmlist ')'			{ $$ = new WithItem($1.booleanValue() ? ParseStr.S_XALTPARM : ParseStr.S_ALTPARM, $5); }
 	
 us_grlist:	groupname							{ $$ = new Vector(); $<Vector>$.addElement($1); }
 	|	us_grlist ',' groupname						{ $1.addElement($3); }
@@ -840,6 +846,9 @@ us_equiv_list:	us_equiv_identifier						{ $$ = new Vector(); $<Vector>$.addEleme
 
 us_equiv_identifier: username							{ $$ = $1; }
 	|	serverpath							{ $$ = $1; }
+
+us_parmlist:	parm_is_string							{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
+	|	us_parmlist ',' parm_is_string					{ $1.addItem($3); }
 
 
 // -----------------------------------------------------------------------------------
@@ -1318,7 +1327,7 @@ alter_named_resource:	alter nr_url anr_with_clause				{ $$ = new AlterNamedResou
 //D:NT-ALIAS = show named resource
 //D:DESCRIPTION show_named_resource.tex
 //D:PURPOSE P056
-show_named_resource:	SHOW nr_url opt_expand					{ $$ = new ShowNamedResource($2, $3); }
+show_named_resource:	show nr_url opt_expand					{ $$ = new ShowNamedResource($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = list named resource
@@ -1941,6 +1950,7 @@ esp_state_optionlist:		esp_state_option				{ $$ = new WithHash(); $<WithHash>$.a
 
 //D:NT-ALIAS = option
 esp_state_option:		UNREACHABLE					{ $$ = $$ = new WithItem(ParseStr.map($1.token), null); }
+	|			DISABLE						{ $$ = $$ = new WithItem(ParseStr.map($1.token), null); }
 	|			BROKEN						{ $$ = $$ = new WithItem(ParseStr.map($1.token), null); }
 	|			BATCH DEFAULT					{ $$ = $$ = new WithItem(ParseStr.map($1.token), null); }
 	|			DEPENDENCY DEFAULT				{ $$ = $$ = new WithItem(ParseStr.map($1.token), null); }
@@ -2363,6 +2373,11 @@ jcd_item:		folderpath '.' jobname					{ final WithHash w = new WithHash();
 			//D:DEFAULT
 	|		ALIAS '=' NONE						{ $$ = new WithItem(ParseStr.map($1.token), null); }
 	|		enable							{ $$ = new WithItem(ParseStr.S_ENABLE, $1); }
+	|		CONDITION '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
+	|		CONDITION '=' STRING					{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
+			//D:DEFAULT
+	|		MODE '=' OR						{ $$ = new WithItem(ParseStr.map($1.token), SDMSSchedulingHierarchy.OR); }
+	|		MODE '=' AND						{ $$ = new WithItem(ParseStr.map($1.token), SDMSSchedulingHierarchy.AND); }
 
 staticdynamic:		STATIC							{ $$ = new Boolean(SDMSSchedulingHierarchy.STATIC); }
 	|		DYNAMIC							{ $$ = new Boolean(SDMSSchedulingHierarchy.DYNAMIC); }
@@ -2715,6 +2730,7 @@ submit_withitem:	suspend							{ $$ = $1; }
 	|		resume							{ $$ = $1; }
 	|		MASTER							{ $$ = new WithItem(ParseStr.map($1.token), $1.textValue); }
 	|		TIME ZONE '=' STRING					{ $$ = new WithItem(ParseStr.map($1.token), $4.textValue); }
+	|		enable							{ $$ = new WithItem(ParseStr.S_ENABLE, $1); }
 
 
 resume:			RESUME IN period					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
@@ -3023,6 +3039,7 @@ sj_auditfilter: sj_filteritem							{ $$ = new Vector(); $<Vector>$.addElement($
 sj_filteritem:  RERUN								{ $$ = SDMSAuditTrail.convert($1); }
 	|	RERUN RECURSIVE							{ $$ = SDMSAuditTrail.convert($1, $2); }
 	|	CANCEL								{ $$ = SDMSAuditTrail.convert($1); }
+	|	CLONE								{ $$ = SDMSAuditTrail.convert($1); }
 	|	SUSPEND								{ $$ = SDMSAuditTrail.convert($1); }
 	|	RESUME								{ $$ = SDMSAuditTrail.convert($1); }
 	|	SET STATUS							{ $$ = SDMSAuditTrail.convert($1, $2); }
@@ -4206,6 +4223,9 @@ with_inherit_grant:	INHERIT GRANT '=' '(' privilege_list ')'		{ $$ = new WithIte
 
 list:		LIST								{ $$ = Boolean.FALSE; }
 	|	LIST CONDENSED							{ $$ = Boolean.TRUE; }
+
+show:		SHOW								{ $$ = Boolean.FALSE; }
+	|	SHOW CONDENSED							{ $$ = Boolean.TRUE; }
 
 		//D:DEFAULT
 lockmode:	N								{ $$ = ParseStr.I_LM_N; }

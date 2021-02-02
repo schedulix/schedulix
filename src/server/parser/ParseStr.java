@@ -30,8 +30,7 @@ import java.util.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;
 
-public class ParseStr
-{
+public class ParseStr {
 
 	public static final String __version = "@(#) $Id: ParseStr.java,v 2.41.2.1 2013/03/14 10:24:42 ronald Exp $";
 

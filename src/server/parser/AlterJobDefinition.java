@@ -262,6 +262,8 @@ public class AlterJobDefinition extends ManipJobDefinition
 		String intName;
 		Long estpId;
 		Long intId;
+		String enableCondition;
+		Integer enableMode;
 
 		Long parentId = se.getId(sysEnv);
 
@@ -304,6 +306,10 @@ public class AlterJobDefinition extends ManipJobDefinition
 				intName = (String) wh.get(ParseStr.S_INTERVAL);
 				depNames = (Vector) wh.get(ParseStr.S_IGNORE);
 				aliasName = (String) wh.get(ParseStr.S_ALIAS);
+				enableCondition = canonizeCondition(sysEnv, (String) wh.get(ParseStr.S_CONDITION));
+				enableMode = (Integer) wh.get(ParseStr.S_MODE);
+				if (enableMode == null)
+					enableMode = SDMSSchedulingHierarchy.AND;
 				estpId = null;
 
 				sh = null;
@@ -317,6 +323,8 @@ public class AlterJobDefinition extends ManipJobDefinition
 						if(wh.containsKey(ParseStr.S_ENABLE))		sh.setIsDisabled(sysEnv, isDisabled);
 						if(wh.containsKey(ParseStr.S_PRIORITY))		sh.setPriority(sysEnv, prio);
 						if(wh.containsKey(ParseStr.S_SUSPEND))		sh.setSuspend(sysEnv, suspend);
+						if(wh.containsKey(ParseStr.S_CONDITION))	sh.setEnableCondition(sysEnv, enableCondition);
+						if(wh.containsKey(ParseStr.S_MODE))		sh.setEnableMode(sysEnv, enableMode);
 						suspend = sh.getSuspend(sysEnv);
 						if (suspend.intValue() == SDMSSchedulingHierarchy.SUSPEND) {
 							Object resumeObj = wh.get(ParseStr.S_RESUME);
@@ -423,7 +431,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 					}
 
 					sh = SDMSSchedulingHierarchyTable.table.create(sysEnv, parentId, newChildId, aliasName, isStatic, isDisabled, prio,
-							suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId, intId);
+							suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId, intId, enableCondition, enableMode);
 					checkTranslation(sysEnv, seChild, se, estp);
 				}
 				if(aliasName != null) {
