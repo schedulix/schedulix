@@ -196,8 +196,8 @@ public class TimerThread
 		final Boolean doSuspend = (forceSuspend || submitSuspended) ? Boolean.TRUE : Boolean.FALSE;
 
 		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, parmList, new Integer(doSuspend.booleanValue() ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
-		                                null,
-		                                ownerId, null, "Event " + evt.getName (sysEnv), timeZone);
+								null,
+								ownerId, null, "Event " + evt.getName (sysEnv), timeZone);
 
 		if (forceSuspend) {
 
@@ -266,10 +266,11 @@ public class TimerThread
 						trigDate = nextActivityDate;
 					}
 
-				else if (backlogHandling != SDMSScheduledEvent.NONE)
-					baseDate = nextActivityDate;
 				else
-					baseDate = now;
+					if (backlogHandling != SDMSScheduledEvent.NONE)
+						baseDate = nextActivityDate;
+					else
+						baseDate = now;
 			}
 
 			if (trigDate == null)
@@ -336,7 +337,7 @@ public class TimerThread
 			throw e;
 		} finally {
 			if (setLastStartTime)
-			scev.setLastStartTime (sysEnv, nowLong);
+				scev.setLastStartTime (sysEnv, nowLong);
 		}
 	}
 

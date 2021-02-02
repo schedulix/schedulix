@@ -47,7 +47,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_PROFESSIONAL = "PROFESSIONAL";
 	public static final String S_ENTERPRISE   = "ENTERPRISE";
 
-	public static final String programVersion = "3.0";
+	public static final String programVersion = "2.10";
 	public static String programLevel = null;
 
 	public static final long SYSTEM_OBJECTS_BOUNDARY = 1000;
@@ -71,15 +71,15 @@ public class SystemEnvironment implements Cloneable
 	private static final String S_LANGLEVEL29  = "2.9";
 	public static final int LANGLEVEL29 = 3;
 
-	private static final String S_LANGLEVEL30  = "3.0";
-	public static final int LANGLEVEL30 = 4;
+	private static final String S_LANGLEVEL210  = "2.10";
+	public static final int LANGLEVEL210 = 4;
 
 	private static final String LANGLEVELS[] = {
 		S_LANGLEVEL261,
 		S_LANGLEVEL27,
 		S_LANGLEVEL28,
 		S_LANGLEVEL29,
-		S_LANGLEVEL30
+		S_LANGLEVEL210
 	};
 
 	private static final int DEFAULT_LANGLEVEL = LANGLEVELS.length - 1;
@@ -676,7 +676,8 @@ public class SystemEnvironment implements Cloneable
 					result.add(tmp.toString());
 					tmp.delete(0, tmp.length());
 				}
-			} else if (chr[i] == ',' || chr[i] == '(' || chr[i] == ')') {
+			} else
+			if (chr[i] == ',' || chr[i] == '(' || chr[i] == ')') {
 				if (inIdentifier) {
 					inIdentifier = false;
 					result.add(tmp.toString());
@@ -692,7 +693,7 @@ public class SystemEnvironment implements Cloneable
 	}
 
 	private void parseSSTParameter(String sst)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Vector<String> v = tokenizeSST(sst);
@@ -706,7 +707,7 @@ public class SystemEnvironment implements Cloneable
 	static final String CBRACKET = ")";
 	static final String COMMA = ",";
 	private int parseSSTEntry(Vector<String> v, int pos)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		String tmp;
@@ -1152,7 +1153,7 @@ public class SystemEnvironment implements Cloneable
 	private void getExportVariables()
 	{
 		final String defaultVars =
-		        SDMSSubmittedEntity.S_ENVIRONMENT	+ "," +
+			SDMSSubmittedEntity.S_ENVIRONMENT	+ "," +
 			SDMSSubmittedEntity.S_ERRORLOG		+ "," +
 			SDMSSubmittedEntity.S_EXPFINALTIME	+ "," +
 			SDMSSubmittedEntity.S_EXPRUNTIME	+ "," +
@@ -1175,11 +1176,11 @@ public class SystemEnvironment implements Cloneable
 			SDMSSubmittedEntity.S_SDMSHOST		+ "," +
 			SDMSSubmittedEntity.S_SDMSPORT		+ "," +
 			SDMSSubmittedEntity.S_SEID		+ "," +
-		        SDMSSubmittedEntity.S_SEOWNER		+ "," +
+			SDMSSubmittedEntity.S_SEOWNER		+ "," +
 			SDMSSubmittedEntity.S_STARTTS		+ "," +
 			SDMSSubmittedEntity.S_STATE		+ "," +
-		        SDMSSubmittedEntity.S_SUBMITGROUP	+ "," +
-		        SDMSSubmittedEntity.S_SUBMITTER		+ "," +
+			SDMSSubmittedEntity.S_SUBMITGROUP	+ "," +
+			SDMSSubmittedEntity.S_SUBMITTER		+ "," +
 			SDMSSubmittedEntity.S_SUBMITTS		+ "," +
 			SDMSSubmittedEntity.S_SYNCTS		+ "," +
 			SDMSSubmittedEntity.S_SYSDATE		+ "," +
@@ -1265,9 +1266,11 @@ public class SystemEnvironment implements Cloneable
 		value = props.getProperty(S_NAMECASE, S_CASE_UPPER).toUpperCase();
 		if (value.equals(S_CASE_UPPER)) {
 			nameCase = CASE_UPPER;
-		} else if (value.equals(S_CASE_LOWER)) {
+		} else
+		if (value.equals(S_CASE_LOWER)) {
 			nameCase = CASE_LOWER;
-		} else if (value.equals(S_CASE_MIXED)) {
+		} else
+		if (value.equals(S_CASE_MIXED)) {
 			nameCase = CASE_MIXED;
 		} else {
 			nameCase = CASE_UPPER;
@@ -1296,18 +1299,9 @@ public class SystemEnvironment implements Cloneable
 		return rc;
 	}
 
-	public static synchronized void incrCntRwTx ()
-	{
-		cntRwTx ++;
-	}
-	public static synchronized void incrCntDl ()
-	{
-		cntDl   ++;
-	}
-	public static synchronized void incrCntWl ()
-	{
-		cntWl   ++;
-	}
+	public static synchronized void incrCntRwTx () { cntRwTx ++; }
+	public static synchronized void incrCntDl ()   { cntDl   ++; }
+	public static synchronized void incrCntWl ()   { cntWl   ++; }
 
 	public Object clone()
 		throws CloneNotSupportedException
@@ -1318,48 +1312,18 @@ public class SystemEnvironment implements Cloneable
 		return sysEnv;
 	}
 
-	public void enableConnect()
-	{
-		connectState.setValue(connectState.getValue() & 2);
-	}
-	public void disableConnect()
-	{
-		connectState.setValue(connectState.getValue() | 1);
-	}
-	public void setConnectShutdown()
-	{
-		connectState.setValue(connectState.getValue() | 2);
-	}
-	public int getConnectState()
-	{
-		return connectState.getValue();
-	}
-	public static void setProtectMode()
-	{
-		protectMode = true;
-	}
-	public static void resetProtectMode()
-	{
-		protectMode = false;
-	}
-	public static boolean getProtectMode()
-	{
-		return protectMode;
-	}
+	public void enableConnect()		{ connectState.setValue(connectState.getValue() & 2); }
+	public void disableConnect()		{ connectState.setValue(connectState.getValue() | 1); }
+	public void setConnectShutdown()	{ connectState.setValue(connectState.getValue() | 2); }
+	public int getConnectState()		{ return connectState.getValue(); }
+	public static void setProtectMode()	{ protectMode = true; }
+	public static void resetProtectMode()	{ protectMode = false; }
+	public static boolean getProtectMode()	{ return protectMode; }
 
-	public Long randomLong()
-	{
-		return new Long(java.lang.Math.abs(random.nextLong()));
-	}
+	public Long randomLong()		{ return new Long(java.lang.Math.abs(random.nextLong())); }
 
-	public static synchronized int getTraceLevel()
-	{
-		return traceLevel;
-	}
-	public static synchronized void setTraceLevel(int t)
-	{
-		traceLevel = t;
-	}
+	public static synchronized int getTraceLevel()	{ return traceLevel; }
+	public static synchronized void setTraceLevel(int t) { traceLevel = t; }
 
 	public static void getSharedLock()
 	{
@@ -1400,18 +1364,9 @@ class MutableInteger
 
 	int value;
 
-	public MutableInteger(int v)
-	{
-		value = v;
-	}
-	public void setValue(int v)
-	{
-		value = v;
-	}
-	public int  getValue()
-	{
-		return value;
-	}
+	public MutableInteger(int v) { value = v; }
+	public void setValue(int v)  { value = v; }
+	public int  getValue()       { return value; }
 }
 
 class ExecuteLock
