@@ -251,6 +251,8 @@ public class SDMSRepository
 		tables.put(SDMSTriggerStateTableGeneric.tableName,			new SDMSTriggerStateTable(env));
 		tables.put(SDMSUserTableGeneric.tableName,				new SDMSUserTable(env));
 		tables.put(SDMSUserEquivTableGeneric.tableName,				new SDMSUserEquivTable(env));
+		tables.put(SDMSUserExtentsTableGeneric.tableName,			new SDMSUserExtentsTable(env));
+		tables.put(SDMSUserParameterTableGeneric.tableName,			new SDMSUserParameterTable(env));
 		tables.put(SDMSVersionedExtentsTableGeneric.tableName,			new SDMSVersionedExtentsTable(env));
 
 		tables.put(SDMSnpJobFootprintTableGeneric.tableName,			new SDMSnpJobFootprintTable(env));
