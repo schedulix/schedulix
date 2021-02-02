@@ -125,18 +125,12 @@ public abstract class SDMSThread extends Thread
 	public static String severityName(int severity)
 	{
 		switch(severity)  {
-			case SEVERITY_DEBUG:
-				return "DEBUG  ";
-			case SEVERITY_MESSAGE:
-				return "MESSAGE";
-			case SEVERITY_WARNING:
-				return "WARNING";
-			case SEVERITY_INFO:
-				return "INFO   ";
-			case SEVERITY_ERROR:
-				return "ERROR  ";
-			case SEVERITY_FATAL:
-				return "FATAL  ";
+			case SEVERITY_DEBUG:	return "DEBUG  ";
+			case SEVERITY_MESSAGE:	return "MESSAGE";
+			case SEVERITY_WARNING:	return "WARNING";
+			case SEVERITY_INFO:	return "INFO   ";
+			case SEVERITY_ERROR:	return "ERROR  ";
+			case SEVERITY_FATAL:	return "FATAL  ";
 		}
 		return "UNKNOWN";
 	}

@@ -393,10 +393,10 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				final SDMSSubmittedEntity masterSme = SDMSSubmittedEntityTable.getObject(sysEnv, thisSme.getMasterId(sysEnv));
 				sme = se.submitMaster(sysEnv,
 				                      params,
-					doSuspend,
-					null,
-					getSubmitOwnerId(sysEnv),
-					new Integer(0),
+						      doSuspend,
+						      null,
+						      getSubmitOwnerId(sysEnv),
+						      new Integer(0),
 				                      "Triggered by " + thisSe.pathString(sysEnv, seVersion) + "(" + getName(sysEnv) + "), Job " + thisSme.getId(sysEnv).toString(),
 				                      masterSme.getTimeZone(sysEnv));
 			} else {
@@ -408,14 +408,15 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				if (trigger_type == SDMSTrigger.AFTER_FINAL) forceChildDef = true;
 				else forceChildDef = false;
 				sme = psme.submitChild(sysEnv,
-					params,
-					doSuspend,
-					null,
-					submitSeId,
-					childTag,
-					replaceId,
-					null,
-					forceChildDef
+							params,
+							doSuspend,
+							null,
+							submitSeId,
+							childTag,
+							replaceId,
+							null,
+							forceChildDef,
+							true
 				);
 			}
 			sme.setBaseSmeId(sysEnv, (Long)(sysEnv.tx.txData.get(SystemEnvironment.S_BASE_SME_ID)));
@@ -487,13 +488,13 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			try {
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, getSeId(sysEnv));
 				sme = se.submitMaster(sysEnv,
-					null,
-					new Integer(getIsSuspend(sysEnv).booleanValue() ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
-					null,
-					getSubmitOwnerId(sysEnv),
-					new Integer(0),
-				                      "Triggered by Resource " + r.getId(sysEnv).toString() + "(" + getName(sysEnv) + ")",
-				                      null );
+							null,
+							new Integer(getIsSuspend(sysEnv).booleanValue() ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
+							null,
+							getSubmitOwnerId(sysEnv),
+							new Integer(0),
+							"Triggered by Resource " + r.getId(sysEnv).toString() + "(" + getName(sysEnv) + ")",
+							null );
 
 			} catch (NonRecoverableException nre) {
 				sysEnv.tx.rollbackSubTransaction(sysEnv);
