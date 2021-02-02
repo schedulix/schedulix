@@ -329,10 +329,12 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 						Long bestTmp = 0L;
 						if (warBest.fltInterval != null) {
 							bestTmp = warBest.fltInterval.getNextTriggerDate(sysEnv, ntd[best] + 1, horizon, tz, mode, indent + 1);
-							ntd[best] = (bestTmp == null ? Long.MAX_VALUE : bestTmp);
+							if (bestTmp == null)
+								bestTmp = Long.MAX_VALUE;
+							ntd[best] = bestTmp;
 						} else {  }
 						for (int j = 0; j < drSize; ++j) {
-							if (ntd[j] < bestTmp) {
+							if (ntd[j].longValue() < bestTmp.longValue()) {
 								best = j;
 								bestTmp = ntd[j];
 							}
@@ -343,11 +345,13 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 					if (i == best) {
 						if (dr.fltInterval != null) {
 							tmp = dr.fltInterval.getNextTriggerDate(sysEnv, dr.fltInterval.blockState.blockEnd + 1, horizon, tz, mode, indent + 1);
-							ntd[best] = (tmp == null ? Long.MAX_VALUE : tmp);
+							if (tmp == null)
+								tmp = Long.MAX_VALUE;
+							ntd[best] = tmp;
 						} else {
 						}
 						for (int j = 0; j < drSize; ++j) {
-							if (ntd[j] < tmp) {
+							if (ntd[j].longValue() < tmp.longValue()) {
 								best = j;
 								tmp = ntd[j];
 							}
@@ -659,58 +663,57 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	private long dispatchFilter(SystemEnvironment sysEnv, long checkDate, long horizon, TimeZone tz, int indent)
 	throws SDMSException
 	{
-		long blockStart;
-		long selBlockStart;
-		BlockState selBs[] = new BlockState[dispatchRules.size()];
 
 		if (checkDate < startTime) {
 			return startTime;
 		}
+
+		long nextHitTime = Long.MAX_VALUE;
+		DispatchRule hitRule = null;
+		long hitBlockEnd = 0;
+		long blockStart;
 		for (int i = 0; i < dispatchRules.size(); ++i) {
 			DispatchRule dr = dispatchRules.get(i);
-			if (dr.selInterval == null) {
-				selBlockStart = 0;
-				selBs[i] = new BlockState();
-				selBs[i].baseStart = 0;
-				selBs[i].baseEnd = Long.MAX_VALUE;
-				selBs[i].blockStart = 0;
-				selBs[i].blockEnd = Long.MAX_VALUE;
+			if (dr.selInterval != null) {
+				blockStart = dr.selInterval.filter(sysEnv, checkDate, horizon, tz, indent + 1);
+				if (hitRule == null && blockStart <= checkDate) {
+					hitRule = dr;
+					hitBlockEnd = nextHitTime;
+					if (dr.selInterval.blockState.blockEnd < hitBlockEnd)
+						hitBlockEnd = dr.selInterval.blockState.blockEnd;
+				}
+				if (blockStart < nextHitTime)
+					nextHitTime = blockStart;
 			} else {
-				selBlockStart = dr.selInterval.filter(sysEnv, checkDate, horizon, tz, indent + 1);
-				selBs[i] = new BlockState(dr.selInterval.blockState);
-			}
-			if (selBlockStart <= checkDate) {
-				if (dr.isActive) {
-					blockStart = dr.fltInterval.filter(sysEnv, checkDate, horizon, tz, indent + 1);
-					blockState.copyFrom(dr.fltInterval.blockState);
-					if (blockStart <= checkDate) {
-						long blockEnd = blockState.blockEnd;
-						if (selBs[i].blockEnd < blockEnd)
-							blockEnd = selBs[i].blockEnd;
-						for (int j = i - 1; j >= 0; --j) {
-							if (selBs[j].blockStart < blockEnd && selBs[j].blockStart > blockStart)
-								blockEnd = selBs[j].blockStart;
-						}
-						blockState.blockEnd = blockEnd;
-						return blockStart;
-					}
-				} else {
-					blockStart = Long.MAX_VALUE;
-					blockState.copyFrom(dr.selInterval.blockState);
+				if (hitRule == null) {
+					hitRule = dr;
+					hitBlockEnd = nextHitTime;
+					nextHitTime = checkDate;
 				}
-				long nextBlockStart = dr.selInterval.blockState.blockEnd;
-				if (blockStart < nextBlockStart) {
-					nextBlockStart = blockStart;
-				}
-				for (int j = i - 1; j >= 0; j --) {
-					if (selBs[j].blockStart < nextBlockStart) {
-						nextBlockStart = selBs[j].blockStart;
-					}
-				}
-				return nextBlockStart;
+				break;
 			}
 		}
-		return Long.MAX_VALUE;
+		if (hitRule == null) {
+			blockState.blockStart = nextHitTime;
+		} else {
+			if (hitRule.isActive) {
+				blockStart = hitRule.fltInterval.filter(sysEnv, checkDate, horizon, tz, indent + 1);
+				blockState.copyFrom(hitRule.fltInterval.blockState);
+				if (blockStart <= checkDate) {
+					blockState.blockStart = checkDate;
+					if (blockState.blockEnd > hitBlockEnd)
+						blockState.blockEnd = hitBlockEnd;
+				} else {
+					if (blockStart <= hitBlockEnd)
+						blockState.blockStart = blockStart;
+					else
+						blockState.blockStart = hitBlockEnd + 1;
+				}
+			} else {
+				blockState.blockStart = hitBlockEnd + 1;
+			}
+		}
+		return blockState.blockStart;
 	}
 
 	private boolean checkSelection (SystemEnvironment sysEnv, int blockIdx, int negIdx, long ts, TimeZone tz, int indent)
@@ -1621,7 +1624,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		Iterator i = ivv.iterator();
 		while (i.hasNext()) {
 			SDMSInterval iv = (SDMSInterval) i.next();
-			if (id.equals(iv.getId(sysEnv))) continue;
+			if (id.equals(iv.getObjId(sysEnv))) continue;
 			try {
 				Long ivalId = iv.getId(sysEnv);
 				IntervalUtil.killFilter (sysEnv, ivalId);
@@ -1630,6 +1633,14 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 				iv.delete(sysEnv);
 			} catch (NotFoundException nfe) {
+			}
+		}
+		Long embIvId = getEmbeddedIntervalId(sysEnv);
+		if (embIvId != null) {
+			SDMSInterval iv = SDMSIntervalTable.getObject(sysEnv, embIvId);
+			if (id.equals(iv.getObjId(sysEnv))) {
+				iv.delete(sysEnv);
+				setEmbeddedIntervalId(sysEnv, null);
 			}
 		}
 	}
@@ -1870,7 +1881,7 @@ class GntdCache
 	private static final int LRU = 2;
 	private static final int NOCACHE = 99;
 
-	private static final int cacheStrategy = NOCACHE;
+	private static final int cacheStrategy = ROUND_ROBIN;
 
 	private static final int maxEntries = 40;
 	Vector<gntd> cache = null;

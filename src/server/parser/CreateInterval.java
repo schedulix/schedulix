@@ -67,14 +67,8 @@ public class CreateInterval
 		embeddedInterval = null;
 	}
 
-	public Long getIvalId()
-	{
-		return ivalId;
-	}
-	public SDMSInterval getIval()
-	{
-		return ival;
-	}
+	public Long getIvalId() { return ivalId; }
+	public SDMSInterval getIval() { return ival; }
 
 	public String toString()
 	{
@@ -94,7 +88,7 @@ public class CreateInterval
 	}
 
 	protected void go (SystemEnvironment sysEnv, int recursionLevel)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long startTime = null;
 		Long endTime = null;
@@ -240,7 +234,7 @@ public class CreateInterval
 						sep = ",";
 					}
 					throw new CommonErrorException (new SDMSMessage (sysEnv, "03808211116",
-					                                "Dispatch interval definitions are not allowed to specify other attributes than STARTTIME, ENDTIME and GROUP; found " + sb.toString()));
+							"Dispatch interval definitions are not allowed to specify other attributes than STARTTIME, ENDTIME and GROUP; found " + sb.toString()));
 				}
 			}
 
@@ -267,9 +261,9 @@ public class CreateInterval
 			if (recursionLevel != 0)
 				tmp_objId = new Long(recursionLevel);
 			ival = SDMSIntervalTable.table.create (sysEnv,
-			                                       obj.mappedName, gId, startTime, endTime, delay, baseInterval, baseIntervalMultiplier,
-			                                       duration, durationMultiplier, syncTime, isInverse, isMerge, embeddedIntervalId, obj.seId,
-			                                       tmp_objId,  null);
+							       obj.mappedName, gId, startTime, endTime, delay, baseInterval, baseIntervalMultiplier,
+							       duration, durationMultiplier, syncTime, isInverse, isMerge, embeddedIntervalId, obj.seId,
+							       tmp_objId,  null);
 			ivalId = ival.getId (sysEnv);
 		} catch (final DuplicateKeyException dke) {
 			if (replace) {
@@ -295,18 +289,18 @@ public class CreateInterval
 
 			if (with.containsKey (ParseStr.S_SELECTION)) {
 				switch (IntervalUtil.createSelections (sysEnv, ivalId, with)) {
-				case IntervalUtil.IGNORED_SECONDS:
-					secondsIgnore = true;
-					break;
-				case IntervalUtil.IGNORED_UPPER_RANGE:
-					ignoreUpperRange = true;
+					case IntervalUtil.IGNORED_SECONDS:
+						secondsIgnore = true;
+						break;
+					case IntervalUtil.IGNORED_UPPER_RANGE:
+						ignoreUpperRange = true;
 						break;
 				}
 			}
 
 			if (with.containsKey (ParseStr.S_FILTER)) {
 				duplicateFilterIgnore = IntervalUtil.createFilter (sysEnv, ivalId, with, obj.seId, recursionLevel + 1);
-				}
+			}
 
 			if (with.containsKey (ParseStr.S_DISPATCH)) {
 				IntervalUtil.createDispatcher (sysEnv, ivalId, with, recursionLevel + 1);
