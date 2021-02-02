@@ -50,9 +50,7 @@ public class ListSubmitted extends Node
 	private final static String emptyString = new String("");
 	private final ObjectFilter objFilter = new ObjectFilter()
 	{
-		public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p) {
-			return true;
-		}
+		public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p) { return true; }
 	};
 
 	WithHash with;

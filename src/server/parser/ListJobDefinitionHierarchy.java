@@ -102,6 +102,8 @@ public class ListJobDefinitionHierarchy extends Node
 		desc.add("IS_STATIC");
 		desc.add("IS_DISABLED");
 		desc.add("INT_NAME");
+		desc.add("ENABLE_CONDITION");
+		desc.add("ENABLE_MODE");
 		desc.add("SH_PRIORITY");
 		desc.add("SH_SUSPEND");
 		desc.add("SH_ALIAS_NAME");
@@ -113,7 +115,7 @@ public class ListJobDefinitionHierarchy extends Node
 		desc.add("PRIVS");
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv,
-			"03201292007", "Job Definition Hierarchy"), desc);
+				"03201292007", "Job Definition Hierarchy"), desc);
 
 		String name = (String) path.remove(path.size() -1);
 
@@ -179,6 +181,8 @@ public class ListJobDefinitionHierarchy extends Node
 		v.add(new Integer(v1.size()));
 
 		String empty = "";
+		v.add(empty);
+		v.add(empty);
 		v.add(empty);
 		v.add(empty);
 		v.add(empty);
@@ -297,6 +301,8 @@ public class ListJobDefinitionHierarchy extends Node
 			} else {
 				v.add(SystemEnvironment.nullString);
 			}
+			v.add(sh.getEnableCondition(sysEnv));
+			v.add(sh.getEnableModeAsString(sysEnv));
 			v.add(sh.getPriority(sysEnv));
 			v.add(sh.getSuspendAsString(sysEnv));
 			v.add(sh.getAliasName(sysEnv));

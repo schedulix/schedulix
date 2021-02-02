@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -162,13 +162,13 @@ public class AlterJob extends Node
 		if(warning        != null) v += SW;
 
 		if(((v & ~JS_ACTION) == 0) ||
-		   ((v & ~OP_ACTION) == 0) ||
-		   ((v & ~ES_ACTION) == 0) ||
-		   ((v & ~KI_ACTION) == 0) ||
+		    ((v & ~OP_ACTION) == 0) ||
+		    ((v & ~ES_ACTION) == 0) ||
+		    ((v & ~KI_ACTION) == 0) ||
 		    ((v & ~DA_ACTION) == 0) ||
 		    ((v & ~CL_ACTION) == 0) ||
-		   ((v & ~CN_ACTION) == 0) ||
-		   ((v & ~RC_ACTION) == 0)) {
+		    ((v & ~CN_ACTION) == 0) ||
+		    ((v & ~RC_ACTION) == 0)) {
 			if(nicevalue != null && renice != null) return false;
 			if(clearWarning != null && warning != null) return false;
 		} else {
@@ -350,10 +350,10 @@ public class AlterJob extends Node
 
 		boolean isSuspended = (sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND);
 		if((state != SDMSSubmittedEntity.FINISHED && state != SDMSSubmittedEntity.BROKEN_FINISHED && state != SDMSSubmittedEntity.ERROR && !isSuspended) ||
-		   (state == SDMSSubmittedEntity.ERROR && !sme.getJobIsRestartable(sysEnv).booleanValue()) ||
-		   (isSuspended && (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED ||
-				    state == SDMSSubmittedEntity.RUNNING || state == SDMSSubmittedEntity.TO_KILL ||
-				    state == SDMSSubmittedEntity.KILLED || state == SDMSSubmittedEntity.BROKEN_ACTIVE))) {
+		    (state == SDMSSubmittedEntity.ERROR && !sme.getJobIsRestartable(sysEnv).booleanValue()) ||
+		    (isSuspended && (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED ||
+				     state == SDMSSubmittedEntity.RUNNING || state == SDMSSubmittedEntity.TO_KILL ||
+				     state == SDMSSubmittedEntity.KILLED || state == SDMSSubmittedEntity.BROKEN_ACTIVE))) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03207082043", "you can only set a state for a (broken) finished  or a suspended not active job"));
 		}
 		if(state != SDMSSubmittedEntity.BROKEN_FINISHED  && state != SDMSSubmittedEntity.ERROR) {
@@ -524,7 +524,7 @@ public class AlterJob extends Node
 			}
 		}
 		if(disable != null) {
-			sme.disable(disable, sysEnv);
+			sme.disable(sysEnv, disable);
 		}
 		if(depsToIgnore != null) {
 			ignoreDeps(sysEnv, sme);
@@ -538,9 +538,8 @@ public class AlterJob extends Node
 			SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.IGNORE_RESOURCE);
 		}
 		if(priority != null) {
-			if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getType(sysEnv).intValue()
-				!= SDMSSchedulingEntity.JOB) {
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03211211229", "Cannot change the priority of a batch or milestone"));
+			if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03211211229", "Cannot change the priority of a batch or milestone"));
 			}
 
 			if(priority.intValue() < SystemEnvironment.priorityLowerBound && !sysEnv.cEnv.gid().contains(SDMSObject.adminGId))
@@ -580,7 +579,7 @@ public class AlterJob extends Node
 				                               true
 				                                               );
 				if (childSme.getIsDisabled(sysEnv).booleanValue()) {
-					childSme.disable(Boolean.FALSE, sysEnv);
+					childSme.disable(sysEnv, Boolean.FALSE);
 				} else {
 					if (clone.booleanValue()) {
 						sme.resume(sysEnv, true);

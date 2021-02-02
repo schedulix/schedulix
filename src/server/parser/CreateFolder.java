@@ -108,8 +108,9 @@ public class CreateFolder extends Node
 		long lpriv = SDMSPrivilege.NOPRIVS;
 		if (with.containsKey(ParseStr.S_INHERIT) && with.get(ParseStr.S_INHERIT) != null)
 			lpriv = ((Long) with.get(ParseStr.S_INHERIT)).longValue();
-		else if (parent.getOwnerId(sysEnv).equals(gId))
-			lpriv = parent.getPrivilegeMask();
+		else
+			if (parent.getOwnerId(sysEnv).equals(gId))
+				lpriv = parent.getPrivilegeMask();
 
 		if((parent.getPrivilegeMask() & lpriv) != lpriv) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061110", "Incompatible grant"));

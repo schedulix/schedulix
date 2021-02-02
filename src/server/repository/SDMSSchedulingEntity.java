@@ -599,7 +599,9 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                sh.getResumeBase(sysEnv),
 			                sh.getMergeMode(sysEnv),
 			                sh.getEstpId(sysEnv),
-			                sh.getIntId(sysEnv)
+			                sh.getIntId(sysEnv),
+			                sh.getEnableCondition(sysEnv),
+			                sh.getEnableMode(sysEnv)
 			                                         );
 		}
 		boolean testInverse = false;

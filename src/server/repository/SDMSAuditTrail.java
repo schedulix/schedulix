@@ -77,6 +77,8 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 				return new Integer(DISABLE);
 			case Parser.ENABLE:
 				return new Integer(ENABLE);
+			case Parser.CLONE:
+				return new Integer(CLONE);
 		}
 		return null;
 	}
@@ -86,6 +88,8 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 		switch (t1.token.intValue()) {
 			case Parser.RERUN:
 				return new Integer(RERUN_RECURSIVE);
+			case Parser.CLONE:
+				return new Integer(CLONE);
 			case Parser.SET:
 				switch (t2.token.intValue()) {
 					case Parser.STATUS:
@@ -131,6 +135,8 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 	public static Integer convert(Token t1, Token t2, Token t3)
 	{
 		switch (t1.token.intValue()) {
+			case Parser.CLONE:
+				return new Integer(CLONE);
 			case Parser.SET:
 				return new Integer(SET_RESOURCE_STATE);
 			case Parser.JOB:

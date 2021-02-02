@@ -328,6 +328,8 @@ public class ShowFolder extends ShowCommented
 		c_desc.add("IS_STATIC");
 		c_desc.add("IS_DISABLED");
 		c_desc.add("INT_NAME");
+		c_desc.add("ENABLE_CONDITION");
+		c_desc.add("ENABLE_MODE");
 		c_desc.add("PRIORITY");
 		c_desc.add("SUSPEND");
 		c_desc.add("RESUME_AT");
@@ -371,6 +373,8 @@ public class ShowFolder extends ShowCommented
 			} else {
 				c_data.add(null);
 			}
+			c_data.add(sh.getEnableCondition(sysEnv));
+			c_data.add(sh.getEnableModeAsString(sysEnv));
 			c_data.add(sh.getPriority(sysEnv));
 			c_data.add(sh.getSuspendAsString(sysEnv));
 			c_data.add(sh.getResumeAt(sysEnv));
