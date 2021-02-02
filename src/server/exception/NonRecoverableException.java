@@ -45,9 +45,6 @@ public class NonRecoverableException extends UserException
 		super(msg);
 	}
 
-	public int getExceptionNumber()
-	{
-		return 64;
-	}
+	public int getExceptionNumber() { return 64; }
 }
 

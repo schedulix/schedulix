@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.jobserver;
 
 import java.util.Vector;
@@ -54,18 +53,12 @@ public final class Trace
 	private static final String levelString (final int level)
 	{
 		switch (level) {
-		case FATAL:
-			return "FATAL  ";
-		case ERROR:
-			return "ERROR  ";
-		case INFO:
-			return "INFO   ";
-		case WARNING:
-			return "WARNING";
-		case DEBUG:
-			return "DEBUG  ";
-		case MESSAGE:
-			return "MESSAGE";
+		case FATAL:   return "FATAL  ";
+		case ERROR:   return "ERROR  ";
+		case INFO:    return "INFO   ";
+		case WARNING: return "WARNING";
+		case DEBUG:   return "DEBUG  ";
+		case MESSAGE: return "MESSAGE";
 		}
 
 		return "UNKNOWN";
@@ -79,30 +72,12 @@ public final class Trace
 		}
 	}
 
-	public static final void fatal   (final String msg)
-	{
-		trace (msg, FATAL);
-	}
-	public static final void error   (final String msg)
-	{
-		trace (msg, ERROR);
-	}
-	public static final void info    (final String msg)
-	{
-		trace (msg, INFO);
-	}
-	public static final void warning (final String msg)
-	{
-		trace (msg, WARNING);
-	}
-	public static final void debug   (final String msg)
-	{
-		trace (msg, DEBUG);
-	}
-	public static final void message (final String msg)
-	{
-		trace (msg, MESSAGE);
-	}
+	public static final void fatal   (final String msg) { trace (msg, FATAL);   }
+	public static final void error   (final String msg) { trace (msg, ERROR);   }
+	public static final void info    (final String msg) { trace (msg, INFO);    }
+	public static final void warning (final String msg) { trace (msg, WARNING); }
+	public static final void debug   (final String msg) { trace (msg, DEBUG);   }
+	public static final void message (final String msg) { trace (msg, MESSAGE); }
 
 	private static final String dump_field (final Object obj)
 	{
@@ -217,6 +192,5 @@ public final class Trace
 
 	private Trace()
 	{
-
 	}
 }

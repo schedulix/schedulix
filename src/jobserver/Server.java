@@ -114,7 +114,7 @@ public class Server
 		if (f.doEmergencyRename)
 			f.emergency_rename();
 		else
-		f.remove();
+			f.remove();
 		feilMap.remove(jid);
 	}
 
@@ -415,23 +415,23 @@ public class Server
 					gotJob = false;
 					now = System.currentTimeMillis();
 					switch (ri.getNextCmd()) {
-					case RepoIface.NOP:
-						delayLoop = true;
-						ts = now;
-						break;
+						case RepoIface.NOP:
+							delayLoop = true;
+							ts = now;
+							break;
 
-					case RepoIface.START_JOB:
-						Descr jd = ri.getJobData();
-						Trace.debug("Server:starting job " + jd.id);
-						createNewEi (jd);
+						case RepoIface.START_JOB:
+							Descr jd = ri.getJobData();
+							Trace.debug("Server:starting job " + jd.id);
+							createNewEi (jd);
 							gotJob = true;
-						break;
+							break;
 
-					case RepoIface.SHUTDOWN_SERVER:
-						active = false;
-						break;
-					default:
-						Utils.abortProgram (ri, "(04504112210) Unexpected response");
+						case RepoIface.SHUTDOWN_SERVER:
+							active = false;
+							break;
+						default:
+							Utils.abortProgram (ri, "(04504112210) Unexpected response");
 					}
 					if (now - bts - breed_delay > 0) {
 						break;

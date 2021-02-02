@@ -89,7 +89,7 @@ public class Config
 	public static final String[] ALL_VALUES = {REPO_HOST, REPO_PORT, RECONNECT_DELAY, DEFAULT_WORKDIR,
 						   USE_PATH, VERBOSE_LOGS, TRACE_LEVEL, BOOTTIME, NOP_DELAY,
 						   JOB_EXECUTOR, JOB_FILE_PREFIX, ENV_MAPPING, DYNAMIC,
-	                                           NOTIFY_PORT, HTTP_PORT, HTTP_HOST, HTTP_LOGENCODING, ONLINE_SERVER,
+						   NOTIFY_PORT, HTTP_PORT, HTTP_HOST, HTTP_LOGENCODING, ONLINE_SERVER,
 						   NAME_PATTERN, KEYSTORE, TRUSTSTORE, KEYSTOREPW, TRUSTSTOREPW,
 						   USE_SSL, CREATE_WORKDIR
 							};
@@ -111,8 +111,8 @@ public class Config
 							TRACE_LEVEL,
 							BOOTTIME,
 							ONLINE_SERVER,
-	                                                CREATE_WORKDIR,
-	                                                HTTP_LOGENCODING
+							CREATE_WORKDIR,
+							HTTP_LOGENCODING
 						};
 	public static final Object[] defaultValues = {	Boolean.FALSE,
 							Boolean.FALSE,
@@ -121,8 +121,8 @@ public class Config
 							new Integer (Trace.DEFAULT),
 							"NONE",
 							Boolean.TRUE,
-	                                                Boolean.FALSE,
-	                                                "utf-8"
+							Boolean.FALSE,
+							"utf-8"
 						};
 
 	public static boolean isWindows()

@@ -50,9 +50,6 @@ public class FatalException extends SDMSException
 		SDMSThread.doTrace(null, msg.toString(), SDMSThread.SEVERITY_ERROR);
 	}
 
-	public int getExceptionNumber()
-	{
-		return 16;
-	}
+	public int getExceptionNumber() { return 16; }
 }
 

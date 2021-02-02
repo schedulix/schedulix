@@ -32,8 +32,7 @@ import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
 
-public class LockingSystem
-{
+public class LockingSystem {
 
 	public static int DEBUG_ALL = 1;
 	public static int DEBUG_WAIT_AND_NOTIFY = 2;
@@ -52,7 +51,7 @@ public class LockingSystem
 	private static int deadlockDetectionWaitCount = 0;
 
 	public static void lock(SystemEnvironment sysEnv, Object object, int mode)
-	throws DeadlockException, InterruptedLockException
+		throws DeadlockException, InterruptedLockException
 	{
 		SDMSThread lt = sysEnv.thread;
 		if (lt.lastSerializationException != null) {
@@ -65,7 +64,7 @@ public class LockingSystem
 		}
 		if ((LockingSystem.debug & LockingSystem.DEBUG_ALL) != 0)
 			System.out.println(Thread.currentThread().getName() +
-			                   ":LockingSystem.lock("  + ObjectLock.objectToShortString(object) + ", mode = "+ mode + ")");
+				":LockingSystem.lock("  + ObjectLock.objectToShortString(object) + ", mode = "+ mode + ")");
 		ObjectLock lock = LockingSystemSynchronized.getLock(sysEnv, object, mode);
 		if (lock.wait)
 			try {
@@ -88,7 +87,7 @@ public class LockingSystem
 	}
 
 	protected static void deadlockDetection(SystemEnvironment sysEnv, SDMSThread thread)
-	throws DeadlockException, NotMyDeadlockException
+		throws DeadlockException, NotMyDeadlockException
 	{
 		startDeadlockDetection(thread);
 		if ((debug & (DEBUG_ALL | DEBUG_DEADLOCK_DETECTION)) != 0)
@@ -140,13 +139,14 @@ public class LockingSystem
 				if ((debug & (DEBUG_ALL | DEBUG_DEADLOCK_DETECTION)) != 0)
 					System.out.println(Thread.currentThread().getName() + ":endDeadlockDetection notify waiting deadlock detection");
 				deadlockDetectionLock.notify();
-			} else if ((debug & (DEBUG_ALL | DEBUG_DEADLOCK_DETECTION)) != 0)
-				System.out.println(Thread.currentThread().getName() + ":endDeadlockDetection no waiting deadlock detection");
+			} else
+				if ((debug & (DEBUG_ALL | DEBUG_DEADLOCK_DETECTION)) != 0)
+					System.out.println(Thread.currentThread().getName() + ":endDeadlockDetection no waiting deadlock detection");
 		}
 	}
 
 	public static void release(SystemEnvironment sysEnv)
-	throws FatalException
+		throws FatalException
 	{
 		sysEnv.thread.lastSerializationException = null;
 
@@ -160,20 +160,19 @@ public class LockingSystem
 	}
 
 	public static void releaseSubTxLocks(SystemEnvironment sysEnv, long checkPoint)
-	throws FatalException
+		throws FatalException
 	{
-
 		notifyLocks(sysEnv, LockingSystemSynchronized.releaseSubTxLocks(sysEnv, checkPoint));
 	}
 
 	public static void release(SystemEnvironment sysEnv, Object object)
-	throws FatalException
+		throws FatalException
 	{
 		notifyLocks(sysEnv, LockingSystemSynchronized.release(sysEnv, object));
 	}
 
 	public static void releaseToCheckPoint(SystemEnvironment sysEnv, Object object, long checkPoint)
-	throws FatalException
+		throws FatalException
 	{
 		notifyLocks(sysEnv, LockingSystemSynchronized.releaseToCheckPoint(sysEnv, object, checkPoint));
 	}
@@ -182,7 +181,6 @@ public class LockingSystem
 	{
 		if (locks == null) return;
 		Iterator<ObjectLock> i = locks.iterator();
-
 		while (i.hasNext()) {
 			ObjectLock lock = i.next();
 			lock.syncLock.doNotify(sysEnv);

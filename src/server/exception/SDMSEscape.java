@@ -45,9 +45,6 @@ public class SDMSEscape extends RecoverableException
 		super(msg);
 	}
 
-	public int getExceptionNumber()
-	{
-		return 1024;
-	}
+	public int getExceptionNumber() { return 1024; }
 }
 

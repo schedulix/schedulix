@@ -25,17 +25,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package de.independit.scheduler.server.exception;
 
-public class NotMyDeadlockException extends SerializationException
-{
+public class NotMyDeadlockException extends SerializationException {
 
-	public NotMyDeadlockException ()
-	{
+	public NotMyDeadlockException () {
 	}
 
 	private static final long serialVersionUID = 1L;
 
-	public int getExceptionNumber()
-	{
-		return 256;
-	}
+	public int getExceptionNumber() { return 256; }
 }

@@ -25,17 +25,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package de.independit.scheduler.server.exception;
 
-public class InterruptedLockException extends SerializationException
-{
+public class InterruptedLockException extends SerializationException {
 
-	public InterruptedLockException ()
-	{
+	public InterruptedLockException () {
 	}
 
 	private static final long serialVersionUID = 1L;
 
-	public int getExceptionNumber()
-	{
-		return 32;
-	}
+	public int getExceptionNumber() { return 32; }
 }

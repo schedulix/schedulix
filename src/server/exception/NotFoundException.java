@@ -45,9 +45,6 @@ public class NotFoundException extends NonRecoverableException
 		super(msg);
 	}
 
-	public int getExceptionNumber()
-	{
-		return 128;
-	}
+	public int getExceptionNumber() { return 128; }
 }
 

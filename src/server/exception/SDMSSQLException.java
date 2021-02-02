@@ -43,9 +43,6 @@ public class SDMSSQLException extends NonRecoverableException
 		super(msg);
 	}
 
-	public int getExceptionNumber()
-	{
-		return 4096;
-	}
+	public int getExceptionNumber() { return 4096; }
 }
 

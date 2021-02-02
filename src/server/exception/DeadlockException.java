@@ -91,9 +91,6 @@ public class DeadlockException extends SerializationException
 		return m;
 	}
 
-	public int getExceptionNumber()
-	{
-		return 4;
-	}
+	public int getExceptionNumber() { return 4; }
 }
 

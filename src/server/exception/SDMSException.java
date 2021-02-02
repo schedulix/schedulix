@@ -111,9 +111,6 @@ public class SDMSException extends Exception
 		this.m = m;
 	}
 
-	public int getExceptionNumber()
-	{
-		return 2048;
-	}
+	public int getExceptionNumber() { return 2048; }
 }
 

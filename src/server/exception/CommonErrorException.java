@@ -45,9 +45,6 @@ public class CommonErrorException extends NonRecoverableException
 		super(msg);
 	}
 
-	public int getExceptionNumber()
-	{
-		return 2;
-	}
+	public int getExceptionNumber() { return 2; }
 }
 

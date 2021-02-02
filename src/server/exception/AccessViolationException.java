@@ -44,9 +44,6 @@ public class AccessViolationException extends CommonErrorException
 		super(msg);
 	}
 
-	public int getExceptionNumber()
-	{
-		return 1;
-	}
+	public int getExceptionNumber() { return 1; }
 }
 
