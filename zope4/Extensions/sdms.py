@@ -1063,6 +1063,15 @@ def json_dumps(o):
 	else:
 		return '{ "ERROR" : { "ERRORCODE" : "WSI-0001", "ERRORMESSAGE" : "Web Service not available" }}'
 
+def json_loads(s):
+	if have_json:
+		try:
+			return json.loads(s)
+		except:
+			return None
+	else:
+		return None
+
 def StringCompare(string1, string2):
 	return locale.strcoll(string1, string2)
 
