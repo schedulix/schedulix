@@ -599,7 +599,13 @@ public class SchedulingThread extends InternalSession
 		Vector v = SDMSResourceAllocationTable.idx_smeId.getVectorForUpdate(sysEnv, sme.getId(sysEnv));
 		for(int i = 0; i < v.size(); i++) {
 			ra = (SDMSResourceAllocation) v.get(i);
-			rId = ra.getRId(sysEnv);
+
+			try {
+				rId = ra.getRId(sysEnv);
+			} catch (NotFoundException e) {
+				continue;
+			}
+
 			r = SDMSResourceTable.getObjectForUpdate(sysEnv, rId);
 			nrId = r.getNrId(sysEnv);
 			if(ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.RESERVATION) {
@@ -615,7 +621,8 @@ public class SchedulingThread extends InternalSession
 				if (ra.getIsSticky(sysEnv).booleanValue()) {
 				}
 			}
-			if (ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.ALLOCATION) ra.delete(sysEnv, true, true);
+			if (ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.ALLOCATION &&
+			    ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.IGNORE) ra.delete(sysEnv, true, true);
 		}
 
 		SystemEnvironment.sched.needSched = true;
@@ -1694,14 +1701,14 @@ public class SchedulingThread extends InternalSession
 
 	public MasterReservationInfo checkMasterReservation(SystemEnvironment sysEnv, SDMSSubmittedEntity sme,
 			SDMSResourceRequirement rr, Long stickyParent, SDMSResource r)
-			throws SDMSException
+		throws SDMSException
 	{
 		return checkMasterReservation(sysEnv, sme, rr, stickyParent, r, new Reservator(r.getId(sysEnv), sme.getId(sysEnv)));
 	}
 
 	public MasterReservationInfo checkMasterReservation(SystemEnvironment sysEnv, SDMSSubmittedEntity sme,
 			SDMSResourceRequirement rr, Long stickyParent, SDMSResource r, Reservator rsrv)
-			throws SDMSException
+		throws SDMSException
 	{
 		if (sysEnv.maxWriter > 1 && sysEnv.tx.mode == SDMSTransaction.READWRITE)
 			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
