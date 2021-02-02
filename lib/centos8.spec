@@ -2,8 +2,8 @@
 # Common description and properties of the schedulix packages
 #
 Name:		schedulix
-Version:	2.9
-Release:	15%{?dist}
+Version:	2.10
+Release:	1%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -14,7 +14,7 @@ Source0:	file://localhost/%{_topdir}/SOURCES/schedulix-%{version}.tgz
 Vendor:		independIT Integrative Technologies GmbH
 Packager:	Ronald Jeninga <ronald.jeninga@schedulix.org>
 
-BuildRequires:	jna gcc-c++ java-1.8.0-openjdk-devel rpm-build rpm-libs rpmdevtools rpm-sign
+# BuildRequires:	jna gcc-c++ java-1.8.0-openjdk-devel rpm-build rpm-libs rpmdevtools rpm-sign
 
 # disable debug package
 %global debug_package %{nil}
@@ -611,20 +611,20 @@ fi
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/schedulixweb4
 %attr(0744, root, root)             /etc/init.d/schedulix-zope4
 # exclude all compiled python files
-%exclude   /opt/schedulix/schedulix-2.9/lib/zope4_post.script
-%exclude   /opt/schedulix/schedulix-2.9/lib/zope4_pre.script
-%exclude   /opt/schedulix/schedulix-2.9/zope4/BICsuiteSubmitMemory/BICsuiteSubmitMemory.pyc
-%exclude   /opt/schedulix/schedulix-2.9/zope4/BICsuiteSubmitMemory/BICsuiteSubmitMemory.pyo
-%exclude   /opt/schedulix/schedulix-2.9/zope4/BICsuiteSubmitMemory/__init__.pyc
-%exclude   /opt/schedulix/schedulix-2.9/zope4/BICsuiteSubmitMemory/__init__.pyo
-%exclude   /opt/schedulix/schedulix-2.9/zope4/Extensions/bicsuite_tx.pyc
-%exclude   /opt/schedulix/schedulix-2.9/zope4/Extensions/bicsuite_tx.pyo
-%exclude   /opt/schedulix/schedulix-2.9/zope4/Extensions/myeval.pyc
-%exclude   /opt/schedulix/schedulix-2.9/zope4/Extensions/myeval.pyo
-%exclude   /opt/schedulix/schedulix-2.9/zope4/Extensions/sdms.pyc
-%exclude   /opt/schedulix/schedulix-2.9/zope4/Extensions/sdms.pyo
-%exclude   /opt/schedulix/schedulix-2.9/zope4/StringFixer/__init__.pyc
-%exclude   /opt/schedulix/schedulix-2.9/zope4/StringFixer/__init__.pyo
+%exclude   /opt/schedulix/schedulix-%{version}/lib/zope4_post.script
+%exclude   /opt/schedulix/schedulix-%{version}/lib/zope4_pre.script
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory/BICsuiteSubmitMemory.pyc
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory/BICsuiteSubmitMemory.pyo
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory/__init__.pyc
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory/__init__.pyo
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/Extensions/bicsuite_tx.pyc
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/Extensions/bicsuite_tx.pyo
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/Extensions/myeval.pyc
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/Extensions/myeval.pyo
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/Extensions/sdms.pyc
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/Extensions/sdms.pyo
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/StringFixer/__init__.pyc
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/StringFixer/__init__.pyo
 
 
 %package examples
