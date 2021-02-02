@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -39,6 +38,7 @@ public class EspState
 	public String name;
 	public Integer type;
 	public Boolean unreachable;
+	public Boolean disabled;
 	public Boolean broken;
 	public Boolean batchDefault;
 	public Boolean depDefault;
@@ -48,6 +48,7 @@ public class EspState
 		name = n;
 		type = t;
 		unreachable = w.containsKey(ParseStr.S_UNREACHABLE) ? Boolean.TRUE : Boolean.FALSE;
+		disabled = w.containsKey(ParseStr.S_DISABLE) ? Boolean.TRUE : Boolean.FALSE;
 		broken =  w.containsKey(ParseStr.S_BROKEN) ? Boolean.TRUE : Boolean.FALSE;
 		batchDefault =  w.containsKey(ParseStr.S_BATCH) ? Boolean.TRUE : Boolean.FALSE;
 		depDefault =  w.containsKey(ParseStr.S_DEPENDENCY) ? Boolean.TRUE : Boolean.FALSE;
@@ -55,7 +56,7 @@ public class EspState
 
 	public String toString()
 	{
-		return "EspState: " + name + " type " + type + " unreachable " + unreachable + " broken " + broken +
+		return "EspState: " + name + " type " + type + " unreachable " + unreachable + " disabled" + disabled + " broken " + broken +
 		       " batch default " + batchDefault + " dependency default " + depDefault;
 	}
 }

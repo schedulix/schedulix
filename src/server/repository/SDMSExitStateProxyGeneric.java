@@ -136,6 +136,24 @@ public class SDMSExitStateProxyGeneric extends SDMSProxy
 		((SDMSExitStateGeneric)(object)).setIsUnreachable (env, p_isUnreachable);
 		return ;
 	}
+	public Boolean getIsDisabled (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSExitStateGeneric)(object)).getIsDisabled (env));
+	}
+
+	public void setIsDisabled (SystemEnvironment env, Boolean p_isDisabled)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSExitStateGeneric)(object)).setIsDisabled (env, p_isDisabled);
+		return ;
+	}
 	public Boolean getIsBroken (SystemEnvironment env)
 	throws SDMSException
 	{

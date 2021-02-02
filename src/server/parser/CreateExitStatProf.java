@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -56,7 +54,6 @@ public class CreateExitStatProf extends Node
 		throws SDMSException
 	{
 		boolean gotFinalState = false;
-
 		SDMSExitStateProfile esp;
 		try {
 			esp = SDMSExitStateProfileTable.table.create (sysEnv, name, null, Boolean.TRUE);
@@ -86,6 +83,7 @@ public class CreateExitStatProf extends Node
 		int idx = 1;
 		Integer pref;
 		boolean had_unreachable = false;
+		boolean had_disabled = false;
 		boolean had_broken = false;
 		boolean had_batchDefault = false;
 		while (i.hasNext()) {
@@ -97,6 +95,7 @@ public class CreateExitStatProf extends Node
 			Boolean isRestartable = Boolean.FALSE;
 			Boolean isBroken = esps.broken;
 			Boolean isUnreachable = esps.unreachable;
+			Boolean isDisabled = esps.disabled;
 			Boolean isBatchDefault = esps.batchDefault;
 			Boolean isDependencyDefault = esps.depDefault;
 
@@ -116,6 +115,17 @@ public class CreateExitStatProf extends Node
 				if (isFinal.booleanValue() != true) {
 					throw new CommonErrorException (new SDMSMessage(sysEnv, "02204301739",
 						"The unreachable state must be defined FINAL"));
+				}
+			}
+			if (isDisabled.booleanValue()) {
+				if (had_disabled) {
+					throw new CommonErrorException (new SDMSMessage(sysEnv, "02011110820",
+					                                "Only one state can be marked as disabled state"));
+				}
+				had_disabled = true;
+				if (isFinal.booleanValue() != true) {
+					throw new CommonErrorException (new SDMSMessage(sysEnv, "02011110821",
+					                                "The disabled state must be defined FINAL"));
 				}
 			}
 			if (isBroken.booleanValue()) {
@@ -143,9 +153,8 @@ public class CreateExitStatProf extends Node
 				}
 			}
 			esdId = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, esps.name).getId(sysEnv);
-
 			try {
-				SDMSExitStateTable.table.create (sysEnv, pref, isFinal, isRestartable, isUnreachable, isBroken, isBatchDefault, isDependencyDefault, espId, esdId);
+				SDMSExitStateTable.table.create (sysEnv, pref, isFinal, isRestartable, isUnreachable, isDisabled, isBroken, isBatchDefault, isDependencyDefault, espId, esdId);
 			} catch (DuplicateKeyException dke) {
 				throw new CommonErrorException (new SDMSMessage(sysEnv, "03110120948",
 					"Exit state definition $1 specified more than once", esps.name));
@@ -161,9 +170,7 @@ public class CreateExitStatProf extends Node
 		String profile = (String) items.get(ParseStr.S_DEFAULT_MAPPING);
 		if (profile != null) {
 			d_esmpId = SDMSExitStateMappingProfileTable.idx_name_getUnique(sysEnv, profile).getId(sysEnv);
-
 			esp.validateMappingProfile(sysEnv, d_esmpId);
-
 			esp.setDefaultEsmpId (sysEnv, d_esmpId);
 		}
 

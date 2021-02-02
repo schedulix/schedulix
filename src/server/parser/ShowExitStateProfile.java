@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -64,9 +62,7 @@ public class ShowExitStateProfile extends ShowCommented
 
 		desc.add("ID");
 		desc.add("NAME");
-
 		desc.add("DEFAULT_ESM_NAME");
-
 		desc.add("IS_VALID");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
@@ -75,7 +71,6 @@ public class ShowExitStateProfile extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("STATES");
 
 		Long defaultEsmpId;
@@ -113,21 +108,14 @@ public class ShowExitStateProfile extends ShowCommented
 		data.add(esp.getPrivileges(sysEnv).toString());
 
 		Vector r_desc = new Vector();
-
 		r_desc.add("ID");
-
 		r_desc.add("PREFERENCE");
-
 		r_desc.add("TYPE");
-
 		r_desc.add("ESD_NAME");
-
 		r_desc.add("IS_UNREACHABLE");
-
+		r_desc.add("IS_DISABLED");
 		r_desc.add("IS_BROKEN");
-
 		r_desc.add("IS_BATCH_DEFAULT");
-
 		r_desc.add("IS_DEPENDENCY_DEFAULT");
 
 		SDMSOutputContainer s_container = new SDMSOutputContainer(sysEnv, null, r_desc);
@@ -155,6 +143,7 @@ public class ShowExitStateProfile extends ShowCommented
 			SDMSExitStateDefinition esd = (SDMSExitStateDefinitionTable.getObject(sysEnv, es.getEsdId(sysEnv)));
 			s_data.add(esd.getName(sysEnv));
 			s_data.add(es.getIsUnreachable(sysEnv));
+			s_data.add(es.getIsDisabled(sysEnv));
 			s_data.add(es.getIsBroken(sysEnv));
 			s_data.add(es.getIsBatchDefault(sysEnv));
 			s_data.add(es.getIsDependencyDefault(sysEnv));

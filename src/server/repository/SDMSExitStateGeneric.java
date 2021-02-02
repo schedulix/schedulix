@@ -49,15 +49,16 @@ public class SDMSExitStateGeneric extends SDMSObject
 	public final static int nr_isFinal = 3;
 	public final static int nr_isRestartable = 4;
 	public final static int nr_isUnreachable = 5;
-	public final static int nr_isBroken = 6;
-	public final static int nr_isBatchDefault = 7;
-	public final static int nr_isDependencyDefault = 8;
-	public final static int nr_espId = 9;
-	public final static int nr_esdId = 10;
-	public final static int nr_creatorUId = 11;
-	public final static int nr_createTs = 12;
-	public final static int nr_changerUId = 13;
-	public final static int nr_changeTs = 14;
+	public final static int nr_isDisabled = 6;
+	public final static int nr_isBroken = 7;
+	public final static int nr_isBatchDefault = 8;
+	public final static int nr_isDependencyDefault = 9;
+	public final static int nr_espId = 10;
+	public final static int nr_esdId = 11;
+	public final static int nr_creatorUId = 12;
+	public final static int nr_createTs = 13;
+	public final static int nr_changerUId = 14;
+	public final static int nr_changeTs = 15;
 
 	public static String tableName = SDMSExitStateTableGeneric.tableName;
 
@@ -65,6 +66,7 @@ public class SDMSExitStateGeneric extends SDMSObject
 	protected Boolean isFinal;
 	protected Boolean isRestartable;
 	protected Boolean isUnreachable;
+	protected Boolean isDisabled;
 	protected Boolean isBroken;
 	protected Boolean isBatchDefault;
 	protected Boolean isDependencyDefault;
@@ -85,6 +87,7 @@ public class SDMSExitStateGeneric extends SDMSObject
 	        Boolean p_isFinal,
 	        Boolean p_isRestartable,
 	        Boolean p_isUnreachable,
+	        Boolean p_isDisabled,
 	        Boolean p_isBroken,
 	        Boolean p_isBatchDefault,
 	        Boolean p_isDependencyDefault,
@@ -102,6 +105,7 @@ public class SDMSExitStateGeneric extends SDMSObject
 		isFinal = p_isFinal;
 		isRestartable = p_isRestartable;
 		isUnreachable = p_isUnreachable;
+		isDisabled = p_isDisabled;
 		isBroken = p_isBroken;
 		isBatchDefault = p_isBatchDefault;
 		isDependencyDefault = p_isDependencyDefault;
@@ -203,6 +207,30 @@ public class SDMSExitStateGeneric extends SDMSObject
 		}
 		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateGeneric) change(env);
 		o.isUnreachable = p_isUnreachable;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
+	public Boolean getIsDisabled (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (isDisabled);
+	}
+
+	public	void setIsDisabled (SystemEnvironment env, Boolean p_isDisabled)
+	throws SDMSException
+	{
+		if(isDisabled.equals(p_isDisabled)) return;
+		SDMSExitStateGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(ExitState) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSExitStateGeneric) change(env);
+		o.isDisabled = p_isDisabled;
 		o.changerUId = env.cEnv.uid();
 		o.changeTs = env.txTime();
 		if (o != this) o.versions.table.index(env, o, 0);
@@ -462,6 +490,7 @@ public class SDMSExitStateGeneric extends SDMSObject
 	                               Boolean p_isFinal,
 	                               Boolean p_isRestartable,
 	                               Boolean p_isUnreachable,
+	                               Boolean p_isDisabled,
 	                               Boolean p_isBroken,
 	                               Boolean p_isBatchDefault,
 	                               Boolean p_isDependencyDefault,
@@ -478,6 +507,7 @@ public class SDMSExitStateGeneric extends SDMSObject
 		isFinal = p_isFinal;
 		isRestartable = p_isRestartable;
 		isUnreachable = p_isUnreachable;
+		isDisabled = p_isDisabled;
 		isBroken = p_isBroken;
 		isBatchDefault = p_isBatchDefault;
 		isDependencyDefault = p_isDependencyDefault;
@@ -512,6 +542,7 @@ public class SDMSExitStateGeneric extends SDMSObject
 				        ", " + squote + "IS_FINAL" + equote +
 				        ", " + squote + "IS_RESTARTABLE" + equote +
 				        ", " + squote + "IS_UNREACHABLE" + equote +
+				        ", " + squote + "IS_DISABLED" + equote +
 				        ", " + squote + "IS_BROKEN" + equote +
 				        ", " + squote + "IS_BATCH_DEFAULT" + equote +
 				        ", " + squote + "IS_DEPENDENCY_DEFAULT" + equote +
@@ -523,6 +554,7 @@ public class SDMSExitStateGeneric extends SDMSObject
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ", VALID_FROM, VALID_TO" +
 				        ") VALUES (?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -551,17 +583,18 @@ public class SDMSExitStateGeneric extends SDMSObject
 			myInsert.setInt (3, isFinal.booleanValue() ? 1 : 0);
 			myInsert.setInt (4, isRestartable.booleanValue() ? 1 : 0);
 			myInsert.setInt (5, isUnreachable.booleanValue() ? 1 : 0);
-			myInsert.setInt (6, isBroken.booleanValue() ? 1 : 0);
-			myInsert.setInt (7, isBatchDefault.booleanValue() ? 1 : 0);
-			myInsert.setInt (8, isDependencyDefault.booleanValue() ? 1 : 0);
-			myInsert.setLong (9, espId.longValue());
-			myInsert.setLong (10, esdId.longValue());
-			myInsert.setLong (11, creatorUId.longValue());
-			myInsert.setLong (12, createTs.longValue());
-			myInsert.setLong (13, changerUId.longValue());
-			myInsert.setLong (14, changeTs.longValue());
-			myInsert.setLong(15, env.tx.versionId);
-			myInsert.setLong(16, Long.MAX_VALUE);
+			myInsert.setInt (6, isDisabled.booleanValue() ? 1 : 0);
+			myInsert.setInt (7, isBroken.booleanValue() ? 1 : 0);
+			myInsert.setInt (8, isBatchDefault.booleanValue() ? 1 : 0);
+			myInsert.setInt (9, isDependencyDefault.booleanValue() ? 1 : 0);
+			myInsert.setLong (10, espId.longValue());
+			myInsert.setLong (11, esdId.longValue());
+			myInsert.setLong (12, creatorUId.longValue());
+			myInsert.setLong (13, createTs.longValue());
+			myInsert.setLong (14, changerUId.longValue());
+			myInsert.setLong (15, changeTs.longValue());
+			myInsert.setLong(16, env.tx.versionId);
+			myInsert.setLong(17, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ExitState: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -627,6 +660,7 @@ public class SDMSExitStateGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "isFinal : " + isFinal, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isRestartable : " + isRestartable, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isUnreachable : " + isUnreachable, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "isDisabled : " + isDisabled, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isBroken : " + isBroken, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isBatchDefault : " + isBatchDefault, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isDependencyDefault : " + isDependencyDefault, SDMSThread.SEVERITY_MESSAGE);
@@ -652,6 +686,7 @@ public class SDMSExitStateGeneric extends SDMSObject
 		        indentString + "isFinal             : " + isFinal + "\n" +
 		        indentString + "isRestartable       : " + isRestartable + "\n" +
 		        indentString + "isUnreachable       : " + isUnreachable + "\n" +
+		        indentString + "isDisabled          : " + isDisabled + "\n" +
 		        indentString + "isBroken            : " + isBroken + "\n" +
 		        indentString + "isBatchDefault      : " + isBatchDefault + "\n" +
 		        indentString + "isDependencyDefault : " + isDependencyDefault + "\n" +

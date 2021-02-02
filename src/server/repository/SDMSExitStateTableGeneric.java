@@ -47,6 +47,7 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 		, "IS_FINAL"
 		, "IS_RESTARTABLE"
 		, "IS_UNREACHABLE"
+		, "IS_DISABLED"
 		, "IS_BROKEN"
 		, "IS_BATCH_DEFAULT"
 		, "IS_DEPENDENCY_DEFAULT"
@@ -80,6 +81,7 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 	                            ,Boolean p_isFinal
 	                            ,Boolean p_isRestartable
 	                            ,Boolean p_isUnreachable
+	                            ,Boolean p_isDisabled
 	                            ,Boolean p_isBroken
 	                            ,Boolean p_isBatchDefault
 	                            ,Boolean p_isDependencyDefault
@@ -100,6 +102,7 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 		         , p_isFinal
 		         , p_isRestartable
 		         , p_isUnreachable
+		         , p_isDisabled
 		         , p_isBroken
 		         , p_isBatchDefault
 		         , p_isDependencyDefault
@@ -117,6 +120,7 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 		                , p_isFinal
 		                , p_isRestartable
 		                , p_isUnreachable
+		                , p_isDisabled
 		                , p_isBroken
 		                , p_isBatchDefault
 		                , p_isDependencyDefault
@@ -163,6 +167,7 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 	                        ,Boolean p_isFinal
 	                        ,Boolean p_isRestartable
 	                        ,Boolean p_isUnreachable
+	                        ,Boolean p_isDisabled
 	                        ,Boolean p_isBroken
 	                        ,Boolean p_isBatchDefault
 	                        ,Boolean p_isDependencyDefault
@@ -185,6 +190,7 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 		Boolean isFinal;
 		Boolean isRestartable;
 		Boolean isUnreachable;
+		Boolean isDisabled;
 		Boolean isBroken;
 		Boolean isBatchDefault;
 		Boolean isDependencyDefault;
@@ -203,17 +209,18 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 			isFinal = new Boolean ((r.getInt(3) == 0 ? false : true));
 			isRestartable = new Boolean ((r.getInt(4) == 0 ? false : true));
 			isUnreachable = new Boolean ((r.getInt(5) == 0 ? false : true));
-			isBroken = new Boolean ((r.getInt(6) == 0 ? false : true));
-			isBatchDefault = new Boolean ((r.getInt(7) == 0 ? false : true));
-			isDependencyDefault = new Boolean ((r.getInt(8) == 0 ? false : true));
-			espId = new Long (r.getLong(9));
-			esdId = new Long (r.getLong(10));
-			creatorUId = new Long (r.getLong(11));
-			createTs = new Long (r.getLong(12));
-			changerUId = new Long (r.getLong(13));
-			changeTs = new Long (r.getLong(14));
-			validFrom = r.getLong(15);
-			validTo = r.getLong(16);
+			isDisabled = new Boolean ((r.getInt(6) == 0 ? false : true));
+			isBroken = new Boolean ((r.getInt(7) == 0 ? false : true));
+			isBatchDefault = new Boolean ((r.getInt(8) == 0 ? false : true));
+			isDependencyDefault = new Boolean ((r.getInt(9) == 0 ? false : true));
+			espId = new Long (r.getLong(10));
+			esdId = new Long (r.getLong(11));
+			creatorUId = new Long (r.getLong(12));
+			createTs = new Long (r.getLong(13));
+			changerUId = new Long (r.getLong(14));
+			changeTs = new Long (r.getLong(15));
+			validFrom = r.getLong(16);
+			validTo = r.getLong(17);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 			throw new FatalException(new SDMSMessage(env, "01110182045", "ExitState: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -224,6 +231,7 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 		                                isFinal,
 		                                isRestartable,
 		                                isUnreachable,
+		                                isDisabled,
 		                                isBroken,
 		                                isBatchDefault,
 		                                isDependencyDefault,
@@ -252,6 +260,7 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 		                                   ", " + squote + "IS_FINAL" + equote +
 		                                   ", " + squote + "IS_RESTARTABLE" + equote +
 		                                   ", " + squote + "IS_UNREACHABLE" + equote +
+		                                   ", " + squote + "IS_DISABLED" + equote +
 		                                   ", " + squote + "IS_BROKEN" + equote +
 		                                   ", " + squote + "IS_BATCH_DEFAULT" + equote +
 		                                   ", " + squote + "IS_DEPENDENCY_DEFAULT" + equote +
