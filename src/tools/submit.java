@@ -39,6 +39,8 @@ class submit extends App
 	public final static String TAG = "TAG";
 	public final static String MASTER = "MASTER";
 	public final static String SUSPEND = App.SUSPEND;
+	public final static String ENABLE = "ENABLE";
+	public final static String DISABLE = "DISABLE";
 	public final static String DELAY = App.DELAY;
 	public final static String UNIT = App.UNIT;
 	public final static String AT = App.AT;
@@ -64,6 +66,7 @@ class submit extends App
 		addOption("U", "unit"   , null, UNIT   , null, "unit"     , false, "Delay Unit (MINUTE, HOUR or DAY) defaults to MINUTE");
 		addOption("A", "at"     , null, AT     , null, "at"       , false, "Timestamp (YYYY-MM-DDTHH:MM) when job should be resumed (only valid with suspend option)");
 		addOption("g", "group"  , null, GROUP  , null, "groupname", false, "Group to own the submitted job (not allows with jid option)");
+		addOption("d", "disable", null, DISABLE, null, null, false, "The disable option can be used in dynamic child submits and will cause the child to be submitted disabled");
 	}
 	public String getName()
 	{
@@ -83,8 +86,14 @@ class submit extends App
 			if (!silent) System.err.println("group option only allowed with user option !");
 			return false;
 		}
-		if (options.isSet(MASTER) && options.isSet(App.USER)) {
-			if (!silent) System.err.println("WARNING: master option has no effect for submits by user");
+		if (options.isSet(MASTER)) {
+			if (options.isSet(App.USER)) {
+				if (!silent) System.err.println("WARNING: master option has no effect for submits by user");
+			}
+			if (options.isSet(DISABLE)) {
+				if (!silent) System.err.println("disable option not allowed for master submits !");
+				return false;
+			}
 		}
 		if (options.isSet(NICE)) {
 			int nicevalue;
@@ -160,6 +169,9 @@ class submit extends App
 		}
 		if (options.isSet(AT)) {
 			cmd = cmd + " AT '" + options.getValue(AT) + "'";
+		}
+		if (options.isSet(DISABLE) && options.getOption(DISABLE).getBValue()) {
+			cmd = cmd + ",\n    " + "DISABLE";
 		}
 		if (options.isSet(NICE))    {
 			cmd = cmd + ",\n    " + "NICEVALUE = " + options.getValue(NICE);

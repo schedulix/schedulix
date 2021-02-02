@@ -140,6 +140,10 @@ public class SubmitJob extends Node
 		Integer unresolvedHandling = (Integer) with.get(ParseStr.S_UNRESOLVED);
 		String childTag = (String) with.get(ParseStr.S_CHILDTAG);
 		Long resumeTs = null;
+		Boolean enable = (Boolean) with.get(ParseStr.S_ENABLE);
+		if (enable != null)
+			if (!enable.booleanValue())
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03007181310", "A disabled Master Submit is not allowed"));
 
 		if(unresolvedHandling != null) {
 			if(unresolvedHandling.intValue() == SDMSDependencyDefinition.DEFER) {
@@ -160,7 +164,7 @@ public class SubmitJob extends Node
 			} else {
 				final String gName = (String) with.get(ParseStr.S_GROUP);
 				gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-				              sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+						sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
 			}
 			auditMsg = "manually submitted";
 		} else {
@@ -177,7 +181,7 @@ public class SubmitJob extends Node
 			}
 			if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT)) {
 				throw new AccessViolationException(
-				        new SDMSMessage(sysEnv, "03312181437", "Insufficient privileges for submitting $1", se.pathString(sysEnv))
+					new SDMSMessage(sysEnv, "03312181437", "Insufficient privileges for submitting $1", se.pathString(sysEnv))
 				);
 			}
 		} catch (SDMSException e) {
@@ -199,8 +203,8 @@ public class SubmitJob extends Node
 		}
 
 		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, params, suspend == null ? null : new Integer(suspend ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
-		                                resumeTs, gId, niceValue,
-		                                auditMsg, submitTag, childTag, unresolvedHandling, timeZone);
+								resumeTs, gId, niceValue,
+								auditMsg, submitTag, childTag, unresolvedHandling, timeZone);
 		return sme.getId(sysEnv);
 	}
 
@@ -213,6 +217,9 @@ public class SubmitJob extends Node
 		String childTag = (String) with.get(ParseStr.S_CHILDTAG);
 		Integer unresolvedHandling = (Integer) with.get(ParseStr.S_UNRESOLVED);
 		Long resumeTs = null;
+		Boolean enable = (Boolean) with.get(ParseStr.S_ENABLE);
+		if (enable == null)
+			enable = Boolean.TRUE;
 
 		if(unresolvedHandling != null) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03407082033", "UNRESOLVED only allowed for master submit"));
@@ -235,7 +242,7 @@ public class SubmitJob extends Node
 		if (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED || state == SDMSSubmittedEntity.RUNNING) {
 			if (sme.getIsCancelled(sysEnv).booleanValue())
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03703020852", "Child submit rejected because job is cancelling"));
-			final SDMSSubmittedEntity smec = sme.submitChild(sysEnv, params, suspended, resumeTs, se.getId(sysEnv), childTag, null, submitTag);
+			final SDMSSubmittedEntity smec = sme.submitChild(sysEnv, params, suspended, resumeTs, se.getId(sysEnv), childTag, null, submitTag, enable.booleanValue());
 			return smec.getId(sysEnv);
 		} else
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03703020852", "Child submit only allowed while job is active"));
