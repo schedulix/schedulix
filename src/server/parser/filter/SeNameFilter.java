@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser.filter;
 
 import java.io.*;
@@ -57,14 +55,8 @@ public class SeNameFilter extends Filter
 		sbt = new StringBuffer();
 		for(i = 0; i < sbf.length(); i++) {
 			c = sbf.charAt(i);
-			if(c == '_') {
-				sbt.append('.');
-				continue;
-			}
-			if(c == '%') {
-				sbt.append(".*");
-				continue;
-			}
+			if(c == '_') { sbt.append('.'); continue; }
+			if(c == '%') { sbt.append(".*"); continue; }
 			if(c == '\\') {
 				j = i+1;
 				if(j < sbf.length()) {
@@ -100,7 +92,6 @@ public class SeNameFilter extends Filter
 
 		if (sysEnv.tx.txData.containsKey(SystemEnvironment.S_SE_NAMEFILTER_CACHE)) {
 			seNameFilterCache = (SeNameFilterCache)(sysEnv.tx.txData.get(SystemEnvironment.S_SE_NAMEFILTER_CACHE));
-
 			if (! seNameFilterCache.id.equals(pId)) {
 				seNameFilterCache.id = pId;
 				seNameFilterCache.name = null;

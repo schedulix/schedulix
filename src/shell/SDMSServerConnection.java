@@ -165,8 +165,8 @@ public class SDMSServerConnection
 		user = options.getValue(App.USER);
 		passwd = options.getValue(App.PASS);
 		use_ssl =
-		        options.isSet(App.TLS) ? options.getOption(App.TLS).getBValue() :
-		        false;
+			options.isSet(App.TLS) ? options.getOption(App.TLS).getBValue() :
+			false;
 		info = options.isSet(App.INFO) ? options.getValue(App.INFO) : null;
 		if (info != null) {
 			info = info.replace("\\\\","\\\\");
@@ -175,7 +175,7 @@ public class SDMSServerConnection
 	}
 
 	public SDMSOutput connect(Options options)
-	throws IOException
+		throws IOException
 	{
 		if (use_ssl) {
 			KeyStore ks = null;
@@ -246,9 +246,9 @@ public class SDMSServerConnection
 		switch (auth) {
 			case App.BASIC:
 				return execute("connect " + userSQuote + user + userEQuote + " identified by '" + passwd +
-			"' with protocol = SERIAL" +
-			(timeout != -1 ? ", timeout = " + timeout : "") +
-			(info != null ? ", session = '" + info + "'" : "" ) + ";");
+					"' with protocol = SERIAL" +
+					(timeout != -1 ? ", timeout = " + timeout : "") +
+					(info != null ? ", session = '" + info + "'" : "" ) + ";");
 			case App.WINSSO:
 				String spn = null;
 				if (options.isSet(App.SPN))
@@ -265,11 +265,11 @@ public class SDMSServerConnection
 				}
 
 				String cmd = "connect with" +
-				             " token = '" + strToken + "'" +
-				             ", protocol = SERIAL" +
-				             ", method = '" + auth + "'" +
-				             (timeout != -1 ? ", timeout = " + timeout : "") +
-				             (info != null ? ", session = '" + info + "'" : "" ) + ";";
+					" token = '" + strToken + "'" +
+					", protocol = SERIAL" +
+					", method = '" + auth + "'" +
+					(timeout != -1 ? ", timeout = " + timeout : "") +
+					(info != null ? ", session = '" + info + "'" : "" ) + ";";
 
 				result = execute(cmd);
 				if (result.error != null) {
@@ -403,17 +403,8 @@ public class SDMSServerConnection
 		}
 	}
 
-	public String getUser()
-	{
-		return user;
-	}
-	public String getHost()
-	{
-		return host;
-	}
-	public int getPort()
-	{
-		return port;
-	}
+	public String getUser() { return user; }
+	public String getHost() { return host; }
+	public int getPort()	{ return port; }
 }
 

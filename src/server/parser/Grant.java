@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -99,34 +97,20 @@ public class Grant extends Node
 	private long getManagePriv(int type)
 	{
 		switch (type) {
-			case SDMSGrant.EXIT_STATE_DEFINITION:
-				return SDMSPrivilege.MANAGE_ESD;
-			case SDMSGrant.EXIT_STATE_PROFILE:
-				return SDMSPrivilege.MANAGE_ESP;
-			case SDMSGrant.EXIT_STATE_MAPPING:
-				return SDMSPrivilege.MANAGE_ESM;
-			case SDMSGrant.EXIT_STATE_TRANSLATION:
-				return SDMSPrivilege.MANAGE_EST;
-			case SDMSGrant.RESOURCE_STATE_DEFINITION:
-				return SDMSPrivilege.MANAGE_RSD;
-			case SDMSGrant.RESOURCE_STATE_PROFILE:
-				return SDMSPrivilege.MANAGE_RSP;
-			case SDMSGrant.RESOURCE_STATE_MAPPING:
-				return SDMSPrivilege.MANAGE_RSM;
-			case SDMSGrant.FOOTPRINT:
-				return SDMSPrivilege.MANAGE_FP;
-			case SDMSGrant.USER:
-				return SDMSPrivilege.MANAGE_USER;
-			case SDMSGrant.GROUP:
-				return SDMSPrivilege.MANAGE_GROUP;
-			case SDMSGrant.ENVIRONMENT:
-				return SDMSPrivilege.MANAGE_ENV;
-			case SDMSGrant.SYSTEM:
-				return SDMSPrivilege.MANAGE_SYS;
-			case SDMSGrant.SELECT:
-				return SDMSPrivilege.MANAGE_SEL;
-		case SDMSGrant.NICE_PROFILE:
-			return SDMSPrivilege.MANAGE_NP;
+			case SDMSGrant.EXIT_STATE_DEFINITION:		return SDMSPrivilege.MANAGE_ESD;
+			case SDMSGrant.EXIT_STATE_PROFILE:		return SDMSPrivilege.MANAGE_ESP;
+			case SDMSGrant.EXIT_STATE_MAPPING:		return SDMSPrivilege.MANAGE_ESM;
+			case SDMSGrant.EXIT_STATE_TRANSLATION:		return SDMSPrivilege.MANAGE_EST;
+			case SDMSGrant.RESOURCE_STATE_DEFINITION:	return SDMSPrivilege.MANAGE_RSD;
+			case SDMSGrant.RESOURCE_STATE_PROFILE:		return SDMSPrivilege.MANAGE_RSP;
+			case SDMSGrant.RESOURCE_STATE_MAPPING:		return SDMSPrivilege.MANAGE_RSM;
+			case SDMSGrant.FOOTPRINT:			return SDMSPrivilege.MANAGE_FP;
+			case SDMSGrant.USER:				return SDMSPrivilege.MANAGE_USER;
+			case SDMSGrant.GROUP:				return SDMSPrivilege.MANAGE_GROUP;
+			case SDMSGrant.ENVIRONMENT:			return SDMSPrivilege.MANAGE_ENV;
+			case SDMSGrant.SYSTEM:				return SDMSPrivilege.MANAGE_SYS;
+			case SDMSGrant.SELECT:				return SDMSPrivilege.MANAGE_SEL;
+			case SDMSGrant.NICE_PROFILE:			return SDMSPrivilege.MANAGE_NP;
 		}
 		return SDMSPrivilege.NOPRIVS;
 	}
@@ -187,7 +171,6 @@ public class Grant extends Node
 		}
 		if((p.getPrivilegeMask() & lpriv) != lpriv) {
 			if (force) {
-
 				newPrivs = p.getPrivilegeMask() & lpriv;
 			} else {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03402240938", "Incompatible grant"));
@@ -206,7 +189,6 @@ public class Grant extends Node
 
 		for (int i = 0; i < gList.size(); i++) {
 			gId = (Long) gList.get(i);
-
 			try {
 				g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(oId, gId));
 			} catch (NotFoundException nfe) {
@@ -222,7 +204,6 @@ public class Grant extends Node
 			if(pr.isEmpty()) {
 				g.delete(sysEnv);
 			} else {
-
 				g.setPrivs(sysEnv, pr.toLong());
 			}
 		}
@@ -251,12 +232,9 @@ public class Grant extends Node
 
 		for (int i = 0; i < gList.size(); i++) {
 			gId = (Long) gList.get(i);
-
 			try {
-
 				g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(oId, gId));
 			} catch (NotFoundException nfe) {
-
 				g = SDMSGrantTable.table.create(sysEnv, oId, gId, SYSTEM, NOPRIVS, null);
 			}
 			Long oldPrivs = g.getPrivs(sysEnv);
@@ -267,7 +245,6 @@ public class Grant extends Node
 				pr.delPriv(sysEnv, lpriv);
 			}
 			if(pr.isEmpty()) {
-
 				g.delete(sysEnv);
 			} else {
 				g.setPrivs(sysEnv, pr.toLong());
@@ -294,8 +271,7 @@ public class Grant extends Node
 			checkObjectType (sysEnv, objectType);
 
 			if (
-
-				objectType != SDMSGrant.ENVIRONMENT
+			    objectType != SDMSGrant.ENVIRONMENT
 			) {
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_GRANTS);
 			}

@@ -485,11 +485,9 @@ public class ExpandParser
 		{O_TRIGGER,		T_RESOURCE,		T_TRIGGER},
 		{O_USER,		T_GROUP,		T_USER},
 		{O_WATCH_TYPE,		T_OBJECT_MONITOR,	T_WATCH_TYPE},
-
 		{O_CONTENT,		T_FOLDER,		T_ALL},
 		{O_CONTENT,		T_SCOPE,		T_ALL},
 		{O_TIME_SCHEDULES,	T_JOB_DEFINITION,	T_ALL},
-
 		{Integer.MAX_VALUE,	Integer.MAX_VALUE,	T_NONE}
 	};
 
@@ -499,7 +497,6 @@ public class ExpandParser
 	static final String CA_TSX = "%tsx%";
 
 	static final DumpExpandItem[] compoundRules = {
-
 		new DumpExpandItem(ST_FOLDER, null,		new PathVector().addThis(new DumpRule(SO_CHILDREN,       CA_FC))),
 		new DumpExpandItem(ST_FOLDER, null,		new PathVector().addThis(new DumpRule(SO_JOB_DEFINITION, CA_FC))),
 		new DumpExpandItem(ST_FOLDER, null,		new PathVector().addThis(new DumpRule(SO_COMMENT,        CA_FC))),
@@ -511,7 +508,6 @@ public class ExpandParser
 		new DumpExpandItem(ST_JOB_DEFINITION, CA_FC,	new PathVector().addThis(new DumpRule(SO_TRIGGER,        CA_FC))),
 		new DumpExpandItem(ST_JOB_DEFINITION, CA_FC,	new PathVector().addThis(new DumpRule(SO_RESOURCE_TMPL,  CA_FC))),
 		null,
-
 		new DumpExpandItem(ST_SCOPE, null,		new PathVector().addThis(new DumpRule(SO_CHILDREN,       CA_SC))),
 		new DumpExpandItem(ST_SCOPE, null,		new PathVector().addThis(new DumpRule(SO_RESOURCE,       CA_SC))),
 		new DumpExpandItem(ST_SCOPE, null,		new PathVector().addThis(new DumpRule(SO_COMMENT,        CA_SC))),
@@ -522,7 +518,6 @@ public class ExpandParser
 		new DumpExpandItem(ST_POOL, CA_SC,		new PathVector().addThis(new DumpRule(SO_DISTRIBUTION,   CA_SC))),
 		new DumpExpandItem(ST_ALL, CA_SC,		new PathVector().addThis(new DumpRule(SO_COMMENT,        CA_SC))),
 		null,
-
 		new DumpExpandItem(ST_JOB_DEFINITION,  null,	new PathVector().addThis(new DumpRule(SO_EVENT,           CA_TS))),
 		new DumpExpandItem(ST_EVENT,           CA_TS,	new PathVector().addThis(new DumpRule(SO_SCHEDULED_EVENT, CA_TS))),
 		new DumpExpandItem(ST_ALL,             CA_TS,	new PathVector().addThis(new DumpRule(SO_COMMENT,         CA_TS))),
@@ -584,7 +579,6 @@ public class ExpandParser
 
 	static int findValue(int operator, int operand, int[][] searchTable)
 	{
-
 		int lb = 0;
 		int ub = searchTable.length - 1;
 		int idx;
@@ -607,7 +601,6 @@ public class ExpandParser
 					return idx;
 			}
 		}
-
 		return -1;
 	}
 
@@ -627,11 +620,9 @@ public class ExpandParser
 				int idx = findValue(numOp.intValue(), type.intValue(), compoundIndex);
 				if (idx != -1) {
 					idx = compoundIndex[idx][RESULT];
-
 					for (int k = idx; compoundRules[k] != null; ++k) {
 						DumpExpandItem crk = new DumpExpandItem(compoundRules[k]);
 						if (crk.alias == null) crk.alias = deiAlias;
-
 						rulesToAdd.addElement(crk);
 						if (alias != null) {
 							DumpExpandItem tmp = new DumpExpandItem(crk);
@@ -640,7 +631,6 @@ public class ExpandParser
 							tmp.ruleList.clear();
 							tmp.ruleList.addElement(dr);
 							rulesToAdd.addElement(tmp);
-
 						}
 					}
 					j.remove();
@@ -667,7 +657,6 @@ public class ExpandParser
 			newDei.ruleList.setSep(", ");
 			PathVector resultRule = new PathVector();
 			do {
-
 				resultRule.addAll(next.ruleList);
 				i++;
 				if (i == ruleArray.length) break;
@@ -685,7 +674,6 @@ public class ExpandParser
 				old = dr;
 			}
 			result.add(newDei);
-
 		}
 		result.setSep(" \n\t");
 		compile(result);
@@ -696,7 +684,6 @@ public class ExpandParser
 	{
 		for (int i = 0; i < rules.size(); ++i) {
 			DumpExpandItem dei = (DumpExpandItem) rules.get(i);
-
 			final String name = dei.name;
 			final Integer type = (Integer) validTypes.get(name);
 			dei.type = type;

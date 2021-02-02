@@ -114,48 +114,34 @@ public class RunTest extends Node
 			return;
 		}
 		switch(testid) {
-		case 1:
-			do_test1(sysEnv);
+		case 1: do_test1(sysEnv);
 			break;
-		case 2:
-			do_test2(sysEnv);
+		case 2: do_test2(sysEnv);
 			break;
-		case 3:
-			do_test3(sysEnv);
+		case 3: do_test3(sysEnv);
 			break;
-		case 4:
-			do_test4(sysEnv);
+		case 4: do_test4(sysEnv);
 			break;
-		case 5:
-			do_test5(sysEnv);
+		case 5: do_test5(sysEnv);
 			break;
-		case 6:
-			do_test6(sysEnv);
+		case 6: do_test6(sysEnv);
 			break;
-		case 7:
-			do_test7(sysEnv);
+		case 7: do_test7(sysEnv);
 			break;
-		case 8:
-			do_test8(sysEnv);
+		case 8: do_test8(sysEnv);
 			break;
-		case 9:
-			do_test9(sysEnv);
+		case 9: do_test9(sysEnv);
 			break;
-		case 10:
-			do_test10(sysEnv);
+		case 10:do_test10(sysEnv);
 			break;
-		case 11:
-			do_test11(sysEnv);
+		case 11:do_test11(sysEnv);
 			break;
-		case 12:
-			do_test12(sysEnv);
+		case 12:do_test12(sysEnv);
 			break;
-		case 13:
-			do_test13(sysEnv);
+		case 13:do_test13(sysEnv);
 			break;
-			case 14:
-				do_test14(sysEnv);
-				break;
+		case 14:do_test14(sysEnv);
+			break;
 		default:
 		}
 
@@ -343,13 +329,13 @@ public class RunTest extends Node
 	}
 
 	private void do_test11(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		LockingSystemSynchronized.dump();
 	}
 
 	private void do_test12(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Map.Entry<String,Long>[] m = de.independit.scheduler.server.exception.DeadlockException.getStackTraces(10);
 		SDMSOutputContainer d_container = null;
@@ -375,7 +361,7 @@ public class RunTest extends Node
 		data.add(t_container);
 
 		d_container = new SDMSOutputContainer(sysEnv,
-		                                      new SDMSMessage(sysEnv, "03212191004", "Deadlock Stack Traces"), desc, data);
+			new SDMSMessage(sysEnv, "03212191004", "Deadlock Stack Traces"), desc, data);
 
 		result.setOutputContainer(d_container);
 
@@ -383,7 +369,7 @@ public class RunTest extends Node
 	}
 
 	private boolean repairSmeCounts(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, HashSet hiProcessed)
-	throws SDMSException
+		throws SDMSException
 	{
 		boolean changedSomething = false;
 
@@ -461,57 +447,23 @@ public class RunTest extends Node
 
 			int cstate = csme.getState(sysEnv);
 			switch (cstate) {
-				case SDMSSubmittedEntity.SUBMITTED:
-					fixSubmitted += 1;
-					break;
-				case SDMSSubmittedEntity.DEPENDENCY_WAIT:
-					fixDependencyWait += 1;
-					break;
-				case SDMSSubmittedEntity.SYNCHRONIZE_WAIT:
-					fixSynchronizeWait += 1;
-					break;
-				case SDMSSubmittedEntity.RESOURCE_WAIT:
-					fixResourceWait += 1;
-					break;
-				case SDMSSubmittedEntity.RUNNABLE:
-					fixRunnable += 1;
-					break;
-				case SDMSSubmittedEntity.STARTING:
-					fixStarting += 1;
-					break;
-				case SDMSSubmittedEntity.STARTED:
-					fixStarted += 1;
-					break;
-				case SDMSSubmittedEntity.RUNNING:
-					fixRunning += 1;
-					break;
-				case SDMSSubmittedEntity.TO_KILL:
-					fixToKill += 1;
-					break;
-				case SDMSSubmittedEntity.KILLED:
-					fixKilled += 1;
-					break;
-				case SDMSSubmittedEntity.CANCELLED:
-					fixCancelled += 1;
-					break;
-				case SDMSSubmittedEntity.FINISHED:
-					fixFinished += 1;
-					break;
-				case SDMSSubmittedEntity.FINAL:
-					fixFinal += 1;
-					break;
-				case SDMSSubmittedEntity.BROKEN_ACTIVE:
-					fixBrokenActive += 1;
-					break;
-				case SDMSSubmittedEntity.BROKEN_FINISHED:
-					fixBrokenFinished += 1;
-					break;
-				case SDMSSubmittedEntity.ERROR:
-					fixError += 1;
-					break;
-				case SDMSSubmittedEntity.UNREACHABLE:
-					fixUnreachable += 1;
-					break;
+				case SDMSSubmittedEntity.SUBMITTED:		fixSubmitted += 1;	break;
+				case SDMSSubmittedEntity.DEPENDENCY_WAIT:	fixDependencyWait += 1; break;
+				case SDMSSubmittedEntity.SYNCHRONIZE_WAIT:	fixSynchronizeWait += 1; break;
+				case SDMSSubmittedEntity.RESOURCE_WAIT:		fixResourceWait += 1;	break;
+				case SDMSSubmittedEntity.RUNNABLE:		fixRunnable += 1;	break;
+				case SDMSSubmittedEntity.STARTING:		fixStarting += 1;	break;
+				case SDMSSubmittedEntity.STARTED:		fixStarted += 1;	break;
+				case SDMSSubmittedEntity.RUNNING:		fixRunning += 1;	break;
+				case SDMSSubmittedEntity.TO_KILL:		fixToKill += 1;		break;
+				case SDMSSubmittedEntity.KILLED:		fixKilled += 1;		break;
+				case SDMSSubmittedEntity.CANCELLED:		fixCancelled += 1;	break;
+				case SDMSSubmittedEntity.FINISHED:		fixFinished += 1;	break;
+				case SDMSSubmittedEntity.FINAL:			fixFinal += 1;		break;
+				case SDMSSubmittedEntity.BROKEN_ACTIVE:		fixBrokenActive += 1;	break;
+				case SDMSSubmittedEntity.BROKEN_FINISHED:	fixBrokenFinished += 1;	break;
+				case SDMSSubmittedEntity.ERROR:			fixError += 1;		break;
+				case SDMSSubmittedEntity.UNREACHABLE:		fixUnreachable += 1;	break;
 			}
 			if (csme.getJobIsRestartable(sysEnv).booleanValue()) fixRestartable += 1;
 		}
@@ -619,7 +571,7 @@ public class RunTest extends Node
 	}
 
 	private void tryFinalize(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector cv = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, sme.getId(sysEnv));
 		SDMSHierarchyInstance hi;
@@ -633,7 +585,7 @@ public class RunTest extends Node
 	}
 
 	private void do_test13(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSubmittedEntity sme;
 		sme = SDMSSubmittedEntityTable.getObject(sysEnv, objectId);
@@ -649,7 +601,7 @@ public class RunTest extends Node
 	}
 
 	private void disableSme(SystemEnvironment sysEnv, Long smeId)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
 		if (sme.getIsDisabled(sysEnv).booleanValue()) return;
@@ -666,7 +618,7 @@ public class RunTest extends Node
 	}
 
 	private void do_test14(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		disableSme(sysEnv, objectId);
 		result.setFeedback(new SDMSMessage(sysEnv, "03711230834", "SME " + objectId + " disabled"));

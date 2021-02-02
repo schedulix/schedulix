@@ -140,7 +140,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_folder(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFolder f;
 		Long id = objectToId(sysEnv, o);
@@ -153,7 +153,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_folder_raw(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFolder f;
 		f = SDMSFolderTable.getObject(sysEnv, id);
@@ -161,7 +161,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_scope(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope s;
 		s = SDMSScopeTable.getObject(sysEnv, objectToId(sysEnv, o));
@@ -169,7 +169,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_job(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSchedulingEntity se;
 		Long id = objectToId(sysEnv, o);
@@ -182,7 +182,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_job_raw(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSchedulingEntity se;
 		se = SDMSSchedulingEntityTable.getObject(sysEnv, id);
@@ -190,7 +190,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_category(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedResource nr;
 		nr = SDMSNamedResourceTable.getObject(sysEnv, objectToId(sysEnv, o));
@@ -198,7 +198,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_schedule(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSchedule sc;
 		sc = SDMSScheduleTable.getObject(sysEnv, objectToId(sysEnv, o));
@@ -206,7 +206,7 @@ public class SelectCmd extends Node
 	}
 
 	private String convert(SystemEnvironment sysEnv, Object o, int idx)
-	throws SDMSException
+		throws SDMSException
 	{
 		PathVector pv = null;
 		int quoted = cquote[idx];
@@ -214,24 +214,12 @@ public class SelectCmd extends Node
 		if(o == null) return null;
 		try {
 			switch(ctype[idx]) {
-				case CATEGORYTYPE:
-					pv = convert_category(sysEnv, o);
-					break;
-				case FOLDERTYPE:
-					pv = convert_folder(sysEnv, o);
-					break;
-				case JOBTYPE:
-					pv = convert_job(sysEnv, o);
-					break;
-				case RESOURCETYPE:
-					pv = convert_category(sysEnv, o);
-					break;
-				case SCHEDULETYPE:
-					pv = convert_schedule(sysEnv, o);
-					break;
-				case SCOPETYPE:
-					pv = convert_scope(sysEnv, o);
-					break;
+				case CATEGORYTYPE:	pv = convert_category(sysEnv, o);	break;
+				case FOLDERTYPE:	pv = convert_folder(sysEnv, o);		break;
+				case JOBTYPE:		pv = convert_job(sysEnv, o);		break;
+				case RESOURCETYPE:	pv = convert_category(sysEnv, o);	break;
+				case SCHEDULETYPE:	pv = convert_schedule(sysEnv, o);	break;
+				case SCOPETYPE:		pv = convert_scope(sysEnv, o);		break;
 			}
 		} catch (NotFoundException nfe) {
 			nfe.printStackTrace();
