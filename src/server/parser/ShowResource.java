@@ -255,8 +255,9 @@ public class ShowResource extends ShowCommented
 		SDMSOutputContainer vars = null;
 		if (r != null)
 			vars = r.getVariables(sysEnv);
-		else if (rt != null)
-			vars = rt.getVariables(sysEnv);
+		else
+			if (rt != null)
+				vars = rt.getVariables(sysEnv);
 		return vars;
 	}
 
@@ -508,18 +509,10 @@ public class ShowResource extends ShowCommented
 			} else {
 				v.add(ra.getAllocationTypeAsString(sysEnv));
 				switch(allocType) {
-					case SDMSResourceAllocation.ALLOCATION:
-						v.add(ALLOCATION);
-						break;
-					case SDMSResourceAllocation.MASTER_RESERVATION:
-						v.add(MASTER_RESERVATION);
-						break;
-					case SDMSResourceAllocation.RESERVATION:
-						v.add(RESERVATION);
-						break;
-					case SDMSResourceAllocation.IGNORE:
-						v.add(IGNORED);
-						break;
+					case SDMSResourceAllocation.ALLOCATION:		v.add(ALLOCATION);		break;
+					case SDMSResourceAllocation.MASTER_RESERVATION: v.add(MASTER_RESERVATION);	break;
+					case SDMSResourceAllocation.RESERVATION:	v.add(RESERVATION);		break;
+					case SDMSResourceAllocation.IGNORE:		v.add(IGNORED);			break;
 				}
 			}
 		}

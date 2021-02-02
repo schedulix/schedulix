@@ -40,6 +40,7 @@ public class ShowNamedResource extends ShowCommented
 
 	private ObjectURL url;
 	HashSet expandIds;
+	Boolean condensed;
 
 	public ShowNamedResource(ObjectURL u)
 	{
@@ -50,11 +51,12 @@ public class ShowNamedResource extends ShowCommented
 		auditFlag = false;
 	}
 
-	public ShowNamedResource(ObjectURL u, HashSet h)
+	public ShowNamedResource(ObjectURL u, HashSet h, Boolean condensed)
 	{
 		super();
 		url = u;
 		expandIds = h;
+		this.condensed = condensed;
 		txMode = SDMSTransaction.READONLY;
 	}
 
@@ -87,7 +89,8 @@ public class ShowNamedResource extends ShowCommented
 		desc.add("PRIVS");
 		desc.add("RESOURCES");
 		desc.add("PARAMETERS");
-		desc.add("JOB_DEFINITIONS");
+		if (!condensed.booleanValue())
+			desc.add("JOB_DEFINITIONS");
 
 		Vector data = new Vector();
 
@@ -132,7 +135,8 @@ public class ShowNamedResource extends ShowCommented
 
 		add_parameters (sysEnv, nrId, data);
 
-		add_job_definitions(sysEnv, nr, nrId, data);
+		if (!condensed.booleanValue())
+			add_job_definitions(sysEnv, nr, nrId, data);
 
 		d_container = new SDMSOutputContainer(sysEnv, "Named Resource", desc, data);
 
