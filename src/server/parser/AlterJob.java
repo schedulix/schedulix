@@ -581,8 +581,8 @@ public class AlterJob extends Node
 				if (childSme.getIsDisabled(sysEnv).booleanValue()) {
 					childSme.disable(sysEnv, Boolean.FALSE);
 				} else {
-					if (clone.booleanValue()) {
-						sme.resume(sysEnv, true);
+					if (!clone.booleanValue()) {
+						childSme.resume(sysEnv, true);
 					}
 				}
 			}
