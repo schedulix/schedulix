@@ -47,6 +47,17 @@ JAVAC_FLAGS = -O
 endif
 JAY_FLAGS = -v
 
+
+ifndef RPMBUILD
+	RPMBUILD := $(shell if uname -a | grep -i ubuntu >/dev/null 2>&1; then echo debbuild; else echo rpmbuild; fi)
+endif
+
+ifeq ($(RPMBUILD),rpmbuild)
+        BUILDRPM=buildrpm
+else
+        BUILDRPM=builddeb
+endif
+
 commonsubdirs:
 	@for DIR in $(SUBDIRS); do \
 		if [ $$DIR != "." ]; then \

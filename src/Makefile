@@ -61,7 +61,7 @@ COPYRIGHT = $(shell grep 'public static final String copyright' jobserver/Libjni
 COMPANY = $(shell grep 'public static final String company' jobserver/Libjni.java | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
 BUILD = $(shell if [ -d ../.git ]; then git log | awk '/commit/ { print $$2; exit }' | tee $(SDMSHOME)/buildhash; else cat ../buildhash; fi)
 SWDIR = $(shell basename $(SDMSHOME))
-RHREL = $(shell cat /etc/redhat-release | sed 's/.* release \([0-9][0-9]*\)\..*/\1/g')
+RHREL = $(shell if [ -f /etc/redhat-release ]; then cat /etc/redhat-release | sed 's/.* release \([0-9][0-9]*\)\..*/\1/g'i; else echo 8; fi)
 
 JAR_FILE = $(SDMSHOME)/lib/BICsuite.jar
 MANIFEST = /tmp/sdms.manifest
@@ -74,16 +74,25 @@ rpm: clean all rpmstructure rpmbuild
 
 rpmstructure:
 	# create the required directory structure
-	mkdir -p $(HOME)/rpmbuild/BUILD
-	mkdir -p $(HOME)/rpmbuild/RPMS
-	mkdir -p $(HOME)/rpmbuild/SOURCES
-	mkdir -p $(HOME)/rpmbuild/SPECS
-	mkdir -p $(HOME)/rpmbuild/SRPMS
+	echo "******** RPMBUILD = " $(RPMBUILD) " *************"
+	if [ $(RPMBUILD) = rpmbuild ]; then \
+		mkdir -p $(HOME)/$(RPMBUILD)/BUILD; \
+		mkdir -p $(HOME)/$(RPMBUILD)/RPMS; \
+		mkdir -p $(HOME)/$(RPMBUILD)/SOURCES; \
+		mkdir -p $(HOME)/$(RPMBUILD)/SPECS; \
+		mkdir -p $(HOME)/$(RPMBUILD)/SRPMS; \
+	else \
+		mkdir -p $(HOME)/$(RPMBUILD)/BUILDROOT; \
+		mkdir -p $(HOME)/$(RPMBUILD)/DEBS; \
+		mkdir -p $(HOME)/$(RPMBUILD)/SOURCES; \
+		mkdir -p $(HOME)/$(RPMBUILD)/SPECS; \
+		mkdir -p $(HOME)/$(RPMBUILD)/SDEBS; \
+	fi; \
 	cd $(SDMSHOME)/..; \
-	tar czf $(HOME)/rpmbuild/SOURCES/schedulix-$(PROGRAM_VERSION).tgz --exclude .git $(SWDIR)/*
+	tar czf $(HOME)/$(RPMBUILD)/SOURCES/schedulix-$(PROGRAM_VERSION).tgz --exclude .git $(SWDIR)/*
 
 rpmbuild:
-	if [ -x ~/bin/buildrpm ]; then ~/bin/buildrpm ../lib/centos$(RHREL).spec; else rpmbuild -ba ../lib/centos$(RHREL).spec; fi
+	if [ -x ~/bin/$(BUILDRPM) ]; then ~/bin/$(BUILDRPM) ../lib/centos$(RHREL).spec; else $(RPMBUILD) -ba ../lib/centos$(RHREL).spec; fi
 
 jar:
 	rm $(JAR_FILE)
