@@ -80,7 +80,10 @@ public class SDMSpopupGuiThread extends Thread
 	{
 		try {
 			final Display display = new Display();
-			final Font argsFont = new Font(display, "Courier", 10, SWT.NORMAL );
+			String fontName = System.getenv("SDMSFONT");
+			if (fontName == null)
+				fontName = "FreeMono";
+			final Font argsFont = new Font(display, fontName, 10, SWT.NORMAL );
 			final Image logo = new Image(display, "Images/Logo.png");
 			final Image bullit = new Image(display,	"Images/Bullit.png");
 
