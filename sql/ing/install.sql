@@ -99,6 +99,8 @@ set autocommit on;
 \i ing_gen/TRIGGER_PARAMETER.sql
 \i ing_gen/TRIGGER_STATE.sql
 \i ing_gen/USER_EQUIV.sql
+\i ing_gen/USER_EXTENTS.sql
+\i ing_gen/USER_PARAMETER.sql
 \i ing_gen/USERS.sql
 \i ing_gen/VERSIONED_EXTENTS.sql
 \i ing_gen/WATCH_TYPE_PARAMETER.sql

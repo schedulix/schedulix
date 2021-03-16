@@ -97,6 +97,8 @@ source mysql_gen/TRIGGER_PARAMETER.sql
 source mysql_gen/TRIGGER_QUEUE.sql
 source mysql_gen/TRIGGER_STATE.sql
 source mysql_gen/USER_EQUIV.sql
+source mysql_gen/USER_EXTENTS.sql
+source mysql_gen/USER_PARAMETER.sql
 source mysql_gen/USERS.sql
 source mysql_gen/VERSIONED_EXTENTS.sql
 source mysql_gen/WATCH_TYPE_PARAMETER.sql
