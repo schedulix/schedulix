@@ -70,10 +70,10 @@ INSERT INTO USERS (ID, NAME,       PASSWD,                              SALT, ME
 -- IMPORTANT!!!
 --	If this ID is changed, it also has to be changed in SDMSObject.java
 INSERT INTO SCHEDULING_HIERARCHY (
-	ID, SE_PARENT_ID, SE_CHILD_ID, ALIAS_NAME, IS_STATIC, IS_DISABLED, PRIORITY, SUSPEND, MERGE_MODE, ESTP_ID,
+	ID, SE_PARENT_ID, SE_CHILD_ID, ALIAS_NAME, IS_STATIC, IS_DISABLED, PRIORITY, SUSPEND, MERGE_MODE, ESTP_ID, ENABLE_MODE,
 	CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS, VALID_FROM, VALID_TO)
 VALUES (
-	30, NULL,         NULL,        NULL,       0,         0,           0,        1,       3,          NULL,
+	30, NULL,         NULL,        NULL,       0,         0,           0,        1,       3,          NULL,    0,
 	0, 0, 0, 0, 0, 9223372036854775807);
 
 --------------------------------------------------------------------------------
