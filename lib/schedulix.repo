@@ -46,3 +46,17 @@ baseurl=https://www.independit.de/repo/schedulix-2.9/centos/$releasever/noarch/
 enabled=0
 gpgcheck=1
 gpgkey=https://www.independit.de/repo/rpm-gpg/RPM-GPG-KEY-schedulix
+#
+[schedulix-2.10]
+name=schedulix-2.10
+baseurl=https://www.independit.de/repo/schedulix-2.10/centos/$releasever/$basearch/
+enabled=0
+gpgcheck=1
+gpgkey=https://www.independit.de/repo/rpm-gpg/RPM-GPG-KEY-schedulix
+#
+[schedulix-2.10-noarch]
+name=schedulix-2.10
+baseurl=https://www.independit.de/repo/schedulix-2.10/centos/$releasever/noarch/
+enabled=0
+gpgcheck=1
+gpgkey=https://www.independit.de/repo/rpm-gpg/RPM-GPG-KEY-schedulix
