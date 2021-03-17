@@ -19,6 +19,7 @@ if [ "$1" == "1" ]; then
 	ln -s /opt/schedulix/schedulix/zope/*.py .;
 	cd ../Products;
 	ln -s /opt/schedulix/schedulix/zope/BICsuiteSubmitMemory .;
+	ln -s /opt/schedulix/schedulix/zope/RemoteUserFolder .;
 	cd ../import;
 	ln -s /opt/schedulix/schedulix/zope/SDMS.zexp .;
 	cd ..;
