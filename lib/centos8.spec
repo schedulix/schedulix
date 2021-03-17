@@ -450,6 +450,7 @@ echo "executing postun client -- %version-%release"
 Summary:		The schedulix zope package installs the zope application server and configures it to access a locally installed server
 Group:			Applications/System
 Requires:		schedulix-base = %{version}-%{release} gcc python2 python2-devel python2-setuptools python2-virtualenv wget
+Conflicts:		schedulix-zope4
 
 %description zope
 %commonDescription
@@ -539,6 +540,7 @@ fi
 Summary:		The schedulix zope package installs the zope application server and configures it to access a locally installed server
 Group:			Applications/System
 Requires:		schedulix-base = %{version}-%{release} gcc python3 python3-devel python3-setuptools wget
+Conflicts:		schedulix-zope
 
 %description zope4
 %commonDescription
