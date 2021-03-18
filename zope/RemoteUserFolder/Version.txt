@@ -1,1 +1,1 @@
-/home/ronald/SDMS-master/SDMS/src/zope/RemoteUserFolder/Version.txt
+RemoteUserFolder 0.4
