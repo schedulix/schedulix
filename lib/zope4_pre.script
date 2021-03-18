@@ -1,7 +1,7 @@
 echo "executing pre zope -- %version-%release"
 if [ "$1" == "1" ]; then
 	export INSTALLHOME=/opt/schedulix;
-	export PYTHONVENV=$INSTALLHOME/software/Zope4;
+	export PYTHONVENV=$INSTALLHOME/Zope4;
 	export ZOPEVERSION=5.1.1;
 	export ZOPEINSTANCE=$INSTALLHOME/schedulixweb4;
 	# we set the umask such that the allowed access is user-only (if not overridden)

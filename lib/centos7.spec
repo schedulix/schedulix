@@ -530,6 +530,14 @@ fi
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/software
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/schedulixweb
 %attr(0744, root, root)             /etc/init.d/schedulix-zope
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/addUser.dtml
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/editUser.dtml
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/userFolderProps.dtml
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/README.txt
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/Version.txt
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/RemoteUserFolder.py
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/__init__.py
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/Refresh.txt
 
 %package zope4
 # ----------------------------------------------------------------------------------------
