@@ -50,7 +50,7 @@ public class SSOConnect extends Connect
 	private String token;
 	private boolean firstTime;
 
-	private final static String ADMIN = "ASDMIN";
+	private final static String ADMIN = "ADMIN";
 	private final static String PUBLIC = "PUBLIC";
 	private final static String ISDEFAULT = "ISDEFAULT";
 	private final static String PROVIDER = "PROVIDER";
