@@ -497,7 +497,7 @@ def printCommand(command):
 #
 # user is case sensitive !
 #
-def SDMSUserConnectCommandV2(server, user, pwd , command, repeatable=0, outdict=None, type='USER', timeout=None, cycle=1, session = '', context = None):
+def SDMSUserConnectCommandV2(server, user, pwd , p_command, repeatable=0, outdict=None, type='USER', timeout=None, cycle=1, session = '', context = None):
 	global yesList
 	executions = 0
 	if timeout != None:
@@ -552,7 +552,7 @@ def SDMSUserConnectCommandV2(server, user, pwd , command, repeatable=0, outdict=
 				break
 
 			executions = executions + 1
-			command = command.rstrip('\n\t ;')
+			command = p_command.rstrip('\n\t ;')
 			command = command + '\n' # important to avoid freeze if last line of command is a comment
 			repeats = 0
 			while repeats < 2:
