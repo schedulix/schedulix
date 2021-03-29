@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.10
-Release:	3%{?dist}
+Release:	4%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -509,6 +509,9 @@ fi
 %defattr(0644, schedulix, schedulix, 0755)
 %dir /opt/schedulix/schedulix-%{version}/zope
 %dir /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory
+%dir /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder
+%dir /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml
+%dir /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/help
 # we skip the compiled python files. Doesn't really make sense to compile them on the source system
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/SDMS.zexp
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/BICsuiteSubmitMemory.py
@@ -529,6 +532,7 @@ fi
 %exclude   /opt/schedulix/schedulix-%{version}/zope/sdms.pyo
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/software
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/schedulixweb
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/ZopeSSO.conf.template
 %attr(0744, root, root)             /etc/init.d/schedulix-zope
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/addUser.dtml
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/editUser.dtml
@@ -538,6 +542,7 @@ fi
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/RemoteUserFolder.py
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/__init__.py
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/Refresh.txt
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/help/RemoteUser-Folder_Edit-Properties.stx
 
 %package zope4
 # ----------------------------------------------------------------------------------------
