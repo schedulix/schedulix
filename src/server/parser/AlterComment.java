@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -70,7 +68,6 @@ public class AlterComment extends Node
 		}
 
 		if (texts == null && (text == null || text.equals(""))) {
-
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03808040831", "Comment cannot be empty. Use the drop command to delete comments"));
 		}
 

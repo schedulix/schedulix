@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -116,7 +114,7 @@ public abstract class ManipTrigger extends Node
 			}
 		}
 		if (cnt > 1)
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03506261701", "Duplicate nameis are not allowed"));
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03506261701", "Duplicate names are not allowed"));
 	}
 
 	public abstract void go(SystemEnvironment sysEnv)

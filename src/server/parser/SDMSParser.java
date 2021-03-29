@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -64,23 +63,19 @@ public class SDMSParser extends Parser
 	protected boolean post(Node n)
 		throws FatalException
 	{
-
 		if(stmtInError) {
 			stmtInError = false;
 			n = createError();
 		} else if(n.cmdtype != Node.ANY_COMMAND) {
 			if(env.isUser() && (n.cmdtype & Node.USER_COMMAND) == 0) {
-
 				errexp = new String[1];
 				errexp[0] = "a user command";
 				n = createError();
 			} else if(env.isJobServer() && (n.cmdtype & Node.SERVER_COMMAND) == 0) {
-
 				errexp = new String[1];
 				errexp[0] = "a jobserver command";
 				n = createError();
 			} else if(env.isJob() && (n.cmdtype & Node.JOB_COMMAND) == 0) {
-
 				errexp = new String[1];
 				errexp[0] = "a job command";
 				n = createError();
@@ -97,7 +92,6 @@ public class SDMSParser extends Parser
 			env.roCmdQueue().post(n);
 		}
 		env.lock().do_wait();
-
 		env.setState(ConnectionEnvironment.RENDERING);
 		n.render(ostream);
 		env.setLast();
@@ -110,7 +104,6 @@ public class SDMSParser extends Parser
 	protected Node createError()
 		throws FatalException
 	{
-
 		SyntaxError n;
 
 		StringBuffer msg = new StringBuffer("");
