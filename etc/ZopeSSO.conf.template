@@ -1,0 +1,346 @@
+#===============================================================================
+# ZopeSSO.conf.template
+#
+# Copy this file to the BICSUITECONFIG directory and edit it according to your
+# needs
+# At least all properties set to <TO_BE_CONFIGURED> have to be set.
+#===============================================================================
+# Configurations for handling SSO for the BICsuite web frontend
+#
+# WARNING:
+# This file contains credentials for LDAP and BICsuite ADMIN access.
+# Make this file only readable for the user running the Zope application server.
+{
+#===============================================================================
+# General Configurations which can be (partially) overridden by domain specific
+# or server specific configurations
+#-------------------------------------------------------------------------------
+# Defaults for domain specific settings if not set in the DOMAINS section
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# WebNameCase defines how names for zope authenticated user names are converted
+# 'UPPER' convert to uppercase 
+# 'LOWER' convert to lowercase 
+# 'MIXED' no conversion (default)
+# 'WebNameCase' : 'MIXED',
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# WebAutoCreateUsers indicates if AD users should be created automatically as
+# BICsuite frontend users. If UseLdapWebGroups, is set to True only AD users
+# which are members of the UserGroup and/or ManagerGroup below will be allowed.
+# True 
+# False (default)
+# 'WebAutoCreateUsers' : True,
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# WebUseLdapGroups indicates if Ldap groups should be used to detect whether a
+# AD user is allowed to login to the BICsuite web frontend
+# True
+# False (default)
+# 'WebUseLdapGroups' : True,
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# WebIncludeDomainNames indicates if Domain Names should be part of web user
+# identifiers
+# True or False
+# defaults to False
+# 'WebIncludeDomainNames' : False,
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# WebUserGroup allowed to login in via SSO
+# defaults to 'BICSUITE_WEB_USER'
+# 'WebUserGroup' : 'BICSUITE_WEB_USER',
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# manager group granting manage privilege on Zope website
+# defaults to 'BICSUITE_WEB_MANAGER'
+# 'WebManagerGroup' : 'BICSUITE_WEB_MANAGER',
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# WebGroupCheckIntervall is the time in minutes after ldap group assignments for
+# a BICsuite web server will be
+# rechecked
+# defaults to 60 (1 hour)
+# 'WebGroupCheckIntervall' : 60
+#-------------------------------------------------------------------------------
+# Defaults for server specific settings if not set in the SERVERS section
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ServerIncludeUserDomainNames indicates if domain names should be part of user
+# Identifiers
+# True or False
+# defaults to False
+# 'ServerIncludeUserDomainNames' : False,
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ServerIncludeGroupDomainNames indicates if domain names should be part of
+# group Identifiers
+# True or False
+# defaults to False
+# 'ServerIncludeGroupDomainNames' : False,
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ServerUserNameCase defines how names for BICsuite are converted
+# UPPER case 
+# LOWER case 
+# MIXED case (don't convert them)
+# defaults to 'UPPER'
+# 'ServerUserNameCase' : 'UPPER',
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ServerGroupNameCase defines how names for BICsuite groups are converted
+# UPPER case 
+# LOWER case 
+# MIXED case (don't convert them)
+# defaults to 'UPPER'
+# 'ServerGroupNameCase' : 'UPPER',
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ServerAutoCreateUsers indicates if AD users should be created automatically
+# If ServerUseLdapGroups is True only AD users which are a member of any AD
+# group named <ServerBicsuitePrefix>_<ServerName>_<groupname> are allowed
+# True or False
+# defaults to False
+# 'ServerAutoCreateUsers' : True,
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ServerUseLdapGroups indicates if AD groups should be used
+# True or False
+# defaults to False
+# 'ServerUseLdapGroups' : True,
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ServerBicsuitePrefix is the prefix used for AD groups. Groups called otherwise
+# than <ServerBicsuitePrefix>_<ServerName>_<groupname>
+# are ignored
+# defaults to 'BICSUITE'
+# 'ServerBicsuitePrefix' : 'BICSUITE',
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ServerName is the server name  used for AD groups. Groups called otherwise
+# than <ServerBicsuitePrefix>_<ServerName>_<groupname>
+# are ignored
+# defaults to 'DEFAULT'
+# 'ServerName' : 'DEFAULT',
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# ServerDefaultGroupSuffix
+# Suffix used to decide whether a AD group should be the default group
+# defaults to '_ISDEFAULT'
+# 'ServerDefaultGroupSuffix' : '_ISDEFAULT',
+#===============================================================================
+# Domain specific configurations independent from the BICsuite server accessed
+# users from domains not configured here will not be able to log on to the
+# BICsuite web frontend via SSO
+#-------------------------------------------------------------------------------
+'DOMAINS' : {
+	# domain name as in <DOMAIN_NAME>\UserName
+        '<TO_BE_CONFIGURED>' : {
+                #---------------------------------------------------------------
+                # Domain specific settings or one BICsuite server
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # ldap server and base to get group memberschif from
+                # Example: 
+		# 'LdapServer' : 'ldap://192.168.0.1',
+                'LdapServer' : 'ldap://<TO_BE_CONFIGURED>',
+                # Example:
+		#'LdapBaseDn' : 'DC=INDEPENDIT,DC=dieter,DC=de',
+                'LdapBaseDn' : '<TO_BE_CONFIGURED>',
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # ldap credentials to use for group membership retrieval
+                # Example
+		# 'LdapUsername' : 'Administrator@INDEPENDIT.DIETER.DE',
+                'LdapUsername' : '<TO_BE_CONFIGURED>',
+                'LdapPassword' : '<TO_BE_CONFIGURED>',
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # WebNameCase defines if names for zope authenticated user names
+                # have to be converted to
+                # 'UPPER' convert to uppercase (default)
+                # 'LOWER' convert to lowercase 
+                # 'MIXED' no conversion 
+                # 'WebNameCase' : 'MIXED',
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # WebAutoCreateUsers indicates if AD users should be created
+                # automatically as BICsuite frontend users. If UseLdapWebGroups,
+                # is set to True only AD users which are members of the
+                # UserGroup and/or ManagerGroup below will be allowed.
+                # True 
+                # False (default)
+                # 'WebAutoCreateUsers' : False,
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # WebUseLdapGroups indicates if Ldap groups should be used to
+                # detect whether AD user is allowed to login to the BICsuite web
+                # frontend
+                # True
+                # False (default)
+                # 'WebUseWebGroups' : False,
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # WebIncludeDomainNames indicates if Domain Names should be part
+                # of web user identifiers
+                # True or False
+                # defaults to False
+                # 'WebIncludeDomainNames' : False,
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # WebUserGroup allowed to login in via SSO
+                # defaults to 'BICSUITE_WEB_USER'
+                # 'WebUserGroup' : 'BICSUITE_WEB_MANAGER',
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # manager group granting manage privilege on Zope website
+                # defaults to 'BICSUITE_WEB_MANAGER'
+                # 'WebManagerGroup' : 'BICSUITE_WEB_MANAGER',
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # WebGroupCheckIntervall is the time in minutes after ldap group
+                # assignments for a BICsuite web server will be rechecked
+                # defaults to 60 (1 hour)
+                # 'WebGroupCheckIntervall' : 60
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        }
+},
+#===============================================================================
+# BICsuite server specific configurations
+#-------------------------------------------------------------------------------
+'SERVERS' : {
+        #-----------------------------------------------------------------------
+	# For every BICsuite server to be access via SSO the following section
+	# must be created with hostname:port
+	# Example: localhost:2506
+        '<TO_BE_CONFIGURED>' : {
+                #---------------------------------------------------------------
+                # General configuration for a bicsuite server independent from
+                # the login domain
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # login credentials for a bicsuite admin user whis is allowed to
+                # manage users and group. Used also to connect to bicsuite
+                # before sending the 'alter session set user' command when
+                # executing statements against bicsuite for a user
+                'AdminUser'     : '<TO_BE_CONFIGURED>',
+                'AdminPassword' : '<TO_BE_CONFIGURED>',
+                #---------------------------------------------------------------
+                # Defaults for server specific settings if not set in the
+                # DOMAINS section
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # ServerIncludeUserDomainNames indicates if domain names should
+                # be part of user identifiers
+                # True or False
+                # defaults to False
+                # 'ServerIncludeUserDomainNames' : False,
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # ServerIncludeGroupDomainNames indicates if domain names should
+                # be part of group Identifiers
+                # True or False
+                # defaults to False
+                # 'ServerIncludeGroupDomainNames' : False,
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # ServerUserNameCase defines how names for BICsuite users
+                # are converted
+                # UPPER case 
+                # LOWER case 
+                # MIXED case (don't convert them)
+                # defaults to 'UPPER'
+                # 'ServerUserNameCase' : 'UPPER',
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # ServerGroupNameCase defines how names for BICsuite groups
+                # are converted
+                # UPPER case 
+                # LOWER case 
+                # MIXED case (don't convert them)
+                # defaults to 'UPPER'
+                # 'ServerUserNameCase' : 'UPPER',
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # ServerAutoCreateUsers indicates if AD users should be created
+                # automatically. If ServerUseLdapGroups is True only AD users
+                # which are a member of any AD group named
+                # <ServerBicsuitePrefix>_<ServerName>_<groupname> are allowed
+                # True or False
+                # defaults to False
+                # 'ServerAutoCreateUsers' : False,
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # ServerUseLdapGroups indicates if AD groups should be used
+                # True or False
+                # defaults to False
+                # 'ServerUseLdapGroups' : False,
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # ServerBicsuitePrefix is the prefix used for AD groups. Groups
+                # called otherwise than
+                # <ServerBicsuitePrefix>_<ServerName>_<groupname> are ignored
+                # defaults to 'BICSUITE'
+                # 'ServerBicsuitePrefix' : 'BICSUITE',
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # ServerName is the server name  used for AD groups. Groups
+                # called otherwise than
+                # <ServerBicsuitePrefix>_<ServerName>_<groupname> are ignored
+                # defaults to 'DEFAULT'
+                # 'ServerName' : 'DEFAULT',
+                #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                # ServerDefaultGroupSuffix
+                # Suffix used to deside whether a AD group should be the default
+                # group
+                # defaults to '_ISDEFAULT'
+                # 'ServerDefaultGroupSuffix' : '_ISDEFAULT',
+                #---------------------------------------------------------------
+                # Domain specific configurations for this BICsuite server
+                #---------------------------------------------------------------
+                'DOMAINS' : {
+			# optional server and domain specific configuration
+			# overiding server and bas defaults
+                        '<TO_BE_CONFIGURED>' : {
+                                #-----------------------------------------------
+                                # Server specific settings for this domain
+                                #- - - - - - - - - - - - - - - - - - - - - - - -
+                                # ServerIncludeUserDomainNames indicates if
+                                # domain names should be part of user
+                                # identifiers
+                                # True or False
+                                # defaults to False
+                                # 'ServerIncludeUserDomainNames' : False,
+                                #- - - - - - - - - - - - - - - - - - - - - - - -
+                                # ServerIncludeGroupDomainNames indicates if
+                                # domain names should be part of group
+                                # identifiers
+                                # True or False
+                                # defaults to False
+                                # 'ServerIncludeGroupDomainNames' : False,
+                                #- - - - - - - - - - - - - - - - - - - - - - - -
+                                # ServerUserNameCase defines how names for
+                                # BICsuite users
+                                # are converted
+                                # UPPER case 
+                                # LOWER case 
+                                # MIXED case (don't convert them)
+                                # defaults to 'UPPER'
+                                # 'ServerUserNameCase' : 'UPPER',
+                                #- - - - - - - - - - - - - - - - - - - - - - - -
+                                # ServerGroupNameCase defines how names for
+                                # BICsuite groups are converted
+                                # UPPER case 
+                                # LOWER case 
+                                # MIXED case (don't convert them)
+                                # defaults to 'UPPER'
+                                # 'ServerUserNameCase' : 'UPPER',
+                                #- - - - - - - - - - - - - - - - - - - - - - - -
+                                # ServerAutoCreateUsers indicates if AD users
+                                # should be created automatically.
+                                # If ServerUseLdapGroups is True only AD users
+                                # which are a member of any AD group named
+                                # <ServerBicsuitePrefix>_<ServerName>_<groupname>
+                                # are allowed
+                                # True or False
+                                # defaults to False
+                                # 'ServerAutoCreateUsers' : False,
+                                #- - - - - - - - - - - - - - - - - - - - - - - -
+                                # ServerUseLdapGroups indicates if AD groups
+                                # should be used
+                                # True or False
+                                # defaults to False
+                                # 'ServerUseLdapGroups' : False,
+                                #- - - - - - - - - - - - - - - - - - - - - - - -
+                                # ServerBicsuitePrefix is the prefix used for AD
+                                # groups. Groups called otherwise than
+                                # <ServerBicsuitePrefix>_<ServerName>_<groupname>
+                                # are ignored
+                                # defaults to 'BICSUITE'
+                                # 'ServerBicsuitePrefix' : 'BICSUITE',
+                                #- - - - - - - - - - - - - - - - - - - - - - - -
+                                # ServerName is the server name  used for AD
+                                # groups. Groups called otherwise than
+                                # <ServerBicsuitePrefix>_<ServerName>_<groupname>
+                                # are ignored
+                                # defaults to 'DEFAULT'
+                                # 'ServerName' : 'DEFAULT',
+                                #- - - - - - - - - - - - - - - - - - - - - - - -
+                                # ServerDefaultGroupSuffix
+                                # Suffix used to deside whether a AD group
+                                # should be the default group
+                                # defaults to '_ISDEFAULT'
+                                # 'ServerDefaultGroupSuffix' : '_ISDEFAULT',
+                                #- - - - - - - - - - - - - - - - - - - - - - - -
+                        }
+                }
+        }
+}
+}
+
