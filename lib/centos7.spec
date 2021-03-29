@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.10
-Release:	3%{?dist}
+Release:	4%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -509,7 +509,11 @@ fi
 %defattr(0644, schedulix, schedulix, 0755)
 %dir /opt/schedulix/schedulix-%{version}/zope
 %dir /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory
+%dir /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder
+%dir /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml
+%dir /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/help
 # we skip the compiled python files. Doesn't really make sense to compile them on the source system
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/ZopeSSO.conf.template
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/SDMS.zexp
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/BICsuiteSubmitMemory.py
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/patch.sh
@@ -536,8 +540,13 @@ fi
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/README.txt
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/Version.txt
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/RemoteUserFolder.py
+%exclude                            /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/RemoteUserFolder.pyc
+%exclude                            /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/RemoteUserFolder.pyo
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/__init__.py
+%exclude                            /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/__init__.pyc
+%exclude                            /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/__init__.pyo
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/Refresh.txt
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/help/RemoteUser-Folder_Edit-Properties.stx
 
 %package zope4
 # ----------------------------------------------------------------------------------------
