@@ -39,7 +39,7 @@ initgroups==2.13.0
 mechanize==0.2.5
 mr.developer==1.34
 pluggy==0.8.1
-py==1.7.0
+py==1.10.0
 pytz==2017.2
 repoze.retry==1.2
 repoze.tm2==1.0
