@@ -45,15 +45,14 @@
 ##############################################################################
 
 # import Globals, App.Undo, socket, os, string, sha, whrandom, sys, zLOG
-import Globals, App.Undo, socket, os, string, sha, sys, zLOG
+import App.Undo, socket, os, string, sys
 
-from Globals import DTMLFile, MessageDialog
-from string import join,strip,split,lower,upper,find
+# from Globals import DTMLFile, MessageDialog
+from App.special_dtml import DTMLFile
+from App.Dialogs import MessageDialog
 
 from OFS.Folder import Folder
 from OFS.CopySupport import CopyContainer
-
-from urllib import quote, unquote
 
 from AccessControl import ClassSecurityInfo
 from AccessControl.Role import RoleManager, DEFAULTMAXLISTUSERS
@@ -64,7 +63,6 @@ from OFS.DTMLMethod import DTMLMethod
 from time import time
 import ldap
 
-from zLOG import format_exception, LOG, ERROR, INFO
 
 import traceback
 import time
@@ -92,10 +90,10 @@ class RemoteUser(User):
 		"""Return the username of a user"""
 		id = self.getId()
 		if self.simple_usernames and id.count("\\"):
-			return string.split(id, "\\", 1)[1]
+			return id.split("\\", 1)[1]
 		else:
 			if self.simple_usernames and id.count('@'):
-				return string.split(id, '@', 1)[0]
+				return id.split('@', 1)[0]
 			else:
 				return id
 
@@ -191,13 +189,13 @@ class RemoteUserFolder(UserFolder):
 		ssoConfFileName = ssoConfFileDir + '/ZopeSSO.conf'
 		try:
 			ssoConfFile = open(ssoConfFileName, "r")
-		except Exception,e:
-			print 'Exception (" + str(e) + ") reading sso config from "' + ssoConfFileName
+		except Exception as e:
+			print('Exception (" + str(e) + ") reading sso config from "' + ssoConfFileName)
 			return False
 		try:
 			ssoConf= eval(ssoConfFile.read())
-		except Exception,e:
-			print 'Exception (" + str(e) + ")"' + ssoConfFileName + ' is malformed!'
+		except Exception as e:
+			print('Exception (" + str(e) + ")"' + ssoConfFileName + ' is malformed!')
 			return False
 
 		return True
@@ -219,7 +217,7 @@ class RemoteUserFolder(UserFolder):
 
 		# if we cannot initialize the SSO Configuration, we will deny access
 		if not self.initSsoConf():
-			print 'Access denied because initialization of SSO Configuration failed'
+			print('Access denied because initialization of SSO Configuration failed')
 			return None
 				
 		v = request['PUBLISHED'] # the published object
@@ -245,11 +243,11 @@ class RemoteUserFolder(UserFolder):
 			namePart = nl[0]
 		domainConf = ssoConf.get('DOMAINS', None)
 		if domainConf == None:
-			print 'Access denied because of no domain configuration found in ZopeSSO.conf for domain ' + domainPart + ' !'
+			print('Access denied because of no domain configuration found in ZopeSSO.conf for domain ' + domainPart + ' !')
 			return None		
 		domainConf = domainConf.get(domainPart, None)
 		if domainConf == None:
-			print 'Access denied because domain config for domain ' + domainPart + ' notfound!'
+			print('Access denied because domain config for domain ' + domainPart + ' notfound!')
 			return None
 
 		WebIncludeDomainNames = domainConf.get('WebIncludeDomainNames', ssoConf.get('WebIncludeDomainNames', False))
@@ -266,15 +264,15 @@ class RemoteUserFolder(UserFolder):
 		elif WebNameCase == 'MIXED':
 			pass
 		else:
-			print 'SSOnameCase must be MIXED, UPPER or LOWER'
+			print('SSOnameCase must be MIXED, UPPER or LOWER')
 			return None
 
 		user = self.getUser(name)
 		WebAutoCreateUsers = domainConf.get('WebAutoCreateUsers', ssoConf.get('WebAutoCreateUsers', False))
 		if user is None and not WebAutoCreateUsers:
-			print 'User ' + name + ' does not exist !'
+			print('User ' + name + ' does not exist !')
 			return None
-
+		
 		isUser = True
 		isManager = False
 		WebUseLdapGroups = domainConf.get('WebUseLdapGroups', ssoConf.get('WebUseLdapGroups', False))
@@ -293,7 +291,7 @@ class RemoteUserFolder(UserFolder):
 			LdapPassword = domainConf.get('LdapPassword', None)
 			LdapBaseDn = domainConf.get('LdapBaseDn', None)
 			if LdapServer == None or LdapUsername == None or LdapPassword == None or LdapBaseDn == None:
-				print 'Missing or uncomplete LDAP settings!'
+				print('Missing or uncomplete LDAP settings!')
 			else:
 				isUser = False
 				isManager = False
@@ -321,7 +319,7 @@ class RemoteUserFolder(UserFolder):
 			isUser = True
 			
 		if not isUser:
-			print 'User ' + name + ' is not in groups ' + WebManagerGroup + ' or ' + WebUserGroup
+			print('User ' + name + ' is not in groups ' + WebManagerGroup + ' or ' + WebUserGroup)
 			return None
 
 		user = self.getUser(name)
@@ -351,7 +349,7 @@ class RemoteUserFolder(UserFolder):
 					domains = []
 				self.userFolderEditUser(name, None, newRoles, domains)
 			  
-		# print 'returning a user'
+		# print('returning a user')
 		return self.getUser(name).__of__(self)
 
 	def manage_setUserFolderProperties(self, encrypt_passwords=0,
