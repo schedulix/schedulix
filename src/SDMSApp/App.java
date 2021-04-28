@@ -432,22 +432,22 @@ public class App
 		}
 		if (options.isSet(INI)) {
 			inifile = options.getValue(INI);
-			options.evaluateInifile(inifile, false , ignoreKeys);
+			options.evaluateInifile(inifile, false, ignoreKeys);
 		}
 		inifile = System.getenv("HOME");
 		if (inifile  != null) {
-			options.evaluateInifile(inifile + "/.sdmshrc", true , ignoreKeys);
+			options.evaluateInifile(inifile + "/.sdmshrc", true, ignoreKeys);
 		}
 		inifile = System.getenv("BICSUITECONFIG");
 		if (inifile != null) {
-			options.evaluateInifile(inifile + "/sdmshrc", true , ignoreKeys);
+			options.evaluateInifile(inifile + "/sdmshrc", true, ignoreKeys);
 		} else {
 			inifile = System.getenv("BICSUITEHOME");
 			if (inifile == null) {
 				if (!silent) System.err.println("BICSUITEHOME is not set");
 				return (1);
 			}
-			options.evaluateInifile(inifile + "/etc/sdmshrc", true , ignoreKeys);
+			options.evaluateInifile(inifile + "/etc/sdmshrc", true, ignoreKeys);
 		}
 
 		silent = (options.getOption(SILENT)).bvalue;

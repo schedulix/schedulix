@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.SDMSApp;
 
 import java.util.*;
@@ -110,7 +109,6 @@ public class Options
 		final int size = options.size();
 		for (int i = 0; i < size; ++i) {
 			final Option o = (Option) options.get(i);
-
 			if (o.longopt == null && o.shortopt == null) {
 				iniOnly.append(formatIniEntry(o));
 				continue;
@@ -296,12 +294,10 @@ MAIN:			while (e.hasMoreElements()) {
 				} else {
 					if (arg.equals("-" + o1.shortopt) || arg.equals("--" + o1.longopt)) {
 						o1.set = true;
-
 						++i;
 						if (i < argv.length) {
 							o1.value = argv[i];
 						} else {
-
 						}
 						found = true;
 						break;

@@ -49,11 +49,11 @@ try:
 except:
 	have_json = False
 try:
-        import pytz
-        import datetime
-        have_pytz = True
+	import pytz
+	import datetime
+	have_pytz = True
 except:
-        have_pytz = False
+	have_pytz = False
 
 try:
 	from M2Crypto import SSL
@@ -180,7 +180,7 @@ def releaseSocket(server,soc):
 		closeSocket(soc)
 		# print "closed connection for server:" +str(server)
 
-# 
+#
 # old version for backward compatibility
 # with user not case sensitive if not quoted
 #
@@ -232,7 +232,7 @@ def SDMSGenericConnectionOpenV2(server,user,pwd,type,session=''):
 	if type == 'JOB':
 		connect_type = 'JOB '
 	if type == 'USER':
-                user = "'" + user + "'"
+		user = "'" + user + "'"
 		connect_type = ''
 	pwd = string.replace(pwd, '\\','\\\\')
 	pwd = string.replace(pwd, '\'','\\\'') 
@@ -294,7 +294,7 @@ def SDMSUserConnectCommand(host, port, user, pwd , command, repeatable=0, outdic
 		user = string.upper(user)
 	else:
 		user = string.replace(user,"'","")
-        server = { 'HOST' : host, 'PORT' : port }
+	server = { 'HOST' : host, 'PORT' : port }
 	return  SDMSUserConnectCommandV2(server, user, pwd , command, repeatable, outdict, type, timeout, cycle, session, context)
 
 ssoConf = None

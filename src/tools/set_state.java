@@ -63,7 +63,6 @@ class set_state extends App
 		if (options.isSet(FORCE) && options.getOption(FORCE).getBValue()) cmd = cmd + " FORCE";
 		SDMSOutput o = execute(cmd);
 		if (o.error != null) {
-
 			if (o.error.code.equals("03207082043") && executions > 1) return 0;
 			printError(o.error);
 			return 1;
