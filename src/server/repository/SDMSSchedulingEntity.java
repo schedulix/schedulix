@@ -1060,4 +1060,15 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			se.doDelete(sysEnv);
 		}
 	}
+
+	public String pathString(SystemEnvironment sysEnv, long version, HashMap pathCache)
+	throws SDMSException
+	{
+		if (pathCache == null)
+			return pathString(sysEnv, version);
+		Long id = getId(sysEnv);
+		SDMSFolder parentFolder = SDMSFolderTable.getObject(sysEnv, getFolderId(sysEnv), version);
+		String path = parentFolder.pathString(sysEnv, version, pathCache) + '.' + getName(sysEnv);
+		return path;
+	}
 }

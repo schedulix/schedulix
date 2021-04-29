@@ -200,7 +200,7 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 		boolean dummy = delete(sysEnv, keeplist);
 	}
 
-	public boolean  delete(SystemEnvironment sysEnv, HashSet keeplist)
+	public boolean delete(SystemEnvironment sysEnv, HashSet keeplist)
 		throws SDMSException
 	{
 		final Long fId = getId(sysEnv);
@@ -295,4 +295,22 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 				p = p | SDMSPrivilege.VIEW;
 		return p & checkPrivs;
 	}
+
+	public String pathString(SystemEnvironment sysEnv, long version, HashMap pathCache)
+	throws SDMSException
+	{
+		if (pathCache == null)
+			return pathString(sysEnv, version);
+		Long id = getId(sysEnv);
+		if (pathCache.containsKey(id))
+			return (String)(pathCache.get(id));
+		Long parentId = getParentId(sysEnv);
+		if (parentId == null)
+			return getName(sysEnv);
+		SDMSFolder parentFolder = SDMSFolderTable.getObject(sysEnv, parentId, version);
+		String path = parentFolder.pathString(sysEnv, version, pathCache) + '.' + getName(sysEnv);
+		pathCache.put(id, path);
+		return path;
+	}
+
 }
