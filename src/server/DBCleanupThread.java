@@ -89,7 +89,7 @@ public class DBCleanupThread extends SDMSThread
 	}
 
 	private Vector checkColumns(SDMSTable table, Vector columns)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector tableColumns = new Vector(Arrays.asList(table.columnNames()));
 		if (columns.size() == 0)
@@ -105,7 +105,7 @@ public class DBCleanupThread extends SDMSThread
 			}
 			if (!tableColumns.contains(o)) {
 				throw new FatalException(new SDMSMessage(sysEnv, "02411181314",
-				                         "Invalid Archive Column " + o + " for Table " + table.tableName()));
+							"Invalid Archive Column " + o + " for Table " + table.tableName()));
 			}
 			h.add(o);
 		}
@@ -113,7 +113,7 @@ public class DBCleanupThread extends SDMSThread
 	}
 
 	private PreparedStatement prepareArchive(SDMSTable table, Vector columns, String selectColumn)
-	throws SDMSException, SQLException
+		throws SDMSException, SQLException
 	{
 		if (columns == null) return null;
 		columns = checkColumns(table, columns);
@@ -126,14 +126,14 @@ public class DBCleanupThread extends SDMSThread
 			sep = ",";
 		}
 		String stmt = "INSERT INTO ARC_" + table.tableName() + " (" + columnList + ") SELECT " +
-		              columnList + " FROM " + table.tableName() +
-		              " WHERE " + selectColumn + " = ?";
+			columnList + " FROM " + table.tableName() +
+			" WHERE " + selectColumn + " = ?";
 
 		return sysEnv.dbConnection.prepareStatement(stmt);
 	}
 
 	private void prepareConnection()
-	throws SDMSException
+		throws SDMSException
 	{
 		while (true) {
 			try {
@@ -149,7 +149,7 @@ public class DBCleanupThread extends SDMSThread
 			}
 			try {
 				String query = "SELECT ID, FINAL_TS FROM SUBMITTED_ENTITY WHERE ID = MASTER_ID AND STATE IN (" +
-				               SDMSSubmittedEntity.CANCELLED + ", " + SDMSSubmittedEntity.FINAL + ") AND FINAL_TS  < ? ORDER BY FINAL_TS";
+					SDMSSubmittedEntity.CANCELLED + ", " + SDMSSubmittedEntity.FINAL + ") AND FINAL_TS  < ? ORDER BY FINAL_TS";
 				loadMasters              = sysEnv.dbConnection.prepareStatement(query);
 				loadSmeForMaster         = sysEnv.dbConnection.prepareStatement("SELECT ID FROM SUBMITTED_ENTITY WHERE MASTER_ID = ?");
 				deleteMaster             = sysEnv.dbConnection.prepareStatement("DELETE FROM SUBMITTED_ENTITY WHERE MASTER_ID = ?");
@@ -191,13 +191,13 @@ public class DBCleanupThread extends SDMSThread
 	}
 
 	public void initDBCleanupThread(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			sysEnv = (SystemEnvironment) env.clone();
 		} catch(CloneNotSupportedException cnse) {
 			throw new FatalException(new SDMSMessage(sysEnv, "03411170950",
-			                         "Cannot Clone SystemEnvironment"));
+							"Cannot Clone SystemEnvironment"));
 		}
 		prepareConnection();
 		sysEnv.tx = new SDMSTransaction(sysEnv, SDMSTransaction.READONLY, null);
@@ -210,7 +210,7 @@ public class DBCleanupThread extends SDMSThread
 	}
 
 	private void loadMasters()
-	throws SDMSException
+		throws SDMSException
 	{
 		try {
 			if (sysEnv.dbConnection.isClosed())
@@ -266,7 +266,7 @@ public class DBCleanupThread extends SDMSThread
 	}
 
 	private Vector<Long> loadMaster(long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector<Long> sme_v = new Vector<Long>();
 		try {
@@ -288,7 +288,7 @@ public class DBCleanupThread extends SDMSThread
 	}
 
 	private void deleteForSme(PreparedStatement s, long id, String what)
-	throws SDMSException, SQLException
+		throws SDMSException, SQLException
 	{
 		s.clearParameters();
 		s.setLong(1, id);
@@ -296,7 +296,7 @@ public class DBCleanupThread extends SDMSThread
 	}
 
 	private void archiveForSme(PreparedStatement s, long id, String what)
-	throws SDMSException, SQLException
+		throws SDMSException, SQLException
 	{
 		if (s == null) return;
 		s.clearParameters();
@@ -305,7 +305,7 @@ public class DBCleanupThread extends SDMSThread
 	}
 
 	private void processSme(long id)
-	throws SDMSException, SQLException
+		throws SDMSException, SQLException
 	{
 		archiveForSme(archiveKillJob, id, KILL_JOB);
 		deleteForSme(deleteKillJob, id, KILL_JOB);
@@ -322,7 +322,7 @@ public class DBCleanupThread extends SDMSThread
 	}
 
 	private boolean processMaster(long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector<Long> sme_v = loadMaster(id);
 		if (sme_v == null) {
@@ -360,7 +360,7 @@ public class DBCleanupThread extends SDMSThread
 	}
 
 	private boolean processMasters()
-	throws SDMSException, InterruptedException
+		throws SDMSException, InterruptedException
 	{
 		boolean deleted = false;
 		int mastersRemoved = 0;
