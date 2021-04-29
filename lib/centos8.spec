@@ -648,6 +648,10 @@ fi
 %exclude   /opt/schedulix/schedulix-%{version}/zope4/Extensions/sdms.pyo
 %exclude   /opt/schedulix/schedulix-%{version}/zope4/StringFixer/__init__.pyc
 %exclude   /opt/schedulix/schedulix-%{version}/zope4/StringFixer/__init__.pyo
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/RemoteUserFolder.pyc
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/RemoteUserFolder.pyo
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/__init__.pyc
+%exclude   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/__init__.pyo
 
 
 %package examples
