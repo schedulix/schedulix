@@ -139,6 +139,28 @@ public class ListFolder extends Node
 	{
 		SDMSFolder f;
 		SDMSSchedulingEntity se;
+		if (expandIds != null) {
+			Iterator iExpand = new HashSet(expandIds).iterator();
+			while (iExpand.hasNext()) {
+				Long expandId = (Long)(iExpand.next());
+				Long pId = null;
+				try {
+					f = SDMSFolderTable.getObject(sysEnv, expandId);
+					pId = f.getParentId(sysEnv);
+				} catch(NotFoundException nfeF) {
+					try {
+						se = SDMSSchedulingEntityTable.getObject(sysEnv, expandId);
+						pId = se.getFolderId(sysEnv);
+					} catch(NotFoundException nfeSe) {
+						continue;
+					}
+				}
+				while (pId != null && !expandIds.contains(pId)) {
+					expandIds.add(pId);
+					pId = SDMSFolderTable.getObject(sysEnv, pId).getParentId(sysEnv);
+				}
+			}
+		}
 		fl = new FolderLister(path, expandIds);
 		fl.setTitle(new SDMSMessage (sysEnv, "03201292009", "List of Folders"));
 		fl.setFormatter(this);

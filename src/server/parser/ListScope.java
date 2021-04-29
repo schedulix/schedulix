@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -71,37 +69,24 @@ public class ListScope extends Node
 		desc.add("ID");
 		desc.add("NAME");
 		desc.add("OWNER");
-
 		desc.add("TYPE");
-
 		desc.add("IS_TERMINATE");
-
 		desc.add("HAS_ALTERED_CONFIG");
-
 		desc.add("IS_SUSPENDED");
-
 		desc.add("IS_ENABLED");
-
 		desc.add("IS_REGISTERED");
-
 		desc.add("IS_CONNECTED");
-
 		desc.add("STATE");
-
 		desc.add("PID");
-
 		desc.add("NODE");
-
 		desc.add("IDLE");
-
 		desc.add("NOPDELAY");
-
 		desc.add("ERRMSG");
 
 		desc.add("SUBSCOPES");
-
 		desc.add("RESOURCES");
 		desc.add("PRIVS");
+		desc.add("IDPATH");
 
 		return desc;
 	}
@@ -154,6 +139,7 @@ public class ListScope extends Node
 		v.add(new Integer(v1.size()));
 		v.add(new Integer(v2.size()));
 		v.add(s.getPrivileges(sysEnv).toString());
+		v.add(s.idPathVector(sysEnv));
 	}
 
 }

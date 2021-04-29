@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -52,7 +50,6 @@ public class ResourceTreeLister extends TreeLister
 		Long scopeId = sId;
 		namedResources = new HashMap();
 		formatter = new SsRFormatter(namedResources);
-
 		while (scopeId != null) {
 			Vector rv = SDMSResourceTable.idx_scopeId.getVector(sysEnv, scopeId);
 			for(int i = 0; i < rv.size(); ++i) {
@@ -101,12 +98,10 @@ public class ResourceTreeLister extends TreeLister
 		Vector children = new Vector();
 
 		if (namedResources.containsKey(id)) {
-
 			SDMSNamedResource nr = (SDMSNamedResource)o;
 			Long scopeId = (Long) namedResources.get(id);
 			switch (nr.getUsage(sysEnv).intValue()) {
 			case SDMSNamedResource.CATEGORY:
-
 				Vector v = SDMSNamedResourceTable.idx_parentId.getVector(sysEnv, id);
 				Iterator i = v.iterator();
 				while (i.hasNext()) {
@@ -118,7 +113,6 @@ public class ResourceTreeLister extends TreeLister
 				}
 				return children;
 			default:
-
 				return children;
 			}
 		}
@@ -127,7 +121,6 @@ public class ResourceTreeLister extends TreeLister
 
 	public int compare(Object o1, Object o2)
 	{
-
 		Vector v1;
 		Vector v2;
 		try {
@@ -148,7 +141,6 @@ public class ResourceTreeLister extends TreeLister
 			if (r != 0) return r;
 		}
 		if (l1 == l2) {
-
 			Vector v1s;
 			Vector v2s;
 			try {
@@ -175,11 +167,9 @@ public class ResourceTreeLister extends TreeLister
 		throws SDMSException
 	{
 		try {
-
 			return ((SDMSNamedResource)o).pathVector(sysEnv);
 		} catch (ClassCastException cce) {
 			Long nrId;
-
 			nrId = ((SDMSResource)o).getNrId(sysEnv);
 			return SDMSNamedResourceTable.getObject(sysEnv, nrId).pathVector(sysEnv);
 		}
@@ -189,15 +179,11 @@ public class ResourceTreeLister extends TreeLister
 		throws SDMSException
 	{
 		try {
-
 			SDMSNamedResource dummy = (SDMSNamedResource)o;
-
 			return new Vector();
 		} catch (ClassCastException cce) {
 			SDMSScope s;
-
 			SDMSResource r = (SDMSResource)o;
-
 			s = SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv));
 			return s.pathVector(sysEnv);
 		}
