@@ -49,21 +49,65 @@ public class SeNameFilter extends Filter
 
 		int i,j;
 		char c, ct;
+		boolean replaceUnderscore = true;
+		boolean chooseListActive = false;
+
+		if (s.contains("*") ||
+		    s.contains("+") ||
+		    s.contains("[") ||
+		    s.contains("]") ||
+		    s.contains(")")) {
+			if (s.contains("%")) {
+				replaceUnderscore = false;
+			} else {
+				pattern = Pattern.compile(s);
+				return;
+			}
+		}
 
 		StringBuffer sbt, sbf;
 		sbf = new StringBuffer(s);
 		sbt = new StringBuffer();
 		for(i = 0; i < sbf.length(); i++) {
 			c = sbf.charAt(i);
-			if(c == '_') { sbt.append('.'); continue; }
-			if(c == '%') { sbt.append(".*"); continue; }
-			if(c == '\\') {
-				j = i+1;
-				if(j < sbf.length()) {
-					ct = sbf.charAt(j);
-					if(ct == '_' || ct == '%') {
-						i=j;
-						c = ct;
+			if (c == '[') {
+				chooseListActive = true;
+			}
+			if (!chooseListActive) {
+				if (c == '_' && replaceUnderscore) {
+					sbt.append('.');
+					continue;
+				}
+				if (c == '%') {
+					sbt.append(".*");
+					continue;
+				}
+				if (c == '\\') {
+					j = i + 1;
+					if (j < sbf.length()) {
+						ct = sbf.charAt(j);
+						if (ct == '_' || ct == '%') {
+							i=j;
+							c = ct;
+						} else if (ct == '\\' || ct == '[') {
+							i=j;
+							sbt.append(c);
+							c = ct;
+						}
+					}
+				}
+			} else {
+				if (c == ']')
+					chooseListActive = false;
+				if (c == '\\') {
+					j = i + 1;
+					if (j < sbf.length()) {
+						ct = sbf.charAt(j);
+						if (ct == '\\' || ct == ']') {
+							i = j;
+							sbt.append(c);
+							c = ct;
+						}
 					}
 				}
 			}
