@@ -117,7 +117,6 @@ echo "executing preun base -- %version-%release"
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc/java.conf.template
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/BICsuite.jar
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/functions.sh
-     %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc/zope_requirements-2.13.26.txt
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc/zope_requirements-2.13.29.txt
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/Waffle.Windows.AuthProvider.dll
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/guava-20.0.jar
@@ -626,6 +625,15 @@ fi
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/StringFixer/__init__.py
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory/BICsuiteSubmitMemory.py
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory/__init__.py
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/README.txt
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/Refresh.txt
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/RemoteUserFolder.py
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/Version.txt
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/__init__.py
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/dtml/addUser.dtml
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/dtml/editUser.dtml
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/dtml/userFolderProps.dtml
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/help/RemoteUser-Folder_Edit-Properties.stx
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/Zope4
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/schedulixweb4
 %attr(0744, root, root)             /etc/init.d/schedulix-zope4
