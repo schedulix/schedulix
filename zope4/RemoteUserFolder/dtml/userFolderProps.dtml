@@ -1,1 +1,102 @@
-/home/ronald/SDMS-master/SDMS/src/zope4/RemoteUserFolder/dtml/userFolderProps.dtml
+<dtml-var manage_page_header>
+
+
+
+<dtml-var "manage_tabs(this(), _,
+           form_title='Edit RemoteUserFolder Properties',
+           help_product='RemoteUserFolder',
+           help_topic='RemoteUser-Folder_Edit-Properties.stx'
+	   )">
+
+
+
+
+<form action="manage_setUserFolderProperties" method="post">
+
+<table cellspacing="0" cellpadding="2" border="0">
+
+
+<tr>
+  <td align="left" valign="center" class="form-label">
+   <a href="#simple_usernames">Simple Usernames</a>
+  </td>
+  <td align="left" valign="center" class="form-element">
+   <input type=checkbox name="simple_usernames:boolean" value="1" <dtml-if simple_usernames>CHECKED</dtml-if>>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="center" class="form-label">
+   <a href="#domain_roles">Allow Domain Roles</a>
+  </td>
+  <td align="left" valign="center" class="form-element">
+   <input type=checkbox name="domain_roles:boolean" value="1" <dtml-if domain_roles>CHECKED</dtml-if>>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="center" class="form-label">
+   <a href="#case_insensitive">Case insensitive</a>
+  </td>
+  <td align="left" valign="center" class="form-element">
+   <input type=checkbox name="case_insensitive:boolean" value="1" <dtml-if case_insensitive>CHECKED</dtml-if>>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="center" class="form-label">
+   <a href="#auto_add">Auto Add Users</a>
+  </td>
+  <td align="left" valign="center" class="form-element">
+   <input type=checkbox name="auto_add:boolean" value="1" <dtml-if auto_add>CHECKED</dtml-if>>
+  </td>
+</tr>
+
+
+
+<tr>
+ <td align="left" valign="center" class="form-label">
+  <a href="#maxlistusers">Maximum users listed</a>
+ </td>
+ <td align="left" valign="center" class="form-element">
+ <input type=text name="maxlistusers" value="&dtml.missing-maxlistusers;" size=3>
+ </td>
+</tr>
+
+</table>
+
+<p>
+<div class="form-element">
+<input class="form-element" type="submit" name="submit" value="Save changes" />
+</div>
+</p>
+
+</form>
+
+<p><a name="simple_usernames"><b>Simple Usernames</b></a> 
+means that the name returned by
+AUTHENTICATED_USER.getUserName() will be just the username portion of <i>DOMAIN\username</i>, whereas AUTHENTICATED_USER.getUserId() will return the full <i>DOMAIN\username</i> style name.
+</p>
+
+<p><a name="domain_roles"><b>Domain Roles</b></a> 
+ allows for a dummy user to be created with a name of the form
+<i>DOMAIN\*</i>. If such a user exists then all users in that domain, ie with a name of the
+form <i>DOMAIN\username</i> will inherit the roles from the dummy domain roles user.
+</P>
+
+<p><a name="case_insensitive"><b>Case Insensitive</b></a>
+means all REMOTE_USER names will be converted to lower case before matching to counter any variability in case by the authentication mechanism (such as happens with IIS)
+</P>
+
+<p><a name="auto_add"><b>Auto Add Users</b></a> 
+means that if a REMOTE_USER is not recongnized as an existing user in this user folder, it will 
+be automatically added. This allows you to assign complete responsibility to the remote authentication mechanism for the list of users that can be authenticated. Using <a href="#domian_roles">Domain Roles</a> in addition allows these new users to automatically inherit roles
+</P>
+
+<p> <a name="maxlistusers"><B>Maximum users listed</B></a>
+ presents search dialog when more users than N (-1 is always, 0 is never) users are listed when
+doing Role Assignment
+</p>
+
+<dtml-var manage_page_footer>
+
