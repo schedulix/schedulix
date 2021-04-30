@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.10
-Release:	6%{?dist}
+Release:	7%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -539,6 +539,7 @@ fi
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/README.txt
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/Version.txt
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/RemoteUserFolder.py
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/RemoteUserFolder.gif
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/__init__.py
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/Refresh.txt
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/help/RemoteUser-Folder_Edit-Properties.stx
@@ -624,6 +625,7 @@ fi
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/README.txt
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/Refresh.txt
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/RemoteUserFolder.py
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/RemoteUserFolder.gif
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/Version.txt
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/__init__.py
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/dtml/addUser.dtml
