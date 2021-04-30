@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.10
-Release:	5%{?dist}
+Release:	6%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -448,7 +448,7 @@ echo "executing postun client -- %version-%release"
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix zope package installs the zope application server and configures it to access a locally installed server
 Group:			Applications/System
-Requires:		schedulix-base = %{version}-%{release} gcc python python-devel python-setuptools python-virtualenv wget
+Requires:		schedulix-base = %{version}-%{release} gcc python python-devel python-setuptools python-virtualenv wget openldap-devel
 Conflicts:		schedulix-zope4
 
 %description zope
@@ -512,7 +512,6 @@ fi
 %dir /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml
 %dir /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/help
 # we skip the compiled python files. Doesn't really make sense to compile them on the source system
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/ZopeSSO.conf.template
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/SDMS.zexp
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/BICsuiteSubmitMemory.py
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/patch.sh
@@ -532,6 +531,7 @@ fi
 %exclude   /opt/schedulix/schedulix-%{version}/zope/sdms.pyo
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/software
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/schedulixweb
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/ZopeSSO.conf.template
 %attr(0744, root, root)             /etc/init.d/schedulix-zope
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/addUser.dtml
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/editUser.dtml
@@ -555,7 +555,7 @@ fi
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix zope4 package installs the zope4 application server and configures it to access a locally installed server
 Group:			Applications/System
-Requires:		schedulix-base = %{version}-%{release} gcc python3 python3-devel python3-setuptools wget
+Requires:		schedulix-base = %{version}-%{release} gcc python3 python3-devel python3-setuptools wget openldap-devel
 Conflicts:		schedulix-zope
 
 %description zope4

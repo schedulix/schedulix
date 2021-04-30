@@ -18,6 +18,7 @@ if [ "$1" == "1" ]; then
 	$PYTHONVENV/bin/pip install Products.SiteErrorLog;
 	$PYTHONVENV/bin/pip install Products.PythonScripts;
 	$PYTHONVENV/bin/pip install Products.TemporaryFolder;
+	$PYTHONVENV/bin/pip install python-ldap
 	$PYTHONVENV/bin/mkwsgiinstance -d $ZOPEINSTANCE -u sdmsadm:sdmsadm;
 	echo '<zodb_db temporary>
     <mappingstorage>
