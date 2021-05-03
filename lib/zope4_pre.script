@@ -45,11 +45,11 @@ else
 	# Due to a bug in previous versions, links with a release number were created
 	# If they are there, we'lll have to replace them whit the stable links
 	#
-	if ls $PYTHONVENV/lib/python3.6/site-packages/Products/StringFixer | grep "schedulix-"; then
+	if ls -l $PYTHONVENV/lib/python3.6/site-packages/Products/StringFixer | grep "schedulix-"; then
 		rm $ZOPEINSTANCE/Extensions
 		rm $PYTHONVENV/lib/python3.6/site-packages/Products/BICsuiteSubmitMemory
 		rm $PYTHONVENV/lib/python3.6/site-packages/Products/StringFixer
-		rm $ZOPEINSTANCE/import/sdms.zexp
+		rm $ZOPEINSTANCE/import/SDMS.zexp
 		ln -s /opt/schedulix/schedulix/zope4/Extensions $ZOPEINSTANCE;
 		ln -s /opt/schedulix/schedulix/zope4/BICsuiteSubmitMemory $PYTHONVENV/lib/python3.6/site-packages/Products;
 		ln -s /opt/schedulix/schedulix/zope4/StringFixer $PYTHONVENV/lib/python3.6/site-packages/Products;
