@@ -1512,9 +1512,17 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			return null;
 		}
 		if (v_sme.size() > 1) {
-
+			SDMSSchedulingEntity se3 = SDMSSchedulingEntityTable.getObject(sysEnv, smeOrig.getSeId(sysEnv), seVersion);
+			String pth = se3.pathString(sysEnv, seVersion);
+			String msg = "";
+			String sep = "";
+			for (int i = 0; i < v_sme.size(); ++i) {
+				SDMSSubmittedEntity candidate = (SDMSSubmittedEntity) v_sme.get(i);
+				msg = msg + sep + candidate.getId(sysEnv);
+				sep = ", ";
+			}
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "02201111026",
-			                               "Ambigous resolution"));
+						"Ambiguous resolution while processing dependencies for " + pth + " : " + msg + " would all classify"));
 		}
 
 		return (SDMSSubmittedEntity) v_sme.get(0);
@@ -1533,7 +1541,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	}
 
 	public void finishDisabledOrBatch(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (getJobEsdId(sysEnv) == null) {
 			setJobEsdId(sysEnv, getDefaultEsdId(sysEnv));
