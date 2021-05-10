@@ -199,10 +199,9 @@ public class SDMSUserExtentsTableGeneric extends SDMSTable
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
-		                                   " FROM " + squote + tableName() + equote + ", " +
-		                                   "       SME2LOAD " +
-		                                   " WHERE " + squote + tableName() + equote + ".UP_ID = SME2LOAD.ID"
-		                                  );
+		                                   " FROM " + squote + tableName() + equote +
+		                                   ""
+					);
 		while(rset.next()) {
 			if(loadObject(env, rset)) ++loaded;
 			++read;
