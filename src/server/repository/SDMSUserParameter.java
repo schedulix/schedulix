@@ -73,6 +73,7 @@ public class SDMSUserParameter extends SDMSUserParameterProxyGeneric
 					SDMSUserExtents e = (SDMSUserExtents) v.get(i);
 					if (s == e.getSequence(env).intValue()) {
 						val = val + e.getExtent(env);
+						break;
 					}
 				}
 			}

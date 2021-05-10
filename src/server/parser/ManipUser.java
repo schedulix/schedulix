@@ -209,7 +209,6 @@ public abstract class ManipUser extends Node
 		Vector v = SDMSUserParameterTable.idx_uId.getVector(sysEnv, u.getId(sysEnv));
 		for (int i = 0; i < v.size(); ++i) {
 			SDMSUserParameter up = (SDMSUserParameter) v.get(i);
-			System.out.println("Deleting Parameter " + up.getName(sysEnv));
 			up.delete(sysEnv);
 		}
 
