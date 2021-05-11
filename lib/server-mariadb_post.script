@@ -4,7 +4,7 @@ R="'%{release}'"
 if [ "$1" == "1" ]; then
 	echo "creating server.conf file"
 	HOSTNAME=`hostname`
-	RHVER=`cat /etc/redhat-release | sed 's/.* release \([0-9][0-9]*\)\..*/\1/g'`
+	RHVER=`cat /etc/redhat-release | sed 's/.* release \([0-9][0-9]*\).*/\1/g'`
 	if [ $RHVER -ge 8 ]; then
 		MARIAJAR=/usr/lib/java/mariadb-java-client.jar
 		MARIAJDBC=org.mariadb.jdbc.Driver
@@ -16,7 +16,7 @@ if [ "$1" == "1" ]; then
 	. ~/.bashrc;
 	sed '
 		s:DbPasswd=.*:DbPasswd=schedulix:
-		s:DbUrl=.*:DbUrl=jdbc\:mysql\://localhost:3306/schedulixdb:
+		s:DbUrl=.*:DbUrl=jdbc\:mysql\://localhost\:3306/schedulixdb:
 		s:DbUser=.*:DbUser=schedulix:
 		s:Hostname=.*:Hostname=$HOSTNAME:
 		s:JdbcDriver=.*:JdbcDriver=$MARIAJDBC:

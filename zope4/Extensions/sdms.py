@@ -986,7 +986,7 @@ def sleep(s):
 	time.sleep(s)
 
 def variant():
-	return 'BICsuite'
+	return 'schedulix'
 
 def re_sub(pattern, replacement, text, count=0):
 	return re.sub(pattern, replacement, text, count)

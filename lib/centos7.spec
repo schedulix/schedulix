@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.9
-Release:	21%{?dist}
+Release:	25%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -117,7 +117,6 @@ echo "executing preun base -- %version-%release"
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc/java.conf.template
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/BICsuite.jar
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/functions.sh
-     %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc/zope_requirements-2.13.26.txt
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc/zope_requirements-2.13.29.txt
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/Waffle.Windows.AuthProvider.dll
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/guava-20.0.jar

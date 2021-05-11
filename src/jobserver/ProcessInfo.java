@@ -256,7 +256,14 @@ public class ProcessInfo
 			}
 		} else if (os.contains("win")) {
 			try {
-				ProcessBuilder pb = new ProcessBuilder("WMIC", "PROCESS", "GET", "HANDLE,", "CREATIONDATE");
+				ProcessBuilder pb = new ProcessBuilder("powershell.exe",
+									"-nologo",
+									"-mta",
+									"-noprofile",
+									"-noninteractive",
+									"-command",
+									"[console]::outputencoding=[text.encoding]::UTF8;Get-WmiObject Win32_Process|%{[string]::Format('{0} {1}'," +
+									"[System.Management.ManagementDateTimeConverter]::ToDateTime($_.CreationDate).ToUniversalTime().ToString('yyyyMMddHHmmss'),$_.Handle)}");
 				pb.redirectOutput(new File(tmpfilename));
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
@@ -264,21 +271,23 @@ public class ProcessInfo
 				try {
 					p.waitFor();
 				} catch (InterruptedException ie) {  }
-				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename), "UTF-16"));
+				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename), "UTF-8"));
 				String line;
 				String pattern = "yyyyMMddHHmmss";
 				int patternLength = pattern.length();
-				SimpleDateFormat format = new SimpleDateFormat(pattern);
+				SimpleDateFormat format = new SimpleDateFormat(pattern + " z");
 				while ((line = in.readLine()) != null) {
 					line = line.trim();
 					if (line.length() < patternLength) continue;
 					String strDate = line.substring(0, patternLength);
 					String strPid  = line.substring(patternLength);
-					strPid = strPid.substring(strPid.indexOf(" ")).trim();
+					int blankIdx = strPid.indexOf(" ");
+					if (blankIdx < 0) continue;
+					strPid = strPid.substring(blankIdx).trim();
 
 					if (strPid.equals("")) continue;
 					try {
-						Long startTime = new Long (format.parse(strDate).getTime() / 1000);
+						Long startTime = new Long (format.parse(strDate + " UTC").getTime() / 1000);
 						result.put(strPid,startTime);
 					} catch (ParseException pe) {
 						continue;
@@ -288,6 +297,8 @@ public class ProcessInfo
 			} catch (Exception e) {
 				throw new RuntimeException("(02310251044) Process start times : " + e.toString());
 			}
+		} else {
+			Trace.error("Unknown Operating System : " + os);
 		}
 		return result;
 	}
