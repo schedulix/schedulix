@@ -2,8 +2,8 @@
 # Common description and properties of the schedulix packages
 #
 Name:		schedulix
-Version:	2.10
-Release:	7%{?dist}
+Version:	2.11
+Release:	1%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
