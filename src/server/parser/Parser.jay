@@ -3048,6 +3048,7 @@ sj_filteritem:  RERUN								{ $$ = SDMSAuditTrail.convert($1); }
 	|	UNREACHABLE							{ $$ = SDMSAuditTrail.convert($1); }
 	|	DISABLE								{ $$ = SDMSAuditTrail.convert($1); }
 	|	ENABLE								{ $$ = SDMSAuditTrail.convert($1); }
+	|	CLONE								{ $$ = SDMSAuditTrail.convert($1); }
 
 
 //-----------------------------------------------------------------------------
