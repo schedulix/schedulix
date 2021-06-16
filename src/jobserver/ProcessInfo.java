@@ -200,10 +200,10 @@ public class ProcessInfo
 
 		String os = System.getProperty("os.name").toLowerCase();
 		if(   os.contains("mac")
-		      || os.contains("nix")
-		      || os.contains("nux")
-		      || os.contains("aix")
-		      || os.contains("hp-ux")
+		   || os.contains("nix")
+		   || os.contains("nux")
+		   || os.contains("aix")
+		   || os.contains("hp-ux")
 		  ) {
 			try {
 				ProcessBuilder pb = new ProcessBuilder("ps", "-e", "-o", "pid=", "-o", "etime=");
@@ -256,14 +256,11 @@ public class ProcessInfo
 			}
 		} else if (os.contains("win")) {
 			try {
-				ProcessBuilder pb = new ProcessBuilder("powershell.exe",
-									"-nologo",
-									"-mta",
-									"-noprofile",
-									"-noninteractive",
-									"-command",
-									"[console]::outputencoding=[text.encoding]::UTF8;Get-WmiObject Win32_Process|%{[string]::Format('{0} {1}'," +
-									"[System.Management.ManagementDateTimeConverter]::ToDateTime($_.CreationDate).ToUniversalTime().ToString('yyyyMMddHHmmss'),$_.Handle)}");
+				final String BICSUITEHOME = System.getenv("BICSUITEHOME");
+				if (BICSUITEHOME == null)
+					throw new Exception("ERROR: BICSUITEHOME must be set, but isn't");
+				ProcessBuilder pb = new ProcessBuilder(BICSUITEHOME + "\\bin\\winps.exe");
+
 				pb.redirectOutput(new File(tmpfilename));
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
