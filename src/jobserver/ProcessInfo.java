@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -225,7 +225,7 @@ public class ProcessInfo
 					String parts[] = line.split("  *");
 					String strPid = parts[0];
 					String strDate;
-					if (parts.length < 2) 
+					if (parts.length < 2)
 						strDate = "00:00:00";
 					else
 						strDate = parts[1];
@@ -342,10 +342,10 @@ public class ProcessInfo
 		long startTimePid = Long.parseLong(starttime);
 
 		if (Math.abs(startTimeJob - startTimePid) > STARTTIME_JITTER) {
-			System.err.println("startTimeJob = " + new Long(startTimeJob).toString() + " startTimePid = " + starttime);
+			Trace.warning("strPid = : " + strPid + ", startTimeJob = " + new Long(startTimeJob).toString() + " startTimePid = " + startTimePid);
 			String os = System.getProperty("os.name").toLowerCase();
 			if (!os.contains("hp-ux"))
-			return false;
+				return false;
 		}
 
 		return true;

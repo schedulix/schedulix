@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.jobserver;
 
 import java.io.*;
@@ -57,7 +56,7 @@ public class WakeupThread
 	{
 		final Runtime rt = Runtime.getRuntime();
 
-		RUNLOOP:	while (run) {
+RUNLOOP:	while (run) {
 			Long p = (Long) cfg.get (Config.NOTIFY_PORT);
 			if (p != null)
 				port = p.intValue();
@@ -68,7 +67,6 @@ public class WakeupThread
 					sleep(5000);
 					if(!run) break RUNLOOP;
 				} catch (Exception e) {
-
 				}
 				p = (Long) cfg.get (Config.NOTIFY_PORT);
 				if (p != null)
@@ -86,24 +84,22 @@ public class WakeupThread
 					try {
 						s.receive(d);
 						String msg = new String(d.getData(), 0, d.getLength());
-
 						try {
 							Server.notified = true;
 							Notifier.interrupt(new Long(0L));
 						} catch(NumberFormatException nfe) {
-
 							Trace.error("[WakeupThread] got a message I don't understand : >" + msg + "< (length : " + msg.length() + ")");
 							Trace.error("[WakeupThread] offending IP : " + d.getAddress().toString() + ", Port : " + d.getPort());
 						}
 					} catch(java.net.SocketTimeoutException ste) {
-
+						/* do nothing */
 					}
 					p = (Long) cfg.get (Config.NOTIFY_PORT);
 					if (p == null || p.intValue() != port) {
 						try {
 							s.close();
 						} catch (Exception e) {
-
+							/* do nothing */
 						}
 						break;
 					}
@@ -114,14 +110,14 @@ public class WakeupThread
 					if (run)
 						sleep(5000);
 				} catch (Exception eStrich) {
-
+					/* do nothing */
 				}
 			}
 			try {
 				if (s != null)
 					s.close();
 			} catch (Exception e) {
-
+				/* do nothing */
 			}
 		}
 	}
