@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -136,27 +134,16 @@ public class ListCalendar extends Node
 		Vector desc = new Vector();
 
 		desc.add("ID");
-
 		desc.add("SE_NAME");
-
 		desc.add("SE_TYPE");
-
 		desc.add("SE_ID");
-
 		desc.add("SE_OWNER");
-
 		desc.add("SE_PRIVS");
-
 		desc.add("SCE_NAME");
-
 		desc.add("SCE_ACTIVE");
-
 		desc.add("EVT_NAME");
-
 		desc.add("STARTTIME");
-
 		desc.add("EXPECTED_FINAL_TIME");
-
 		desc.add("TIME_ZONE");
 
 		if (with.containsKey(ParseStr.S_STARTTIME)) {
