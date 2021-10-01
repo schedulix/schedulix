@@ -43,7 +43,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 public class ProcessInfo
 {
 	static final long BOOTTIME_JITTER  = 90;
-	static final long STARTTIME_JITTER = 10;
+	static Long STARTTIME_JITTER = null;
 
 	public static final char BOOTTIME_NONE   = 'N';
 	public static final char BOOTTIME_SYSTEM = 'S';
@@ -166,7 +166,7 @@ public class ProcessInfo
 		return "unknown";
 	}
 
-	public static long getStartTime(String strPid)
+	private static long getStartTime(String strPid)
 	{
 		long result = 0;
 		String os = System.getProperty("os.name").toLowerCase();
@@ -190,6 +190,11 @@ public class ProcessInfo
 			result = new HashMap<String,Long>();
 		else
 			result.clear();
+		if (STARTTIME_JITTER == null) {
+			STARTTIME_JITTER = new Long((Long) cfg.get(Config.STARTTIME_JITTER));
+		}
+		if (STARTTIME_JITTER.longValue() == 0)
+			return result;
 
 		final File job_file_prefix = (File) cfg.get (Config.JOB_FILE_PREFIX);
 		final File tmp_file = new File(job_file_prefix.getParent() + "/starttimes." + cfg.get(Config.REPO_USER));
@@ -309,6 +314,9 @@ public class ProcessInfo
 		char how;
 		int s, e;
 
+		if (STARTTIME_JITTER.longValue() == 0)
+			return true;
+
 		s = 0;
 		e = 0;
 		while (processId.charAt(e) != '@') ++e;
@@ -341,11 +349,8 @@ public class ProcessInfo
 		}
 		long startTimePid = Long.parseLong(starttime);
 
-		if (Math.abs(startTimeJob - startTimePid) > STARTTIME_JITTER) {
+		if (Math.abs(startTimeJob - startTimePid) > STARTTIME_JITTER.longValue()) {
 			Trace.warning("strPid = : " + strPid + ", startTimeJob = " + new Long(startTimeJob).toString() + " startTimePid = " + startTimePid);
-			String os = System.getProperty("os.name").toLowerCase();
-			if (!os.contains("hp-ux"))
-				return false;
 		}
 
 		return true;

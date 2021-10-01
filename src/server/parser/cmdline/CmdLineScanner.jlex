@@ -78,7 +78,7 @@ ws	=	[ \t\n\r\b\015]+
 identifier =	{alpha}{alnum}*
 eidentifier =   [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z|])?
 
-%state	DQSTRING SQSTRING BTSTRING VARIABLE DQVARIABLE
+%state	DQSTRING SQSTRING BTSTRING VARIABLE DQVARIABLE BTVARIABLE
 %%
 
 //------------------------------------------------------------------------------------------
@@ -87,9 +87,9 @@ eidentifier =   [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z
 
 <YYINITIAL>{ws}			{ proto("WS ");			return CmdLineParser.SEPARATOR; }
 <YYINITIAL>\'			{				yybegin(SQSTRING); value = new String(""); eofProhibited = true; break; }
-<YYINITIAL>`			{				yybegin(BTSTRING); value = new String("`"); eofProhibited = true; break; }
+<YYINITIAL>`			{ proto("BTSTRING_START");	yybegin(BTSTRING); value = new String("`"); eofProhibited = true; return CmdLineParser.DQSTRING_START; }
 <YYINITIAL>\\`			{ proto("BACKTICK ");		value = new String("`"); return CmdLineParser.CHAR; }
-<YYINITIAL>\"			{ proto("DQSTRING_START ");	yybegin(DQSTRING); return CmdLineParser.DQSTRING_START; }
+<YYINITIAL>\"			{ proto("DQSTRING_START ");	yybegin(DQSTRING); value = new String(""); return CmdLineParser.DQSTRING_START; }
 <YYINITIAL>\\			{ proto("\\");			value = new String(yytext()); return CmdLineParser.CHAR; }
 <YYINITIAL>\\\\			{ proto("\\\\");		value = new String("\\"); return CmdLineParser.CHAR; }
 <YYINITIAL>\\\'			{ proto("SINGLE QUOTE ");	value = new String("\\'"); return CmdLineParser.CHAR; }
@@ -116,25 +116,32 @@ eidentifier =   [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z
 
 
 //------------------------------------------------------------------------------------------
-// Backticked string, no variable evaluation
+// Backticked string, variable are evaluated
 //
 
-<BTSTRING>`			{ proto("BTSTRING ");		value = ((String) value) + "`"; 
+<BTSTRING>`			{ proto("BTSTRING_END ");	value = new String("`"); 
 								yybegin(YYINITIAL); 
 								eofProhibited = false; 
-								return CmdLineParser.SQSTRING; 
+								return CmdLineParser.DQSTRING_END; 
 				}
-<BTSTRING>[^`\\]+		{				value = ((String) value) + new String(yytext()); break; }
-<BTSTRING>\\			{				value = ((String) value) + new String(yytext()); break; }
-<BTSTRING>\\\\			{				value = ((String) value) + "\\"; break; }
-<BTSTRING>\\`			{				value = ((String) value) + "`"; break; }
+<BTSTRING>\$\{			{ proto("PARAMSTART ");		yybegin(BTVARIABLE); return CmdLineParser.PARAMSTART; }
+<BTSTRING>\\\$			{ proto("DOLLAR ");		value = new String("$"); return CmdLineParser.CHAR; }
+<BTSTRING>\${identifier}	{ 
+					proto("PARAM ");
+					value = (yytext().substring(1)).toUpperCase(); 
+					return CmdLineParser.PARAM; 
+				}
+<BTSTRING>\\`			{				value = new String("`"); return CmdLineParser.CHAR; }
+<BTSTRING>\\\\			{				value = new String("\\"); return CmdLineParser.CHAR; }
+<BTSTRING>.			{ proto("CHAR ");		value = new String(yytext()); return CmdLineParser.CHAR; }
+<BTSTRING>{ws}			{ proto("CHAR ");		value = new String(yytext()); return CmdLineParser.CHAR; }
 
 
 //------------------------------------------------------------------------------------------
 // Double Quoted String, Variables are evaluated, Whitespace matters
 //
 
-<DQSTRING>\"			{ proto("DQSTRING_END ");	yybegin(YYINITIAL); return CmdLineParser.DQSTRING_END; }
+<DQSTRING>\"			{ proto("DQSTRING_END ");	value = new String(""); yybegin(YYINITIAL); return CmdLineParser.DQSTRING_END; }
 <DQSTRING>\$\{			{ proto("PARAMSTART ");		yybegin(DQVARIABLE); return CmdLineParser.PARAMSTART; }
 <DQSTRING>\\\$			{ proto("DOLLAR ");		value = new String("$"); return CmdLineParser.CHAR; }
 <DQSTRING>\${identifier}	{ 
@@ -171,6 +178,18 @@ eidentifier =   [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z
 				}
 <DQVARIABLE>\.			{ proto("DOT ");		return CmdLineParser.DOT; }
 <DQVARIABLE>.			{ proto("CHAR ");		value = new String(yytext()); return CmdLineParser.CHAR; }
+
+//------------------------------------------------------------------------------------------
+// Variable Environment, started from BTSTRING state
+// Identifiers may be quoted, to make them case sensitive
+
+<BTVARIABLE>\}			{ proto("PARAMEND ");		yybegin(BTSTRING); return CmdLineParser.PARAMEND; }
+<BTVARIABLE>{eidentifier}	{ proto("SQSTRING ");		value = yytext().toUpperCase(); return CmdLineParser.SQSTRING; }
+<BTVARIABLE>\'{eidentifier}\'	{ proto("SQSTRING ");		value = (yytext().substring(1, yytext().length() - 1));
+				  return CmdLineParser.SQSTRING;
+				}
+<BTVARIABLE>\.			{ proto("DOT ");		return CmdLineParser.DOT; }
+<BTVARIABLE>.			{ proto("CHAR ");		value = new String(yytext()); return CmdLineParser.CHAR; }
 
 //------------------------------------------------------------------------------------------
 

@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -65,29 +65,40 @@ public class Config
 	public static final String TRUSTSTOREPW    = "TRUSTSTOREPASSWORD";
 	public static final String USE_SSL         = "USE_SSL";
 	public static final String CREATE_WORKDIR  = "CREATE_WORKDIR";
+	public static final String CONVERT_NEWLINE = "CONVERT_NEWLINE";
+	public static final String STARTTIME_JITTER = "STARTTIME_JITTER";
+
+	public static final Long NOREPLACE         = new Long(0);
+	public static final Long CRLF_TO_LF        = new Long(1);
+	public static final Long LF_TO_CRLF        = new Long(2);
 
 	private static final String[] LONG_VALUES    = {REPO_PORT, TRACE_LEVEL, RECONNECT_DELAY, NOP_DELAY,
-							NOTIFY_PORT, HTTP_PORT};
+	                                                NOTIFY_PORT, HTTP_PORT, CONVERT_NEWLINE, STARTTIME_JITTER
+	                                               };
 	private static final String[] BOOLEAN_VALUES = {USE_PATH, VERBOSE_LOGS, ONLINE_SERVER, USE_SSL,
-							CREATE_WORKDIR};
+	                                                CREATE_WORKDIR
+	                                               };
 	private static final String[] FILE_VALUES    = {DEFAULT_WORKDIR, JOB_EXECUTOR, JOB_FILE_PREFIX };
-	private static final String[] SECOND_VALUES  = {RECONNECT_DELAY, NOP_DELAY};
+	private static final String[] SECOND_VALUES  = {RECONNECT_DELAY, NOP_DELAY, STARTTIME_JITTER};
 	private static final String[] VECTOR_VALUES = {NAME_PATTERN};
 
 	private static final String[] REQUIRED = {REPO_HOST, REPO_PORT, REPO_USER, REPO_PASS};
 	private static final String[] WRITE_THROUGH = {REPO_HOST, REPO_PORT, REPO_USER, USE_SSL,
 						       KEYSTOREPW, TRUSTSTOREPW,
-						       KEYSTORE, TRUSTSTORE};
+						       KEYSTORE, TRUSTSTORE
+						      };
 	private static final String[] DEPRECATED = {RECONNECT_DELAY, NOP_DELAY, DEFAULT_WORKDIR, USE_PATH,
 						    VERBOSE_LOGS, NOP_DELAY, JOB_EXECUTOR, JOB_FILE_PREFIX,
 						    ENV_MAPPING, NOTIFY_PORT, ONLINE_SERVER, KEYSTORE, TRUSTSTORE,
-						    CREATE_WORKDIR};
+						    CREATE_WORKDIR
+						   };
 	public static final String[] ALL_VALUES = {REPO_HOST, REPO_PORT, RECONNECT_DELAY, DEFAULT_WORKDIR,
 						   USE_PATH, VERBOSE_LOGS, TRACE_LEVEL, BOOTTIME, NOP_DELAY,
 						   JOB_EXECUTOR, JOB_FILE_PREFIX, ENV_MAPPING, DYNAMIC,
 						   NOTIFY_PORT, HTTP_PORT, HTTP_HOST, HTTP_LOGENCODING, ONLINE_SERVER,
 						   NAME_PATTERN, KEYSTORE, TRUSTSTORE, KEYSTOREPW, TRUSTSTOREPW,
-						   USE_SSL, CREATE_WORKDIR};
+						   USE_SSL, CREATE_WORKDIR
+						  };
 
 	private final File startupWorkdir;
 
@@ -107,7 +118,9 @@ public class Config
 							BOOTTIME,
 							ONLINE_SERVER,
 							CREATE_WORKDIR,
-							HTTP_LOGENCODING
+	                                                HTTP_LOGENCODING,
+	                                                CONVERT_NEWLINE,
+	                                                STARTTIME_JITTER
 						};
 	public static final Object[] defaultValues = {	Boolean.FALSE,
 							Boolean.FALSE,
@@ -117,7 +130,9 @@ public class Config
 							"NONE",
 							Boolean.TRUE,
 							Boolean.FALSE,
-							"utf-8"
+	                                                "utf-8",
+	                                                new Long(0),
+	                                                new Long(5)
 						};
 
 	public static boolean isWindows()
@@ -168,17 +183,17 @@ public class Config
 			scanner.nextToken();
 
 		switch (scanner.ttype) {
-		case StreamTokenizer.TT_WORD:
-		case '"':
-			return scanner.sval;
+			case StreamTokenizer.TT_WORD:
+			case '"':
+				return scanner.sval;
 
-		case StreamTokenizer.TT_NUMBER:
-			return new Long ((long) scanner.nval);
+			case StreamTokenizer.TT_NUMBER:
+				return new Long ((long) scanner.nval);
 
-		case StreamTokenizer.TT_EOL:
-		case StreamTokenizer.TT_EOF:
-			if (what.equals (USE_PATH) || what.equals (VERBOSE_LOGS))
-				return Boolean.TRUE;
+			case StreamTokenizer.TT_EOL:
+			case StreamTokenizer.TT_EOF:
+				if (what.equals (USE_PATH) || what.equals (VERBOSE_LOGS))
+					return Boolean.TRUE;
 		}
 
 		throw new CommonErrorException (configFileError ("(04301271412) Missing value of " + what));
