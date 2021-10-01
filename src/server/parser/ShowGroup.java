@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -55,6 +53,7 @@ public class ShowGroup extends ShowCommented
 	private final static String ENV = "environment";
 	private final static String SYS = "system";
 	private final static String NP  = "nice profile";
+	private final static String WT  = "watch type";
 	private final static String SEL = "select";
 
 	private ObjectURL url;
@@ -75,12 +74,13 @@ public class ShowGroup extends ShowCommented
 		Vector desc = new Vector();
 
 		g = (SDMSGroup) url.resolve(sysEnv);
+		if (g.getDeleteVersion(sysEnv) > 0)
+			throw new NotFoundException("Group " + g.getName(sysEnv) + " not found");
 		if(!g.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411717", "Insufficient privileges"));
 		Long gId = g.getId(sysEnv);
 
 		desc.add("ID");
-
 		desc.add("NAME");
 		desc.add("COMMENTTYPE");
 		desc.add("COMMENT");
@@ -89,9 +89,7 @@ public class ShowGroup extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("MANAGE_PRIVS");
-
 		desc.add("USERS");
 
 		Vector data = new Vector();
@@ -134,14 +132,10 @@ public class ShowGroup extends ShowCommented
 		SDMSOutputContainer d_container = null;
 
 		Vector desc = new Vector();
-
 		desc.add("ID");
-
 		desc.add("UID");
 		desc.add("NAME");
-
 		desc.add("IS_ENABLED");
-
 		desc.add("DEFAULT_GROUP");
 		desc.add("PRIVS");
 
@@ -153,7 +147,6 @@ public class ShowGroup extends ShowCommented
 			SDMSUser u = SDMSUserTable.getObject(sysEnv, m.getUId(sysEnv));
 			if (u.getName(sysEnv).equals(SDMSUser.NOBODY)) continue;
 			Vector data = new Vector();
-
 			data.add(m.getId(sysEnv));
 			data.add(u.getId(sysEnv));
 			data.add(u.getName(sysEnv));
@@ -174,17 +167,15 @@ public class ShowGroup extends ShowCommented
 		SDMSOutputContainer dc = null;
 
 		Vector desc = new Vector(2);
-
 		desc.add("PRIVS");
 
 		dc = new SDMSOutputContainer(sysEnv, "MANAGE_PRIVS", desc);
 
 		SDMSPrivilege p = new SDMSPrivilege();
 		try {
-			SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
+			SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO, gId));
 			p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 		} catch (NotFoundException nfe) {
-
 		}
 		long pr = p.toLong().longValue();
 		if ((SDMSPrivilege.MANAGE_ALL & pr) != SDMSPrivilege.NOPRIVS) {
@@ -239,6 +230,7 @@ public class ShowGroup extends ShowCommented
 				dc.addData(sysEnv, v);
 				v = new Vector();
 			}
+
 			if ((SDMSPrivilege.MANAGE_ENV & pr) ==  SDMSPrivilege.MANAGE_ENV) {
 				v.add(ENV);
 				dc.addData(sysEnv, v);
