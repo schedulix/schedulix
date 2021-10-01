@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -44,6 +43,17 @@ public class SDMSGroup extends SDMSGroupProxyGeneric
 	protected SDMSGroup(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	public void setDeleteVersion(SystemEnvironment sysEnv, Long deleteVersion)
+	throws SDMSException
+	{
+		Vector gv = SDMSGrantTable.idx_gId.getVector(sysEnv, this.getId(sysEnv));
+		for (int i = 0; i < gv.size(); ++i) {
+			SDMSGrant g = (SDMSGrant) gv.get(i);
+			g.delete(sysEnv);
+		}
+		super.setDeleteVersion(sysEnv, deleteVersion);
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)
