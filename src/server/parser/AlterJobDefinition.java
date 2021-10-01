@@ -943,9 +943,11 @@ public class AlterJobDefinition extends ManipJobDefinition
 		se.setAgingAmount(sysEnv, agingAmount);
 		se.setAgingBase(sysEnv, agingBase);
 		se.setSubmitSuspended(sysEnv, submitSuspended);
-		se.setResumeAt(sysEnv, resumeAt);
-		se.setResumeIn(sysEnv, resumeIn);
-		se.setResumeBase(sysEnv, resumeBase);
+		if (withs.get(ParseStr.S_RESUME) != null || !submitSuspended) {
+			se.setResumeAt(sysEnv, resumeAt);
+			se.setResumeIn(sysEnv, resumeIn);
+			se.setResumeBase(sysEnv, resumeBase);
+		}
 		se.setTimeoutAmount(sysEnv, to_mult);
 		se.setTimeoutBase(sysEnv, to_interval);
 		se.setTimeoutStateId(sysEnv, to_esdId);
