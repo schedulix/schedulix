@@ -458,14 +458,6 @@ public class AlterTrigger extends ManipTrigger
 
 		checkWith(sysEnv, t);
 
-		if (isInverse.booleanValue()) {
-			if(fireId != null)
-				t.setFireId(sysEnv, seId);
-		} else {
-			if(seId != null)
-				t.setSeId(sysEnv, seId);
-		}
-
 		if(triggertype != null)	{
 			t.setType(sysEnv, triggertype);
 		}
