@@ -2845,8 +2845,8 @@ all_jobstates:	jobstate							{ $$ = $1; }
 aj_igndeplist:	aj_igndepitem							{ $$ = new Vector(); $<Vector>$.addElement($1); }
 	|	aj_igndeplist ',' aj_igndepitem					{ $1.addElement($3); }
 
-aj_igndepitem:	jobid								{ $$ = new Vector(); $<Vector>$.addElement($1); $<Vector>$.addElement(Boolean.FALSE); }
-	|	jobid RECURSIVE							{ $$ = new Vector(); $<Vector>$.addElement($1); $<Vector>$.addElement(Boolean.TRUE); }
+aj_igndepitem:	id								{ $$ = new Vector(); $<Vector>$.addElement($1); $<Vector>$.addElement(Boolean.FALSE); }
+	|	id RECURSIVE							{ $$ = new Vector(); $<Vector>$.addElement($1); $<Vector>$.addElement(Boolean.TRUE); }
 
 aj_ignrsrclist:	id								{ $$ = new Vector(); $<Vector>$.addElement($1); }
 	|	aj_ignrsrclist ',' id						{ $1.addElement($3); }
