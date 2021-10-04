@@ -120,7 +120,7 @@ public abstract class JobDistribution extends Node
 		try {
 			if(workdir != null) {
 				sr = new StringReader(workdir);
-				args = cmdlineScan(sysEnv, sr, sme, sme, smeId, "Working Directory", "Working Directory Name is empty");
+				args = cmdlineScan(sysEnv, sr, sme, sme, smeId, "Working Directory", "Working Directory Name is empty", Config.NOREPLACE);
 				workdir = (String) args.get(0);
 			} else {
 				Long cfgScopeId = sId;
@@ -147,7 +147,7 @@ public abstract class JobDistribution extends Node
 
 			if(logfile != null) {
 				sr = new StringReader(logfile);
-				args = cmdlineScan(sysEnv, sr, sme, sme, smeId, "Logfile", "Logfile Name is empty");
+				args = cmdlineScan(sysEnv, sr, sme, sme, smeId, "Logfile", "Logfile Name is empty", Config.NOREPLACE);
 				logfile = (String) args.get(0);
 			}
 			data.add(logfile);
@@ -159,7 +159,7 @@ public abstract class JobDistribution extends Node
 
 			if(errlogfile != null) {
 				sr = new StringReader(errlogfile);
-				args = cmdlineScan(sysEnv, sr, sme, sme, smeId, "Error Logfile", "Error Logfile Name is empty");
+				args = cmdlineScan(sysEnv, sr, sme, sme, smeId, "Error Logfile", "Error Logfile Name is empty", Config.NOREPLACE);
 				errlogfile = (String) args.get(0);
 			}
 			data.add(errlogfile);
@@ -174,7 +174,24 @@ public abstract class JobDistribution extends Node
 
 		sr = new StringReader(runProgram);
 		try {
-			args = cmdlineScan(sysEnv, sr, sme, sme, smeId, "run/rerun Program", "Run Program is missing");
+			Long cfgScopeId = sId;
+			Long convert_nl = null;
+			while(true) {
+				try {
+					SDMSScopeConfig sc = (SDMSScopeConfig)
+					                     SDMSScopeConfigTable.idx_scopeId_key.getUnique(sysEnv, new SDMSKey(cfgScopeId, Config.CONVERT_NEWLINE));
+					convert_nl = Long.parseLong(sc.getValue(sysEnv).substring(1));
+					break;
+				} catch (NotFoundException nfe) {
+					SDMSScope cfgS = SDMSScopeTable.getObject(sysEnv, cfgScopeId);
+					cfgScopeId = cfgS.getParentId(sysEnv);
+					if (cfgScopeId == null) {
+						convert_nl = Config.NOREPLACE;
+						break;
+					}
+				}
+			}
+			args = cmdlineScan(sysEnv, sr, sme, sme, smeId, "run/rerun Program", "Run Program is missing", convert_nl);
 		} catch (CommonErrorException cce) {
 			return false;
 		}
@@ -284,7 +301,7 @@ public abstract class JobDistribution extends Node
 		if(workdir != null) {
 			sr = new StringReader(workdir);
 			try {
-				args = cmdlineScan(sysEnv, sr, sme, kj, kjId, "workdir", "Working Directory Name is empty");
+				args = cmdlineScan(sysEnv, sr, sme, kj, kjId, "workdir", "Working Directory Name is empty", Config.NOREPLACE);
 			} catch (CommonErrorException cce) {
 				return false;
 			}
@@ -302,7 +319,24 @@ public abstract class JobDistribution extends Node
 
 		sr = new StringReader(runProgram);
 		try {
-			args = cmdlineScan(sysEnv, sr, sme, kj, kjId, "run/rerun Program", "Run Program missing");
+			Long cfgScopeId = sId;
+			Long convert_nl = null;
+			while(true) {
+				try {
+					SDMSScopeConfig sc = (SDMSScopeConfig)
+					                     SDMSScopeConfigTable.idx_scopeId_key.getUnique(sysEnv, new SDMSKey(cfgScopeId, Config.CONVERT_NEWLINE));
+					convert_nl = Long.parseLong(sc.getValue(sysEnv).substring(1));
+					break;
+				} catch (NotFoundException nfe) {
+					SDMSScope cfgS = SDMSScopeTable.getObject(sysEnv, cfgScopeId);
+					cfgScopeId = cfgS.getParentId(sysEnv);
+					if (cfgScopeId == null) {
+						convert_nl = Config.NOREPLACE;
+						break;
+					}
+				}
+			}
+			args = cmdlineScan(sysEnv, sr, sme, kj, kjId, "run/rerun Program", "Run Program missing", convert_nl);
 		} catch (CommonErrorException cce) {
 			return false;
 		}
@@ -349,10 +383,68 @@ public abstract class JobDistribution extends Node
 		return true;
 	}
 
-	private Vector cmdlineScan(SystemEnvironment sysEnv, StringReader sr, SDMSSubmittedEntity sme, SDMSProxy job, Long id, String parseObject, String nullMessage)
+	private String convertString(String s, Long convert_nl)
+	{
+		if (convert_nl.longValue() == Config.NOREPLACE)
+			return s;
+		char [] bs = new char[s.length()];
+		s.getChars(0, s.length(), bs, 0);
+		boolean gotCR = false;
+
+		if (convert_nl.longValue() == Config.CRLF_TO_LF) {
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < bs.length; ++i) {
+				if (gotCR && bs[i] == '\n') {
+					sb.append(bs[i]);
+					gotCR = false;
+					continue;
+				}
+				if (gotCR) {
+					sb.append('\r');
+					gotCR = false;
+				}
+				if (bs[i] == '\r') {
+					gotCR = true;
+					continue;
+				}
+				sb.append(bs[i]);
+			}
+			return sb.toString();
+		} else if (convert_nl.longValue() == Config.LF_TO_CRLF) {
+			gotCR = false;
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < bs.length; ++i) {
+				if (!gotCR && bs[i] == '\n') {
+					sb.append('\r');
+					sb.append('\n');
+					gotCR = false;
+					continue;
+				}
+				gotCR = false;
+				if (bs[i] == '\r') {
+					gotCR = true;
+				}
+				sb.append(bs[i]);
+			}
+			return sb.toString();
+		} else
+			return s;
+	}
+
+	private void hexprint(String s)
+	{
+		byte[] bs = s.getBytes();
+		for (int i = 0; i < bs.length; ++i) {
+			System.out.print(String.format("0x%02x ", bs[i]));
+		}
+		System.out.println();
+	}
+
+	private Vector cmdlineScan(SystemEnvironment sysEnv, StringReader sr, SDMSSubmittedEntity sme, SDMSProxy job, Long id, String parseObject, String nullMessage, Long convert_nl)
 		throws SDMSException
 	{
 		Vector args = null;
+		Vector argsToConvert = null;
 		SDMSMessage msg = null;
 		boolean err = true;
 
@@ -363,6 +455,18 @@ public abstract class JobDistribution extends Node
 			args = (Vector) cmdp.yyparse(cmds);
 			if (args == null) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03808071039", "String is empty"));
+			}
+			if (convert_nl != Config.NOREPLACE) {
+				argsToConvert = args;
+				args = new Vector();
+				for (int i = 0; i < argsToConvert.size(); ++i) {
+					String src = (String) argsToConvert.get(i);
+					System.out.println(src);
+					hexprint(src);
+					String tmp = convertString(src, convert_nl);
+					hexprint(tmp);
+					args.add(tmp);
+				}
 			}
 			err = false;
 		} catch (IOException ioe) {

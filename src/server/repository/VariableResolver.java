@@ -149,7 +149,7 @@ public abstract class VariableResolver
 				SDMSScope evalScope)
 		throws SDMSException
 	{
-		StringBuffer var = new StringBuffer();
+		StringBuffer varbuf = new StringBuffer();
 		int i = pos + 1;
 		boolean delimited = false;
 		boolean caseSensitive = false;
@@ -180,15 +180,15 @@ public abstract class VariableResolver
 				if (delimited && Arrays.binarySearch(searchChars, key[i]) < 0) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03312031427", "Syntax Error: unexpected Character '" + key[i] + "'"));
 				}
-				var.append(key[i]);
+				varbuf.append(key[i]);
 			}
 			i++;
 		}
 		i--;
 
 		final String varName;
-		if (caseSensitive)	varName = var.toString();
-		else			varName = var.toString().toUpperCase();
+		if (caseSensitive)	varName = varbuf.toString();
+		else			varName = varbuf.toString().toUpperCase();
 		SDMSKey k = new SDMSKey(objId, varName);
 		if(recursionCheck.search(k) >= 0) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03603010059", "Run into a loop while trying to resolve variable $1", varName));
@@ -196,7 +196,8 @@ public abstract class VariableResolver
 		recursionCheck.push(k);
 		Boolean isDefault = (Boolean) sysEnv.tx.txData.get(SystemEnvironment.S_ISDEFAULT);
 		sysEnv.tx.txData.remove(SystemEnvironment.S_ISDEFAULT);
-		result.append(getInternalVariableValue(sysEnv, thisObject, varName, fastAccess, mode, triggercontext, recursionCheck, version, evalScope));
+		String tmp = getInternalVariableValue(sysEnv, thisObject, varName, fastAccess, mode, triggercontext, recursionCheck, version, evalScope);
+		result.append(tmp);
 		if(isDefault != null)
 			sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, isDefault);
 		recursionCheck.pop();

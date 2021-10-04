@@ -99,7 +99,7 @@ public class CmdLineParser
 %token	SEPARATOR DQSTRING_START DQSTRING_END PARAMSTART PARAMEND DOT
 
 %type <Vector> parameterlist, param, dottedparam, parameter, charlist, executablename
-%type <String> dqstring, dqlist, optdqlist
+%type <String> dqstring, dqlist, optdqlist DQSTRING_START DQSTRING_END
 
 %start cmdline
 
@@ -161,7 +161,7 @@ charlist:	CHAR				{ $$ = new Vector(); $<Vector>$.add($1); }
 						  v.addAll(w);
 						}
 
-dqstring:	DQSTRING_START optdqlist DQSTRING_END	{ $$ = $2; }
+dqstring:	DQSTRING_START optdqlist DQSTRING_END	{ $$ = $1 + $2 + $3; }
 
 optdqlist:					{ $$ = new String(""); }
 	|	dqlist				{ $$ = $1; }
