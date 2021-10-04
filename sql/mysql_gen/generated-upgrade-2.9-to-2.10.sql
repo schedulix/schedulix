@@ -1741,16 +1741,6 @@ SELECT
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
   FROM `USER_EQUIV`;
-CREATE TABLE ARC_USER_EXTENTS (
-    ID                             decimal(20) NOT NULL
-    , `UP_ID`                        decimal(20)      NULL
-    , `SEQUENCE`                     integer          NULL
-    , `EXTENT`                       varchar(256)     NULL
-    , `CREATOR_U_ID`                 decimal(20)      NULL
-    , `CREATE_TS`                    decimal(20)      NULL
-    , `CHANGER_U_ID`                 decimal(20)      NULL
-    , `CHANGE_TS`                    decimal(20)      NULL
-) ENGINE = INNODB;
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
