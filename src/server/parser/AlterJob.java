@@ -36,46 +36,13 @@ import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 
-public class AlterJob extends Node
+public class AlterJob extends ManipJob
 {
 
 	public final static String __version = "@(#) $Id: AlterJob.java,v 2.35.2.4 2013/07/19 06:45:20 dieter Exp $";
 
 	public static final int LOCALSUSPEND      = 100;
 	public static final int LOCALADMINSUSPEND = 200;
-
-	private Long jobId		= null;
-	private WithHash with		= null;
-	private Boolean clone		= null;
-	private String execPid		= null;
-	private String extPid		= null;
-	private Integer status		= null;
-	private String exitState	= null;
-	private Boolean exitStateForce	= null;
-	private String ts		= null;
-	private Integer exitCode	= null;
-	private String errText		= null;
-	private Boolean suspend		= null;
-	private Boolean adminSuspend	= null;
-	private Boolean localSuspend	= null;
-	private Object resumeObj	= null;
-	private String runProgram	= null;
-	private String rerunProgram	= null;
-	private Boolean rerun		= null;
-	private Integer rerunSeq	= null;
-	private Boolean kill		= null;
-	private Boolean cancel		= null;
-	private Boolean disable		= null;
-	private Long tsLong		= null;
-	private Vector depsToIgnore	= null;
-	private Integer priority	= null;
-	private Integer nicevalue	= null;
-	private Integer renice		= null;
-	private String comment		= null;
-	private Vector resToIgnore	= null;
-	private Vector nrsToIgnore	= null;
-	private Boolean clearWarning	= null;
-	private String warning		= null;
 
 	private static final int EP = 0x0000001;
 	private static final int EX = 0x0000002;
@@ -276,133 +243,6 @@ public class AlterJob extends Node
 		comment = (String) with.get(ParseStr.S_COMMENT);
 	}
 
-	private void setSomeFields(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Integer status)
-		throws SDMSException
-	{
-		sme.setState(sysEnv, status);
-		if(with.containsKey(ParseStr.S_ERROR_TEXT))	sme.setErrorMsg(sysEnv, errText);
-		if(with.containsKey(ParseStr.S_EXEC_PID))	sme.setPid(sysEnv, execPid);
-		if(with.containsKey(ParseStr.S_EXT_PID))	sme.setExtPid(sysEnv, extPid);
-	}
-
-	private void changeState(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, boolean force)
-		throws SDMSException
-	{
-		switch(status.intValue()) {
-			case SDMSSubmittedEntity.STARTED:
-				setSomeFields(sysEnv, sme, status);
-				if(tsLong != null)
-					sme.setStartTs(sysEnv, tsLong);
-				delFromQueue(sysEnv, sme);
-				break;
-			case SDMSSubmittedEntity.RUNNING:
-				int oldState = sme.getState(sysEnv);
-				setSomeFields(sysEnv, sme, status);
-				if (oldState != SDMSSubmittedEntity.STARTED && tsLong != null)
-					sme.setStartTs(sysEnv, tsLong);
-				delFromQueue(sysEnv, sme);
-				break;
-			case SDMSSubmittedEntity.FINISHED:
-				if(exitCode == null) {
-					throw new CommonErrorException(new SDMSMessage(sysEnv,
-							"03212102041", "you cannot finish a job without an exit code"));
-				}
-				sme.finishJob(sysEnv, exitCode, errText, tsLong);
-
-				int newState = sme.getState(sysEnv);
-				if (newState == SDMSSubmittedEntity.FINISHED || newState == SDMSSubmittedEntity.FINAL)
-					delFromQueue(sysEnv, sme);
-				break;
-			case SDMSSubmittedEntity.BROKEN_ACTIVE:
-				setSomeFields(sysEnv, sme, status);
-				break;
-			case SDMSSubmittedEntity.BROKEN_FINISHED:
-				sme.releaseResources(sysEnv, status.intValue());
-				setSomeFields(sysEnv, sme, status);
-				break;
-			case SDMSSubmittedEntity.ERROR:
-				sme.releaseResources(sysEnv, status.intValue());
-				sme.setToError(sysEnv, errText);
-				break;
-			default:
-				if(force) {
-					sme.setState(sysEnv, status);
-				}
-				break;
-		}
-	}
-
-	private void setExitState(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, long actVersion)
-		throws SDMSException
-	{
-		String oldExitState;
-
-		Long esdId = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, exitState, actVersion).getId(sysEnv);
-		Long espId = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getEspId(sysEnv);
-		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion);
-		SDMSExitState es;
-		int state = sme.getState(sysEnv).intValue();
-
-		if(se.getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) {
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03403091701", "You can only change the exit state of a job, $1 is a $2",
-						se.pathString(sysEnv), se.getTypeAsString(sysEnv)));
-		}
-
-		boolean isSuspended = (sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND);
-		if((state != SDMSSubmittedEntity.FINISHED && state != SDMSSubmittedEntity.BROKEN_FINISHED && state != SDMSSubmittedEntity.ERROR && !isSuspended) ||
-		    (state == SDMSSubmittedEntity.ERROR && !sme.getJobIsRestartable(sysEnv).booleanValue()) ||
-		    (isSuspended && (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED ||
-				     state == SDMSSubmittedEntity.RUNNING || state == SDMSSubmittedEntity.TO_KILL ||
-				     state == SDMSSubmittedEntity.KILLED || state == SDMSSubmittedEntity.BROKEN_ACTIVE))) {
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03207082043", "you can only set a state for a (broken) finished  or a suspended not active job"));
-		}
-		if(state != SDMSSubmittedEntity.BROKEN_FINISHED  && state != SDMSSubmittedEntity.ERROR) {
-			try {
-				Long jobEsdId = sme.getJobEsdId(sysEnv);
-				if (jobEsdId != null) {
-					es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, jobEsdId), actVersion);
-					if(sme.getJobIsFinal(sysEnv).booleanValue()) {
-						throw new CommonErrorException(new SDMSMessage(sysEnv, "03207082044",
-										"you can only set a state for a job in a nonfinal state"));
-					}
-					oldExitState = SDMSExitStateDefinitionTable.getObject(sysEnv, sme.getJobEsdId(sysEnv), actVersion).getName(sysEnv);
-				} else {
-					oldExitState = "N/A";
-				}
-			} catch(NotFoundException nfe) {
-				throw new FatalException(new SDMSMessage(sysEnv, "03207082059", "Actual exit state is not part of the profile"));
-			}
-		} else {
-			oldExitState = "N/A";
-		}
-		try {
-			es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, esdId), actVersion);
-		} catch(NotFoundException nfe) {
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03207051918", "Exit State $1 is not part of the profile", exitState));
-		}
-
-		if(!exitStateForce.booleanValue()) {
-			Long esmpId = se.getEsmpId(sysEnv);
-			if(esmpId == null) {
-				SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, espId, actVersion);
-				esmpId = esp.getDefaultEsmpId(sysEnv);
-				if(esmpId == null) {
-					SDMSMessage m = new SDMSMessage(sysEnv, "03403090928",
-										"Couldn't determine the exit state mapping for job definition $1",
-										se.pathString(sysEnv));
-					SDMSThread.doTrace(sysEnv.cEnv, m.toString(), SDMSThread.SEVERITY_ERROR);
-					throw new CommonErrorException(m);
-				}
-			}
-			if(!SDMSExitStateMappingTable.idx_esmpId_esdId.containsKey(sysEnv, new SDMSKey(esmpId, esdId), actVersion)) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03403090958",
-							"A mapping to exit state $1 doesn't exist, use force if you really want this", exitState));
-			}
-		}
-
-		sme.changeState(sysEnv, esdId, es, sme.getExitCode(sysEnv), errText, null, false);
-	}
-
 	private void alterByJob(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
 		throws SDMSException
 	{
@@ -410,7 +250,8 @@ public class AlterJob extends Node
 		long actVersion = sme.getSeVersion(sysEnv).longValue();
 
 		if(exitState != null) {
-			setExitState(sysEnv, sme, actVersion);
+			Long esdId = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, exitState, actVersion).getId(sysEnv);
+			setExitState(sysEnv, sme, actVersion, esdId, exitStateForce);
 		} else {
 			if(with.containsKey(ParseStr.S_ERROR_TEXT)) {
 				sme.setErrorMsg(sysEnv, errText);
@@ -459,7 +300,7 @@ public class AlterJob extends Node
 			return;
 		}
 		if(status != null) {
-			changeState(sysEnv, sme, false);
+			changeState(sysEnv, sme, false, status);
 		}
 		SDMSScope s = SDMSScopeTable.getObjectForUpdate(sysEnv, sId);
 		s.setLastActive(sysEnv, new Long(sysEnv.cEnv.last()));
@@ -468,12 +309,37 @@ public class AlterJob extends Node
 	private void alterByOperator(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, long actVersion)
 		throws SDMSException
 	{
+		int baseApprovalBits = sme.getApprovalMode(sysEnv).intValue();
+		SDMSPrivilege priv = sme.getPrivileges(sysEnv);
 		if(status != null) {
 			String oldState = sme.getStateAsString(sysEnv);
-			changeState(sysEnv, sme, true);
+			if (priv.can(SDMSPrivilege.SET_JOB_STATE)) {
+				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.SET_JOB_STATE_BITS;
+				if (approvalBits != 0) {
+					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SET_JOB_STATE,
+					                    ((approvalBits & SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL) == SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL),
+					                    sysEnv.cEnv.uid(), comment, new Long(status.intValue()), null, (exitCode != null ? new Long(exitCode.intValue()) : null), null);
+				}
+				if ((approvalBits & SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL) == 0) {
+					changeState(sysEnv, sme, true, status);
+				}
+			} else
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191534", "Insufficient privileges for set state"));
 		}
 		if(exitState != null) {
-			setExitState(sysEnv, sme, actVersion);
+			if (priv.can(SDMSPrivilege.SET_STATE)) {
+				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.SET_STATE_BITS;
+				Long esdId = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, exitState, actVersion).getId(sysEnv);
+				if (approvalBits != 0) {
+					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SET_STATE,
+					                    ((approvalBits & SDMSSubmittedEntity.SET_STATE_APPROVAL) == SDMSSubmittedEntity.SET_STATE_APPROVAL),
+					                    sysEnv.cEnv.uid(), comment, esdId, exitStateForce, null, null);
+				}
+				if ((approvalBits & SDMSSubmittedEntity.SET_STATE_APPROVAL) == 0) {
+					setExitState(sysEnv, sme, actVersion, esdId, exitStateForce);
+				}
+			} else
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191533", "Insufficient privileges for set state"));
 		}
 		Long resumeTs = null;
 		if(resumeObj != null) {
@@ -489,102 +355,187 @@ public class AlterJob extends Node
 			}
 		}
 		if(suspend != null) {
-			if(suspend.booleanValue()) {
-				sme.suspend(sysEnv, localSuspend.booleanValue(), adminSuspend.booleanValue());
-				SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.SUSPEND);
-			} else {
-				if (sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.ADMINSUSPEND && !adminSuspend.booleanValue())
+			if (priv.can(SDMSPrivilege.SUSPEND)) {
+				if (!suspend.booleanValue() && sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.ADMINSUSPEND && !adminSuspend.booleanValue())
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408080757", "Insufficient privileges for admin resume"));
-				sme.resume(sysEnv, adminSuspend.booleanValue());
-				SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.RESUME);
+				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.SUSPEND_BITS;
+				if (approvalBits != 0) {
+					int suspendType = 0;
+					if (localSuspend != null && localSuspend.booleanValue()) suspendType += 1;
+					if (adminSuspend.booleanValue()) suspendType += 2;
+					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SUSPEND,
+					                    ((approvalBits & SDMSSubmittedEntity.SUSPEND_APPROVAL) == SDMSSubmittedEntity.SUSPEND_APPROVAL),
+					                    sysEnv.cEnv.uid(), comment, new Long (suspendType), suspend, resumeTs, null);
+				}
+				if ((approvalBits & SDMSSubmittedEntity.SUSPEND_APPROVAL) == 0) {
+					performSuspend(sysEnv, sme, suspend, (localSuspend == null ? false : localSuspend.booleanValue()), adminSuspend.booleanValue(), resumeTs);
+				}
+			} else {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191535", "Insufficient privileges for suspend"));
 			}
 		}
-		if(resumeObj != null) {
-			Date d = new Date(resumeTs);
-			sme.setResumeTs(sysEnv, resumeTs);
+		if(resumeObj != null && suspend == null) {
+			if (priv.can(SDMSPrivilege.SUSPEND)) {
+				Date d = new Date(resumeTs);
+				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.SUSPEND_BITS;
+				if (approvalBits != 0) {
+					int suspendType = 0;
+					if (localSuspend != null && localSuspend.booleanValue()) suspendType += 1;
+					if (adminSuspend != null && adminSuspend.booleanValue()) suspendType += 2;
+					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SUSPEND,
+					                    ((approvalBits & SDMSSubmittedEntity.SUSPEND_APPROVAL) == SDMSSubmittedEntity.SUSPEND_APPROVAL),
+					                    sysEnv.cEnv.uid(), comment, new Long (suspendType), suspend, resumeTs, null);
+				}
+				if ((approvalBits & SDMSSubmittedEntity.SUSPEND_APPROVAL) == 0) {
+					sme.setResumeTs(sysEnv, resumeTs);
+				}
+			} else {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03106151535", "Insufficient privileges for resume"));
+			}
 		}
 		if(rerun != null) {
-			if(rerun.booleanValue()) {
-				sme.rerunRecursive(sysEnv, jobId, comment, true);
+			if (priv.can(SDMSPrivilege.RERUN)) {
+				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.RERUN_BITS;
+				if (approvalBits != 0) {
+					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.RERUN,
+					                    ((approvalBits & SDMSSubmittedEntity.RERUN_APPROVAL) == SDMSSubmittedEntity.RERUN_APPROVAL),
+					                    sysEnv.cEnv.uid(), comment, null, rerun, null, null);
+				}
+				if ((approvalBits & SDMSSubmittedEntity.RERUN_APPROVAL) == 0) {
+					performRerun(sysEnv, sme, rerun);
+				}
 			} else {
-				sme.rerun(sysEnv);
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191539", "Insufficient privileges for rerun"));
 			}
 		}
 		if(kill != null) {
-			if(kill.booleanValue()) {
-				if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getKillProgram(sysEnv) == null) {
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "032070111144", "couldn't kill, no kill program defined"));
+			if (priv.can(SDMSPrivilege.KILL)) {
+				if(kill.booleanValue()) {
+					if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getKillProgram(sysEnv) == null) {
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "032070111144", "couldn't kill, no kill program defined"));
+					}
+					int approvalBits = baseApprovalBits & SDMSSubmittedEntity.KILL_BITS;
+					if (approvalBits != 0) {
+						createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.KILL,
+						                    ((approvalBits & SDMSSubmittedEntity.KILL_APPROVAL) == SDMSSubmittedEntity.KILL_APPROVAL),
+						                    sysEnv.cEnv.uid(), comment, null, kill, null, null);
+					}
+					if ((approvalBits & SDMSSubmittedEntity.KILL_APPROVAL) == 0) {
+						performKill(sysEnv, sme);
+					}
 				}
-				sme.kill(sysEnv);
+			} else {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191549", "Insufficient privileges for kill"));
 			}
 		}
 		if(cancel != null) {
-			if(cancel.booleanValue()) {
-				sme.cancel(sysEnv);
+			if (priv.can(SDMSPrivilege.CANCEL)) {
+				if(cancel.booleanValue()) {
+					int approvalBits = baseApprovalBits & SDMSSubmittedEntity.CANCEL_BITS;
+					if (approvalBits != 0) {
+						createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.CANCEL,
+						                    ((approvalBits & SDMSSubmittedEntity.CANCEL_APPROVAL) == SDMSSubmittedEntity.CANCEL_APPROVAL),
+						                    sysEnv.cEnv.uid(), comment, null, cancel, null, null);
+					}
+					if ((approvalBits & SDMSSubmittedEntity.CANCEL_APPROVAL) == 0) {
+						performCancel(sysEnv, sme);
+					}
+				}
+			} else {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191551", "Insufficient privileges for cancel"));
 			}
 		}
 		if(disable != null) {
-			sme.disable(sysEnv, disable);
+			if (priv.can(SDMSPrivilege.ENABLE)) {
+				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.ENABLE_BITS;
+				if (approvalBits != 0) {
+					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.ENABLE,
+					                    ((approvalBits & SDMSSubmittedEntity.ENABLE_APPROVAL) == SDMSSubmittedEntity.ENABLE_APPROVAL),
+					                    sysEnv.cEnv.uid(), comment, null, disable, null, null);
+				}
+				if ((approvalBits & SDMSSubmittedEntity.ENABLE_APPROVAL) == 0) {
+					performDisable(sysEnv, sme, disable);
+				}
+			} else {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191552", "Insufficient privileges for enable/disable"));
+			}
 		}
 		if(depsToIgnore != null) {
-			ignoreDeps(sysEnv, sme);
-		}
-		if(nrsToIgnore != null) {
-			ignoreNamedResources(sysEnv, sme);
-			SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.IGNORE_RESOURCE);
+			if (priv.can(SDMSPrivilege.IGN_DEPENDENCY)) {
+				ignoreDeps(sysEnv, sme);
+			} else {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191553", "Insufficient privileges for ignore dependency"));
+			}
 		}
 		if(resToIgnore != null) {
-			ignoreResources(sysEnv, sme);
-			SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.IGNORE_RESOURCE);
-		}
-		if(priority != null) {
-			if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03211211229", "Cannot change the priority of a batch or milestone"));
+			if (priv.can(SDMSPrivilege.IGN_RESOURCE)) {
+				ignoreResources(sysEnv, sme);
+			} else {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191555", "Insufficient privileges for ignore resource"));
 			}
+		}
+		if(priority != null || nicevalue != null || renice != null) {
+			if (priv.can(SDMSPrivilege.PRIORITY)) {
+				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.PRIORITY_BITS;
+				Boolean isRenice = Boolean.FALSE;
+				if (priority != null) {
+					if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) {
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03211211229", "Cannot change the priority of a batch or milestone"));
+					}
+					if(priority.intValue() < SystemEnvironment.priorityLowerBound && !sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+						priority = new Integer(SystemEnvironment.priorityLowerBound);
 
-			if(priority.intValue() < SystemEnvironment.priorityLowerBound && !sysEnv.cEnv.gid().contains(SDMSObject.adminGId))
-				priority = new Integer(SystemEnvironment.priorityLowerBound);
-			sme.setPriority(sysEnv, priority);
-		}
-		if(nicevalue != null) {
-			sme.renice(sysEnv, nicevalue, null, comment);
-		}
-		if(renice != null) {
-			int nv = renice.intValue() + sme.getNice(sysEnv).intValue();
-			sme.renice(sysEnv, new Integer(nv), null, comment);
+					}
+					isRenice = Boolean.FALSE;
+
+				}
+				if (nicevalue != null) {
+					isRenice = Boolean.TRUE;
+					priority = nicevalue;
+				}
+				if(renice != null) {
+					int nv = renice.intValue() + sme.getNice(sysEnv).intValue();
+					isRenice = Boolean.TRUE;
+					priority = new Integer(nv);
+				}
+				if (approvalBits != 0) {
+					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.PRIORITY,
+					                    ((approvalBits & SDMSSubmittedEntity.PRIORITY_APPROVAL) == SDMSSubmittedEntity.PRIORITY_APPROVAL),
+					                    sysEnv.cEnv.uid(), comment, new Long(priority), isRenice, null, null);
+				}
+				if ((approvalBits & SDMSSubmittedEntity.PRIORITY_APPROVAL) == 0) {
+					performPriority(sysEnv, sme, isRenice, priority);
+				}
+			} else {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191556", "Insufficient privileges for set priority"));
+			}
 		}
 		if (clone != null) {
-			if (sme.getIsReplaced(sysEnv).booleanValue()) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311420", "Cannot clone an already replaced job or batch"));
-			}
-			if (sme.getState(sysEnv) != SDMSSubmittedEntity.FINAL) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311421", "Cannot clone a job or batch that is stil active"));
-			}
-			Long parentId = sme.getParentId(sysEnv);
-			if (parentId == null) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311422", "Cannot clone a master job or batch"));
-			} else {
-				SDMSSubmittedEntity psme = SDMSSubmittedEntityTable.getObject(sysEnv, parentId);
-				String childTag = "C_" + sysEnv.tx.txId;
-				Long replaceId = sme.getId (sysEnv);
-				Long submitSeId = sme.getSeId(sysEnv);
-				SDMSSubmittedEntity childSme = psme.submitChild(sysEnv,
-				                               null,
-				                               new Integer (SDMSSubmittedEntity.SUSPEND),
-				                               null,
-				                               submitSeId,
-				                               childTag,
-				                               replaceId,
-				                               null,
-				                               true
-				                                               );
-				if (childSme.getIsDisabled(sysEnv).booleanValue()) {
-					childSme.disable(sysEnv, Boolean.FALSE);
+			if (priv.can(SDMSPrivilege.CLONE)) {
+				if(comment == null)
+					comment = "";
+				if (sme.getIsReplaced(sysEnv).booleanValue()) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311420", "Cannot clone an already replaced job or batch"));
+				}
+				if (sme.getState(sysEnv) != SDMSSubmittedEntity.FINAL) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311421", "Cannot clone a job or batch that is stil active"));
+				}
+				Long parentId = sme.getParentId(sysEnv);
+				if (parentId == null) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311422", "Cannot clone a master job or batch"));
 				} else {
-					if (!clone.booleanValue()) {
-						childSme.resume(sysEnv, true);
+					int approvalBits = baseApprovalBits & SDMSSubmittedEntity.CLONE_BITS;
+					if (approvalBits != 0) {
+						createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.CLONE,
+						                    ((approvalBits & SDMSSubmittedEntity.CLONE_APPROVAL) == SDMSSubmittedEntity.CLONE_APPROVAL),
+						                    sysEnv.cEnv.uid(), comment, null, clone, null, null);
+					}
+					if ((approvalBits & SDMSSubmittedEntity.CLONE_APPROVAL) == 0) {
+						performClone(sysEnv, sme, clone);
 					}
 				}
+			} else {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191559", "Insufficient privileges for clone"));
 			}
 		}
 
@@ -733,14 +684,17 @@ public class AlterJob extends Node
 			Long diId = (Long) v.get(0);
 			Boolean rec = (Boolean) v.get(1);
 			SDMSDependencyInstance di = SDMSDependencyInstanceTable.getObject(sysEnv, diId);
-			di.setIgnore(sysEnv, (rec.booleanValue()? SDMSDependencyInstance.RECURSIVE : SDMSDependencyInstance.YES),
-					jobId, comment);
+			int approvalBits = sme.getApprovalMode(sysEnv).intValue() & SDMSSubmittedEntity.IGN_DEP_BITS;
+			if (approvalBits != 0) {
+				createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.IGN_DEPENDENCY,
+				                    ((approvalBits & SDMSSubmittedEntity.IGN_DEP_APPROVAL) == SDMSSubmittedEntity.IGN_DEP_APPROVAL),
+				                    sysEnv.cEnv.uid(), comment, di.getId(sysEnv), rec, null, null);
+			}
+			if ((approvalBits & SDMSSubmittedEntity.IGN_DEP_APPROVAL) == 0) {
+				di.setIgnore(sysEnv, (rec.booleanValue()? SDMSDependencyInstance.RECURSIVE : SDMSDependencyInstance.YES),
+				             jobId, comment);
 		}
 	}
-
-	private void ignoreNamedResources(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
-		throws SDMSException
-	{
 	}
 
 	private void ignoreResources(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
@@ -750,9 +704,9 @@ public class AlterJob extends Node
 		SDMSResourceAllocation ra = null;
 		final SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), sme.getSeVersion(sysEnv).longValue());
 		Long smeId = sme.getId(sysEnv);
-		boolean raFound = false;
 
 		for(int i = 0; i < resToIgnore.size(); i++) {
+			boolean raFound = false;
 			rId = (Long) resToIgnore.get(i);
 			try {
 				SDMSResource r = SDMSResourceTable.getObject(sysEnv, rId);
@@ -777,28 +731,17 @@ public class AlterJob extends Node
 					)
 				);
 			}
-			ra.ignore(sysEnv);
+			int approvalBits = sme.getApprovalMode(sysEnv).intValue() & SDMSSubmittedEntity.IGN_RSS_BITS;
+			if (approvalBits != 0) {
+				createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.IGN_RESOURCE,
+				                    ((approvalBits & SDMSSubmittedEntity.IGN_RSS_APPROVAL) == SDMSSubmittedEntity.IGN_RSS_APPROVAL),
+				                    sysEnv.cEnv.uid(), comment, rId, null, null, null);
+			}
+			if ((approvalBits & SDMSSubmittedEntity.IGN_RSS_APPROVAL) == 0) {
+				ra.ignore(sysEnv);
 		}
 	}
-
-	private void delFromQueue(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
-		throws SDMSException
-	{
-		try {
-			SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUniqueForUpdate(sysEnv, new SDMSKey(sme.getId(sysEnv), sysEnv.cEnv.uid()));
-			rq.delete(sysEnv);
-		} catch (NotFoundException nfe) {
-		}
-	}
-
-	private void delFromQueue(SystemEnvironment sysEnv, SDMSKillJob kj)
-		throws SDMSException
-	{
-		try {
-			SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUnique(sysEnv, new SDMSKey(kj.getId(sysEnv), sysEnv.cEnv.uid()));
-			rq.delete(sysEnv);
-		} catch (NotFoundException nfe) {
-		}
+		SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.IGNORE_RESOURCE);
 	}
 
 }

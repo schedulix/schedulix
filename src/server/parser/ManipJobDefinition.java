@@ -39,6 +39,7 @@ import de.independit.scheduler.server.parser.cmdline.*;
 public abstract class ManipJobDefinition extends Node
 {
 
+	ObjectURL url = null;
 	Vector path;
 	WithHash withs;
 	String name;
@@ -81,6 +82,46 @@ public abstract class ManipJobDefinition extends Node
 	Long to_esdId;
 	String gName;
 	Long gId;
+	Boolean gotCancel = Boolean.FALSE;
+	Boolean gotRerun = Boolean.FALSE;
+	Boolean gotEnable = Boolean.FALSE;
+	Boolean gotSetState = Boolean.FALSE;
+	Boolean gotIgnDep = Boolean.FALSE;
+	Boolean gotIgnRss = Boolean.FALSE;
+	Boolean gotClone = Boolean.FALSE;
+	Boolean gotSuspend = Boolean.FALSE;
+	Boolean gotClrWarn = Boolean.FALSE;
+	Boolean gotPriority = Boolean.FALSE;
+	Boolean gotEditParm = Boolean.FALSE;
+	Boolean gotKill = Boolean.FALSE;
+	Boolean gotSetJobState = Boolean.FALSE;
+	Boolean cancelLeadFlag = Boolean.FALSE;
+	Boolean rerunLeadFlag = Boolean.FALSE;
+	Boolean enableLeadFlag = Boolean.FALSE;
+	Boolean setStateLeadFlag = Boolean.FALSE;
+	Boolean ignDepLeadFlag = Boolean.FALSE;
+	Boolean ignRssLeadFlag = Boolean.FALSE;
+	Boolean cloneLeadFlag = Boolean.FALSE;
+	Boolean suspendLeadFlag = Boolean.FALSE;
+	Boolean clrWarnLeadFlag = Boolean.FALSE;
+	Boolean priorityLeadFlag = Boolean.FALSE;
+	Boolean editParmLeadFlag = Boolean.FALSE;
+	Boolean killLeadFlag = Boolean.FALSE;
+	Boolean setJobStateLeadFlag = Boolean.FALSE;
+	Integer cancelApproval = 0;
+	Integer rerunApproval = 0;
+	Integer enableApproval = 0;
+	Integer setStateApproval = 0;
+	Integer ignDepApproval = 0;
+	Integer ignRssApproval = 0;
+	Integer cloneApproval = 0;
+	Integer suspendApproval = 0;
+	Integer clrWarnApproval = 0;
+	Integer priorityApproval = 0;
+	Integer editParmApproval = 0;
+	Integer killApproval = 0;
+	Integer setJobStateApproval = 0;
+
 	Long inheritPrivs;
 
 	Vector childdeflist;
@@ -92,6 +133,7 @@ public abstract class ManipJobDefinition extends Node
 	boolean priowarn = false;
 	boolean noerr;
 	HashSet resourceList = null;
+	SDMSSchedulingEntity se = null;
 
 	public ManipJobDefinition(Vector p, String n, WithHash w, Boolean ne)
 	{
@@ -102,13 +144,26 @@ public abstract class ManipJobDefinition extends Node
 		noerr = ne.booleanValue();
 	}
 
+	public ManipJobDefinition(ObjectURL u, WithHash w, Boolean ne)
+	{
+		super();
+		url = u;
+		withs = w;
+		noerr = ne.booleanValue();
+	}
+
 	protected void evaluateWith(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
 		String s;
 		WithHash w;
 
-		folderId = SDMSFolderTable.pathToId(sysEnv, path);
+		if (url != null) {
+			se = (SDMSSchedulingEntity) url.resolve(sysEnv);
+			folderId = se.getFolderId(sysEnv);
+		} else {
+			folderId = SDMSFolderTable.pathToId(sysEnv, path);
+		}
 
 		otype = ((Integer) withs.get(ParseStr.S_TYPE));
 
@@ -209,7 +264,6 @@ public abstract class ManipJobDefinition extends Node
 		if(gName != null) {
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
 					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
-			ChownChecker.check(sysEnv, gId);
 		} else {
 			final SDMSUser u = SDMSUserTable.getObject(sysEnv, env.uid());
 			gId = u.getDefaultGId(sysEnv);

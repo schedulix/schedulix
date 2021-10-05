@@ -34,7 +34,7 @@ import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
 
-public class SetParameter extends Node
+public class SetParameter extends ManipJob
 {
 
 	public final static String __version = "@(#) $Id: SetParameter.java,v 2.4.14.1 2013/03/14 10:24:48 ronald Exp $";
@@ -71,6 +71,11 @@ public class SetParameter extends Node
 		}
 
 		final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, jobid);
+		SDMSPrivilege privs = sme.getPrivileges(sysEnv);
+		int baseApprovalBits = sme.getApprovalMode(sysEnv).intValue();
+		int approvalBits = baseApprovalBits & SDMSSubmittedEntity.EDIT_PARM_BITS;
+		if (!privs.can(SDMSPrivilege.MODIFY_PARAMETER))
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03105201628", "Insufficient privileges to modify job parameters"));
 
 		final Vector keyList = new Vector (parms.keySet());
 		final int size = keyList.size();
@@ -79,7 +84,17 @@ public class SetParameter extends Node
 			final Vector tmp = (Vector) parms.get (name);
 			final String value = (String) tmp.get(1);
 
-			sme.setVariableValue(sysEnv, name, value);
+			if ((cmdtype == Node.JOB_COMMAND) || (cmdtype == Node.USER_COMMAND && (approvalBits & SDMSSubmittedEntity.EDIT_PARM_APPROVAL) == 0)) {
+				sme.setVariableValue(sysEnv, name, value);
+			}
+			if (cmdtype == Node.USER_COMMAND && approvalBits != 0) {
+				SDMSSystemMessage msg = createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.MODIFY_PARAMETER,
+				                        ((approvalBits & SDMSSubmittedEntity.EDIT_PARM_APPROVAL) == SDMSSubmittedEntity.EDIT_PARM_APPROVAL),
+				                        sysEnv.cEnv.uid(), auditComment, new Long(0), null, null, name);
+				Long msgId = msg.getId(sysEnv);
+				SDMSEntityVariable ev = SDMSEntityVariableTable.table.create(sysEnv, msgId, name, value, Boolean.TRUE, null);
+				msg.setAdditionalLong(sysEnv, ev.getId(sysEnv));
+			}
 		}
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03206060017", "Parameter set"));

@@ -92,6 +92,10 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	public static final int DISABLE = 30;
 	public static final int ENABLE = 31;
 	public static final int CLONE = 32;
+	public static final int APPROVE = 33;
+	public static final int REJECT = 34;
+	public static final int APPROVAL_REQUEST = 35;
+	public static final int REVIEW_REQUEST = 36;
 
 	public final static int nr_id = 1;
 	public final static int nr_userId = 2;
@@ -326,6 +330,14 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				return "ENABLE";
 			case SDMSAuditTrail.CLONE:
 				return "CLONE";
+			case SDMSAuditTrail.APPROVE:
+				return "APPROVE";
+			case SDMSAuditTrail.REJECT:
+				return "REJECT";
+			case SDMSAuditTrail.APPROVAL_REQUEST:
+				return "APPROVAL_REQUEST";
+			case SDMSAuditTrail.REVIEW_REQUEST:
+				return "REVIEW_REQUEST";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -859,6 +871,10 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			case SDMSAuditTrail.DISABLE:
 			case SDMSAuditTrail.ENABLE:
 			case SDMSAuditTrail.CLONE:
+			case SDMSAuditTrail.APPROVE:
+			case SDMSAuditTrail.REJECT:
+			case SDMSAuditTrail.APPROVAL_REQUEST:
+			case SDMSAuditTrail.REVIEW_REQUEST:
 				return true;
 		}
 		return false;

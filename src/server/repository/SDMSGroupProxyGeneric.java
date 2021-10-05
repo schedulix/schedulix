@@ -40,7 +40,7 @@ public class SDMSGroupProxyGeneric extends SDMSProxy
 
 	public final static String PUBLIC = "PUBLIC";
 	public final static String ADMIN = "ADMIN";
-	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP|SDMSPrivilege.MONITOR|SDMSPrivilege.OPERATE|SDMSPrivilege.GRANT;
+	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP|SDMSPrivilege.MONITOR|SDMSPrivilege.OPERATE|SDMSPrivilege.RESOURCE|SDMSPrivilege.CANCEL|SDMSPrivilege.RERUN|SDMSPrivilege.ENABLE|SDMSPrivilege.SET_STATE|SDMSPrivilege.IGN_DEPENDENCY|SDMSPrivilege.IGN_RESOURCE|SDMSPrivilege.CLONE|SDMSPrivilege.SUSPEND|SDMSPrivilege.CLEAR_WARNING|SDMSPrivilege.APPROVE|SDMSPrivilege.MODIFY_PARAMETER|SDMSPrivilege.KILL|SDMSPrivilege.PRIORITY|SDMSPrivilege.GRANT;
 
 	static final public int name_size = 64;
 

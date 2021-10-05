@@ -247,6 +247,8 @@ public abstract class SDMSProxy implements Comparable
 		if (priv != 0)
 			priv = priv | SDMSPrivilege.VIEW;
 		if ((priv & SDMSPrivilege.OPERATE) != 0)
+			priv = priv | SDMSPrivilege.OPERATE_PRIVS;
+		if ((priv & SDMSPrivilege.OPERATE_PRIVS) != 0)
 			priv = priv | SDMSPrivilege.MONITOR;
 		return priv;
 	}

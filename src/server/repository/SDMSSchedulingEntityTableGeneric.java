@@ -78,6 +78,32 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		, "QA_ID"
 		, "NE_ID"
 		, "FP_ID"
+		, "CANCEL_LEAD_FLAG"
+		, "CANCEL_APPROVAL"
+		, "RERUN_LEAD_FLAG"
+		, "RERUN_APPROVAL"
+		, "ENABLE_LEAD_FLAG"
+		, "ENABLE_APPROVAL"
+		, "SET_STATE_LEAD_FLAG"
+		, "SET_STATE_APPROVAL"
+		, "IGN_DEP_LEAD_FLAG"
+		, "IGN_DEP_APPROVAL"
+		, "IGN_RSS_LEAD_FLAG"
+		, "IGN_RSS_APPROVAL"
+		, "CLONE_LEAD_FLAG"
+		, "CLONE_APPROVAL"
+		, "SUSPEND_LEAD_FLAG"
+		, "SUSPEND_APPROVAL"
+		, "CLR_WARN_LEAD_FLAG"
+		, "CLR_WARN_APPROVAL"
+		, "PRIORITY_LEAD_FLAG"
+		, "PRIORITY_APPROVAL"
+		, "EDIT_PARM_LEAD_FLAG"
+		, "EDIT_PARM_APPROVAL"
+		, "KILL_LEAD_FLAG"
+		, "KILL_APPROVAL"
+		, "SET_JOB_STATE_LEAD_FLAG"
+		, "SET_JOB_STATE_APPROVAL"
 		, "INHERIT_PRIVS"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
@@ -148,6 +174,32 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 	                                   ,Long p_qaId
 	                                   ,Long p_neId
 	                                   ,Long p_fpId
+	                                   ,Boolean p_cancelLeadFlag
+	                                   ,Integer p_cancelApproval
+	                                   ,Boolean p_rerunLeadFlag
+	                                   ,Integer p_rerunApproval
+	                                   ,Boolean p_enableLeadFlag
+	                                   ,Integer p_enableApproval
+	                                   ,Boolean p_setStateLeadFlag
+	                                   ,Integer p_setStateApproval
+	                                   ,Boolean p_ignDepLeadFlag
+	                                   ,Integer p_ignDepApproval
+	                                   ,Boolean p_ignRssLeadFlag
+	                                   ,Integer p_ignRssApproval
+	                                   ,Boolean p_cloneLeadFlag
+	                                   ,Integer p_cloneApproval
+	                                   ,Boolean p_suspendLeadFlag
+	                                   ,Integer p_suspendApproval
+	                                   ,Boolean p_clrWarnLeadFlag
+	                                   ,Integer p_clrWarnApproval
+	                                   ,Boolean p_priorityLeadFlag
+	                                   ,Integer p_priorityApproval
+	                                   ,Boolean p_editParmLeadFlag
+	                                   ,Integer p_editParmApproval
+	                                   ,Boolean p_killLeadFlag
+	                                   ,Integer p_killApproval
+	                                   ,Boolean p_setJobStateLeadFlag
+	                                   ,Integer p_setJobStateApproval
 	                                   ,Long p_inheritPrivs
 	                                  )
 	throws SDMSException
@@ -195,6 +247,32 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		         , p_qaId
 		         , p_neId
 		         , p_fpId
+		         , p_cancelLeadFlag
+		         , p_cancelApproval
+		         , p_rerunLeadFlag
+		         , p_rerunApproval
+		         , p_enableLeadFlag
+		         , p_enableApproval
+		         , p_setStateLeadFlag
+		         , p_setStateApproval
+		         , p_ignDepLeadFlag
+		         , p_ignDepApproval
+		         , p_ignRssLeadFlag
+		         , p_ignRssApproval
+		         , p_cloneLeadFlag
+		         , p_cloneApproval
+		         , p_suspendLeadFlag
+		         , p_suspendApproval
+		         , p_clrWarnLeadFlag
+		         , p_clrWarnApproval
+		         , p_priorityLeadFlag
+		         , p_priorityApproval
+		         , p_editParmLeadFlag
+		         , p_editParmApproval
+		         , p_killLeadFlag
+		         , p_killApproval
+		         , p_setJobStateLeadFlag
+		         , p_setJobStateApproval
 		         , p_inheritPrivs
 		         , p_creatorUId
 		         , p_createTs
@@ -239,6 +317,32 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		                , p_qaId
 		                , p_neId
 		                , p_fpId
+		                , p_cancelLeadFlag
+		                , p_cancelApproval
+		                , p_rerunLeadFlag
+		                , p_rerunApproval
+		                , p_enableLeadFlag
+		                , p_enableApproval
+		                , p_setStateLeadFlag
+		                , p_setStateApproval
+		                , p_ignDepLeadFlag
+		                , p_ignDepApproval
+		                , p_ignRssLeadFlag
+		                , p_ignRssApproval
+		                , p_cloneLeadFlag
+		                , p_cloneApproval
+		                , p_suspendLeadFlag
+		                , p_suspendApproval
+		                , p_clrWarnLeadFlag
+		                , p_clrWarnApproval
+		                , p_priorityLeadFlag
+		                , p_priorityApproval
+		                , p_editParmLeadFlag
+		                , p_editParmApproval
+		                , p_killLeadFlag
+		                , p_killApproval
+		                , p_setJobStateLeadFlag
+		                , p_setJobStateApproval
 		                , p_inheritPrivs
 		                , p_creatorUId
 		                , p_createTs
@@ -308,6 +412,32 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 	                        ,Long p_qaId
 	                        ,Long p_neId
 	                        ,Long p_fpId
+	                        ,Boolean p_cancelLeadFlag
+	                        ,Integer p_cancelApproval
+	                        ,Boolean p_rerunLeadFlag
+	                        ,Integer p_rerunApproval
+	                        ,Boolean p_enableLeadFlag
+	                        ,Integer p_enableApproval
+	                        ,Boolean p_setStateLeadFlag
+	                        ,Integer p_setStateApproval
+	                        ,Boolean p_ignDepLeadFlag
+	                        ,Integer p_ignDepApproval
+	                        ,Boolean p_ignRssLeadFlag
+	                        ,Integer p_ignRssApproval
+	                        ,Boolean p_cloneLeadFlag
+	                        ,Integer p_cloneApproval
+	                        ,Boolean p_suspendLeadFlag
+	                        ,Integer p_suspendApproval
+	                        ,Boolean p_clrWarnLeadFlag
+	                        ,Integer p_clrWarnApproval
+	                        ,Boolean p_priorityLeadFlag
+	                        ,Integer p_priorityApproval
+	                        ,Boolean p_editParmLeadFlag
+	                        ,Integer p_editParmApproval
+	                        ,Boolean p_killLeadFlag
+	                        ,Integer p_killApproval
+	                        ,Boolean p_setJobStateLeadFlag
+	                        ,Integer p_setJobStateApproval
 	                        ,Long p_inheritPrivs
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
@@ -338,6 +468,32 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "gangSchedule", p_gangSchedule));
 		if (!SDMSSchedulingEntityGeneric.checkDependencyOperation(p_dependencyOperation))
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "dependencyOperation", p_dependencyOperation));
+		if (!SDMSSchedulingEntityGeneric.checkCancelApproval(p_cancelApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "cancelApproval", p_cancelApproval));
+		if (!SDMSSchedulingEntityGeneric.checkRerunApproval(p_rerunApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "rerunApproval", p_rerunApproval));
+		if (!SDMSSchedulingEntityGeneric.checkEnableApproval(p_enableApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "enableApproval", p_enableApproval));
+		if (!SDMSSchedulingEntityGeneric.checkSetStateApproval(p_setStateApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "setStateApproval", p_setStateApproval));
+		if (!SDMSSchedulingEntityGeneric.checkIgnDepApproval(p_ignDepApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "ignDepApproval", p_ignDepApproval));
+		if (!SDMSSchedulingEntityGeneric.checkIgnRssApproval(p_ignRssApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "ignRssApproval", p_ignRssApproval));
+		if (!SDMSSchedulingEntityGeneric.checkCloneApproval(p_cloneApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "cloneApproval", p_cloneApproval));
+		if (!SDMSSchedulingEntityGeneric.checkSuspendApproval(p_suspendApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "suspendApproval", p_suspendApproval));
+		if (!SDMSSchedulingEntityGeneric.checkClrWarnApproval(p_clrWarnApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "clrWarnApproval", p_clrWarnApproval));
+		if (!SDMSSchedulingEntityGeneric.checkPriorityApproval(p_priorityApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "priorityApproval", p_priorityApproval));
+		if (!SDMSSchedulingEntityGeneric.checkEditParmApproval(p_editParmApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "editParmApproval", p_editParmApproval));
+		if (!SDMSSchedulingEntityGeneric.checkKillApproval(p_killApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "killApproval", p_killApproval));
+		if (!SDMSSchedulingEntityGeneric.checkSetJobStateApproval(p_setJobStateApproval))
+			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "setJobStateApproval", p_setJobStateApproval));
 	}
 
 	protected SDMSObject rowToObject(SystemEnvironment env, ResultSet r)
@@ -379,6 +535,32 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		Long qaId;
 		Long neId;
 		Long fpId;
+		Boolean cancelLeadFlag;
+		Integer cancelApproval;
+		Boolean rerunLeadFlag;
+		Integer rerunApproval;
+		Boolean enableLeadFlag;
+		Integer enableApproval;
+		Boolean setStateLeadFlag;
+		Integer setStateApproval;
+		Boolean ignDepLeadFlag;
+		Integer ignDepApproval;
+		Boolean ignRssLeadFlag;
+		Integer ignRssApproval;
+		Boolean cloneLeadFlag;
+		Integer cloneApproval;
+		Boolean suspendLeadFlag;
+		Integer suspendApproval;
+		Boolean clrWarnLeadFlag;
+		Integer clrWarnApproval;
+		Boolean priorityLeadFlag;
+		Integer priorityApproval;
+		Boolean editParmLeadFlag;
+		Integer editParmApproval;
+		Boolean killLeadFlag;
+		Integer killApproval;
+		Boolean setJobStateLeadFlag;
+		Integer setJobStateApproval;
 		Long inheritPrivs;
 		Long creatorUId;
 		Long createTs;
@@ -451,13 +633,39 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 			if (r.wasNull()) neId = null;
 			fpId = new Long (r.getLong(36));
 			if (r.wasNull()) fpId = null;
-			inheritPrivs = new Long (r.getLong(37));
-			creatorUId = new Long (r.getLong(38));
-			createTs = new Long (r.getLong(39));
-			changerUId = new Long (r.getLong(40));
-			changeTs = new Long (r.getLong(41));
-			validFrom = r.getLong(42);
-			validTo = r.getLong(43);
+			cancelLeadFlag = new Boolean ((r.getInt(37) == 0 ? false : true));
+			cancelApproval = new Integer (r.getInt(38));
+			rerunLeadFlag = new Boolean ((r.getInt(39) == 0 ? false : true));
+			rerunApproval = new Integer (r.getInt(40));
+			enableLeadFlag = new Boolean ((r.getInt(41) == 0 ? false : true));
+			enableApproval = new Integer (r.getInt(42));
+			setStateLeadFlag = new Boolean ((r.getInt(43) == 0 ? false : true));
+			setStateApproval = new Integer (r.getInt(44));
+			ignDepLeadFlag = new Boolean ((r.getInt(45) == 0 ? false : true));
+			ignDepApproval = new Integer (r.getInt(46));
+			ignRssLeadFlag = new Boolean ((r.getInt(47) == 0 ? false : true));
+			ignRssApproval = new Integer (r.getInt(48));
+			cloneLeadFlag = new Boolean ((r.getInt(49) == 0 ? false : true));
+			cloneApproval = new Integer (r.getInt(50));
+			suspendLeadFlag = new Boolean ((r.getInt(51) == 0 ? false : true));
+			suspendApproval = new Integer (r.getInt(52));
+			clrWarnLeadFlag = new Boolean ((r.getInt(53) == 0 ? false : true));
+			clrWarnApproval = new Integer (r.getInt(54));
+			priorityLeadFlag = new Boolean ((r.getInt(55) == 0 ? false : true));
+			priorityApproval = new Integer (r.getInt(56));
+			editParmLeadFlag = new Boolean ((r.getInt(57) == 0 ? false : true));
+			editParmApproval = new Integer (r.getInt(58));
+			killLeadFlag = new Boolean ((r.getInt(59) == 0 ? false : true));
+			killApproval = new Integer (r.getInt(60));
+			setJobStateLeadFlag = new Boolean ((r.getInt(61) == 0 ? false : true));
+			setJobStateApproval = new Integer (r.getInt(62));
+			inheritPrivs = new Long (r.getLong(63));
+			creatorUId = new Long (r.getLong(64));
+			createTs = new Long (r.getLong(65));
+			changerUId = new Long (r.getLong(66));
+			changeTs = new Long (r.getLong(67));
+			validFrom = r.getLong(68);
+			validTo = r.getLong(69);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 			throw new FatalException(new SDMSMessage(env, "01110182045", "SchedulingEntity: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
@@ -499,6 +707,32 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		                                       qaId,
 		                                       neId,
 		                                       fpId,
+		                                       cancelLeadFlag,
+		                                       cancelApproval,
+		                                       rerunLeadFlag,
+		                                       rerunApproval,
+		                                       enableLeadFlag,
+		                                       enableApproval,
+		                                       setStateLeadFlag,
+		                                       setStateApproval,
+		                                       ignDepLeadFlag,
+		                                       ignDepApproval,
+		                                       ignRssLeadFlag,
+		                                       ignRssApproval,
+		                                       cloneLeadFlag,
+		                                       cloneApproval,
+		                                       suspendLeadFlag,
+		                                       suspendApproval,
+		                                       clrWarnLeadFlag,
+		                                       clrWarnApproval,
+		                                       priorityLeadFlag,
+		                                       priorityApproval,
+		                                       editParmLeadFlag,
+		                                       editParmApproval,
+		                                       killLeadFlag,
+		                                       killApproval,
+		                                       setJobStateLeadFlag,
+		                                       setJobStateApproval,
 		                                       inheritPrivs,
 		                                       creatorUId,
 		                                       createTs,
@@ -554,6 +788,32 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		                                   ", " + squote + "QA_ID" + equote +
 		                                   ", " + squote + "NE_ID" + equote +
 		                                   ", " + squote + "FP_ID" + equote +
+		                                   ", " + squote + "CANCEL_LEAD_FLAG" + equote +
+		                                   ", " + squote + "CANCEL_APPROVAL" + equote +
+		                                   ", " + squote + "RERUN_LEAD_FLAG" + equote +
+		                                   ", " + squote + "RERUN_APPROVAL" + equote +
+		                                   ", " + squote + "ENABLE_LEAD_FLAG" + equote +
+		                                   ", " + squote + "ENABLE_APPROVAL" + equote +
+		                                   ", " + squote + "SET_STATE_LEAD_FLAG" + equote +
+		                                   ", " + squote + "SET_STATE_APPROVAL" + equote +
+		                                   ", " + squote + "IGN_DEP_LEAD_FLAG" + equote +
+		                                   ", " + squote + "IGN_DEP_APPROVAL" + equote +
+		                                   ", " + squote + "IGN_RSS_LEAD_FLAG" + equote +
+		                                   ", " + squote + "IGN_RSS_APPROVAL" + equote +
+		                                   ", " + squote + "CLONE_LEAD_FLAG" + equote +
+		                                   ", " + squote + "CLONE_APPROVAL" + equote +
+		                                   ", " + squote + "SUSPEND_LEAD_FLAG" + equote +
+		                                   ", " + squote + "SUSPEND_APPROVAL" + equote +
+		                                   ", " + squote + "CLR_WARN_LEAD_FLAG" + equote +
+		                                   ", " + squote + "CLR_WARN_APPROVAL" + equote +
+		                                   ", " + squote + "PRIORITY_LEAD_FLAG" + equote +
+		                                   ", " + squote + "PRIORITY_APPROVAL" + equote +
+		                                   ", " + squote + "EDIT_PARM_LEAD_FLAG" + equote +
+		                                   ", " + squote + "EDIT_PARM_APPROVAL" + equote +
+		                                   ", " + squote + "KILL_LEAD_FLAG" + equote +
+		                                   ", " + squote + "KILL_APPROVAL" + equote +
+		                                   ", " + squote + "SET_JOB_STATE_LEAD_FLAG" + equote +
+		                                   ", " + squote + "SET_JOB_STATE_APPROVAL" + equote +
 		                                   ", " + squote + "INHERIT_PRIVS" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +

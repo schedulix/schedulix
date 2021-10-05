@@ -30,7 +30,8 @@ import java.util.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;
 
-public class ParseStr {
+public class ParseStr
+{
 
 	public static final String __version = "@(#) $Id: ParseStr.java,v 2.41.2.1 2013/03/14 10:24:42 ronald Exp $";
 
@@ -57,6 +58,7 @@ public class ParseStr {
 	public static final String S_AMOUNT		= "AMOUNT";
 	public static final String S_AND		= "AND";
 	public static final String S_ANY		= "ANY";
+	public static final String S_APPROVE		= "APPROVE";
 	public static final String S_AVG		= "AVG";
 	public static final String S_BACKLOG_HANDLING	= "BACKLOG_HANDLING";
 	public static final String S_BACKUP		= "BACKUP";
@@ -328,6 +330,7 @@ public class ParseStr {
 	public static final String S_RECURSIVE		= "RECURSIVE";
 	public static final String S_REFERENCE		= "REFERENCE";
 	public static final String S_REGISTER		= "REGISTER";
+	public static final String S_REJECT		= "REJECT";
 	public static final String S_RENAME		= "RENAME";
 	public static final String S_RENICE		= "RENICE";
 	public static final String S_REQUESTABLE_AMOUNT	= "REQUESTABLE_AMOUNT";
@@ -569,6 +572,7 @@ public class ParseStr {
 		mapper.put(new Integer(Parser.AMOUNT),			ParseStr.S_AMOUNT);
 		mapper.put(new Integer(Parser.AND),			ParseStr.S_AND);
 		mapper.put(new Integer(Parser.ANY),			ParseStr.S_ANY);
+		mapper.put(new Integer(Parser.APPROVE),			ParseStr.S_APPROVE);
 		mapper.put(new Integer(Parser.AVG),			ParseStr.S_AVG);
 		mapper.put(new Integer(Parser.BACKLOG_HANDLING),	ParseStr.S_BACKLOG_HANDLING);
 		mapper.put(new Integer(Parser.BACKUP),			ParseStr.S_BACKUP);
@@ -800,6 +804,7 @@ public class ParseStr {
 		mapper.put(new Integer(Parser.RECURSIVE),		ParseStr.S_RECURSIVE);
 		mapper.put(new Integer(Parser.REFERENCE),		ParseStr.S_REFERENCE);
 		mapper.put(new Integer(Parser.REGISTER),		ParseStr.S_REGISTER);
+		mapper.put(new Integer(Parser.REJECT),			ParseStr.S_REJECT);
 		mapper.put(new Integer(Parser.RENAME),			ParseStr.S_RENAME);
 		mapper.put(new Integer(Parser.RENICE),			ParseStr.S_RENICE);
 		mapper.put(new Integer(Parser.REQUIRED),		ParseStr.S_REQUIRED);
@@ -831,7 +836,6 @@ public class ParseStr {
 		mapper.put(new Integer(Parser.SCHEDULED_EVENT),		ParseStr.S_SCHEDULED_EVENT);
 		mapper.put(new Integer(Parser.SCOPE),			ParseStr.S_SCOPE);
 		mapper.put(new Integer(Parser.SELECT),			ParseStr.S_SELECT);
-		mapper.put(new Integer(Parser.SELECT_CONDITION),	ParseStr.S_SELECT_CONDITION);
 		mapper.put(new Integer(Parser.SELECTION),		ParseStr.S_SELECTION);
 		mapper.put(new Integer(Parser.SERIAL),			ParseStr.S_SERIAL);
 		mapper.put(new Integer(Parser.SERVER),			ParseStr.S_SERVER);

@@ -112,11 +112,40 @@ public class CreateJobDefinition extends ManipJobDefinition
 						null,
 						neId,
 						fpId,
+			                cancelLeadFlag,
+			                cancelApproval,
+			                rerunLeadFlag,
+			                rerunApproval,
+			                enableLeadFlag,
+			                enableApproval,
+			                setStateLeadFlag,
+			                setStateApproval,
+			                ignDepLeadFlag,
+			                ignDepApproval,
+			                ignRssLeadFlag,
+			                ignRssApproval,
+			                cloneLeadFlag,
+			                cloneApproval,
+			                suspendLeadFlag,
+			                suspendApproval,
+			                clrWarnLeadFlag,
+			                clrWarnApproval,
+			                priorityLeadFlag,
+			                priorityApproval,
+			                editParmLeadFlag,
+			                editParmApproval,
+			                killLeadFlag,
+			                killApproval,
+			                setJobStateLeadFlag,
+			                setJobStateApproval,
 						inheritPrivs
 			);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
-				AlterJobDefinition ajd = new AlterJobDefinition(path, name, withs, Boolean.FALSE);
+				PathVector p = new PathVector(path);
+				p.addThis(name);
+				ObjectURL url = new ObjectURL(new Integer(Parser.JOB_DEFINITION), p);
+				AlterJobDefinition ajd = new AlterJobDefinition(url, withs, Boolean.FALSE);
 				ajd.setEnv(env);
 				ajd.go(sysEnv);
 				result = ajd.result;

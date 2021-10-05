@@ -173,6 +173,34 @@ public class ShowFolder extends ShowCommented
 		desc.add("ESP_NAME");
 		desc.add("ESM_NAME");
 		desc.add("ENV_NAME");
+
+		desc.add("CANCEL_LEAD_FLAG");
+		desc.add("CANCEL_APPROVAL");
+		desc.add("RERUN_LEAD_FLAG");
+		desc.add("RERUN_APPROVAL");
+		desc.add("ENABLE_LEAD_FLAG");
+		desc.add("ENABLE_APPROVAL");
+		desc.add("SET_STATE_LEAD_FLAG");
+		desc.add("SET_STATE_APPROVAL");
+		desc.add("IGN_DEPENDENCY_LEAD_FLAG");
+		desc.add("IGN_DEPENDENCY_APPROVAL");
+		desc.add("IGN_RESOURCE_LEAD_FLAG");
+		desc.add("IGN_RESOURCE_APPROVAL");
+		desc.add("CLONE_LEAD_FLAG");
+		desc.add("CLONE_APPROVAL");
+		desc.add("SUSPEND_LEAD_FLAG");
+		desc.add("SUSPEND_APPROVAL");
+		desc.add("CLEAR_WARN_LEAD_FLAG");
+		desc.add("CLEAR_WARN_APPROVAL");
+		desc.add("PRIORITY_LEAD_FLAG");
+		desc.add("PRIORITY_APPROVAL");
+		desc.add("EDIT_PARAMETER_LEAD_FLAG");
+		desc.add("EDIT_PARAMETER_APPROVAL");
+		desc.add("KILL_LEAD_FLAG");
+		desc.add("KILL_APPROVAL");
+		desc.add("SET_JOB_STATE_LEAD_FLAG");
+		desc.add("SET_JOB_STATE_APPROVAL");
+
 		desc.add("FP_NAME");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
@@ -257,6 +285,33 @@ public class ShowFolder extends ShowCommented
 			data.add(SystemEnvironment.nullString);
 		}
 
+		data.add(se.getCancelLeadFlag(sysEnv));
+		data.add(se.getCancelApprovalAsString(sysEnv));
+		data.add(se.getRerunLeadFlag(sysEnv));
+		data.add(se.getRerunApprovalAsString(sysEnv));
+		data.add(se.getEnableLeadFlag(sysEnv));
+		data.add(se.getEnableApprovalAsString(sysEnv));
+		data.add(se.getSetStateLeadFlag(sysEnv));
+		data.add(se.getSetStateApprovalAsString(sysEnv));
+		data.add(se.getIgnDepLeadFlag(sysEnv));
+		data.add(se.getIgnDepApprovalAsString(sysEnv));
+		data.add(se.getIgnRssLeadFlag(sysEnv));
+		data.add(se.getIgnRssApprovalAsString(sysEnv));
+		data.add(se.getCloneLeadFlag(sysEnv));
+		data.add(se.getCloneApprovalAsString(sysEnv));
+		data.add(se.getSuspendLeadFlag(sysEnv));
+		data.add(se.getSuspendApprovalAsString(sysEnv));
+		data.add(se.getClrWarnLeadFlag(sysEnv));
+		data.add(se.getClrWarnApprovalAsString(sysEnv));
+		data.add(se.getPriorityLeadFlag(sysEnv));
+		data.add(se.getPriorityApprovalAsString(sysEnv));
+		data.add(se.getEditParmLeadFlag(sysEnv));
+		data.add(se.getEditParmApprovalAsString(sysEnv));
+		data.add(se.getKillLeadFlag(sysEnv));
+		data.add(se.getKillApprovalAsString(sysEnv));
+		data.add(se.getSetJobStateLeadFlag(sysEnv));
+		data.add(se.getSetJobStateApprovalAsString(sysEnv));
+
 		fpId = se.getFpId(sysEnv);
 		if (fpId != null) {
 			fp = SDMSFootprintTable.getObject(sysEnv, fpId);
@@ -318,9 +373,11 @@ public class ShowFolder extends ShowCommented
 	{
 		Vector c_desc = new Vector();
 		c_desc.add("ID");
+		c_desc.add("CHILD_ID");
 		c_desc.add("CHILDNAME");
 		c_desc.add("CHILDTYPE");
 		c_desc.add("CHILDPRIVS");
+		c_desc.add("PARENT_ID");
 		c_desc.add("PARENTNAME");
 		c_desc.add("PARENTTYPE");
 		c_desc.add("PARENTPRIVS");
@@ -356,10 +413,12 @@ public class ShowFolder extends ShowCommented
 			c_data.add(sh.getId(sysEnv));
 
 			cse = SDMSSchedulingEntityTable.getObject(sysEnv, sh.getSeChildId(sysEnv));
+			c_data.add(sh.getSeChildId(sysEnv));
 			c_data.add(cse.pathVector(sysEnv));
 			c_data.add(cse.getTypeAsString(sysEnv));
 			c_data.add(cse.getPrivileges(sysEnv).toString());
 			cse = SDMSSchedulingEntityTable.getObject(sysEnv, sh.getSeParentId(sysEnv));
+			c_data.add(sh.getSeParentId(sysEnv));
 			c_data.add(cse.pathVector(sysEnv));
 			c_data.add(cse.getTypeAsString(sysEnv));
 			c_data.add(cse.getPrivileges(sysEnv).toString());
@@ -428,9 +487,11 @@ public class ShowFolder extends ShowCommented
 		Vector c_desc = new Vector();
 		c_desc.add("ID");
 		c_desc.add("NAME");
+		c_desc.add("DEPENDENT_ID");
 		c_desc.add("DEPENDENTNAME");
 		c_desc.add("DEPENDENTTYPE");
 		c_desc.add("DEPENDENTPRIVS");
+		c_desc.add("REQUIRED_ID");
 		c_desc.add("REQUIREDNAME");
 		c_desc.add("REQUIREDTYPE");
 		c_desc.add("REQUIREDPRIVS");
@@ -456,10 +517,12 @@ public class ShowFolder extends ShowCommented
 			c_data.add(dd.getId(sysEnv));
 			c_data.add(dd.getName(sysEnv));
 			se = SDMSSchedulingEntityTable.getObject(sysEnv, dd.getSeDependentId(sysEnv));
+			c_data.add(dd.getSeDependentId(sysEnv));
 			c_data.add(se.pathVector(sysEnv));
 			c_data.add(se.getTypeAsString(sysEnv));
 			c_data.add(se.getPrivileges(sysEnv).toString());
 			se = SDMSSchedulingEntityTable.getObject(sysEnv, dd.getSeRequiredId(sysEnv));
+			c_data.add(dd.getSeRequiredId(sysEnv));
 			c_data.add(se.pathVector(sysEnv));
 			c_data.add(se.getTypeAsString(sysEnv));
 			c_data.add(se.getPrivileges(sysEnv).toString());
@@ -505,6 +568,7 @@ public class ShowFolder extends ShowCommented
 
 		Vector c_desc = new Vector();
 		c_desc.add("ID");
+		c_desc.add("RESOURCE_ID");
 		c_desc.add("RESOURCE_NAME");
 		c_desc.add("RESOURCE_USAGE");
 		c_desc.add("RESOURCE_PRIVS");
@@ -609,6 +673,7 @@ public class ShowFolder extends ShowCommented
 
 		c_data.add(rr.getId(sysEnv));
 		SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, rr.getNrId(sysEnv));
+		c_data.add(rr.getNrId(sysEnv));
 		c_data.add(nr.pathVector(sysEnv));
 		c_data.add(nr.getUsageAsString(sysEnv));
 		c_data.add(nr.getPrivileges(sysEnv).toString());
@@ -672,6 +737,7 @@ public class ShowFolder extends ShowCommented
 	{
 		c_data.add(e.getId(sysEnv));
 		SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, e.getNrId(sysEnv));
+		c_data.add(e.getNrId(sysEnv));
 		c_data.add(nr.pathVector(sysEnv));
 		c_data.add(nr.getUsageAsString(sysEnv));
 		c_data.add(nr.getPrivileges(sysEnv).toString());

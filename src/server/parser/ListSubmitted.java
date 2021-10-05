@@ -50,7 +50,9 @@ public class ListSubmitted extends Node
 	private final static String emptyString = new String("");
 	private final ObjectFilter objFilter = new ObjectFilter()
 	{
-		public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p) { return true; }
+		public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p) {
+			return true;
+		}
 	};
 
 	WithHash with;
@@ -195,6 +197,12 @@ public class ListSubmitted extends Node
 		return result;
 	}
 
+	private Boolean getApprovalPending(SystemEnvironment sysEnv, Long smeId)
+	throws SDMSException
+	{
+		return (SDMSSystemMessageTable.idx_smeId.containsKey(sysEnv, smeId));
+	}
+
 	protected void renderResultFuture(SystemEnvironment sysEnv, SDMSProxy p, SDMSOutputContainer d_container, String pathhit)
 		throws SDMSException
 	{
@@ -216,6 +224,7 @@ public class ListSubmitted extends Node
 		String logfile;
 		String errlogfile;
 		long actVersion;
+		Boolean approvalPending;
 
 		SDMSScheduledEvent scev = null;
 		SDMSCalendar cal = null;
@@ -275,6 +284,7 @@ public class ListSubmitted extends Node
 		workdir = se.getWorkdir(sysEnv);
 		logfile = se.getLogfile(sysEnv);
 		errlogfile = se.getErrlogfile(sysEnv);
+		approvalPending = Boolean.FALSE;
 
 		Vector parameterVector = new Vector();
 		if(parms != null) {
@@ -360,6 +370,7 @@ public class ListSubmitted extends Node
 		v.add(workdir);
 		v.add(logfile);
 		v.add(errlogfile);
+		v.add(approvalPending);
 
 		if(parameterVector.size() > 0)
 			v.addAll(parameterVector);
@@ -436,6 +447,7 @@ public class ListSubmitted extends Node
 		String logfile;
 		String errlogfile;
 		long actVersion;
+		Boolean approvalPending;
 
 		Long tmp;
 		Date d = new Date();
@@ -610,6 +622,7 @@ public class ListSubmitted extends Node
 		workdir = job.getWorkdir(sysEnv);
 		logfile = job.getLogfile(sysEnv);
 		errlogfile = job.getErrlogfile(sysEnv);
+		approvalPending = getApprovalPending(sysEnv, jobId);
 
 		Vector parameterVector = new Vector();
 		if(parms != null) {
@@ -696,6 +709,7 @@ public class ListSubmitted extends Node
 			v.add(workdir);
 			v.add(logfile);
 			v.add(errlogfile);
+			v.add(approvalPending);
 
 			if(parameterVector.size() > 0)
 				v.addAll(parameterVector);
@@ -929,6 +943,7 @@ public class ListSubmitted extends Node
 		desc.add("WORKDIR");
 		desc.add("LOGFILE");
 		desc.add("ERRLOGFILE");
+		desc.add("APPROVAL_PENDING");
 
 		if(with != null) {
 			parms = (Vector) with.get(ParseStr.S_PARAMETERS);
@@ -990,7 +1005,7 @@ public class ListSubmitted extends Node
 				SDMSEvent ev = SDMSEventTable.getObject(sysEnv, ((SDMSScheduledEvent)p).getEvtId(sysEnv));
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, ev.getSeId(sysEnv));
 				SDMSPrivilege q = se.getPrivileges(sysEnv);
-				if(!(q.can(SDMSPrivilege.OPERATE) || q.can(SDMSPrivilege.MONITOR))) {
+				if(!(q.canAny(SDMSPrivilege.OPERATE|SDMSPrivilege.OPERATE_PRIVS) || q.can(SDMSPrivilege.MONITOR))) {
 					j.remove();
 					continue;
 				}
@@ -999,7 +1014,7 @@ public class ListSubmitted extends Node
 				SDMSEvent ev = SDMSEventTable.getObject(sysEnv, scev.getEvtId(sysEnv));
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, ev.getSeId(sysEnv));
 				SDMSPrivilege q = se.getPrivileges(sysEnv);
-				if(!(q.can(SDMSPrivilege.OPERATE) || q.can(SDMSPrivilege.MONITOR))) {
+				if(!(q.canAny(SDMSPrivilege.OPERATE|SDMSPrivilege.OPERATE_PRIVS) || q.can(SDMSPrivilege.MONITOR))) {
 					j.remove();
 					continue;
 				}

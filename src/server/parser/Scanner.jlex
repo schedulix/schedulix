@@ -45,6 +45,9 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("ALTER",		new Integer(Parser.ALTER));
 	tokens.put("AMOUNT",		new Integer(Parser.AMOUNT));
 	tokens.put("AND",		new Integer(Parser.AND));
+	tokens.put("APPROVAL",		new Integer(Parser.APPROVAL));
+	tokens.put("APPROVALS",		new Integer(Parser.APPROVAL));
+	tokens.put("APPROVE",		new Integer(Parser.APPROVE));
 	tokens.put("AT",		new Integer(Parser.AT));
 	tokens.put("ANY",		new Integer(Parser.ANY));
 	tokens.put("AUDIT",		new Integer(Parser.AUDIT));
@@ -182,6 +185,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("KILL",		new Integer(Parser.KILL));
 	tokens.put("KILLED",		new Integer(Parser.KILLED));
 	tokens.put("LAST",		new Integer(Parser.LAST));
+	tokens.put("LEADING",		new Integer(Parser.LEADING));
 	tokens.put("LEVEL",		new Integer(Parser.LEVEL));
 	tokens.put("LIBERAL",		new Integer(Parser.LIBERAL));
 	tokens.put("LIKE",		new Integer(Parser.LIKE));
@@ -225,6 +229,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("N",			new Integer(Parser.N));
 	tokens.put("NAME",		new Integer(Parser.NAME));
 	tokens.put("NICEVALUE",		new Integer(Parser.NICEVALUE));
+	tokens.put("NO",		new Integer(Parser.NO));
 	tokens.put("NODE",		new Integer(Parser.NODE));
 	tokens.put("NODES",		new Integer(Parser.NODE));
 	tokens.put("NOINVERSE",		new Integer(Parser.NOINVERSE));
@@ -276,6 +281,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("RECURSIVE",		new Integer(Parser.RECURSIVE));
 	tokens.put("REFERENCE",		new Integer(Parser.REFERENCE));
 	tokens.put("REGISTER",		new Integer(Parser.REGISTER));
+	tokens.put("REJECT",		new Integer(Parser.REJECT));
 	tokens.put("RENAME",		new Integer(Parser.RENAME));
 	tokens.put("RENICE",		new Integer(Parser.RENICE));
 	tokens.put("REQUIRED",		new Integer(Parser.REQUIRED));
@@ -288,6 +294,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("RESULT",		new Integer(Parser.RESULT));
 	tokens.put("RESUME",		new Integer(Parser.RESUME));
 	tokens.put("REVOKE",		new Integer(Parser.REVOKE));
+	tokens.put("REVIEW",		new Integer(Parser.REVIEW));
 	tokens.put("ROLLBACK",		new Integer(Parser.ROLLBACK));
 	tokens.put("ROOT",		new Integer(Parser.ROOT));
 	tokens.put("RUN",		new Integer(Parser.RUN));
@@ -312,6 +319,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("SHUTDOWN",		new Integer(Parser.SHUTDOWN));
 	tokens.put("SINGLE",		new Integer(Parser.SINGLE));
 	tokens.put("SORT",		new Integer(Parser.SORT));
+	tokens.put("SQLSELECT",		new Integer(Parser.SQLSELECT));
 	tokens.put("SSL",		new Integer(Parser.SSL));
 	tokens.put("STARTED",		new Integer(Parser.STARTED));
 	tokens.put("STARTING",		new Integer(Parser.STARTING));
@@ -777,24 +785,24 @@ until_finished =	{until}{uscore}{finished}
 <SELECT>{with}				{ yypushback(yytext().length());  // we put "with" back to be read again
 					  yybegin(YYINITIAL);
 					  value = new String(sel_stmt);
-					  t = new Token(Parser.SELECT, (String) value, value);
-					  return Parser.SELECT;
+					  t = new Token(Parser.SQLSELECT, (String) value, value);
+					  return Parser.SQLSELECT;
 					}
 <SELECT>{nws_nsc}			{ proto_input(yytext()); sel_stmt.append(yytext()); break; }
 <SELECT>\'				{ proto_input(yytext()); sel_stmt.append(yytext()); yybegin(SELECTSTR); break; }
 <SELECT>;				{ yybegin(YYINITIAL);
 					  yypushback(1);
 					  value = new String(sel_stmt);
-					  t = new Token(Parser.SELECT, (String) value, value);
-					  return Parser.SELECT;
+					  t = new Token(Parser.SQLSELECT, (String) value, value);
+					  return Parser.SQLSELECT;
 					}
 <SELECT>"("				{ proto_input(yytext()); sel_stmt.append(yytext()); selbrctr++; break; }
 <SELECT>")"				{ if (selbrctr == 0) {
 						yybegin(YYINITIAL);
 						yypushback(1);
 					  	value = new String(sel_stmt);
-						  t = new Token(Parser.SELECT, (String) value, value);
-						  return Parser.SELECT;
+						  t = new Token(Parser.SQLSELECT, (String) value, value);
+						  return Parser.SQLSELECT;
 					  } else
 						selbrctr--;
 					  proto_input(yytext());

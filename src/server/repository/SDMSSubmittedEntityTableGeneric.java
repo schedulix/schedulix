@@ -97,6 +97,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		, "CHILD_SUSPENDED"
 		, "WARN_COUNT"
 		, "WARN_LINK"
+		, "APPROVAL_MODE"
 		, "SUBMIT_TS"
 		, "RESUME_TS"
 		, "SYNC_TS"
@@ -236,6 +237,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                                  ,Integer p_childSuspended
 	                                  ,Integer p_warnCount
 	                                  ,Long p_warnLink
+	                                  ,Integer p_approvalMode
 	                                  ,Long p_submitTs
 	                                  ,Long p_resumeTs
 	                                  ,Long p_syncTs
@@ -342,6 +344,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		         , p_childSuspended
 		         , p_warnCount
 		         , p_warnLink
+		         , p_approvalMode
 		         , p_submitTs
 		         , p_resumeTs
 		         , p_syncTs
@@ -445,6 +448,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                , p_childSuspended
 		                , p_warnCount
 		                , p_warnLink
+		                , p_approvalMode
 		                , p_submitTs
 		                , p_resumeTs
 		                , p_syncTs
@@ -573,6 +577,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                        ,Integer p_childSuspended
 	                        ,Integer p_warnCount
 	                        ,Long p_warnLink
+	                        ,Integer p_approvalMode
 	                        ,Long p_submitTs
 	                        ,Long p_resumeTs
 	                        ,Long p_syncTs
@@ -689,6 +694,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		Integer childSuspended;
 		Integer warnCount;
 		Long warnLink;
+		Integer approvalMode;
 		Long submitTs;
 		Long resumeTs;
 		Long syncTs;
@@ -823,71 +829,72 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 			warnCount = new Integer (r.getInt(54));
 			warnLink = new Long (r.getLong(55));
 			if (r.wasNull()) warnLink = null;
-			submitTs = new Long (r.getLong(56));
-			resumeTs = new Long (r.getLong(57));
+			approvalMode = new Integer (r.getInt(56));
+			submitTs = new Long (r.getLong(57));
+			resumeTs = new Long (r.getLong(58));
 			if (r.wasNull()) resumeTs = null;
-			syncTs = new Long (r.getLong(58));
+			syncTs = new Long (r.getLong(59));
 			if (r.wasNull()) syncTs = null;
-			resourceTs = new Long (r.getLong(59));
+			resourceTs = new Long (r.getLong(60));
 			if (r.wasNull()) resourceTs = null;
-			runnableTs = new Long (r.getLong(60));
+			runnableTs = new Long (r.getLong(61));
 			if (r.wasNull()) runnableTs = null;
-			startTs = new Long (r.getLong(61));
+			startTs = new Long (r.getLong(62));
 			if (r.wasNull()) startTs = null;
-			finishTs = new Long (r.getLong(62));
+			finishTs = new Long (r.getLong(63));
 			if (r.wasNull()) finishTs = null;
-			finalTs = new Long (r.getLong(63));
+			finalTs = new Long (r.getLong(64));
 			if (r.wasNull()) finalTs = null;
-			cntSubmitted = new Integer (r.getInt(64));
-			cntDependencyWait = new Integer (r.getInt(65));
-			cntSynchronizeWait = new Integer (r.getInt(66));
-			cntResourceWait = new Integer (r.getInt(67));
-			cntRunnable = new Integer (r.getInt(68));
-			cntStarting = new Integer (r.getInt(69));
-			cntStarted = new Integer (r.getInt(70));
-			cntRunning = new Integer (r.getInt(71));
-			cntToKill = new Integer (r.getInt(72));
-			cntKilled = new Integer (r.getInt(73));
-			cntCancelled = new Integer (r.getInt(74));
-			cntFinished = new Integer (r.getInt(75));
-			cntFinal = new Integer (r.getInt(76));
-			cntBrokenActive = new Integer (r.getInt(77));
-			cntBrokenFinished = new Integer (r.getInt(78));
-			cntError = new Integer (r.getInt(79));
-			cntUnreachable = new Integer (r.getInt(80));
-			cntRestartable = new Integer (r.getInt(81));
-			cntWarn = new Integer (r.getInt(82));
-			cntPending = new Integer (r.getInt(83));
-			idleTs = new Integer (r.getInt(84));
+			cntSubmitted = new Integer (r.getInt(65));
+			cntDependencyWait = new Integer (r.getInt(66));
+			cntSynchronizeWait = new Integer (r.getInt(67));
+			cntResourceWait = new Integer (r.getInt(68));
+			cntRunnable = new Integer (r.getInt(69));
+			cntStarting = new Integer (r.getInt(70));
+			cntStarted = new Integer (r.getInt(71));
+			cntRunning = new Integer (r.getInt(72));
+			cntToKill = new Integer (r.getInt(73));
+			cntKilled = new Integer (r.getInt(74));
+			cntCancelled = new Integer (r.getInt(75));
+			cntFinished = new Integer (r.getInt(76));
+			cntFinal = new Integer (r.getInt(77));
+			cntBrokenActive = new Integer (r.getInt(78));
+			cntBrokenFinished = new Integer (r.getInt(79));
+			cntError = new Integer (r.getInt(80));
+			cntUnreachable = new Integer (r.getInt(81));
+			cntRestartable = new Integer (r.getInt(82));
+			cntWarn = new Integer (r.getInt(83));
+			cntPending = new Integer (r.getInt(84));
+			idleTs = new Integer (r.getInt(85));
 			if (r.wasNull()) idleTs = null;
-			idleTime = new Integer (r.getInt(85));
+			idleTime = new Integer (r.getInt(86));
 			if (r.wasNull()) idleTime = null;
-			statisticTs = new Integer (r.getInt(86));
+			statisticTs = new Integer (r.getInt(87));
 			if (r.wasNull()) statisticTs = null;
-			dependencyWaitTime = new Integer (r.getInt(87));
+			dependencyWaitTime = new Integer (r.getInt(88));
 			if (r.wasNull()) dependencyWaitTime = null;
-			suspendTime = new Integer (r.getInt(88));
+			suspendTime = new Integer (r.getInt(89));
 			if (r.wasNull()) suspendTime = null;
-			syncTime = new Integer (r.getInt(89));
+			syncTime = new Integer (r.getInt(90));
 			if (r.wasNull()) syncTime = null;
-			resourceTime = new Integer (r.getInt(90));
+			resourceTime = new Integer (r.getInt(91));
 			if (r.wasNull()) resourceTime = null;
-			jobserverTime = new Integer (r.getInt(91));
+			jobserverTime = new Integer (r.getInt(92));
 			if (r.wasNull()) jobserverTime = null;
-			restartableTime = new Integer (r.getInt(92));
+			restartableTime = new Integer (r.getInt(93));
 			if (r.wasNull()) restartableTime = null;
-			childWaitTime = new Integer (r.getInt(93));
+			childWaitTime = new Integer (r.getInt(94));
 			if (r.wasNull()) childWaitTime = null;
-			opSusresTs = new Long (r.getLong(94));
+			opSusresTs = new Long (r.getLong(95));
 			if (r.wasNull()) opSusresTs = null;
-			npeId = new Long (r.getLong(95));
+			npeId = new Long (r.getLong(96));
 			if (r.wasNull()) npeId = null;
-			timeZone = r.getString(96);
+			timeZone = r.getString(97);
 			if (r.wasNull()) timeZone = null;
-			creatorUId = new Long (r.getLong(97));
-			createTs = new Long (r.getLong(98));
-			changerUId = new Long (r.getLong(99));
-			changeTs = new Long (r.getLong(100));
+			creatorUId = new Long (r.getLong(98));
+			createTs = new Long (r.getLong(99));
+			changerUId = new Long (r.getLong(100));
+			changeTs = new Long (r.getLong(101));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -950,6 +957,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                      childSuspended,
 		                                      warnCount,
 		                                      warnLink,
+		                                      approvalMode,
 		                                      submitTs,
 		                                      resumeTs,
 		                                      syncTs,
@@ -1064,6 +1072,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                   ", " + squote + "CHILD_SUSPENDED" + equote +
 		                                   ", " + squote + "WARN_COUNT" + equote +
 		                                   ", " + squote + "WARN_LINK" + equote +
+		                                   ", " + squote + "APPROVAL_MODE" + equote +
 		                                   ", " + squote + "SUBMIT_TS" + equote +
 		                                   ", " + squote + "RESUME_TS" + equote +
 		                                   ", " + squote + "SYNC_TS" + equote +

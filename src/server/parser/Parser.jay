@@ -39,7 +39,7 @@ public class Parser
 %token <Token>	FLOAT
 
 %token <Token>	ACTION ACTIVATE ACTIVE ADD AFTER AFTER_FINAL AGING
-%token <Token>	ALIAS ALL ALL_FINAL ALTER AMOUNT AND ANY AT AUDIT AUTHENTICATED AVG
+%token <Token>	ALIAS ALL ALL_FINAL ALTER AMOUNT AND ANY AT APPROVE APPROVAL AUDIT AUTHENTICATED AVG
 %token <Token>	BACKLOG_HANDLING BACKUP BASE BATCH BEFORE BEFORE_FINAL BETWEEN BMULTICMD BOTH BROKEN BROKEN_ACTIVE BROKEN_FINISHED BY
 %token <Token>	CALENDAR CANCEL CANCELLED CASCADE CATEGORY CHANGE_STATUS CHANGE CHILD CHECK CHILDREN CHILDSUSPEND CHILDTAG CLEANUP CLEAR CLONE CMPOP
 %token <Token>	COMMAND COMMENT CONDENSED CONDITION CONFIG CONNECT CONSTANT CONTENT CONTINUE COPY COUNT CREATE CYCLE
@@ -55,18 +55,18 @@ public class Parser
 %token <Token>	INFINITE INFO INHERIT INITIAL_STATUS INSTANCE INTERNAL INTERVAL INVERSE IS ISX IX
 %token <Token>	JOB JOB_DEFINITION JOB_DEFINITION_HIERARCHY JOB_FINAL JOB_SERVER JOB_STATUS JSON
 %token <Token>	KEEP KEEP_FINAL KILL KILLED KILL_PROGRAM
-%token <Token>	LAST LEVEL LIBERAL LIKE LIMIT LINE LINK LIST LOCAL LOCAL_CONSTANT LOCK LOCKMODE LOGFILE LOOPS
+%token <Token>	LAST LEADING LEVEL LIBERAL LIKE LIMIT LINE LINK LIST LOCAL LOCAL_CONSTANT LOCK LOCKMODE LOGFILE LOOPS
 %token <Token>	MAIN MANAGE MANAGED MANAGE_SELECT MAP MAPPING MAPS MASTER MASTER_ID MAX MAXPCT MERGE MERGED MERGE_GLOBAL MERGE_LOCAL MERGE_MODE METHOD MILESTONE
 %token <Token>	MIN MINPCT MINUTE MODE MONITOR MONTH MOVE MULTICOMMAND MULTIPLIER
-%token <Token>	N NAME NAMED_RESOURCE NICE_PROFILE NICEVALUE NODE NOINVERSE NOKEEP NOMASTER NOMERGE NOMINALPCT NONE NONFATAL
+%token <Token>	N NAME NAMED_RESOURCE NICE_PROFILE NICEVALUE NO NODE NOINVERSE NOKEEP NOMASTER NOMERGE NOMINALPCT NONE NONFATAL
 %token <Token>	NORESUME NOSTICKY NOSUSPEND NOT NOTRACE NOTRUNC NOWARN
 %token <Token>	OBJECT OF OFFLINE ON ONLINE ONLY OPERATE OR OTHER OWNER
 %token <Token>	PARENT PARAMETERS PASSWORD PATH PENDING PERFORMANCE PERL PID PLAIN POOL PRIORITY PROFILE PROTOCOL PUBLIC PYTHON
 %token <Token>	QUOTED
-%token <Token>	RAWPASSWORD REACHABLE READ REASSURE RECREATE RECURSIVE REFERENCE REGISTER RENAME RENICE REQUIRED REQUESTABLE_AMOUNT RERUN RERUN_PROGRAM RESOLVE RESOURCE
+%token <Token>	RAWPASSWORD REACHABLE READ REASSURE RECREATE RECURSIVE REFERENCE REGISTER REJECT RENAME RENICE REQUIRED REQUESTABLE_AMOUNT RERUN RERUN_PROGRAM RESOLVE RESOURCE
 %token <Token>	RESOURCE_TEMPLATE RESOURCE_STATUS RESOURCE_STATUS_DEFINITION RESOURCE_STATUS_MAPPING RESOURCE_STATUS_PROFILE RESOURCE_WAIT
-%token <Token>	RESTARTABLE RESTRICT RESULT RESUME REVOKE ROLLBACK ROOT RUN RUNNABLE RUNNING RUNTIME RUN_PROGRAM
-%token <Token>	S SALT SC SCHEDULE SCHEDULED_EVENT SCOPE SELECT SELECT_CONDITION SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT SSL
+%token <Token>	RESTARTABLE RESTRICT RESULT RESUME REVIEW REVOKE ROLLBACK ROOT RUN RUNNABLE RUNNING RUNTIME RUN_PROGRAM
+%token <Token>	S SALT SC SCHEDULE SCHEDULED_EVENT SCOPE SELECT SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT SQLSELECT SSL
 %token <Token>	STARTED STARTING STARTTIME STATIC STATUS STATUS_MAPPING STATUS_PROFILE STICKY STOP STRICT STRING
 %token <Token>	SUBMIT SUBMITCOUNT SUBMITTAG SUBMITTED SUBMITTING_USER SUM SUSPEND SUSPEND_LIMIT SX SUSPENDED SYNCHRONIZE_WAIT SYNCHRONIZING SYNCTIME SYSTEM
 %token <Token>	TAG TEST TEXT TIME TIMEOUT TIMESTAMP TO TO_KILL TOKEN TOUCH TRACE TRANSLATION TREE TRIGGER TRUNC TYPE
@@ -84,7 +84,7 @@ public class Parser
 %type <Node>	alter_environment, alter_event, alter_exit_status_prof, alter_exit_status_mapping, alter_exit_status_trans
 %type <Node>	alter_folder, alter_footprint, alter_group, alter_interval, alter_job, alter_job_definition, alter_jobservers, alter_named_resource, alter_nice_profile
 %type <Node>	alter_om, alter_omj, alter_pool, alter_resource, alter_rsm, alter_rsp, alter_schedule, alter_scheduled_event, alter_scope, alter_server
-%type <Node>	alter_session, alter_trigger, alter_user, alter_wt
+%type <Node>	alter_session, alter_trigger, alter_user, alter_wt, approve_cmd
 %type <Node>	child_submit_cmd, cleanup_folder, cmd,
 %type <Node>	connect_cmd, connect_cmdu, connect_cmdj, connect_cmds, connect_init, connect_cont, copy_cmd
 %type <Node>	copy_dist, copy_folder, copy_named_resource, copy_scope
@@ -103,7 +103,7 @@ public class Parser
 %type <Node>	get_next_job, get_parm_cmd, get_set_parm_cmd, get_submittag_cmd, grant_cmd
 %type <Node>	kill_sess_cmd
 %type <Node>	link_cmd, link_resource
-%type <Node>	list_calendar, list_cmd, list_dependency_definition, list_dependency_hierarchy, list_environment, list_event, list_exit_status_def
+%type <Node>	list_approval, list_calendar, list_cmd, list_dependency_definition, list_dependency_hierarchy, list_environment, list_event, list_exit_status_def
 %type <Node>	list_exit_status_mapping, list_exit_status_profile, list_exit_status_trans, list_folder, list_footprint, list_group, list_grant
 %type <Node>	list_interval, list_job
 %type <Node>	list_job_definition_hierarchy, list_named_resource, list_nice_profile, list_om, list_pool, list_resource_stat_def, list_rsm, list_rsp, list_schedule
@@ -131,7 +131,7 @@ public class Parser
 %type <Boolean>	jp_optlocal, js_fatal
 %type <Boolean>	list, show
 %type <Boolean>	master
-%type <Boolean>	opt_cascade, opt_force, opt_ignore, opt_suspended, opttrunc
+%type <Boolean>	opt_cascade, opt_force, opt_ignore, opt_leading, opt_suspended, opttrunc
 %type <Boolean>	active, staticdynamic
 %type <Boolean>	trace, trunc
 %type <Boolean> wt_submitpar
@@ -148,7 +148,7 @@ public class Parser
 %type <String>	keywords
 %type <String>	mappingname
 %type <String>	nodename
-%type <String>	objecttypename, opt_filespec, opt_gpmode, opt_username
+%type <String>	objecttypename, opt_app_with, opt_filespec, opt_gpmode, opt_username
 %type <String>	parametername, pid, profilename
 %type <String>	resourcename, rsmname, rspname, rulename
 %type <String>	schedulename, scopename, sdatetime, servername, statusname, stridentifier
@@ -156,7 +156,7 @@ public class Parser
 %type <String>	username
 %type <String>	watchtypename, wt_parametertype, wt_parameterdefault
 
-%type <Integer>	all_jobstates, allany
+%type <Integer>	all_jobstates, allany, approval_mode
 %type <Integer>	baseinterval
 %type <Integer>	ct_event, ct_triggertype
 %type <Integer>	esp_state_type
@@ -164,14 +164,14 @@ public class Parser
 %type <Integer>	job_childdef_suspend, job_type, jobstate, jobstate2, jp_aggfunction, jrq_mode, jrq_resolve, jrq_unresolved
 %type <Integer>	lj_mode, lockmode, jrd_keep
 %type <Integer>	mergemode
-%type <Integer>	opt_integer, opt_quoted, opt_sid, opt_signed_integer, om_recreate
+%type <Integer>	optall opt_integer, opt_quoted, opt_sid, opt_signed_integer, om_recreate
 %type <Integer>	resource_usage
 %type <Integer>	schevbacklog, sid, signed_integer, sj_filteritem
 %type <Integer>	testid
 %type <Integer>	us_connect_type
 
 %type <Long>	id, jobid, longg
-%type <Long> 	opt_ivowner, privilege, privilege_list
+%type <Long> 	opt_ivowner, basic_priv, operate_priv, privilege, privilege_list
 
 %type <Float>	signed_float
 
@@ -202,9 +202,9 @@ public class Parser
 %type <PathVector>	ar_path, dump_rulelist, folderpath, opt_resourcepath, resourcepath,
 %type <PathVector>	schedulepath, serverpath
 
-%type <HashSet>		expand, idlist, lj_jobstatelist, opt_expand
+%type <HashSet>		expand, idlist, lj_jobstatelist, opt_expand, opt_la_with
 
-%type <WithHash>	aj_withlist, aj_withwith, ajd_add_del_list, anr_with_clause, anr_with_list, aom_with_clause, aom_withitemlist, ar_parmlist, ar_with_clause, ar_with_list
+%type <WithHash>	aj_withlist, aj_withwith, ajd_add_del_list, anr_with_clause, anr_with_list, aom_with_clause, aom_withitemlist, operate_approvelist, ar_parmlist, ar_with_clause, ar_with_list
 %type <WithHash>	cc_with, cev_withlist, cev_with_clause, cf_optwith, cf_parmlist, cf_with, cf_withwith, clf_optwith, clf_with
 %type <WithHash>	cnr_parmlist, cnr_with_clause, cnr_with_list, cpl_withlist, cpl_resource, connect_with, connect_withlist
 %type <WithHash>	cs_optwith, ct_parmlist, ct_withlist, ct_withwith
@@ -225,7 +225,7 @@ public class Parser
 %type <WithHash>	selwithlist, signed_period, signed_period_rj, sj_withlist, stickyspec, submit_with, submit_withlist, sp_with
 %type <WithHash>	us_add_dellist, us_parmlist, us_with, us_withlist, wt_with_clause, wt_withitemlist
 
-%type <WithItem>	aj_disable, aj_suspend, aj_withitem, ajd_add_del_item, anr_with_item, aom_withitem, ar_parm, ar_with_item
+%type <WithItem>	aj_disable, aj_suspend, aj_withitem, ajd_add_del_item, anr_with_item, aom_withitem, approval_required, operate_approval, ar_parm, ar_with_item
 %type <WithItem>	cc_withitem, cev_withitem, cf_withitem, cf_parm, clf_withitem, cnr_parm, cnr_with_item, connect_withitem
 %type <WithItem>	cpl_managed, cpl_res_item, cpl_withitem, ct_object, ct_parm, ct_rscstatusitem, ct_warn_nowarn, ct_withitem
 %type <WithItem>	dump_mapitem, dump_withitem
@@ -307,6 +307,7 @@ ordinarycmdlist:	ordinarycmd SECO					{ $$ = new Vector(); $<Vector>$.addElement
 	|	ordinarycmdlist ordinarycmd SECO				{ if($1 != null) $1.addElement($2); }
 
 ordinarycmd:	alter_cmd							{ $$ = $1; }
+	|	approve_cmd							{ $$ = $1; }
 	|	connect_cmd							{ $$ = $1; }
 	|	copy_cmd							{ $$ = $1; }
 	|	create_cmd							{ $$ = $1; }
@@ -466,6 +467,7 @@ copy_cmd:	copy_folder							{ $$ = $1; }
 link_cmd:	link_resource							{ $$ = $1; }
 
 list_cmd:	list_named_resource						{ $$ = $1; }
+	|	list_approval							{ $$ = $1; }
 	|	list_calendar							{ $$ = $1; }
 	|	list_dependency_definition					{ $$ = $1; }
 	|	list_dependency_hierarchy					{ $$ = $1; }
@@ -536,6 +538,28 @@ show_cmd:	show_named_resource						{ $$ = $1; }
 empty_cmd:									{ $$ = new EmptyCmd(); }
 
 
+//----------------------------------------------------------------------------------------------
+// A P P R O V E   C O M M A N D
+// ---------------------------------------------------------------------------------------------
+//D:MASTER USER
+//D:NT-ALIAS = approve
+//D:PURPOSE P9999
+approve_cmd:	APPROVE idlist opt_app_with					{ $$ = new ApproveCmd(true, $2, $3); }
+	|	REJECT idlist opt_app_with					{ $$ = new ApproveCmd(false, $2, $3); }
+
+opt_app_with:									{ $$ = null; }
+	|	WITH COMMENT '=' STRING						{ $$ = $4; }
+
+
+//D:MASTER USER
+//D:NT-ALIAS = list approval
+//D:PURPOSE P9998
+list_approval:	LIST PENDING APPROVAL opt_la_with					{ $$ = new ListApproval($4); }
+	|	LIST APPROVAL opt_la_with						{ $$ = new ListApproval($3); }
+
+opt_la_with:										{ $$ = null; }
+	|	WITH JOB IN '(' idlist ')'						{ $$ = $5; }
+
 
 //----------------------------------------------------------------------------------------------
 // S E L E C T   C O M M A N D
@@ -544,7 +568,7 @@ empty_cmd:									{ $$ = new EmptyCmd(); }
 //D:NT-ALIAS = select
 //D:PURPOSE P001
 //D:DESCRIPTION select.tex
-select_cmd:	SELECT opt_sel_with						{ $$ = new SelectCmd($1.textValue, $2); }
+select_cmd:	SQLSELECT opt_sel_with						{ $$ = new SelectCmd($1.textValue, $2); }
 
 opt_sel_with:									{ $$ = null; }
 	|	with select_with						{ $$ = $2; }
@@ -982,6 +1006,7 @@ alter_folder:	alter folder_url cf_withwith					{ $$ = new AlterFolder($2, $3, $1
 //D:DESCRIPTION list_folder.tex
 //D:PURPOSE P028
 list_folder:	list FOLDER folderpath opt_lf_withlist				{ $$ = new ListFolder($3, $4, $1); }
+	|	list FOLDER id opt_lf_withlist					{ $$ = new ListFolder($3, $4, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = show folder
@@ -1080,6 +1105,8 @@ lf_filteratom:		NAME LIKE STRING					{ $$ = new WithItem(ParseStr.map($1.token),
 //D:DESCRIPTION list_job_definition_hierarchy.tex
 //D:PURPOSE P030
 list_job_definition_hierarchy:	LIST JOB_DEFINITION_HIERARCHY folderpath opt_expand
+										{ $$ = new ListJobDefinitionHierarchy($3, $4); }
+	|			LIST JOB_DEFINITION_HIERARCHY id opt_expand
 										{ $$ = new ListJobDefinitionHierarchy($3, $4); }
 
 
@@ -1334,6 +1361,13 @@ show_named_resource:	show nr_url opt_expand					{ $$ = new ShowNamedResource($2,
 //D:DESCRIPTION list_named_resource.tex
 //D:PURPOSE P057
 list_named_resource:	LIST NAMED_RESOURCE opt_resourcepath opt_lnr_withwith	{ if($3 == null)
+											if($4 == null)	$$ = new ListNamedResource();
+											else		$$ = new ListNamedResource($3, $4);
+										  else
+											if($4 == null)	$$ = new ListNamedResource($3, new WithHash());
+											else		$$ = new ListNamedResource($3, $4);
+										}
+	|		LIST NAMED_RESOURCE id opt_lnr_withwith	{ if($3 == null)
 											if($4 == null)	$$ = new ListNamedResource();
 											else		$$ = new ListNamedResource($3, $4);
 										  else
@@ -2148,7 +2182,7 @@ npentryitem:		active							{ $$ = new WithItem(ParseStr.S_ACTIVE, $1); }
 //D:NT-ALIAS = drop job definition
 //D:PURPOSE P113
 //D:DESCRIPTION drop_job_definition.tex
-drop_job_definition:	drop JOB_DEFINITION folderpath '.' jobname opt_force	{ $$ = new DropJobDefinition($3, $5, $6, $1.booleanValue()); }
+drop_job_definition:	drop jobdef_url opt_force	{ $$ = new DropJobDefinition($2, $3, $1.booleanValue()); }
 
 //
 */
@@ -2165,10 +2199,10 @@ create_job_definition:	create JOB_DEFINITION folderpath '.' jobname job_with_cla
 //D:NODEFAULTS
 //D:PURPOSE P163
 //D:DESCRIPTION alter_job_definition.tex
-alter_job_definition:	alter JOB_DEFINITION folderpath '.' jobname job_with_clause
-										{ $$ = new AlterJobDefinition($3, $5, $6, $1); }
-	|		alter JOB_DEFINITION folderpath '.' jobname ajd_add_del_list
-										{ $$ = new AlterJobDefDependents($3, $5, $6, $1); }
+alter_job_definition:   alter jobdef_url job_with_clause
+										{ $$ = new AlterJobDefinition($2, $3, $1); }
+	|               alter jobdef_url ajd_add_del_list
+										{ $$ = new AlterJobDefDependents($2, $3, $1); }
 
 //D:MASTER
 //D:NT-ALIAS = move job definition
@@ -2260,6 +2294,7 @@ job_withitem:		RUN_PROGRAM '=' cmdline					{ $$ = new WithItem(ParseStr.map($1.t
 			//D:OPTION group
 	|		with_group						{ $$ = $1; }
 	|		with_inherit_grant					{ $$ = $1; }
+	|		approval_required					{ $$ = $1; }
 
 
 //D:LINEBREAK
@@ -2426,6 +2461,7 @@ jrq_item:		DEPENDENCY dependencyname				{ $$ = new WithItem(ParseStr.map($1.toke
 	|		EXPIRED '=' signed_period_rj 				{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|		EXPIRED '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
 //	|		REFERENCE TIMESTAMP '=' jrq_sort			{ $$ = new WithItem(ParseStr.map($1.token), $4); }
+			//D:NT-ALIAS = select condition
 	|		SELECT CONDITION '=' STRING				{ $$ = new WithItem(ParseStr.S_SELECT_CONDITION, $4.textValue); }
 			//D:DEFAULT
 	|		SELECT CONDITION '=' NONE				{ $$ = new WithItem(ParseStr.S_SELECT_CONDITION, null); }
@@ -2605,6 +2641,22 @@ jp_aggfunction:		AVG							{ $$ = ParseStr.I_AVG; }
 	|		MIN							{ $$ = ParseStr.I_MIN; }
 	|		SUM							{ $$ = ParseStr.I_SUM; }
 
+approval_required:	APPROVAL '=' '(' operate_approvelist ')'		{ $$ = new WithItem(ParseStr.S_APPROVE, $4); }
+	|		APPROVAL '=' NONE					{ $$ = new WithItem(ParseStr.S_APPROVE, new WithHash()); }
+
+operate_approvelist: operate_approval						{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
+	|	operate_approvelist ',' operate_approval			{ $1.addItem($3); }
+
+operate_approval:	operate_priv approval_mode opt_leading			{ $$ = new WithItem(new Long($1), new SDMSKey($2, $3)); }
+
+approval_mode:		MASTER							{ $$ = new Integer(SDMSSchedulingEntity.DEFAULT); }
+	|		PARENT							{ $$ = new Integer(SDMSSchedulingEntity.PARENT); }
+	|		NO							{ $$ = new Integer(SDMSSchedulingEntity.NO); }
+	|		REVIEW							{ $$ = new Integer(SDMSSchedulingEntity.REVIEW); }
+	|		APPROVE							{ $$ = new Integer(SDMSSchedulingEntity.APPROVE); }
+
+opt_leading:									{ $$ = Boolean.FALSE; }
+	|		LEADING							{ $$ = Boolean.TRUE; }
 
 
 //-------------------------------------------------------------------
@@ -2701,6 +2753,7 @@ submit_cmd:		full_submit_cmd						{ $$ = $1; }
 	|		child_submit_cmd					{ $$ = $1; }
 
 full_submit_cmd:	SUBMIT folderpath opt_submit_with			{ $$ = new SubmitJob($2, $3); }
+	|		SUBMIT id opt_submit_with				{ $$ = new SubmitJob($2, $3); }
 
 child_submit_cmd:	SUBMIT aliasname opt_submit_with			{ $$ = new SubmitJob($2, $3); }
 
@@ -3544,10 +3597,14 @@ rename_trigger:		RENAME trigger_url TO triggername			{ $$ = new RenameTrigger($2
 //D:NT-ALIAS = list trigger
 //D:DESCRIPTION list_trigger.tex
 //D:PURPOSE P152
-list_trigger:		LIST TRIGGER						{ $$ = new ListTrigger((Vector) null, false); }
-	|		LIST TRIGGER FOR folderpath				{ $$ = new ListTrigger($4, false); }
-	|		LIST TRIGGER OF folderpath				{ $$ = new ListTrigger($4, true); }
-	|		LIST TRIGGER FOR ct_object				{ $$ = new ListTrigger($4); }
+list_trigger:		LIST TRIGGER optall					{ $$ = new ListTrigger((Vector) null, false, $3); } 
+	|		LIST TRIGGER FOR folderpath optall			{ $$ = new ListTrigger($4, false, $5); }
+	|		LIST TRIGGER OF folderpath optall			{ $$ = new ListTrigger($4, true, $5); }
+	|		LIST TRIGGER FOR ct_object optall			{ $$ = new ListTrigger($4, $5); }
+
+optall:										{ $$ = new Integer(0); }
+	|		ALL							{ $$ = new Integer(0); }
+	|		LIMIT integer						{ $$ = $2; }
 
 //D:MASTER
 //D:NT-ALIAS = show trigger
@@ -3632,7 +3689,10 @@ revoke_cmd:	REVOKE privilege_list ON objecturl FROM us_grlist gr_cascforce		{ $$
 list_grant:	LIST GRANT ON objecturl						{ $$ = new ListGrant($4); }
 	|	LIST GRANT FOR groupname					{ $$ = new ListGrant($4); }
 
-privilege:	VIEW								{ $$ = SDMSPrivilege.map($1.token); }
+privilege:	basic_priv							{ $$ = $1; }
+	|	operate_priv							{ $$ = $1; }
+
+basic_priv:	VIEW								{ $$ = SDMSPrivilege.map($1.token); }
 	|	USE								{ $$ = SDMSPrivilege.map($1.token); }
 	|	EDIT								{ $$ = SDMSPrivilege.map($1.token); }
 	|	DROP								{ $$ = SDMSPrivilege.map($1.token); }
@@ -3640,8 +3700,23 @@ privilege:	VIEW								{ $$ = SDMSPrivilege.map($1.token); }
 	|	CREATE CONTENT							{ $$ = SDMSPrivilege.map($1.token); }
 	|	MONITOR								{ $$ = SDMSPrivilege.map($1.token); }
 	|	OPERATE								{ $$ = SDMSPrivilege.map($1.token); }
+	|	APPROVE								{ $$ = SDMSPrivilege.map($1.token); }
 	|	RESOURCE							{ $$ = SDMSPrivilege.map($1.token); }
 	|	EXECUTE								{ $$ = SDMSPrivilege.map($1.token); }
+
+operate_priv:	CANCEL								{ $$ = SDMSPrivilege.map($1.token); }
+	|	RERUN								{ $$ = SDMSPrivilege.map($1.token); }
+	|	ENABLE								{ $$ = SDMSPrivilege.map($1.token); }
+	|	SET STATUS							{ $$ = SDMSPrivilege.map($2.token); }
+	|	IGNORE_DEPENDENCY						{ $$ = SDMSPrivilege.map(DEPENDENCY); }
+	|	IGNORE RESOURCE							{ $$ = SDMSPrivilege.map($1.token); }
+	|	CLONE								{ $$ = SDMSPrivilege.map($1.token); }
+	|	SUSPEND								{ $$ = SDMSPrivilege.map($1.token); }
+	|	CLEAR WARNING							{ $$ = SDMSPrivilege.map($2.token); }
+	|	PRIORITY							{ $$ = SDMSPrivilege.map($1.token); }
+	|	EDIT PARAMETERS							{ $$ = SDMSPrivilege.map($2.token); }	
+	|	KILL								{ $$ = SDMSPrivilege.map($1.token); }
+	|	SET JOB_STATUS							{ $$ = SDMSPrivilege.map($2.token); }
 
 privilege_list:	privilege							{ $$ = $1; }
 	|	privilege_list ',' privilege					{ $$ = new Long($1.longValue() | $3.longValue()); }
@@ -4074,6 +4149,7 @@ sys_object:	ENVIRONMENT							{ $$ = $1; }
 	|	RESOURCE_STATUS_PROFILE						{ $$ = $1; }
 	|	SYSTEM								{ $$ = $1; }
 	|	USER								{ $$ = $1; }
+	|	WATCH TYPE							{ $$ = $1; }
 
 
 dist_url:	DISTRIBUTION distname FOR pool_url				{ $$ = new ObjectURL($1.token, $2, $4); }
@@ -4646,6 +4722,8 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	ALTER								{ $$ = (String) $1.value; }
 	|	AMOUNT								{ $$ = (String) $1.value; }
 	|	AND								{ $$ = (String) $1.value; }
+	|	APPROVAL							{ $$ = (String) $1.value; }
+	|	APPROVE								{ $$ = (String) $1.value; }
 	|	AT								{ $$ = (String) $1.value; }
 	|	AUTHENTICATED							{ $$ = (String) $1.value; }
 	|	AVG								{ $$ = (String) $1.value; }
@@ -4750,6 +4828,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	JSON								{ $$ = (String) $1.value; }
 	|	KILL								{ $$ = (String) $1.value; }
 	|	KILLED								{ $$ = (String) $1.value; }
+	|	LEADING								{ $$ = (String) $1.value; }
 	|	LEVEL								{ $$ = (String) $1.value; }
 	|	LIBERAL								{ $$ = (String) $1.value; }
 	|	LIKE								{ $$ = (String) $1.value; }
@@ -4784,6 +4863,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	N								{ $$ = (String) $1.value; }
 	|	NAME								{ $$ = (String) $1.value; }
 	|	NICEVALUE							{ $$ = (String) $1.value; }
+	|	NO								{ $$ = (String) $1.value; }
 	|	NODE								{ $$ = (String) $1.value; }
 	|	NOINVERSE							{ $$ = (String) $1.value; }
 	|	NOMASTER							{ $$ = (String) $1.value; }
@@ -4824,6 +4904,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	RECREATE							{ $$ = (String) $1.value; }
 	|	RECURSIVE							{ $$ = (String) $1.value; }
 	|	REGISTER							{ $$ = (String) $1.value; }
+	|	REJECT								{ $$ = (String) $1.value; }
 	|	RENAME								{ $$ = (String) $1.value; }
 	|	REQUIRED							{ $$ = (String) $1.value; }
 	|	REQUESTABLE_AMOUNT						{ $$ = (String) $1.value; }
@@ -4832,6 +4913,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	RESTRICT							{ $$ = (String) $1.value; }
 	|	RESUME								{ $$ = (String) $1.value; }
 	|	REVOKE								{ $$ = (String) $1.value; }
+	|	REVIEW								{ $$ = (String) $1.value; }
 	|	ROLLBACK							{ $$ = (String) $1.value; }
 	|	RUN								{ $$ = (String) $1.value; }
 	|	RUNNABLE							{ $$ = (String) $1.value; }
@@ -4850,8 +4932,9 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	SHUTDOWN							{ $$ = (String) $1.value; }
 	|	SHOW								{ $$ = (String) $1.value; }
 	|	SINGLE								{ $$ = (String) $1.value; }
-	|	SSL								{ $$ = (String) $1.value; }
 	|	SORT								{ $$ = (String) $1.value; }
+	|	SQLSELECT							{ $$ = (String) $1.value; }
+	|	SSL								{ $$ = (String) $1.value; }
 	|	STARTED								{ $$ = (String) $1.value; }
 	|	STARTING							{ $$ = (String) $1.value; }
 	|	STARTTIME							{ $$ = (String) $1.value; }

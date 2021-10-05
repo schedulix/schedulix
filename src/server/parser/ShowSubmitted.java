@@ -42,6 +42,10 @@ public class ShowSubmitted extends Node
 	private static final int REQUIRED   = 1;
 	private static final int DEPENDENTS = 2;
 
+	private final static String AM_APPROVE = "APPROVE";
+	private final static String AM_REVIEW = "REVIEW";
+	private final static String AM_NO = "NO";
+
 	final Long jobId;
 	long actVersion;
 	Vector path;
@@ -110,6 +114,18 @@ public class ShowSubmitted extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback( new SDMSMessage(sysEnv, "03205081158", "Job shown"));
+
+	}
+
+	private void setApprovalValue(Vector data, int approve, int allFlags, int approvalFlag)
+	{
+		if ((approve & allFlags) != 0) {
+			if ((approve & approvalFlag) != 0)
+				data.add(AM_APPROVE);
+			else
+				data.add(AM_REVIEW);
+		} else
+			data.add(AM_NO);
 
 	}
 
@@ -187,6 +203,19 @@ public class ShowSubmitted extends Node
 		desc.add("AGING_BASE");
 		desc.add("DYNAMIC_PRIORITY");
 		desc.add("PARENT_SUSPENDED");
+		desc.add("CANCEL_APPROVAL");
+		desc.add("RERUN_APPROVAL");
+		desc.add("ENABLE_APPROVAL");
+		desc.add("SET_STATE_APPROVAL");
+		desc.add("IGN_DEPENDENCY_APPROVAL");
+		desc.add("IGN_RESOURCE_APPROVAL");
+		desc.add("CLONE_APPROVAL");
+		desc.add("SUSPEND_APPROVAL");
+		desc.add("CLEAR_WARN_APPROVAL");
+		desc.add("PRIORITY_APPROVAL");
+		desc.add("EDIT_PARAMETER_APPROVAL");
+		desc.add("KILL_APPROVAL");
+		desc.add("SET_JOB_STATE_APPROVAL");
 		desc.add("SUBMIT_TS");
 		desc.add("RESUME_TS");
 		desc.add("SYNC_TS");
@@ -250,6 +279,7 @@ public class ShowSubmitted extends Node
 		desc.add("PRIVS");
 		desc.add("SE_PRIVS");
 		desc.add("SUBMITTAG");
+		desc.add("APPROVAL_PENDING");
 		desc.add("UNRESOLVED_HANDLING");
 		desc.add("DEFINED_RESOURCES");
 		if (strType.equals("JOB"))
@@ -399,6 +429,21 @@ public class ShowSubmitted extends Node
 		}
 		data.add(sme.getParentSuspended(sysEnv));
 
+		int approve = sme.getApprovalMode(sysEnv).intValue();
+		setApprovalValue(data, approve, SDMSSubmittedEntity.CANCEL_BITS, SDMSSubmittedEntity.CANCEL_APPROVAL);
+		setApprovalValue(data, approve, SDMSSubmittedEntity.RERUN_BITS, SDMSSubmittedEntity.RERUN_APPROVAL);
+		setApprovalValue(data, approve, SDMSSubmittedEntity.ENABLE_BITS, SDMSSubmittedEntity.ENABLE_APPROVAL);
+		setApprovalValue(data, approve, SDMSSubmittedEntity.SET_STATE_BITS, SDMSSubmittedEntity.SET_STATE_APPROVAL);
+		setApprovalValue(data, approve, SDMSSubmittedEntity.IGN_DEP_BITS, SDMSSubmittedEntity.IGN_DEP_APPROVAL);
+		setApprovalValue(data, approve, SDMSSubmittedEntity.IGN_RSS_BITS, SDMSSubmittedEntity.IGN_RSS_APPROVAL);
+		setApprovalValue(data, approve, SDMSSubmittedEntity.CLONE_BITS, SDMSSubmittedEntity.CLONE_APPROVAL);
+		setApprovalValue(data, approve, SDMSSubmittedEntity.SUSPEND_BITS, SDMSSubmittedEntity.SUSPEND_APPROVAL);
+		setApprovalValue(data, approve, SDMSSubmittedEntity.CLR_WARN_BITS, SDMSSubmittedEntity.CLR_WARN_APPROVAL);
+		setApprovalValue(data, approve, SDMSSubmittedEntity.PRIORITY_BITS, SDMSSubmittedEntity.PRIORITY_APPROVAL);
+		setApprovalValue(data, approve, SDMSSubmittedEntity.EDIT_PARM_BITS, SDMSSubmittedEntity.EDIT_PARM_APPROVAL);
+		setApprovalValue(data, approve, SDMSSubmittedEntity.KILL_BITS, SDMSSubmittedEntity.KILL_APPROVAL);
+		setApprovalValue(data, approve, SDMSSubmittedEntity.SET_JOB_STATE_BITS, SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL);
+
 		Long submitTs = sme.getSubmitTs(sysEnv);
 		if(submitTs != null) {
 			d.setTime(submitTs.longValue());
@@ -532,6 +577,7 @@ public class ShowSubmitted extends Node
 		data.add(sme.getPrivileges(sysEnv).toString());
 		data.add(se.getPrivileges(sysEnv, actVersion).toString());
 		data.add(sme.getSubmitTag(sysEnv));
+		data.add(SDMSSystemMessageTable.idx_smeId.containsKey(sysEnv, smeId));
 		Integer unresolvedHandling = sme.getUnresolvedHandling(sysEnv);
 		if(unresolvedHandling == null)
 			data.add(null);

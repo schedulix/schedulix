@@ -145,6 +145,48 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		mapper.put(new Integer(Parser.SUSPENDED),		new Integer(SDMSSubmittedEntity.SUSPENDED));
 	}
 
+	public static String convertStateToString (int state)
+	throws SDMSException
+	{
+		switch (state) {
+			case SDMSSubmittedEntity.SUBMITTED:
+				return "SUBMITTED";
+			case SDMSSubmittedEntity.DEPENDENCY_WAIT:
+				return "DEPENDENCY_WAIT";
+			case SDMSSubmittedEntity.SYNCHRONIZE_WAIT:
+				return "SYNCHRONIZE_WAIT";
+			case SDMSSubmittedEntity.RESOURCE_WAIT:
+				return "RESOURCE_WAIT";
+			case SDMSSubmittedEntity.RUNNABLE:
+				return "RUNNABLE";
+			case SDMSSubmittedEntity.STARTING:
+				return "STARTING";
+			case SDMSSubmittedEntity.STARTED:
+				return "STARTED";
+			case SDMSSubmittedEntity.RUNNING:
+				return "RUNNING";
+			case SDMSSubmittedEntity.TO_KILL:
+				return "TO_KILL";
+			case SDMSSubmittedEntity.KILLED:
+				return "KILLED";
+			case SDMSSubmittedEntity.CANCELLED:
+				return "CANCELLED";
+			case SDMSSubmittedEntity.FINISHED:
+				return "FINISHED";
+			case SDMSSubmittedEntity.FINAL:
+				return "FINAL";
+			case SDMSSubmittedEntity.BROKEN_ACTIVE:
+				return "BROKEN_ACTIVE";
+			case SDMSSubmittedEntity.BROKEN_FINISHED:
+				return "BROKEN_FINISHED";
+			case SDMSSubmittedEntity.ERROR:
+				return "ERROR";
+			case SDMSSubmittedEntity.UNREACHABLE:
+				return "UNREACHABLE";
+			default:
+				return "UNKNOWN";
+		}
+	}
 	protected SDMSSubmittedEntity(SDMSObject p_object)
 	{
 		super(p_object);
@@ -766,6 +808,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			setState(sysEnv, new Integer(FINAL));
 			removeAsyncTrigger(sysEnv);
 			deleteLocalResources(sysEnv);
+			removeApprovals(sysEnv);
 			try {
 				SDMSnpJobFootprint jfp = SDMSnpJobFootprintTable.idx_smeId_getUniqueForUpdate(sysEnv, getId(sysEnv));
 				jfp.delete(sysEnv);
@@ -3446,6 +3489,29 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 	}
 
+	private void removeApprovals(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Long smeId = getId(sysEnv);
+		Long masterId = getMasterId(sysEnv);
+		Vector appv = SDMSSystemMessageTable.idx_smeId.getVector(sysEnv, smeId);
+		for (int i = 0; i < appv.size(); ++i) {
+			SDMSSystemMessage msg = (SDMSSystemMessage) appv.get(i);
+			if (!msg.getMsgType(sysEnv).equals(SDMSSystemMessage.APPROVAL))
+				continue;
+			msg.delete(sysEnv);
+		}
+		if (masterId.equals(smeId)) {
+			appv = SDMSSystemMessageTable.idx_masterId.getVector(sysEnv, masterId);
+			for (int i = 0; i < appv.size(); ++i) {
+				SDMSSystemMessage msg = (SDMSSystemMessage) appv.get(i);
+				if (!msg.getMsgType(sysEnv).equals(SDMSSystemMessage.APPROVAL))
+					continue;
+				msg.delete(sysEnv);
+			}
+		}
+	}
+
 	protected boolean trigger(SystemEnvironment sysEnv, int trigger_type)
 		throws SDMSException
 	{
@@ -3489,6 +3555,14 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				if(tr.trigger(sysEnv, esdId, reasonSmeId, null, this)) fired = true;
 		}
 		return fired;
+	}
+
+	private Integer getApprovalMode(SystemEnvironment sysEnv, SDMSSchedulingEntity se, Long masterId, Long parentId)
+	throws SDMSException
+	{
+		int approvalMode = 0;
+
+		return new Integer(approvalMode);
 	}
 
 	private SDMSSubmittedEntity createSme(SystemEnvironment sysEnv, SDMSSchedulingEntity se, SDMSSchedulingHierarchy sh,
@@ -3546,16 +3620,20 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (suspended.intValue() != SDMSSubmittedEntity.NOSUSPEND)
 			opSusresTs = new Long(-submitTs.longValue());
 
+		Long masterId = getMasterId(sysEnv);
+		Long parentId = getId(sysEnv);
+		Integer approvalMode = getApprovalMode(sysEnv, se, masterId, parentId);
+
 		sme = SDMSSubmittedEntityTable.table.create(sysEnv,
 				sysEnv.randomLong(),
-				getMasterId(sysEnv),
+		                masterId,
 				submitTag,
 				null,
 				seId,
 				childTag,
 				getSeVersion(sysEnv),
 				ownerId,
-				getId(sysEnv),
+		                parentId,
 				null,
 				new Boolean(isStatic),
 				new Boolean(isDisabled),
@@ -3600,6 +3678,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				zero,
 				zero,
 				null,
+		                new Integer(approvalMode),
 				submitTs,
 				resumeTs,
 				null,
@@ -3849,10 +3928,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			if((p & SDMSPrivilege.OPERATE) != SDMSPrivilege.OPERATE) {
 				long seVersion = getSeVersion(sysEnv).longValue();
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, getSeId(sysEnv), seVersion);
-				long q = se.getPrivileges(sysEnv, SDMSPrivilege.OPERATE | SDMSPrivilege.MONITOR, false, checkGroups, seVersion);
+				long q = se.getPrivileges(sysEnv, SDMSPrivilege.OPERATE_PRIVS | SDMSPrivilege.OPERATE | SDMSPrivilege.MONITOR, false, checkGroups, seVersion);
 				if (q != 0) {
 					SDMSGroup g = SDMSGroupTable.getObject(sysEnv, getOwnerId(sysEnv));
-					q = q & g.getPrivileges(sysEnv, SDMSPrivilege.OPERATE | SDMSPrivilege.MONITOR, false, checkGroups);
+					q = q & g.getPrivileges(sysEnv, SDMSPrivilege.OPERATE_PRIVS | SDMSPrivilege.OPERATE | SDMSPrivilege.MONITOR, false, checkGroups);
 				}
 				p = p | q;
 			}
@@ -3864,7 +3943,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	public long addImplicitPrivs(long priv)
 	{
 		priv = super.addImplicitPrivs(priv);
-		if((priv & SDMSPrivilege.OPERATE) == SDMSPrivilege.OPERATE) priv = priv | SDMSPrivilege.EDIT;
+		if((priv & SDMSPrivilege.OPERATE_PRIVS) != 0) priv = priv | SDMSPrivilege.EDIT;
 		return priv;
 	}
 

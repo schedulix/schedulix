@@ -149,7 +149,7 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 		throws SDMSException
 	{
 		long p = super.getPrivileges(env, checkPrivs | SDMSPrivilege.OPERATE, fastFail, checkGroups);
-		if ((p & SDMSPrivilege.OPERATE) != 0) p = p | SDMSPrivilege.CREATE;
+		if ((p&(SDMSPrivilege.OPERATE|SDMSPrivilege.OPERATE_PRIVS)) != 0) p = p | SDMSPrivilege.CREATE;
 		p = p & checkPrivs;
 		return p;
 	}

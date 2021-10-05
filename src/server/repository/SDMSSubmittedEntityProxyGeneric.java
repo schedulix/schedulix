@@ -73,7 +73,46 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 	public static final int WEEK = SDMSInterval.WEEK;
 	public static final int MONTH = SDMSInterval.MONTH;
 	public static final int YEAR = SDMSInterval.YEAR;
-	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP|SDMSPrivilege.MONITOR|SDMSPrivilege.OPERATE|SDMSPrivilege.GRANT|SDMSPrivilege.RESOURCE;
+	public static final int CANCEL_REVIEW = 0x00000001;
+	public static final int CANCEL_APPROVAL = 0x00000002;
+	public static final int RERUN_REVIEW = 0x00000004;
+	public static final int RERUN_APPROVAL = 0x00000008;
+	public static final int ENABLE_REVIEW = 0x00000010;
+	public static final int ENABLE_APPROVAL = 0x00000020;
+	public static final int SET_STATE_REVIEW = 0x00000040;
+	public static final int SET_STATE_APPROVAL = 0x00000080;
+	public static final int IGN_DEP_REVIEW = 0x00000100;
+	public static final int IGN_DEP_APPROVAL = 0x00000200;
+	public static final int IGN_RSS_REVIEW = 0x00000400;
+	public static final int IGN_RSS_APPROVAL = 0x00000800;
+	public static final int CLONE_REVIEW = 0x00001000;
+	public static final int CLONE_APPROVAL = 0x00002000;
+	public static final int SUSPEND_REVIEW = 0x00004000;
+	public static final int SUSPEND_APPROVAL = 0x00008000;
+	public static final int CLR_WARN_REVIEW = 0x00010000;
+	public static final int CLR_WARN_APPROVAL = 0x00020000;
+	public static final int PRIORITY_REVIEW = 0x00040000;
+	public static final int PRIORITY_APPROVAL = 0x00080000;
+	public static final int EDIT_PARM_REVIEW = 0x00100000;
+	public static final int EDIT_PARM_APPROVAL = 0x00200000;
+	public static final int KILL_REVIEW = 0x00400000;
+	public static final int KILL_APPROVAL = 0x00800000;
+	public static final int SET_JOB_STATE_REVIEW = 0x01000000;
+	public static final int SET_JOB_STATE_APPROVAL = 0x02000000;
+	public static final int CANCEL_BITS = 0x00000003;
+	public static final int RERUN_BITS = 0x0000000C;
+	public static final int ENABLE_BITS = 0x00000030;
+	public static final int SET_STATE_BITS = 0x000000C0;
+	public static final int IGN_DEP_BITS = 0x00000300;
+	public static final int IGN_RSS_BITS = 0x00000C00;
+	public static final int CLONE_BITS = 0x00003000;
+	public static final int SUSPEND_BITS = 0x0000C000;
+	public static final int CLR_WARN_BITS = 0x00030000;
+	public static final int PRIORITY_BITS = 0x000C0000;
+	public static final int EDIT_PARM_BITS = 0x00300000;
+	public static final int KILL_BITS = 0x00C00000;
+	public static final int SET_JOB_STATE_BITS = 0x03000000;
+	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP|SDMSPrivilege.MONITOR|SDMSPrivilege.OPERATE|SDMSPrivilege.GRANT|SDMSPrivilege.RESOURCE|SDMSPrivilege.CANCEL|SDMSPrivilege.RERUN|SDMSPrivilege.ENABLE|SDMSPrivilege.SET_STATE|SDMSPrivilege.IGN_DEPENDENCY|SDMSPrivilege.IGN_RESOURCE|SDMSPrivilege.CLONE|SDMSPrivilege.SUSPEND|SDMSPrivilege.CLEAR_WARNING|SDMSPrivilege.PRIORITY|SDMSPrivilege.MODIFY_PARAMETER|SDMSPrivilege.KILL|SDMSPrivilege.APPROVE|SDMSPrivilege.SET_JOB_STATE;
 
 	static final public int submitTag_size = 32;
 	static final public int childTag_size = 70;
@@ -1089,6 +1128,23 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
 
 		((SDMSSubmittedEntityGeneric)(object)).setWarnLink (env, p_warnLink);
+		return ;
+	}
+	public Integer getApprovalMode (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSubmittedEntityGeneric)(object)).getApprovalMode (env));
+	}
+
+	public void setApprovalMode (SystemEnvironment env, Integer p_approvalMode)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSubmittedEntityGeneric)(object)).setApprovalMode (env, p_approvalMode);
 		return ;
 	}
 	public Long getSubmitTs (SystemEnvironment env)

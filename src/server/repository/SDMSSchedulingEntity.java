@@ -169,6 +169,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 	{
 		Long seId = getId(sysEnv);
 		Long submitTs;
+		int approvalMode = 0;
 		Date ts = new Date();
 		submitTs = ts.getTime();
 
@@ -254,6 +255,45 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.YEAR_DUR_M));
 				break;
 		}
+		int approval = getCancelApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.CANCEL_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.CANCEL_REVIEW;
+		approval = getRerunApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.RERUN_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.RERUN_REVIEW;
+		approval = getEnableApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.ENABLE_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.ENABLE_REVIEW;
+		approval = getSetStateApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.SET_STATE_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.SET_STATE_REVIEW;
+		approval = getIgnDepApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.IGN_DEP_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.IGN_DEP_REVIEW;
+		approval = getIgnRssApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.IGN_RSS_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.IGN_RSS_REVIEW;
+		approval = getCloneApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.CLONE_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.CLONE_REVIEW;
+		approval = getSuspendApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.SUSPEND_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.SUSPEND_REVIEW;
+		approval = getClrWarnApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.CLR_WARN_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.CLR_WARN_REVIEW;
+		approval = getPriorityApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.PRIORITY_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.PRIORITY_REVIEW;
+		approval = getEditParmApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.EDIT_PARM_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.EDIT_PARM_REVIEW;
+		approval = getKillApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.KILL_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.KILL_REVIEW;
+		approval = getSetJobStateApproval(sysEnv).intValue();
+		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL;
+		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.SET_JOB_STATE_REVIEW;
 		agingBase = new Integer(SDMSInterval.MINUTE);
 		final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.table.create(sysEnv,
 		                                sysEnv.randomLong(),
@@ -309,6 +349,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                                zero,
 		                                zero,
 		                                null,
+		                                new Integer(approvalMode),
 		                                submitTs,
 		                                resumeTs,
 		                                null,
@@ -495,6 +536,32 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                          getQaId(sysEnv),
 		                          neId,
 		                          fpId,
+		                          getCancelLeadFlag(sysEnv),
+		                          getCancelApproval(sysEnv),
+		                          getRerunLeadFlag(sysEnv),
+		                          getRerunApproval(sysEnv),
+		                          getEnableLeadFlag(sysEnv),
+		                          getEnableApproval(sysEnv),
+		                          getSetStateLeadFlag(sysEnv),
+		                          getSetStateApproval(sysEnv),
+		                          getIgnDepLeadFlag(sysEnv),
+		                          getIgnDepApproval(sysEnv),
+		                          getIgnRssLeadFlag(sysEnv),
+		                          getIgnRssApproval(sysEnv),
+		                          getCloneLeadFlag(sysEnv),
+		                          getCloneApproval(sysEnv),
+		                          getSuspendLeadFlag(sysEnv),
+		                          getSuspendApproval(sysEnv),
+		                          getClrWarnLeadFlag(sysEnv),
+		                          getClrWarnApproval(sysEnv),
+		                          getPriorityLeadFlag(sysEnv),
+		                          getPriorityApproval(sysEnv),
+		                          getEditParmLeadFlag(sysEnv),
+		                          getEditParmApproval(sysEnv),
+		                          getKillLeadFlag(sysEnv),
+		                          getKillApproval(sysEnv),
+		                          getSetJobStateLeadFlag(sysEnv),
+		                          getSetJobStateApproval(sysEnv),
 		                          getInheritPrivs(sysEnv)
 		                                                                );
 		Long seId = se.getId(sysEnv);
@@ -813,7 +880,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 				p = p | parentPrivs & inheritPrivs;
 			}
 			if((p & SDMSPrivilege.SUBMIT) == SDMSPrivilege.SUBMIT) p = p | SDMSPrivilege.VIEW;
-			if((p & SDMSPrivilege.OPERATE) == SDMSPrivilege.OPERATE) p = p | SDMSPrivilege.MONITOR;
+			if((p & (SDMSPrivilege.OPERATE|SDMSPrivilege.OPERATE_PRIVS)) != 0) p = p | SDMSPrivilege.MONITOR;
 			p = p & checkPrivs;
 		}
 		return p;

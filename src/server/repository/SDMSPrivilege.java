@@ -54,19 +54,48 @@ public class SDMSPrivilege
 	public final static String S_VIEW		= "V";
 	public final static String S_EXECUTE		= "X";
 
+	public final static String S_CANCEL		= "C";
+	public final static String S_RERUN		= "R";
+	public final static String S_ENABLE		= "E";
+	public final static String S_SET_STATE		= "S";
+	public final static String S_IGN_DEPENDENCY	= "D";
+	public final static String S_IGN_RESOURCE	= "I";
+	public final static String S_CLONE		= "L";
+	public final static String S_SUSPEND		= "U";
+	public final static String S_CLEAR_WARNING	= "W";
+	public final static String S_PRIORITY		= "P";
+	public final static String S_MODIFY_PARAMETER	= "M";
+	public final static String S_KILL		= "K";
+	public final static String S_APPROVE		= "A";
+	public final static String S_SET_JOB_STATE	= "J";
+
 	public final static long CREATE			= 0x0000000000000001L;
 	public final static long CREATE_CONTENT		= 0x0000000000000002L;
 	public final static long CREATE_PARENT_CONTENT	= 0x0000000000000004L;
 	public final static long RESOURCE		= 0x0000000000000008L;
 	public final static long DROP			= 0x0000000000000010L;
 	public final static long EDIT			= 0x0000000000000100L;
+	public final static long APPROVE		= 0x0000000000000200L;
 	public final static long MONITOR		= 0x0000000000001000L;
 	public final static long OPERATE		= 0x0000000000010000L;
+	public final static long CANCEL			= 0x0000000000020000L;
+	public final static long RERUN			= 0x0000000000040000L;
+	public final static long ENABLE			= 0x0000000000080000L;
 	public final static long SUBMIT			= 0x0000000000100000L;
+	public final static long SET_STATE		= 0x0000000000200000L;
+	public final static long IGN_DEPENDENCY		= 0x0000000000400000L;
+	public final static long IGN_RESOURCE		= 0x0000000000800000L;
 	public final static long USE			= 0x0000000001000000L;
+	public final static long CLONE			= 0x0000000002000000L;
+	public final static long SUSPEND		= 0x0000000004000000L;
+	public final static long CLEAR_WARNING		= 0x0000000008000000L;
 	public final static long VIEW			= 0x0000000010000000L;
+	public final static long PRIORITY		= 0x0000000020000000L;
+	public final static long MODIFY_PARAMETER	= 0x0000000040000000L;
+	public final static long KILL			= 0x0000000080000000L;
 	public final static long EXECUTE		= 0x0000000100000000L;
 	public final static long GRANT			= 0x0000000200000000L;
+	public final static long SET_JOB_STATE		= 0x0002000000000000L;
 
 	public final static long MANAGE_USER		= 0x0000000400000000L;
 	public final static long MANAGE_GROUP		= 0x0000000800000000L;
@@ -82,25 +111,32 @@ public class SDMSPrivilege
 	public final static long MANAGE_SYS		= 0x0000200000000000L;
 	public final static long MANAGE_SEL		= 0x0000400000000000L;
 	public final static long MANAGE_NP		= 0x0000800000000000L;
+	public final static long MANAGE_WT		= 0x0001000000000000L;
 
 	private final static long VALID_BITS		= CREATE|CREATE_CONTENT|CREATE_PARENT_CONTENT|DROP|
 							  EDIT|MONITOR|OPERATE|SUBMIT|USE|VIEW|GRANT|RESOURCE|
+							  CANCEL|RERUN|ENABLE|SET_STATE|IGN_DEPENDENCY|IGN_RESOURCE|
+							  CLONE|SUSPEND|CLEAR_WARNING|PRIORITY|MODIFY_PARAMETER|KILL|APPROVE|
+							  SET_JOB_STATE|
 							  EXECUTE|MANAGE_USER|MANAGE_GROUP|MANAGE_ESD|MANAGE_ESP|
 							  MANAGE_ESM|MANAGE_EST|MANAGE_RSD|MANAGE_RSP|MANAGE_RSM|
-	                MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL|MANAGE_NP;
+	                MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL|MANAGE_NP|MANAGE_WT;
 
 	private final static long INVALID_BITS		= ~VALID_BITS;
 
 	public final static long ALL			= CREATE|CREATE_CONTENT|DROP|RESOURCE|EXECUTE|
 							  EDIT|MONITOR|OPERATE|SUBMIT|USE|VIEW|GRANT;
 
+	public final static long OPERATE_PRIVS		= CANCEL|RERUN|ENABLE|SET_STATE|IGN_DEPENDENCY|IGN_RESOURCE|CLONE|SUSPEND|CLEAR_WARNING|PRIORITY|MODIFY_PARAMETER|KILL|APPROVE|SET_JOB_STATE;
+
 	public final static long MANAGE_ALL		= MANAGE_USER|MANAGE_GROUP|MANAGE_ESD|MANAGE_ESP|
 							  MANAGE_ESM|MANAGE_EST|MANAGE_RSD|MANAGE_RSP|MANAGE_RSM|
-	                MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL|MANAGE_NP;
+							  MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL|MANAGE_NP|MANAGE_WT;
 
 	public final static long MANAGE_PRIVS[] = 	{ MANAGE_USER, MANAGE_GROUP, MANAGE_ESD, MANAGE_ESP,
 							  MANAGE_ESM, MANAGE_EST, MANAGE_RSD, MANAGE_RSP, MANAGE_RSM,
-	                                                  MANAGE_FP, MANAGE_ENV, MANAGE_SYS, MANAGE_SEL, MANAGE_NP
+	                                                  MANAGE_FP, MANAGE_ENV, MANAGE_SYS, MANAGE_SEL, MANAGE_NP,
+							  MANAGE_WT
 							};
 
 	public final static long NOPRIVS		= 0x0000000000000000L;
@@ -123,6 +159,20 @@ public class SDMSPrivilege
 		mapper.put(new Integer(Parser.OPERATE),		new Long(SDMSPrivilege.OPERATE));
 		mapper.put(new Integer(Parser.RESOURCE),	new Long(SDMSPrivilege.RESOURCE));
 		mapper.put(new Integer(Parser.EXECUTE),		new Long(SDMSPrivilege.EXECUTE));
+		mapper.put(new Integer(Parser.CANCEL),		new Long(SDMSPrivilege.CANCEL));
+		mapper.put(new Integer(Parser.RERUN),		new Long(SDMSPrivilege.RERUN));
+		mapper.put(new Integer(Parser.ENABLE),		new Long(SDMSPrivilege.ENABLE));
+		mapper.put(new Integer(Parser.STATUS),		new Long(SDMSPrivilege.SET_STATE));
+		mapper.put(new Integer(Parser.DEPENDENCY),	new Long(SDMSPrivilege.IGN_DEPENDENCY));
+		mapper.put(new Integer(Parser.IGNORE),		new Long(SDMSPrivilege.IGN_RESOURCE));
+		mapper.put(new Integer(Parser.CLONE),		new Long(SDMSPrivilege.CLONE));
+		mapper.put(new Integer(Parser.SUSPEND),		new Long(SDMSPrivilege.SUSPEND));
+		mapper.put(new Integer(Parser.WARNING),		new Long(SDMSPrivilege.CLEAR_WARNING));
+		mapper.put(new Integer(Parser.PRIORITY),	new Long(SDMSPrivilege.PRIORITY));
+		mapper.put(new Integer(Parser.PARAMETERS),	new Long(SDMSPrivilege.MODIFY_PARAMETER));
+		mapper.put(new Integer(Parser.KILL),		new Long(SDMSPrivilege.KILL));
+		mapper.put(new Integer(Parser.APPROVE),		new Long(SDMSPrivilege.APPROVE));
+		mapper.put(new Integer(Parser.JOB_STATUS),	new Long(SDMSPrivilege.SET_JOB_STATE));
 	}
 
 	public SDMSPrivilege()
@@ -184,13 +234,44 @@ public class SDMSPrivilege
 	public String toString()
 	{
 		StringBuffer sb = new StringBuffer();
+		boolean full = true;
 		if((priv&CREATE)	== CREATE)			sb.append(S_CREATE);
 		if((priv&CREATE_CONTENT)== CREATE_CONTENT)		sb.append(S_CREATE_CONTENT);
 		if((priv&CREATE_PARENT_CONTENT)==CREATE_PARENT_CONTENT)	sb.append(S_CREATE_PARENT_CONTENT);
 		if((priv&DROP)		== DROP)			sb.append(S_DROP);
 		if((priv&EDIT)		== EDIT)			sb.append(S_EDIT);
 		if((priv&MONITOR)	== MONITOR)			sb.append(S_MONITOR);
-		if((priv&OPERATE)	== OPERATE)			sb.append(S_OPERATE);
+
+		if((priv&(OPERATE_PRIVS|OPERATE))!= 0) {
+			sb.append(S_OPERATE);
+			if ((priv&OPERATE) != 0) {
+				if ((priv&OPERATE_PRIVS) != 0) {
+					full = true;
+				} else {
+					full = false;
+				}
+			}
+			if (full) {
+				sb.append("(");
+				if((priv&OPERATE)	== OPERATE)			sb.append(S_OPERATE);
+				if((priv&CANCEL)	== CANCEL)			sb.append(S_CANCEL);
+				if((priv&RERUN)		== RERUN)			sb.append(S_RERUN);
+				if((priv&ENABLE)	== ENABLE)			sb.append(S_ENABLE);
+				if((priv&SET_STATE)	== SET_STATE)			sb.append(S_SET_STATE);
+				if((priv&IGN_DEPENDENCY)== IGN_DEPENDENCY)		sb.append(S_IGN_DEPENDENCY);
+				if((priv&IGN_RESOURCE)	== IGN_RESOURCE)		sb.append(S_IGN_RESOURCE);
+				if((priv&CLONE)		== CLONE)			sb.append(S_CLONE);
+				if((priv&SUSPEND)	== SUSPEND)			sb.append(S_SUSPEND);
+				if((priv&CLEAR_WARNING)	== CLEAR_WARNING)		sb.append(S_CLEAR_WARNING);
+				if((priv&PRIORITY)	== PRIORITY)			sb.append(S_PRIORITY);
+				if((priv&MODIFY_PARAMETER)== MODIFY_PARAMETER)		sb.append(S_MODIFY_PARAMETER);
+				if((priv&KILL)		== KILL)			sb.append(S_KILL);
+				if((priv&APPROVE)	== APPROVE)			sb.append(S_APPROVE);
+				if((priv&SET_JOB_STATE)	== SET_JOB_STATE)		sb.append(S_SET_JOB_STATE);
+				sb.append(")");
+			}
+		}
+
 		if((priv&SUBMIT)	== SUBMIT)			sb.append(S_SUBMIT);
 		if((priv&USE)		== USE)				sb.append(S_USE);
 		if((priv&VIEW)		== VIEW)			sb.append(S_VIEW);
@@ -211,6 +292,21 @@ public class SDMSPrivilege
 		if((priv&EDIT)		== EDIT)			v.add("EDIT");
 		if((priv&MONITOR)	== MONITOR)			v.add("MONITOR");
 		if((priv&OPERATE)	== OPERATE)			v.add("OPERATE");
+		if((priv&CANCEL)	== CANCEL)			v.add("CANCEL");
+		if((priv&RERUN)		== RERUN)			v.add("RERUN");
+		if((priv&ENABLE)	== ENABLE)			v.add("ENABLE");
+		if((priv&SET_STATE)	== SET_STATE)			v.add("SET STATE");
+		if((priv&IGN_DEPENDENCY)== IGN_DEPENDENCY)		v.add("IGNORE DEPENDENCY");
+		if((priv&IGN_RESOURCE)	== IGN_RESOURCE)		v.add("IGNORE RESOURCE");
+		if((priv&CLONE)		== CLONE)			v.add("CLONE");
+		if((priv&SUSPEND)	== SUSPEND)			v.add("SUSPEND");
+		if((priv&CLEAR_WARNING)	== CLEAR_WARNING)		v.add("CLEAR WARNING");
+		if((priv&PRIORITY)	== PRIORITY)			v.add("PRIORITY");
+		if((priv&MODIFY_PARAMETER)== MODIFY_PARAMETER)		v.add("EDIT PARAMETER");
+		if((priv&KILL)		== KILL)			v.add("KILL");
+		if((priv&APPROVE)	== APPROVE)			v.add("APPROVE");
+		if((priv&SET_JOB_STATE)	== SET_JOB_STATE)		v.add("SET JOB STATE");
+
 		if((priv&SUBMIT)	== SUBMIT)			v.add("SUBMIT");
 		if((priv&USE)		== USE)				v.add("USE");
 		if((priv&VIEW)		== VIEW)			v.add("VIEW");
@@ -231,6 +327,7 @@ public class SDMSPrivilege
 		if((priv&MANAGE_SYS)	== MANAGE_SYS)			v.add("MANAGE SYSTEM");
 		if((priv&MANAGE_SEL)	== MANAGE_SEL)			v.add("MANAGE SELECT");
 		if((priv&MANAGE_NP)	== MANAGE_NP)			v.add("MANAGE NICE PROFILE");
+		if((priv&MANAGE_WT)	== MANAGE_WT)			v.add("MANAGE WATCH TYPE");
 
 		return (String[]) v.toArray (new String [v.size()]);
 	}
@@ -252,7 +349,14 @@ public class SDMSPrivilege
 
 	public boolean can(long p)
 	{
+		if ((priv&OPERATE) != 0)
+			return (((priv|OPERATE_PRIVS)&p)==p);
 		return ((priv&p)==p);
+	}
+
+	public boolean canAny(long p)
+	{
+		return ((priv&p) != 0);
 	}
 
 	public boolean isEmpty()

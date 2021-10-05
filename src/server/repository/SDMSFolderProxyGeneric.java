@@ -38,7 +38,7 @@ import de.independit.scheduler.server.exception.*;
 public class SDMSFolderProxyGeneric extends SDMSProxy
 {
 
-	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP|SDMSPrivilege.CREATE_CONTENT|SDMSPrivilege.CREATE_PARENT_CONTENT|SDMSPrivilege.GRANT|SDMSPrivilege.RESOURCE|SDMSPrivilege.SUBMIT|SDMSPrivilege.MONITOR|SDMSPrivilege.OPERATE;
+	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP|SDMSPrivilege.CREATE_CONTENT|SDMSPrivilege.CREATE_PARENT_CONTENT|SDMSPrivilege.GRANT|SDMSPrivilege.RESOURCE|SDMSPrivilege.SUBMIT|SDMSPrivilege.MONITOR|SDMSPrivilege.OPERATE|SDMSPrivilege.PRIORITY|SDMSPrivilege.CANCEL|SDMSPrivilege.RERUN|SDMSPrivilege.ENABLE|SDMSPrivilege.CLEAR_WARNING|SDMSPrivilege.SET_STATE|SDMSPrivilege.IGN_DEPENDENCY|SDMSPrivilege.IGN_RESOURCE|SDMSPrivilege.CLONE|SDMSPrivilege.SUSPEND|SDMSPrivilege.MODIFY_PARAMETER|SDMSPrivilege.KILL|SDMSPrivilege.APPROVE;
 
 	static final public int name_size = 64;
 
