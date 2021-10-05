@@ -112,7 +112,7 @@ public class NotifierThread extends InternalSession
 				Integer cnt = getFromPingList(sId);
 				if (cnt != null && cnt.intValue() < 5) {
 					SDMSScope s = SDMSScopeTable.getObject(sysEnv, sId);
-					doTrace(null, "Notifying " + s.pathString(sysEnv) + " (" + s.getId(sysEnv) + ")", SEVERITY_INFO);
+					doTrace(null, "Notifying " + s.pathString(sysEnv) + " (" + s.getId(sysEnv) + ")", SEVERITY_DEBUG);
 					s.notify(sysEnv);
 					incPingList(sId);
 				}
