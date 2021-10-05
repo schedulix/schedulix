@@ -38,12 +38,16 @@ public class ChownChecker
 {
 	public static final String __version = "@(#) $Id: ChownChecker.java,v 2.2.6.1 2013/03/14 10:24:24 ronald Exp $";
 
-	public static void check(SystemEnvironment sysEnv, Long gIdTo)
+	public static void check(SystemEnvironment sysEnv, Long gIdTo, Long gIdFrom)
 	throws SDMSException
 	{
 		final Long uId = sysEnv.cEnv.uid();
 		final SDMSUser u = SDMSUserTable.getObject(sysEnv, uId);
 		final SDMSGroup g = SDMSGroupTable.getObject(sysEnv, gIdTo);
+		SDMSGroup gf = null;
+		if (gIdFrom != null)
+			gf = SDMSGroupTable.getObject(sysEnv, gIdFrom);
+
 		if (g.getDeleteVersion(sysEnv).longValue() != 0) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03603220847",
 			                               "Group $1 is deleted", g.getName(sysEnv)));
@@ -53,6 +57,13 @@ public class ChownChecker
 		    !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03312162236",
 			                               "User $1 does not belong to Group $2", u.getName(sysEnv), g.getName(sysEnv)));
+		}
+
+		if(gf != null &&
+		    !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gIdFrom, uId)) &&
+		    !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03312162237",
+			                               "User $1 does not belong to current owner Group $2", u.getName(sysEnv), gf.getName(sysEnv)));
 		}
 	}
 
