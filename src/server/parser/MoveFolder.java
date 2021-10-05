@@ -119,11 +119,11 @@ public class MoveFolder extends Node
 		}
 
 		if(SDMSSchedulingEntityTable.idx_folderId_name.containsKey(sysEnv, new SDMSKey(opId, newName))) {
-			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03112161101", "Object with name $1 already exists",
+			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03112161105", "Object with name $1 already exists",
 				newName));
 		}
 		if(SDMSFolderTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(opId, newName))) {
-			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03112161103", "Object with name $1 already exists",
+			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03112161106", "Object with name $1 already exists",
 				newName));
 		}
 

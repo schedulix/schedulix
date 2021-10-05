@@ -127,7 +127,7 @@ public class CreateSchedule
 			tz = (String) with.get(ParseStr.S_TIME);
 			TimeZone tmp = TimeZone.getTimeZone(tz);
 			if (!tz.equals(tmp.getID())) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03207031503", "Time Zone " + tz + " unknown"));
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03207031504", "Time Zone " + tz + " unknown"));
 			}
 		} else {
 			TimeZone tmp = TimeZone.getDefault();

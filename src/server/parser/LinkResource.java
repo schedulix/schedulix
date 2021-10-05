@@ -68,8 +68,8 @@ public class LinkResource extends ManipResource
 		gId = r.getOwnerId(sysEnv);
 		HashSet groups = sysEnv.cEnv.gid();
 		if(!groups.contains(gId) && !groups.contains(SDMSObject.adminGId))
-			throw new AccessViolationException(new SDMSMessage(sysEnv, "03402260151",
-				"You cannot create a resource with a group you do not belong to"));
+			throw new AccessViolationException(new SDMSMessage(sysEnv, "03402260152",
+			                                   "You cannot create a resource owned by a group you aren't member of"));
 
 		tag = null;
 		traceInterval = null;
@@ -109,9 +109,9 @@ public class LinkResource extends ManipResource
 		SystemEnvironment.sched.notifyChange(sysEnv, r, sId, SchedulingThread.CREATE);
 
 		if (replaced)
-			result.setFeedback(new SDMSMessage(sysEnv, "03202211126", "Resource replaced"));
+			result.setFeedback(new SDMSMessage(sysEnv, "03202211127", "Resource replaced"));
 		else
-			result.setFeedback(new SDMSMessage(sysEnv, "03202211126", "Resource created"));
+			result.setFeedback(new SDMSMessage(sysEnv, "03202211128", "Resource created"));
 	}
 
 	private void check_link(SystemEnvironment sysEnv, SDMSResource r, Long sId)

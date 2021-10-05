@@ -165,7 +165,7 @@ public class SSOConnect extends Connect
 				}
 			}
 			if (!isBicsuiteUser)
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "02709251459", "Permission denied"));
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "02709251505", "Permission denied"));
 
 			if (SystemEnvironment.useAdGroups)
 				initUser(sysEnv, vGroups.toArray(new String[0]), false, SystemEnvironment.autoCreateUsers, SystemEnvironment.autoCreateGroups, defaultGroup);
@@ -179,7 +179,7 @@ public class SSOConnect extends Connect
 			desc.add("TOKEN");
 			data.add(token);
 		}
-		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv, "03205141302", "Connect"), desc, data);
+		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv, "03205141303", "Connect"), desc, data);
 		result.setOutputContainer(d_container);
 		result.setFeedback(new SDMSMessage(sysEnv, "03709191436", (firstTime ? "Connection in progress" : "Connected")));
 	}

@@ -54,7 +54,7 @@ public class RenameWt extends Node
 		throws SDMSException
 	{
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_OBJECT_MONITOR);
-		result.setFeedback(new SDMSMessage(sysEnv, "02108241001", "Watch Type renamed"));
+		result.setFeedback(new SDMSMessage(sysEnv, "02108241002", "Watch Type renamed"));
 	}
 }
 

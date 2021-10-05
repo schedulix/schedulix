@@ -324,7 +324,7 @@ public class CreateTrigger extends ManipTrigger
 
 		resumeObj = with.get(ParseStr.S_RESUME);
 		if (!isSuspend.booleanValue() && (resumeObj != null))
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03108091752", "Resume clause without suspend clause doesn't make sense"));
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03108091753", "Resume clause without suspend clause doesn't make sense"));
 		analyzeResumeObj(sysEnv);
 
 		maxRetry = (Integer) with.get(ParseStr.S_SUBMITCOUNT);

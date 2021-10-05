@@ -62,7 +62,7 @@ public class CreateResourceStatus extends Node
 			}
 		}
 
-		result.setFeedback(new SDMSMessage(sysEnv, "03201100049", "Resource State Definition created"));
+		result.setFeedback(new SDMSMessage(sysEnv, "03201100050", "Resource State Definition created"));
 	}
 }
 

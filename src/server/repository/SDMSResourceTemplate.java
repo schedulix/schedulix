@@ -136,7 +136,7 @@ public class SDMSResourceTemplate extends SDMSResourceTemplateProxyGeneric
 			pd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(nrId, name));
 		} catch(NotFoundException nfe) {
 			throw new CommonErrorException(
-			        new SDMSMessage(sysEnv, "03409111747", "Parameter $1 not defined for this resource", name));
+			        new SDMSMessage(sysEnv, "03409111748", "Parameter $1 not defined for this resource", name));
 		}
 
 		return pd;
@@ -162,7 +162,7 @@ public class SDMSResourceTemplate extends SDMSResourceTemplateProxyGeneric
 			int type = pd.getType(sysEnv).intValue();
 			if(type == SDMSParameterDefinition.CONSTANT)
 				throw new CommonErrorException(
-				        new SDMSMessage(sysEnv, "03409111750", "Parameter $1 is defined as a $2 for this resource", name, pd.getTypeAsString(sysEnv)));
+				        new SDMSMessage(sysEnv, "03409111751", "Parameter $1 is defined as a $2 for this resource", name, pd.getTypeAsString(sysEnv)));
 			if(value == null) continue;
 
 			final String sic = (value == null ? value : '=' + (String) value);
@@ -219,7 +219,7 @@ public class SDMSResourceTemplate extends SDMSResourceTemplateProxyGeneric
 				pd = getParameterDefinition(sysEnv, pn);
 				if(pd.getType(sysEnv).intValue() == SDMSParameterDefinition.CONSTANT)
 					throw new CommonErrorException(
-					        new SDMSMessage(sysEnv, "03409131150",
+					        new SDMSMessage(sysEnv, "03409131151",
 					                        "Parameter $1 is defined as a $2 for this resource", pn, pd.getTypeAsString(sysEnv)));
 
 				pdId = pd.getId(sysEnv);

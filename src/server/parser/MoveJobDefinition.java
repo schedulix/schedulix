@@ -113,7 +113,7 @@ public class MoveJobDefinition extends Node
 
 		se.setName (sysEnv, newName);
 
-		result.setFeedback(new SDMSMessage(sysEnv, "03202201037", "Job Definition renamed"));
+		result.setFeedback(new SDMSMessage(sysEnv, "03202201038", "Job Definition renamed"));
 	}
 
 	public void go(SystemEnvironment sysEnv)

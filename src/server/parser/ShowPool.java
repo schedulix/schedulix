@@ -132,7 +132,7 @@ public class ShowPool extends ShowCommented
 
 		result.setOutputContainer(d_container);
 
-		result.setFeedback(new SDMSMessage(sysEnv, "03603161318", "Pool shown"));
+		result.setFeedback(new SDMSMessage(sysEnv, "03603161319", "Pool shown"));
 	}
 
 }

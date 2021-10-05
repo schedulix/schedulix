@@ -89,7 +89,7 @@ public class FolderVariableResolver extends VariableResolver
 					pf = SDMSFolderTable.getObject(sysEnv, parentId);
 				return getInternalVariableValue(sysEnv, pf, key, fastAccess, mode, triggercontext, recursionCheck, version);
 			} else {
-				throw new NotFoundException(new SDMSMessage(sysEnv, "03209231452", "Couldn't resolve the variable $1", key));
+				throw new NotFoundException(new SDMSMessage(sysEnv, "03209231454", "Couldn't resolve the variable $1", key));
 			}
 		}
 	}

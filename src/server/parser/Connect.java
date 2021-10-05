@@ -229,7 +229,7 @@ public class Connect extends Node
 					passwd = CheckSum.mkstr(CheckSum.sha256((txtPasswd + (salt == null ? "" : salt)).getBytes()), false);
 				if (!u.getPasswd(sysEnv).equals(passwd)) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv,
-						"02110192352", "Invalid username or password"));
+					                               "02110192353", "Invalid username or password"));
 				}
 			}
 			if(sysEnv.getConnectState() != SystemEnvironment.NORMAL) {
@@ -400,7 +400,7 @@ public class Connect extends Node
 			if (checkResult == Authenticator.ABORT && SystemEnvironment.auth.checkInternally(user)) {
 				connect_internal_user(sysEnv);
 			} else {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "02110192352", "Invalid username or password"));
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "02110192356", "Invalid username or password"));
 			}
 		}
 	}
@@ -494,7 +494,7 @@ public class Connect extends Node
 			}
 			if (!sme.getAccessKey(sysEnv).equals(accessKey)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
-						"02110192353", "Invalid username or password"));
+						"02110192354", "Invalid username or password"));
 			}
 		} catch (NotFoundException nfe) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv,

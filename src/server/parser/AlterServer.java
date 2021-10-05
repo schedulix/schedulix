@@ -99,28 +99,28 @@ public class AlterServer extends Node
 			if (suspend.booleanValue()) {
 				if (SystemEnvironment.sched.id() == threadId) {
 					SystemEnvironment.sched.SDMSsuspend();
-					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Scheduling Thread suspended"));
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191021", "Scheduling Thread suspended"));
 				}
 				if (SystemEnvironment.tt.id() == threadId) {
 					SystemEnvironment.tt.SDMSsuspend();
-					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Trigger Thread suspended"));
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191022", "Trigger Thread suspended"));
 				}
 				if (SystemEnvironment.timer.id() == threadId) {
 					SystemEnvironment.timer.SDMSsuspend();
-					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Timer Thread suspended"));
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191023", "Timer Thread suspended"));
 				}
 			} else {
 				if (SystemEnvironment.sched.id() == threadId) {
 					SystemEnvironment.sched.SDMSresume();
-					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Scheduling Thread resumed"));
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191024", "Scheduling Thread resumed"));
 				}
 				if (SystemEnvironment.tt.id() == threadId) {
 					SystemEnvironment.tt.SDMSresume();
-					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Trigger Thread resumed"));
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191025", "Trigger Thread resumed"));
 				}
 				if (SystemEnvironment.timer.id() == threadId) {
 					SystemEnvironment.timer.SDMSresume();
-					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Timer Thread resumed"));
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191026", "Timer Thread resumed"));
 				}
 			}
 		} else {
@@ -144,7 +144,7 @@ public class AlterServer extends Node
 				case 0:
 					((ListenThread) list[i]).trace_off();
 					SDMSException.debugOff();
-					result.setFeedback(new SDMSMessage(sysEnv, "03203191018", "Server Trace disabled"));
+					result.setFeedback(new SDMSMessage(sysEnv, "03203191027", "Server Trace disabled"));
 					break;
 				case 1:
 					SDMSException.debugOff();
