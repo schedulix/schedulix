@@ -47,7 +47,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_PROFESSIONAL = "PROFESSIONAL";
 	public static final String S_ENTERPRISE   = "ENTERPRISE";
 
-	public static final String programVersion = "2.10";
+	public static final String programVersion = "2.11";
 	public static String programLevel = null;
 
 	public static final long SYSTEM_OBJECTS_BOUNDARY = 1000;
@@ -74,12 +74,16 @@ public class SystemEnvironment implements Cloneable
 	private static final String S_LANGLEVEL210  = "2.10";
 	public static final int LANGLEVEL210 = 4;
 
+	private static final String S_LANGLEVEL211  = "2.11";
+	public static final int LANGLEVEL211 = 5;
+
 	private static final String LANGLEVELS[] = {
 		S_LANGLEVEL261,
 		S_LANGLEVEL27,
 		S_LANGLEVEL28,
 		S_LANGLEVEL29,
-		S_LANGLEVEL210
+		S_LANGLEVEL210,
+		S_LANGLEVEL211
 	};
 
 	private static final int DEFAULT_LANGLEVEL = LANGLEVELS.length - 1;
@@ -337,6 +341,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_OBJECT_MONITOR	      = "OBJECT_MONITOR";
 	public static final String S_NICE_PROFILE	      = "NICE_PROFILE";
 	public static final String S_WARNINGS	              = "WARNINGS";
+	public static final String S_APPROVALS	              = "APPROVALS";
 	private HashMap featureLevels;
 
 	public final static HashMap<Long, Long> jidsStarting = new HashMap<Long, Long>();
@@ -416,8 +421,9 @@ public class SystemEnvironment implements Cloneable
 		featureLevels.put(S_EXIT_STATE_TRANSLATION,   new Feature(S_BASIC,        "Use of Exit State Translations"));
 		featureLevels.put(S_POOL,		      new Feature(S_ENTERPRISE,   "Use of Pools and Distributions"));
 		featureLevels.put(S_OBJECT_MONITOR,	      new Feature(S_PROFESSIONAL, "Use of Object Monitors"));
-		featureLevels.put(S_NICE_PROFILE,	      new Feature(S_ENTERPRISE,   "Use of Nice Profiles"));
+		featureLevels.put(S_NICE_PROFILE,	      new Feature(S_PROFESSIONAL, "Use of Nice Profiles"));
 		featureLevels.put(S_WARNINGS,	              new Feature(S_PROFESSIONAL, "Warnings on Submitted Entities"));
+		featureLevels.put(S_APPROVALS,	              new Feature(S_PROFESSIONAL, "4-eyes principle"));
 	}
 
 	private void setProperties()
@@ -603,7 +609,7 @@ public class SystemEnvironment implements Cloneable
 	{
 		Feature f = (Feature)featureLevels.get(feature);
 		if (f == null) {
-			throw new CommonErrorException(new SDMSMessage(this, "02803040840", "Availability Check on unknown Feature $1", feature));
+			throw new CommonErrorException(new SDMSMessage(this, "02803040841", "Availability Check on unknown Feature $1", feature));
 		}
 		if (checkCompatLevel(f.requiredLevel)) {
 			return true;
