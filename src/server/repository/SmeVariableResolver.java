@@ -38,9 +38,6 @@ import de.independit.scheduler.server.parser.*;
 
 public class SmeVariableResolver extends VariableResolver
 {
-
-	public static final String __version = "@(#) $Id: SmeVariableResolver.java,v 2.14.4.2 2013/03/20 11:27:16 ronald Exp $";
-
 	public final static String S_JOBID	= SDMSSubmittedEntity.S_JOBID;
 	public final static String S_SEID	= SDMSSubmittedEntity.S_SEID;
 	public final static String S_MASTERID	= SDMSSubmittedEntity.S_MASTERID;
@@ -289,7 +286,8 @@ public class SmeVariableResolver extends VariableResolver
 			}
 		}
 
-		if(specialNames.containsKey(key) || SystemEnvironment.scopeSysVars.contains(key)) return getSpecialValue(sysEnv, thisSme, key, triggercontext, evalScope);
+		if(specialNames.containsKey(key) || SystemEnvironment.scopeSysVars.contains(key))
+			return getSpecialValue(sysEnv, thisSme, key, triggercontext, evalScope);
 		try {
 			ev = SDMSEntityVariableTable.idx_smeId_Name_getUnique(sysEnv, new SDMSKey(thisSme.getId(sysEnv), key));
 			Long evLink = ev.getEvLink(sysEnv);
