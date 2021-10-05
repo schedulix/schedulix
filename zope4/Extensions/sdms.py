@@ -1129,6 +1129,7 @@ def deepcopy(dict):
 def getLog(url):
 	try:
 		r = requests.get(url)
+		r.encoding = 'UTF-8'
 		return r.text
 	except: 
 		return 'Error retrieving ' + url
