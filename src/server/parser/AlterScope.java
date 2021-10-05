@@ -128,7 +128,7 @@ public class AlterScope
 			}
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
 					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
-			ChownChecker.check(sysEnv, gId);
+			ChownChecker.check(sysEnv, gId, s.getOwnerId(sysEnv));
 			s.setOwnerId(sysEnv, gId);
 			if(with.containsKey (ParseStr.S_GROUP_CASCADE)) {
 				changeChildGroup(sysEnv, sId, gId);
@@ -222,7 +222,7 @@ public class AlterScope
 			final String gName = (String) with.get (ParseStr.S_GROUP);
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
 					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
-			ChownChecker.check(sysEnv, gId);
+			ChownChecker.check(sysEnv, gId, s.getOwnerId(sysEnv));
 			s.setOwnerId(sysEnv, gId);
 		}
 

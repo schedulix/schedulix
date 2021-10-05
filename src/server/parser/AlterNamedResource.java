@@ -173,7 +173,7 @@ public class AlterNamedResource extends Node
 		}
 
 		if(gId != null) {
-			ChownChecker.check(sysEnv, gId);
+			ChownChecker.check(sysEnv, gId, nr.getOwnerId(sysEnv));
 			nr.setOwnerId(sysEnv, gId);
 			if(with.containsKey(ParseStr.S_GROUP_CASCADE)) {
 				changeChildGroup(sysEnv, nr.getId(sysEnv), gId);
@@ -185,7 +185,7 @@ public class AlterNamedResource extends Node
 			if (inheritPrivs == null) inheritPrivs = new Long(0);
 			long lpriv = inheritPrivs.longValue();
 			if((nr.getPrivilegeMask() & lpriv) != lpriv) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061132", "Incompatible grant"));
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061135", "Incompatible grant"));
 			}
 			nr.setInheritPrivs(sysEnv, inheritPrivs);
 		}

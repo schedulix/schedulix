@@ -85,7 +85,7 @@ public class AlterFolder extends Node
 			if (inheritPrivs == null) inheritPrivs = new Long(0);
 			long lpriv = inheritPrivs.longValue();
 			if((f.getPrivilegeMask() & lpriv) != lpriv) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061132", "Incompatible grant"));
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061134", "Incompatible grant"));
 			}
 			f.setInheritPrivs(sysEnv, inheritPrivs);
 		}
@@ -105,7 +105,7 @@ public class AlterFolder extends Node
 			}
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
 					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
-			ChownChecker.check(sysEnv, gId);
+			ChownChecker.check(sysEnv, gId, f.getOwnerId(sysEnv));
 			f.setOwnerId(sysEnv, gId);
 			if (with.containsKey(ParseStr.S_GROUP_CASCADE)) {
 				setChildOwner (sysEnv,f.getId(sysEnv), gId);

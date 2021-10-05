@@ -130,7 +130,7 @@ public class AlterResource extends ManipResource
 
 		if(groupname != null) {
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(groupname, new Long(0))).getId(sysEnv);
-			ChownChecker.check(sysEnv, gId);
+			ChownChecker.check(sysEnv, gId, r.getOwnerId(sysEnv));
 			r.setOwnerId(sysEnv, gId);
 		}
 
@@ -154,10 +154,10 @@ public class AlterResource extends ManipResource
 			final SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, rt.getNrId(sysEnv));
 			final Long rspId = nr.getRspId(sysEnv);
 			if (rspId == null) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03604041545", "Resource does not have a profile"));
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03604041546", "Resource does not have a profile"));
 			}
 			if(!SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(rsdId, rspId)))
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03604041633", "Resource state is not contained within the resource state profile"));
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03604041634", "Resource state is not contained within the resource state profile"));
 			rt.setRsdId(sysEnv, rsdId);
 		}
 
@@ -173,7 +173,7 @@ public class AlterResource extends ManipResource
 
 		if(groupname != null) {
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(groupname, new Long(0))).getId(sysEnv);
-			ChownChecker.check(sysEnv, gId);
+			ChownChecker.check(sysEnv, gId, rt.getOwnerId(sysEnv));
 			rt.setOwnerId(sysEnv, gId);
 		}
 

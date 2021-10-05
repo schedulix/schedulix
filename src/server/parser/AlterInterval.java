@@ -293,7 +293,7 @@ public class AlterInterval
 		if(with.containsKey(ParseStr.S_GROUP)) {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(gName, ZERO)).getId(sysEnv);
-			ChownChecker.check(sysEnv, gId);
+			ChownChecker.check(sysEnv, gId, ival.getOwnerId(sysEnv));
 			ival.setOwnerId(sysEnv, gId);
 		}
 
