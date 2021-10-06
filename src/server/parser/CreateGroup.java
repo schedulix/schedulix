@@ -95,6 +95,11 @@ public class CreateGroup extends ManipGroup
 					replace = true;
 					g1.setDeleteVersion(sysEnv, new Long(0));
 					newGroupId = g1.getId(sysEnv);
+					Vector gv = SDMSGrantTable.idx_gId.getVector(sysEnv, newGroupId);
+					for (int i = 0; i < gv.size(); ++i) {
+						SDMSGrant gr = (SDMSGrant) gv.get(i);
+						gr.delete(sysEnv);
+					}
 					SDMSMemberTable.table.create(sysEnv, newGroupId, myUId);
 					addedMe = true;
 					break;
