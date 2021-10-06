@@ -49,13 +49,3 @@ SELECT
     , CHANGER_U_ID                   AS CHANGER_U_ID
     , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM USER_EXTENTS;
-CREATE TABLE ARC_USER_EXTENTS (
-    ID                             decimal(20) NOT NULL
-    , UP_ID                          decimal(20)      NULL
-    , SEQUENCE                       integer          NULL
-    , EXTENT                         varchar(256)     NULL
-    , CREATOR_U_ID                   decimal(20)      NULL
-    , CREATE_TS                      decimal(20)      NULL
-    , CHANGER_U_ID                   decimal(20)      NULL
-    , CHANGE_TS                      decimal(20)      NULL
-);

@@ -93,6 +93,7 @@ set autocommit on;
 \i ing_gen/SME_COUNTER.sql
 \i ing_gen/SUBMITTED_ENTITY.sql
 \i ing_gen/SUBMITTED_ENTITY_STATS.sql
+\i ing_gen/SYSTEM_MESSAGE.sql
 \i ing_gen/TEMPLATE_VARIABLE.sql
 \i ing_gen/TRIGGER_DEFINITION.sql
 \i ing_gen/TRIGGER_QUEUE.sql

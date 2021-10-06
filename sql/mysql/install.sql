@@ -91,6 +91,7 @@ source mysql_gen/SCOPE.sql
 source mysql_gen/SME_COUNTER.sql
 source mysql_gen/SUBMITTED_ENTITY.sql
 source mysql_gen/SUBMITTED_ENTITY_STATS.sql
+source mysql_gen/SYSTEM_MESSAGE.sql
 source mysql_gen/TEMPLATE_VARIABLE.sql
 source mysql_gen/TRIGGER_DEFINITION.sql
 source mysql_gen/TRIGGER_PARAMETER.sql

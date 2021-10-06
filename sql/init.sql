@@ -62,6 +62,9 @@ INSERT INTO USERS (ID, NAME,     PASSWD,                                SALT, ME
 INSERT INTO USERS (ID, NAME,       PASSWD,                              SALT, METHOD, IS_ENABLED, DEFAULT_G_ID, CONNECTION_TYPE, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
 	VALUES    (2,  'INTERNAL', 'xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx', null, 0,    0,          81,           0,               0,              0,            0,         0,            0);
 
+INSERT INTO USERS (ID, NAME,           PASSWD,                                SALT, METHOD, IS_ENABLED, DEFAULT_G_ID, CONNECTION_TYPE, DELETE_VERSION, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
+       VALUES     (3, 'FE_PROPERTIES', 'xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx', null, 0,      0,          80,           0,               0,              0,            0,         0,            0);
+
 --------------------------------------------------------------------------------
 --	Table "SCHEDULING HIERARCHY"
 --------------------------------------------------------------------------------
@@ -126,3 +129,5 @@ INSERT INTO MEMBER (ID, G_ID, U_ID, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANG
 INSERT INTO MEMBER (ID, G_ID, U_ID, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
 	VALUES     (93, 81,   2,    0,            0,         0,            0);
 
+INSERT INTO MEMBER (ID, G_ID, U_ID, CREATOR_U_ID, CREATE_TS, CHANGER_U_ID, CHANGE_TS)
+        VALUES     (94, 80,   3,    0,            0,         0,            0);

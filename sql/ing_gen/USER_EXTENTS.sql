@@ -49,13 +49,3 @@ SELECT
     , CHANGER_U_ID                   AS CHANGER_U_ID
     , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((CHANGE_TS- decimal(CHANGE_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS CHANGE_TS
   FROM USER_EXTENTS;\g
-CREATE TABLE ARC_USER_EXTENTS (
-    ID                             decimal(20) NOT NULL
-    , UP_ID                          decimal(20)      NULL
-    , SEQUENCE                       integer          NULL
-    , EXTENT                         varchar(256)     NULL
-    , CREATOR_U_ID                   decimal(20)      NULL
-    , CREATE_TS                      decimal(20)      NULL
-    , CHANGER_U_ID                   decimal(20)      NULL
-    , CHANGE_TS                      decimal(20)      NULL
-);\g

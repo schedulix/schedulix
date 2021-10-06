@@ -91,6 +91,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 \i pg_gen/SME_COUNTER.sql
 \i pg_gen/SUBMITTED_ENTITY.sql
 \i pg_gen/SUBMITTED_ENTITY_STATS.sql
+\i pg_gen/SYSTEM_MESSAGE.sql
 \i pg_gen/TEMPLATE_VARIABLE.sql
 \i pg_gen/TRIGGER_DEFINITION.sql
 \i pg_gen/TRIGGER_PARAMETER.sql

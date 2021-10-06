@@ -82,6 +82,7 @@ CREATE TABLE SUBMITTED_ENTITY (
     , CHILD_SUSPENDED                integer         NOT NULL
     , WARN_COUNT                     integer         NOT NULL
     , WARN_LINK                      decimal(20)     WITH NULL
+    , APPROVAL_MODE                  integer         NOT NULL
     , SUBMIT_TS                      decimal(20)     NOT NULL
     , RESUME_TS                      decimal(20)     WITH NULL
     , SYNC_TS                        decimal(20)     WITH NULL
@@ -186,6 +187,7 @@ SELECT
     , CHILD_SUSPENDED                AS CHILD_SUSPENDED
     , WARN_COUNT                     AS WARN_COUNT
     , WARN_LINK                      AS WARN_LINK
+    , APPROVAL_MODE                  AS APPROVAL_MODE
     , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((SUBMIT_TS- decimal(SUBMIT_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS SUBMIT_TS
     , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((RESUME_TS- decimal(RESUME_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS RESUME_TS
     , '01-JAN-1970 00:00:00 GMT' + date(char(decimal((SYNC_TS- decimal(SYNC_TS/1125899906842624, 18, 0)*1125899906842624)/1000, 18, 0)) + ' secs') AS SYNC_TS
@@ -267,6 +269,7 @@ CREATE TABLE ARC_SUBMITTED_ENTITY (
     , CHILD_SUSPENDED                integer          NULL
     , WARN_COUNT                     integer          NULL
     , WARN_LINK                      decimal(20)      NULL
+    , APPROVAL_MODE                  integer          NULL
     , SUBMIT_TS                      decimal(20)      NULL
     , RESUME_TS                      decimal(20)      NULL
     , SYNC_TS                        decimal(20)      NULL
