@@ -53,6 +53,7 @@ public class ShowUser extends ShowCommented
 	private final static String ENV = "environment";
 	private final static String SYS = "system";
 	private final static String NP  = "nice profile";
+	private final static String WT  = "watch type";
 	private final static String SEL = "select";
 
 	private String name;
@@ -81,6 +82,8 @@ public class ShowUser extends ShowCommented
 		} else {
 			u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(name, new Long(0)));
 		}
+		if (u.getDeleteVersion(sysEnv) > 0)
+			throw new NotFoundException("User " + (name == null ? "" : name + " ") + " not found");
 		if(!u.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411728", "Insufficient privileges"));
 		Long uId = u.getId(sysEnv);
@@ -289,6 +292,11 @@ public class ShowUser extends ShowCommented
 			}
 			if ((SDMSPrivilege.MANAGE_NP & pr) ==  SDMSPrivilege.MANAGE_NP) {
 				v.add(NP);
+				dc.addData(sysEnv, v);
+				v = new Vector();
+			}
+			if ((SDMSPrivilege.MANAGE_WT & pr) ==  SDMSPrivilege.MANAGE_WT) {
+				v.add(WT);
 				dc.addData(sysEnv, v);
 				v = new Vector();
 			}

@@ -55,6 +55,7 @@ public class ShowGroup extends ShowCommented
 	private final static String ENV = "environment";
 	private final static String SYS = "system";
 	private final static String NP  = "nice profile";
+	private final static String WT  = "watch type";
 	private final static String SEL = "select";
 
 	private ObjectURL url;
@@ -75,6 +76,8 @@ public class ShowGroup extends ShowCommented
 		Vector desc = new Vector();
 
 		g = (SDMSGroup) url.resolve(sysEnv);
+		if (g.getDeleteVersion(sysEnv) > 0)
+			throw new NotFoundException("Group " + g.getName(sysEnv) + " not found");
 		if(!g.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411717", "Insufficient privileges"));
 		Long gId = g.getId(sysEnv);
@@ -163,7 +166,7 @@ public class ShowGroup extends ShowCommented
 
 			d_container.addData(sysEnv, data);
 		}
-		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, 1));
+		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, 2));
 
 		return d_container;
 	}
@@ -236,6 +239,11 @@ public class ShowGroup extends ShowCommented
 			}
 			if ((SDMSPrivilege.MANAGE_FP & pr) ==  SDMSPrivilege.MANAGE_FP)  {
 				v.add(FPR);
+				dc.addData(sysEnv, v);
+				v = new Vector();
+			}
+			if ((SDMSPrivilege.MANAGE_WT & pr) ==  SDMSPrivilege.MANAGE_WT)  {
+				v.add(WT);
 				dc.addData(sysEnv, v);
 				v = new Vector();
 			}
