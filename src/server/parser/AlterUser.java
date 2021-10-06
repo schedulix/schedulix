@@ -343,8 +343,6 @@ public class AlterUser extends ManipUser
 		throws SDMSException
 	{
 		SDMSUser u;
-		boolean suActive = false;
-		boolean manageUser = false;
 		Long uId;
 
 		commonInit(sysEnv);
