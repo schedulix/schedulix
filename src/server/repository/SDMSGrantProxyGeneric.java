@@ -63,6 +63,7 @@ public class SDMSGrantProxyGeneric extends SDMSProxy
 	public static final int USER = SDMSObjectComment.USER;
 	public static final int OBJECT_MONITOR = SDMSObjectComment.OBJECT_MONITOR;
 	public static final int NICE_PROFILE = SDMSObjectComment.NICE_PROFILE;
+	public static final int WATCH_TYPE = SDMSObjectComment.WATCH_TYPE;
 	public static final Boolean GRANT = Boolean.TRUE;
 	public static final Boolean REVOKE = Boolean.FALSE;
 	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP;

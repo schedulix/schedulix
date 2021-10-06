@@ -64,6 +64,7 @@ public class SDMSGrantGeneric extends SDMSObject
 	public static final int USER = SDMSObjectComment.USER;
 	public static final int OBJECT_MONITOR = SDMSObjectComment.OBJECT_MONITOR;
 	public static final int NICE_PROFILE = SDMSObjectComment.NICE_PROFILE;
+	public static final int WATCH_TYPE = SDMSObjectComment.WATCH_TYPE;
 	public static final Boolean GRANT = Boolean.TRUE;
 	public static final Boolean REVOKE = Boolean.FALSE;
 
@@ -219,6 +220,8 @@ public class SDMSGrantGeneric extends SDMSObject
 				return "RESOURCE";
 			case SDMSGrant.EXIT_STATE_DEFINITION:
 				return "EXIT_STATE_DEFINITION";
+			case SDMSGrant.NICE_PROFILE:
+				return "NICE_PROFILE";
 			case SDMSGrant.EXIT_STATE_PROFILE:
 				return "EXIT_STATE_PROFILE";
 			case SDMSGrant.EXIT_STATE_MAPPING:
@@ -229,6 +232,8 @@ public class SDMSGrantGeneric extends SDMSObject
 				return "RESOURCE_STATE_DEFINITION";
 			case SDMSGrant.RESOURCE_STATE_PROFILE:
 				return "RESOURCE_STATE_PROFILE";
+			case SDMSGrant.WATCH_TYPE:
+				return "WATCH_TYPE";
 			case SDMSGrant.RESOURCE_STATE_MAPPING:
 				return "RESOURCE_STATE_MAPPING";
 			case SDMSGrant.FOOTPRINT:
@@ -607,11 +612,13 @@ public class SDMSGrantGeneric extends SDMSObject
 			case SDMSGrant.GROUP:
 			case SDMSGrant.RESOURCE:
 			case SDMSGrant.EXIT_STATE_DEFINITION:
+			case SDMSGrant.NICE_PROFILE:
 			case SDMSGrant.EXIT_STATE_PROFILE:
 			case SDMSGrant.EXIT_STATE_MAPPING:
 			case SDMSGrant.EXIT_STATE_TRANSLATION:
 			case SDMSGrant.RESOURCE_STATE_DEFINITION:
 			case SDMSGrant.RESOURCE_STATE_PROFILE:
+			case SDMSGrant.WATCH_TYPE:
 			case SDMSGrant.RESOURCE_STATE_MAPPING:
 			case SDMSGrant.FOOTPRINT:
 			case SDMSGrant.USER:
