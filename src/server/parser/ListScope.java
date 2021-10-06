@@ -102,6 +102,9 @@ public class ListScope extends Node
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
+		if (url.path == null) {
+			url.path = ((SDMSScope)url.resolve(sysEnv)).pathVector(sysEnv);
+		}
 		ScopeLister sl = new ScopeLister(url, expandIds);
 		sl.setTitle(new SDMSMessage(sysEnv, "03207191656", "List of Scopes"));
 		sl.setFormatter(this);

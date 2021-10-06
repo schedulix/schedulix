@@ -40,35 +40,32 @@ public class ListFolder extends Node
 
 	public final static String __version = "@(#) $Id: ListFolder.java,v 2.18.2.2 2013/06/18 09:49:32 ronald Exp $";
 
-	Vector path;
+	Vector path = null;
+	Long id = null;
 	HashSet expandIds;
 	HashMap mseCache = new HashMap();
 	WithHash with;
 	FolderLister fl;
 	boolean isCondensed;
 
-	public ListFolder(Vector p)
-	{
-		super();
-		path = p;
-		expandIds = new HashSet();
-		txMode = SDMSTransaction.READONLY;
-		auditFlag = false;
-	}
-
-	public ListFolder(Vector p, HashSet e)
-	{
-		super();
-		path = p;
-		expandIds = e;
-		txMode = SDMSTransaction.READONLY;
-		auditFlag = false;
-	}
-
 	public ListFolder(Vector p, WithHash w, Boolean condensed)
 	{
 		super();
 		path = p;
+		if(w.containsKey(ParseStr.S_EXPAND))
+			expandIds = (HashSet) w.get(ParseStr.S_EXPAND);
+		else
+			expandIds = new HashSet();
+		with = w;
+		isCondensed = condensed.booleanValue();
+		txMode = SDMSTransaction.READONLY;
+		auditFlag = false;
+	}
+
+	public ListFolder(Long id, WithHash w, Boolean condensed)
+	{
+		super();
+		this.id = id;
 		if(w.containsKey(ParseStr.S_EXPAND))
 			expandIds = (HashSet) w.get(ParseStr.S_EXPAND);
 		else
@@ -161,6 +158,9 @@ public class ListFolder extends Node
 				}
 			}
 		}
+		if (path == null) {
+			path = SDMSFolderTable.getObject(sysEnv, id).pathVector(sysEnv);
+		}
 		fl = new FolderLister(path, expandIds);
 		fl.setTitle(new SDMSMessage (sysEnv, "03201292009", "List of Folders"));
 		fl.setFormatter(this);
@@ -219,10 +219,28 @@ public class ListFolder extends Node
 	private void add_empties(Vector v)
 	{
 		String empty = "";
-		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
-		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
-		v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty); v.add(empty);
-		v.add(empty); v.add(empty); v.add(empty); v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
+		v.add(empty);
 	}
 
 	private void fillFVector(SystemEnvironment sysEnv, SDMSFolder f, Vector v)
@@ -253,19 +271,18 @@ public class ListFolder extends Node
 		v.add(f.idPathVector(sysEnv));
 		if (!fl.useFilter)
 			v.add(' ');
-		else
-			if (fl.objectsToList.contains(f)) {
-				if (f.getId(sysEnv).equals(SDMSObject.systemFId)) {
-					if (fl.checkValid(sysEnv, f))
-						v.add('Y');
-					else
-						v.add('N');
-				} else {
+		else if (fl.objectsToList.contains(f)) {
+			if (f.getId(sysEnv).equals(SDMSObject.systemFId)) {
+				if (fl.checkValid(sysEnv, f))
 					v.add('Y');
-				}
+				else
+					v.add('N');
 			} else {
-				v.add('N');
+					v.add('Y');
 			}
+		} else {
+			v.add('N');
+		}
 	}
 
 	private void fillSeVector(SystemEnvironment sysEnv, SDMSSchedulingEntity se, Vector v)
@@ -343,11 +360,10 @@ public class ListFolder extends Node
 		v.add(se.idPathVector(sysEnv));
 		if (!fl.useFilter)
 			v.add(' ');
+		else if (fl.objectsToList.contains(se))
+			v.add('Y');
 		else
-			if (fl.objectsToList.contains(se))
-				v.add('Y');
-			else
-				v.add('N');
+			v.add('N');
 	}
 }
 

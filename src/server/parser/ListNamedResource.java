@@ -41,15 +41,29 @@ public class ListNamedResource extends Node
 
 	public final static String __version = "@(#) $Id: ListNamedResource.java,v 2.11.2.2 2013/06/18 09:49:33 ronald Exp $";
 
-	Vector path;
+	Long id = null;
+	Vector path = null;
 	WithHash with;
 	HashSet expandIds;
 
 	public ListNamedResource()
 	{
 		super();
-		path = null;
 		expandIds = new HashSet();
+		txMode = SDMSTransaction.READONLY;
+		auditFlag = false;
+	}
+
+	public ListNamedResource(Long id, WithHash w)
+	{
+		super();
+		this.id = id;
+		with = w;
+
+		if (with.containsKey(ParseStr.S_EXPAND)) {
+			expandIds = (HashSet) with.get(ParseStr.S_EXPAND);
+		} else	expandIds = new HashSet();
+
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
 	}
@@ -96,6 +110,11 @@ public class ListNamedResource extends Node
 		throws SDMSException
 	{
 		SDMSNamedResource nr;
+
+		if (id != null) {
+			nr = SDMSNamedResourceTable.getObject(sysEnv, id);
+			path = nr.pathVector(sysEnv);
+		}
 		if (path == null)
 			nr = SDMSNamedResourceTable.idx_parentId_name_getUnique(sysEnv, new SDMSKey(null, "RESOURCE"));
 		else {

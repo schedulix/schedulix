@@ -43,8 +43,9 @@ public class ListTrigger extends Node
 	private Vector path;
 	private WithItem fireObj;
 	private boolean reverse;
+	private int maxCount;
 
-	public ListTrigger(Vector p, boolean reverse)
+	public ListTrigger(Vector p, boolean reverse, Integer maxCount)
 	{
 		super();
 		fireObj = null;
@@ -58,15 +59,17 @@ public class ListTrigger extends Node
 		txMode = SDMSTransaction.READONLY;
 		this.reverse = reverse;
 		auditFlag = false;
+		this.maxCount = maxCount.intValue();
 	}
 
-	public ListTrigger(WithItem o)
+	public ListTrigger(WithItem o, Integer maxCount)
 	{
 		super();
 		name = null;
 		path = null;
 		fireObj = o;
 		txMode = SDMSTransaction.READONLY;
+		this.maxCount = maxCount.intValue();
 	}
 
 	private Long getFireId(SystemEnvironment sysEnv)
@@ -225,8 +228,20 @@ public class ListTrigger extends Node
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv, "03206200023", "List of Triggers"), desc);
 
+		int ctr = 0;
+		boolean gotRerun = false;
 		while(i.hasNext()) {
 			t = (SDMSTrigger) i.next();
+			if (t.getAction(sysEnv).intValue() == SDMSTrigger.RERUN) {
+				gotRerun = true;
+			} else {
+				if ((maxCount != 0) && (ctr >= maxCount))
+					if (gotRerun)
+						break;
+					else
+						continue;
+			}
+			ctr++;
 			SDMSSchedulingEntity fire_se = null;
 			SDMSNamedResource fire_nr = null;
 			SDMSResource fire_r = null;

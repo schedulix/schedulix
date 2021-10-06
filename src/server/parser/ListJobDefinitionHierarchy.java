@@ -36,21 +36,11 @@ import de.independit.scheduler.server.output.*;
 
 public class ListJobDefinitionHierarchy extends Node
 {
-
-	Vector path;
+	Long id = null;
+	Vector path = null;
 	boolean expand;
 	HashSet expandIds;
 	HashMap stateStrings;
-
-	public ListJobDefinitionHierarchy(Vector p)
-	{
-		super();
-		path = p;
-		expand = false;
-		expandIds = null;
-		txMode = SDMSTransaction.READONLY;
-		auditFlag = false;
-	}
 
 	public ListJobDefinitionHierarchy(Vector p, HashSet e)
 	{
@@ -62,12 +52,25 @@ public class ListJobDefinitionHierarchy extends Node
 		auditFlag = false;
 	}
 
+	public ListJobDefinitionHierarchy(Long id, HashSet e)
+	{
+		super();
+		this.id = id;
+		expand = true;
+		expandIds = e;
+		txMode = SDMSTransaction.READONLY;
+		auditFlag = false;
+	}
+
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
 
 		SDMSSchedulingEntity se;
-		Long id;
+		if (id != null) {
+			se = SDMSSchedulingEntityTable.getObject(sysEnv, id);
+			path = se.pathVector(sysEnv);
+		}
 		SDMSOutputContainer d_container = null;
 		Vector desc = new Vector();
 		SDMSKey key;
