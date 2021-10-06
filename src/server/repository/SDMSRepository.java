@@ -155,6 +155,11 @@ public class SDMSRepository
 			                   " WHERE M.ID = S.MASTER_ID " +
 			                   "   AND S.ID != S.MASTER_ID");
 			env.dbConnection.commit();
+			fill.executeUpdate("INSERT INTO SME2LOAD " +
+			                   "SELECT ID FROM SYSTEM_MESSAGE S " +
+			                   " WHERE S.MSG_TYPE = 1 " +
+			                   "   AND S.OPERATION = 11");
+			env.dbConnection.commit();
 		} catch(SQLException sqle) {
 			throw new FatalException(new SDMSMessage(env, "03401131304",
 			                         "SQL Error : $1", sqle.getMessage()));
@@ -244,6 +249,7 @@ public class SDMSRepository
 		tables.put(SDMSSmeCounterTableGeneric.tableName,			new SDMSSmeCounterTable(env));
 		tables.put(SDMSSubmittedEntityTableGeneric.tableName,			new SDMSSubmittedEntityTable(env));
 		tables.put(SDMSSubmittedEntityStatsTableGeneric.tableName,		new SDMSSubmittedEntityStatsTable(env));
+		tables.put(SDMSSystemMessageTableGeneric.tableName,			new SDMSSystemMessageTable(env));
 		tables.put(SDMSTemplateVariableTableGeneric.tableName,			new SDMSTemplateVariableTable(env));
 		tables.put(SDMSTriggerTableGeneric.tableName,				new SDMSTriggerTable(env));
 		tables.put(SDMSTriggerParameterTableGeneric.tableName,			new SDMSTriggerParameterTable(env));
