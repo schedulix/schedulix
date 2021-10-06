@@ -40,16 +40,14 @@ public class DropJobDefinition extends Node
 
 	public final static String __version = "@(#) $Id: DropJobDefinition.java,v 2.7.4.2 2013/03/19 17:16:46 ronald Exp $";
 
-	Vector path;
-	String name;
+	private ObjectURL url;
 	Boolean force;
 	boolean ignoreNotFound;
 
-	public DropJobDefinition(Vector p, String n, Boolean f, boolean ignNF)
+	public DropJobDefinition(ObjectURL u, Boolean f, boolean ignNF)
 	{
 		super();
-		name = n;
-		path = p;
+		url = u;
 		force = f;
 		ignoreNotFound = ignNF;
 	}
@@ -57,10 +55,9 @@ public class DropJobDefinition extends Node
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		SDMSFolder f = SDMSFolderTable.getFolder(sysEnv, path);
-		SDMSSchedulingEntity se = null;
+		SDMSSchedulingEntity se;
 		try {
-			se = SDMSSchedulingEntityTable.idx_folderId_name_getUnique(sysEnv, new SDMSKey(f.getId(sysEnv), name));
+			se = (SDMSSchedulingEntity) url.resolve(sysEnv);
 		} catch(NotFoundException nfe) {
 			if(ignoreNotFound) {
 				result.setFeedback(new SDMSMessage(sysEnv, "03301291253", "Job Definition dropped"));

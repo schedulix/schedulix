@@ -41,8 +41,9 @@ public class SubmitJob extends Node
 
 	public final static String __version = "@(#) $Id: SubmitJob.java,v 2.17.4.2 2013/06/18 09:49:39 ronald Exp $";
 
-	Vector path;
-	String name;
+	Long se_id = null;
+	Vector path = null;
+	String name = null;
 	WithHash with;
 
 	public SubmitJob(Vector p, WithHash w)
@@ -50,7 +51,15 @@ public class SubmitJob extends Node
 		super();
 		cmdtype = Node.USER_COMMAND | Node.JOB_COMMAND;
 		path = p;
-		name = name = (String) p.remove(p.size() -1);;
+		name = (String) p.remove(p.size() -1);
+		with = w;
+	}
+
+	public SubmitJob(Long id, WithHash w)
+	{
+		super();
+		cmdtype = Node.USER_COMMAND | Node.JOB_COMMAND;
+		se_id = id;
 		with = w;
 	}
 
@@ -132,7 +141,12 @@ public class SubmitJob extends Node
 	public Long master_submit(SystemEnvironment sysEnv, String submitTag, String timeZone)
 		throws SDMSException
 	{
-		SDMSSchedulingEntity se = (SDMSSchedulingEntity)SDMSSchedulingEntityTable.get(sysEnv, path, name);
+		SDMSSchedulingEntity se;
+		if (se_id == null) {
+			se = (SDMSSchedulingEntity)SDMSSchedulingEntityTable.get(sysEnv, path, name);
+		} else {
+			se = SDMSSchedulingEntityTable.getObject(sysEnv, se_id);
+		}
 		Boolean suspend = (Boolean) with.get(ParseStr.S_SUSPEND);
 		Object resumeObj = with.get(ParseStr.S_RESUME);
 		Vector params = (Vector) with.get(ParseStr.S_PARAMETERS);
@@ -245,7 +259,7 @@ public class SubmitJob extends Node
 			final SDMSSubmittedEntity smec = sme.submitChild(sysEnv, params, suspended, resumeTs, se.getId(sysEnv), childTag, null, submitTag, enable.booleanValue());
 			return smec.getId(sysEnv);
 		} else
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03703020852", "Child submit only allowed while job is active"));
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03703020853", "Child submit only allowed while job is active"));
 	}
 
 	public void go(SystemEnvironment sysEnv)
@@ -283,7 +297,7 @@ public class SubmitJob extends Node
 			Boolean checkOnly = (Boolean) with.get(ParseStr.S_CHECK_ONLY);
 			boolean co = (checkOnly == null ? false : checkOnly.booleanValue());
 
-			if(path == null)
+			if(path == null && se_id == null)
 				throw new CommonErrorException( new SDMSMessage(sysEnv, "03212060119", "You cannot submit by alias as a user"));
 			if(co) sysEnv.tx.beginSubTransaction(sysEnv);
 			id = master_submit(sysEnv, submitTag, tz);
@@ -294,7 +308,7 @@ public class SubmitJob extends Node
 			}
 		} else {
 			if (with.containsKey(ParseStr.S_MASTER)) {
-				if (path == null) {
+				if (path == null && se_id == null) {
 					throw new CommonErrorException( new SDMSMessage(sysEnv, "03801291249", "A master submit by alias is not supported"));
 				}
 				id = master_submit(sysEnv, submitTag, tz);

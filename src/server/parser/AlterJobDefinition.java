@@ -37,9 +37,9 @@ import de.independit.scheduler.server.exception.*;
 public class AlterJobDefinition extends ManipJobDefinition
 {
 
-	public AlterJobDefinition(Vector p, String n, WithHash w, Boolean ne)
+	public AlterJobDefinition(ObjectURL u, WithHash w, Boolean ne)
 	{
-		super(p, n, w, ne);
+		super(u, w, ne);
 	}
 
 	protected void checkDependents(SystemEnvironment sysEnv, Long seId)
@@ -814,13 +814,12 @@ public class AlterJobDefinition extends ManipJobDefinition
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		SDMSSchedulingEntity se;
 		Long seId;
 		boolean espChanged = false;
 
 		evaluateWith(sysEnv);
 		try {
-			se = SDMSSchedulingEntityTable.idx_folderId_name_getUnique(sysEnv, new SDMSKey(folderId, name));
+			se = (SDMSSchedulingEntity) url.resolve(sysEnv);
 		} catch (NotFoundException nfe) {
 			if(noerr) {
 				result.setFeedback(new SDMSMessage(sysEnv, "03311130031","No Job Definition altered"));
@@ -893,8 +892,13 @@ public class AlterJobDefinition extends ManipJobDefinition
 						esp.getName(sysEnv)));
 			}
 		}
-		if(!withs.containsKey(ParseStr.S_GROUP)) 		gId = se.getOwnerId(sysEnv);
-
+		if(!withs.containsKey(ParseStr.S_GROUP))
+			gId = se.getOwnerId(sysEnv);
+		else {
+			if (gId != se.getOwnerId(sysEnv)) {
+				ChownChecker.check(sysEnv, gId, se.getOwnerId(sysEnv));
+			}
+		}
 		type = otype.intValue();
 		switch(type) {
 			case SDMSSchedulingEntity.JOB:
@@ -929,7 +933,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 			if (inheritPrivs == null) inheritPrivs = new Long(0);
 			long lpriv = inheritPrivs.longValue();
 			if((se.getPrivilegeMask() & lpriv) != lpriv) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061132", "Incompatible grant"));
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061133", "Incompatible grant"));
 			}
 		} else
 			inheritPrivs = null;
@@ -951,9 +955,11 @@ public class AlterJobDefinition extends ManipJobDefinition
 		se.setAgingAmount(sysEnv, agingAmount);
 		se.setAgingBase(sysEnv, agingBase);
 		se.setSubmitSuspended(sysEnv, submitSuspended);
-		se.setResumeAt(sysEnv, resumeAt);
-		se.setResumeIn(sysEnv, resumeIn);
-		se.setResumeBase(sysEnv, resumeBase);
+		if (withs.get(ParseStr.S_RESUME) != null || !submitSuspended) {
+			se.setResumeAt(sysEnv, resumeAt);
+			se.setResumeIn(sysEnv, resumeIn);
+			se.setResumeBase(sysEnv, resumeBase);
+		}
 		se.setTimeoutAmount(sysEnv, to_mult);
 		se.setTimeoutBase(sysEnv, to_interval);
 		se.setTimeoutStateId(sysEnv, to_esdId);

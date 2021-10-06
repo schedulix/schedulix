@@ -44,9 +44,9 @@ public class AlterJobDefDependents extends ManipJobDefinition
 	private SDMSSchedulingEntity se;
 	private Long seId;
 
-	public AlterJobDefDependents(PathVector p, String n, WithHash w, Boolean ne)
+	public AlterJobDefDependents(ObjectURL u, WithHash w, Boolean ne)
 	{
-		super(p, n, w, ne);
+		super(u, w, ne);
 	}
 
 	private void delChildren(SystemEnvironment sysEnv, Vector arg, boolean ignoreNotFound)
@@ -166,7 +166,7 @@ public class AlterJobDefDependents extends ManipJobDefinition
 		Object arg;
 
 		try {
-			se = SDMSSchedulingEntityTable.get(sysEnv, path, name);
+			se = (SDMSSchedulingEntity) url.resolve(sysEnv);
 		} catch (NotFoundException nfe) {
 			if(noerr) {
 				result.setFeedback(new SDMSMessage(sysEnv, "03311130034","No Job Definition altered"));
