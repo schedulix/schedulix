@@ -78,7 +78,6 @@ public abstract class ManipJob extends Node
 	protected SDMSSystemMessage createSystemMessage(SystemEnvironment sysEnv, int msgType, Long smeId, Long masterId, int operation, boolean isMandatory, Long uid, String comment, Long additionalLong, Boolean additionalBool, Long secondLong, String opComment)
 	throws SDMSException
 	{
-		writeAudit(sysEnv, smeId, new Integer(isMandatory ? SDMSAuditTrail.APPROVAL_REQUEST : SDMSAuditTrail.REVIEW_REQUEST), comment);
 		return SDMSSystemMessageTable.table.create(sysEnv, new Integer(msgType), smeId, masterId, new Integer(operation), new Boolean(isMandatory), uid, new Long ((new Date()).getTime()), comment, additionalLong, additionalBool, secondLong, opComment);
 	}
 
@@ -229,6 +228,149 @@ public abstract class ManipJob extends Node
 		}
 
 		sme.changeState(sysEnv, esdId, es, sme.getExitCode(sysEnv), errText, null, false);
+	}
+
+	void performReject(SystemEnvironment sysEnv, SDMSSystemMessage msg, SDMSSubmittedEntity sme)
+	throws SDMSException
+	{
+	}
+
+	void performClone(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Boolean shouldSuspend)
+	throws SDMSException
+	{
+		SDMSSubmittedEntity psme = SDMSSubmittedEntityTable.getObject(sysEnv, sme.getParentId(sysEnv));
+		String childTag = "C_" + sysEnv.tx.txId;
+		Long replaceId = sme.getId (sysEnv);
+		Long submitSeId = sme.getSeId(sysEnv);
+		SDMSSubmittedEntity childSme = psme.submitChild(sysEnv,
+		                               null,
+		                               new Integer (SDMSSubmittedEntity.SUSPEND),
+		                               null,
+		                               submitSeId,
+		                               childTag,
+		                               replaceId,
+		                               null,
+		                               true
+		                                               );
+		if (childSme.getIsDisabled(sysEnv).booleanValue()) {
+			childSme.disable(sysEnv, Boolean.FALSE);
+		} else {
+			if (!shouldSuspend.booleanValue()) {
+				childSme.resume(sysEnv, true);
+			}
+		}
+	}
+
+	void performCancel(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
+	throws SDMSException
+	{
+		sme.cancel(sysEnv);
+	}
+
+	void performRerun(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Boolean rerun)
+	throws SDMSException
+	{
+		if(rerun.booleanValue()) {
+			sme.rerunRecursive(sysEnv, sme.getId(sysEnv), message, true);
+		} else {
+			sme.rerun(sysEnv);
+		}
+	}
+
+	void performDisable(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Boolean disable)
+	throws SDMSException
+	{
+		sme.disable(sysEnv, disable);
+	}
+
+	void performSetState(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Long esdId, Boolean force)
+	throws SDMSException
+	{
+		setExitState(sysEnv, sme, sme.getSeVersion(sysEnv), esdId, force);
+	}
+
+	void performIgnDep(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Long diId, Boolean recursive)
+	throws SDMSException
+	{
+		SDMSDependencyInstance di = SDMSDependencyInstanceTable.getObject(sysEnv, diId);
+		di.setIgnore(sysEnv, (recursive.booleanValue()? SDMSDependencyInstance.RECURSIVE : SDMSDependencyInstance.YES), sme.getId(sysEnv), message);
+	}
+
+	void performIgnRss(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Long rId)
+	throws SDMSException
+	{
+		SDMSResource r = SDMSResourceTable.getObject(sysEnv, rId);
+		SDMSResourceAllocation ra = null;
+		boolean raFound = false;
+
+		Vector rav = SDMSResourceAllocationTable.idx_smeId_nrId.getVector(sysEnv, new SDMSKey(sme.getId(sysEnv), r.getNrId(sysEnv)));
+		for (int j = 0; j < rav.size(); ++j) {
+			ra = (SDMSResourceAllocation) rav.get(j);
+			if (ra.getRId(sysEnv).equals(rId)) {
+				raFound = true;
+				break;
+			}
+		}
+		if (raFound) {
+			ra.ignore(sysEnv);
+		}
+	}
+
+	void performSuspend(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Boolean suspend, boolean isLocal, boolean isAdmin, Long resumeTs)
+	throws SDMSException
+	{
+		if (suspend != null) {
+			if(suspend.booleanValue()) {
+				sme.suspend(sysEnv, isLocal, isAdmin);
+				SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.SUSPEND);
+			} else {
+				if (resumeTs == null) {
+					sme.resume(sysEnv, isAdmin);
+					SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.RESUME);
+				}
+			}
+		}
+		if (resumeTs != null) {
+			sme.setResumeTs(sysEnv, resumeTs);
+		}
+	}
+
+	void performClrWarn(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
+	throws SDMSException
+	{
+	}
+
+	void performSetWarn(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
+	throws SDMSException
+	{
+	}
+
+	void performPriority(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Boolean isRenice, Integer priority)
+	throws SDMSException
+	{
+		if (isRenice) {
+			sme.renice(sysEnv, priority.intValue(), null, message);
+		} else {
+			sme.setPriority(sysEnv, priority.intValue());
+		}
+	}
+
+	void performModParm(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, String name, String value)
+	throws SDMSException
+	{
+		sme.setVariableValue(sysEnv, name, value);
+	}
+
+	void performKill(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
+	throws SDMSException
+	{
+		sme.kill(sysEnv);
+	}
+
+	void performSetJobState(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
+	throws SDMSException
+	{
+		changeState(sysEnv, sme, true, status);
 	}
 
 	public abstract void go(SystemEnvironment sysEnv)
