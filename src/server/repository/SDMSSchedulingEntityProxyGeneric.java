@@ -59,7 +59,12 @@ public class SDMSSchedulingEntityProxyGeneric extends SDMSProxy
 	public static final int WEEK = SDMSInterval.WEEK;
 	public static final int MONTH = SDMSInterval.MONTH;
 	public static final int YEAR = SDMSInterval.YEAR;
-	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP|SDMSPrivilege.CREATE_PARENT_CONTENT|SDMSPrivilege.SUBMIT|SDMSPrivilege.MONITOR|SDMSPrivilege.OPERATE|SDMSPrivilege.RESOURCE|SDMSPrivilege.GRANT;
+	public static final int DEFAULT = 0;
+	public static final int PARENT = 1;
+	public static final int NO = 2;
+	public static final int REVIEW = 4;
+	public static final int APPROVE = 5;
+	public final static long privilegeMask = SDMSPrivilege.EDIT|SDMSPrivilege.CREATE|SDMSPrivilege.VIEW|SDMSPrivilege.DROP|SDMSPrivilege.CREATE_PARENT_CONTENT|SDMSPrivilege.SUBMIT|SDMSPrivilege.MONITOR|SDMSPrivilege.OPERATE|SDMSPrivilege.CANCEL|SDMSPrivilege.RERUN|SDMSPrivilege.ENABLE|SDMSPrivilege.SET_STATE|SDMSPrivilege.IGN_DEPENDENCY|SDMSPrivilege.IGN_RESOURCE|SDMSPrivilege.CLONE|SDMSPrivilege.SUSPEND|SDMSPrivilege.CLEAR_WARNING|SDMSPrivilege.PRIORITY|SDMSPrivilege.RESOURCE|SDMSPrivilege.GRANT|SDMSPrivilege.MODIFY_PARAMETER|SDMSPrivilege.KILL|SDMSPrivilege.APPROVE;
 
 	static final public int name_size = 64;
 	static final public int runProgram_size = 512;
@@ -795,6 +800,539 @@ public class SDMSSchedulingEntityProxyGeneric extends SDMSProxy
 			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
 
 		((SDMSSchedulingEntityGeneric)(object)).setFpId (env, p_fpId);
+		return ;
+	}
+	public Boolean getCancelLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getCancelLeadFlag (env));
+	}
+
+	public void setCancelLeadFlag (SystemEnvironment env, Boolean p_cancelLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setCancelLeadFlag (env, p_cancelLeadFlag);
+		return ;
+	}
+	public Integer getCancelApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getCancelApproval (env));
+	}
+
+	public String getCancelApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getCancelApprovalAsString (env);
+	}
+
+	public void setCancelApproval (SystemEnvironment env, Integer p_cancelApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setCancelApproval (env, p_cancelApproval);
+		return ;
+	}
+	public Boolean getRerunLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getRerunLeadFlag (env));
+	}
+
+	public void setRerunLeadFlag (SystemEnvironment env, Boolean p_rerunLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setRerunLeadFlag (env, p_rerunLeadFlag);
+		return ;
+	}
+	public Integer getRerunApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getRerunApproval (env));
+	}
+
+	public String getRerunApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getRerunApprovalAsString (env);
+	}
+
+	public void setRerunApproval (SystemEnvironment env, Integer p_rerunApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setRerunApproval (env, p_rerunApproval);
+		return ;
+	}
+	public Boolean getEnableLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getEnableLeadFlag (env));
+	}
+
+	public void setEnableLeadFlag (SystemEnvironment env, Boolean p_enableLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setEnableLeadFlag (env, p_enableLeadFlag);
+		return ;
+	}
+	public Integer getEnableApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getEnableApproval (env));
+	}
+
+	public String getEnableApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getEnableApprovalAsString (env);
+	}
+
+	public void setEnableApproval (SystemEnvironment env, Integer p_enableApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setEnableApproval (env, p_enableApproval);
+		return ;
+	}
+	public Boolean getSetStateLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getSetStateLeadFlag (env));
+	}
+
+	public void setSetStateLeadFlag (SystemEnvironment env, Boolean p_setStateLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setSetStateLeadFlag (env, p_setStateLeadFlag);
+		return ;
+	}
+	public Integer getSetStateApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getSetStateApproval (env));
+	}
+
+	public String getSetStateApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getSetStateApprovalAsString (env);
+	}
+
+	public void setSetStateApproval (SystemEnvironment env, Integer p_setStateApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setSetStateApproval (env, p_setStateApproval);
+		return ;
+	}
+	public Boolean getIgnDepLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getIgnDepLeadFlag (env));
+	}
+
+	public void setIgnDepLeadFlag (SystemEnvironment env, Boolean p_ignDepLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setIgnDepLeadFlag (env, p_ignDepLeadFlag);
+		return ;
+	}
+	public Integer getIgnDepApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getIgnDepApproval (env));
+	}
+
+	public String getIgnDepApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getIgnDepApprovalAsString (env);
+	}
+
+	public void setIgnDepApproval (SystemEnvironment env, Integer p_ignDepApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setIgnDepApproval (env, p_ignDepApproval);
+		return ;
+	}
+	public Boolean getIgnRssLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getIgnRssLeadFlag (env));
+	}
+
+	public void setIgnRssLeadFlag (SystemEnvironment env, Boolean p_ignRssLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setIgnRssLeadFlag (env, p_ignRssLeadFlag);
+		return ;
+	}
+	public Integer getIgnRssApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getIgnRssApproval (env));
+	}
+
+	public String getIgnRssApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getIgnRssApprovalAsString (env);
+	}
+
+	public void setIgnRssApproval (SystemEnvironment env, Integer p_ignRssApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setIgnRssApproval (env, p_ignRssApproval);
+		return ;
+	}
+	public Boolean getCloneLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getCloneLeadFlag (env));
+	}
+
+	public void setCloneLeadFlag (SystemEnvironment env, Boolean p_cloneLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setCloneLeadFlag (env, p_cloneLeadFlag);
+		return ;
+	}
+	public Integer getCloneApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getCloneApproval (env));
+	}
+
+	public String getCloneApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getCloneApprovalAsString (env);
+	}
+
+	public void setCloneApproval (SystemEnvironment env, Integer p_cloneApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setCloneApproval (env, p_cloneApproval);
+		return ;
+	}
+	public Boolean getSuspendLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getSuspendLeadFlag (env));
+	}
+
+	public void setSuspendLeadFlag (SystemEnvironment env, Boolean p_suspendLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setSuspendLeadFlag (env, p_suspendLeadFlag);
+		return ;
+	}
+	public Integer getSuspendApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getSuspendApproval (env));
+	}
+
+	public String getSuspendApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getSuspendApprovalAsString (env);
+	}
+
+	public void setSuspendApproval (SystemEnvironment env, Integer p_suspendApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setSuspendApproval (env, p_suspendApproval);
+		return ;
+	}
+	public Boolean getClrWarnLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getClrWarnLeadFlag (env));
+	}
+
+	public void setClrWarnLeadFlag (SystemEnvironment env, Boolean p_clrWarnLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setClrWarnLeadFlag (env, p_clrWarnLeadFlag);
+		return ;
+	}
+	public Integer getClrWarnApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getClrWarnApproval (env));
+	}
+
+	public String getClrWarnApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getClrWarnApprovalAsString (env);
+	}
+
+	public void setClrWarnApproval (SystemEnvironment env, Integer p_clrWarnApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setClrWarnApproval (env, p_clrWarnApproval);
+		return ;
+	}
+	public Boolean getPriorityLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getPriorityLeadFlag (env));
+	}
+
+	public void setPriorityLeadFlag (SystemEnvironment env, Boolean p_priorityLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setPriorityLeadFlag (env, p_priorityLeadFlag);
+		return ;
+	}
+	public Integer getPriorityApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getPriorityApproval (env));
+	}
+
+	public String getPriorityApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getPriorityApprovalAsString (env);
+	}
+
+	public void setPriorityApproval (SystemEnvironment env, Integer p_priorityApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setPriorityApproval (env, p_priorityApproval);
+		return ;
+	}
+	public Boolean getEditParmLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getEditParmLeadFlag (env));
+	}
+
+	public void setEditParmLeadFlag (SystemEnvironment env, Boolean p_editParmLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setEditParmLeadFlag (env, p_editParmLeadFlag);
+		return ;
+	}
+	public Integer getEditParmApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getEditParmApproval (env));
+	}
+
+	public String getEditParmApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getEditParmApprovalAsString (env);
+	}
+
+	public void setEditParmApproval (SystemEnvironment env, Integer p_editParmApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setEditParmApproval (env, p_editParmApproval);
+		return ;
+	}
+	public Boolean getKillLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getKillLeadFlag (env));
+	}
+
+	public void setKillLeadFlag (SystemEnvironment env, Boolean p_killLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setKillLeadFlag (env, p_killLeadFlag);
+		return ;
+	}
+	public Integer getKillApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getKillApproval (env));
+	}
+
+	public String getKillApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getKillApprovalAsString (env);
+	}
+
+	public void setKillApproval (SystemEnvironment env, Integer p_killApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setKillApproval (env, p_killApproval);
+		return ;
+	}
+	public Boolean getSetJobStateLeadFlag (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getSetJobStateLeadFlag (env));
+	}
+
+	public void setSetJobStateLeadFlag (SystemEnvironment env, Boolean p_setJobStateLeadFlag)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setSetJobStateLeadFlag (env, p_setJobStateLeadFlag);
+		return ;
+	}
+	public Integer getSetJobStateApproval (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSchedulingEntityGeneric)(object)).getSetJobStateApproval (env));
+	}
+
+	public String getSetJobStateApprovalAsString (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead (env);
+		return ((SDMSSchedulingEntityGeneric) object).getSetJobStateApprovalAsString (env);
+	}
+
+	public void setSetJobStateApproval (SystemEnvironment env, Integer p_setJobStateApproval)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSchedulingEntityGeneric)(object)).setSetJobStateApproval (env, p_setJobStateApproval);
 		return ;
 	}
 	public Long getInheritPrivs (SystemEnvironment env)
