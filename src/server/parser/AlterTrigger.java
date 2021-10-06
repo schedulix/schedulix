@@ -60,7 +60,10 @@ public class AlterTrigger extends ManipTrigger
 		with = w;
 		fireObj = null;
 		url = u;
-		isInverse = (Boolean) u.triggerInverse.value;
+		if (u != null && u.triggerInverse != null)
+			isInverse = (Boolean) u.triggerInverse.value;
+		else
+			isInverse = null;
 		noerr = ne.booleanValue();
 	}
 
@@ -455,16 +458,10 @@ public class AlterTrigger extends ManipTrigger
 		tId = t.getId(sysEnv);
 		fireId = t.getFireId(sysEnv);
 		seId = t.getSeId(sysEnv);
+		if (isInverse == null)
+			isInverse = t.getIsInverse(sysEnv);
 
 		checkWith(sysEnv, t);
-
-		if (isInverse.booleanValue()) {
-			if(fireId != null)
-				t.setFireId(sysEnv, seId);
-		} else {
-			if(seId != null)
-				t.setSeId(sysEnv, seId);
-		}
 
 		if(triggertype != null)	{
 			t.setType(sysEnv, triggertype);
