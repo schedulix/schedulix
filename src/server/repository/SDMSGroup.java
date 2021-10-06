@@ -46,6 +46,17 @@ public class SDMSGroup extends SDMSGroupProxyGeneric
 		super(p_object);
 	}
 
+	public void setDeleteVersion(SystemEnvironment sysEnv, Long deleteVersion)
+	throws SDMSException
+	{
+		Vector gv = SDMSGrantTable.idx_gId.getVector(sysEnv, this.getId(sysEnv));
+		for (int i = 0; i < gv.size(); ++i) {
+			SDMSGrant g = (SDMSGrant) gv.get(i);
+			g.delete(sysEnv);
+		}
+		super.setDeleteVersion(sysEnv, deleteVersion);
+	}
+
 	public String getURLName(SystemEnvironment sysEnv)
 	throws SDMSException
 	{
