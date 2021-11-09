@@ -102,7 +102,7 @@ public class RenewTicketThread extends SDMSThread
 			(postgres ? "WHERE TS = CAST (? AS DECIMAL)" :
 			"WHERE TS = ?");
 		getTicketString = "SELECT TS, TICKET FROM REPOSITORY_LOCK";
-		insertString = "INSERT INTO REPOSITORY_LOCK ( LOCKID, TS, TICKET ) VALUES ( 1 , ?, ?)";
+		insertString = "INSERT INTO REPOSITORY_LOCK ( LOCKID, TS, TICKET, IPS ) VALUES ( 1 , ?, ?, ?)";
 		deleteString = "DELETE FROM REPOSITORY_LOCK";
 		lockString = "UPDATE REPOSITORY_LOCK SET TS = TS+0";
 		brokenPostgresSelect = "SELECT COUNT(*) FROM REPOSITORY_LOCK WHERE TS = CAST (? AS DECIMAL)";
@@ -138,6 +138,32 @@ public class RenewTicketThread extends SDMSThread
 		return false;
 	}
 
+	private String getIps()
+	throws InterruptedException, IOException
+	{
+		StringBuffer retval = new StringBuffer();
+		Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+		while (e.hasMoreElements()) {
+			NetworkInterface n = e.nextElement();
+			String ifName = n.getName();
+			if (ifName.equals("lo"))
+				continue;
+			retval.append(ifName + ": ");
+			Enumeration<InetAddress> ee = n.getInetAddresses();
+			String sep = "";
+			while (ee.hasMoreElements()) {
+				InetAddress i = ee.nextElement();
+				String hostAddress = i.getHostAddress().toString();
+				if (hostAddress.endsWith("%" + ifName))
+					hostAddress = hostAddress.substring(0, hostAddress.length() - (ifName.length() + 1));
+				retval.append(sep + hostAddress);
+				sep = ", ";
+			}
+			retval.append("; ");
+		}
+		return retval.toString();
+	}
+
 	public synchronized void getTicket(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
@@ -152,9 +178,25 @@ public class RenewTicketThread extends SDMSThread
 			while(true) {
 				try {
 					SDMSThread.doTrace(null, "Acquire repository lock for " + SystemEnvironment.startTime, SDMSThread.SEVERITY_INFO);
+					boolean gotIps = false;
+					String ips = null;
+					while (! gotIps) {
+						try {
+							ips = getIps();
+							gotIps = true;
+						} catch (InterruptedException ie) {
+
+						} catch (IOException ioe) {
+							ips = "Couldn't retrieve the server's IP address(es)";
+							gotIps = true;
+						}
+					}
+					if (ips != null && ips.length() > 256)
+						ips = ips.substring(0, 256);
 					pInsert.clearParameters();
 					pInsert.setLong(1, SystemEnvironment.startTime);
 					pInsert.setLong(2, System.currentTimeMillis());
+					pInsert.setString(3, ips);
 					pInsert.executeUpdate();
 					pInsert.close();
 					break;
