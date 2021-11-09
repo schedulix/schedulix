@@ -314,18 +314,18 @@ public class RunTest extends Node
 	{
 		SDMSTable t = sysEnv.repository.getTableByName(str);
 		if (t == null) {
-			result.setFeedback(new SDMSMessage(sysEnv, "03212191003", "Table " + str + " not found!"));
+			result.setFeedback(new SDMSMessage(sysEnv, "03212191007", "Table " + str + " not found!"));
 			return;
 		}
 		SDMSVersions v = t.getVersions(objectId);
 		if (v == null) {
 			boolean exist = t.contains(objectId);
-			result.setFeedback(new SDMSMessage(sysEnv, "03212191003", "Object with id " + objectId + "(contains = " + exist + ") not found!"));
+			result.setFeedback(new SDMSMessage(sysEnv, "03212191008", "Object with id " + objectId + "(contains = " + exist + ") not found!"));
 			return;
 		}
 		System.out.println(v.toString());
 
-		result.setFeedback(new SDMSMessage(sysEnv, "03212191003", "Versions dumped to stdout"));
+		result.setFeedback(new SDMSMessage(sysEnv, "03212191006", "Versions dumped to stdout"));
 	}
 
 	private void do_test11(SystemEnvironment sysEnv)
@@ -596,7 +596,7 @@ public class RunTest extends Node
 			tryFinalize(sysEnv, sme);
 			result.setFeedback(new SDMSMessage(sysEnv, "03711230834", "SME " + objectId + " fixed"));
 		} else {
-			result.setFeedback(new SDMSMessage(sysEnv, "03711230834", "SME " + objectId + " OK"));
+			result.setFeedback(new SDMSMessage(sysEnv, "03711230835", "SME " + objectId + " OK"));
 		}
 	}
 
@@ -621,7 +621,7 @@ public class RunTest extends Node
 		throws SDMSException
 	{
 		disableSme(sysEnv, objectId);
-		result.setFeedback(new SDMSMessage(sysEnv, "03711230834", "SME " + objectId + " disabled"));
+		result.setFeedback(new SDMSMessage(sysEnv, "03711230836", "SME " + objectId + " disabled"));
 	}
 }
 
