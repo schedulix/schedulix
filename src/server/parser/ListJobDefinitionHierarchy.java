@@ -41,8 +41,9 @@ public class ListJobDefinitionHierarchy extends Node
 	boolean expand;
 	HashSet expandIds;
 	HashMap stateStrings;
+	Boolean isCondensed;
 
-	public ListJobDefinitionHierarchy(Vector p, HashSet e)
+	public ListJobDefinitionHierarchy(Vector p, HashSet e, Boolean isCondensed)
 	{
 		super();
 		path = p;
@@ -50,9 +51,10 @@ public class ListJobDefinitionHierarchy extends Node
 		expandIds = e;
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
+		this.isCondensed = isCondensed;
 	}
 
-	public ListJobDefinitionHierarchy(Long id, HashSet e)
+	public ListJobDefinitionHierarchy(Long id, HashSet e, Boolean isCondensed)
 	{
 		super();
 		this.id = id;
@@ -60,6 +62,7 @@ public class ListJobDefinitionHierarchy extends Node
 		expandIds = e;
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
+		this.isCondensed = isCondensed;
 	}
 
 	public void go(SystemEnvironment sysEnv)
@@ -80,21 +83,25 @@ public class ListJobDefinitionHierarchy extends Node
 		desc.add("NAME");
 		desc.add("OWNER");
 		desc.add("TYPE");
-		desc.add("RUN_PROGRAM");
-		desc.add("RERUN_PROGRAM");
-		desc.add("KILL_PROGRAM");
-		desc.add("WORKDIR");
-		desc.add("LOGFILE");
-		desc.add("TRUNC_LOG");
-		desc.add("ERRLOGFILE");
-		desc.add("TRUNC_ERRLOG");
+		if (!isCondensed) {
+			desc.add("RUN_PROGRAM");
+			desc.add("RERUN_PROGRAM");
+			desc.add("KILL_PROGRAM");
+			desc.add("WORKDIR");
+			desc.add("LOGFILE");
+			desc.add("TRUNC_LOG");
+			desc.add("ERRLOGFILE");
+			desc.add("TRUNC_ERRLOG");
+		}
 		desc.add("EXPECTED_RUNTIME");
 		desc.add("GET_EXPECTED_RUNTIME");
 		desc.add("PRIORITY");
 		desc.add("SUBMIT_SUSPENDED");
 		desc.add("MASTER_SUBMITTABLE");
-		desc.add("SAME_NODE");
-		desc.add("GANG_SCHEDULE");
+		if (!isCondensed) {
+			desc.add("SAME_NODE");
+			desc.add("GANG_SCHEDULE");
+		}
 		desc.add("DEPENDENCY_MODE");
 		desc.add("ESP_NAME");
 		desc.add("ESM_NAME");
@@ -137,21 +144,25 @@ public class ListJobDefinitionHierarchy extends Node
 		v.add(g.getName(sysEnv));
 
 		v.add(se.getTypeAsString(sysEnv));
-		v.add(se.getRunProgram(sysEnv));
-		v.add(se.getRerunProgram(sysEnv));
-		v.add(se.getKillProgram(sysEnv));
-		v.add(se.getWorkdir(sysEnv));
-		v.add(se.getLogfile(sysEnv));
-		v.add(se.getTruncLog(sysEnv));
-		v.add(se.getErrlogfile(sysEnv));
-		v.add(se.getTruncErrlog(sysEnv));
+		if (!isCondensed) {
+			v.add(se.getRunProgram(sysEnv));
+			v.add(se.getRerunProgram(sysEnv));
+			v.add(se.getKillProgram(sysEnv));
+			v.add(se.getWorkdir(sysEnv));
+			v.add(se.getLogfile(sysEnv));
+			v.add(se.getTruncLog(sysEnv));
+			v.add(se.getErrlogfile(sysEnv));
+			v.add(se.getTruncErrlog(sysEnv));
+		}
 		v.add(se.getExpectedRuntime(sysEnv));
 		v.add(se.getGetExpectedRuntime(sysEnv));
 		v.add(se.getPriority(sysEnv));
 		v.add(se.getSubmitSuspended(sysEnv));
 		v.add(se.getMasterSubmittable(sysEnv));
-		v.add(se.getSameNode(sysEnv));
-		v.add(se.getGangSchedule(sysEnv));
+		if (!isCondensed) {
+			v.add(se.getSameNode(sysEnv));
+			v.add(se.getGangSchedule(sysEnv));
+		}
 		v.add(se.getDependencyOperationAsString(sysEnv));
 
 		Long espId = se.getEspId(sysEnv);
@@ -212,7 +223,7 @@ public class ListJobDefinitionHierarchy extends Node
 		d_container.addData(sysEnv, v);
 		add_childs(sysEnv, d_container, v1, sePath);
 
-		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, 34));
+		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, (isCondensed ? 24 : 34)));
 
 		result.setOutputContainer(d_container);
 
@@ -252,21 +263,25 @@ public class ListJobDefinitionHierarchy extends Node
 			v.add(g.getName(sysEnv));
 			String typeString = se.getTypeAsString(sysEnv);
 			v.add(typeString);
-			v.add(se.getRunProgram(sysEnv));
-			v.add(se.getRerunProgram(sysEnv));
-			v.add(se.getKillProgram(sysEnv));
-			v.add(se.getWorkdir(sysEnv));
-			v.add(se.getLogfile(sysEnv));
-			v.add(se.getTruncLog(sysEnv));
-			v.add(se.getErrlogfile(sysEnv));
-			v.add(se.getTruncErrlog(sysEnv));
+			if (!isCondensed) {
+				v.add(se.getRunProgram(sysEnv));
+				v.add(se.getRerunProgram(sysEnv));
+				v.add(se.getKillProgram(sysEnv));
+				v.add(se.getWorkdir(sysEnv));
+				v.add(se.getLogfile(sysEnv));
+				v.add(se.getTruncLog(sysEnv));
+				v.add(se.getErrlogfile(sysEnv));
+				v.add(se.getTruncErrlog(sysEnv));
+			}
 			v.add(se.getExpectedRuntime(sysEnv));
 			v.add(se.getGetExpectedRuntime(sysEnv));
 			v.add(se.getPriority(sysEnv));
 			v.add(se.getSubmitSuspended(sysEnv));
 			v.add(se.getMasterSubmittable(sysEnv));
-			v.add(se.getSameNode(sysEnv));
-			v.add(se.getGangSchedule(sysEnv));
+			if (!isCondensed) {
+				v.add(se.getSameNode(sysEnv));
+				v.add(se.getGangSchedule(sysEnv));
+			}
 			v.add(se.getDependencyOperationAsString(sysEnv));
 			espId = se.getEspId(sysEnv);
 			esp = SDMSExitStateProfileTable.getObject(sysEnv, espId);

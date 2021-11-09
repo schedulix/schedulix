@@ -41,23 +41,26 @@ public class ListDependencyHierarchy
 
 	private final Long    smeId;
 	private final HashSet expandIds;
+	private final Boolean isCondensed;
 
-	public ListDependencyHierarchy (Long i)
+	public ListDependencyHierarchy (Long i, Boolean isCondensed)
 	{
 		super();
 		smeId     = i;
 		expandIds = null;
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
+		this.isCondensed = isCondensed;
 	}
 
-	public ListDependencyHierarchy (Long i, HashSet e)
+	public ListDependencyHierarchy (Long i, HashSet e, Boolean isCondensed)
 	{
 		super();
 		smeId     = i;
 		expandIds = e;
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
+		this.isCondensed = isCondensed;
 	}
 
 	private Object asTimestamp (SystemEnvironment sysEnv, final Long ts)
