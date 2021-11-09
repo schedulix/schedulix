@@ -226,28 +226,34 @@ public class ShowScope extends ShowCommented
 
 		final SDMSOutputContainer cont = ScopeConfig.get (sysEnv, s);
 		final Vector data = (Vector) cont.dataset.get (0);
-		final HashSet keysIssued = new HashSet();
+		final HashSet configKeysIssued = new HashSet();
+
+		configKeysIssued.add(Config.DYNAMIC);
+		configKeysIssued.add(Config.ENV_MAPPING);
+		configKeysIssued.add(Config.NAME_PATTERN);
 
 		if (cont != null) {
 			final int size = cont.desc.size();
 			for (int i = 0; i < size; ++i) {
 				final String key = ((SDMSOutputLabel) cont.desc.get (i)).name;
-				if (ScopeConfig.isInternalEntry (key))
+				if (ScopeConfig.isInternalEntry (key)) {
 					continue;
-				if (key.startsWith(Config.NAME_PATTERN))
-					keysIssued.add(Config.NAME_PATTERN);
-				else
-					keysIssued.add(key);
+				}
+				if (key.startsWith(Config.NAME_PATTERN)) {
+					configKeysIssued.add(Config.NAME_PATTERN);
+				} else {
+					configKeysIssued.add(key);
+				}
 
 				final Object value = data.get (i);
 
-				if (key.equals (Config.ENV_MAPPING))
+				if (key.equals (Config.ENV_MAPPING)) {
 					collectEnvMapping (sysEnv, envTable, (HashMap) value);
 
-				else if (key.equals (Config.DYNAMIC))
+				} else if (key.equals (Config.DYNAMIC)) {
 					;
 
-				else {
+				} else {
 					Long scopeId = null;
 					Long ancestId = null;
 					String ancestVal = "";
@@ -283,8 +289,7 @@ public class ShowScope extends ShowCommented
 		}
 		for (int i = 0; i < Config.ALL_VALUES.length; ++i) {
 			String key = Config.ALL_VALUES[i];
-			if (!keysIssued.contains(key)) {
-
+			if (!configKeysIssued.contains(key)) {
 				Object value = null;
 				for (int j = 0; j < Config.defaultKeys.length; ++j) {
 					if (key.equals(Config.defaultKeys[j])) {
