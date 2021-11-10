@@ -50,7 +50,9 @@ public class ListSubmitted extends Node
 	private final static String emptyString = new String("");
 	private final ObjectFilter objFilter = new ObjectFilter()
 	{
-		public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p) { return true; }
+		public boolean checkPrivileges(SystemEnvironment sysEnv, SDMSProxy p) {
+			return true;
+		}
 	};
 
 	WithHash with;
@@ -286,6 +288,8 @@ public class ListSubmitted extends Node
 					parmVal = se.getVariableValue(sysEnv, w, actVersion);
 				} catch(NotFoundException cee) {
 					parmVal = emptyString;
+				} catch(SDMSException e) {
+					parmVal = e.getMessage();
 				}
 				parameterVector.add(parmVal);
 			}
@@ -621,6 +625,8 @@ public class ListSubmitted extends Node
 					parmVal = job.getVariableValue(sysEnv, w, true, ParseStr.S_DEFAULT);
 				} catch(NotFoundException cee) {
 					parmVal = emptyString;
+				} catch(SDMSException e) {
+					parmVal = e.getMessage();
 				}
 				parameterVector.add(parmVal);
 			}
