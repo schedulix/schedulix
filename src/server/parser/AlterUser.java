@@ -385,7 +385,7 @@ public class AlterUser extends ManipUser
 			manageUser = true;
 		}
 
-		if(sysEnv.cEnv.uid().equals(uId)) {
+		if(sysEnv.cEnv.uid().equals(uId) && uId != 0) {
 			alterByUser(sysEnv, u);
 			if (!manageUser)
 				return;
