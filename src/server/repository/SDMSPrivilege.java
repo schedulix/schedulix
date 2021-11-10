@@ -81,6 +81,7 @@ public class SDMSPrivilege
 	public final static long MANAGE_ENV		= 0x0000100000000000L;
 	public final static long MANAGE_SYS		= 0x0000200000000000L;
 	public final static long MANAGE_SEL		= 0x0000400000000000L;
+	public final static long MANAGE_WT		= 0x0001000000000000L;
 	public final static long MANAGE_NP		= 0x0000800000000000L;
 
 	private final static long VALID_BITS		= CREATE|CREATE_CONTENT|CREATE_PARENT_CONTENT|DROP|
