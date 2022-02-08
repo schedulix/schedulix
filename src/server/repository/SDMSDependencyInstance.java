@@ -134,7 +134,8 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 						return SDMSDependencyInstance.DEFERRED;
 					}
 					setRequiredId(sysEnv, sme.getId(sysEnv));
-				}
+				} else
+					sme = SDMSSubmittedEntityTable.getObject(sysEnv, getRequiredId(sysEnv));
 			}
 		} else
 			sme = SDMSSubmittedEntityTable.getObject(sysEnv, getRequiredId(sysEnv));
