@@ -179,6 +179,11 @@ public class GetNextJob extends JobDistribution
 						smeId = rq.getSmeId(sysEnv);
 
 						SDMSSubmittedEntity tmpsme = SDMSSubmittedEntityTable.getObjectForUpdate(sysEnv, smeId);
+						if (tmpsme.getIsDisabled(sysEnv).booleanValue()) {
+							tmpsme.finishDisabledOrBatch(sysEnv);
+							SDMSThread.doTrace(env, "(DISABLED BUG): Disabled Job " +  sme.getId(sysEnv) + " finished in getNextJob()", SDMSThread.SEVERITY_WARNING);
+							continue;
+						}
 						if (tmpsme.getRunnableTs(sysEnv) > minRunnableTs) continue;
 						candidates++;
 						sme = tmpsme;

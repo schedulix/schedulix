@@ -622,7 +622,8 @@ public class SchedulingThread extends InternalSession
 				}
 			}
 			if (ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.ALLOCATION &&
-			    ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.IGNORE) ra.delete(sysEnv, true, true);
+			    ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.IGNORE)
+				ra.delete(sysEnv, true, true);
 		}
 
 		SystemEnvironment.sched.needSched = true;
@@ -1285,7 +1286,13 @@ public class SchedulingThread extends InternalSession
 			sme = (SDMSSubmittedEntity) sv.get(i);
 			if(sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND || sme.getParentSuspended(sysEnv).intValue() > 0)
 				continue;
-			resourceScheduleSme(sysEnv, sme, resourceChain);
+			if (sme.getIsDisabled(sysEnv).booleanValue()) {
+				sme.finishDisabledOrBatch(sysEnv);
+
+				doTrace(cEnv, " (DISABLED BUG): Disabled Job " +  sme.getId(sysEnv) + " finished in resourceSchedule()", SEVERITY_WARNING);
+			} else {
+				resourceScheduleSme(sysEnv, sme, resourceChain);
+			}
 		}
 	}
 
