@@ -204,6 +204,9 @@ public class AlterJob extends ManipJob
 			}
 		}
 		resumeObj = with.get(ParseStr.S_RESUME);
+		if (resumeObj == null && with.containsKey(ParseStr.S_RESUME)) {
+			noResume = true;
+		}
 		if(suspend == null && resumeObj != null) {
 
 			if (resumeObj instanceof Boolean) {
@@ -340,6 +343,9 @@ public class AlterJob extends ManipJob
 				}
 			} else
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191533", "Insufficient privileges for set state"));
+		}
+		if (noResume) {
+			sme.setResumeTs(sysEnv, null);
 		}
 		Long resumeTs = null;
 		if(resumeObj != null) {

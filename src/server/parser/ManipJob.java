@@ -56,6 +56,7 @@ public abstract class ManipJob extends Node
 	protected String rerunProgram	= null;
 	protected Boolean rerun		= null;
 	protected Integer rerunSeq	= null;
+	protected Boolean noResume	= null;
 	protected Boolean kill		= null;
 	protected Boolean cancel	= null;
 	protected Boolean disable	= null;
