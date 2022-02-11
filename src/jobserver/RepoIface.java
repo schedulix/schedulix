@@ -287,7 +287,7 @@ public class RepoIface
 			}
 		}
 
-		Trace.debug ("Trying " + repoUser + "/" + "********" + "@" + currentHost + ":" + currentPort + (use_ssl ? " (ssl) " : "") + "...");
+		Trace.debug ("Trying " + repoUser + "@" + currentHost + ":" + currentPort + (use_ssl ? " (ssl) " : "") + "...");
 
 		request_reconnect = false;
 
