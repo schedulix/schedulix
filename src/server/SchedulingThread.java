@@ -405,6 +405,10 @@ public class SchedulingThread extends InternalSession
 				}
 			}
 
+			if (sme.getIsDisabled(sysEnv).booleanValue()) {
+				sme.finishDisabledOrBatch(sysEnv);
+				continue;
+			}
 			requestSyncSme(sysEnv, sme, SDMSSubmittedEntity.DEPENDENCY_WAIT);
 
 			if(sme.getState(sysEnv).intValue() == SDMSSubmittedEntity.ERROR)
@@ -622,7 +626,8 @@ public class SchedulingThread extends InternalSession
 				}
 			}
 			if (ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.ALLOCATION &&
-			    ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.IGNORE) ra.delete(sysEnv, true, true);
+			    ra.getAllocationType(sysEnv).intValue() != SDMSResourceAllocation.IGNORE)
+				ra.delete(sysEnv, true, true);
 		}
 
 		SystemEnvironment.sched.needSched = true;
@@ -780,7 +785,11 @@ public class SchedulingThread extends InternalSession
 				Iterator i = smefp.keySet().iterator();
 				while(i.hasNext()) {
 					Long L = (Long) i.next();
-					SDMSResource r = SDMSResourceTable.getObject(sysEnv, (Long) sfp.get(L));
+					Long sfpL = (Long) sfp.get(L);
+					if (sfpL == null) {
+						continue;
+					}
+					SDMSResource r = SDMSResourceTable.getObject(sysEnv, sfpL);
 					Long rId = r.getId(sysEnv);
 					final Vector rav = SDMSResourceAllocationTable.idx_smeId_nrId.getVector(sysEnv, new SDMSKey(smeId, r.getNrId(sysEnv)));
 					for (int k = 0; k < rav.size(); ++k) {
@@ -1285,7 +1294,13 @@ public class SchedulingThread extends InternalSession
 			sme = (SDMSSubmittedEntity) sv.get(i);
 			if(sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND || sme.getParentSuspended(sysEnv).intValue() > 0)
 				continue;
-			resourceScheduleSme(sysEnv, sme, resourceChain);
+			if (sme.getIsDisabled(sysEnv).booleanValue()) {
+				sme.finishDisabledOrBatch(sysEnv);
+
+				doTrace(cEnv, " (DISABLED BUG): Disabled Job " +  sme.getId(sysEnv) + " finished in resourceSchedule()", SEVERITY_WARNING);
+			} else {
+				resourceScheduleSme(sysEnv, sme, resourceChain);
+			}
 		}
 	}
 
