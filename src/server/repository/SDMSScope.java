@@ -251,6 +251,28 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 		return ;
 	}
 
+	public boolean hasActiveJobs(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Long myId = getId(sysEnv);
+		Vector jv = SDMSSubmittedEntityTable.idx_scopeId.getVector(sysEnv, myId,
+		new SDMSFilter() {
+			public boolean isValid(SystemEnvironment sysEnv, SDMSProxy obj) throws SDMSException {
+				SDMSSubmittedEntity sme = (SDMSSubmittedEntity) obj;
+				int state = sme.getState(sysEnv);
+				if (state != SDMSSubmittedEntity.FINAL && state != SDMSSubmittedEntity.CANCELLED && state != SDMSSubmittedEntity.ERROR)
+					return true;
+				return false;
+			}
+		}, 2 );
+		if (jv.size() > 0)
+			return true;
+
+		if (SDMSRunnableQueueTable.idx_scopeId.containsKey(sysEnv, myId))
+			return true;
+		return false;
+	}
+
 	public void delete(SystemEnvironment sysEnv)
 		throws SDMSException
 	{

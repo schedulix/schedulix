@@ -77,6 +77,13 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		return r;
 	}
 
+	public Integer getUsage(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, getNrId(sysEnv));
+		return nr.getUsage(sysEnv);
+	}
+
 	public String getTag (SystemEnvironment sysEnv)
 		throws SDMSException
 	{
@@ -231,7 +238,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		int usage = nr.getUsage(sysEnv).intValue();
 		if(usage == SDMSNamedResource.STATIC) return REASON_AVAILABLE;
 
-		if(nr.getUsage(sysEnv).intValue() == SDMSNamedResource.SYNCHRONIZING) {
+		if(usage == SDMSNamedResource.SYNCHRONIZING) {
 			if(!syncCheckState(sysEnv, rr))					return REASON_STATE;
 			if(!syncCheckExpired(sysEnv, rr, nr, sme))			return REASON_EXPIRE;
 			if(!checkAmount(sysEnv, rr, stickyParent, waitAmount))		rc |= REASON_AMOUNT;
@@ -561,6 +568,54 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		super.setRsdId(sysEnv, rsdId);
 	}
 
+	private int collectChildren(SystemEnvironment sysEnv, Vector sv, SDMSScope parent, Long nrId)
+	throws SDMSException
+	{
+		int count = 0;
+		Vector cv = SDMSScopeTable.idx_parentId.getVector(sysEnv, parent.getId(sysEnv));
+		for (int i = 0; i < cv.size(); ++i) {
+			SDMSScope cs = (SDMSScope) cv.get(i);
+			if (SDMSResourceTable.idx_nrId_scopeId.containsKey(sysEnv, new SDMSKey(nrId, cs.getId(sysEnv)))) {
+				continue;
+			}
+			int tmpcount = collectChildren(sysEnv, sv, cs, nrId);
+			if (tmpcount == 0) {
+				sv.add(cs);
+				count++;
+			} else
+				count += tmpcount;
+		}
+
+		return count;
+	}
+
+	private boolean isStaticAndJobsActive(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Long nrId;
+		SDMSScope s;
+
+		if (getUsage(sysEnv).intValue() != SDMSNamedResource.STATIC)
+			return false;
+
+		nrId = getNrId(sysEnv);
+		s = SDMSScopeTable.getObject(sysEnv, getScopeId(sysEnv));
+
+		Vector sv = new Vector();
+		if (collectChildren(sysEnv, sv, s, nrId) == 0) {
+			sv.add(s);
+		}
+
+		for (int i = 0; i < sv.size(); ++i) {
+			SDMSScope ls = (SDMSScope) sv.get(i);
+			if (s.hasActiveJobs(sysEnv))
+				return true;
+
+		}
+
+		return false;
+	}
+
 	public void delete(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
@@ -579,6 +634,8 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		if(size > 0) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03206242252", "Resource is in use"));
 		}
+		if (isStaticAndJobsActive(sysEnv))
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202101013", "Resource is in use"));
 
 		Vector lr = SDMSResourceTable.idx_linkId.getVector(sysEnv, rId);
 		for (int i = 0; i < lr.size(); ++i) {
