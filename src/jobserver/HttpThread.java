@@ -39,6 +39,7 @@ public class HttpThread
 	private boolean run = true;
 	private boolean needFooter = false;
 	private boolean gotFooter = false;
+	private int reqNr = 0;
 
 	private static final String CLGTH = "Content-Length:";
 	private static final String POST  = "POST";
@@ -251,13 +252,16 @@ RUNLOOP:	while (run) {
 
 			ServerSocket s = null;
 			try {
-				s = new ServerSocket(port);
-				s.setSoTimeout(timeoutInterval);
 				while(true) {
+					if (s == null) {
+						s = new ServerSocket(port);
+					}
 					PrintWriter out = null;
 					try {
 						remote = s.accept();
+						reqNr++;
 						String remoteAddress = remote.getInetAddress().getHostAddress();
+						remote.setSoTimeout(timeoutInterval);
 						BufferedReader in = new BufferedReader(new InputStreamReader(remote.getInputStream()));
 						out = new PrintWriter(remote.getOutputStream());
 						String str = null;
@@ -265,7 +269,7 @@ RUNLOOP:	while (run) {
 						String query = "";
 						do {
 							str = in.readLine();
-							Trace.message("[HttpThread] Got Request from " + remoteAddress + " : " + str);
+							Trace.message("[HttpThread] Received Request " + reqNr + " from " + remoteAddress + " : " + str);
 							if (str == null)
 								break;
 							String[] spl = str.split(" ");
@@ -281,14 +285,16 @@ RUNLOOP:	while (run) {
 										query = "FNAME=" + spl[1];
 									}
 								} else {
-									Trace.error("[HttpThread] Invalid Request : " + str);
+									Trace.error("[HttpThread] Request " + reqNr + " Invalid : " + str);
 								}
 						} while (!str.equals(""));
 						executeQuery(query, out);
+						Trace.message("[HttpThread] Request " + reqNr + " from " + remoteAddress + " processed");
+						out.close();
 					} catch(java.net.SocketTimeoutException ste) {
 					} catch(java.lang.Throwable t) {
 						port = 0;
-						Trace.error("[HttpThread] caught Exception (243) : " + t.toString());
+						Trace.error("[HttpThread] Request " + reqNr + " caught Exception (300): " + t.toString());
 						StackTraceElement trace[] = t.getStackTrace();
 						for (int i = 0; i < trace.length; ++i) {
 							Trace.error("[HttpThread] " + trace[i].toString());
@@ -298,9 +304,11 @@ RUNLOOP:	while (run) {
 							if (remote != null) {
 								if (needFooter && !gotFooter && (out != null)) printFooter(out);
 								remote.close();
+								Trace.message("[HttpThread] Request " + reqNr + " connection closed");
+								remote = null;
 							}
 						} catch (Exception e) {
-							Trace.error("[HttpThread] caught Exception (250) : " + e.toString());
+							Trace.error("[HttpThread] Request " + reqNr + " caught Exception (314) : " + e.toString());
 							StackTraceElement trace[] = e.getStackTrace();
 							for (int i = 0; i < trace.length; ++i) {
 								Trace.error("[HttpThread] " + trace[i].toString());
@@ -311,6 +319,7 @@ RUNLOOP:	while (run) {
 						if (p == null || p.intValue() != port) {
 							try {
 								s.close();
+								s = null;
 							} catch (Exception e) {
 							}
 							break;
@@ -322,14 +331,18 @@ RUNLOOP:	while (run) {
 				try {
 					if (run)
 						sleep(sleepInterval);
-					if (s != null)
+					if (s != null) {
 						s.close();
+						s = null;
+					}
 				} catch (Exception eStrich) {
 				}
 			}
 			try {
-				if (s != null)
+				if (s != null) {
 					s.close();
+					s = null;
+				}
 			} catch (Exception e) {
 			}
 		}
