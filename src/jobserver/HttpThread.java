@@ -255,7 +255,6 @@ RUNLOOP:	while (run) {
 				while(true) {
 					if (s == null) {
 						s = new ServerSocket(port);
-						s.setSoTimeout(timeoutInterval);
 					}
 					PrintWriter out = null;
 					try {
@@ -270,7 +269,7 @@ RUNLOOP:	while (run) {
 						String query = "";
 						do {
 							str = in.readLine();
-							Trace.message("[HttpThread] Got Request " + reqNr + " from " + remoteAddress + " : " + str);
+							Trace.message("[HttpThread] Received Request " + reqNr + " from " + remoteAddress + " : " + str);
 							if (str == null)
 								break;
 							String[] spl = str.split(" ");
@@ -291,8 +290,8 @@ RUNLOOP:	while (run) {
 						} while (!str.equals(""));
 						executeQuery(query, out);
 						Trace.message("[HttpThread] Request " + reqNr + " from " + remoteAddress + " processed");
+						out.close();
 					} catch(java.net.SocketTimeoutException ste) {
-						Trace.error("[HttpThread] Request " + reqNr + " received SocketTimeoutException");
 					} catch(java.lang.Throwable t) {
 						port = 0;
 						Trace.error("[HttpThread] Request " + reqNr + " caught Exception (300): " + t.toString());
