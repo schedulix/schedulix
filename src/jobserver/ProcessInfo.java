@@ -219,9 +219,24 @@ public class ProcessInfo
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
 				p.getOutputStream().close();
+				p.getInputStream().close();
+				p.getErrorStream().close();
 				try {
 					p.waitFor();
 				} catch (InterruptedException ie) {  }
+
+				try {
+					while (p.isAlive()) {
+						Thread.sleep(100);
+						p.destroy();
+						System.gc();
+					}
+					p = null;
+					System.gc();
+				} catch (Exception e) {
+					System.out.println("Warning: " + e.toString());
+				}
+
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename)));
 				String line;
 				long now = System.currentTimeMillis() / 1000;
@@ -270,9 +285,27 @@ public class ProcessInfo
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
 				p.getOutputStream().close();
+				p.getInputStream().close();
+				p.getErrorStream().close();
 				try {
 					p.waitFor();
 				} catch (InterruptedException ie) {  }
+				try {
+					while (p.isAlive()) {
+						Thread.sleep(100);
+						p.destroy();
+						System.gc();
+					}
+					p = null;
+					System.gc();
+				} catch (Exception e) {
+					System.out.println("Warning: " + e.toString());
+				}
+			} catch (Exception e) {
+				throw new RuntimeException("(03203141513) Error running winps : " + e.toString());
+			}
+
+			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename), "UTF-8"));
 				String line;
 				String pattern = "yyyyMMddHHmmss";
