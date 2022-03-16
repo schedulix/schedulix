@@ -225,17 +225,8 @@ public class ProcessInfo
 					p.waitFor();
 				} catch (InterruptedException ie) {  }
 
-				try {
-					while (p.isAlive()) {
-						Thread.sleep(100);
-						p.destroy();
-						System.gc();
-					}
-					p = null;
-					System.gc();
-				} catch (Exception e) {
-					System.out.println("Warning: " + e.toString());
-				}
+				p = null;
+				System.gc();
 
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmpfilename)));
 				String line;
@@ -290,17 +281,10 @@ public class ProcessInfo
 				try {
 					p.waitFor();
 				} catch (InterruptedException ie) {  }
-				try {
-					while (p.isAlive()) {
-						Thread.sleep(100);
-						p.destroy();
-						System.gc();
-					}
-					p = null;
-					System.gc();
-				} catch (Exception e) {
-					System.out.println("Warning: " + e.toString());
-				}
+
+				p = null;
+				System.gc();
+
 			} catch (Exception e) {
 				throw new RuntimeException("(03203141513) Error running winps : " + e.toString());
 			}
