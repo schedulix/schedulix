@@ -177,7 +177,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 	{
 		Long seId = getSeId(sysEnv);
 		String se = null;
-		if(seId != null)
+		if(seId != null && seId.longValue() != 0)
 			se = SDMSSchedulingEntityTable.getObject(sysEnv, seId).pathString(sysEnv);
 
 		return getName(sysEnv) + (se == null ? "" : " (" + se + ")");
