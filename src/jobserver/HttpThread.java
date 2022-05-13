@@ -226,6 +226,21 @@ public class HttpThread
 		gotFooter = true;
 	}
 
+	InetAddress parseHttpIf (String value)
+	{
+		if (value == null || value.equals("")) return null;
+		InetAddress result;
+		try {
+			result = InetAddress.getByName(value);
+		} catch (UnknownHostException uhe) {
+			Trace.warning("Unable to resolve the configured IP Address: " + uhe.toString());
+			result = null;
+		}
+		Trace.warning("Using Inet Address/Interface " + (result == null ? "<ALL>" : result.toString()) + " for listening");
+
+		return result;
+	}
+
 	public final void run()
 	{
 		final Runtime rt = Runtime.getRuntime();
@@ -233,6 +248,8 @@ public class HttpThread
 
 RUNLOOP:	while (run) {
 			Long p = (Long) cfg.get (Config.HTTP_PORT);
+			String cfgHttpIf = (String) cfg.get (Config.HTTP_INTERFACE);
+			InetAddress httpIf = parseHttpIf(cfgHttpIf);
 			if (p != null)
 				port = p.intValue();
 			else
@@ -254,7 +271,15 @@ RUNLOOP:	while (run) {
 			try {
 				while(true) {
 					if (s == null) {
-						s = new ServerSocket(port);
+						if (httpIf != null)
+							try {
+								s = new ServerSocket(port, 5, httpIf);
+							} catch (Exception e) {
+								Trace.warning("Failed to create a server socket for address " + httpIf.toString());
+								s = new ServerSocket(port);
+							}
+						else
+							s = new ServerSocket(port, 5);
 					}
 					PrintWriter out = null;
 					try {

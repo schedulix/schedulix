@@ -57,6 +57,7 @@ public class Config
 	public static final String HTTP_PORT       = "HTTPPORT";
 	public static final String HTTP_HOST       = "HTTPHOST";
 	public static final String HTTP_LOGENCODING= "HTTPLOGENCODING";
+	public static final String HTTP_INTERFACE  = "HTTP_INTERFACE";
 	public static final String ONLINE_SERVER   = "ONLINE_SERVER";
 	public static final String NAME_PATTERN    = "NAME_PATTERN_";
 	public static final String KEYSTORE        = "KEYSTORE";
@@ -80,7 +81,7 @@ public class Config
 	                                               };
 	private static final String[] FILE_VALUES    = {DEFAULT_WORKDIR, JOB_EXECUTOR, JOB_FILE_PREFIX };
 	private static final String[] SECOND_VALUES  = {RECONNECT_DELAY, NOP_DELAY, STARTTIME_JITTER};
-	private static final String[] VECTOR_VALUES = {NAME_PATTERN};
+	private static final String[] VECTOR_VALUES = {NAME_PATTERN, HTTP_INTERFACE};
 
 	private static final String[] REQUIRED = {REPO_HOST, REPO_PORT, REPO_USER, REPO_PASS};
 	private static final String[] WRITE_THROUGH = {REPO_HOST, REPO_PORT, REPO_USER, USE_SSL,
@@ -95,9 +96,9 @@ public class Config
 	public static final String[] ALL_VALUES = {REPO_HOST, REPO_PORT, RECONNECT_DELAY, DEFAULT_WORKDIR,
 						   USE_PATH, VERBOSE_LOGS, TRACE_LEVEL, BOOTTIME, NOP_DELAY,
 						   JOB_EXECUTOR, JOB_FILE_PREFIX, ENV_MAPPING, DYNAMIC,
-						   NOTIFY_PORT, HTTP_PORT, HTTP_HOST, HTTP_LOGENCODING, ONLINE_SERVER,
-						   NAME_PATTERN, KEYSTORE, TRUSTSTORE, KEYSTOREPW, TRUSTSTOREPW,
-	                                           USE_SSL, CREATE_WORKDIR, CONVERT_NEWLINE, STARTTIME_JITTER
+	                                           NOTIFY_PORT, HTTP_PORT, HTTP_INTERFACE, HTTP_HOST, HTTP_LOGENCODING,
+	                                           ONLINE_SERVER, NAME_PATTERN, KEYSTORE, TRUSTSTORE, KEYSTOREPW,
+	                                           TRUSTSTOREPW, USE_SSL, CREATE_WORKDIR, CONVERT_NEWLINE, STARTTIME_JITTER
 	                                          };
 
 	private final File startupWorkdir;
