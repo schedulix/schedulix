@@ -306,6 +306,8 @@ public class AlterTrigger extends ManipTrigger
 		SDMSSchedulingEntity mainSe = null;
 
 		if (checkIsMaster.booleanValue()) {
+			if(!with.containsKey(ParseStr.S_GROUP) && checkSubmitOwnerId == null)
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "02402180659", "Group clause is mandatory for master triggers"));
 			if (isMaster != null || seId != null) {
 				if (se == null)
 					se = SDMSSchedulingEntityTable.getObject(sysEnv, checkSeId);
