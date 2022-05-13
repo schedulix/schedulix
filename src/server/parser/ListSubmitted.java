@@ -286,10 +286,8 @@ public class ListSubmitted extends Node
 				String parmVal;
 				try {
 					parmVal = se.getVariableValue(sysEnv, w, actVersion);
-				} catch(NotFoundException cee) {
+				} catch(SDMSException cee) {
 					parmVal = emptyString;
-				} catch(SDMSException e) {
-					parmVal = e.getMessage();
 				}
 				parameterVector.add(parmVal);
 			}
@@ -623,10 +621,8 @@ public class ListSubmitted extends Node
 				String parmVal;
 				try {
 					parmVal = job.getVariableValue(sysEnv, w, true, ParseStr.S_DEFAULT);
-				} catch(NotFoundException cee) {
+				} catch(SDMSException cee) {
 					parmVal = emptyString;
-				} catch(SDMSException e) {
-					parmVal = e.getMessage();
 				}
 				parameterVector.add(parmVal);
 			}
