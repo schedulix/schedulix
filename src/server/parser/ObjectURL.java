@@ -507,6 +507,7 @@ public class ObjectURL
 		for (int i = 0; i < v.size(); ++i) {
 			p = (SDMSTrigger) v.get(i);
 			if (p.getIsInverse(sysEnv).equals(isInverse)) break;
+			p = null;
 		}
 		return p;
 	}
