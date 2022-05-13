@@ -325,12 +325,10 @@ public class ListGrant extends Node
 						} else if (SDMSPrivilege.MANAGE_PRIVS[j] ==  SDMSPrivilege.MANAGE_ESM) {
 							v.add("exit state mapping");
 							p.setPriv(sysEnv, SDMSExitStateMappingProfile.privilegeMask);
-						} else
-						if (SDMSPrivilege.MANAGE_PRIVS[j] ==  SDMSPrivilege.MANAGE_EST) {
+						} else if (SDMSPrivilege.MANAGE_PRIVS[j] ==  SDMSPrivilege.MANAGE_EST) {
 							v.add("exit state translation");
 							p.setPriv(sysEnv, SDMSExitStateTranslationProfile.privilegeMask);
-						} else
-						if (SDMSPrivilege.MANAGE_PRIVS[j] ==  SDMSPrivilege.MANAGE_RSD) {
+						} else if (SDMSPrivilege.MANAGE_PRIVS[j] ==  SDMSPrivilege.MANAGE_RSD) {
 							v.add("resource state definition");
 							p.setPriv(sysEnv, SDMSResourceStateDefinition.privilegeMask);
 						} else if (SDMSPrivilege.MANAGE_PRIVS[j] ==  SDMSPrivilege.MANAGE_RSP) {
