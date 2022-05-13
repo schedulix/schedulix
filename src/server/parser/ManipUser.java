@@ -230,7 +230,6 @@ public abstract class ManipUser extends Node
 			if(isAdd) {
 				try {
 					SDMSUserParameterTable.table.create(sysEnv, u.getId(sysEnv), pn, pv);
-					System.out.println("Createing parameter " + pn + " with value '" + pv + "'");
 				} catch(DuplicateKeyException dke) {
 					if(processError) {
 						SDMSUserParameter up =
