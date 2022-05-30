@@ -699,8 +699,8 @@ public class AlterJob extends ManipJob
 			if ((approvalBits & SDMSSubmittedEntity.IGN_DEP_APPROVAL) == 0) {
 				di.setIgnore(sysEnv, (rec.booleanValue()? SDMSDependencyInstance.RECURSIVE : SDMSDependencyInstance.YES),
 				             jobId, comment);
+			}
 		}
-	}
 	}
 
 	private void ignoreResources(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
@@ -745,8 +745,8 @@ public class AlterJob extends ManipJob
 			}
 			if ((approvalBits & SDMSSubmittedEntity.IGN_RSS_APPROVAL) == 0) {
 				ra.ignore(sysEnv);
+			}
 		}
-	}
 		SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.IGNORE_RESOURCE);
 	}
 
