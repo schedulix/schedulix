@@ -75,7 +75,7 @@ public class AlterJob extends ManipJob
 	private static final int OP_ACTION = RP|RR|SU|RE|ID|ET|PR|NV|IR|IN|CW|SW|RS|DA;
 	private static final int ES_ACTION = ES|ET|RU;
 	private static final int KI_ACTION = KI|ET;
-	private static final int CN_ACTION = CN|ET;
+	private static final int CN_ACTION = KI|CN|ET;
 	private static final int DA_ACTION = DA|ET;
 	private static final int RC_ACTION = RC|ET;
 	private static final int CL_ACTION = CL|ET;
@@ -131,7 +131,6 @@ public class AlterJob extends ManipJob
 		if(((v & ~JS_ACTION) == 0) ||
 		    ((v & ~OP_ACTION) == 0) ||
 		    ((v & ~ES_ACTION) == 0) ||
-		    ((v & ~KI_ACTION) == 0) ||
 		    ((v & ~DA_ACTION) == 0) ||
 		    ((v & ~CL_ACTION) == 0) ||
 		    ((v & ~CN_ACTION) == 0) ||
@@ -176,7 +175,7 @@ public class AlterJob extends ManipJob
 			}
 			final GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
 			gc.setTime(d);
-			tsLong = new Long(gc.getTimeInMillis());
+			tsLong = Long.valueOf(gc.getTimeInMillis());
 		}
 
 		exitCode = (Integer) with.get(ParseStr.S_EXIT_CODE);
@@ -229,6 +228,12 @@ public class AlterJob extends ManipJob
 		rerun = (Boolean) with.get(ParseStr.S_RERUN);
 		rerunSeq = (Integer) with.get(ParseStr.S_RUN);
 		kill = (Boolean) with.get(ParseStr.S_KILL);
+		if (kill == Boolean.FALSE) {
+			killRecursive = true;
+			kill = Boolean.TRUE;
+		} else {
+			killRecursive = false;
+		}
 		cancel = (Boolean) with.get(ParseStr.S_CANCEL);
 		disable = (Boolean) with.get(ParseStr.S_DISABLE);
 		depsToIgnore = (Vector) with.get(ParseStr.S_IGNORE_DEPENDENCY);
@@ -274,10 +279,10 @@ public class AlterJob extends ManipJob
 		}
 		if (kill != null) {
 			if(kill.booleanValue()) {
-				if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getKillProgram(sysEnv) == null) {
+				if(!killRecursive && SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getKillProgram(sysEnv) == null) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "032070111144", "couldn't kill, no kill program defined"));
 				}
-				sme.kill(sysEnv);
+				sme.kill(sysEnv, killRecursive);
 			}
 		}
 		return;
@@ -306,7 +311,7 @@ public class AlterJob extends ManipJob
 			changeState(sysEnv, sme, false, status);
 		}
 		SDMSScope s = SDMSScopeTable.getObjectForUpdate(sysEnv, sId);
-		s.setLastActive(sysEnv, new Long(sysEnv.cEnv.last()));
+		s.setLastActive(sysEnv, Long.valueOf(sysEnv.cEnv.last()));
 	}
 
 	private void alterByOperator(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, long actVersion)
@@ -321,7 +326,7 @@ public class AlterJob extends ManipJob
 				if (approvalBits != 0) {
 					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SET_JOB_STATE,
 					                    ((approvalBits & SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL) == SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL),
-					                    sysEnv.cEnv.uid(), comment, new Long(status.intValue()), null, (exitCode != null ? new Long(exitCode.intValue()) : null), null);
+					                    sysEnv.cEnv.uid(), comment, Long.valueOf(status.intValue()), null, (exitCode != null ? Long.valueOf(exitCode.intValue()) : null), null);
 				}
 				if ((approvalBits & SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL) == 0) {
 					changeState(sysEnv, sme, true, status);
@@ -371,7 +376,7 @@ public class AlterJob extends ManipJob
 					if (adminSuspend.booleanValue()) suspendType += 2;
 					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SUSPEND,
 					                    ((approvalBits & SDMSSubmittedEntity.SUSPEND_APPROVAL) == SDMSSubmittedEntity.SUSPEND_APPROVAL),
-					                    sysEnv.cEnv.uid(), comment, new Long (suspendType), suspend, resumeTs, null);
+					                    sysEnv.cEnv.uid(), comment, Long.valueOf (suspendType), suspend, resumeTs, null);
 				}
 				if ((approvalBits & SDMSSubmittedEntity.SUSPEND_APPROVAL) == 0) {
 					performSuspend(sysEnv, sme, suspend, (localSuspend == null ? false : localSuspend.booleanValue()), adminSuspend.booleanValue(), resumeTs);
@@ -390,7 +395,7 @@ public class AlterJob extends ManipJob
 					if (adminSuspend != null && adminSuspend.booleanValue()) suspendType += 2;
 					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SUSPEND,
 					                    ((approvalBits & SDMSSubmittedEntity.SUSPEND_APPROVAL) == SDMSSubmittedEntity.SUSPEND_APPROVAL),
-					                    sysEnv.cEnv.uid(), comment, new Long (suspendType), suspend, resumeTs, null);
+					                    sysEnv.cEnv.uid(), comment, Long.valueOf (suspendType), suspend, resumeTs, null);
 				}
 				if ((approvalBits & SDMSSubmittedEntity.SUSPEND_APPROVAL) == 0) {
 					sme.setResumeTs(sysEnv, resumeTs);
@@ -417,8 +422,8 @@ public class AlterJob extends ManipJob
 		if(kill != null) {
 			if (priv.can(SDMSPrivilege.KILL)) {
 				if(kill.booleanValue()) {
-					if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getKillProgram(sysEnv) == null) {
-						throw new CommonErrorException(new SDMSMessage(sysEnv, "032070111144", "couldn't kill, no kill program defined"));
+					if(!killRecursive && SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getKillProgram(sysEnv) == null) {
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "032070111145", "couldn't kill, no kill program defined"));
 					}
 					int approvalBits = baseApprovalBits & SDMSSubmittedEntity.KILL_BITS;
 					if (approvalBits != 0) {
@@ -489,7 +494,7 @@ public class AlterJob extends ManipJob
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03211211229", "Cannot change the priority of a batch or milestone"));
 					}
 					if(priority.intValue() < SystemEnvironment.priorityLowerBound && !sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
-						priority = new Integer(SystemEnvironment.priorityLowerBound);
+						priority = Integer.valueOf(SystemEnvironment.priorityLowerBound);
 
 					}
 					isRenice = Boolean.FALSE;
@@ -502,12 +507,12 @@ public class AlterJob extends ManipJob
 				if(renice != null) {
 					int nv = renice.intValue() + sme.getNice(sysEnv).intValue();
 					isRenice = Boolean.TRUE;
-					priority = new Integer(nv);
+					priority = Integer.valueOf(nv);
 				}
 				if (approvalBits != 0) {
 					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.PRIORITY,
 					                    ((approvalBits & SDMSSubmittedEntity.PRIORITY_APPROVAL) == SDMSSubmittedEntity.PRIORITY_APPROVAL),
-					                    sysEnv.cEnv.uid(), comment, new Long(priority), isRenice, null, null);
+					                    sysEnv.cEnv.uid(), comment, Long.valueOf(priority), isRenice, null, null);
 				}
 				if ((approvalBits & SDMSSubmittedEntity.PRIORITY_APPROVAL) == 0) {
 					performPriority(sysEnv, sme, isRenice, priority);
@@ -632,19 +637,19 @@ public class AlterJob extends ManipJob
 					sme.setKillExitCode(sysEnv, exitCode);
 				}
 				if(s == SDMSSubmittedEntity.TO_KILL) {
-					sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.KILLED));
+					sme.setState(sysEnv, SDMSConstants.SME_KILLED);
 				}
 				break;
 			case SDMSSubmittedEntity.BROKEN_ACTIVE:
 				break;
 			case SDMSSubmittedEntity.BROKEN_FINISHED:
 				if(s == SDMSSubmittedEntity.TO_KILL) {
-					sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.KILLED));
+					sme.setState(sysEnv, SDMSConstants.SME_KILLED);
 				}
 				break;
 			case SDMSSubmittedEntity.ERROR:
 				if(s == SDMSSubmittedEntity.TO_KILL) {
-					sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.RUNNING));
+					sme.setState(sysEnv, SDMSConstants.SME_RUNNING);
 				}
 				break;
 			default:

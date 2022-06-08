@@ -44,10 +44,6 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 
 	private final static VariableResolver FVR = new FolderVariableResolver();
 
-	private final static Long lzero = new Long(0);
-	private final static Integer zero = new Integer(0);
-	private final static Float fzero = new Float(0);
-
 	protected SDMSFolder(SDMSObject p_object)
 	{
 		super(p_object);
@@ -118,12 +114,12 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 			                   r_o.getTraceInterval(sysEnv),
 			                   r_o.getTraceBase(sysEnv),
 			                   r_o.getTraceBaseMultiplier(sysEnv),
-			                   fzero,
-			                   fzero,
-			                   fzero,
-			                   fzero,
-			                   lzero,
-			                   lzero
+			                   SDMSConstants.fZERO,
+			                   SDMSConstants.fZERO,
+			                   SDMSConstants.fZERO,
+			                   SDMSConstants.fZERO,
+			                   SDMSConstants.lZERO,
+			                   SDMSConstants.lZERO
 			                                                 );
 			r_o.copyVariables(sysEnv, r_n.getId(sysEnv));
 		}

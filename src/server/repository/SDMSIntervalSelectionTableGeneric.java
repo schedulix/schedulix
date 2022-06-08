@@ -164,23 +164,23 @@ public class SDMSIntervalSelectionTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			intId = new Long (r.getLong(2));
-			value = new Integer (r.getInt(3));
+			id     = Long.valueOf (r.getLong(1));
+			intId = Long.valueOf (r.getLong(2));
+			value = Integer.valueOf (r.getInt(3));
 			if (r.wasNull()) value = null;
-			periodFrom = new Long (r.getLong(4));
+			periodFrom = Long.valueOf (r.getLong(4));
 			if (r.wasNull()) periodFrom = null;
-			periodTo = new Long (r.getLong(5));
+			periodTo = Long.valueOf (r.getLong(5));
 			if (r.wasNull()) periodTo = null;
-			creatorUId = new Long (r.getLong(6));
-			createTs = new Long (r.getLong(7));
-			changerUId = new Long (r.getLong(8));
-			changeTs = new Long (r.getLong(9));
+			creatorUId = Long.valueOf (r.getLong(6));
+			createTs = Long.valueOf (r.getLong(7));
+			changerUId = Long.valueOf (r.getLong(8));
+			changeTs = Long.valueOf (r.getLong(9));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "IntervalSelection: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "IntervalSelection: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSIntervalSelectionGeneric(id,

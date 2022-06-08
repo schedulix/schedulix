@@ -212,7 +212,7 @@ public class SDMSpopupGuiThread extends Thread
 						public void widgetSelected(SelectionEvent e) {
 							try {
 								int ret;
-								ret = new Integer(exit_code.getText()).intValue();
+								ret = Integer.valueOf(exit_code.getText()).intValue();
 								System.err.println ("User requested exit with exit code " + ret + " (Exit Code Field)");
 								System.exit(ret);
 							} catch (Exception evt) {
@@ -227,17 +227,17 @@ public class SDMSpopupGuiThread extends Thread
 					data = new GridData(SWT.RIGHT, SWT.FILL, expand, false, 1, 1);
 					exit_button.setLayoutData(data);
 					exit_button.setText(button[1]);
-					exitButtons.put (new Integer(button[0]), button[1]);
+					exitButtons.put (Integer.valueOf(button[0]), button[1]);
 					exit_button.addSelectionListener(new SelectionAdapter() {
 						public void widgetSelected(SelectionEvent e) {
 							int ret;
-							ret = new Integer(button[0]).intValue();
+							ret = Integer.valueOf(button[0]).intValue();
 							System.err.println ("User requested exit with exit code " + ret + " (" + button[1] + " Button)");
 							System.exit(ret);
 						}
 					});
-					if (defaultButton == null || new Integer(button[0]).intValue() == 0) defaultButton = exit_button;
-					if (focusControl == null || new Integer(button[0]).intValue() == 0) focusControl = exit_button;
+					if (defaultButton == null || Integer.valueOf(button[0]).intValue() == 0) defaultButton = exit_button;
+					if (focusControl == null || Integer.valueOf(button[0]).intValue() == 0) focusControl = exit_button;
 				}
 				expand = false;
 			}
@@ -254,7 +254,7 @@ public class SDMSpopupGuiThread extends Thread
 						long secsRunning = (now - startTime) / 1000;
 						long secsToRun = runTimeSecs.intValue() - secsRunning;
 						if (secsToRun > 0) {
-							String exitStr = exitButtons.get(new Integer(exitCode));
+							String exitStr = exitButtons.get(Integer.valueOf(exitCode));
 							if (exitStr == null)
 								exitStr = " with exit code " + exitCode;
 							int interval = 1000;

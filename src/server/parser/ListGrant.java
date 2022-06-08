@@ -234,7 +234,7 @@ public class ListGrant extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-			new SDMSMessage(sysEnv, "03402110100", "$1 Grant(s) found", new Integer(d_container.lines)));
+		        new SDMSMessage(sysEnv, "03402110100", "$1 Grant(s) found", Integer.valueOf(d_container.lines)));
 	}
 
 	private SDMSProxy resolveById(SystemEnvironment sysEnv, Integer objType, Long objId)
@@ -265,10 +265,10 @@ public class ListGrant extends Node
 				case SDMSObjectComment.JOB_DEFINITION:
 					try {
 						p = SDMSFolderTable.getObject(sysEnv, objId);
-						objType = new Integer(SDMSObjectComment.FOLDER);
+						objType = SDMSConstants.OC_FOLDER;
 					} catch (NotFoundException nfe) {
 						p = SDMSSchedulingEntityTable.getObject(sysEnv, objId);
-						objType = new Integer(SDMSObjectComment.JOB_DEFINITION);
+						objType = SDMSConstants.OC_JOB_DEFINITION;
 					}
 					break;
 				case SDMSObjectComment.FOOTPRINT:
@@ -425,7 +425,7 @@ public class ListGrant extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-		        new SDMSMessage(sysEnv, "03402110101", "$1 Grant(s) found", new Integer(d_container.lines)));
+		        new SDMSMessage(sysEnv, "03402110101", "$1 Grant(s) found", Integer.valueOf(d_container.lines)));
 	}
 
 	public void go(SystemEnvironment sysEnv)
@@ -444,7 +444,7 @@ public class ListGrant extends Node
 				while (i.hasNext()) {
 					Long gId = (Long) i.next();
 					try {
-						SDMSGrant g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSProxy.ZERO, gId));
+						SDMSGrant g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSConstants.lZERO, gId));
 						p.addPriv(sysEnv, g.getPrivs(sysEnv).longValue());
 					} catch (NotFoundException nfe) {
 					}

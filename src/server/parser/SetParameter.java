@@ -90,7 +90,7 @@ public class SetParameter extends ManipJob
 			if (cmdtype == Node.USER_COMMAND && approvalBits != 0) {
 				SDMSSystemMessage msg = createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.MODIFY_PARAMETER,
 				                        ((approvalBits & SDMSSubmittedEntity.EDIT_PARM_APPROVAL) == SDMSSubmittedEntity.EDIT_PARM_APPROVAL),
-				                        sysEnv.cEnv.uid(), auditComment, new Long(0), null, null, name);
+				                        sysEnv.cEnv.uid(), auditComment, SDMSConstants.lZERO, null, null, name);
 				Long msgId = msg.getId(sysEnv);
 				SDMSEntityVariable ev = SDMSEntityVariableTable.table.create(sysEnv, msgId, name, value, Boolean.TRUE, null);
 				msg.setAdditionalLong(sysEnv, ev.getId(sysEnv));

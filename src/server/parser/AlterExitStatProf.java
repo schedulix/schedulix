@@ -127,10 +127,10 @@ public class AlterExitStatProf extends Node
 		EspState espState;
 		while (i.hasNext()) {
 			espState = (EspState)i.next();
-			if (espState.type.equals(new Integer(SDMSExitState.FINAL)))
+			if (espState.type.equals(SDMSConstants.ES_FINAL))
 				isFinal = Boolean.TRUE;
 			else isFinal = Boolean.FALSE;
-			if (espState.type.equals(new Integer(SDMSExitState.RESTARTABLE)))
+			if (espState.type.equals(SDMSConstants.ES_RESTARTABLE))
 				isRestartable = Boolean.TRUE;
 			else isRestartable = Boolean.FALSE;
 
@@ -188,7 +188,7 @@ public class AlterExitStatProf extends Node
 			}
 			esd = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, espState.name);
 			esdId = esd.getId(sysEnv);
-			pref = new Integer (idx);
+			pref = Integer.valueOf (idx);
 			idx ++;
 			try {
 				SDMSExitStateTable.table.create (sysEnv, pref, isFinal, isRestartable, isUnreachable, isDisabled, isBroken, isBatchDefault, isDependencyDefault, espId, esdId);

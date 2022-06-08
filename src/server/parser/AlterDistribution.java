@@ -45,8 +45,6 @@ public class AlterDistribution extends Node
 	private final Vector resList;
 	private boolean ignoreErrors;
 
-	private static final Integer zero = new Integer(0);
-
 	public AlterDistribution(ObjectURL u, Vector v, Boolean r)
 	{
 		super();

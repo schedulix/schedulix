@@ -178,7 +178,7 @@ public class SsRFormatter implements Formatter
 			v.add(null);
 			v.add(null);
 			v.add(Boolean.FALSE);
-			v.add(new Boolean(pool_child));
+			v.add(Boolean.valueOf(pool_child));
 
 			v.add(r.getTraceInterval(sysEnv));
 			v.add(r.getTraceBase(sysEnv));

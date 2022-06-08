@@ -39,7 +39,6 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 {
 
 	public final static String __version = "@(#) $Id: SDMSResourceAllocation.java,v 2.3.14.1 2013/03/14 10:25:23 ronald Exp $";
-	static final Integer ONE = new Integer(1);
 
 	protected SDMSResourceAllocation(SDMSObject p_object)
 	{
@@ -58,7 +57,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 	{
 		int refcount = getRefcount(sysEnv).intValue();
 		if (refcount > 1 && !deleteAll) {
-			setRefcount(sysEnv, new Integer(refcount -1));
+			setRefcount(sysEnv, Integer.valueOf(refcount -1));
 			return;
 		}
 
@@ -71,7 +70,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 			if ( smeId.longValue() > 0) {
 				try {
 					masterra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(sysEnv,
-						new SDMSKey(new Long(-getStickyParent(sysEnv).longValue()),getRId(sysEnv), getStickyName(sysEnv)));
+					                new SDMSKey(Long.valueOf(-getStickyParent(sysEnv).longValue()),getRId(sysEnv), getStickyName(sysEnv)));
 
 				} catch(NotFoundException nfe) {
 					SDMSThread.doTrace(sysEnv.cEnv, ": No master reservation found for sticky allocation", SDMSThread.SEVERITY_ERROR);
@@ -85,7 +84,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 			if (iraAmount != 0) {
 				if (smeId.longValue() > 0) {
 					if (getIsSticky(sysEnv).booleanValue()) {
-						final Long nParentId = new Long(-getStickyParent(sysEnv).longValue());
+						final Long nParentId = Long.valueOf(-getStickyParent(sysEnv).longValue());
 						try {
 							final SDMSResourceAllocation mra =
 								SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(
@@ -94,11 +93,11 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 							int diff = mra.getOrigAmount(sysEnv).intValue() - mraAmount;
 							if (diff > 0) {
 								if (diff >= iraAmount) {
-									mra.setMyAmount(sysEnv, new Integer(mraAmount + iraAmount));
+									mra.setMyAmount(sysEnv, Integer.valueOf(mraAmount + iraAmount));
 									iraAmount = 0;
 								} else {
 									iraAmount = iraAmount - diff;
-									mra.setMyAmount(sysEnv, new Integer(mraAmount + diff));
+									mra.setMyAmount(sysEnv, Integer.valueOf(mraAmount + diff));
 								}
 							}
 						} catch (NotFoundException nfe) {
@@ -177,7 +176,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 	public SDMSResourceAllocation ignore (SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		setAllocationType(sysEnv, new Integer(IGNORE));
+		setAllocationType(sysEnv, SDMSConstants.RA_IGNORE);
 		return this;
 	}
 
@@ -200,7 +199,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 			   p_allocType == MASTER_RESERVATION) {
 				Integer rAmount = r.getFreeAmount(sysEnv);
 				if (rAmount != null ) {
-					rAmount = new Integer(rAmount.intValue() - Math.max (getAmount(sysEnv).intValue(), 0));
+					rAmount = Integer.valueOf(rAmount.intValue() - Math.max (getAmount(sysEnv).intValue(), 0));
 					r.setFreeAmount(sysEnv, rAmount);
 				}
 			}
@@ -212,7 +211,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 				if (raAmount.intValue() > 0) {
 					Integer rAmount = r.getFreeAmount(sysEnv);
 					if (rAmount != null) {
-						rAmount = new Integer(rAmount.intValue() + raAmount.intValue());
+						rAmount = Integer.valueOf(rAmount.intValue() + raAmount.intValue());
 						r.setFreeAmount(sysEnv, rAmount);
 					}
 				}
@@ -235,7 +234,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 				if (iraAmount != 0) {
 					Long rId = getRId(sysEnv);
 					if (getIsSticky(sysEnv).booleanValue()) {
-						final Long nParentId = new Long(-getStickyParent(sysEnv).longValue());
+						final Long nParentId = Long.valueOf(-getStickyParent(sysEnv).longValue());
 						try {
 							final SDMSResourceAllocation mra =
 								SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(
@@ -244,11 +243,11 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 							int diff = mra.getOrigAmount(sysEnv).intValue() - mraAmount;
 							if (diff > 0) {
 								if (diff >= iraAmount) {
-									mra.setMyAmount(sysEnv, new Integer(mraAmount + iraAmount));
+									mra.setMyAmount(sysEnv, Integer.valueOf(mraAmount + iraAmount));
 									iraAmount = 0;
 								} else {
 									iraAmount = iraAmount - diff;
-									mra.setMyAmount(sysEnv, new Integer(mraAmount + diff));
+									mra.setMyAmount(sysEnv, Integer.valueOf(mraAmount + diff));
 								}
 							}
 						} catch (NotFoundException nfe) {
@@ -259,7 +258,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 			}
 		}
 		if (p_allocType == ALLOCATION)
-			setRefcount(sysEnv, ONE);
+			setRefcount(sysEnv, SDMSConstants.iONE);
 		return;
 	}
 
@@ -268,7 +267,7 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 	{
 		int allocationType = getAllocationType(sysEnv);
 		if (allocationType == REQUEST || allocationType == MASTER_REQUEST) {
-			super.setAmount(sysEnv, new Integer(Math.max(p_amount, 0)));
+			super.setAmount(sysEnv, Integer.valueOf(Math.max(p_amount, 0)));
 			return;
 		}
 
@@ -291,11 +290,11 @@ public class SDMSResourceAllocation extends SDMSResourceAllocationProxyGeneric
 					dAmount += oAmount;
 				}
 
-				r.setFreeAmount(sysEnv, new Integer(rAmount - dAmount));
+				r.setFreeAmount(sysEnv, Integer.valueOf(rAmount - dAmount));
 			}
 		}
 
-		super.setAmount(sysEnv, new Integer(Math.max(nAmount, 0)));
+		super.setAmount(sysEnv, Integer.valueOf(Math.max(nAmount, 0)));
 	}
 
 	protected void setMyAmount (SystemEnvironment sysEnv, Integer p_amount)

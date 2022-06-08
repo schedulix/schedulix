@@ -3,64 +3,6 @@
 //
 // Copyright (C) 2001 topIT Informationstechnologie GmbH
 //
-// $Log: MiniScanner.jlex,v $
-// Revision 2.10.4.1  2013/03/14 10:25:30  ronald
-// Umstellung auf standard konforme package bezeichnungen
-//
-// Revision 2.10  2011/09/27 07:23:32  ronald
-// Gravierende Performanceverbesserung bei sehr grossen Statements
-//
-// Revision 2.9  2011/02/15 10:47:14  ronald
-// sdmsh weniger empfindlich in bezug auf leerzeichen
-// system password kann nun ohne restart geaendert werden
-// Password in sdmsctl nun quoted
-//
-// Revision 2.8  2010/03/15 07:48:21  ronald
-// Enhancements for scanning select statements
-//
-// Revision 2.7  2008/05/08 16:36:23  ronald
-// sdmsh now exits with exit code 1 on connect error
-//
-// Revision 2.6  2007/10/26 10:20:12  ronald
-// Loads of documentation work
-//
-// Revision 2.5  2007/08/27 14:11:17  ronald
-// Dump WIP
-//
-// Revision 2.4  2007/04/25 17:14:38  ronald
-// Multicommand rollback implemented
-//
-// Revision 2.3  2007/01/05 12:46:45  ronald
-// prompt befehl zugefuegt
-//
-// Revision 2.2  2006/03/09 14:50:17  ronald
-// Fehler in der Behandlung von Multicommands (hoffentlich) ausgemerzt
-//
-// Revision 2.1  2004/11/22 09:23:47  ronald
-// Eliminated compiler warnings
-//
-// Revision 2.0  2004/04/19 15:25:42  ronald
-// Version 2.0 Started
-//
-// Revision 1.6  2004/03/24 12:23:21  ronald
-// Issue #269: irrecoverable syntax error
-//
-// Revision 1.5  2003/05/07 21:28:17  ronald
-// Mittels !command koennen nun Shell Kommandos ausgefuehrt werden.
-// Ist noch nicht Windows-Proof
-//
-// Revision 1.4  2003/04/15 23:17:41  ronald
-// Allowed nested includes. Paths are interpreted from the actual files
-// point of view
-//
-// Revision 1.3  2002/11/13 09:49:01  ronald
-// Verbesserungen an sdmsh (echo on/off, timing on/off)
-//
-// Revision 1.2  2002/11/07 11:31:15  ronald
-// Multicommands eingebaut
-//
-// Revision 1.1  2002/11/04 20:18:21  ronald
-// sdmsh verbessert. versteht nun "include" und "whenever error ..."
 //
 //
 package de.independit.scheduler.shell;
@@ -68,6 +10,8 @@ package de.independit.scheduler.shell;
 import java.lang.*;
 import java.util.*;
 import java.io.*;
+
+import de.independit.scheduler.server.SDMSConstants;
 
 %%
 
@@ -271,7 +215,13 @@ echooff =	{echo}{uscore}{off}
 				  // System.out.print("BMULTI ");
 				  return MiniParser.BMULTI;
 				}
-<YYINITIAL>{emulticmd}		{ addVal();
+<YYINITIAL>{emulticmd}		{ if (inStatement) {
+					addVal(";");
+					inStatement = false;
+					yypushback(((String) yytext()).length());	// so etwas muss es sein
+					return MiniParser.STATEMENT;
+				  }
+				  addVal();
 				  eatSemiColon = true;
 				  // System.out.print("EMULTI ");
 				  return MiniParser.EMULTI;
@@ -286,9 +236,9 @@ echooff =	{echo}{uscore}{off}
 
 <YYINITIAL>{number}+		{ if(!inStatement) {
 					try {
-						value = new Long(yytext());
+						value = Long.valueOf(yytext());
 					} catch (NumberFormatException nfe) {
-						value = new Long(0);
+						value = SDMSConstants.lZERO;
 				  		// System.out.print("NAN ");
 						return MiniParser.NAN;
 					}

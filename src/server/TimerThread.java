@@ -143,7 +143,7 @@ public class TimerThread
 				aliveSinceLong = false;
 			}
 		} catch (final NotFoundException e) {
-			SDMSPersistentValueTable.table.create (sysEnv, LAST_SCHEDULE_RUN, new Integer (now.toMinutes()));
+			SDMSPersistentValueTable.table.create (sysEnv, LAST_SCHEDULE_RUN, Integer.valueOf (now.toMinutes()));
 			lastRun.set (now);
 			aliveSinceLong = false;
 		}
@@ -153,7 +153,7 @@ public class TimerThread
 		throws SDMSException
 	{
 		final SDMSPersistentValue persVal = SDMSPersistentValueTable.idx_name_getUniqueForUpdate(sysEnv, LAST_SCHEDULE_RUN);
-		persVal.setIntValue (sysEnv, new Integer (now.toMinutes()));
+		persVal.setIntValue (sysEnv, Integer.valueOf (now.toMinutes()));
 		lastRun.set (now);
 	}
 
@@ -195,7 +195,7 @@ public class TimerThread
 		final boolean submitSuspended = se.getSubmitSuspended (sysEnv).booleanValue();
 		final Boolean doSuspend = (forceSuspend || submitSuspended) ? Boolean.TRUE : Boolean.FALSE;
 
-		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, parmList, new Integer(doSuspend.booleanValue() ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
+		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, parmList, (doSuspend.booleanValue() ? SDMSConstants.SME_SUSPEND : SDMSConstants.SME_NOSUSPEND),
 								null,
 								ownerId, null, "Event " + evt.getName (sysEnv), timeZone);
 
@@ -446,7 +446,7 @@ public class TimerThread
 	{
 
 		if (action != ALTER)
-			throw new FatalException (new SDMSMessage (sysEnv, "04207262214", "Unexpected action code $1 for Event $2", new Integer (action), evt.getId (sysEnv)));
+			throw new FatalException (new SDMSMessage (sysEnv, "04207262214", "Unexpected action code $1 for Event $2", Integer.valueOf (action), evt.getId (sysEnv)));
 
 	}
 
@@ -457,7 +457,7 @@ public class TimerThread
 	{
 
 		if (action != ALTER)
-			throw new FatalException (new SDMSMessage (sysEnv, "04207262215", "Unexpected action code $1 for Interval $2", new Integer (action), ival.getId (sysEnv)));
+			throw new FatalException (new SDMSMessage (sysEnv, "04207262215", "Unexpected action code $1 for Interval $2", Integer.valueOf (action), ival.getId (sysEnv)));
 		if (sysEnv.maxWriter > 1)
 			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
@@ -532,7 +532,7 @@ public class TimerThread
 		final Long sceId = sce.getId (sysEnv);
 
 		if (action != ALTER)
-			throw new FatalException (new SDMSMessage (sysEnv, "04207262216", "Unexpected action code $1 for Schedule $2", new Integer (action), sceId));
+			throw new FatalException (new SDMSMessage (sysEnv, "04207262216", "Unexpected action code $1 for Schedule $2", Integer.valueOf (action), sceId));
 
 		if (sysEnv.maxWriter > 1)
 			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
@@ -554,42 +554,42 @@ public class TimerThread
 			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
 		switch (action) {
-		case CREATE:
-			if (! scev.getIsBroken (sysEnv).booleanValue())
-				try {
-					loadNow();
-					doSchedule (sysEnv, scev, false);
-				} catch (final SDMSException se) {
-					throw se;
-				} catch (final Exception e) {
-					SDMSMessage message = new SDMSMessage (sysEnv, "02205080754", "Unexpected Exception ($1)", toString (e));
-					SDMSThread.doTrace(sysEnv.cEnv, message.toString(), SDMSThread.SEVERITY_ERROR);
-					throw new CommonErrorException (message);
-				}
-			break;
+			case CREATE:
+				if (! scev.getIsBroken (sysEnv).booleanValue())
+					try {
+						loadNow();
+						doSchedule (sysEnv, scev, false);
+					} catch (final SDMSException se) {
+						throw se;
+					} catch (final Exception e) {
+						SDMSMessage message = new SDMSMessage (sysEnv, "02205080754", "Unexpected Exception ($1)", toString (e));
+						SDMSThread.doTrace(sysEnv.cEnv, message.toString(), SDMSThread.SEVERITY_ERROR);
+						throw new CommonErrorException (message);
+					}
+				break;
 
-		case ALTER:
-			scev.setNextActivityTime      (sysEnv, null);
-			scev.setNextActivityIsTrigger (sysEnv, null);
-			scev.clearCalendar(sysEnv);
-			if (! scev.getIsBroken (sysEnv).booleanValue())
-				try {
-					loadNow();
-					doSchedule (sysEnv, scev, false);
-				} catch (final SDMSException se) {
-					throw se;
-				} catch (final Exception e) {
-					SDMSMessage message = new SDMSMessage (sysEnv, "02205080755", "Unexpected Exception ($1)", toString (e));
-					SDMSThread.doTrace(sysEnv.cEnv, message.toString(), SDMSThread.SEVERITY_ERROR);
-					throw new CommonErrorException (message);
-				}
-			break;
+			case ALTER:
+				scev.setNextActivityTime      (sysEnv, null);
+				scev.setNextActivityIsTrigger (sysEnv, null);
+				scev.clearCalendar(sysEnv);
+				if (! scev.getIsBroken (sysEnv).booleanValue())
+					try {
+						loadNow();
+						doSchedule (sysEnv, scev, false);
+					} catch (final SDMSException se) {
+						throw se;
+					} catch (final Exception e) {
+						SDMSMessage message = new SDMSMessage (sysEnv, "02205080755", "Unexpected Exception ($1)", toString (e));
+						SDMSThread.doTrace(sysEnv.cEnv, message.toString(), SDMSThread.SEVERITY_ERROR);
+						throw new CommonErrorException (message);
+					}
+				break;
 
-		case DROP:
-			break;
+			case DROP:
+				break;
 
-		default:
-			throw new FatalException (new SDMSMessage (sysEnv, "04207262159", "Unexpected action code $1 for Scheduled Event $2", new Integer (action), scev.getId (sysEnv)));
+			default:
+				throw new FatalException (new SDMSMessage (sysEnv, "04207262159", "Unexpected action code $1 for Scheduled Event $2", Integer.valueOf (action), scev.getId (sysEnv)));
 		}
 
 	}

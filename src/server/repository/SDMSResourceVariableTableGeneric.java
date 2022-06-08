@@ -162,19 +162,19 @@ public class SDMSResourceVariableTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			pdId = new Long (r.getLong(2));
-			rId = new Long (r.getLong(3));
+			id     = Long.valueOf (r.getLong(1));
+			pdId = Long.valueOf (r.getLong(2));
+			rId = Long.valueOf (r.getLong(3));
 			value = r.getString(4);
-			creatorUId = new Long (r.getLong(5));
-			createTs = new Long (r.getLong(6));
-			changerUId = new Long (r.getLong(7));
-			changeTs = new Long (r.getLong(8));
+			creatorUId = Long.valueOf (r.getLong(5));
+			createTs = Long.valueOf (r.getLong(6));
+			changerUId = Long.valueOf (r.getLong(7));
+			changeTs = Long.valueOf (r.getLong(8));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "ResourceVariable: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "ResourceVariable: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSResourceVariableGeneric(id,

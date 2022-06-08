@@ -87,7 +87,7 @@ public class ListDependencyDefinition extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "02204291509", "$1 Dependency Definition(s) found",
-					new Integer(d_container.lines)));
+		                        Integer.valueOf(d_container.lines)));
 
 	}
 

@@ -30,6 +30,7 @@ package de.independit.scheduler.server.parser;
 import java.util.*;
 
 import de.independit.scheduler.server.SystemEnvironment;
+import de.independit.scheduler.server.SDMSConstants;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.output.SDMSOutputContainer;
@@ -38,11 +39,11 @@ public class ScopeParameter
 {
 	public static final String __version = "@(#) $Id: ScopeParameter.java,v 2.4.14.1 2013/03/14 10:24:47 ronald Exp $";
 
-	private static final Integer typeConstant     = new Integer (SDMSParameterDefinition.CONSTANT);
-	private static final Integer typeDynamic      = new Integer (SDMSParameterDefinition.DYNAMIC);
-	private static final Integer typeDynamicValue = new Integer (SDMSParameterDefinition.DYNAMICVALUE);
+	private static final Integer typeConstant     = SDMSConstants.PD_CONSTANT;
+	private static final Integer typeDynamic      = SDMSConstants.PD_DYNAMIC;
+	private static final Integer typeDynamicValue = SDMSConstants.PD_DYNAMICVALUE;
 
-	private static final Integer aggFunctionNone = new Integer (SDMSParameterDefinition.NONE);
+	private static final Integer aggFunctionNone = SDMSConstants.PD_NONE;
 
 	private static final void markAltered (final SystemEnvironment sysEnv, final Long sId)
 		throws SDMSException

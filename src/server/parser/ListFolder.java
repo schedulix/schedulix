@@ -175,7 +175,7 @@ public class ListFolder extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03201292008",
-				"$1 Object(s) found", new Integer(d_container.lines)));
+		                                   "$1 Object(s) found", Integer.valueOf(d_container.lines)));
 	}
 
 	private Boolean checkMse(SystemEnvironment sysEnv, SDMSFolder f, HashMap cache)
@@ -264,8 +264,8 @@ public class ListFolder extends Node
 		}
 		Vector v1 = SDMSFolderTable.idx_parentId.getVector(sysEnv, fId);
 		Vector v2 = SDMSSchedulingEntityTable.idx_folderId.getVector(sysEnv, fId);
-		v.add(new Integer(v1.size()));
-		v.add(new Integer(v2.size()));
+		v.add(Integer.valueOf(v1.size()));
+		v.add(Integer.valueOf(v2.size()));
 		v.add(checkMse(sysEnv, f, mseCache));
 		v.add(f.getPrivileges(sysEnv).toString());
 		v.add(f.idPathVector(sysEnv));
@@ -349,10 +349,10 @@ public class ListFolder extends Node
 				v.add(SystemEnvironment.nullString);
 			}
 		}
-		v.add(new Integer(0));
+		v.add(SDMSConstants.iZERO);
 
 		Vector v2 = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, seId);
-		Integer children = new Integer (v2.size());
+		Integer children = Integer.valueOf (v2.size());
 		v.add(children);
 
 		v.add("");

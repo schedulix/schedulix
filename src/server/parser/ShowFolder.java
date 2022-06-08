@@ -586,6 +586,8 @@ public class ShowFolder extends ShowCommented
 		c_desc.add("DEFINITION");
 		c_desc.add("ORIGIN");
 		c_desc.add("CONDITION");
+		c_desc.add("RESOURCE_STATE_PROFILE_ID");
+		c_desc.add("RESOURCE_STATE_PROFILE_NAME");
 
 		SDMSOutputContainer c_container = new SDMSOutputContainer(sysEnv, null, c_desc);
 
@@ -718,6 +720,16 @@ public class ShowFolder extends ShowCommented
 		c_data.add(source);
 		c_data.add(sourceName);
 		c_data.add(rr.getCondition(sysEnv));
+		Long rspId = nr.getRspId(sysEnv);
+		String rspName = null;
+		SDMSResourceStateProfile rsp = null;
+		if (rspId != null) {
+			rsp = SDMSResourceStateProfileTable.getObject(sysEnv, rspId);
+			rspName = rsp.getName(sysEnv);
+		}
+
+		c_data.add(rspId);
+		c_data.add(rspName);
 	}
 
 	private void render_env(SystemEnvironment sysEnv, Vector c_data, SDMSEnvironment e, String name)
@@ -755,6 +767,8 @@ public class ShowFolder extends ShowCommented
 		c_data.add(source);
 		c_data.add(name);
 		c_data.add(e.getCondition(sysEnv));
+		c_data.add(null);
+		c_data.add(null);
 	}
 
 	private void add_resources(SystemEnvironment sysEnv, SDMSProxy p, Vector v)

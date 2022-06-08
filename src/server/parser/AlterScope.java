@@ -33,6 +33,7 @@ import de.independit.scheduler.server.SystemEnvironment;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.server.*;
 
 public class AlterScope
 	extends Node
@@ -127,7 +128,7 @@ public class AlterScope
 				gName = (String) with.get(ParseStr.S_GROUP_CASCADE);
 			}
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			                         sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId, s.getOwnerId(sysEnv));
 			s.setOwnerId(sysEnv, gId);
 			if(with.containsKey (ParseStr.S_GROUP_CASCADE)) {
@@ -137,7 +138,7 @@ public class AlterScope
 
 		if (with.containsKey(ParseStr.S_INHERIT)) {
 			Long inheritPrivs = (Long) with.get(ParseStr.S_INHERIT);
-			if (inheritPrivs == null) inheritPrivs = new Long(0);
+			if (inheritPrivs == null) inheritPrivs = SDMSConstants.lZERO;
 			long lpriv = inheritPrivs.longValue();
 			if((s.getPrivilegeMask() & lpriv) != lpriv) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061325", "Incompatible grant"));
@@ -154,7 +155,7 @@ public class AlterScope
 	{
 		final Long sId = s.getId(sysEnv);
 		String salt = null;
-		Integer method = new Integer(SDMSScope.SHA256);
+		Integer method = SDMSConstants.S_SHA256;
 
 		s.notify(sysEnv);
 
@@ -176,7 +177,7 @@ public class AlterScope
 				salt = (String) v.get(1);
 
 				if (passwd.length() == ManipUser.MD5LENGTH)
-					method = new Integer(SDMSScope.MD5);
+					method = SDMSConstants.S_MD5;
 			} else
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "04312151811", "Both " + ParseStr.S_PASSWORD + " and " + ParseStr.S_RAWPASSWORD + " are not allowed"));
 		}
@@ -221,7 +222,7 @@ public class AlterScope
 		if (with.containsKey (ParseStr.S_GROUP)) {
 			final String gName = (String) with.get (ParseStr.S_GROUP);
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			                         sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId, s.getOwnerId(sysEnv));
 			s.setOwnerId(sysEnv, gId);
 		}
@@ -256,12 +257,9 @@ public class AlterScope
 		}
 
 		if(fatal) {
-
-			s.setState(sysEnv, new Integer(SDMSScope.FATAL));
+			s.setState(sysEnv, SDMSConstants.S_FATAL);
 		} else {
-
-			s.setState(sysEnv, new Integer (SDMSScope.NONFATAL));
-
+			s.setState(sysEnv, SDMSConstants.S_NONFATAL);
 		}
 		SDMSThread.doTrace(env, errmsg, SDMSThread.SEVERITY_ERROR);
 		s.setErrmsg(sysEnv, errmsg);

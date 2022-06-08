@@ -140,7 +140,7 @@ public class ListNamedResource extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(new SDMSMessage (sysEnv, "02111101415",
-				"$1 Named Resource(s) found", new Integer(d_container.lines)));
+		                                    "$1 Named Resource(s) found", Integer.valueOf(d_container.lines)));
 	}
 
 	private void fillVector(SystemEnvironment sysEnv, SDMSNamedResource nr, Vector v)
@@ -171,8 +171,8 @@ public class ListNamedResource extends Node
 			if(tnr.getUsage(sysEnv).intValue() == SDMSNamedResource.CATEGORY)	subcat++;
 			else									res++;
 		}
-		v.add(new Integer(subcat));
-		v.add(new Integer(res));
+		v.add(Integer.valueOf(subcat));
+		v.add(Integer.valueOf(res));
 		v.add(nr.getPrivileges(sysEnv).toString());
 		v.add(nr.idPathVector(sysEnv));
 	}

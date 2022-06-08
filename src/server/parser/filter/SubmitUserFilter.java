@@ -79,7 +79,7 @@ public class SubmitUserFilter extends Filter
 			for(int i = 0; i < names.size(); i++) {
 				try {
 					Long gid = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					                   sysEnv, new SDMSKey ((String)(names.get(i)), new Long(0))).getId(sysEnv);
+					                   sysEnv, new SDMSKey ((String)(names.get(i)), SDMSConstants.lZERO)).getId(sysEnv);
 					owners.add(gid);
 				} catch (SerializationException e) {
 					throw new RuntimeException();

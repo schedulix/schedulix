@@ -135,12 +135,12 @@ public class ShowScope extends ShowCommented
 		v.add(s.getIsSuspended(sysEnv));
 		v.add(s.getIsEnabled(sysEnv));
 		v.add(s.getIsRegistered(sysEnv));
-		v.add(new Boolean(s.isConnected(sysEnv)));
+		v.add(Boolean.valueOf(s.isConnected(sysEnv)));
 		v.add(s.getHasAlteredConfig(sysEnv));
 		v.add(s.getState(sysEnv));
 		v.add(s.getPid(sysEnv));
 		v.add(s.getNode(sysEnv));
-		v.add(new Long(s.getIdle(sysEnv)));
+		v.add(Long.valueOf(s.getIdle(sysEnv)));
 		v.add(s.getErrmsg(sysEnv));
 		v.add(getCommentContainer(sysEnv, sId));
 		v.add(getCommentInfoType(sysEnv, sId));
@@ -278,7 +278,7 @@ public class ShowScope extends ShowCommented
 						final Vector row = new Vector();
 						row.add (key);
 						row.add (cfgValue);
-						row.add (new Boolean (isLocal));
+						row.add (Boolean.valueOf (isLocal));
 						row.add (getScopePath (sysEnv, isLocal ? ancestId : scopeId));
 						row.add (isLocal ? ancestVal : cfgValue);
 
@@ -348,7 +348,7 @@ public class ShowScope extends ShowCommented
 			final Vector row = new Vector();
 			row.add (envKey);
 			row.add (envValue);
-			row.add (new Boolean (isLocal));
+			row.add (Boolean.valueOf (isLocal));
 			row.add (getScopePath (sysEnv, isLocal ? ancestId : scopeId));
 			row.add (isLocal ? ancestVal : envValue);
 

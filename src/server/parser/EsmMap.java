@@ -31,6 +31,8 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
+import de.independit.scheduler.server.SDMSConstants;
+
 public class EsmMap
 {
 
@@ -48,7 +50,7 @@ public class EsmMap
 	public EsmMap(String n)
 	{
 		name = n;
-		from = new Integer(Integer.MIN_VALUE);
+		from = SDMSConstants.iMIN_VALUE;
 	}
 
 	public String name()

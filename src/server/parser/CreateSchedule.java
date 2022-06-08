@@ -97,7 +97,7 @@ public class CreateSchedule
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			              sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId)) &&
 			   !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03401151027",
@@ -108,7 +108,7 @@ public class CreateSchedule
 		Long inheritPrivs;
 		if (with.containsKey(ParseStr.S_INHERIT)) {
 			inheritPrivs = (Long) with.get(ParseStr.S_INHERIT);
-			if (inheritPrivs == null) inheritPrivs = new Long(0);
+			if (inheritPrivs == null) inheritPrivs = SDMSConstants.lZERO;
 		} else
 			inheritPrivs = null;
 
@@ -116,7 +116,7 @@ public class CreateSchedule
 		if((parent.getPrivilegeMask() & lpriv) != lpriv) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061327", "Incompatible grant"));
 		}
-		inheritPrivs = new Long(lpriv);
+		inheritPrivs = Long.valueOf(lpriv);
 
 		if(!with.containsKey(ParseStr.S_ACTIVE)) active = Boolean.TRUE;
 		else	active = (Boolean) with.get(ParseStr.S_ACTIVE);

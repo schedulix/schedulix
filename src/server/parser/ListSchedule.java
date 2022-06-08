@@ -85,7 +85,7 @@ public class ListSchedule
 			row.add (ScheduleUtil.getIvalName (sysEnv, sub));
 			row.add (sub.getTimeZone (sysEnv));
 			row.add (sub.getIsActive (sysEnv));
-			row.add (new Boolean (sub.isReallyActive (sysEnv)));
+			row.add (Boolean.valueOf (sub.isReallyActive (sysEnv)));
 			row.add (sub.getPrivileges(sysEnv).toString());
 
 			table.addData (sysEnv, row);
@@ -140,7 +140,7 @@ public class ListSchedule
 		row.add (sce.getTimeZone (sysEnv));
 		row.add (sce.getIsActive (sysEnv));
 
-		row.add (new Boolean (sce.isReallyActive (sysEnv)));
+		row.add (Boolean.valueOf (sce.isReallyActive (sysEnv)));
 
 		row.add (sce.getPrivileges(sysEnv).toString());
 
@@ -153,6 +153,6 @@ public class ListSchedule
 
 		result.setOutputContainer (table);
 
-		result.setFeedback (new SDMSMessage (sysEnv, "04207252340", "$1 Schedule(s) found", new Integer (table.lines)));
+		result.setFeedback (new SDMSMessage (sysEnv, "04207252340", "$1 Schedule(s) found", Integer.valueOf (table.lines)));
 	}
 }

@@ -65,11 +65,11 @@ public class CreateComment extends Node
 		obj.resolve(sysEnv);
 
 		if (with.containsKey(ParseStr.S_URL)) {
-			infoType = new Integer(SDMSObjectComment.URL);
+			infoType = SDMSConstants.OC_URL;
 			text = (String) with.get(ParseStr.S_URL);
 			tag = null;
 		} else {
-			infoType = new Integer(SDMSObjectComment.TEXT);
+			infoType = SDMSConstants.OC_TEXT;
 		}
 
 		Vector v = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, obj.objId);
@@ -86,15 +86,14 @@ public class CreateComment extends Node
 		}
 
 		if (infoType.intValue() == SDMSObjectComment.URL)
-			SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(1), tag, text);
+			SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, SDMSConstants.iONE, tag, text);
 		else {
 			v = (Vector) with.get(ParseStr.S_TEXT);
 			for (int i = 0; i < v.size(); ++i) {
 				Vector tt = (Vector) v.get(i);
 				tag = (String) tt.get(0);
 				text = (String) tt.get(1);
-
-				SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(i+1), tag, text);
+				SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, Integer.valueOf(i+1), tag, text);
 			}
 		}
 

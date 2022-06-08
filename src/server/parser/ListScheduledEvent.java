@@ -114,7 +114,7 @@ public class ListScheduledEvent
 
 			row.add (scev.getIsActive (sysEnv));
 
-			row.add (new Boolean (scev.isReallyActive (sysEnv)));
+			row.add (Boolean.valueOf (scev.isReallyActive (sysEnv)));
 
 			row.add (scev.getIsBroken (sysEnv));
 
@@ -180,6 +180,6 @@ public class ListScheduledEvent
 
 		result.setOutputContainer (table);
 
-		result.setFeedback (new SDMSMessage (sysEnv, "04207261919", "$1 Scheduled Event(s) found", new Integer (table.lines)));
+		result.setFeedback (new SDMSMessage (sysEnv, "04207261919", "$1 Scheduled Event(s) found", Integer.valueOf (table.lines)));
 	}
 }

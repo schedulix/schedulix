@@ -263,7 +263,7 @@ public abstract class ManipJobDefinition extends Node
 		gName = (String) withs.get(ParseStr.S_GROUP);
 		if(gName != null) {
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			              sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 		} else {
 			final SDMSUser u = SDMSUserTable.getObject(sysEnv, env.uid());
 			gId = u.getDefaultGId(sysEnv);
@@ -271,11 +271,11 @@ public abstract class ManipJobDefinition extends Node
 
 		if (withs.containsKey(ParseStr.S_INHERIT)) {
 			inheritPrivs = (Long) withs.get(ParseStr.S_INHERIT);
-			if (inheritPrivs == null) inheritPrivs = new Long(0);
+			if (inheritPrivs == null) inheritPrivs = SDMSConstants.lZERO;
 		} else
-			inheritPrivs = new Long(0);
+			inheritPrivs = SDMSConstants.lZERO;
 		long lpriv = inheritPrivs.longValue();
-		inheritPrivs = new Long(lpriv);
+		inheritPrivs = Long.valueOf(lpriv);
 	}
 
 	protected void checkJob(SystemEnvironment sysEnv)
@@ -289,29 +289,29 @@ public abstract class ManipJobDefinition extends Node
 		if(errlogfile == null)  truncErrlog = null;
 		if(priority != null) {
 			if(priority.intValue() > SchedulingThread.MIN_PRIORITY) {
-				priority = new Integer(SchedulingThread.MIN_PRIORITY);
+				priority = SDMSConstants.ST_MIN_PRIORITY;
 				priowarn = true;
 			}
 			if(priority.intValue() < SchedulingThread.MAX_PRIORITY) {
-				priority = new Integer(SchedulingThread.MAX_PRIORITY);
+				priority = SDMSConstants.ST_MAX_PRIORITY;
 				priowarn = true;
 			}
 			if(priority.intValue() < SystemEnvironment.priorityLowerBound && !sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
-				priority = new Integer(SystemEnvironment.priorityLowerBound);
+				priority = Integer.valueOf(SystemEnvironment.priorityLowerBound);
 				priowarn = true;
 			}
-		} else  priority = new Integer(SchedulingThread.DEFAULT_PRIORITY);
+		} else  priority = SDMSConstants.ST_DEFAULT_PRIORITY;
 		if(minPriority != null) {
 			if(minPriority.intValue() > SchedulingThread.MIN_PRIORITY) {
-				minPriority = new Integer(SchedulingThread.MIN_PRIORITY);
+				minPriority = SDMSConstants.ST_MIN_PRIORITY;
 				priowarn = true;
 			}
 			if(minPriority.intValue() < SchedulingThread.MAX_PRIORITY) {
-				minPriority = new Integer(SchedulingThread.MAX_PRIORITY);
+				minPriority = SDMSConstants.ST_MAX_PRIORITY;
 				priowarn = true;
 			}
 			if(minPriority.intValue() < SystemEnvironment.priorityLowerBound && !sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
-				priority = new Integer(SystemEnvironment.priorityLowerBound);
+				priority = Integer.valueOf(SystemEnvironment.priorityLowerBound);
 				priowarn = true;
 			}
 		}
@@ -324,7 +324,7 @@ public abstract class ManipJobDefinition extends Node
 		}
 
 		if(masterSubmittable == null) masterSubmittable = Boolean.FALSE;
-		if(dependencyOperation == null) dependencyOperation = new Integer (SDMSSchedulingEntity.AND);
+		if(dependencyOperation == null) dependencyOperation = SDMSConstants.SE_AND;
 		if(esp == null) {
 			throw new CommonErrorException(
 				new SDMSMessage(sysEnv, "02112140955",
@@ -359,7 +359,7 @@ public abstract class ManipJobDefinition extends Node
 
 		if(timeout != null) {
 			to_mult = (Integer) timeout.get(ParseStr.S_MULT);
-			if(to_mult == null) to_mult = new Integer(1);
+			if(to_mult == null) to_mult = SDMSConstants.iONE;
 			to_interval = (Integer) timeout.get(ParseStr.S_INTERVAL);
 			to_state = (String) timeout.get(ParseStr.S_STATUS);
 			to_esdId = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, to_state).getId(sysEnv);
@@ -422,17 +422,16 @@ public abstract class ManipJobDefinition extends Node
 		truncLog = null;
 		truncErrlog = null;
 		if(masterSubmittable == null) masterSubmittable = Boolean.FALSE;
-		if(dependencyOperation == null) dependencyOperation = new Integer (SDMSSchedulingEntity.AND);
+		if(dependencyOperation == null) dependencyOperation = SDMSConstants.SE_AND;
 		if(priority != null) {
+			priowarn = true;
 			if(priority.intValue() > SchedulingThread.MIN_PRIORITY) {
-				priority = new Integer(SchedulingThread.MIN_PRIORITY);
-				priowarn = true;
+				priority = SDMSConstants.ST_MIN_PRIORITY;
 			}
 			if(priority.intValue() < -SchedulingThread.MIN_PRIORITY) {
-				priority = new Integer(-SchedulingThread.MIN_PRIORITY);
-				priowarn = true;
+				priority = SDMSConstants.ST_MINUS_MIN_PRIORITY;
 			}
-		} else  priority = new Integer(0);
+		} else  priority = SDMSConstants.iZERO;
 		minPriority = null;
 		if(submitSuspended == null) submitSuspended = Boolean.FALSE;
 		if(esp == null) {
@@ -574,7 +573,7 @@ public abstract class ManipJobDefinition extends Node
 		}
 
 		if(wh.containsKey(ParseStr.S_ENABLE))
-			isDisabled = new Boolean(!((Boolean) wh.get(ParseStr.S_ENABLE)).booleanValue());
+			isDisabled = Boolean.valueOf(!((Boolean) wh.get(ParseStr.S_ENABLE)).booleanValue());
 
 		if(parentType != SDMSSchedulingEntity.BATCH && parentType != SDMSSchedulingEntity.JOB && isStatic.equals(Boolean.TRUE)) {
 			throw new CommonErrorException(
@@ -584,13 +583,13 @@ public abstract class ManipJobDefinition extends Node
 		prio = (Integer) wh.get(ParseStr.S_PRIORITY);
 		if(prio != null) {
 			if(prio.intValue() > SchedulingThread.MIN_PRIORITY)
-				prio = new Integer(SchedulingThread.MIN_PRIORITY);
+				prio = SDMSConstants.ST_MIN_PRIORITY;
 			if(prio.intValue() < - SchedulingThread.MIN_PRIORITY)
-				prio = new Integer(- SchedulingThread.MAX_PRIORITY);
-		} else prio = new Integer(0);
+				prio = SDMSConstants.ST_MINUS_MIN_PRIORITY;
+		} else prio = SDMSConstants.iZERO;
 
 		suspend = (Integer) wh.get(ParseStr.S_SUSPEND);
-		if(suspend == null) suspend = new Integer(SDMSSchedulingHierarchy.CHILDSUSPEND);
+		if(suspend == null) suspend = SDMSConstants.SH_CHILDSUSPEND;
 		shResumeAt = null;
 		shResumeIn = null;
 		shResumeBase = null;
@@ -608,7 +607,7 @@ public abstract class ManipJobDefinition extends Node
 		}
 
 		mergeMode = (Integer) wh.get(ParseStr.S_MERGE_MODE);
-		if(mergeMode == null) mergeMode = new Integer(SDMSSchedulingHierarchy.NOMERGE);
+		if(mergeMode == null) mergeMode = SDMSConstants.SH_NOMERGE;
 
 		estpName = (String) wh.get(ParseStr.S_TRANSLATION);
 		intName = (String) wh.get(ParseStr.S_INTERVAL);
@@ -778,8 +777,9 @@ public abstract class ManipJobDefinition extends Node
 			String pdef = (String) pv.get(1);
 			Boolean isLocal = (Boolean) pv.get(2);
 			String exportName = (String) pv.get(3);
-			Integer type = (pt == null ? new Integer(SDMSParameterDefinition.PARAMETER) : (Integer) pt.key);
-			Integer aggFunction = new Integer(SDMSParameterDefinition.NONE);
+			Long parmId = (Long) pv.get(4);
+			Integer type = (pt == null ? SDMSConstants.PD_PARAMETER : (Integer) pt.key);
+			Integer aggFunction = SDMSConstants.PD_NONE;
 			Long linkPdId = null;
 			switch(type.intValue()) {
 				case SDMSParameterDefinition.PARAMETER:
@@ -841,8 +841,20 @@ public abstract class ManipJobDefinition extends Node
 				}
 			} else {
 				try {
-					SDMSParameterDefinition pd =
-						SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(se.getId(sysEnv), pn));
+					SDMSParameterDefinition pd;
+					if (parmId.longValue() != 0) {
+						try {
+							pd = SDMSParameterDefinitionTable.getObject(sysEnv, parmId);
+							Long pSeId = pd.getSeId(sysEnv);
+							if (!pSeId.equals(se.getId(sysEnv))) {
+								throw new CommonErrorException(new SDMSMessage(sysEnv, "03202161355", "Parameter $1($2) does not belong to job definition $3", pd.getName(sysEnv), parmId, se.pathString(sysEnv)));
+							}
+							pd.setName(sysEnv, pn);
+						} catch (NotFoundException nfe) {
+							throw new CommonErrorException(new SDMSMessage(sysEnv, "03202161351", "Could not find a parameter with ID $1", parmId));
+						}
+					} else
+						pd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(se.getId(sysEnv), pn));
 					pd.setType(sysEnv, type);
 					pd.setAggFunction(sysEnv, aggFunction);
 					pd.setDefaultValue(sysEnv, pdef);
@@ -897,11 +909,11 @@ public abstract class ManipJobDefinition extends Node
 		nr = SDMSNamedResourceTable.getNamedResource(sysEnv, name);
 		Long nrId = nr.getId(sysEnv);
 
-		if(amount == null) amount = new Integer(0);
-		if(lockmode == null) lockmode = new Integer(SDMSResourceRequirement.N);
+		if(amount == null) amount = SDMSConstants.iZERO;
+		if(lockmode == null) lockmode = SDMSConstants.RR_N;
 		if(rsmpname != null)	rsmpId = SDMSResourceStateMappingProfileTable.idx_name_getUnique(sysEnv, rsmpname).getId(sysEnv);
 		else 			rsmpId = null;
-		if(keepMode == null) keepMode = new Integer(SDMSResourceRequirement.NOKEEP);
+		if(keepMode == null) keepMode = SDMSConstants.RR_NOKEEP;
 		if(sticky != null) {
 
 			isSticky = Boolean.TRUE;
@@ -927,7 +939,7 @@ public abstract class ManipJobDefinition extends Node
 
 		if(expired != null) {
 			exp_mult = (Integer) expired.get(ParseStr.S_MULT);
-			if(exp_mult == null) exp_mult = new Integer(1);
+			if(exp_mult == null) exp_mult = SDMSConstants.iONE;
 			exp_interval = (Integer) expired.get(ParseStr.S_INTERVAL);
 			ignoreOnRerun = (Boolean) expired.get(ParseStr.S_IGNORE);
 		} else {
@@ -1050,7 +1062,7 @@ public abstract class ManipJobDefinition extends Node
 
 		unresolved = (Integer) wh.get(ParseStr.S_UNRESOLVED);
 		if (unresolved == null) {
-			unresolved = new Integer(SDMSDependencyDefinition.ERROR);
+			unresolved = SDMSConstants.DD_ERROR;
 		}
 
 		Object o = wh.get(ParseStr.S_STATUS);
@@ -1066,16 +1078,16 @@ public abstract class ManipJobDefinition extends Node
 					sns.add ((String) ((WithItem) i.next()).key);
 				}
 			}
-			stateSelection = new Integer(SDMSDependencyDefinition.FINAL);
+			stateSelection = SDMSConstants.DD_FINAL;
 		} else {
 			rStateNames = null;
 			String stateMacro = (String) o;
 			if (stateMacro.equals(ParseStr.S_DEFAULT)) {
-				stateSelection = new Integer(SDMSDependencyDefinition.DEFAULT);
+				stateSelection = SDMSConstants.DD_DEFAULT;
 			} else if (stateMacro.equals(ParseStr.S_UNREACHABLE)) {
-				stateSelection = new Integer(SDMSDependencyDefinition.UNREACHABLE);
+				stateSelection = SDMSConstants.DD_UNREACHABLE;
 			} else if (stateMacro.equals(ParseStr.S_REACHABLE)) {
-				stateSelection = new Integer(SDMSDependencyDefinition.ALL_REACHABLE);
+				stateSelection = SDMSConstants.DD_ALL_REACHABLE;
 			}
 		}
 
@@ -1083,7 +1095,7 @@ public abstract class ManipJobDefinition extends Node
 		Long rId = rSe.getId(sysEnv);
 
 		mode = (Integer) wh.get(ParseStr.S_MODE);
-		if(mode == null) mode = new Integer(SDMSDependencyDefinition.ALL_FINAL);
+		if(mode == null) mode = SDMSConstants.DD_ALL_FINAL;
 
 		resolveMode = (Integer) wh.get(ParseStr.S_RESOLVE);
 		if (resolveMode == null) resolveMode = SDMSDependencyDefinition.INTERNAL;
@@ -1093,7 +1105,7 @@ public abstract class ManipJobDefinition extends Node
 		expired = (WithHash) wh.get(ParseStr.S_EXPIRED);
 		if (expired != null) {
 			expiredAmount = (Integer) expired.get(ParseStr.S_MULT);
-			if(expiredAmount == null) expiredAmount = new Integer(1);
+			if(expiredAmount == null) expiredAmount = SDMSConstants.iONE;
 			expiredBase = (Integer) expired.get(ParseStr.S_INTERVAL);
 		}
 

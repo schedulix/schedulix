@@ -146,35 +146,56 @@ public class SDMSResourceRequirement extends SDMSResourceRequirementProxyGeneric
 		}
 	}
 
+	public void setRsmpId(SystemEnvironment sysEnv, Long rsmpId)
+	throws SDMSException
+	{
+		Long nrId = this.getNrId(sysEnv);
+		SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, nrId);
+		Long rspId = nr.getRspId(sysEnv);
+		if (rspId == null) {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03709071205",
+			                               "It is not allowed to specify a mapping for a resource ($1) without a resource state profile",
+			                               nr.pathString(sysEnv)));
+		}
+		checkMapping(sysEnv, rspId, rsmpId, nr);
+		super.setRsmpId(sysEnv, rsmpId);
+	}
+
 	private void checkMapping(SystemEnvironment sysEnv, Long rspId, Long rsmpId, SDMSNamedResource nr)
 		throws SDMSException
 	{
+		Long rsdId = SDMSResourceRequirement.checkMapping(sysEnv, rspId, rsmpId);
+		if (rsdId == null)
+			return;
+		throw new CommonErrorException(new SDMSMessage(sysEnv, "03709071205",
+		                               "Resource State Profile $1 of $2 doesn't contain State $3",
+		                               SDMSResourceStateProfileTable.getObject(sysEnv, rspId).getName(sysEnv),
+		                               nr.pathString(sysEnv),
+		                               SDMSResourceStateDefinitionTable.getObject(sysEnv, rsdId).getName(sysEnv)));
+	}
+
+	public static Long checkMapping(SystemEnvironment sysEnv, Long rspId, Long rsmpId)
+	throws SDMSException
+	{
 		Vector v = SDMSResourceStateMappingTable.idx_rsmpId.getVector(sysEnv, rsmpId);
+		Long initialRsdId = SDMSResourceStateProfileTable.getObject(sysEnv, rspId).getInitialRsdId(sysEnv);
 		for(int i = 0; i < v.size(); i++) {
 			SDMSResourceStateMapping rsm = (SDMSResourceStateMapping) v.get(i);
 			Long toRsdId = rsm.getToRsdId(sysEnv);
 			Long fromRsdId = rsm.getFromRsdId(sysEnv);
-			Long initialRsdId = SDMSResourceStateProfileTable.getObject(sysEnv, rspId).getInitialRsdId(sysEnv);
 
 			if (fromRsdId != null &&
 			    !(SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(fromRsdId, rspId)) ||
 			      fromRsdId.equals(initialRsdId)
 			     )) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03709071205",
-							"Resource State Profile $1 of $2 doesn't contain 'from' State $3",
-							SDMSResourceStateProfileTable.getObject(sysEnv, rspId).getName(sysEnv),
-							nr.pathString(sysEnv),
-							SDMSResourceStateDefinitionTable.getObject(sysEnv, toRsdId).getName(sysEnv)));
+				return fromRsdId;
 			}
 
 			if (!SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(toRsdId, rspId))) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304111022",
-							"Resource State Profile $1 of $2 doesn't contain 'to' State $3",
-							SDMSResourceStateProfileTable.getObject(sysEnv, rspId).getName(sysEnv),
-							nr.pathString(sysEnv),
-							SDMSResourceStateDefinitionTable.getObject(sysEnv, toRsdId).getName(sysEnv)));
+				return toRsdId;
 			}
 		}
+		return null;
 	}
 }
 

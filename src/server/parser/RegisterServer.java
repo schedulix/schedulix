@@ -80,7 +80,7 @@ public class RegisterServer extends Node
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03201291821", "A Scope cannot be registered"));
 		}
 		s.setIsRegistered(sysEnv, Boolean.TRUE);
-		s.setState(sysEnv, new Integer(SDMSScope.NOMINAL));
+		s.setState(sysEnv, SDMSConstants.S_NOMINAL);
 		s.setErrmsg(sysEnv, null);
 		s.setPid(sysEnv, pid);
 		if(suspended != null) {
@@ -120,10 +120,10 @@ public class RegisterServer extends Node
 				case SDMSSubmittedEntity.BROKEN_ACTIVE:
 					sme.releaseResources(sysEnv, newState);
 					sme.setErrorMsg(sysEnv, "Jobserver deregistered");
-					sme.setState(sysEnv, new Integer(newState));
+					sme.setState(sysEnv, Integer.valueOf(newState));
 					break;
 				case SDMSSubmittedEntity.STARTING:
-					sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.RUNNABLE));
+					sme.setState(sysEnv, SDMSConstants.SME_RUNNABLE);
 					break;
 			}
 		}
@@ -138,7 +138,7 @@ public class RegisterServer extends Node
 	{
 		SDMSScope s = SDMSScopeTable.getObjectForUpdate(sysEnv, sysEnv.cEnv.uid());
 		s.setIsRegistered(sysEnv, Boolean.TRUE);
-		s.setState(sysEnv, new Integer(SDMSScope.NOMINAL));
+		s.setState(sysEnv, SDMSConstants.S_NOMINAL);
 		s.setErrmsg(sysEnv, null);
 		s.setPid(sysEnv, pid);
 		s.setHasAlteredConfig (sysEnv, Boolean.FALSE);

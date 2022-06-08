@@ -46,6 +46,7 @@ public abstract class ListenThread extends SDMSThread
 	public final static int SERVICE = 2;
 
 	private int		port;
+	private InetAddress	iFace;
 	private int		maxConnections;
 	private int             svrtype;
 	private ThreadGroup	uc;
@@ -55,13 +56,14 @@ public abstract class ListenThread extends SDMSThread
 	private SyncFifo	roCmdQueue;
 	private boolean trace;
 
-	public ListenThread(ThreadGroup t, int p, int mc, SyncFifo f, SyncFifo rof, int type)
+	public ListenThread(ThreadGroup t, int p, InetAddress iFace, int mc, SyncFifo f, SyncFifo rof, int type)
 	{
 		super(t, type == LISTENER ? "Listener" : "Service" );
 		svrtype = type;
 		port = p;
 		uc = t;
 		if(port <= 0) port = 2506;
+		this.iFace = iFace;
 		maxConnections = mc;
 		if(maxConnections <= 0) maxConnections = 1000;
 		run = true;
@@ -108,13 +110,13 @@ public abstract class ListenThread extends SDMSThread
 		}
 	}
 
-	abstract ServerSocket getServerSocket(int port)
+	abstract ServerSocket getServerSocket(int port, InetAddress iFace)
 		throws IOException;
 
 	private void init()
 	{
 		try {
-			serv = getServerSocket(port);
+			serv = getServerSocket(port, iFace);
 			serv.setSoTimeout(1000);
 		} catch (IOException ioe) {
 			doTrace(null, "Oops: ServerSocket open() problem: " + ioe + "\nPort = " + port, SEVERITY_FATAL);

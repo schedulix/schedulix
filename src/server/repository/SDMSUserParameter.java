@@ -87,10 +87,10 @@ public class SDMSUserParameter extends SDMSUserParameterProxyGeneric
 		int e = 1;
 		while (p_value.length() > 0) {
 			if (p_value.length() > SDMSUserExtentsProxyGeneric.getExtentMaxLength()) {
-				SDMSUserExtentsTable.table.create(env, getId(env), new Integer(e), p_value.substring(0, SDMSUserExtentsProxyGeneric.getExtentMaxLength()));
+				SDMSUserExtentsTable.table.create(env, getId(env), Integer.valueOf(e), p_value.substring(0, SDMSUserExtentsProxyGeneric.getExtentMaxLength()));
 				p_value = p_value.substring(SDMSUserExtentsProxyGeneric.getExtentMaxLength());
 			} else {
-				SDMSUserExtentsTable.table.create(env, getId(env), new Integer(e), p_value);
+				SDMSUserExtentsTable.table.create(env, getId(env), Integer.valueOf(e), p_value);
 				break;
 			}
 			e ++;

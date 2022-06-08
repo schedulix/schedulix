@@ -61,7 +61,7 @@ public class SDMSLock
 		    m != O    &&
 		    m != N) {
 			throw new FatalException(new SDMSMessage(env, "03110181534",
-						"Invalid Lockmode $1", new Integer(m)));
+			                         "Invalid Lockmode $1", Integer.valueOf(m)));
 		}
 		mode = m;
 	}

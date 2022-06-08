@@ -93,7 +93,7 @@ public class GetNextJob extends JobDistribution
 		Long lastActive = s.getLastActive(sysEnv);
 		if (lastActive == null || l > lastActive.longValue()) {
 			s = SDMSScopeTable.getObjectForUpdate(sysEnv, sysEnv.cEnv.uid());
-			s.setLastActive(sysEnv, new Long(l));
+			s.setLastActive(sysEnv, Long.valueOf(l));
 		}
 
 		d_container = new SDMSOutputContainer(sysEnv, "Jobserver Command", desc, data);
@@ -118,7 +118,7 @@ public class GetNextJob extends JobDistribution
 
 		Long jId;
 		long now = new Date().getTime();
-		v = SDMSRunnableQueueTable.idx_scopeId_state.getVectorForUpdate(sysEnv, new SDMSKey(sId, new Integer(SDMSSubmittedEntity.STARTING)));
+		v = SDMSRunnableQueueTable.idx_scopeId_state.getVectorForUpdate(sysEnv, new SDMSKey(sId, SDMSConstants.SME_STARTING));
 		Iterator i_sj = v.iterator();
 		while (i_sj.hasNext()) {
 			rq = (SDMSRunnableQueue) i_sj.next();
@@ -139,7 +139,7 @@ public class GetNextJob extends JobDistribution
 					continue;
 			}
 			synchronized (SystemEnvironment.jidsStarting) {
-				SystemEnvironment.jidsStarting.put(smeId, new Long(now));
+				SystemEnvironment.jidsStarting.put(smeId, Long.valueOf(now));
 			}
 			break;
 		}
@@ -158,13 +158,13 @@ public class GetNextJob extends JobDistribution
 					}
 				}
 			};
-			v = SDMSRunnableQueueTable.idx_scopeId_state.getVectorForUpdate(sysEnv, new SDMSKey(sId, new Integer(SDMSSubmittedEntity.RUNNABLE)), filter);
+			v = SDMSRunnableQueueTable.idx_scopeId_state.getVectorForUpdate(sysEnv, new SDMSKey(sId, SDMSConstants.SME_RUNNABLE), filter);
 			if(v.size() == 0) {
 				if (sysEnv.maxWriter == 1) {
 					sysEnv.tx.commitSubTransaction(sysEnv);
 					SystemEnvironment.sched.getNextJobSchedule(sysEnv);
 					sysEnv.tx.beginSubTransaction(sysEnv);
-					v = SDMSRunnableQueueTable.idx_scopeId_state.getVector(sysEnv, new SDMSKey(sId, new Integer(SDMSSubmittedEntity.RUNNABLE)), filter);
+					v = SDMSRunnableQueueTable.idx_scopeId_state.getVector(sysEnv, new SDMSKey(sId, SDMSConstants.SME_RUNNABLE), filter);
 				} else {
 					SystemEnvironment.sched.requestSchedule();
 				}

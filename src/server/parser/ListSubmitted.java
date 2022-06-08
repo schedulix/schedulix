@@ -58,7 +58,7 @@ public class ListSubmitted extends Node
 	WithHash with;
 	Vector filterItems;
 	HashSet renderedJobs = new HashSet();
-	Integer mode = new Integer(ListSubmitted.LIST);
+	Integer mode = SDMSConstants.iONE;
 	HashSet expandIds = new HashSet();
 	HashSet hitList = new HashSet();
 	HashSet pathhits = new HashSet();
@@ -77,7 +77,7 @@ public class ListSubmitted extends Node
 		with = w;
 		if(with != null) {
 			mode = (Integer) with.get(ParseStr.S_MODE);
-			if(mode == null) mode = new Integer(ListSubmitted.LIST);
+			if(mode == null) mode = SDMSConstants.iONE;
 			if(with.containsKey(ParseStr.S_EXPAND))
 				expandIds = (HashSet) with.get(ParseStr.S_EXPAND);
 			if(with.containsKey(ParseStr.S_ENABLED))
@@ -237,7 +237,7 @@ public class ListSubmitted extends Node
 
 		SDMSEvent ev = SDMSEventTable.getObject(sysEnv, scev.getEvtId(sysEnv));
 		actVersion = sysEnv.tx.versionId;
-		Long actVersionObject = new Long(actVersion);
+		Long actVersionObject = Long.valueOf(actVersion);
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, ev.getSeId(sysEnv), actVersion);
 
 		Long tmp;
@@ -463,7 +463,7 @@ public class ListSubmitted extends Node
 		if(renderedJobs.contains(jobId)) return;
 
 		actVersion = job.getSeVersion(sysEnv).longValue();
-		Long actVersionObject = new Long(actVersion);
+		Long actVersionObject = Long.valueOf(actVersion);
 
 		masterId = job.getMasterId(sysEnv);
 		paths = job.pathStrings(sysEnv);
@@ -585,7 +585,7 @@ public class ListSubmitted extends Node
 		} else finalTs = null;
 		priority = job.getPriority(sysEnv);
 		if(se.getType(sysEnv).intValue() == SDMSSchedulingEntity.JOB) {
-			dynPriority = new Integer(SystemEnvironment.sched.getDynPriority(sysEnv, job));
+			dynPriority = Integer.valueOf(SystemEnvironment.sched.getDynPriority(sysEnv, job));
 		} else {
 			dynPriority = null;
 		}
@@ -609,7 +609,7 @@ public class ListSubmitted extends Node
 		} else {
 			nc = c.size();
 		}
-		Integer numChilds = new Integer(nc);
+		Integer numChilds = Integer.valueOf(nc);
 		if(hitList.contains(jobId))	hit = "H";
 		if(pathhit.equals("P")) pathhits.add(jobId);
 		String submitPath = "*";
@@ -1100,7 +1100,7 @@ public class ListSubmitted extends Node
 
 		result.setOutputContainer(d_container);
 		result.setFeedback(new SDMSMessage(sysEnv, "03201170305", "$1 Object(s) found",
-							new Integer(d_container.lines)));
+		                                   Integer.valueOf(d_container.lines)));
 	}
 
 }

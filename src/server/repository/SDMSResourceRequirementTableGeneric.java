@@ -230,37 +230,37 @@ public class SDMSResourceRequirementTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			nrId = new Long (r.getLong(2));
-			seId = new Long (r.getLong(3));
-			amount = new Integer (r.getInt(4));
+			id     = Long.valueOf (r.getLong(1));
+			nrId = Long.valueOf (r.getLong(2));
+			seId = Long.valueOf (r.getLong(3));
+			amount = Integer.valueOf (r.getInt(4));
 			if (r.wasNull()) amount = null;
-			keepMode = new Integer (r.getInt(5));
-			isSticky = new Boolean ((r.getInt(6) == 0 ? false : true));
+			keepMode = Integer.valueOf (r.getInt(5));
+			isSticky = Boolean.valueOf ((r.getInt(6) == 0 ? false : true));
 			stickyName = r.getString(7);
 			if (r.wasNull()) stickyName = null;
-			stickyParent = new Long (r.getLong(8));
+			stickyParent = Long.valueOf (r.getLong(8));
 			if (r.wasNull()) stickyParent = null;
-			rsmpId = new Long (r.getLong(9));
+			rsmpId = Long.valueOf (r.getLong(9));
 			if (r.wasNull()) rsmpId = null;
-			expiredAmount = new Integer (r.getInt(10));
+			expiredAmount = Integer.valueOf (r.getInt(10));
 			if (r.wasNull()) expiredAmount = null;
-			expiredBase = new Integer (r.getInt(11));
+			expiredBase = Integer.valueOf (r.getInt(11));
 			if (r.wasNull()) expiredBase = null;
-			ignoreOnRerun = new Boolean ((r.getInt(12) == 0 ? false : true));
-			lockmode = new Integer (r.getInt(13));
+			ignoreOnRerun = Boolean.valueOf ((r.getInt(12) == 0 ? false : true));
+			lockmode = Integer.valueOf (r.getInt(13));
 			if (r.wasNull()) lockmode = null;
 			condition = r.getString(14);
 			if (r.wasNull()) condition = null;
-			creatorUId = new Long (r.getLong(15));
-			createTs = new Long (r.getLong(16));
-			changerUId = new Long (r.getLong(17));
-			changeTs = new Long (r.getLong(18));
+			creatorUId = Long.valueOf (r.getLong(15));
+			createTs = Long.valueOf (r.getLong(16));
+			changerUId = Long.valueOf (r.getLong(17));
+			changeTs = Long.valueOf (r.getLong(18));
 			validFrom = r.getLong(19);
 			validTo = r.getLong(20);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "ResourceRequirement: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "ResourceRequirement: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSResourceRequirementGeneric(id,

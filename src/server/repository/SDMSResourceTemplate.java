@@ -68,13 +68,6 @@ public class SDMSResourceTemplate extends SDMSResourceTemplateProxyGeneric
 	public void setRsdId(SystemEnvironment sysEnv, Long rsdId)
 	throws SDMSException
 	{
-		setRsdId(sysEnv, rsdId, null);
-		return ;
-	}
-
-	public void setRsdId(SystemEnvironment sysEnv, Long rsdId, SDMSSubmittedEntity causeSme)
-	throws SDMSException
-	{
 		SDMSSubmittedEntity sme = null;
 		Long nrId = getNrId(sysEnv);
 
@@ -83,13 +76,15 @@ public class SDMSResourceTemplate extends SDMSResourceTemplateProxyGeneric
 		if(rspId == null) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03409301352", "Named Resource $1 is stateless", nr.pathVector(sysEnv).toString()));
 		} else {
-			if(!SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(rsdId, rspId))) {
-				SDMSResourceStateProfile rsp = SDMSResourceStateProfileTable.getObject(sysEnv, rspId);
+			SDMSResourceStateProfile rsp = SDMSResourceStateProfileTable.getObject(sysEnv, rspId);
+			if (!rsdId.equals(rsp.getInitialRsdId(sysEnv)) &&
+			    !SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(rsdId, rspId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03409301353", "Resource state is not defined in the profile $1",
 				                               rsp.getName(sysEnv)));
 			}
 		}
 
+		super.setRsdId(sysEnv, rsdId);
 		return ;
 	}
 

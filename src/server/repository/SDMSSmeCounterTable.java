@@ -55,9 +55,9 @@ public class SDMSSmeCounterTable extends SDMSSmeCounterTableGeneric
 
 		TimeZone tz = SystemEnvironment.systemTimeZone;
 		GregorianCalendar c = new GregorianCalendar(tz);
-		Integer day = new Integer(c.get(Calendar.DAY_OF_MONTH));
-		Integer month = new Integer(c.get(Calendar.MONTH)+1);
-		Integer year = new Integer(c.get(Calendar.YEAR));
+		Integer day = Integer.valueOf(c.get(Calendar.DAY_OF_MONTH));
+		Integer month = Integer.valueOf(c.get(Calendar.MONTH)+1);
+		Integer year = Integer.valueOf(c.get(Calendar.YEAR));
 		Integer cnt;
 		Long chksum;
 
@@ -65,18 +65,18 @@ public class SDMSSmeCounterTable extends SDMSSmeCounterTableGeneric
 		try {
 			ctr = SDMSSmeCounterTable.idx_jahr_monat_tag_getUniqueForUpdate(env, new SDMSKey(year, month, day));
 		} catch(NotFoundException nfe) {
-			ctr = SDMSSmeCounterTable.table.create(env, year, month, day, new Integer(0), new Long(0));
+			ctr = SDMSSmeCounterTable.table.create(env, year, month, day, SDMSConstants.iZERO, SDMSConstants.lZERO);
 		}
 
 		cnt = ctr.getAnzahl(env);
-		cnt = new Integer(cnt.intValue() + n);
+		cnt = Integer.valueOf(cnt.intValue() + n);
 
-		chksum = new Long(CheckSum.fastchksum(year.intValue(), month.intValue(), day.intValue(), cnt.intValue()));
+		chksum = Long.valueOf(CheckSum.fastchksum(year.intValue(), month.intValue(), day.intValue(), cnt.intValue()));
 
 		ctr.setAnzahl(env, cnt);
 		ctr.setChecksum(env, chksum);
 
-		env.tx.smeCtr = new Integer(0);
+		env.tx.smeCtr = SDMSConstants.iZERO;
 	}
 
 }

@@ -37,10 +37,17 @@ public class SDMSPerlRenderer extends SDMSScriptRenderer
 {
 
 	public final static String __version = "@(#) $Id: SDMSPerlRenderer.java,v 2.1.20.1 2013/03/14 10:24:18 ronald Exp $";
+	private boolean zeroTerminated = false;
 
 	public SDMSPerlRenderer ()
 	{
 		super();
+	}
+
+	public SDMSPerlRenderer (Boolean zero)
+	{
+		super();
+		zeroTerminated = zero.booleanValue();
 	}
 
 	public void render(SystemEnvironment env, SDMSOutput p_output) throws FatalException
@@ -72,6 +79,8 @@ public class SDMSPerlRenderer extends SDMSScriptRenderer
 			renderError(sb, p_output.error);
 		}
 		sb.append("}\n");
+
+		if (zeroTerminated) sb.append("\0");
 
 		ostream.print(sb);
 

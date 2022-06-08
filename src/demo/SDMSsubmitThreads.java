@@ -121,7 +121,7 @@ public class SDMSsubmitThreads
 				i++;
 			} else if (arg.equals("-t") || arg.equals("--time")) {
 				if (next == null) errorExit(arg + "option without value");
-				waitTime = new Integer(SDMSpopup.rndConf(next));
+				waitTime = Integer.valueOf(SDMSpopup.rndConf(next));
 				i++;
 			} else if (arg.equals("-?") || arg.equals("--help")) {
 				printOptions();
@@ -134,7 +134,7 @@ public class SDMSsubmitThreads
 			System.exit(1);
 		}
 
-		connection = new SDMSServerConnection(host, new Integer(port).intValue(), id, key, 0, false);
+		connection = new SDMSServerConnection(host, Integer.valueOf(port).intValue(), id, key, 0, false );
 		try {
 			output = connection.connect(null);
 		} catch (IOException e) {
@@ -224,7 +224,7 @@ public class SDMSsubmitThreads
 
 	static void submitThread(int tag)
 	{
-		String strTag = new Integer(tag).toString();
+		String strTag = Integer.valueOf(tag).toString();
 		output = connection.execute("SUBMIT '" + child + "' WITH CHILDTAG = '" + strTag + "'");
 		if (output.error != null) {
 			if (output.error.code.equals("03110181528")) {

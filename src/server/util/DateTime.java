@@ -90,9 +90,9 @@ public class DateTime
 	private static final int MINUTE = 5;
 	private static final int SECOND = 6;
 
-	private static final DateTime MIN_VALUE = new DateTime (new Long (GMT_VALID | (0L << GMT_SHIFT)));
+	private static final DateTime MIN_VALUE = new DateTime (Long.valueOf (GMT_VALID | (0L << GMT_SHIFT)));
 
-	public static final DateTime ZERO = new DateTime (new Long (DURATION_VALID | MINUTE_VALID));
+	public static final DateTime ZERO = new DateTime (Long.valueOf (DURATION_VALID | MINUTE_VALID));
 
 	private final int parseNumber (final String str, final String what, final int ofs, final int len, final int min, final int max)
 		throws SDMSEscape
@@ -698,7 +698,7 @@ public class DateTime
 		if (secondsSuppressed)
 			result |= SECONDS_SUPPRESSED;
 
-		return new Long (result);
+		return Long.valueOf (result);
 	}
 
 	public final Date toDate()

@@ -52,12 +52,13 @@ public abstract class ManipJob extends Node
 	protected Boolean adminSuspend	= null;
 	protected Boolean localSuspend	= null;
 	protected Object resumeObj	= null;
+	protected boolean noResume      = false;
 	protected String runProgram	= null;
 	protected String rerunProgram	= null;
 	protected Boolean rerun		= null;
 	protected Integer rerunSeq	= null;
-	protected Boolean noResume	= null;
 	protected Boolean kill		= null;
+	protected boolean killRecursive	= false;
 	protected Boolean cancel	= null;
 	protected Boolean disable	= null;
 	protected Long tsLong		= null;
@@ -79,7 +80,7 @@ public abstract class ManipJob extends Node
 	protected SDMSSystemMessage createSystemMessage(SystemEnvironment sysEnv, int msgType, Long smeId, Long masterId, int operation, boolean isMandatory, Long uid, String comment, Long additionalLong, Boolean additionalBool, Long secondLong, String opComment)
 	throws SDMSException
 	{
-		return SDMSSystemMessageTable.table.create(sysEnv, new Integer(msgType), smeId, masterId, new Integer(operation), new Boolean(isMandatory), uid, new Long ((new Date()).getTime()), comment, additionalLong, additionalBool, secondLong, opComment);
+		return SDMSSystemMessageTable.table.create(sysEnv, Integer.valueOf(msgType), smeId, masterId, Integer.valueOf(operation), Boolean.valueOf(isMandatory), uid, Long.valueOf ((new Date()).getTime()), comment, additionalLong, additionalBool, secondLong, opComment);
 	}
 
 	protected void setSomeFields(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Integer status)
@@ -245,7 +246,7 @@ public abstract class ManipJob extends Node
 		Long submitSeId = sme.getSeId(sysEnv);
 		SDMSSubmittedEntity childSme = psme.submitChild(sysEnv,
 		                               null,
-		                               new Integer (SDMSSubmittedEntity.SUSPEND),
+		                               SDMSConstants.SME_SUSPEND,
 		                               null,
 		                               submitSeId,
 		                               childTag,
@@ -365,7 +366,7 @@ public abstract class ManipJob extends Node
 	void performKill(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
 	throws SDMSException
 	{
-		sme.kill(sysEnv);
+		sme.kill(sysEnv, killRecursive);
 	}
 
 	void performSetJobState(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)

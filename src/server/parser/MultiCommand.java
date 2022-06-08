@@ -87,7 +87,7 @@ public class MultiCommand extends Node
 			sysEnv.tx.commitSubTransaction(sysEnv);
 		}
 		if (commit)
-			result.setFeedback(new SDMSMessage(sysEnv, "03204041823", "$1 Command(s) processed", new Integer (cmdlist.size())));
+			result.setFeedback(new SDMSMessage(sysEnv, "03204041823", "$1 Command(s) processed", Integer.valueOf (cmdlist.size())));
 		else {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03704251206", "Abort by user request (Rollback option specified)"));
 		}

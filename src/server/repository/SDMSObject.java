@@ -57,18 +57,18 @@ public abstract class SDMSObject implements Cloneable, Comparable
 
 	private static ObjectCounter nextId = null;
 
-	public final static Long systemUId    = new Long(0);
-	public final static Long nobodyUId    = new Long(1);
-	public final static Long internalUId  = new Long(2);
+	public final static Long systemUId    = Long.valueOf(0);
+	public final static Long nobodyUId    = Long.valueOf(1);
+	public final static Long internalUId  = Long.valueOf(2);
 
-	public final static Long adminGId  = new Long(81);
-	public final static Long publicGId = new Long(80);
+	public final static Long adminGId  = Long.valueOf(81);
+	public final static Long publicGId = Long.valueOf(80);
 
-	public final static Long dummyShId  = new Long(30);
+	public final static Long dummyShId  = Long.valueOf(30);
 
-	public final static Long systemFId = new Long(40);
+	public final static Long systemFId = Long.valueOf(40);
 
-	public final static Long rootScId = new Long(70);
+	public final static Long rootScId = Long.valueOf(70);
 
 	protected SDMSObject()
 	{
@@ -80,7 +80,7 @@ public abstract class SDMSObject implements Cloneable, Comparable
 		if (nextId == null) {
 			nextId = new ObjectCounter(env);
 		}
-		id = new Long(nextId.next(env));
+		id = Long.valueOf(nextId.next(env));
 		validFrom = -1;
 		validTo = -1;
 		versions = new SDMSVersions(table, id);

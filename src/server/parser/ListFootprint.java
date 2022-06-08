@@ -79,7 +79,7 @@ public class ListFootprint extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "03204092036", "$1 Footprint(s) found",
-					new Integer(d_container.lines)));
+		                        Integer.valueOf(d_container.lines)));
 	}
 }
 

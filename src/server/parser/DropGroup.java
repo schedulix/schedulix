@@ -142,7 +142,7 @@ public class DropGroup extends Node
 
 		SDMSObjectCommentTable.dropComment (sysEnv, gId);
 
-		g.setDeleteVersion(sysEnv, new Long(sysEnv.tx.txId));
+		g.setDeleteVersion(sysEnv, Long.valueOf(sysEnv.tx.txId));
 
 		if (me != null) {
 			me.delete(sysEnv);

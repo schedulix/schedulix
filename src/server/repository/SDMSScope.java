@@ -45,10 +45,6 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	public final static String __version = "@(#) $Id: SDMSScope.java,v 2.27.2.4 2013/03/19 17:16:52 ronald Exp $";
 	private final static VariableResolver SVR = new ScopeVariableResolver();
 
-	private final static Long lzero = new Long(0);
-	private final static Integer zero = new Integer(0);
-	private final static Float fzero = new Float(0);
-
 	protected SDMSScope(SDMSObject p_object)
 	{
 		super(p_object);
@@ -77,7 +73,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 
 		Integer type = getType(sysEnv);
 		SDMSScope f;
-		if (type.equals(new Integer(SDMSScope.SCOPE))) {
+		if (type.intValue() == SDMSScope.SCOPE) {
 			f = SDMSScopeTable.table.create(sysEnv,
 							name,
 							defaultGId,
@@ -91,7 +87,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 							null,
 							null,
 							null,
-							new Integer(0),
+			                                SDMSConstants.iZERO,
 							null,
 							null,
 							null,
@@ -109,7 +105,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 							Boolean.FALSE,
 							getIsEnabled(sysEnv),
 							Boolean.FALSE,
-							new Integer(SDMSScope.NOMINAL),
+			                                SDMSConstants.S_NOMINAL,
 							getPasswd(sysEnv),
 							getSalt(sysEnv),
 							getMethod(sysEnv),
@@ -151,19 +147,19 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 						r.getTraceInterval(sysEnv),
 						r.getTraceBase(sysEnv),
 						r.getTraceBaseMultiplier(sysEnv),
-						fzero,
-						fzero,
-						fzero,
-						fzero,
-						lzero,
-						lzero
+			                    SDMSConstants.fZERO,
+			                    SDMSConstants.fZERO,
+			                    SDMSConstants.fZERO,
+			                    SDMSConstants.fZERO,
+			                    SDMSConstants.lZERO,
+			                    SDMSConstants.lZERO
 			);
 			rMap.put(r.getId(sysEnv), newR.getId(sysEnv));
 		}
 
 		ScopeConfig.copy(sysEnv, id, newId);
 		ScopeParameter.copy(sysEnv, id, newId);
-		if (type.equals(new Integer(SDMSScope.SERVER))) {
+		if (type.intValue() == SDMSScope.SERVER) {
 			SystemEnvironment.sched.notifyChange(sysEnv, f, SchedulingThread.CREATE);
 		}
 		return f;

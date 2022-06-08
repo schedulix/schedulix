@@ -40,8 +40,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 {
 
 	private final static VariableResolver SEVR = new SeVariableResolver();
-	private static final Integer zero = new Integer(0);
-	private static final Long lzero = new Long(0);
 
 	protected SDMSSchedulingEntity(SDMSObject p_object)
 	{
@@ -185,7 +183,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			esp.checkProfile(sysEnv);
 		}
 		if (suspended == null) {
-			suspended = new Integer(getSubmitSuspended(sysEnv) ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND);
+			suspended = getSubmitSuspended(sysEnv) ? SDMSConstants.SME_SUSPEND : SDMSConstants.SME_NOSUSPEND;
 			if (suspended.intValue() == SDMSSubmittedEntity.SUSPEND) {
 				TimeZone evalTz = null;
 				if (timeZone == null)
@@ -197,62 +195,62 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		}
 		Long opSusresTs = null;
 		if (suspended.intValue() != SDMSSubmittedEntity.NOSUSPEND)
-			opSusresTs = new Long(-submitTs.longValue());
+			opSusresTs = Long.valueOf(-submitTs.longValue());
 
 		long seVersion = SDMSTransaction.drawVersion(sysEnv);
 
 		Integer prio = getPriority(sysEnv);
-		Integer rawPrio = zero;
-		Integer nice = (niceValue == null ? new Integer(0) : niceValue);
+		Integer rawPrio = SDMSConstants.iZERO;
+		Integer nice = (niceValue == null ? SDMSConstants.iZERO : niceValue);
 		switch(getType(sysEnv).intValue() ) {
 			case JOB:
 				if(prio == null) {
-					prio = new Integer(SchedulingThread.DEFAULT_PRIORITY + nice.intValue());
+					prio = Integer.valueOf(SchedulingThread.DEFAULT_PRIORITY + nice.intValue());
 				} else {
 					if(prio.intValue() >= SystemEnvironment.priorityLowerBound) {
-						prio = new Integer(prio.intValue() + nice.intValue());
+						prio = Integer.valueOf(prio.intValue() + nice.intValue());
 						if(prio.intValue() < SystemEnvironment.priorityLowerBound) {
-							prio = new Integer(SystemEnvironment.priorityLowerBound);
+							prio = Integer.valueOf(SystemEnvironment.priorityLowerBound);
 						}
 					}
-					rawPrio = new Integer(prio.intValue() * 100);
+					rawPrio = Integer.valueOf(prio.intValue() * 100);
 				}
 				break;
 			case BATCH:
 				if(prio != null) {
-					nice = new Integer(prio.intValue() + nice.intValue());
-					prio = new Integer(SchedulingThread.DEFAULT_PRIORITY);
+					nice = Integer.valueOf(prio.intValue() + nice.intValue());
+					prio = SDMSConstants.ST_DEFAULT_PRIORITY;
 				}
 				break;
 			case MILESTONE:
-				prio = new Integer(SchedulingThread.DEFAULT_PRIORITY);
+				prio = SDMSConstants.ST_DEFAULT_PRIORITY;
 				if (nice == null)
-					nice = new Integer(0);
+					nice = SDMSConstants.iZERO;
 				break;
 		}
 		Integer minEP = null;
-		minEP = new Integer(SystemEnvironment.priorityLowerBound);
+		minEP = Integer.valueOf(SystemEnvironment.priorityLowerBound);
 		Integer agingAmount = null;
 		Integer agingBase = null;
-		agingAmount = new Integer(SystemEnvironment.priorityDelay);
-		agingBase = new Integer(SDMSInterval.MINUTE);
+		agingAmount = Integer.valueOf(SystemEnvironment.priorityDelay);
+		agingBase = SDMSConstants.IV_MINUTE;
 		switch(agingBase.intValue()) {
 			case SDMSInterval.MINUTE:
 				break;
 			case SDMSInterval.HOUR:
-				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.HOUR_DUR_M));
+				agingAmount = Integer.valueOf((int) (agingAmount.intValue() * SDMSInterval.HOUR_DUR_M));
 				break;
 			case SDMSInterval.DAY:
-				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.DAY_DUR_M));
+				agingAmount = Integer.valueOf((int) (agingAmount.intValue() * SDMSInterval.DAY_DUR_M));
 				break;
 			case SDMSInterval.WEEK:
-				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.WEEK_DUR_M));
+				agingAmount = Integer.valueOf((int) (agingAmount.intValue() * SDMSInterval.WEEK_DUR_M));
 				break;
 			case SDMSInterval.MONTH:
-				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.MONTH_DUR_M));
+				agingAmount = Integer.valueOf((int) (agingAmount.intValue() * SDMSInterval.MONTH_DUR_M));
 				break;
 			case SDMSInterval.YEAR:
-				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.YEAR_DUR_M));
+				agingAmount = Integer.valueOf((int) (agingAmount.intValue() * SDMSInterval.YEAR_DUR_M));
 				break;
 		}
 		int approval = getCancelApproval(sysEnv).intValue();
@@ -294,23 +292,23 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		approval = getSetJobStateApproval(sysEnv).intValue();
 		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL;
 		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.SET_JOB_STATE_REVIEW;
-		agingBase = new Integer(SDMSInterval.MINUTE);
+		agingBase = SDMSConstants.IV_MINUTE;
 		final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.table.create(sysEnv,
 		                                sysEnv.randomLong(),
-		                                new Long(0),
+		                                SDMSConstants.lZERO,
 		                                submitTag,
 		                                unresolvedHandling,
 		                                seId,
 		                                childTag,
-		                                new Long(seVersion),
+		                                Long.valueOf(seVersion),
 		                                ownerId,
 		                                null,
 		                                null,
 		                                Boolean.TRUE,
 		                                Boolean.FALSE,
 						null,
-		                                new Integer(SDMSSchedulingHierarchy.FAILURE),
-		                                new Integer(SDMSSubmittedEntity.SUBMITTED),
+		                                SDMSConstants.SH_FAILURE,
+		                                SDMSConstants.SME_SUBMITTED,
 		                                null,
 		                                null,
 		                                Boolean.FALSE,
@@ -319,7 +317,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                                null,
 		                                null,
 		                                null,
-		                                zero,
+		                                SDMSConstants.iZERO,
 		                                Boolean.FALSE,
 		                                Boolean.FALSE,
 		                                null,
@@ -329,7 +327,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                                null,
 		                                null,
 		                                null,
-		                                zero,
+		                                SDMSConstants.iZERO,
 		                                null,
 		                                null,
 		                                null,
@@ -342,14 +340,14 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                                prio,
 						rawPrio,
 		                                nice,
-						zero,
+		                                SDMSConstants.iZERO,
 		                                minEP,
 		                                agingAmount,
-		                                zero,
-		                                zero,
-		                                zero,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
 		                                null,
-		                                new Integer(approvalMode),
+		                                Integer.valueOf(approvalMode),
 		                                submitTs,
 		                                resumeTs,
 		                                null,
@@ -358,36 +356,36 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                                null,
 		                                null,
 		                                null,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
-		                                zero,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
 		                                null,
-						zero,
-						zero,
-						zero,
-						zero,
-		                                zero,
-						zero,
-						zero,
-						zero,
-						zero,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
+		                                SDMSConstants.iZERO,
 		                                opSusresTs,
 		                                null,
 		                                timeZone
@@ -411,18 +409,18 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			SDMSTrigger t = (SDMSTrigger) trv.get(i);
 			int trType = t.getType(sysEnv).intValue();
 			if(trType == SDMSTrigger.UNTIL_FINISHED || trType == SDMSTrigger.UNTIL_FINAL) {
-				SDMSTriggerQueueTable.table.create(sysEnv, sme.getId(sysEnv), t.getId(sysEnv), lzero, zero, zero);
+				SDMSTriggerQueueTable.table.create(sysEnv, sme.getId(sysEnv), t.getId(sysEnv), SDMSConstants.lZERO, SDMSConstants.iZERO, SDMSConstants.iZERO);
 			}
 		}
 
 		sme.checkDependencies(sysEnv);
 
-		Long lTs = new Long (ts.getTime());
+		Long lTs = Long.valueOf (ts.getTime());
 		Long internalId;
 		if(sysEnv.cEnv.isUser())
 			internalId = sysEnv.cEnv.uid();
 		else
-			internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, new Long(0))).getId(sysEnv);
+			internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, SDMSConstants.lZERO)).getId(sysEnv);
 
 		SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.SUBMIT);
 
@@ -437,8 +435,8 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		Date ts = new Date();
 		long seVersion = SDMSTransaction.drawVersion(sysEnv);
 
-		Integer prio = new Integer(SchedulingThread.DEFAULT_PRIORITY);
-		Integer nice = new Integer(0);
+		Integer prio = SDMSConstants.ST_DEFAULT_PRIORITY;
+		Integer nice = SDMSConstants.iZERO;
 
 		Long espId = getEspId(sysEnv);
 		SDMSExitState es;
@@ -454,25 +452,25 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		}
 		SDMSSubmittedEntity sme = ((SDMSSubmittedEntityTable) SDMSSubmittedEntityTable.table).createErrorMaster(sysEnv,
 		                          seId,
-		                          new Long(seVersion),
+		                          Long.valueOf(seVersion),
 		                          ownerId,
 		                          esdId,
 		                          esdId,
 		                          errorMsg,
 		                          prio,
 		                          nice,
-		                          new Long (ts.getTime())
-		                                                                                                       );
+		                          Long.valueOf (ts.getTime())
+		                 );
 
 		Long smeId = sme.getId(sysEnv);
 		sme.setMasterId(sysEnv, smeId);
 
-		Long lTs = new Long (ts.getTime());
+		Long lTs = Long.valueOf (ts.getTime());
 		Long internalId;
 		if(sysEnv.cEnv.isUser())
 			internalId = sysEnv.cEnv.uid();
 		else
-			internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, new Long(0))).getId(sysEnv);
+			internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, SDMSConstants.lZERO)).getId(sysEnv);
 
 		sme.trigger(sysEnv, SDMSTrigger.IMMEDIATE_LOCAL);
 		sme.trigger(sysEnv, SDMSTrigger.IMMEDIATE_MERGE);

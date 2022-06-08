@@ -41,7 +41,7 @@ public class SDMSRepository
 	private HashMap tables;
 	private Iterator tableIterator = null;
 	private SDMSException loaderException = null;
-	private Integer lockObject = new Integer(0);
+	private Object lockObject = new Object();
 	private long lowestActiveVersion = Long.MAX_VALUE;
 
 	private static int tableCount = 0;

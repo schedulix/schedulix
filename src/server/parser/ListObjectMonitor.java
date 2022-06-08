@@ -75,7 +75,7 @@ public class ListObjectMonitor extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "02108241006", "$1 Object Type(s) found",
-					new Integer(d_container.lines)));
+		                        Integer.valueOf(d_container.lines)));
 	}
 
 }

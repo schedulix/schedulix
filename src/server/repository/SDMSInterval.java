@@ -267,8 +267,8 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 			}
 		}
 
-		gntdCache.add(new gntd(minDate, horizon, tz, blockState, new Long(blockState.blockStart), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, mode));
-		return new Long(blockState.blockStart);
+		gntdCache.add(new gntd(minDate, horizon, tz, blockState, Long.valueOf(blockState.blockStart), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, mode));
+		return Long.valueOf(blockState.blockStart);
 	}
 
 	private Long getNextDispatchTriggerDate(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, boolean mode, int indent)
@@ -289,7 +289,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 				if (dr.fltInterval != null) {
 					tmp = dr.fltInterval.getNextTriggerDate(sysEnv, minDate, horizon, tz, mode, indent + 1);
 				} else {
-					tmp = new Long(minDate);
+					tmp = Long.valueOf(minDate);
 				}
 				if (best == Integer.MAX_VALUE || (tmp != null && tmp < ntd[best])) {
 					best = i;
@@ -635,7 +635,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		if (filter == null) {
 			initialize(sysEnv, tz, indent + 1);
 		}
-		Long lCheckDate = new Long(checkDate);
+		Long lCheckDate = Long.valueOf(checkDate);
 
 		gntd result = fltrCache.get(lCheckDate, horizon, tz);
 		if (result != null) {
@@ -645,18 +645,18 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 
 		if (dispatchRules != null) {
 			long tmp = dispatchFilter(sysEnv, checkDate, horizon, tz, indent + 1);
-			fltrCache.add(new gntd(lCheckDate, horizon, tz, blockState, new Long(tmp), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, FILTER));
+			fltrCache.add(new gntd(lCheckDate, horizon, tz, blockState, Long.valueOf(tmp), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, FILTER));
 			return tmp;
 		}
 		if(!seek(sysEnv, checkDate, horizon, tz, FILTER, indent + 1)) {
-			fltrCache.add(new gntd(lCheckDate, horizon, tz, blockState, new Long(Long.MAX_VALUE), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, FILTER));
+			fltrCache.add(new gntd(lCheckDate, horizon, tz, blockState, Long.valueOf(Long.MAX_VALUE), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, FILTER));
 			return Long.MAX_VALUE;
 		}
 		if (checkDate < startTime && blockState.blockStart < startTime) {
-			fltrCache.add(new gntd(lCheckDate, horizon, tz, blockState, new Long(startTime), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, FILTER));
+			fltrCache.add(new gntd(lCheckDate, horizon, tz, blockState, Long.valueOf(startTime), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, FILTER));
 			return startTime;
 		}
-		fltrCache.add(new gntd(lCheckDate, horizon, tz, blockState, new Long(blockState.blockStart), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, FILTER));
+		fltrCache.add(new gntd(lCheckDate, horizon, tz, blockState, Long.valueOf(blockState.blockStart), selBlPos, selBlNeg, prevCeilGc, ceilGc, floorGc, nextFloorGc, FILTER));
 		return blockState.blockStart;
 	}
 

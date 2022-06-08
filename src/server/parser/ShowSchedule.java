@@ -98,7 +98,7 @@ public class ShowSchedule
 
 		data.add (sce.getIsActive (sysEnv));
 
-		data.add (new Boolean (sce.isReallyActive (sysEnv)));
+		data.add (Boolean.valueOf (sce.isReallyActive (sysEnv)));
 
 		final Date d = new Date();
 		try {

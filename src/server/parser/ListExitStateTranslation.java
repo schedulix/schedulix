@@ -86,7 +86,7 @@ public class ListExitStateTranslation extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "02111281857",
-				"$1 Exit State Translations(s) found", new Integer(d_container.lines)));
+		                        "$1 Exit State Translations(s) found", Integer.valueOf(d_container.lines)));
 	}
 }
 

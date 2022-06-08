@@ -89,7 +89,7 @@ public class SDMSPurgeSet
 		HashMap result = new HashMap();
 
 		synchronized (s) {
-			result.put(STAT_SIZE, new Long(s.size()));
+			result.put(STAT_SIZE, Long.valueOf(s.size()));
 		}
 		return result;
 	}

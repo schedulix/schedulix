@@ -61,7 +61,7 @@ public class CreateScope extends Node
 		String passwd = null;
 		String node = null;
 		String salt = null;
-		Integer method = new Integer(SDMSScope.SHA256);
+		Integer method = SDMSConstants.S_SHA256;
 		Boolean isEnabled = null;
 		Vector path;
 		String name;
@@ -72,7 +72,7 @@ public class CreateScope extends Node
 		Boolean isSuspended = null;
 		Boolean isRegistered = null;
 		Integer state = null;
-		Integer type = new Integer(SDMSScope.SCOPE);
+		Integer type = SDMSConstants.S_SCOPE;
 		boolean isScope;
 		final SDMSScope s;
 
@@ -84,8 +84,8 @@ public class CreateScope extends Node
 			isSuspended = Boolean.FALSE;
 			isRegistered = Boolean.FALSE;
 			isEnabled = Boolean.TRUE;
-			state = new Integer(SDMSScope.NOMINAL);
-			type = new Integer(SDMSScope.SERVER);
+			state = SDMSConstants.S_NOMINAL;
+			type = SDMSConstants.S_SERVER;
 			node = (String) with.get (ParseStr.S_NODE);
 			if (with.containsKey (ParseStr.S_PASSWORD)) {
 				salt = ManipUser.generateSalt();
@@ -101,7 +101,7 @@ public class CreateScope extends Node
 					salt = (String) v.get(1);
 
 					if (passwd.length() == ManipUser.MD5LENGTH)
-						method = new Integer(SDMSScope.MD5);
+						method = SDMSConstants.S_MD5;
 				} else
 					throw new CommonErrorException (new SDMSMessage (sysEnv, "04312151753",
 						"Both " + ParseStr.S_PASSWORD + " and " + ParseStr.S_RAWPASSWORD + " are not allowed"));
@@ -122,7 +122,7 @@ public class CreateScope extends Node
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey (gName, new Long(0))).getId(sysEnv);
+			              sysEnv, new SDMSKey (gName, SDMSConstants.lZERO)).getId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId)) &&
 			   !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03312161746",
@@ -140,7 +140,7 @@ public class CreateScope extends Node
 		Long inheritPrivs;
 		if (with.containsKey(ParseStr.S_INHERIT)) {
 			inheritPrivs = (Long) with.get(ParseStr.S_INHERIT);
-			if (inheritPrivs == null) inheritPrivs = new Long(0);
+			if (inheritPrivs == null) inheritPrivs = SDMSConstants.lZERO;
 		} else
 			inheritPrivs = null;
 
@@ -148,8 +148,7 @@ public class CreateScope extends Node
 		if((parent.getPrivilegeMask() & lpriv) != lpriv) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061323", "Incompatible grant"));
 		}
-
-		inheritPrivs = new Long(lpriv);
+		inheritPrivs = Long.valueOf(lpriv);
 
 		try {
 			s = SDMSScopeTable.table.create(sysEnv, name, gId, parentId, type, isTerminate,

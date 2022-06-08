@@ -100,14 +100,14 @@ public class AlterSchedule
 		if(with.containsKey(ParseStr.S_GROUP)) {
 			final String gName = (String) with.get (ParseStr.S_GROUP);
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-			                         sysEnv, new SDMSKey (gName, new Long(0))).getId(sysEnv);
+			                         sysEnv, new SDMSKey (gName, SDMSConstants.lZERO)).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId, sce.getOwnerId(sysEnv));
 			sce.setOwnerId(sysEnv, gId);
 		}
 
 		if (with.containsKey(ParseStr.S_INHERIT)) {
 			Long inheritPrivs = (Long) with.get(ParseStr.S_INHERIT);
-			if (inheritPrivs == null) inheritPrivs = new Long(0);
+			if (inheritPrivs == null) inheritPrivs = SDMSConstants.lZERO;
 			long lpriv = inheritPrivs.longValue();
 			if((sce.getPrivilegeMask() & lpriv) != lpriv) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061132", "Incompatible grant"));

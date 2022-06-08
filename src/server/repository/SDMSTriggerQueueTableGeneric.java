@@ -170,21 +170,21 @@ public class SDMSTriggerQueueTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			smeId = new Long (r.getLong(2));
-			trId = new Long (r.getLong(3));
-			nextTriggerTime = new Long (r.getLong(4));
-			timesChecked = new Integer (r.getInt(5));
-			timesTriggered = new Integer (r.getInt(6));
-			creatorUId = new Long (r.getLong(7));
-			createTs = new Long (r.getLong(8));
-			changerUId = new Long (r.getLong(9));
-			changeTs = new Long (r.getLong(10));
+			id     = Long.valueOf (r.getLong(1));
+			smeId = Long.valueOf (r.getLong(2));
+			trId = Long.valueOf (r.getLong(3));
+			nextTriggerTime = Long.valueOf (r.getLong(4));
+			timesChecked = Integer.valueOf (r.getInt(5));
+			timesTriggered = Integer.valueOf (r.getInt(6));
+			creatorUId = Long.valueOf (r.getLong(7));
+			createTs = Long.valueOf (r.getLong(8));
+			changerUId = Long.valueOf (r.getLong(9));
+			changeTs = Long.valueOf (r.getLong(10));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "TriggerQueue: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "TriggerQueue: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSTriggerQueueGeneric(id,

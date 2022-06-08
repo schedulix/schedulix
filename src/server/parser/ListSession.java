@@ -68,7 +68,7 @@ public class ListSession extends Node
 			while (gi.hasNext()) {
 				Long gId = (Long) gi.next();
 				try {
-					SDMSGrant g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSProxy.ZERO, gId));
+					SDMSGrant g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSConstants.lZERO, gId));
 					p.addPriv(sysEnv, g.getPrivs(sysEnv).longValue());
 				} catch (NotFoundException nfe) {
 				}
@@ -132,7 +132,7 @@ public class ListSession extends Node
 
 		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, 1));
 
-		result.setFeedback(new SDMSMessage (sysEnv, "03112181812", "$1 Session(s) found", new Integer(sessionCtr)));
+		result.setFeedback(new SDMSMessage (sysEnv, "03112181812", "$1 Session(s) found", Integer.valueOf(sessionCtr)));
 		result.setOutputContainer(d_container);
 	}
 
@@ -144,8 +144,8 @@ public class ListSession extends Node
 		} else {
 			data.add(" ");
 		}
-		data.add(new Integer(cEnv.id()));
-		data.add(new Integer(cEnv.port()));
+		data.add(Integer.valueOf(cEnv.id()));
+		data.add(Integer.valueOf(cEnv.port()));
 		data.add(cEnv.dStart());
 		try {
 			if(cEnv.isUser()) {
@@ -175,8 +175,8 @@ public class ListSession extends Node
 			}
 			data.add(cEnv.uid());
 			data.add(cEnv.ip());
-			data.add(new Long(cEnv.txId()));
-			data.add(new Long(cEnv.idle()));
+			data.add(Long.valueOf(cEnv.txId()));
+			data.add(Long.valueOf(cEnv.idle()));
 			String state = (cEnv.getState()).toString();
 			String waitInfo = "";
 			if (sysEnv.maxWriter > 1 && cEnv.worker != null) {
@@ -186,7 +186,7 @@ public class ListSession extends Node
 				}
 			}
 			data.add(state);
-			data.add(new Integer(cEnv.getMe().getTimeout()));
+			data.add(Integer.valueOf(cEnv.getMe().getTimeout()));
 			data.add(cEnv.getInfo());
 			try {
 				if(fullView) {

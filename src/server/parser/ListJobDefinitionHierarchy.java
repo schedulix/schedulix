@@ -192,7 +192,7 @@ public class ListJobDefinitionHierarchy extends Node
 		}
 
 		Vector v1 = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, id);
-		v.add(new Integer(v1.size()));
+		v.add(Integer.valueOf(v1.size()));
 
 		String empty = "";
 		v.add(empty);
@@ -228,7 +228,7 @@ public class ListJobDefinitionHierarchy extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(new SDMSMessage(sysEnv, "02204260958",
-				"$1 Object(s) found", new Integer(d_container.lines)));
+		                                   "$1 Object(s) found", Integer.valueOf(d_container.lines)));
 	}
 
 	private void add_childs(SystemEnvironment sysEnv, SDMSOutputContainer oc, Vector vc, String hPath)
@@ -308,7 +308,7 @@ public class ListJobDefinitionHierarchy extends Node
 				v.add(SystemEnvironment.nullString);
 			}
 			Vector v1 = SDMSSchedulingHierarchyTable.idx_seParentId.getVector(sysEnv, seId);
-			v.add(new Integer(v1.size()));
+			v.add(Integer.valueOf(v1.size()));
 			v.add(shId);
 			v.add(sh.getIsStatic(sysEnv));
 			v.add(sh.getIsDisabled(sysEnv));

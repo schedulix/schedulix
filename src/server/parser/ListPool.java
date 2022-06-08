@@ -91,7 +91,7 @@ public class ListPool extends Node
 
 		result.setOutputContainer(s_container);
 
-		result.setFeedback(new SDMSMessage(sysEnv,"03603151712", "$1 Pool(s) found", new Integer(s_container.lines)));
+		result.setFeedback(new SDMSMessage(sysEnv,"03603151712", "$1 Pool(s) found", Integer.valueOf(s_container.lines)));
 	}
 
 }

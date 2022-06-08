@@ -58,7 +58,7 @@ public class CreateEnvironment extends Node
 			ne = SDMSNamedEnvironmentTable.table.create(sysEnv, name);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
-				AlterEnvironment ae = new AlterEnvironment(new ObjectURL(new Integer(Parser.ENVIRONMENT), name), resourceList, Boolean.FALSE);
+				AlterEnvironment ae = new AlterEnvironment(new ObjectURL(SDMSConstants.PS_ENVIRONMENT, name), resourceList, Boolean.FALSE);
 				ae.setEnv(env);
 				ae.go(sysEnv);
 				result = ae.result;

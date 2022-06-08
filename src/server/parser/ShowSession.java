@@ -79,7 +79,7 @@ public class ShowSession extends Node
 		list = new SDMSThread[tg.activeCount()];
 		nt = tg.enumerate(list);
 
-		if(sid == null) sid = new Integer(env.id());
+		if(sid == null) sid = Integer.valueOf(env.id());
 
 		Vector data = new Vector();
 		for(i=0; i<nt; i++) {
@@ -105,7 +105,7 @@ public class ShowSession extends Node
 		} else {
 			data.add(" ");
 		}
-		data.add(new Integer(cEnv.id()));
+		data.add(Integer.valueOf(cEnv.id()));
 		data.add(cEnv.dStart());
 		if(cEnv.isJobServer()) {
 			data.add(SDMSScopeTable.getObject(sysEnv, (Long) cEnv.uid()).pathString(sysEnv));
@@ -114,11 +114,11 @@ public class ShowSession extends Node
 		}
 		data.add(cEnv.uid());
 		data.add(cEnv.ip());
-		data.add(new Boolean(cEnv.getIsSSLConnection()));
-		data.add(new Boolean(cEnv.getIsClientAuthenticated()));
-		data.add(new Long(cEnv.txId()));
-		data.add(new Long(cEnv.idle()));
-		data.add(new Long(cEnv.timeout()));
+		data.add(Boolean.valueOf(cEnv.getIsSSLConnection()));
+		data.add(Boolean.valueOf(cEnv.getIsClientAuthenticated()));
+		data.add(Long.valueOf(cEnv.txId()));
+		data.add(Long.valueOf(cEnv.idle()));
+		data.add(Long.valueOf(cEnv.timeout()));
 		data.add(new String(cEnv.actstmt == null ? "" : cEnv.actstmt));
 	}
 }

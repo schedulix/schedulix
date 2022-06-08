@@ -68,7 +68,7 @@ public class ListUser extends Node
 		SDMSPrivilege sysPrivs = new SDMSPrivilege();
 		for(int i = 0; i < groups.size(); ++i) {
 			try {
-				SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSProxy.ZERO, (Long)groups.get(i)));
+				SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSConstants.lZERO, (Long)groups.get(i)));
 				sysPrivs.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 			} catch (NotFoundException nfe) {  }
 		}
@@ -102,7 +102,7 @@ public class ListUser extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-			new SDMSMessage(sysEnv, "02111101419", "$1 User(s) found", new Integer(d_container.lines)));
+		        new SDMSMessage(sysEnv, "02111101419", "$1 User(s) found", Integer.valueOf(d_container.lines)));
 	}
 }
 

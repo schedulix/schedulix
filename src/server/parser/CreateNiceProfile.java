@@ -37,7 +37,7 @@ import de.independit.scheduler.server.exception.*;
 
 public class CreateNiceProfile extends Node
 {
-	private static final Integer ZERO = new Integer(0);
+	private static final Integer ZERO = SDMSConstants.iZERO;
 
 	private String name;
 	private WithHash items;

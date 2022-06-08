@@ -25,8 +25,8 @@ public class Parser
 	private static final String patternString = "^[-!#%&(-,/0-9=?@A-Z_a-z|]([- !#%&(-,/0-9=?@A-Z_a-z|]*[-!#%&(-,/0-9=?@A-Z_a-z|])?$";
 	private final Pattern identifierPattern = Pattern.compile(patternString);
 
-	private final static Integer PLUS_ONE		= new Integer(1);
-	private final static Integer MINUS_ONE		= new Integer(-1);
+	private final static Integer PLUS_ONE		= SDMSConstants.iONE;
+	private final static Integer MINUS_ONE		= SDMSConstants.iMINUS_ONE;
 
 	private boolean inStatement = false;
 
@@ -69,13 +69,13 @@ public class Parser
 %token <Token>	S SALT SC SCHEDULE SCHEDULED_EVENT SCOPE SELECT SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT SQLSELECT SSL
 %token <Token>	STARTED STARTING STARTTIME STATIC STATUS STATUS_MAPPING STATUS_PROFILE STICKY STOP STRICT STRING
 %token <Token>	SUBMIT SUBMITCOUNT SUBMITTAG SUBMITTED SUBMITTING_USER SUM SUSPEND SUSPEND_LIMIT SX SUSPENDED SYNCHRONIZE_WAIT SYNCHRONIZING SYNCTIME SYSTEM
-%token <Token>	TAG TEST TEXT TIME TIMEOUT TIMESTAMP TO TO_KILL TOKEN TOUCH TRACE TRANSLATION TREE TRIGGER TRUNC TYPE
+%token <Token>	TAG TERMINATED TEST TEXT TIME TIMEOUT TIMESTAMP TO TO_KILL TOKEN TOUCH TRACE TRANSLATION TREE TRIGGER TRUNC TYPE
 %token <Token>	UNREACHABLE UNRESOLVED UNTIL_FINAL UNTIL_FINISHED UPDATE URL USAGE USE USER
 %token <Token>	VALUE VERSION VIEW
 %token <Token>	WARN WARNING WATCH WATCHER WEEK WITH WORKDIR
 %token <Token>	X XML
 %token <Token>	YEAR
-%token <Token>	ZONE
+%token <Token>	ZERO ZONE
 
 //D:T-PARM	STRING
 // die T_ALIAS Eintraege sind hier nicht mehr notwendig. Die stehen in der Datei $SDMSHOME/doc/lang/bin/mksyntax_genlib.py.
@@ -170,14 +170,14 @@ public class Parser
 %type <Integer>	testid
 %type <Integer>	us_connect_type
 
-%type <Long>	id, jobid, longg
+%type <Long>	id, jobid, jp_optid, longg
 %type <Long> 	opt_ivowner, basic_priv, operate_priv, privilege, privilege_list
 
 %type <Float>	signed_float
 
 %type <Number>	number
 
-%type <Token>	objecttype, protocol, sys_object
+%type <Token>	objecttype, sys_object
 
 %type <Vector>	aj_igndepitem, aj_igndeplist, aj_ignrsrclist, aj_ignnrlist
 %type <Vector>	cc_textitem, cc_textlist, cd_with, cfp_withwith, cfp_addwith, cfp_delwith, clf_list, cleanup_list 
@@ -219,7 +219,7 @@ public class Parser
 %type <WithHash>	opt_connect_with, opt_dump_with, opt_event_submit_with, opt_ival_with, opt_gr_with, opt_lc_withlist, opt_lf_withlist, opt_lj_withlist, opt_lnr_withwith
 %type <WithHash>	opt_npwith, opt_om_instancelist, opt_period, opt_schevwith, /* opt_show_with, */ opt_schedwith, opt_sel_with, opt_sj_with, opt_sp_with, opt_stickyspec, opt_submit_with,
 %type <WithHash>	om_parameterlist, om_period, om_with_clause, om_withitemlist, om_instancelist
-%type <WithHash>	period
+%type <WithHash>	period, protocol
 %type <WithHash>	system_resource_req, rsp_with_clause, rsp_withitemlist
 %type <WithHash>	schedwithlist, schedwithwith, schevwithlist, schevwithwith, scope_cfg, scope_cfg_list, scope_cfg_envlist, scope_parm, scope_parmlist, select_with
 %type <WithHash>	selwithlist, signed_period, signed_period_rj, sj_withlist, stickyspec, submit_with, submit_withlist, sp_with
@@ -236,7 +236,7 @@ public class Parser
 %type <WithItem>	jcd_item, job_parameter, job_withitem, jp_nondefwith, jp_withitem, jrd_item, jrd_static_item, jrd_sync_item, jrd_system_item, jrq_item, jrq_req_state, js_withitem
 %type <WithItem>	lc_filteratom, lc_filteritem, lc_withitem, lf_filteratom, lf_filteritem, lf_withitem, lj_withitem, lnr_filteratom, lnr_filteritem, lnr_withitem
 %type <WithItem>	npwithitem, npentryitem
-%type <WithItem>	opt_ival_inverse, opt_jp_withitem, om_parameteritem, om_withitem, om_instanceitem
+%type <WithItem>	opt_ival_inverse, opt_jp_withitem, om_parameteritem, om_withitem, om_instanceitem, opt_zero
 %type <WithItem>	password, parm_is_string
 %type <WithItem>	resume, rsp_withitem
 %type <WithItem>	schedwith, schevwithitem, scope_cfg_item, scope_parmitem, se_spec, selwithitem, sj_withitem, submit_param, submit_withitem, suspend
@@ -679,8 +679,9 @@ connect_withlist: connect_withitem						{ $$ = new WithHash(); $<WithHash>$.addI
 //D:NT-ALIAS = withitem
 connect_withitem:	PROTOCOL '=' protocol					{ $$ = new WithItem(ParseStr.map($1.token), $3); 
 										  ConnectionEnvironment ce = getConnectionEnvironment();
-										  if(ce!=null)
-											ce.setRenderer($3.token);
+										  if(ce!=null) {
+											ce.setRenderer($3);
+										  }
 										}
 	|	TIMEOUT '=' integer						{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|	trace								{ $$ = new WithItem(ParseStr.S_TRACE_LEVEL, $1); }
@@ -694,14 +695,17 @@ connect_cmdlist:	cmd							{ $$ = new Vector(); $<Vector>$.addElement($1); }
 	|		connect_cmdlist SECO cmd				{ $1.addElement($3); }
 
 	
-protocol:	XML								{ $$ = $1; }
-	|	LINE								{ $$ = $1; }
+protocol:	XML								{ $$ = new WithHash(); $<WithHash>$.addItem(new WithItem("P", Integer.valueOf($1.token))); }
+	|	LINE								{ $$ = new WithHash(); $<WithHash>$.addItem(new WithItem("P", Integer.valueOf($1.token))); }
 //D:SUPPRESS
-	|	TIME								{ $$ = $1; }
-	|	SERIAL								{ $$ = $1; }
-	|	PYTHON								{ $$ = $1; }
-	|	PERL								{ $$ = $1; }
-	|	JSON								{ $$ = $1; }
+	|	TIME								{ $$ = new WithHash(); $<WithHash>$.addItem(new WithItem("P", Integer.valueOf($1.token))); }
+	|	SERIAL								{ $$ = new WithHash(); $<WithHash>$.addItem(new WithItem("P", Integer.valueOf($1.token))); }
+	|	PYTHON opt_zero							{ $$ = new WithHash(); $<WithHash>$.addItem(new WithItem("P", Integer.valueOf($1.token))); $<WithHash>$.addItem($2); }
+	|	PERL opt_zero							{ $$ = new WithHash(); $<WithHash>$.addItem(new WithItem("P", Integer.valueOf($1.token))); $<WithHash>$.addItem($2); }
+	|	JSON opt_zero							{ $$ = new WithHash(); $<WithHash>$.addItem(new WithItem("P", Integer.valueOf($1.token))); $<WithHash>$.addItem($2); }
+
+opt_zero:									{ $$ = new WithItem("Z", Boolean.FALSE); }
+	|	ZERO TERMINATED							{ $$ = new WithItem("Z", Boolean.TRUE); }
 
 
 
@@ -1716,7 +1720,9 @@ rename_rsm:		RENAME RESOURCE_STATUS_MAPPING mappingname TO profilename
 //D:NT-ALIAS = list resource state mapping
 //D:DESCRIPTION list_resource_state_mapping.tex
 //D:PURPOSE P077
-list_rsm:		LIST RESOURCE_STATUS_MAPPING				{ $$ = new ListRsm(); }
+list_rsm:		LIST RESOURCE_STATUS_MAPPING				{ $$ = new ListRsm(null); }
+	|		LIST RESOURCE_STATUS_MAPPING FOR profilename		{ $$ = new ListRsm($4); }
+
 
 //D:MASTER
 //D:NT-ALIAS = show resource state mapping
@@ -2329,20 +2335,20 @@ job_type:		JOB							{ $$ = ParseStr.I_JOB; }
 	|		MILESTONE						{ $$ = ParseStr.I_MILESTONE; }
 	|		BATCH							{ $$ = ParseStr.I_BATCH; }
 
-opttrunc:									{ $$ = new Boolean(SDMSSchedulingEntity.NOTRUNC); }
+opttrunc:									{ $$ = SDMSConstants.SE_NOTRUNC; }
 	|		trunc							{ $$ = $1; }
 
-trunc:			TRUNC							{ $$ = new Boolean(SDMSSchedulingEntity.TRUNC); }
+trunc:			TRUNC							{ $$ = SDMSConstants.SE_TRUNC; }
 			//D:DEFAULT
-	|		NOTRUNC							{ $$ = new Boolean(SDMSSchedulingEntity.NOTRUNC); }
+	|		NOTRUNC							{ $$ = SDMSConstants.SE_NOTRUNC; }
 
-suspend:		SUSPEND							{ $$ = new WithItem(ParseStr.S_SUSPEND, new Boolean(SDMSSchedulingEntity.SUSPEND)); }
+suspend:		SUSPEND							{ $$ = new WithItem(ParseStr.S_SUSPEND, SDMSConstants.SE_SUSPEND); }
 			//D:DEFAULT
-	|		NOSUSPEND						{ $$ = new WithItem(ParseStr.S_SUSPEND, new Boolean(SDMSSchedulingEntity.NOSUSPEND)); }
+	|		NOSUSPEND						{ $$ = new WithItem(ParseStr.S_SUSPEND, SDMSConstants.SE_NOSUSPEND); }
 
-master:			MASTER							{ $$ = new Boolean(SDMSSchedulingEntity.MASTER); }
+master:			MASTER							{ $$ = SDMSConstants.SE_MASTER; }
 			//D:DEFAULT
-	|		NOMASTER						{ $$ = new Boolean(SDMSSchedulingEntity.NOMASTER); }
+	|		NOMASTER						{ $$ = SDMSConstants.SE_NOMASTER; }
 
 			//D:DEFAULT
 allany:			ALL							{ $$ = ParseStr.I_ALL; }
@@ -2414,8 +2420,8 @@ jcd_item:		folderpath '.' jobname					{ final WithHash w = new WithHash();
 	|		MODE '=' OR						{ $$ = new WithItem(ParseStr.map($1.token), SDMSSchedulingHierarchy.OR); }
 	|		MODE '=' AND						{ $$ = new WithItem(ParseStr.map($1.token), SDMSSchedulingHierarchy.AND); }
 
-staticdynamic:		STATIC							{ $$ = new Boolean(SDMSSchedulingHierarchy.STATIC); }
-	|		DYNAMIC							{ $$ = new Boolean(SDMSSchedulingHierarchy.DYNAMIC); }
+staticdynamic:		STATIC							{ $$ = SDMSConstants.SH_STATIC; }
+	|		DYNAMIC							{ $$ = SDMSConstants.SH_DYNAMIC; }
 
 			//D:DEFAULT
 job_childdef_suspend:	CHILDSUSPEND						{ $$ = ParseStr.I_SH_CHILDSUSPEND; }
@@ -2585,18 +2591,20 @@ jrd_statelist:		statusname						{ $$ = new Vector(); $<Vector>$.addElement($1); 
 job_parameterslist:	job_parameter						{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
 	|		job_parameterslist ',' job_parameter			{ $1.addItem($3); }
 
-job_parameter:		parametername opt_jp_withitem jp_optdefault jp_optlocal	jp_optexport { final Vector v = new Vector();
-										  v.addElement($2);
+job_parameter:		parametername jp_optid opt_jp_withitem jp_optdefault jp_optlocal jp_optexport { final Vector v = new Vector();
 										  v.addElement($3);
 										  v.addElement($4);
 										  v.addElement($5);
+										  v.addElement($6);
+										  v.addElement($2);
 										  $$ = new WithItem($1, v);
 										}
-	|		parametername jp_nondefwith jp_optlocal	jp_optexport	{ final Vector v = new Vector();
-										  v.addElement($2);
-										  v.addElement(null);
+	|		parametername jp_optid jp_nondefwith jp_optlocal jp_optexport	{ final Vector v = new Vector();
 										  v.addElement($3);
+										  v.addElement(null);
 										  v.addElement($4);
+										  v.addElement($5);
+										  v.addElement($2);
 										  $$ = new WithItem($1, v);
 										}
 
@@ -2628,6 +2636,9 @@ jp_nondefwith:		CONSTANT '=' STRING					{ $$ = new WithItem(ParseStr.I_CONSTANT,
 										  $$ = new WithItem(ParseStr.I_EXPRESSION, v);
 										}
 
+jp_optid:									{ $$ = Long.valueOf(0); }
+	|		'(' id ')'						{ $$ = $2; }
+
 jp_optdefault:									{ $$ = null; }
 	|		DEFAULT '=' STRING					{ $$ = $3.textValue; }
 
@@ -2647,13 +2658,13 @@ approval_required:	APPROVAL '=' '(' operate_approvelist ')'		{ $$ = new WithItem
 operate_approvelist: operate_approval						{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
 	|	operate_approvelist ',' operate_approval			{ $1.addItem($3); }
 
-operate_approval:	operate_priv approval_mode opt_leading			{ $$ = new WithItem(new Long($1), new SDMSKey($2, $3)); }
+operate_approval:	operate_priv approval_mode opt_leading			{ $$ = new WithItem(Long.valueOf($1), new SDMSKey($2, $3)); }
 
-approval_mode:		MASTER							{ $$ = new Integer(SDMSSchedulingEntity.DEFAULT); }
-	|		PARENT							{ $$ = new Integer(SDMSSchedulingEntity.PARENT); }
-	|		NO							{ $$ = new Integer(SDMSSchedulingEntity.NO); }
-	|		REVIEW							{ $$ = new Integer(SDMSSchedulingEntity.REVIEW); }
-	|		APPROVE							{ $$ = new Integer(SDMSSchedulingEntity.APPROVE); }
+approval_mode:		MASTER							{ $$ = SDMSConstants.SE_DEFAULT; }
+	|		PARENT							{ $$ = SDMSConstants.SE_PARENT; }
+	|		NO							{ $$ = SDMSConstants.SE_NO; }
+	|		REVIEW							{ $$ = SDMSConstants.SE_REVIEW; }
+	|		APPROVE							{ $$ = SDMSConstants.SE_APPROVE; }
 
 opt_leading:									{ $$ = Boolean.FALSE; }
 	|		LEADING							{ $$ = Boolean.TRUE; }
@@ -2846,6 +2857,7 @@ aj_withitem:	CANCEL								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.T
 		//D:SUPPRESS
 	|	IGNORE NAMED_RESOURCE '=' '(' aj_ignnrlist ')'			{ $$ = new WithItem(ParseStr.S_IGNORE_NAMED_RESOURCE, $5); }
 	|	KILL								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
+	|	KILL RECURSIVE							{ $$ = new WithItem(ParseStr.map($1.token), Boolean.FALSE); }
 	|	NICEVALUE '=' signed_integer					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|	PRIORITY '=' integer						{ $$ = new WithItem(ParseStr.map($1.token), $3); }
 	|	RENICE '=' signed_integer					{ $$ = new WithItem(ParseStr.map($1.token), $3); }
@@ -3602,8 +3614,8 @@ list_trigger:		LIST TRIGGER optall					{ $$ = new ListTrigger((Vector) null, fal
 	|		LIST TRIGGER OF folderpath optall			{ $$ = new ListTrigger($4, true, $5); }
 	|		LIST TRIGGER FOR ct_object optall			{ $$ = new ListTrigger($4, $5); }
 
-optall:										{ $$ = new Integer(0); }
-	|		ALL							{ $$ = new Integer(0); }
+optall:										{ $$ = SDMSConstants.iZERO; }
+	|		ALL							{ $$ = SDMSConstants.iZERO; }
 	|		LIMIT integer						{ $$ = $2; }
 
 //D:MASTER
@@ -3719,7 +3731,7 @@ operate_priv:	CANCEL								{ $$ = SDMSPrivilege.map($1.token); }
 	|	SET JOB_STATUS							{ $$ = SDMSPrivilege.map($2.token); }
 
 privilege_list:	privilege							{ $$ = $1; }
-	|	privilege_list ',' privilege					{ $$ = new Long($1.longValue() | $3.longValue()); }
+	|	privilege_list ',' privilege					{ $$ = Long.valueOf($1.longValue() | $3.longValue()); }
 
 gr_cascforce:									{ $$ = null; }
 	|	CASCADE								{ $$ = Boolean.TRUE; }
@@ -4039,10 +4051,10 @@ om_parameterlist:	om_parameteritem					{ $$ = new WithHash(); $<WithHash>$.addIt
 om_parameteritem:	parametername '=' STRING	 			{ $$ = new WithItem($1, $3.textValue); }
 	|		parametername '=' DEFAULT	 			{ $$ = new WithItem($1, null); }
 
-om_recreate:		NONE							{ $$ = new Integer(0 /* SDMSObjectMonitor.NONE */);   }
+om_recreate:		NONE							{ $$ = SDMSConstants.OM_NONE;   }
 			//D:DEFAULT
-	|		CREATE							{ $$ = new Integer(1 /* SDMSObjectMonitor.CREATE */); }
-	|		CHANGE							{ $$ = new Integer(2 /* SDMSObjectMonitor.CHANGE */); }
+	|		CREATE							{ $$ = SDMSConstants.OM_CREATE; }
+	|		CHANGE							{ $$ = SDMSConstants.OM_CHANGE; }
 
 
 //D:NT-ALIAS = instancelist
@@ -4598,7 +4610,7 @@ longg:		INTEGER								{ $$ = (Long) $1.value; }
 
 //D:NT=PARM
 integer:	INTEGER								{ if(((Long) $1.value).longValue() <= Integer.MAX_VALUE)
-											$$ = new Integer (((Long) $1.value).intValue());
+											$$ = Integer.valueOf (((Long) $1.value).intValue());
 										  else {
 											yyerror(ParseStr.S_SYNTAX_ERROR, new String[]{"VALID INTEGER (Integer out of bounds)"});
 											$$ = PLUS_ONE;
@@ -4615,7 +4627,7 @@ opt_integer:	integer								{ $$ = $1; }
 //D:NT=PARM
 signed_integer:	integer								{ $$ = $1; }
 	|	'+' integer							{ $$ = $2; }
-	|	'-' integer							{ $$ = new Integer(- $2.intValue()); }
+	|	'-' integer							{ $$ = Integer.valueOf(- $2.intValue()); }
 
 opt_signed_integer:	signed_integer						{ $$ = $1; }
 		//D:DEFAULT
@@ -4624,7 +4636,7 @@ opt_signed_integer:	signed_integer						{ $$ = $1; }
 //D:NT=PARM
 signed_float:	FLOAT								{ $$ = (Float) $1.value; }
 	|	'+' FLOAT							{ $$ = (Float) $2.value; }
-	|	'-' FLOAT							{ $$ = new Float(- ((Float) $2.value).floatValue()); }
+	|	'-' FLOAT							{ $$ = Float.valueOf(- ((Float) $2.value).floatValue()); }
 
 //D:NT=PARM
 number:		signed_float							{ $$ = $1; }
@@ -4953,6 +4965,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	SYNCHRONIZING							{ $$ = (String) $1.value; }
 	|	SYNCTIME							{ $$ = (String) $1.value; }
 	|	TAG								{ $$ = (String) $1.value; }
+	|	TERMINATED							{ $$ = (String) $1.value; }
 	|	TEST								{ $$ = (String) $1.value; }
 	|	TIME								{ $$ = (String) $1.value; }
 	|	TIMEOUT								{ $$ = (String) $1.value; }
@@ -4985,6 +4998,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	XML								{ $$ = (String) $1.value; }
 	|	YEAR								{ $$ = (String) $1.value; }
 	|	ZONE								{ $$ = (String) $1.value; }
+	|	ZERO								{ $$ = (String) $1.value; }
 
 %%
 

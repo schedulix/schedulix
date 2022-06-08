@@ -29,6 +29,8 @@ package de.independit.scheduler.jobserver;
 import java.io.*;
 import java.net.*;
 
+import de.independit.scheduler.server.SDMSConstants;
+
 public class WakeupThread
 	extends Thread
 {
@@ -86,7 +88,7 @@ RUNLOOP:	while (run) {
 						String msg = new String(d.getData(), 0, d.getLength());
 						try {
 							Server.notified = true;
-							Notifier.interrupt(new Long(0L));
+							Notifier.interrupt(SDMSConstants.lZERO);
 						} catch(NumberFormatException nfe) {
 							Trace.error("[WakeupThread] got a message I don't understand : >" + msg + "< (length : " + msg.length() + ")");
 							Trace.error("[WakeupThread] offending IP : " + d.getAddress().toString() + ", Port : " + d.getPort());

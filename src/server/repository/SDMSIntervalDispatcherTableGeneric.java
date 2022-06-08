@@ -188,25 +188,25 @@ public class SDMSIntervalDispatcherTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			intId = new Long (r.getLong(2));
-			seqNo = new Integer (r.getInt(3));
+			id     = Long.valueOf (r.getLong(1));
+			intId = Long.valueOf (r.getLong(2));
+			seqNo = Integer.valueOf (r.getInt(3));
 			name = r.getString(4);
-			selectIntId = new Long (r.getLong(5));
+			selectIntId = Long.valueOf (r.getLong(5));
 			if (r.wasNull()) selectIntId = null;
-			filterIntId = new Long (r.getLong(6));
+			filterIntId = Long.valueOf (r.getLong(6));
 			if (r.wasNull()) filterIntId = null;
-			isEnabled = new Boolean ((r.getInt(7) == 0 ? false : true));
-			isActive = new Boolean ((r.getInt(8) == 0 ? false : true));
-			creatorUId = new Long (r.getLong(9));
-			createTs = new Long (r.getLong(10));
-			changerUId = new Long (r.getLong(11));
-			changeTs = new Long (r.getLong(12));
+			isEnabled = Boolean.valueOf ((r.getInt(7) == 0 ? false : true));
+			isActive = Boolean.valueOf ((r.getInt(8) == 0 ? false : true));
+			creatorUId = Long.valueOf (r.getLong(9));
+			createTs = Long.valueOf (r.getLong(10));
+			changerUId = Long.valueOf (r.getLong(11));
+			changeTs = Long.valueOf (r.getLong(12));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "IntervalDispatcher: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "IntervalDispatcher: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSIntervalDispatcherGeneric(id,

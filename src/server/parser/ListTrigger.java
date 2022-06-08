@@ -411,7 +411,7 @@ public class ListTrigger extends Node
 
 		result.setOutputContainer(d_container);
 
-		result.setFeedback(new SDMSMessage(sysEnv, "03206191305", "$1 Trigger(s) found", new Integer(d_container.lines)));
+		result.setFeedback(new SDMSMessage(sysEnv, "03206191305", "$1 Trigger(s) found", Integer.valueOf(d_container.lines)));
 	}
 }
 

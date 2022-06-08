@@ -82,7 +82,7 @@ public class ListEnvironment extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "03201232119", "$1 Environment(s) found",
-					new Integer(d_container.lines)));
+		                        Integer.valueOf(d_container.lines)));
 	}
 }
 

@@ -215,33 +215,33 @@ public class SDMSSystemMessageTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			msgType = new Integer (r.getInt(2));
-			smeId = new Long (r.getLong(3));
-			masterId = new Long (r.getLong(4));
-			operation = new Integer (r.getInt(5));
-			isMandatory = new Boolean ((r.getInt(6) == 0 ? false : true));
-			requestUId = new Long (r.getLong(7));
-			requestTs = new Long (r.getLong(8));
+			id     = Long.valueOf (r.getLong(1));
+			msgType = Integer.valueOf (r.getInt(2));
+			smeId = Long.valueOf (r.getLong(3));
+			masterId = Long.valueOf (r.getLong(4));
+			operation = Integer.valueOf (r.getInt(5));
+			isMandatory = Boolean.valueOf ((r.getInt(6) == 0 ? false : true));
+			requestUId = Long.valueOf (r.getLong(7));
+			requestTs = Long.valueOf (r.getLong(8));
 			requestMsg = r.getString(9);
 			if (r.wasNull()) requestMsg = null;
-			additionalLong = new Long (r.getLong(10));
+			additionalLong = Long.valueOf (r.getLong(10));
 			if (r.wasNull()) additionalLong = null;
-			additionalBool = new Boolean ((r.getInt(11) == 0 ? false : true));
+			additionalBool = Boolean.valueOf ((r.getInt(11) == 0 ? false : true));
 			if (r.wasNull()) additionalBool = null;
-			secondLong = new Long (r.getLong(12));
+			secondLong = Long.valueOf (r.getLong(12));
 			if (r.wasNull()) secondLong = null;
 			comment = r.getString(13);
 			if (r.wasNull()) comment = null;
-			creatorUId = new Long (r.getLong(14));
-			createTs = new Long (r.getLong(15));
-			changerUId = new Long (r.getLong(16));
-			changeTs = new Long (r.getLong(17));
+			creatorUId = Long.valueOf (r.getLong(14));
+			createTs = Long.valueOf (r.getLong(15));
+			changerUId = Long.valueOf (r.getLong(16));
+			changeTs = Long.valueOf (r.getLong(17));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "SystemMessage: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "SystemMessage: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSSystemMessageGeneric(id,

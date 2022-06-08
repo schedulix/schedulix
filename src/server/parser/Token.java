@@ -50,14 +50,14 @@ public class Token
 	public Token(int t, String n, Object v)
 	{
 		textValue = n;
-		token = new Integer(t);
+		token = Integer.valueOf(t);
 		value = v;
 	}
 
 	public Token(int t, String n)
 	{
 		textValue = n;
-		token = new Integer(t);
+		token = Integer.valueOf(t);
 		value = n.toUpperCase();
 	}
 

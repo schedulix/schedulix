@@ -168,22 +168,22 @@ public class SDMSExitStateMappingTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			esmpId = new Long (r.getLong(2));
-			esdId = new Long (r.getLong(3));
-			ecrStart = new Integer (r.getInt(4));
+			id     = Long.valueOf (r.getLong(1));
+			esmpId = Long.valueOf (r.getLong(2));
+			esdId = Long.valueOf (r.getLong(3));
+			ecrStart = Integer.valueOf (r.getInt(4));
 			if (r.wasNull()) ecrStart = null;
-			ecrEnd = new Integer (r.getInt(5));
+			ecrEnd = Integer.valueOf (r.getInt(5));
 			if (r.wasNull()) ecrEnd = null;
-			creatorUId = new Long (r.getLong(6));
-			createTs = new Long (r.getLong(7));
-			changerUId = new Long (r.getLong(8));
-			changeTs = new Long (r.getLong(9));
+			creatorUId = Long.valueOf (r.getLong(6));
+			createTs = Long.valueOf (r.getLong(7));
+			changerUId = Long.valueOf (r.getLong(8));
+			changeTs = Long.valueOf (r.getLong(9));
 			validFrom = r.getLong(10);
 			validTo = r.getLong(11);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "ExitStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "ExitStateMapping: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSExitStateMappingGeneric(id,

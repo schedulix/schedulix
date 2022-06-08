@@ -64,7 +64,7 @@ public class SDMSpopup
 				i++;
 			} else if (arg.equals("-t") || arg.equals("--time")) {
 				if (next == null) errorExit(arg + "option without value");
-				runTimeSecs = new Integer(rndConf(next));
+				runTimeSecs = Integer.valueOf(rndConf(next));
 				i++;
 			} else if (arg.equals("-e") || arg.equals("--exit")) {
 				if (next == null) errorExit(arg + "option without value");

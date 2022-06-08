@@ -177,7 +177,7 @@ public class RenewTicketThread extends SDMSThread
 			pInsert = sysEnv.dbConnection.prepareStatement(insertString);
 			while(true) {
 				try {
-					SDMSThread.doTrace(null, "Acquire repository lock for " + SystemEnvironment.startTime, SDMSThread.SEVERITY_INFO);
+					doTrace(null, "Acquire repository lock for " + SystemEnvironment.startTime, SDMSThread.SEVERITY_INFO);
 					boolean gotIps = false;
 					String ips = null;
 					while (! gotIps) {
@@ -201,6 +201,7 @@ public class RenewTicketThread extends SDMSThread
 					pInsert.close();
 					break;
 				} catch (SQLException sqle) {
+					doTrace(null, "Some exception was raised while trying to insert a new ticket : " + sqle.toString(), SEVERITY_INFO);
 					try {
 						sysEnv.dbConnection.rollback();
 					} catch (SQLException sqle2) {  }
@@ -215,8 +216,8 @@ public class RenewTicketThread extends SDMSThread
 					while(rset.next()) {
 						ts = rset.getLong(1);
 						ticket = rset.getLong(2);
+						SDMSThread.doTrace(null, "Ticket values Read: " + ts + ", " + ticket, SDMSThread.SEVERITY_INFO);
 					}
-					SDMSThread.doTrace(null, "Ticket values Read: " + ts + ", " + ticket, SDMSThread.SEVERITY_INFO);
 					if(ts != 0) {
 						if(!SystemEnvironment.singleServer) {
 							if(oldticket != 0) {

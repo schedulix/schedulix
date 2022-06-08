@@ -47,9 +47,7 @@ public class Grant extends Node
 	private Boolean childrenOnly;
 	private int thisType;
 
-	private static final Integer SYSTEM = new Integer(SDMSGrant.SYSTEM);
-	private static final Long NOPRIVS = new Long(SDMSPrivilege.NOPRIVS);
-	private static final Long ZERO = new Long(0L);
+	private static final Integer SYSTEM = Integer.valueOf(SDMSGrant.SYSTEM);
 
 	public Grant(Boolean g, Long p, ObjectURL u, Vector grp, Boolean r, Boolean c)
 	{
@@ -111,8 +109,9 @@ public class Grant extends Node
 			case SDMSGrant.SYSTEM:				return SDMSPrivilege.MANAGE_SYS;
 			case SDMSGrant.SELECT:				return SDMSPrivilege.MANAGE_SEL;
 			case SDMSGrant.NICE_PROFILE:			return SDMSPrivilege.MANAGE_NP;
+			case SDMSGrant.WATCH_TYPE: return SDMSPrivilege.MANAGE_WT;
 		}
-		return SDMSPrivilege.NOPRIVS;
+		return SDMSConstants.PR_NOPRIVS;
 	}
 
 	private void checkObjectType(SystemEnvironment sysEnv, int type)
@@ -150,7 +149,7 @@ public class Grant extends Node
 
 		for (int i = 0; i < groupList.size(); i++) {
 			final String name = (String) groupList.get(i);
-			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(name, ZERO)).getId(sysEnv);
+			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(name, SDMSConstants.lZERO)).getId(sysEnv);
 			result.addElement(gId);
 		}
 		return result;
@@ -192,7 +191,7 @@ public class Grant extends Node
 			try {
 				g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(oId, gId));
 			} catch (NotFoundException nfe) {
-				g = SDMSGrantTable.table.create(sysEnv, oId, gId, new Integer(thisType), NOPRIVS, null);
+				g = SDMSGrantTable.table.create(sysEnv, oId, gId, Integer.valueOf(thisType), SDMSConstants.PR_NOPRIVS, null);
 			}
 			oldPrivs = g.getPrivs(sysEnv);
 			if(isGrant) {
@@ -235,7 +234,7 @@ public class Grant extends Node
 			try {
 				g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(oId, gId));
 			} catch (NotFoundException nfe) {
-				g = SDMSGrantTable.table.create(sysEnv, oId, gId, SYSTEM, NOPRIVS, null);
+				g = SDMSGrantTable.table.create(sysEnv, oId, gId, SYSTEM, SDMSConstants.PR_NOPRIVS, null);
 			}
 			Long oldPrivs = g.getPrivs(sysEnv);
 			if(isGrant) {

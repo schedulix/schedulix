@@ -80,7 +80,7 @@ public class ListExitStatusDef extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "03111272323", "$1 Exit State Definition(s) found",
-					new Integer(d_container.lines)));
+		                        Integer.valueOf(d_container.lines)));
 	}
 }
 

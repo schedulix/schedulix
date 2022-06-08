@@ -208,28 +208,28 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			userId = new Long (r.getLong(2));
-			ts = new Long (r.getLong(3));
-			txId = new Long (r.getLong(4));
-			action = new Integer (r.getInt(5));
-			objectType = new Integer (r.getInt(6));
-			objectId = new Long (r.getLong(7));
-			originId = new Long (r.getLong(8));
-			isSetWarning = new Boolean ((r.getInt(9) == 0 ? false : true));
+			id     = Long.valueOf (r.getLong(1));
+			userId = Long.valueOf (r.getLong(2));
+			ts = Long.valueOf (r.getLong(3));
+			txId = Long.valueOf (r.getLong(4));
+			action = Integer.valueOf (r.getInt(5));
+			objectType = Integer.valueOf (r.getInt(6));
+			objectId = Long.valueOf (r.getLong(7));
+			originId = Long.valueOf (r.getLong(8));
+			isSetWarning = Boolean.valueOf ((r.getInt(9) == 0 ? false : true));
 			actionInfo = r.getString(10);
 			if (r.wasNull()) actionInfo = null;
 			actionComment = r.getString(11);
 			if (r.wasNull()) actionComment = null;
-			creatorUId = new Long (r.getLong(12));
-			createTs = new Long (r.getLong(13));
-			changerUId = new Long (r.getLong(14));
-			changeTs = new Long (r.getLong(15));
+			creatorUId = Long.valueOf (r.getLong(12));
+			createTs = Long.valueOf (r.getLong(13));
+			changerUId = Long.valueOf (r.getLong(14));
+			changeTs = Long.valueOf (r.getLong(15));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "AuditTrail: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSAuditTrailGeneric(id,

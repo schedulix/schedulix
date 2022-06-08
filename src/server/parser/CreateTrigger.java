@@ -67,7 +67,7 @@ public class CreateTrigger extends ManipTrigger
 	{
 		oType = SDMSTrigger.JOB_DEFINITION;
 		objpath = (Vector) objType.value;
-		objectType = new Integer(oType);
+		objectType = Integer.valueOf(oType);
 		SDMSSchedulingEntity fireJob = SDMSSchedulingEntityTable.get(sysEnv, objpath, null);
 		fireId = fireJob.getId(sysEnv);
 		SDMSSchedulingEntity triggerJob;
@@ -91,10 +91,10 @@ public class CreateTrigger extends ManipTrigger
 			if (with.containsKey(ParseStr.S_SUBMIT)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03108190857", "Submit and Rerun cannot be specified both"));
 			}
-			action = new Integer(SDMSTrigger.RERUN);
+			action = SDMSConstants.TR_RERUN;
 			iaction = SDMSTrigger.RERUN;
 		} else {
-			action = new Integer(SDMSTrigger.SUBMIT);
+			action = SDMSConstants.TR_SUBMIT;
 			iaction = SDMSTrigger.SUBMIT;
 		}
 
@@ -106,7 +106,7 @@ public class CreateTrigger extends ManipTrigger
 					new SDMSMessage(sysEnv, "03402131550", "Submit privilege on $1 missing", triggerJob.pathString(sysEnv))
 				);
 			seId = triggerJob.getId(sysEnv);
-			action = new Integer(SDMSTrigger.SUBMIT);
+			action = SDMSConstants.TR_SUBMIT;
 			iaction = SDMSTrigger.SUBMIT;
 		} else	{
 			if ((folderpath == null) && (iaction == SDMSTrigger.RERUN)) {
@@ -174,7 +174,7 @@ public class CreateTrigger extends ManipTrigger
 			}
 		} else {
 			if (action.intValue() == SDMSTrigger.RERUN) {
-				triggertype = new Integer(SDMSTrigger.IMMEDIATE_LOCAL);
+				triggertype = SDMSConstants.TR_IMMEDIATE_LOCAL;
 			} else {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03206211424", "Triggertype must be specified"));
 			}
@@ -192,7 +192,7 @@ public class CreateTrigger extends ManipTrigger
 				throw new CommonErrorException(
 						new SDMSMessage(sysEnv, "02402180658", "Group clause is mandatory for master triggers"));
 			final String gName = (String) with.get(ParseStr.S_GROUP);
-			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 			if (mainJob != null) mainJob.checkSubmitForGroup(sysEnv, gId);
 			else triggerJob.checkSubmitForGroup(sysEnv, gId);
 		} else {
@@ -231,7 +231,7 @@ public class CreateTrigger extends ManipTrigger
 
 		maxRetry = (Integer) with.get(ParseStr.S_SUBMITCOUNT);
 		if(maxRetry == null) {
-			maxRetry = new Integer(1);
+			maxRetry = SDMSConstants.iONE;
 		}
 
 		rscstate = null;
@@ -268,7 +268,7 @@ public class CreateTrigger extends ManipTrigger
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03206250058", "Trigger can only be defined for synchronizing resources"));
 		}
 
-		objectType = new Integer(oType);
+		objectType = Integer.valueOf(oType);
 
 		if (with.containsKey(ParseStr.S_ACTIVE)) {
 			active = (Boolean) with.get(ParseStr.S_ACTIVE);
@@ -283,7 +283,7 @@ public class CreateTrigger extends ManipTrigger
 		if (with.containsKey(ParseStr.S_PARENT) && with.get(ParseStr.S_PARENT) != null)
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03109081538", "Parent Scheduling Entity option is only valid for Object Monitor Triggers"));
 
-		action = new Integer(SDMSTrigger.SUBMIT);
+		action = SDMSConstants.TR_SUBMIT;
 		iaction = SDMSTrigger.SUBMIT;
 
 		folderpath = (Vector) with.get(ParseStr.S_SUBMIT);
@@ -304,7 +304,7 @@ public class CreateTrigger extends ManipTrigger
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03206210043", "Triggertype must be Immediate local for resource triggers"));
 			}
 		} else {
-			triggertype = new Integer(SDMSTrigger.IMMEDIATE_LOCAL);
+			triggertype = SDMSConstants.TR_IMMEDIATE_LOCAL;
 		}
 		isMaster = (Boolean) with.get(ParseStr.S_MASTER);
 		if(isMaster != null) {
@@ -331,7 +331,7 @@ public class CreateTrigger extends ManipTrigger
 		if(maxRetry != null) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03206210045", "Retry Count not allowed for resource triggers"));
 		} else {
-			maxRetry = new Integer(0);
+			maxRetry = SDMSConstants.iZERO;
 			isWarnOnLimit = Boolean.FALSE;
 		}
 
@@ -364,7 +364,11 @@ public class CreateTrigger extends ManipTrigger
 		try {
 			scopeId = SDMSScopeTable.pathToId(sysEnv, objpath);
 		} catch (NotFoundException nfe) {
-			scopeId = SDMSFolderTable.pathToId(sysEnv, objpath);
+			try {
+				scopeId = SDMSFolderTable.pathToId(sysEnv, objpath);
+			} catch (NotFoundException nfe2) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03205061329", "Triggers for job resources aren't supported"));
+			}
 		}
 		SDMSNamedResource nr = SDMSNamedResourceTable.getNamedResource(sysEnv, resourcepath);
 		Long nrId = nr.getId(sysEnv);
@@ -431,7 +435,7 @@ public class CreateTrigger extends ManipTrigger
 		while (i.hasNext()) {
 			String key = (String) i.next();
 			String value = (String) parmHash.get(key);
-			t.checkParameterExpressionSyntax(sysEnv, value);
+			value = t.checkParameterExpressionSyntax(sysEnv, value);
 			try {
 				SDMSTriggerParameterTable.table.create(sysEnv, key, value, t.getId(sysEnv));
 			} catch (DuplicateKeyException dke) {
@@ -454,7 +458,7 @@ public class CreateTrigger extends ManipTrigger
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			if (gName == null) {
 			} else {
-				gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+				gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 			}
 		}
 

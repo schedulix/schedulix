@@ -59,7 +59,7 @@ public class CreateExitStateTranslation extends Node
 			estp = SDMSExitStateTranslationProfileTable.table.create (sysEnv, name);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
-				AlterExitStateTranslation aest = new AlterExitStateTranslation(new ObjectURL(new Integer(Parser.EXIT_STATUS_TRANSLATION), name), trans, Boolean.FALSE);
+				AlterExitStateTranslation aest = new AlterExitStateTranslation(new ObjectURL(SDMSConstants.PS_EXIT_STATUS_TRANSLATION, name), trans, Boolean.FALSE);
 				aest.setEnv(env);
 				aest.go(sysEnv);
 				result = aest.result;

@@ -38,8 +38,6 @@ public class DropUser extends Node
 
 	public final static String __version = "@(#) $Id: DropUser.java,v 2.5.4.1 2013/03/14 10:24:31 ronald Exp $";
 
-	private final static Integer ZERO = new Integer(0);
-
 	private ObjectURL url;
 	private boolean noerr;
 
@@ -75,7 +73,7 @@ public class DropUser extends Node
 				while(i.hasNext()) {
 					Long gId = (Long) i.next();
 					try {
-						SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
+						SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSConstants.lZERO, gId));
 						p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 					} catch (NotFoundException nfe) {
 					}
@@ -106,7 +104,7 @@ public class DropUser extends Node
 				ue.delete(sysEnv);
 			}
 			u.setIsEnabled(sysEnv, Boolean.FALSE);
-			u.setDeleteVersion(sysEnv, new Long(sysEnv.tx.txId));
+			u.setDeleteVersion(sysEnv, Long.valueOf(sysEnv.tx.txId));
 			if (suActive)
 				sysEnv.cEnv.popGid(sysEnv);
 

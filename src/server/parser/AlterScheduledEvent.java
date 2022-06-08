@@ -65,7 +65,7 @@ public class AlterScheduledEvent
 			final boolean isActive = scev.getIsActive (sysEnv).booleanValue();
 			if (active.booleanValue() != isActive) {
 				if (! isActive) {
-					scev.setIsBroken (sysEnv, new Boolean (false));
+					scev.setIsBroken (sysEnv, Boolean.FALSE);
 					scev.setErrorCode (sysEnv, null);
 					scev.setErrorMsg (sysEnv, null);
 				}
@@ -81,7 +81,7 @@ public class AlterScheduledEvent
 		if(with.containsKey(ParseStr.S_GROUP)) {
 			final String gName = (String) with.get (ParseStr.S_GROUP);
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			                         sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId, scev.getOwnerId(sysEnv));
 			scev.setOwnerId(sysEnv, gId);
 		}

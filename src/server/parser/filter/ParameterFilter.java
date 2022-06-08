@@ -217,7 +217,7 @@ class IntegerCaster extends Caster
 	{
 		try {
 			long i = Long.parseLong(v);
-			return new Long(i);
+			return Long.valueOf(i);
 		} catch (NumberFormatException nfe) {
 			return null;
 		}
@@ -231,7 +231,7 @@ class DoubleCaster extends Caster
 	{
 		try {
 			double x = Double.parseDouble(v);
-			return new Double(x);
+			return Double.valueOf(x);
 		} catch (NumberFormatException nfe) {
 			return null;
 		}

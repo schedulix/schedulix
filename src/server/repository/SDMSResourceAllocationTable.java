@@ -69,8 +69,7 @@ public class SDMSResourceAllocationTable extends SDMSResourceAllocationTableGene
 			r = SDMSResourceTable.getObject(env, p_rId);
 			Integer rAmount = r.getFreeAmount(env);
 			if (rAmount != null ) {
-
-				rAmount = new Integer(rAmount.intValue() - Math.max (p_amount.intValue(), 0));
+				rAmount = Integer.valueOf(rAmount.intValue() - Math.max (p_amount.intValue(), 0));
 				r.setFreeAmount(env, rAmount);
 			}
 		}

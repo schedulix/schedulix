@@ -56,38 +56,38 @@ public class ObjectURL
 	private final static HashMap typeFromURL = new HashMap();
 	static
 	{
-		typeFromURL.put(new Integer(Parser.DISTRIBUTION),		new Integer(SDMSObjectComment.DISTRIBUTION));
-		typeFromURL.put(new Integer(Parser.ENVIRONMENT),		new Integer(SDMSObjectComment.ENVIRONMENT));
-		typeFromURL.put(new Integer(Parser.EVENT),			new Integer(SDMSObjectComment.EVENT));
-		typeFromURL.put(new Integer(Parser.EXIT_STATUS_DEFINITION),	new Integer(SDMSObjectComment.EXIT_STATE_DEFINITION));
-		typeFromURL.put(new Integer(Parser.EXIT_STATUS_PROFILE),	new Integer(SDMSObjectComment.EXIT_STATE_PROFILE));
-		typeFromURL.put(new Integer(Parser.EXIT_STATUS_MAPPING),	new Integer(SDMSObjectComment.EXIT_STATE_MAPPING));
-		typeFromURL.put(new Integer(Parser.EXIT_STATUS_TRANSLATION),	new Integer(SDMSObjectComment.EXIT_STATE_TRANSLATION));
-		typeFromURL.put(new Integer(Parser.FOLDER),			new Integer(SDMSObjectComment.FOLDER));
-		typeFromURL.put(new Integer(Parser.FOOTPRINT),			new Integer(SDMSObjectComment.FOOTPRINT));
-		typeFromURL.put(new Integer(Parser.GROUP),			new Integer(SDMSObjectComment.GROUP));
-		typeFromURL.put(new Integer(Parser.INTERVAL),			new Integer(SDMSObjectComment.INTERVAL));
-		typeFromURL.put(new Integer(Parser.JOB_DEFINITION),		new Integer(SDMSObjectComment.JOB_DEFINITION));
-		typeFromURL.put(new Integer(Parser.JOB_SERVER),			new Integer(SDMSObjectComment.SCOPE));
-		typeFromURL.put(new Integer(Parser.JOB),			new Integer(SDMSObjectComment.JOB));
-		typeFromURL.put(new Integer(Parser.NAMED_RESOURCE),		new Integer(SDMSObjectComment.NAMED_RESOURCE));
-		typeFromURL.put(new Integer(Parser.NICE_PROFILE),		new Integer(SDMSObjectComment.NICE_PROFILE));
-		typeFromURL.put(new Integer(Parser.OBJECT),			new Integer(SDMSObjectComment.OBJECT_MONITOR));
-		typeFromURL.put(new Integer(Parser.PARAMETERS),			new Integer(SDMSObjectComment.PARAMETER));
-		typeFromURL.put(new Integer(Parser.POOL),			new Integer(SDMSObjectComment.POOL));
-		typeFromURL.put(new Integer(Parser.RESOURCE),			new Integer(SDMSObjectComment.RESOURCE));
-		typeFromURL.put(new Integer(Parser.RESOURCE_STATUS_DEFINITION),	new Integer(SDMSObjectComment.RESOURCE_STATE_DEFINITION));
-		typeFromURL.put(new Integer(Parser.RESOURCE_STATUS_PROFILE),	new Integer(SDMSObjectComment.RESOURCE_STATE_PROFILE));
-		typeFromURL.put(new Integer(Parser.RESOURCE_STATUS_MAPPING),	new Integer(SDMSObjectComment.RESOURCE_STATE_MAPPING));
-		typeFromURL.put(new Integer(Parser.RESOURCE_TEMPLATE),		new Integer(SDMSObjectComment.RESOURCE_TEMPLATE));
-		typeFromURL.put(new Integer(Parser.SCHEDULE),			new Integer(SDMSObjectComment.SCHEDULE));
-		typeFromURL.put(new Integer(Parser.SCHEDULED_EVENT),		new Integer(SDMSObjectComment.SCHEDULED_EVENT));
-		typeFromURL.put(new Integer(Parser.SCOPE),			new Integer(SDMSObjectComment.SCOPE));
-		typeFromURL.put(new Integer(Parser.TRIGGER),			new Integer(SDMSObjectComment.TRIGGER));
-		typeFromURL.put(new Integer(Parser.USER),			new Integer(SDMSObjectComment.USER));
-		typeFromURL.put(new Integer(Parser.WATCH),			new Integer(SDMSObjectComment.WATCH_TYPE));
-		typeFromURL.put(new Integer(Parser.COMMENT),			new Integer(SDMSObjectComment.COMMENT));
-		typeFromURL.put(new Integer(Parser.GRANT),			new Integer(SDMSObjectComment.GRANT));
+		typeFromURL.put(Integer.valueOf(Parser.DISTRIBUTION),			Integer.valueOf(SDMSObjectComment.DISTRIBUTION));
+		typeFromURL.put(Integer.valueOf(Parser.ENVIRONMENT),			Integer.valueOf(SDMSObjectComment.ENVIRONMENT));
+		typeFromURL.put(Integer.valueOf(Parser.EVENT),				Integer.valueOf(SDMSObjectComment.EVENT));
+		typeFromURL.put(Integer.valueOf(Parser.EXIT_STATUS_DEFINITION),		Integer.valueOf(SDMSObjectComment.EXIT_STATE_DEFINITION));
+		typeFromURL.put(Integer.valueOf(Parser.EXIT_STATUS_PROFILE),		Integer.valueOf(SDMSObjectComment.EXIT_STATE_PROFILE));
+		typeFromURL.put(Integer.valueOf(Parser.EXIT_STATUS_MAPPING),		Integer.valueOf(SDMSObjectComment.EXIT_STATE_MAPPING));
+		typeFromURL.put(Integer.valueOf(Parser.EXIT_STATUS_TRANSLATION),	Integer.valueOf(SDMSObjectComment.EXIT_STATE_TRANSLATION));
+		typeFromURL.put(Integer.valueOf(Parser.FOLDER),				Integer.valueOf(SDMSObjectComment.FOLDER));
+		typeFromURL.put(Integer.valueOf(Parser.FOOTPRINT),			Integer.valueOf(SDMSObjectComment.FOOTPRINT));
+		typeFromURL.put(Integer.valueOf(Parser.GROUP),				Integer.valueOf(SDMSObjectComment.GROUP));
+		typeFromURL.put(Integer.valueOf(Parser.INTERVAL),			Integer.valueOf(SDMSObjectComment.INTERVAL));
+		typeFromURL.put(Integer.valueOf(Parser.JOB_DEFINITION),			Integer.valueOf(SDMSObjectComment.JOB_DEFINITION));
+		typeFromURL.put(Integer.valueOf(Parser.JOB_SERVER),			Integer.valueOf(SDMSObjectComment.SCOPE));
+		typeFromURL.put(Integer.valueOf(Parser.JOB),				Integer.valueOf(SDMSObjectComment.JOB));
+		typeFromURL.put(Integer.valueOf(Parser.NAMED_RESOURCE),			Integer.valueOf(SDMSObjectComment.NAMED_RESOURCE));
+		typeFromURL.put(Integer.valueOf(Parser.NICE_PROFILE),			Integer.valueOf(SDMSObjectComment.NICE_PROFILE));
+		typeFromURL.put(Integer.valueOf(Parser.OBJECT),				Integer.valueOf(SDMSObjectComment.OBJECT_MONITOR));
+		typeFromURL.put(Integer.valueOf(Parser.PARAMETERS),			Integer.valueOf(SDMSObjectComment.PARAMETER));
+		typeFromURL.put(Integer.valueOf(Parser.POOL),				Integer.valueOf(SDMSObjectComment.POOL));
+		typeFromURL.put(Integer.valueOf(Parser.RESOURCE),			Integer.valueOf(SDMSObjectComment.RESOURCE));
+		typeFromURL.put(Integer.valueOf(Parser.RESOURCE_STATUS_DEFINITION),	Integer.valueOf(SDMSObjectComment.RESOURCE_STATE_DEFINITION));
+		typeFromURL.put(Integer.valueOf(Parser.RESOURCE_STATUS_PROFILE),	Integer.valueOf(SDMSObjectComment.RESOURCE_STATE_PROFILE));
+		typeFromURL.put(Integer.valueOf(Parser.RESOURCE_STATUS_MAPPING),	Integer.valueOf(SDMSObjectComment.RESOURCE_STATE_MAPPING));
+		typeFromURL.put(Integer.valueOf(Parser.RESOURCE_TEMPLATE),		Integer.valueOf(SDMSObjectComment.RESOURCE_TEMPLATE));
+		typeFromURL.put(Integer.valueOf(Parser.SCHEDULE),			Integer.valueOf(SDMSObjectComment.SCHEDULE));
+		typeFromURL.put(Integer.valueOf(Parser.SCHEDULED_EVENT),		Integer.valueOf(SDMSObjectComment.SCHEDULED_EVENT));
+		typeFromURL.put(Integer.valueOf(Parser.SCOPE),				Integer.valueOf(SDMSObjectComment.SCOPE));
+		typeFromURL.put(Integer.valueOf(Parser.TRIGGER),			Integer.valueOf(SDMSObjectComment.TRIGGER));
+		typeFromURL.put(Integer.valueOf(Parser.USER),				Integer.valueOf(SDMSObjectComment.USER));
+		typeFromURL.put(Integer.valueOf(Parser.WATCH),				Integer.valueOf(SDMSObjectComment.WATCH_TYPE));
+		typeFromURL.put(Integer.valueOf(Parser.COMMENT),			Integer.valueOf(SDMSObjectComment.COMMENT));
+		typeFromURL.put(Integer.valueOf(Parser.GRANT),				Integer.valueOf(SDMSObjectComment.GRANT));
 	}
 
 	public ObjectURL(Integer t)
@@ -214,10 +214,10 @@ public class ObjectURL
 			case SDMSObjectComment.JOB_DEFINITION:
 				try {
 					p = SDMSFolderTable.getObject(sysEnv, objId);
-					objType = new Integer(SDMSObjectComment.FOLDER);
+					objType = SDMSConstants.OC_FOLDER;
 				} catch (NotFoundException nfe) {
 					p = SDMSSchedulingEntityTable.getObject(sysEnv, objId);
-					objType = new Integer(SDMSObjectComment.JOB_DEFINITION);
+					objType = SDMSConstants.OC_JOB_DEFINITION;
 				}
 				break;
 			case SDMSObjectComment.FOOTPRINT:
@@ -259,7 +259,7 @@ public class ObjectURL
 			case SDMSObjectComment.SCOPE:
 				p = SDMSScopeTable.getObject(sysEnv, objId);
 				if (((SDMSScope) p).getType(sysEnv).intValue() == SDMSScope.SERVER)
-					parserType = new Integer(Parser.JOB_SERVER);
+					parserType = SDMSConstants.PS_JOB_SERVER;
 				break;
 			case SDMSObjectComment.TRIGGER:
 				p = SDMSTriggerTable.getObject(sysEnv, objId);
@@ -338,7 +338,7 @@ public class ObjectURL
 			case SDMSObjectComment.SCOPE:
 				p = getScope(sysEnv);
 				if (((SDMSScope) p).getType(sysEnv).intValue() == SDMSScope.SERVER)
-					parserType = new Integer(Parser.JOB_SERVER);
+					parserType = SDMSConstants.PS_JOB_SERVER;
 				break;
 			case SDMSObjectComment.TRIGGER:
 				p = getTrigger(sysEnv);
@@ -419,7 +419,7 @@ public class ObjectURL
 		try {
 			p = SDMSFolderTable.getFolder(sysEnv, path);
 		} catch (NotFoundException nfe) {
-			objType = new Integer(SDMSObjectComment.JOB_DEFINITION);
+			objType = SDMSConstants.OC_JOB_DEFINITION;
 			p = getSchedulingEntity(sysEnv);
 		}
 		return p;
@@ -486,7 +486,7 @@ public class ObjectURL
 		try {
 			p = SDMSResourceTable.idx_nrId_scopeId_getUnique(sysEnv, key);
 		} catch (NotFoundException nfe) {
-			objType = new Integer(SDMSObjectComment.RESOURCE_TEMPLATE);
+			objType = SDMSConstants.OC_RESOURCE_TEMPLATE;
 			p = SDMSResourceTemplateTable.idx_nrId_seId_getUnique(sysEnv, key);
 		}
 		return p;
@@ -551,11 +551,11 @@ public class ObjectURL
 
 			path.add (evtName);
 		} else {
-			final ObjectURL evtObj = new ObjectURL (new Integer(Parser.EVENT), evtName, seSpec);
+			final ObjectURL evtObj = new ObjectURL (SDMSConstants.PS_EVENT, evtName, seSpec);
 			evtObj.resolveByName (sysEnv);
 			evtId = evtObj.objId;
 
-			final ObjectURL sceObj = new ObjectURL (new Integer(Parser.SCHEDULE), path, seSpec);
+			final ObjectURL sceObj = new ObjectURL (SDMSConstants.PS_SCHEDULE, path, seSpec);
 			sceObj.resolveByName (sysEnv);
 			sceId = sceObj.objId;
 
@@ -588,11 +588,10 @@ public class ObjectURL
 		} else {
 			v = SDMSTriggerTable.idx_fireId_name.getVector(sysEnv, new SDMSKey(master.objId, name));
 		}
-		if (v.size() == 0)
-			throw new NotFoundException("Trigger " + name + " not found");
 		for (int i = 0; i < v.size(); ++i) {
 			p = (SDMSTrigger) v.get(i);
 			if (p.getIsInverse(sysEnv).equals(isInverse)) break;
+			p = null;
 		}
 		return p;
 	}

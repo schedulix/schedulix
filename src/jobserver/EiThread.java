@@ -30,11 +30,12 @@ import java.io.*;
 import java.nio.channels.*;
 import java.util.*;
 
+import de.independit.scheduler.server.SDMSConstants;
+
 public class EiThread
 	extends Thread
 {
 	private static final long DEFAULT_NOP_DELAY = 30000;
-	private static final Long ZERO = new Long(0);
 
 	private final RepoIface ri;
 	private final Config    cfg;
@@ -198,6 +199,6 @@ public class EiThread
 		Trace.debug("EiThread:Adding jid " + jid + " to jidsToBreed");
 		JobServer.server.addJidToBreed(jid);
 
-		Notifier.interrupt(ZERO);
+		Notifier.interrupt(SDMSConstants.lZERO);
 	}
 }

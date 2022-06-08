@@ -238,13 +238,13 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			seId = new Long (r.getLong(2));
-			seVersion = new Long (r.getLong(3));
-			smeId = new Long (r.getLong(4));
-			scopeId = new Long (r.getLong(5));
-			state = new Integer (r.getInt(6));
-			exitCode = new Integer (r.getInt(7));
+			id     = Long.valueOf (r.getLong(1));
+			seId = Long.valueOf (r.getLong(2));
+			seVersion = Long.valueOf (r.getLong(3));
+			smeId = Long.valueOf (r.getLong(4));
+			scopeId = Long.valueOf (r.getLong(5));
+			state = Integer.valueOf (r.getInt(6));
+			exitCode = Integer.valueOf (r.getInt(7));
 			if (r.wasNull()) exitCode = null;
 			commandline = r.getString(8);
 			if (r.wasNull()) commandline = null;
@@ -258,21 +258,21 @@ public class SDMSKillJobTableGeneric extends SDMSTable
 			if (r.wasNull()) extPid = null;
 			errorMsg = r.getString(13);
 			if (r.wasNull()) errorMsg = null;
-			runnableTs = new Long (r.getLong(14));
+			runnableTs = Long.valueOf (r.getLong(14));
 			if (r.wasNull()) runnableTs = null;
-			startTs = new Long (r.getLong(15));
+			startTs = Long.valueOf (r.getLong(15));
 			if (r.wasNull()) startTs = null;
-			finishTs = new Long (r.getLong(16));
+			finishTs = Long.valueOf (r.getLong(16));
 			if (r.wasNull()) finishTs = null;
-			creatorUId = new Long (r.getLong(17));
-			createTs = new Long (r.getLong(18));
-			changerUId = new Long (r.getLong(19));
-			changeTs = new Long (r.getLong(20));
+			creatorUId = Long.valueOf (r.getLong(17));
+			createTs = Long.valueOf (r.getLong(18));
+			changerUId = Long.valueOf (r.getLong(19));
+			changeTs = Long.valueOf (r.getLong(20));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "KillJob: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "KillJob: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSKillJobGeneric(id,

@@ -100,7 +100,7 @@ public class ListExitStateProfile extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "02111082031",
-				"$1 Exit State Profile(s) found", new Integer(d_container.lines)));
+		                        "$1 Exit State Profile(s) found", Integer.valueOf(d_container.lines)));
 	}
 }
 

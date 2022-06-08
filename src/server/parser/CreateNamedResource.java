@@ -79,7 +79,7 @@ public class CreateNamedResource extends Node
 		if(gName == null) gName = (String) with.get(ParseStr.S_GROUP_CASCADE);
 
 		if(gName != null) {
-			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey (gName, new Long(0))).getId(sysEnv);
+			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey (gName, SDMSConstants.lZERO)).getId(sysEnv);
 		} else {
 			gId = SDMSUserTable.getObject(sysEnv, sysEnv.cEnv.uid()).getDefaultGId(sysEnv);
 		}
@@ -96,11 +96,11 @@ public class CreateNamedResource extends Node
 		if (u == SDMSNamedResource.STATIC || u == SDMSNamedResource.CATEGORY || u == SDMSNamedResource.STATIC)
 			factor = null;
 		else if (factor == null)
-			factor = new Float(1.0);
+			factor = SDMSConstants.fONE;
 
 		if (with.containsKey(ParseStr.S_INHERIT)) {
 			inheritPrivs = (Long) with.get(ParseStr.S_INHERIT);
-			if (inheritPrivs == null) inheritPrivs = new Long(0);
+			if (inheritPrivs == null) inheritPrivs = SDMSConstants.lZERO;
 		} else
 			inheritPrivs = null;
 	}
@@ -117,7 +117,7 @@ public class CreateNamedResource extends Node
 
 		if(iu == SDMSNamedResource.POOL)
 			sysEnv.checkFeatureAvailability(SystemEnvironment.S_RESOURCE_POOLS);
-		if(factor != null && !(factor.equals(new Float(1.0))))
+		if(factor != null && !(factor.equals(SDMSConstants.fONE)))
 			sysEnv.checkFeatureAvailability(SystemEnvironment.S_RESOURCE_TRACING);
 
 		if(rspName != null) {
@@ -139,15 +139,14 @@ public class CreateNamedResource extends Node
 		if((n.getPrivilegeMask() & lpriv) != lpriv) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061331", "Incompatible grant"));
 		}
-
-		inheritPrivs = new Long(lpriv);
+		inheritPrivs = Long.valueOf(lpriv);
 
 		try {
 			n = SDMSNamedResourceTable.table.create(sysEnv, name, gId, parentId, usage, rsp_id, factor, inheritPrivs);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
 				path.add(name);
-				AlterNamedResource anr = new AlterNamedResource(new ObjectURL(new Integer(Parser.NAMED_RESOURCE), path), with, Boolean.FALSE);
+				AlterNamedResource anr = new AlterNamedResource(new ObjectURL(SDMSConstants.PS_NAMED_RESOURCE, path), with, Boolean.FALSE);
 				anr.setEnv(env);
 				anr.go(sysEnv);
 				result = anr.result;

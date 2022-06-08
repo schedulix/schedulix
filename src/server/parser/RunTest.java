@@ -150,7 +150,7 @@ public class RunTest extends Node
 	private void do_test1(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		Long id = new Long(str);
+		Long id = Long.valueOf(str);
 		System.out.println("start release of "+id);
 		SDMSSubmittedEntityTable.getObject(sysEnv, id).releaseMaster(sysEnv);
 	}
@@ -279,19 +279,19 @@ public class RunTest extends Node
 			t_data.add(table.tableName());
 			stat = table.stat(sysEnv);
 			long tIdCount = ((Long)(stat.get(SDMSTable.STAT_ID_COUNT))).longValue();
-			t_data.add(new Long(tIdCount));
+			t_data.add(Long.valueOf(tIdCount));
 			countIds += tIdCount;
 			long tVersionsCount = ((Long)(stat.get(SDMSTable.STAT_VERSION_COUNT))).longValue();
-			t_data.add(new Long(tVersionsCount));
+			t_data.add(Long.valueOf(tVersionsCount));
 			countVersions += tVersionsCount;
 			long tLowVersion = ((Long)(stat.get(SDMSTable.STAT_LOW_VERSION))).longValue();
 			if (tLowVersion == Long.MAX_VALUE)
 				t_data.add("Long.MAX_VALUE");
 			else
-				t_data.add(new Long(tLowVersion));
+				t_data.add(Long.valueOf(tLowVersion));
 			if (tLowVersion < lowVersion) lowVersion = tLowVersion;
 			long tMaxVersions = ((Long)(stat.get(SDMSTable.STAT_MAX_VERSIONS))).longValue();
-			t_data.add(new Long(tMaxVersions));
+			t_data.add(Long.valueOf(tMaxVersions));
 			if (tMaxVersions > maxVersions) maxVersions = tMaxVersions;
 
 			t_container.addData(sysEnv, t_data);
@@ -606,7 +606,7 @@ public class RunTest extends Node
 		SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
 		if (sme.getIsDisabled(sysEnv).booleanValue()) return;
 		sme.setIsDisabled(sysEnv, Boolean.TRUE);
-		sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.DEPENDENCY_WAIT));
+		sme.setState(sysEnv, SDMSConstants.SME_DEPENDENCY_WAIT);
 		sme.checkDependencies(sysEnv);
 		Vector v = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, smeId);
 		Iterator i = v.iterator();

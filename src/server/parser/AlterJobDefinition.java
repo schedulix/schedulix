@@ -96,16 +96,16 @@ public class AlterJobDefinition extends ManipJobDefinition
 				stateSelection = null;
 				if (o == null || o instanceof Vector) {
 					rStateNames = (Vector) o;
-					stateSelection = new Integer(SDMSDependencyDefinition.FINAL);
+					stateSelection = SDMSConstants.DD_FINAL;
 				} else {
 					rStateNames = null;
 					String stateMacro = (String) o;
 					if (stateMacro.equals(ParseStr.S_DEFAULT)) {
-						stateSelection = new Integer(SDMSDependencyDefinition.DEFAULT);
+						stateSelection = SDMSConstants.DD_DEFAULT;
 					} else if (stateMacro.equals(ParseStr.S_UNREACHABLE)) {
-						stateSelection = new Integer(SDMSDependencyDefinition.UNREACHABLE);
+						stateSelection = SDMSConstants.DD_UNREACHABLE;
 					} else if (stateMacro.equals(ParseStr.S_REACHABLE)) {
-						stateSelection = new Integer(SDMSDependencyDefinition.ALL_REACHABLE);
+						stateSelection = SDMSConstants.DD_ALL_REACHABLE;
 					}
 				}
 				mode = (Integer) wh.get(ParseStr.S_MODE);
@@ -119,7 +119,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 				expired = (WithHash) wh.get(ParseStr.S_EXPIRED);
 				if (expired != null) {
 					expiredAmount = (Integer) expired.get(ParseStr.S_MULT);
-					if(expiredAmount == null) expiredAmount = new Integer(1);
+					if(expiredAmount == null) expiredAmount = SDMSConstants.iONE;
 					expiredBase = (Integer) expired.get(ParseStr.S_INTERVAL);
 				}
 
@@ -151,7 +151,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 					}
 				}
 				if(idx >= act_deps.size()) {
-					if(unresolved == null) unresolved = new Integer(SDMSDependencyDefinition.ERROR);
+					if(unresolved == null) unresolved = SDMSConstants.DD_ERROR;
 					dd = SDMSDependencyDefinitionTable.table.create(sysEnv, seId, rId, rdName, unresolved, mode, stateSelection, condition,
 					                resolveMode, expiredAmount, expiredBase, selectCondition);
 				}
@@ -291,7 +291,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 				}
 
 				if(wh.containsKey(ParseStr.S_ENABLE))
-					isDisabled = new Boolean(!((Boolean) wh.get(ParseStr.S_ENABLE)).booleanValue());
+					isDisabled = Boolean.valueOf(!((Boolean) wh.get(ParseStr.S_ENABLE)).booleanValue());
 				else
 					isDisabled = null;
 
@@ -387,7 +387,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 					if(isDisabled == null) {
 						isDisabled = Boolean.FALSE;
 					}
-					if(suspend == null) suspend = new Integer(SDMSSchedulingHierarchy.CHILDSUSPEND);
+					if(suspend == null) suspend = SDMSConstants.SH_CHILDSUSPEND;
 					if (suspend.intValue() == SDMSSchedulingHierarchy.SUSPEND) {
 						Object resumeObj = wh.get(ParseStr.S_RESUME);
 						if (resumeObj != null) {
@@ -399,13 +399,13 @@ public class AlterJobDefinition extends ManipJobDefinition
 							}
 						}
 					}
-					if(mergeMode == null) mergeMode = new Integer(SDMSSchedulingHierarchy.NOMERGE);
+					if(mergeMode == null) mergeMode = SDMSConstants.SH_NOMERGE;
 					if(prio != null) {
 						if(prio.intValue() > SchedulingThread.MIN_PRIORITY)
-							prio = new Integer(SchedulingThread.MIN_PRIORITY);
+							prio = SDMSConstants.ST_MIN_PRIORITY;
 						if(prio.intValue() < - SchedulingThread.MIN_PRIORITY)
-							prio = new Integer(- SchedulingThread.MAX_PRIORITY);
-					} else prio = new Integer(0);
+							prio = SDMSConstants.ST_MIN_PRIORITY;
+					} else prio = SDMSConstants.iZERO;
 
 					estpId = null;
 					if(estpName != null) {
@@ -507,8 +507,9 @@ public class AlterJobDefinition extends ManipJobDefinition
 				String pdef = (String) pv.get(1);
 				Boolean isLocal = (Boolean) pv.get(2);
 				String exportName = (String) pv.get(3);
-				Integer type = (pt == null ? new Integer(SDMSParameterDefinition.PARAMETER) : (Integer) pt.key);
-				Integer aggFunction = new Integer(SDMSParameterDefinition.NONE);
+				Long parmId = (Long) pv.get(4);
+				Integer type = (pt == null ? SDMSConstants.PD_PARAMETER : (Integer) pt.key);
+				Integer aggFunction = SDMSConstants.PD_NONE;
 				Long linkPdId = null;
 				switch(type.intValue()) {
 					case SDMSParameterDefinition.PARAMETER:
@@ -556,9 +557,15 @@ public class AlterJobDefinition extends ManipJobDefinition
 				for(idx = 0; idx < act_parms.size(); idx++) {
 					pd = (SDMSParameterDefinition) act_parms.get(idx);
 					oldnm = pd.getName(sysEnv);
-					if(oldnm.equals(pn)) {
+					if(oldnm.equals(pn) || pd.getId(sysEnv).equals(parmId)) {
+						if (!pd.getId(sysEnv).equals(parmId)) {
+							if (parmId.longValue() != 0L)
+								throw new CommonErrorException(new SDMSMessage(sysEnv, "03303041550", "Parameter ID $1 does not point to the parameter with name $2", parmId, pn));
+						}
 						act_parms.removeElementAt(idx);
 						idx = -1;
+						if (!oldnm.equals(pn))
+							pd.setName(sysEnv, pn);
 						pd.setType(sysEnv, type);
 						pd.setAggFunction(sysEnv, aggFunction);
 						pd.setDefaultValue(sysEnv, pdef);
@@ -566,6 +573,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 						pd.setLinkPdId(sysEnv, linkPdId);
 						pd.setExportName(sysEnv, exportName);
 						break;
+					} else {
 					}
 				}
 				if(idx >= act_parms.size()) {
@@ -686,7 +694,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 						if(wh.containsKey(ParseStr.S_EXPIRED)) {
 							if(expired != null) {
 								exp_mult = (Integer) expired.get(ParseStr.S_MULT);
-								if(exp_mult == null) exp_mult = new Integer(1);
+								if(exp_mult == null) exp_mult = SDMSConstants.iONE;
 								exp_interval = (Integer) expired.get(ParseStr.S_INTERVAL);
 								ignoreOnRerun = (Boolean) expired.get(ParseStr.S_IGNORE);
 							} else {
@@ -703,14 +711,14 @@ public class AlterJobDefinition extends ManipJobDefinition
 					}
 				}
 				if(idx >= act_resrc.size()) {
-					if(amount == null)	amount = new Integer(0);
-					if(lockmode == null)	lockmode = new Integer(SDMSResourceRequirement.N);
+					if(amount == null)	amount = SDMSConstants.iZERO;
+					if(lockmode == null)	lockmode = SDMSConstants.RR_N;
 					if(rsmpname == null) {
 						rsmpId = null;
 					} else {
 						rsmpId = SDMSResourceStateMappingProfileTable.idx_name_getUnique(sysEnv, rsmpname).getId(sysEnv);
 					}
-					if(keepMode == null)	keepMode = new Integer(SDMSResourceRequirement.NOKEEP);
+					if(keepMode == null)	keepMode = SDMSConstants.RR_NOKEEP;
 					if(sticky == null) {
 						isSticky = Boolean.FALSE;
 						stickyName = null;
@@ -739,7 +747,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 						ignoreOnRerun = Boolean.FALSE;
 					} else {
 						exp_mult = (Integer) expired.get(ParseStr.S_MULT);
-						if(exp_mult == null) exp_mult = new Integer(1);
+						if(exp_mult == null) exp_mult = SDMSConstants.iONE;
 						exp_interval = (Integer) expired.get(ParseStr.S_INTERVAL);
 						ignoreOnRerun = (Boolean) expired.get(ParseStr.S_IGNORE);
 					}
@@ -930,7 +938,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 
 		if (withs.containsKey(ParseStr.S_INHERIT)) {
 			inheritPrivs = (Long) withs.get(ParseStr.S_INHERIT);
-			if (inheritPrivs == null) inheritPrivs = new Long(0);
+			if (inheritPrivs == null) inheritPrivs = SDMSConstants.lZERO;
 			long lpriv = inheritPrivs.longValue();
 			if((se.getPrivilegeMask() & lpriv) != lpriv) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061133", "Incompatible grant"));

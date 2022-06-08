@@ -234,35 +234,35 @@ public class SDMSResourceAllocationTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			rId = new Long (r.getLong(2));
-			smeId = new Long (r.getLong(3));
-			nrId = new Long (r.getLong(4));
-			amount = new Integer (r.getInt(5));
+			id     = Long.valueOf (r.getLong(1));
+			rId = Long.valueOf (r.getLong(2));
+			smeId = Long.valueOf (r.getLong(3));
+			nrId = Long.valueOf (r.getLong(4));
+			amount = Integer.valueOf (r.getInt(5));
 			if (r.wasNull()) amount = null;
-			origAmount = new Integer (r.getInt(6));
+			origAmount = Integer.valueOf (r.getInt(6));
 			if (r.wasNull()) origAmount = null;
-			keepMode = new Integer (r.getInt(7));
-			isSticky = new Boolean ((r.getInt(8) == 0 ? false : true));
+			keepMode = Integer.valueOf (r.getInt(7));
+			isSticky = Boolean.valueOf ((r.getInt(8) == 0 ? false : true));
 			stickyName = r.getString(9);
 			if (r.wasNull()) stickyName = null;
-			stickyParent = new Long (r.getLong(10));
+			stickyParent = Long.valueOf (r.getLong(10));
 			if (r.wasNull()) stickyParent = null;
-			allocationType = new Integer (r.getInt(11));
-			rsmpId = new Long (r.getLong(12));
+			allocationType = Integer.valueOf (r.getInt(11));
+			rsmpId = Long.valueOf (r.getLong(12));
 			if (r.wasNull()) rsmpId = null;
-			lockmode = new Integer (r.getInt(13));
+			lockmode = Integer.valueOf (r.getInt(13));
 			if (r.wasNull()) lockmode = null;
-			refcount = new Integer (r.getInt(14));
-			creatorUId = new Long (r.getLong(15));
-			createTs = new Long (r.getLong(16));
-			changerUId = new Long (r.getLong(17));
-			changeTs = new Long (r.getLong(18));
+			refcount = Integer.valueOf (r.getInt(14));
+			creatorUId = Long.valueOf (r.getLong(15));
+			createTs = Long.valueOf (r.getLong(16));
+			changerUId = Long.valueOf (r.getLong(17));
+			changeTs = Long.valueOf (r.getLong(18));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "ResourceAllocation: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "ResourceAllocation: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSResourceAllocationGeneric(id,

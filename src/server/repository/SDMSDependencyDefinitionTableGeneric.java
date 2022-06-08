@@ -222,32 +222,32 @@ public class SDMSDependencyDefinitionTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			seDependentId = new Long (r.getLong(2));
-			seRequiredId = new Long (r.getLong(3));
+			id     = Long.valueOf (r.getLong(1));
+			seDependentId = Long.valueOf (r.getLong(2));
+			seRequiredId = Long.valueOf (r.getLong(3));
 			name = r.getString(4);
 			if (r.wasNull()) name = null;
-			unresolvedHandling = new Integer (r.getInt(5));
-			mode = new Integer (r.getInt(6));
-			stateSelection = new Integer (r.getInt(7));
+			unresolvedHandling = Integer.valueOf (r.getInt(5));
+			mode = Integer.valueOf (r.getInt(6));
+			stateSelection = Integer.valueOf (r.getInt(7));
 			condition = r.getString(8);
 			if (r.wasNull()) condition = null;
-			resolveMode = new Integer (r.getInt(9));
-			expiredAmount = new Integer (r.getInt(10));
+			resolveMode = Integer.valueOf (r.getInt(9));
+			expiredAmount = Integer.valueOf (r.getInt(10));
 			if (r.wasNull()) expiredAmount = null;
-			expiredBase = new Integer (r.getInt(11));
+			expiredBase = Integer.valueOf (r.getInt(11));
 			if (r.wasNull()) expiredBase = null;
 			selectCondition = r.getString(12);
 			if (r.wasNull()) selectCondition = null;
-			creatorUId = new Long (r.getLong(13));
-			createTs = new Long (r.getLong(14));
-			changerUId = new Long (r.getLong(15));
-			changeTs = new Long (r.getLong(16));
+			creatorUId = Long.valueOf (r.getLong(13));
+			createTs = Long.valueOf (r.getLong(14));
+			changerUId = Long.valueOf (r.getLong(15));
+			changeTs = Long.valueOf (r.getLong(16));
 			validFrom = r.getLong(17);
 			validTo = r.getLong(18);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "DependencyDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "DependencyDefinition: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSDependencyDefinitionGeneric(id,

@@ -57,14 +57,14 @@ public class DropTrigger extends Node
 	{
 		SDMSTrigger t;
 
-		try {
-			t = (SDMSTrigger) url.resolve(sysEnv);
-		} catch (NotFoundException nfe) {
+		t = (SDMSTrigger) url.resolve(sysEnv);
+		if (t == null) {
 			if(noerr) {
 				result.setFeedback(new SDMSMessage(sysEnv, "03311130110", "Trigger dropped"));
 				return;
+			} else {
+				throw new NotFoundException(new SDMSMessage(sysEnv, "03112061110", "Trigger " + url.name + " not found"));
 			}
-			throw nfe;
 		}
 
 		t.delete(sysEnv);

@@ -198,27 +198,27 @@ public class SDMSScheduleTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
+			id     = Long.valueOf (r.getLong(1));
 			name = r.getString(2);
-			ownerId = new Long (r.getLong(3));
-			intId = new Long (r.getLong(4));
+			ownerId = Long.valueOf (r.getLong(3));
+			intId = Long.valueOf (r.getLong(4));
 			if (r.wasNull()) intId = null;
-			parentId = new Long (r.getLong(5));
+			parentId = Long.valueOf (r.getLong(5));
 			if (r.wasNull()) parentId = null;
 			timeZone = r.getString(6);
-			seId = new Long (r.getLong(7));
+			seId = Long.valueOf (r.getLong(7));
 			if (r.wasNull()) seId = null;
-			isActive = new Boolean ((r.getInt(8) == 0 ? false : true));
-			creatorUId = new Long (r.getLong(9));
-			createTs = new Long (r.getLong(10));
-			changerUId = new Long (r.getLong(11));
-			changeTs = new Long (r.getLong(12));
-			inheritPrivs = new Long (r.getLong(13));
+			isActive = Boolean.valueOf ((r.getInt(8) == 0 ? false : true));
+			creatorUId = Long.valueOf (r.getLong(9));
+			createTs = Long.valueOf (r.getLong(10));
+			changerUId = Long.valueOf (r.getLong(11));
+			changeTs = Long.valueOf (r.getLong(12));
+			inheritPrivs = Long.valueOf (r.getLong(13));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "Schedule: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "Schedule: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSScheduleGeneric(id,

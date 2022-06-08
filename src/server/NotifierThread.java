@@ -44,7 +44,6 @@ public class NotifierThread extends InternalSession
 {
 
 	public final static String name = "Notifier";
-	public final static Integer ZERO = new Integer(0);
 
 	private HashMap<Long,Integer> jsToNotify;
 
@@ -71,7 +70,7 @@ public class NotifierThread extends InternalSession
 	{
 		Integer cnt = jsToNotify.get(id);
 		if (cnt == null) {
-			jsToNotify.put(id, ZERO);
+			jsToNotify.put(id, SDMSConstants.iZERO);
 		}
 	}
 
@@ -89,7 +88,7 @@ public class NotifierThread extends InternalSession
 	{
 		Integer cnt = jsToNotify.get(id);
 		if (cnt != null) {
-			jsToNotify.put(id, new Integer(cnt.intValue() + 1));
+			jsToNotify.put(id, Integer.valueOf(cnt.intValue() + 1));
 		}
 	}
 

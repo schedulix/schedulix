@@ -62,7 +62,7 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 		if (newActive) {
 			if (activeTs == null) {
 				Date dts = new Date();
-				activeTs = new Long (dts.getTime());
+				activeTs = Long.valueOf (dts.getTime());
 			}
 			setActiveTs(sysEnv, activeTs);
 			activate(sysEnv, activeTs.longValue());
@@ -164,7 +164,7 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 			}
 			nice += npe.getRenice(sysEnv).intValue();
 			if (nice != oldNice) {
-				sme.renice(sysEnv, null, new Integer(nice), comment);
+				sme.renice(sysEnv, null, Integer.valueOf(nice), comment);
 			}
 			sme.setNpeId(sysEnv, npe.getId(sysEnv));
 			int npeIsSuspended = npe.getIsSuspended(sysEnv).intValue();
@@ -174,11 +174,11 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 			if (opSusresTs != null)
 				srts = opSusresTs.longValue();
 			Date dts = new Date();
-			Long ts = new Long (dts.getTime());
+			Long ts = Long.valueOf (dts.getTime());
 			if (npeIsSuspended == SDMSNiceProfileEntry.NOSUSPEND) {
 				if (smeIsSuspended != SDMSSubmittedEntity.NOSUSPEND && srts >= 0) {
-					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, new Integer(SDMSAuditTrail.RESUME),
-					                                 new Integer(SDMSAuditTrail.JOB), sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
+					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, SDMSConstants.AT_RESUME,
+					                                 SDMSConstants.AT_JOB, sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
 					                                 "Resume caused by activation of Nice Profile " + getName(sysEnv));
 
 					sme.resume(sysEnv, true, false);
@@ -191,8 +191,8 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 						admin = true;
 						stradm = "Admin ";
 					}
-					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, new Integer(SDMSAuditTrail.SUSPEND),
-					                                 new Integer(SDMSAuditTrail.JOB), sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
+					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, SDMSConstants.AT_SUSPEND,
+					                                 SDMSConstants.AT_JOB, sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
 					                                 stradm + "Suspend caused by activation of Nice Profile " + getName(sysEnv));
 
 					sme.suspend(sysEnv, false, admin, false);
@@ -315,7 +315,7 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 				sme.setNpeId(sysEnv, null);
 
 			if (nice != oldNice) {
-				sme.renice(sysEnv, null, new Integer(nice), comment);
+				sme.renice(sysEnv, null, Integer.valueOf(nice), comment);
 			}
 			int smeIsSuspended = sme.getIsSuspended(sysEnv).intValue();
 			Long opSusresTs = sme.getOpSusresTs(sysEnv);
@@ -323,13 +323,13 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 			if (opSusresTs != null)
 				srts = opSusresTs.longValue();
 			Date dts = new Date();
-			Long ts = new Long (dts.getTime());
+			Long ts = Long.valueOf (dts.getTime());
 			if (srts > oldNpActivteTs)
 				npeIsSuspended = SDMSNiceProfileEntry.NOSUSPEND;
 			if (npeIsSuspended == SDMSNiceProfileEntry.NOSUSPEND) {
 				if (smeIsSuspended != SDMSSubmittedEntity.NOSUSPEND && srts >= 0) {
-					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, new Integer(SDMSAuditTrail.RESUME),
-					                                 new Integer(SDMSAuditTrail.JOB), sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
+					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, SDMSConstants.AT_RESUME,
+					                                 SDMSConstants.AT_JOB, sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
 					                                 "Resume caused by deactivation of Nice Profile " + getName(sysEnv));
 
 					sme.resume(sysEnv, true, false);
@@ -343,8 +343,8 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 						admin = true;
 						stradm = "Admin ";
 					}
-					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, new Integer(SDMSAuditTrail.SUSPEND),
-					                                 new Integer(SDMSAuditTrail.JOB), sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
+					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, SDMSConstants.AT_SUSPEND,
+					                                 SDMSConstants.AT_JOB, sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
 					                                 stradm + "Suspend caused by deactivation of Nice Profile " + getName(sysEnv));
 
 					sme.suspend(sysEnv, false, admin, false);

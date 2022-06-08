@@ -213,7 +213,7 @@ def SDMSGenericConnectionOpenV2(server,user,pwd,type,session=''):
 		connect_type = ''
 	pwd = pwd.replace('\\','\\\\')
 	pwd = pwd.replace('\'','\\\'') 
-	connectCommand = "CONNECT " + connect_type + user + " IDENTIFIED BY '" + pwd + "' WITH PROTOCOL = PYTHON"
+	connectCommand = "CONNECT " + connect_type + user + " IDENTIFIED BY '" + pwd + "' WITH PROTOCOL = PYTHON ZERO TERMINATED"
 	if server.get('CACHE','NO').upper() in yesList:
 		timeout = 60 # default timeout of 60 seconds
 		if 'TIMEOUT' in server:
@@ -557,7 +557,7 @@ def SDMSUserConnectCommandV2(server, user, pwd , p_command, repeatable=0, outdic
 			repeats = 0
 			while repeats < 2:
 				repeats = repeats + 1
-				connectCommand = "CONNECT '" + connectUser + "' IDENTIFIED BY '" + connectPass + "' WITH PROTOCOL = PYTHON"
+				connectCommand = "CONNECT '" + connectUser + "' IDENTIFIED BY '" + connectPass + "' WITH PROTOCOL = PYTHON ZERO TERMINATED"
 				if server.get('CACHE','NO').upper() in yesList:
 					timeout = 60 # default timeout of 60 seconds
 					if 'TIMEOUT' in server:
@@ -791,12 +791,7 @@ def sendCommand(soc, command):
 	except Exception as e:
 		return "{ 'ERROR' : { 'ERRORCODE' : 'ZSI-10002', 'ERRORMESSAGE' : 'Connection Broken' }}"
 	data = []
-	hasData = 1
-	gotData = 0
-	lvl = 0
-	esc = 0
-	instr = 0
-	while hasData == 1:
+	while True:
 		try:
 			buf = soc.recv(1024).decode("utf-8")
 		except Exception as e:
@@ -807,43 +802,11 @@ def sendCommand(soc, command):
 			print('data was:')
 			print(''.join(data))
 			return "{ 'ERROR' : { 'ERRORCODE' : 'ZSI-10002', 'ERRORMESSAGE' : 'Connection Broken' }}"
-		data.append(buf)
-		for c in buf:
-			if c == '\'':
-				if esc == 1:
-					esc = 0
-				else:
-					if instr == 0:
-						instr = 1
-					else:
-						instr = 0
-				continue;
-			if c == '{':
-				if instr == 1:
-					continue
-				if esc == 1:
-					esc = 0
-				else:
-					lvl = lvl + 1
-				gotData = 1
-				continue
-			if c == '}':
-				if instr == 1:
-					continue
-				if esc == 1:
-					esc = 0
-				else:
-					lvl = lvl - 1
-					if lvl == 0 and gotData == 1:
-						hasData = 0
-				continue
-			if c == '\\':
-				if esc == 0:
-					esc = 1
-				else:
-					esc = 0
-				continue
-			esc = 0
+		if buf[len(buf) - 1] == '\0':
+			data.append(buf[:-1])
+			break
+		else:
+			data.append(buf)
 	return ''.join(data)
 
 from email.utils import mktime_tz

@@ -248,43 +248,43 @@ public class SDMSIntervalTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
+			id     = Long.valueOf (r.getLong(1));
 			name = r.getString(2);
-			ownerId = new Long (r.getLong(3));
-			startTime = new Long (r.getLong(4));
+			ownerId = Long.valueOf (r.getLong(3));
+			startTime = Long.valueOf (r.getLong(4));
 			if (r.wasNull()) startTime = null;
-			endTime = new Long (r.getLong(5));
+			endTime = Long.valueOf (r.getLong(5));
 			if (r.wasNull()) endTime = null;
-			delay = new Long (r.getLong(6));
+			delay = Long.valueOf (r.getLong(6));
 			if (r.wasNull()) delay = null;
-			baseInterval = new Integer (r.getInt(7));
+			baseInterval = Integer.valueOf (r.getInt(7));
 			if (r.wasNull()) baseInterval = null;
-			baseIntervalMultiplier = new Integer (r.getInt(8));
+			baseIntervalMultiplier = Integer.valueOf (r.getInt(8));
 			if (r.wasNull()) baseIntervalMultiplier = null;
-			duration = new Integer (r.getInt(9));
+			duration = Integer.valueOf (r.getInt(9));
 			if (r.wasNull()) duration = null;
-			durationMultiplier = new Integer (r.getInt(10));
+			durationMultiplier = Integer.valueOf (r.getInt(10));
 			if (r.wasNull()) durationMultiplier = null;
-			syncTime = new Long (r.getLong(11));
-			isInverse = new Boolean ((r.getInt(12) == 0 ? false : true));
-			isMerge = new Boolean ((r.getInt(13) == 0 ? false : true));
-			embeddedIntervalId = new Long (r.getLong(14));
+			syncTime = Long.valueOf (r.getLong(11));
+			isInverse = Boolean.valueOf ((r.getInt(12) == 0 ? false : true));
+			isMerge = Boolean.valueOf ((r.getInt(13) == 0 ? false : true));
+			embeddedIntervalId = Long.valueOf (r.getLong(14));
 			if (r.wasNull()) embeddedIntervalId = null;
-			seId = new Long (r.getLong(15));
+			seId = Long.valueOf (r.getLong(15));
 			if (r.wasNull()) seId = null;
-			objId = new Long (r.getLong(16));
+			objId = Long.valueOf (r.getLong(16));
 			if (r.wasNull()) objId = null;
-			objType = new Integer (r.getInt(17));
+			objType = Integer.valueOf (r.getInt(17));
 			if (r.wasNull()) objType = null;
-			creatorUId = new Long (r.getLong(18));
-			createTs = new Long (r.getLong(19));
-			changerUId = new Long (r.getLong(20));
-			changeTs = new Long (r.getLong(21));
+			creatorUId = Long.valueOf (r.getLong(18));
+			createTs = Long.valueOf (r.getLong(19));
+			changerUId = Long.valueOf (r.getLong(20));
+			changeTs = Long.valueOf (r.getLong(21));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "Interval: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "Interval: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSIntervalGeneric(id,

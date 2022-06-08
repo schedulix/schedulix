@@ -65,7 +65,7 @@ public class SDMSExitStateMappingProfile extends SDMSExitStateMappingProfileProx
 
 			throw new FatalException(new SDMSMessage(sysEnv, "02201111620",
 			                         "Invalid Exit State Mapping Profile $1 does not map exit code $2",
-			                         esmpId, new Integer(exitCode)));
+			                         esmpId, Integer.valueOf(exitCode)));
 		}
 		return esdId;
 	}

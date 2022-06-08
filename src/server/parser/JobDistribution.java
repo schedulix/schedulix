@@ -84,7 +84,7 @@ public abstract class JobDistribution extends Node
 		se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion);
 		data.add(smeId);
 
-		sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.STARTING));
+		sme.setState(sysEnv, SDMSConstants.SME_STARTING);
 
 		Vector args;
 		String runProgram;
@@ -154,8 +154,8 @@ public abstract class JobDistribution extends Node
 			tmpStr = logfile;
 			sme.setLogfile(sysEnv, logfile);
 			tmpb = se.getTruncLog(sysEnv);
-			if(rerun)	data.add(new Boolean(! SDMSSchedulingEntity.NOTRUNC));
-			else		data.add(tmpb == null ? new Boolean(! SDMSSchedulingEntity.NOTRUNC) : new Boolean(! tmpb.booleanValue()));
+			if(rerun)	data.add(Boolean.valueOf(! SDMSSchedulingEntity.NOTRUNC));
+			else		data.add(tmpb == null ? Boolean.valueOf(! SDMSSchedulingEntity.NOTRUNC) : Boolean.valueOf(! tmpb.booleanValue()));
 
 			if(errlogfile != null) {
 				sr = new StringReader(errlogfile);
@@ -166,8 +166,8 @@ public abstract class JobDistribution extends Node
 			tmpStr = errlogfile;
 			sme.setErrlogfile(sysEnv, errlogfile);
 			tmpb = se.getTruncErrlog(sysEnv);
-			if(rerun)	data.add(new Boolean(! SDMSSchedulingEntity.NOTRUNC));
-			else		data.add(tmpb == null ? new Boolean(! SDMSSchedulingEntity.NOTRUNC) : new Boolean(! tmpb.booleanValue()));
+			if(rerun)	data.add(Boolean.valueOf(! SDMSSchedulingEntity.NOTRUNC));
+			else		data.add(tmpb == null ? Boolean.valueOf(! SDMSSchedulingEntity.NOTRUNC) : Boolean.valueOf(! tmpb.booleanValue()));
 		} catch (CommonErrorException cce) {
 			return false;
 		}
@@ -214,7 +214,7 @@ public abstract class JobDistribution extends Node
 		for(int i = 0; i < jsv.size(); i++) {
 			rq = (SDMSRunnableQueue) jsv.get(i);
 			if(rq.getScopeId(sysEnv).equals(sId)) {
-				rq.setState(sysEnv, new Integer(SDMSSubmittedEntity.STARTING));
+				rq.setState(sysEnv, SDMSConstants.SME_STARTING);
 				continue;
 			}
 			rq.delete(sysEnv);
@@ -311,11 +311,11 @@ public abstract class JobDistribution extends Node
 
 		logfile = kj.getLogfile(sysEnv);
 		data.add(logfile);
-		data.add(new Boolean(! SDMSSchedulingEntity.NOTRUNC));
+		data.add(Boolean.valueOf(! SDMSSchedulingEntity.NOTRUNC));
 
 		errlogfile = kj.getErrlogfile(sysEnv);
 		data.add(errlogfile);
-		data.add(new Boolean(! SDMSSchedulingEntity.NOTRUNC));
+		data.add(Boolean.valueOf(! SDMSSchedulingEntity.NOTRUNC));
 
 		sr = new StringReader(runProgram);
 		try {
@@ -351,9 +351,9 @@ public abstract class JobDistribution extends Node
 
 		fillEnvironment(sysEnv, sme, data);
 
-		data.add(new Integer(0));
+		data.add(SDMSConstants.iZERO);
 
-		kj.setState(sysEnv, new Integer(SDMSSubmittedEntity.STARTING));
+		kj.setState(sysEnv, SDMSConstants.SME_STARTING);
 		kj.setScopeId(sysEnv, sId);
 
 		Vector jobenv = new Vector();
@@ -373,7 +373,7 @@ public abstract class JobDistribution extends Node
 		for(int i = 0; i < jsv.size(); i++) {
 			rq = (SDMSRunnableQueue) jsv.get(i);
 			if(rq.getScopeId(sysEnv).equals(sId)) {
-				rq.setState(sysEnv, new Integer(SDMSSubmittedEntity.STARTING));
+				rq.setState(sysEnv, SDMSConstants.SME_STARTING);
 				continue;
 			}
 			rq.delete(sysEnv);

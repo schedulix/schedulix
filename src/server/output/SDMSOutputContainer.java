@@ -155,7 +155,7 @@ public class SDMSOutputContainer implements Serializable
 		if(c1 >= desc.size() || -c1 >= desc.size()) {
 			throw new FatalException(new SDMSMessage(env, "03117121557",
 						"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
-						new Integer(c1), new Integer(desc.size())));
+			                         Integer.valueOf(c1), Integer.valueOf(desc.size())));
 		}
 		return new occomp(env, a);
 	}
@@ -169,13 +169,13 @@ public class SDMSOutputContainer implements Serializable
 		if(c1 >= desc.size() || -c1 >= desc.size()) {
 			throw new FatalException(new SDMSMessage(env, "03201292045",
 						"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
-						new Integer(c1), new Integer(desc.size())));
+			                         Integer.valueOf(c1), Integer.valueOf(desc.size())));
 		}
 		a[1] = c2;
 		if(c2 >= desc.size() || -c2 >= desc.size()) {
 			throw new FatalException(new SDMSMessage(env, "03117121559",
 						"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
-						new Integer(c2), new Integer(desc.size())));
+			                         Integer.valueOf(c2), Integer.valueOf(desc.size())));
 		}
 		return new occomp(env, a);
 	}
@@ -188,8 +188,8 @@ public class SDMSOutputContainer implements Serializable
 		for(i = 0; i < c.length; i++) {
 			if(c[i] >= desc.size() || -c[i] >= desc.size()) {
 				throw new FatalException(new SDMSMessage(env, "03117121601",
-						"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
-						new Integer(c[i]), new Integer(desc.size())));
+							"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
+				                         Integer.valueOf(c[i]), Integer.valueOf(desc.size())));
 			}
 		}
 		return new occomp(env, c);

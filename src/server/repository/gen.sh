@@ -12,10 +12,10 @@ true = 1
 import $TABLE
 table = $TABLE.table
 import standard_columns
-if not table.has_key('sql_only') or table['sql_only'] == 0:
+if ('sql_only' not in table) or (table['sql_only'] == 0):
 	table['columns'] = table['columns'] + standard_columns.columns
 
-if not table.has_key('hierarchy'):
+if 'hierarchy' not in table:
 	table['hierarchy'] = 0
 
 if table['hierarchy'] == 1:

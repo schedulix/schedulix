@@ -75,31 +75,6 @@ public class SDMSMessage
 		}
 	}
 
-	public SDMSMessage(SystemEnvironment p_env, String p_errId)
-	{
-		this(p_env, p_errId, (String) null, (Object[]) null);
-	}
-
-	public SDMSMessage(SystemEnvironment p_env, String p_errId, Object p1)
-	{
-		this(p_env, p_errId, (String) null, new Object[] {p1});
-	}
-
-	public SDMSMessage(SystemEnvironment p_env, String p_errId, Object p1, Object p2)
-	{
-		this(p_env, p_errId, (String) null, new Object[] {p1, p2});
-	}
-
-	public SDMSMessage(SystemEnvironment p_env, String p_errId, Object p1, Object p2, Object p3)
-	{
-		this(p_env, p_errId, (String) null, new Object[] {p1, p2, p3});
-	}
-
-	public SDMSMessage(SystemEnvironment p_env, String p_errId, Object p[])
-	{
-		this(p_env, p_errId, (String) null, p);
-	}
-
 	public SDMSMessage(SystemEnvironment p_env, String p_errId, String p_msg)
 	{
 		this(p_env, p_errId, p_msg, (Object[]) null);

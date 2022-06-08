@@ -39,7 +39,6 @@ public class ShowUser extends ShowCommented
 
 	public final static String __version = "@(#) $Id: ShowUser.java,v 2.9.4.2 2013/06/18 09:49:38 ronald Exp $";
 
-	private final static Long ZERO = new Long(0L);
 	private final static String USR = "user";
 	private final static String GRP = "group";
 	private final static String ESD = "exit state definition";
@@ -80,7 +79,7 @@ public class ShowUser extends ShowCommented
 		if(name == null) {
 			u = SDMSUserTable.getObject(sysEnv, env.uid());
 		} else {
-			u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(name, new Long(0)));
+			u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(name, SDMSConstants.lZERO));
 		}
 		if (u.getDeleteVersion(sysEnv) > 0)
 			throw new NotFoundException("User " + (name == null ? "" : name + " ") + " not found");
@@ -222,7 +221,7 @@ public class ShowUser extends ShowCommented
 		for(int i = 0; i < v.size(); i++) {
 			SDMSMember m = (SDMSMember) v.get(i);
 			try {
-				SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO, m.getGId(sysEnv)));
+				SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSConstants.lZERO, m.getGId(sysEnv)));
 				p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 			} catch (NotFoundException nfe) {
 			}

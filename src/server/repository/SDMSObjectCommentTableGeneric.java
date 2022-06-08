@@ -182,23 +182,23 @@ public class SDMSObjectCommentTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			objectId = new Long (r.getLong(2));
-			objectType = new Integer (r.getInt(3));
-			infoType = new Integer (r.getInt(4));
-			sequenceNumber = new Integer (r.getInt(5));
+			id     = Long.valueOf (r.getLong(1));
+			objectId = Long.valueOf (r.getLong(2));
+			objectType = Integer.valueOf (r.getInt(3));
+			infoType = Integer.valueOf (r.getInt(4));
+			sequenceNumber = Integer.valueOf (r.getInt(5));
 			tag = r.getString(6);
 			if (r.wasNull()) tag = null;
 			description = r.getString(7);
-			creatorUId = new Long (r.getLong(8));
-			createTs = new Long (r.getLong(9));
-			changerUId = new Long (r.getLong(10));
-			changeTs = new Long (r.getLong(11));
+			creatorUId = Long.valueOf (r.getLong(8));
+			createTs = Long.valueOf (r.getLong(9));
+			changerUId = Long.valueOf (r.getLong(10));
+			changeTs = Long.valueOf (r.getLong(11));
 			validFrom = r.getLong(12);
 			validTo = r.getLong(13);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "ObjectComment: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "ObjectComment: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSObjectCommentGeneric(id,

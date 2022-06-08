@@ -369,10 +369,10 @@ public abstract class SDMSTable
 				if (vLowVersion < lowVersion) lowVersion = vLowVersion;
 			}
 		}
-		result.put(STAT_ID_COUNT, new Long(countIds));
-		result.put(STAT_VERSION_COUNT, new Long(countVersions));
-		result.put(STAT_LOW_VERSION, new Long(lowVersion));
-		result.put(STAT_MAX_VERSIONS, new Long(maxVersions));
+		result.put(STAT_ID_COUNT, Long.valueOf(countIds));
+		result.put(STAT_VERSION_COUNT, Long.valueOf(countVersions));
+		result.put(STAT_LOW_VERSION, Long.valueOf(lowVersion));
+		result.put(STAT_MAX_VERSIONS, Long.valueOf(maxVersions));
 
 		return result;
 	}

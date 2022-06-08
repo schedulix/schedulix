@@ -39,8 +39,6 @@ public class CreateResource extends ManipResource
 
 	public final static String __version = "@(#) $Id: CreateResource.java,v 2.14.4.5 2013/03/26 11:59:17 ronald Exp $";
 
-	static final Float fzero = new Float(0);
-
 	private WithHash with;
 	private boolean replace;
 	private WithHash parms;
@@ -84,7 +82,7 @@ public class CreateResource extends ManipResource
 		parms = (WithHash) with.get(ParseStr.S_PARAMETERS);
 
 		if(groupname != null) {
-			g = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(groupname, new Long(0)));
+			g = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(groupname, SDMSConstants.lZERO));
 			gId = g.getId(sysEnv);
 		} else {
 			u = SDMSUserTable.getObject(sysEnv, sysEnv.cEnv.uid());
@@ -115,7 +113,7 @@ public class CreateResource extends ManipResource
 			}
 		}
 
-		if (baseMultiplier == null) baseMultiplier = new Integer(10 * 60);
+		if (baseMultiplier == null) baseMultiplier = Integer.valueOf(10 * 60);
 
 		if(replace) {
 			SDMSKey k = new SDMSKey(nrId, sId);
@@ -142,7 +140,7 @@ public class CreateResource extends ManipResource
 		}
 
 		if ((requestableAmount == null) && (amount == null)) {
-			requestableAmount = new Integer(-1);
+			requestableAmount = SDMSConstants.iMINUS_ONE;
 		}
 		if(requestableAmount == null) {
 			requestableAmount = amount;
@@ -153,7 +151,7 @@ public class CreateResource extends ManipResource
 		rsdId = check_resource(sysEnv, nr, rsdId, requestableAmount, amount, scopeResource);
 
 		Date dts = new Date();
-		Long ts = new Long (dts.getTime());
+		Long ts = Long.valueOf (dts.getTime());
 
 		if (requestableAmount.intValue() == -1) {
 			requestableAmount = null;
@@ -168,7 +166,8 @@ public class CreateResource extends ManipResource
 		} else {
 			r = SDMSResourceTable.table.create(sysEnv, nrId, sId, null,  gId, null, null, null, rsdId, ts, amount, requestableAmount,
 			                                   amount, amount, online, factor, traceInterval, traceBase, baseMultiplier,
-			                                   fzero, fzero, fzero, fzero, new Long(0), new Long(0));
+			                                   SDMSConstants.fZERO, SDMSConstants.fZERO, SDMSConstants.fZERO, SDMSConstants.fZERO,
+			                                   SDMSConstants.lZERO, SDMSConstants.lZERO);
 			r.createVariables(sysEnv, parms);
 
 			SystemEnvironment.sched.notifyChange(sysEnv, r, sId, SchedulingThread.CREATE);
@@ -189,14 +188,15 @@ public class CreateResource extends ManipResource
 			}
 		} else {
 			rsp = SDMSResourceStateProfileTable.getObject(sysEnv, rspId);
+			Long initialRsdId = rsp.getInitialRsdId(sysEnv);
 			if(rsdId == null) {
-				if(rsp.getInitialRsdId(sysEnv) == null) {
+				if(initialRsdId == null) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03202211217", "Resource must have an initial state"));
 				} else {
 					rsdId = rsp.getInitialRsdId(sysEnv);
 				}
 			} else {
-				if(!SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(rsdId, rspId))) {
+				if (!rsdId.equals(initialRsdId) && !SDMSResourceStateTable.idx_rsdId_rspId.containsKey(sysEnv, new SDMSKey(rsdId, rspId))) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03202211221", "Resource state is not defined in the profile $1",
 						rsp.getName(sysEnv)));
 				}

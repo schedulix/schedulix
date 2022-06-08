@@ -218,27 +218,27 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			ddId = new Long (r.getLong(2));
-			dependentId = new Long (r.getLong(3));
-			dependentIdOrig = new Long (r.getLong(4));
-			dependencyOperation = new Integer (r.getInt(5));
-			requiredId = new Long (r.getLong(6));
-			requiredSeId = new Long (r.getLong(7));
+			id     = Long.valueOf (r.getLong(1));
+			ddId = Long.valueOf (r.getLong(2));
+			dependentId = Long.valueOf (r.getLong(3));
+			dependentIdOrig = Long.valueOf (r.getLong(4));
+			dependencyOperation = Integer.valueOf (r.getInt(5));
+			requiredId = Long.valueOf (r.getLong(6));
+			requiredSeId = Long.valueOf (r.getLong(7));
 			if (r.wasNull()) requiredSeId = null;
-			state = new Integer (r.getInt(8));
-			ignore = new Integer (r.getInt(9));
-			diIdOrig = new Long (r.getLong(10));
-			seVersion = new Long (r.getLong(11));
-			creatorUId = new Long (r.getLong(12));
-			createTs = new Long (r.getLong(13));
-			changerUId = new Long (r.getLong(14));
-			changeTs = new Long (r.getLong(15));
+			state = Integer.valueOf (r.getInt(8));
+			ignore = Integer.valueOf (r.getInt(9));
+			diIdOrig = Long.valueOf (r.getLong(10));
+			seVersion = Long.valueOf (r.getLong(11));
+			creatorUId = Long.valueOf (r.getLong(12));
+			createTs = Long.valueOf (r.getLong(13));
+			changerUId = Long.valueOf (r.getLong(14));
+			changeTs = Long.valueOf (r.getLong(15));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "DependencyInstance: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "DependencyInstance: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSDependencyInstanceGeneric(id,

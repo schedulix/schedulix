@@ -59,7 +59,7 @@ public class CreateExitStatProf extends Node
 			esp = SDMSExitStateProfileTable.table.create (sysEnv, name, null, Boolean.TRUE);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
-				AlterExitStatProf aesp = new AlterExitStatProf(new ObjectURL(new Integer(Parser.EXIT_STATUS_PROFILE), name), items, Boolean.FALSE);
+				AlterExitStatProf aesp = new AlterExitStatProf(new ObjectURL(SDMSConstants.PS_EXIT_STATUS_PROFILE, name), items, Boolean.FALSE);
 				aesp.setEnv(env);
 				aesp.go(sysEnv);
 				result = aesp.result;
@@ -87,7 +87,7 @@ public class CreateExitStatProf extends Node
 		boolean had_broken = false;
 		boolean had_batchDefault = false;
 		while (i.hasNext()) {
-			pref = new Integer (idx);
+			pref = Integer.valueOf (idx);
 			idx ++;
 			esps = (EspState)i.next();
 
@@ -99,11 +99,11 @@ public class CreateExitStatProf extends Node
 			Boolean isBatchDefault = esps.batchDefault;
 			Boolean isDependencyDefault = esps.depDefault;
 
-			if (esps.type.equals(new Integer(SDMSExitState.FINAL))) {
+			if (esps.type.intValue() == SDMSExitState.FINAL) {
 				isFinal = Boolean.TRUE;
 				gotFinalState = true;
 			}
-			if (esps.type.equals(new Integer(SDMSExitState.RESTARTABLE))) {
+			if (esps.type.intValue() == SDMSExitState.RESTARTABLE) {
 				isRestartable = Boolean.TRUE;
 			}
 			if (isUnreachable.booleanValue()) {

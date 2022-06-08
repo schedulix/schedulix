@@ -49,10 +49,10 @@ public class SSLListenThread extends ListenThread
 	private SSLContext sc;
 	private SSLServerSocketFactory ssf;
 
-	public SSLListenThread(ThreadGroup t, int p, int mc, SyncFifo f, SyncFifo rof, int type)
+	public SSLListenThread(ThreadGroup t, int p, InetAddress iFace, int mc, SyncFifo f, SyncFifo rof, int type)
 		throws SDMSException
 	{
-		super(t, p, mc, f, rof, type);
+		super(t, p, iFace, mc, f, rof, type);
 
 		try {
 			ks = KeyStore.getInstance("JKS");
@@ -68,10 +68,14 @@ public class SSLListenThread extends ListenThread
 		}
 	}
 
-	ServerSocket getServerSocket(int port)
+	ServerSocket getServerSocket(int port, InetAddress iFace)
 	throws IOException
 	{
-		SSLServerSocket sslserversocket = (SSLServerSocket) ssf.createServerSocket(port);
+		SSLServerSocket sslserversocket;
+		if (iFace == null)
+			sslserversocket = (SSLServerSocket) ssf.createServerSocket(port);
+		else
+			sslserversocket = (SSLServerSocket) ssf.createServerSocket(port, 0, iFace);
 
 		if (SystemEnvironment.clientAuthentication) {
 			System.out.println("Client Authentication is needed");

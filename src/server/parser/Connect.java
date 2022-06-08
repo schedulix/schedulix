@@ -42,7 +42,6 @@ public class Connect extends Node
 	public final static String __version = "@(#) $Id: Connect.java,v 2.20.2.1 2013/03/14 10:24:24 ronald Exp $";
 
 	public static final String JS_ALREADY_CONNECTED = "Server already connected";
-	protected final static Long zero = new Long(0);
 
 	protected String user;
 	private String jsName;
@@ -197,7 +196,7 @@ public class Connect extends Node
 		method = SDMSUser.SHA256;
 
 		u.setSalt(sysEnv, salt);
-		u.setMethod(sysEnv, new Integer(method));
+		u.setMethod(sysEnv, Integer.valueOf(method));
 		u.setPasswd(sysEnv, pwdHash);
 	}
 
@@ -210,7 +209,7 @@ public class Connect extends Node
 		int method;
 
 		try {
-			u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(user, zero));
+			u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(user, SDMSConstants.lZERO));
 			if (!u.getIsEnabled(sysEnv).booleanValue()) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
 					"02110192355", "User disabled"));
@@ -277,7 +276,7 @@ public class Connect extends Node
 	{
 		SDMSUser u;
 		Long uId;
-		Integer method = new Integer(SDMSUser.SHA256);
+		Integer method = SDMSConstants.U_SHA256;
 		boolean suActive = false;
 		Vector members = null;
 		boolean freshMeat = false;
@@ -293,7 +292,7 @@ public class Connect extends Node
 				if (u.getDeleteVersion(sysEnv).intValue() != 0) {
 					if (!createUser)
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "02709251500", "User " + user + " does not exist"));
-					u.setDeleteVersion(sysEnv, zero);
+					u.setDeleteVersion(sysEnv, SDMSConstants.lZERO);
 					u.setIsEnabled(sysEnv, Boolean.TRUE);
 					try {
 						SDMSMemberTable.table.create(sysEnv, SDMSObject.publicGId, u.getId(sysEnv));
@@ -310,7 +309,7 @@ public class Connect extends Node
 			if (u == null) {
 				String passwd = "Internal Authentication Disabled";
 				Boolean enable = Boolean.TRUE;
-				u = SDMSUserTable.table.create(sysEnv, user, passwd, passwd, method, enable, SDMSObject.publicGId, new Integer(SDMSUser.PLAIN), zero);
+				u = SDMSUserTable.table.create(sysEnv, user, passwd, passwd, method, enable, SDMSObject.publicGId, SDMSConstants.U_PLAIN, SDMSConstants.lZERO);
 				SDMSMemberTable.table.create(sysEnv, SDMSObject.publicGId, u.getId(sysEnv));
 				freshMeat = true;
 			} else {
@@ -341,7 +340,7 @@ public class Connect extends Node
 					} catch (NotFoundException nfe) {
 						if (!createGroups)
 							throw new CommonErrorException(new SDMSMessage(sysEnv, "02709251501", "Group " + groups[i] + " does not exist"));
-						g = SDMSGroupTable.table.create(sysEnv, groups[i], zero);
+						g = SDMSGroupTable.table.create(sysEnv, groups[i], SDMSConstants.lZERO);
 						m = SDMSMemberTable.table.create(sysEnv, g.getId(sysEnv), uId);
 						members.add(m);
 					}
@@ -460,7 +459,7 @@ public class Connect extends Node
 		if(s.isConnected(sysEnv)) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03204102020", JS_ALREADY_CONNECTED));
 		} else {
-			sf.setSessionId(sysEnv, new Integer(env.id()));
+			sf.setSessionId(sysEnv, Integer.valueOf(env.id()));
 		}
 
 		sysEnv.cEnv.setUid(s.getId(sysEnv));
@@ -487,7 +486,7 @@ public class Connect extends Node
 				sme = SDMSSubmittedEntityTable.getObject(sysEnv, kj.getSmeId(sysEnv));
 			}
 			try {
-				accessKey = new Long(Long.parseLong(key));
+				accessKey = Long.valueOf(Long.parseLong(key));
 			} catch (NumberFormatException nfe) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
 						"03206031607", "Invalid username or password"));
@@ -538,7 +537,8 @@ public class Connect extends Node
 	throws SDMSException
 	{
 		if(withs.containsKey(ParseStr.S_PROTOCOL)) {
-			sysEnv.cEnv.setRenderer(((Token) withs.get(ParseStr.S_PROTOCOL)).token);
+			WithHash pw = (WithHash) withs.get(ParseStr.S_PROTOCOL);
+			sysEnv.cEnv.setRenderer(pw);
 		}
 		if (withs.containsKey(ParseStr.S_SESSION)) {
 			sysEnv.cEnv.setInfo((String) withs.get(ParseStr.S_SESSION));

@@ -293,7 +293,7 @@ public class SDMSVersions
 			SDMSThread.doTrace(env.cEnv, "Version " + versionId + " of id " + id + " not found\n" + this, SDMSThread.SEVERITY_DEBUG);
 		throw new NotFoundException(new SDMSMessage(env, "03210252200",
 					    "Version $1 of id $2 not found",
-					    new Long(versionId), id));
+		                            Long.valueOf(versionId), id));
 	}
 
 	protected synchronized SDMSObject getRaw (SystemEnvironment env, long versionId)
@@ -443,8 +443,8 @@ public class SDMSVersions
 			SDMSObject o = (SDMSObject) i.next();
 			if (o.validTo < lowVersion) lowVersion = o.validTo;
 		}
-		result.put(STAT_VERSION_COUNT, new Long(countVersions));
-		result.put(STAT_LOW_VERSION, new Long(lowVersion));
+		result.put(STAT_VERSION_COUNT, Long.valueOf(countVersions));
+		result.put(STAT_LOW_VERSION, Long.valueOf(lowVersion));
 
 		return result;
 	}

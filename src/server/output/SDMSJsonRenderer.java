@@ -39,10 +39,17 @@ public class SDMSJsonRenderer extends SDMSScriptRenderer
 	public final static String __version = "@(#) $Id: SDMSJsonRenderer.java,v 2.2.18.1 2013/03/14 10:24:18 ronald Exp $";
 
 	public static volatile boolean directIO = true;
+	private boolean zeroTerminated = false;
 
 	public SDMSJsonRenderer ()
 	{
 		super();
+	}
+
+	public SDMSJsonRenderer (Boolean zero)
+	{
+		super();
+		zeroTerminated = zero.booleanValue();
 	}
 
 	public void render(SystemEnvironment env, SDMSOutput p_output) throws FatalException
@@ -77,6 +84,7 @@ public class SDMSJsonRenderer extends SDMSScriptRenderer
 			renderError(sb, p_output.error);
 		}
 		sb.append("}\n");
+		if (zeroTerminated) sb.append("\0");
 
 		ostream.print(sb);
 
@@ -104,7 +112,10 @@ public class SDMSJsonRenderer extends SDMSScriptRenderer
 			}
 			renderError(ostream, p_output.error);
 		}
-		ostream.print("}\n");
+		if (zeroTerminated)
+			ostream.print("}\n\0");
+		else
+			ostream.print("}\n");
 
 	}
 

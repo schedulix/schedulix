@@ -53,7 +53,7 @@ public class CreateFolder extends Node
 		replace = r.booleanValue();
 		path = p;
 		if (p.size() == 1) {
-			af = new AlterFolder(new ObjectURL(new Integer(Parser.FOLDER), path), with, Boolean.FALSE);
+			af = new AlterFolder(new ObjectURL(SDMSConstants.PS_FOLDER, path), with, Boolean.FALSE);
 		} else {
 			name = (String) p.remove(p.size() - 1);
 		}
@@ -97,7 +97,7 @@ public class CreateFolder extends Node
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			              sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId)) &&
 			   !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03312162226",
@@ -115,14 +115,14 @@ public class CreateFolder extends Node
 		if((parent.getPrivilegeMask() & lpriv) != lpriv) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061110", "Incompatible grant"));
 		}
-		Long inheritPrivs = new Long(lpriv);
+		Long inheritPrivs = Long.valueOf(lpriv);
 
 		try {
 			f = SDMSFolderTable.table.create(sysEnv, name, gId, envId, parentId, inheritPrivs);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
 				path.add(name);
-				af = new AlterFolder(new ObjectURL(new Integer(Parser.FOLDER), path), with, Boolean.FALSE);
+				af = new AlterFolder(new ObjectURL(SDMSConstants.PS_FOLDER, path), with, Boolean.FALSE);
 				af.setEnv(env);
 				af.go(sysEnv);
 				result = af.result;

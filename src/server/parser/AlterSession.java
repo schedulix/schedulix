@@ -40,7 +40,6 @@ public class AlterSession extends Node
 
 	public final static String __version = "@(#) $Id: AlterSession.java,v 2.6.2.1 2013/03/14 10:24:23 ronald Exp $";
 
-	private final static Long zero = new Long(0);
 	private Integer sid;
 	private String userName;
 	private String baseUser;
@@ -106,13 +105,13 @@ public class AlterSession extends Node
 		Long aId;
 
 		try {
-			c = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(userName, zero));
+			c = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(userName, SDMSConstants.lZERO));
 			if (!c.getIsEnabled(sysEnv).booleanValue()) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03707161120", "User disabled"));
 			}
 			if (baseUser != null) {
 				try {
-					b = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(baseUser, zero));
+					b = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(baseUser, SDMSConstants.lZERO));
 				} catch (NotFoundException nfe) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03707161122", "Base User not found"));
 				}
@@ -131,7 +130,7 @@ public class AlterSession extends Node
 
 		boolean aIsAdmin = sysEnv.cEnv.gid().contains(SDMSObject.adminGId);
 		boolean bIsAdmin = false;
-		aId = new Long(sysEnv.cEnv.uid());
+		aId = Long.valueOf(sysEnv.cEnv.uid());
 		bId = b.getId(sysEnv);
 		cId = c.getId(sysEnv);
 
@@ -174,7 +173,7 @@ public class AlterSession extends Node
 		list = new SDMSThread[tg.activeCount()];
 		nt = tg.enumerate(list);
 
-		if(sid == null) sid = new Integer(env.id());
+		if(sid == null) sid = Integer.valueOf(env.id());
 		searchedId = sid.intValue();
 
 		for(i=0; i<nt; i++) {

@@ -70,7 +70,7 @@ public class CreateScheduledEvent
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			              sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId)) &&
 			   !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03312162143",
@@ -78,8 +78,7 @@ public class CreateScheduledEvent
 			}
 		}
 
-		final Integer backlogHandling = with.containsKey (ParseStr.S_BACKLOG_HANDLING) ? (Integer) with.get (ParseStr.S_BACKLOG_HANDLING) :
-						new Integer (SDMSScheduledEvent.LAST);
+		final Integer backlogHandling = with.containsKey (ParseStr.S_BACKLOG_HANDLING) ? (Integer) with.get (ParseStr.S_BACKLOG_HANDLING) : SDMSConstants.SEV_LAST;
 
 		Integer suspendLimit = null;
 		Integer suspendLimitMultiplier = null;

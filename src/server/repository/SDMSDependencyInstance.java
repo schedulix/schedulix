@@ -101,7 +101,7 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 		if (!(idOrig.equals(getId(sysEnv)))) {
 			SDMSDependencyInstance diOrig = SDMSDependencyInstanceTable.getObject(sysEnv, idOrig);
 			int checkResult = diOrig.check(sysEnv, checkCache, reresolve);
-			setState(sysEnv, new Integer(checkResult));
+			setState(sysEnv, Integer.valueOf(checkResult));
 			return checkResult;
 		}
 
@@ -215,11 +215,11 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 				break;
 		}
 		if (diState != SDMSDependencyInstance.OPEN || dsme.getState(sysEnv).intValue() == SDMSSubmittedEntity.UNREACHABLE) {
-			setState(sysEnv, new Integer(diState));
+			setState(sysEnv, Integer.valueOf(diState));
 		}
 
 		if (checkCache != null)
-			checkCache.put(getId(sysEnv), new Integer(diState));
+			checkCache.put(getId(sysEnv), Integer.valueOf(diState));
 
 		return diState;
 	}
@@ -230,10 +230,10 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 		SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, getDependentId(sysEnv));
 
 		java.util.Date dts = new java.util.Date();
-		Long ts = new Long (dts.getTime());
+		Long ts = Long.valueOf (dts.getTime());
 
 		if(mode == SDMSDependencyInstance.RECURSIVE) {
-			setIgnore(sysEnv, new Integer(mode));
+			setIgnore(sysEnv, Integer.valueOf(mode));
 			Long diIdOrig = getDiIdOrig(sysEnv);
 			Vector vdi = SDMSDependencyInstanceTable.idx_diIdOrig.getVector(sysEnv, diIdOrig);
 			for(int j = 0; j < vdi.size(); j++) {
@@ -247,7 +247,7 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 		} else {
 			int ign = getIgnore(sysEnv).intValue();
 			if(ign != SDMSDependencyInstance.RECURSIVE)
-				setIgnore(sysEnv, new Integer(mode));
+				setIgnore(sysEnv, Integer.valueOf(mode));
 		}
 		sme.checkDependencies(sysEnv);
 	}

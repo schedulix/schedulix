@@ -204,26 +204,26 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			preference = new Integer (r.getInt(2));
-			isFinal = new Boolean ((r.getInt(3) == 0 ? false : true));
-			isRestartable = new Boolean ((r.getInt(4) == 0 ? false : true));
-			isUnreachable = new Boolean ((r.getInt(5) == 0 ? false : true));
-			isDisabled = new Boolean ((r.getInt(6) == 0 ? false : true));
-			isBroken = new Boolean ((r.getInt(7) == 0 ? false : true));
-			isBatchDefault = new Boolean ((r.getInt(8) == 0 ? false : true));
-			isDependencyDefault = new Boolean ((r.getInt(9) == 0 ? false : true));
-			espId = new Long (r.getLong(10));
-			esdId = new Long (r.getLong(11));
-			creatorUId = new Long (r.getLong(12));
-			createTs = new Long (r.getLong(13));
-			changerUId = new Long (r.getLong(14));
-			changeTs = new Long (r.getLong(15));
+			id     = Long.valueOf (r.getLong(1));
+			preference = Integer.valueOf (r.getInt(2));
+			isFinal = Boolean.valueOf ((r.getInt(3) == 0 ? false : true));
+			isRestartable = Boolean.valueOf ((r.getInt(4) == 0 ? false : true));
+			isUnreachable = Boolean.valueOf ((r.getInt(5) == 0 ? false : true));
+			isDisabled = Boolean.valueOf ((r.getInt(6) == 0 ? false : true));
+			isBroken = Boolean.valueOf ((r.getInt(7) == 0 ? false : true));
+			isBatchDefault = Boolean.valueOf ((r.getInt(8) == 0 ? false : true));
+			isDependencyDefault = Boolean.valueOf ((r.getInt(9) == 0 ? false : true));
+			espId = Long.valueOf (r.getLong(10));
+			esdId = Long.valueOf (r.getLong(11));
+			creatorUId = Long.valueOf (r.getLong(12));
+			createTs = Long.valueOf (r.getLong(13));
+			changerUId = Long.valueOf (r.getLong(14));
+			changeTs = Long.valueOf (r.getLong(15));
 			validFrom = r.getLong(16);
 			validTo = r.getLong(17);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "ExitState: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "ExitState: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSExitStateGeneric(id,

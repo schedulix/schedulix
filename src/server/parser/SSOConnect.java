@@ -28,7 +28,7 @@ package de.independit.scheduler.server.parser;
 import java.io.*;
 import java.util.*;
 import java.lang.*;
-import javax.xml.bind.DatatypeConverter;
+import java.util.Base64;
 
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
@@ -89,11 +89,11 @@ public class SSOConnect extends Connect
 			provider = (WindowsAuthProviderImpl)(sysEnv.cEnv.SSOInfo.get(PROVIDER));
 		}
 		try {
-			byteToken = DatatypeConverter.parseBase64Binary(token);
+			byteToken = Base64.getDecoder().decode(token);
 			serverContext = provider.acceptSecurityToken("server-connection", byteToken, "Negotiate");
 			byteToken = serverContext.getToken();
 			if (byteToken != null)
-				token = DatatypeConverter.printBase64Binary(byteToken);
+				token = Base64.getEncoder().encodeToString(byteToken);
 			else
 				token = "null";
 

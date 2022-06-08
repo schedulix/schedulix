@@ -190,7 +190,7 @@ public class ShowNamedResource extends ShowCommented
 				} catch (final NotFoundException nfe2) {
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, r.getScopeId(sysEnv));
 					SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), sme.getSeVersion(sysEnv).longValue());
-					PathVector pv = se.pathVector(sysEnv);
+					PathVector pv = se.pathVector(sysEnv, sme.getSeVersion(sysEnv).longValue());
 					pv.add("[" + sme.getId(sysEnv) + "]");
 					data.add(pv);
 					data.add("JOB");

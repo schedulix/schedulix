@@ -164,19 +164,19 @@ public class SDMSExitStateTranslationTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			estpId = new Long (r.getLong(2));
-			fromEsdId = new Long (r.getLong(3));
-			toEsdId = new Long (r.getLong(4));
-			creatorUId = new Long (r.getLong(5));
-			createTs = new Long (r.getLong(6));
-			changerUId = new Long (r.getLong(7));
-			changeTs = new Long (r.getLong(8));
+			id     = Long.valueOf (r.getLong(1));
+			estpId = Long.valueOf (r.getLong(2));
+			fromEsdId = Long.valueOf (r.getLong(3));
+			toEsdId = Long.valueOf (r.getLong(4));
+			creatorUId = Long.valueOf (r.getLong(5));
+			createTs = Long.valueOf (r.getLong(6));
+			changerUId = Long.valueOf (r.getLong(7));
+			changeTs = Long.valueOf (r.getLong(8));
 			validFrom = r.getLong(9);
 			validTo = r.getLong(10);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "ExitStateTranslation: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "ExitStateTranslation: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSExitStateTranslationGeneric(id,

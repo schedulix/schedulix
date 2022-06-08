@@ -39,8 +39,8 @@ class Libjni
 	public static final String version   = SystemEnvironment.programVersion;
 	public static final String protocol  = "1.1";
 
-	public static final Boolean alive    = new Boolean(true);
-	public static final Boolean dead     = new Boolean(false);
+	public static final Boolean alive    = Boolean.valueOf(true);
+	public static final Boolean dead     = Boolean.valueOf(false);
 
 	private static final String unixEnv  = "/bin/sh -c env";
 	private static final String winEnv   = "CMD.EXE /C SET";

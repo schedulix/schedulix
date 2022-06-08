@@ -41,19 +41,29 @@ public class ListRsm extends Node
 
 	public final static String __version = "@(#) $Id: ListRsm.java,v 2.2.8.1 2013/03/14 10:24:38 ronald Exp $";
 
-	public ListRsm()
+	private String profileName = null;
+
+	public ListRsm(String pName)
 	{
 		super();
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
+		profileName = pName;
 	}
 
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
+		SDMSResourceStateProfile rsp = null;
+		Long rspId = null;
 		SDMSResourceStateMappingProfile o;
 		SDMSOutputContainer d_container = null;
 		Vector desc = new Vector();
+
+		if (profileName != null) {
+			rsp = SDMSResourceStateProfileTable.idx_name_getUnique(sysEnv, profileName);
+			rspId = rsp.getId(sysEnv);
+		}
 
 		desc.add("ID");
 		desc.add("NAME");
@@ -65,6 +75,8 @@ public class ListRsm extends Node
 		while(i.hasNext()) {
 			Vector v = new Vector();
 			o = (SDMSResourceStateMappingProfile)(i.next());
+			if (rsp != null && SDMSResourceRequirement.checkMapping(sysEnv, rspId, o.getId(sysEnv)) != null)
+				continue;
 
 			v.add(o.getId(sysEnv));
 			v.add(o.getName(sysEnv));
@@ -79,7 +91,7 @@ public class ListRsm extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "03204021223", "$1 Resource State Mapping(s) found",
-					new Integer(d_container.lines)));
+		                        Integer.valueOf(d_container.lines)));
 
 	}
 

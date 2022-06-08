@@ -40,21 +40,21 @@ public class ExprParser
 
 	private static final String emptyString = "";
 
-	private static Integer I_PLUS = new Integer(278);
-	private static Integer I_MINUS = new Integer(276);
+	private static Integer I_PLUS = Integer.valueOf(278);
+	private static Integer I_MINUS = Integer.valueOf(276);
 
-	private static Integer I_TIMES = new Integer(279);
-	private static Integer I_DIV = new Integer(275);
-	private static Integer I_MOD = new Integer(277);
+	private static Integer I_TIMES = Integer.valueOf(279);
+	private static Integer I_DIV = Integer.valueOf(275);
+	private static Integer I_MOD = Integer.valueOf(277);
 
-	private static Integer I_GT = new Integer(268);
-	private static Integer I_GE = new Integer(269);
-	private static Integer I_LT = new Integer(270);
-	private static Integer I_LE = new Integer(271);
-	private static Integer I_EQ = new Integer(267);
-	private static Integer I_NE = new Integer(272);
-	private static Integer I_MATCHES = new Integer(273);
-	private static Integer I_NOMATCH = new Integer(274);
+	private static Integer I_GT = Integer.valueOf(268);
+	private static Integer I_GE = Integer.valueOf(269);
+	private static Integer I_LT = Integer.valueOf(270);
+	private static Integer I_LE = Integer.valueOf(271);
+	private static Integer I_EQ = Integer.valueOf(267);
+	private static Integer I_NE = Integer.valueOf(272);
+	private static Integer I_MATCHES = Integer.valueOf(273);
+	private static Integer I_NOMATCH = Integer.valueOf(274);
 %}
 
 %token <String>	STRING 257 IDENTIFIER 258 PARAMETER 259 JPARAMETER 260 RPARAMETER 261 TPARAMETER 262 RSPARAMETER 263 DSPARAMETER 264
@@ -72,18 +72,18 @@ public class ExprParser
 %start triggerexp
 
 %%
-triggerexp:						{ debuginfo("triggerexp --> true"); if(stop == 0) return new Boolean(true); }
+triggerexp:						{ debuginfo("triggerexp --> true"); if(stop == 0) return Boolean.TRUE; }
 	|	boolexp					{ debuginfo("triggerexp/boolexp --> " + $1); if(stop == 0) return($1); }
 	|	expression				{ debuginfo("triggerexp/expression --> " + $1.getValue()); if(stop == 0) return($1.getValue()); }
 
 boolexp:	boolterm				{ debuginfo("boolexp/boolterm"); $$ = $1; }
-	|	boolexp OR boolterm			{ debuginfo("boolexp/boolexp OR boolterm"); Boolean b = $1; if (b.booleanValue()) $$ = new Boolean(b.booleanValue()); else $$ = new Boolean($3.booleanValue()); }
+	|	boolexp OR boolterm			{ debuginfo("boolexp/boolexp OR boolterm"); Boolean b = $1; if (b.booleanValue()) $$ = b; else $$ = $3; }
 
 boolterm:	booloperand				{ debuginfo("boolterm/booloperand"); $$ = $1; }
-	|	boolterm AND booloperand		{ debuginfo("boolterm/boolterm AND booloperand"); Boolean b = $1; if (b.booleanValue()) $$ = new Boolean($3.booleanValue()); else $$ = new Boolean(b.booleanValue()); }
+	|	boolterm AND booloperand		{ debuginfo("boolterm/boolterm AND booloperand"); Boolean b = $1; if (b.booleanValue()) $$ = $3; else $$ = b; }
 
 booloperand:	'(' boolexp ')'				{ debuginfo("booloperand/(boolexp)"); $$ = $2; }
-	|	NOT booloperand				{ debuginfo("booloperand/NOT booloperand"); $$ = new Boolean(! $2.booleanValue()); }
+	|	NOT booloperand				{ debuginfo("booloperand/NOT booloperand"); $$ = Boolean.valueOf(! $2.booleanValue()); }
 	|	expression comparison expression	{ debuginfo("booloperand/expression (" + $1.toString() + ") comparison expression (" + $3.toString() + ")"); $$ = $1.compare($3, $2, checkOnly); }
 	|	BOOLEAN					{ debuginfo("booloperand/BOOLEAN"); $$ = $1; }
 
@@ -324,11 +324,11 @@ class ParseObject {
 			long v;
 			try {
 				v = number.longValueExact();
-				return new Long(v);
+				return Long.valueOf(v);
 			} catch (ArithmeticException ae) {
 				double d;
 				d = number.doubleValue();
-				return new Double(d);
+				return Double.valueOf(d);
 			}
 		}
 		return null;
@@ -385,7 +385,7 @@ class ParseObject {
 			case ExprParser.DIV:
 				if (op2.number.equals(0))
 					throw new SDMSException(new SDMSMessage((SystemEnvironment) null, "03802071627", "Error evaluating expression. Division by zero"));
-				op1.number = op1.number.divide(op2.number, BigDecimal.ROUND_HALF_UP);
+				op1.number = op1.number.divide(op2.number, RoundingMode.HALF_UP);
 				break;
 			case ExprParser.TIMES:	op1.number = op1.number.multiply(op2.number); break;
 			case ExprParser.MOD:
@@ -498,12 +498,12 @@ class ParseObject {
 		} else {
 			int val = compareTo(o2, checkOnly);
 			switch(operator) {
-				case ExprParser.EQ:	return new Boolean(val == 0);
-				case ExprParser.GE:	return new Boolean(val >= 0);
-				case ExprParser.GT:	return new Boolean(val > 0);
-				case ExprParser.LE:	return new Boolean(val <= 0);
-				case ExprParser.LT:	return new Boolean(val < 0);
-				case ExprParser.NE:	return new Boolean(val != 0);
+				case ExprParser.EQ:	return Boolean.valueOf(val == 0);
+				case ExprParser.GE:	return Boolean.valueOf(val >= 0);
+				case ExprParser.GT:	return Boolean.valueOf(val > 0);
+				case ExprParser.LE:	return Boolean.valueOf(val <= 0);
+				case ExprParser.LT:	return Boolean.valueOf(val < 0);
+				case ExprParser.NE:	return Boolean.valueOf(val != 0);
 			}
 		}
 		return Boolean.TRUE;
@@ -574,7 +574,7 @@ class ParseObject {
 	{
 		if(checkOnly) return new ParseObject();
 		ParseObject retval = adjust(ParseObject.NUMBER, checkOnly);
-		retval.number = retval.number.divide(one, BigDecimal.ROUND_HALF_UP);
+		retval.number = retval.number.divide(one, RoundingMode.HALF_UP);
 		return retval;
 	}
 

@@ -36,8 +36,6 @@ import de.independit.scheduler.server.util.*;
 public class AlterInterval
 	extends Node
 {
-	private static final Long ZERO = new Long(0);
-
 	private final ObjectURL obj;
 	private final WithHash with;
 	private final boolean noerr;
@@ -227,7 +225,7 @@ public class AlterInterval
 					ci.go(sysEnv, 1);
 					SDMSInterval iv = ci.getIval();
 					iv.setObjId(sysEnv, ivalId);
-					iv.setObjType(sysEnv, new Integer(SDMSInterval.INTERVAL));
+					iv.setObjType(sysEnv, SDMSConstants.IV_INTERVAL);
 				}
 			}
 		}
@@ -292,7 +290,7 @@ public class AlterInterval
 
 		if(with.containsKey(ParseStr.S_GROUP)) {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
-			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(gName, ZERO)).getId(sysEnv);
+			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId, ival.getOwnerId(sysEnv));
 			ival.setOwnerId(sysEnv, gId);
 		}

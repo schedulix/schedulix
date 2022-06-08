@@ -31,6 +31,7 @@ import java.io.*;
 import java.nio.channels.*;
 
 import de.independit.scheduler.server.exception.CommonErrorException;
+import de.independit.scheduler.server.SDMSConstants;
 
 public class Server
 {
@@ -362,7 +363,7 @@ public class Server
 	public final void runServer ()
 	{
 		int status = 0;
-		final Long id = new Long(0);
+		final Long id = SDMSConstants.lZERO;
 		Thread currentThread = Thread.currentThread();
 		startWakeupThread(cfg);
 		startHttpThread(cfg);

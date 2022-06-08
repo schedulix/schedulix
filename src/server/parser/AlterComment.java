@@ -62,9 +62,9 @@ public class AlterComment extends Node
 		Vector texts = (Vector) with.get(ParseStr.S_TEXT);
 		if(texts == null) {
 			text = (String) with.get(ParseStr.S_URL);
-			infoType = new Integer(SDMSObjectComment.URL);
+			infoType = SDMSConstants.OC_URL;
 		} else {
-			infoType = new Integer(SDMSObjectComment.TEXT);
+			infoType = SDMSConstants.OC_TEXT;
 		}
 
 		if (texts == null && (text == null || text.equals(""))) {
@@ -94,7 +94,7 @@ public class AlterComment extends Node
 					Vector entry = (Vector) texts.get(i);
 					tag = (String) entry.get(0);
 					text = (String) entry.get(1);
-					SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(i+1), tag, text);
+					SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, Integer.valueOf(i+1), tag, text);
 				}
 			}
 		} else {
@@ -103,7 +103,7 @@ public class AlterComment extends Node
 					oc = (SDMSObjectComment) ocv.get(i);
 					oc.delete(sysEnv);
 				}
-				SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(1), null, text);
+				SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, SDMSConstants.iONE, null, text);
 			} else {
 				int i;
 				for (i = 0; i < ocv.size() && i < texts.size(); ++i) {
@@ -130,7 +130,7 @@ public class AlterComment extends Node
 					Vector entry = (Vector) texts.get(i);
 					tag = (String) entry.get(0);
 					text = (String) entry.get(1);
-					SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(i+1), tag, text);
+					SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, Integer.valueOf(i+1), tag, text);
 				}
 			}
 		}

@@ -102,7 +102,7 @@ public class ProcessInfo
 		String os = System.getProperty("os.name").toLowerCase();
 		if (os.contains("mac") || os.contains("nix") || os.contains("nux") || os.contains("aix") || os.contains("sunos")) {
 			File f = new File(VAR_RUN_LASTBOOT);
-			return new Long(f.lastModified()).toString();
+			return Long.valueOf(f.lastModified()).toString();
 		}
 		return "0";
 	}
@@ -149,7 +149,7 @@ public class ProcessInfo
 					}
 				}
 			}
-			return new Long(bootTime).toString();
+			return Long.valueOf(bootTime).toString();
 		} catch (Exception e) {
 			throw new RuntimeException("(02310251147) Cannot get boot time : " + e.toString());
 		}
@@ -191,7 +191,7 @@ public class ProcessInfo
 		else
 			result.clear();
 		if (STARTTIME_JITTER == null) {
-			STARTTIME_JITTER = new Long((Long) cfg.get(Config.STARTTIME_JITTER));
+			STARTTIME_JITTER = Long.valueOf((Long) cfg.get(Config.STARTTIME_JITTER));
 		}
 		if (STARTTIME_JITTER.longValue() == 0)
 			return result;
@@ -267,7 +267,7 @@ public class ProcessInfo
 					} catch (NumberFormatException nfe) {
 						etime = 0;
 					}
-					Long startTime = new Long(now - etime);
+					Long startTime = Long.valueOf(now - etime);
 					result.put(strPid,startTime);
 				}
 				in.close();
@@ -322,7 +322,7 @@ public class ProcessInfo
 
 					if (strPid.equals("")) continue;
 					try {
-						Long startTime = new Long (format.parse(strDate + " UTC").getTime() / 1000);
+						Long startTime = Long.valueOf (format.parse(strDate + " UTC").getTime() / 1000);
 						result.put(strPid,startTime);
 					} catch (ParseException pe) {
 						continue;
@@ -383,7 +383,7 @@ public class ProcessInfo
 		long startTimePid = Long.parseLong(starttime);
 
 		if (Math.abs(startTimeJob - startTimePid) > STARTTIME_JITTER.longValue()) {
-			Trace.warning("strPid = : " + strPid + ", startTimeJob = " + new Long(startTimeJob).toString() + " startTimePid = " + startTimePid);
+			Trace.warning("strPid = : " + strPid + ", startTimeJob = " + Long.valueOf(startTimeJob).toString() + " startTimePid = " + startTimePid);
 		}
 
 		return true;
@@ -401,7 +401,7 @@ public class ProcessInfo
 					bootTime = getBootTimeFile();
 					break;
 			}
-			bootTimes.put("" + how, new Long(bootTime));
+			bootTimes.put("" + how, Long.valueOf(bootTime));
 		}
 		return bootTimes.get("" + how).toString();
 

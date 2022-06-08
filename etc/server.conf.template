@@ -139,6 +139,13 @@ HistoryLimit=28800
 Hostname=hostname.domain.de
 
 #
+# Interface: If only a single interface should be used for listening,
+#            the value of this property should be set accordingly.
+#            If the value is invalid or not set, the server will listen
+#            on all interfaces
+# Interface=127.0.0.1
+
+#
 # JdbcDriver: Name of the JDBC-Driver to load
 #
 # in case of Ingres, use something like:
@@ -250,6 +257,13 @@ SingleServer=true
 # SSLport: The port for SSL/TLS Connections
 #
 #SSLPort=2507
+
+#
+# SSLInterface: If only a single interface should be used for listening,
+#               the value of this property should be set accordingly.
+#               If the value is invalid or not set, the server will listen
+#               on all interfaces
+#
 
 #
 # Properties for Single Sign On (on Windows)

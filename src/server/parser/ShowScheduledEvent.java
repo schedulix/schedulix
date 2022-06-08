@@ -165,7 +165,7 @@ public class ShowScheduledEvent
 
 		data.add (scev.getIsActive (sysEnv));
 
-		data.add (new Boolean (scev.isReallyActive (sysEnv)));
+		data.add (Boolean.valueOf (scev.isReallyActive (sysEnv)));
 
 		data.add (scev.getIsBroken (sysEnv));
 

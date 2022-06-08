@@ -193,25 +193,25 @@ public class SDMSUserTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
+			id     = Long.valueOf (r.getLong(1));
 			name = r.getString(2);
 			passwd = r.getString(3);
 			salt = r.getString(4);
 			if (r.wasNull()) salt = null;
-			method = new Integer (r.getInt(5));
-			isEnabled = new Boolean ((r.getInt(6) == 0 ? false : true));
-			defaultGId = new Long (r.getLong(7));
-			connectionType = new Integer (r.getInt(8));
-			deleteVersion = new Long (r.getLong(9));
-			creatorUId = new Long (r.getLong(10));
-			createTs = new Long (r.getLong(11));
-			changerUId = new Long (r.getLong(12));
-			changeTs = new Long (r.getLong(13));
+			method = Integer.valueOf (r.getInt(5));
+			isEnabled = Boolean.valueOf ((r.getInt(6) == 0 ? false : true));
+			defaultGId = Long.valueOf (r.getLong(7));
+			connectionType = Integer.valueOf (r.getInt(8));
+			deleteVersion = Long.valueOf (r.getLong(9));
+			creatorUId = Long.valueOf (r.getLong(10));
+			createTs = Long.valueOf (r.getLong(11));
+			changerUId = Long.valueOf (r.getLong(12));
+			changeTs = Long.valueOf (r.getLong(13));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "User: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSUserGeneric(id,

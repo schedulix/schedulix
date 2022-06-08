@@ -160,19 +160,19 @@ public class SDMSEventParameterTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
+			id     = Long.valueOf (r.getLong(1));
 			key = r.getString(2);
 			value = r.getString(3);
-			evtId = new Long (r.getLong(4));
-			creatorUId = new Long (r.getLong(5));
-			createTs = new Long (r.getLong(6));
-			changerUId = new Long (r.getLong(7));
-			changeTs = new Long (r.getLong(8));
+			evtId = Long.valueOf (r.getLong(4));
+			creatorUId = Long.valueOf (r.getLong(5));
+			createTs = Long.valueOf (r.getLong(6));
+			changerUId = Long.valueOf (r.getLong(7));
+			changeTs = Long.valueOf (r.getLong(8));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "EventParameter: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "EventParameter: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSEventParameterGeneric(id,

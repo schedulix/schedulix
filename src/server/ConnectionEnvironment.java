@@ -130,7 +130,7 @@ public class ConnectionEnvironment
 	}
 
 	public int id()				{ return id; }
-	public String name()			{ return name != null ? name : new Integer (id).toString(); }
+	public String name() { return name != null ? name : Integer.valueOf(id).toString(); }
 	public long start()			{ return start; }
 	public long last()			{ return last; }
 	public long idle()			{ return ((System.currentTimeMillis() - last + 500)/1000); }
@@ -229,10 +229,13 @@ public class ConnectionEnvironment
 		renderer = type;
 	}
 
-	public void setRenderer(int type)
+	public void setRenderer(WithHash type)
 	{
 		renderer = null;
-		switch (type) {
+		int t = (Integer) type.get("P");
+		Boolean z = (Boolean) type.get("Z");
+		if (z == null) z = Boolean.FALSE;
+		switch (t) {
 			case Parser.XML:
 				renderer = new SDMSXmlRenderer();
 				break;
@@ -240,13 +243,13 @@ public class ConnectionEnvironment
 				renderer = new SDMSLineRenderer();
 				break;
 			case Parser.PERL:
-				renderer = new SDMSPerlRenderer();
+				renderer = new SDMSPerlRenderer(z);
 				break;
 			case Parser.PYTHON:
-				renderer = new SDMSPythonRenderer();
+				renderer = new SDMSPythonRenderer(z);
 				break;
 			case Parser.JSON:
-				renderer = new SDMSJsonRenderer();
+				renderer = new SDMSJsonRenderer(z);
 				break;
 			case Parser.SERIAL:
 				renderer = new SDMSSerialRenderer();

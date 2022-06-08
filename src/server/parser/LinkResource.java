@@ -41,8 +41,6 @@ public class LinkResource extends ManipResource
 
 	public final static String __version = "@(#) $Id: LinkResource.java,v 2.4.4.1 2013/03/14 10:24:35 ronald Exp $";
 
-	static final Float fzero = new Float(0);
-
 	private ObjectURL scope;
 	private boolean force;
 
@@ -74,7 +72,7 @@ public class LinkResource extends ManipResource
 		tag = null;
 		traceInterval = null;
 		traceBase = null;
-		baseMultiplier = new Integer(10 * 60);
+		baseMultiplier = Integer.valueOf(10 * 60);
 
 		nrId = r.getNrId(sysEnv);
 		sId = s.getId(sysEnv);
@@ -86,7 +84,8 @@ public class LinkResource extends ManipResource
 		try {
 			r = SDMSResourceTable.table.create(sysEnv, nrId, sId, null, gId, linkTo, null, null, null, null, null,
 								null, null, null, null, null, null, null, baseMultiplier,
-								fzero, fzero, fzero, fzero, new Long(0), new Long(0));
+			                                   SDMSConstants.fZERO, SDMSConstants.fZERO, SDMSConstants.fZERO, SDMSConstants.fZERO,
+			                                   SDMSConstants.lZERO, SDMSConstants.lZERO);
 		} catch (DuplicateKeyException dke) {
 			if (!force) throw dke;
 			replaced = true;
@@ -101,7 +100,8 @@ public class LinkResource extends ManipResource
 					r.delete(sysEnv);
 					r = SDMSResourceTable.table.create(sysEnv, nrId, sId, null, gId, linkTo, null, null, null, null, null,
 									null, null, null, null, null, null, null, baseMultiplier,
-									fzero, fzero, fzero, fzero, new Long(0), new Long(0));
+					                                   SDMSConstants.fZERO, SDMSConstants.fZERO, SDMSConstants.fZERO, SDMSConstants.fZERO,
+					                                   SDMSConstants.lZERO, SDMSConstants.lZERO);
 				}
 			}
 		}

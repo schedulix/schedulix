@@ -91,7 +91,7 @@ public class ListNiceProfile extends Node
 				d.setTime(activeTs.longValue());
 				v.add(sysEnv.systemDateFormat.format(d));
 				seq++;
-				v.add(new Integer(seq));
+				v.add(Integer.valueOf(seq));
 			} else {
 				v.add(null);
 				v.add(null);
@@ -104,7 +104,7 @@ public class ListNiceProfile extends Node
 
 		result.setOutputContainer(d_container);
 
-		result.setFeedback(new SDMSMessage(sysEnv, "03408110806", "$1 Nice Profile(s) found", new Integer(d_container.lines)));
+		result.setFeedback(new SDMSMessage(sysEnv, "03408110806", "$1 Nice Profile(s) found", Integer.valueOf(d_container.lines)));
 	}
 }
 

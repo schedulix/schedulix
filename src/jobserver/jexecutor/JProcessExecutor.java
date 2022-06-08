@@ -257,7 +257,7 @@ public class JProcessExecutor extends Jexecutor
 
 			try {
 				taskfile.open();
-				taskfile.append(Feil.RETURNCODE, new Integer(process.exitValue()).toString());
+				taskfile.append(Feil.RETURNCODE, Integer.valueOf(process.exitValue()).toString());
 				taskfile.append(Feil.STATUS,     Feil.STATUS_FINISHED);
 			} catch (IOException ioe) {
 				throw new RuntimeException ("(02310220942) Cannot write taskfile : " + ioe.toString());

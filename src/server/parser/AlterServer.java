@@ -82,7 +82,7 @@ public class AlterServer extends Node
 			while (i.hasNext()) {
 				Long gId = (Long) i.next();
 				try {
-					SDMSGrant g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSProxy.ZERO, gId));
+					SDMSGrant g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSConstants.lZERO, gId));
 					p.addPriv(sysEnv, g.getPrivs(sysEnv).longValue());
 				} catch (NotFoundException nfe) {
 

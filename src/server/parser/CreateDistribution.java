@@ -47,8 +47,6 @@ public class CreateDistribution extends Node
 	private final Vector resList;
 	private final boolean replace;
 
-	private static final Integer zero = new Integer(0);
-
 	public CreateDistribution(ObjectURL u, Vector v, Boolean r)
 	{
 		super();

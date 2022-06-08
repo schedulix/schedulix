@@ -436,6 +436,7 @@ int process()
 	char analyzeline[PATH_MAX*3 + 1];
 	int lineno;
 	static char buf[BUFSIZE+1];
+	int rc;
 
 	if(open_pipe()) {
 		if(childpid)
@@ -448,7 +449,10 @@ int process()
 			snprintf(filename, PATH_MAX, "%s.%d", logbasename, first_logno);
 			if (analyzer != NULL) {
 				snprintf(analyzeline, PATH_MAX*3, "%s %s", analyzer, filename);
-				system(analyzeline);
+				rc = system(analyzeline);
+				if (rc < 0) {
+					fprintf(stderr, "Error executing %s : %s\n", analyzeline, strerror(errno));
+				}
 			}
 			unlink(filename);
 			first_logno++;

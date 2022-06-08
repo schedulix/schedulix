@@ -57,7 +57,7 @@ public class Lockmode
 		    m != S    &&
 		    m != SC   &&
 		    m != N) {
-			throw new CommonErrorException(new SDMSMessage(env, "03110181507", "Invalid Lockmode $1", new Integer(m)));
+			throw new CommonErrorException(new SDMSMessage(env, "03110181507", "Invalid Lockmode $1", Integer.valueOf(m)));
 		}
 		mode = m;
 	}
@@ -84,7 +84,7 @@ public class Lockmode
 		int rc = mode;
 		if(m == X || m == SX || m == S || m == SC || m == N) mode = m;
 		else {
-			throw new CommonErrorException(new SDMSMessage(env, "03308061033", "Invalid Lockmode $1", new Integer(m)));
+			throw new CommonErrorException(new SDMSMessage(env, "03308061033", "Invalid Lockmode $1", Integer.valueOf(m)));
 		}
 		return rc;
 	}
@@ -97,7 +97,7 @@ public class Lockmode
 			case SC:	return SharedComp;
 			case N:		return Nolock;
 			default:	throw new FatalException(
-						new SDMSMessage(env, "03110181508", "Invalid internal State $1", new Integer(mode)));
+				        new SDMSMessage(env, "03110181508", "Invalid internal State $1", Integer.valueOf(mode)));
 		}
 	}
 	public static boolean isCompatible(Lockmode l1, Lockmode l2)

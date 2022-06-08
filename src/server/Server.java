@@ -64,20 +64,9 @@ public class Server
 
 	public Server(String inifile, boolean adminMode, boolean protectMode, String programLevel)
 	{
-		iniFile = inifile;
-		Properties props = new Properties();
-		InputStream ini;
+		this.iniFile = inifile;
+		Properties props = readProperties();
 
-		ini = Server.class.getResourceAsStream(inifile);
-		try {
-			if(ini == null)
-				ini = new FileInputStream(inifile);
-			props.load(ini);
-		} catch(FileNotFoundException fnf) {
-			SDMSThread.doTrace(null, "Properties File not found : " + fnf, SDMSThread.SEVERITY_FATAL);
-		} catch(IOException ioe) {
-			SDMSThread.doTrace(null, "Error loading Properties file: " + ioe, SDMSThread.SEVERITY_FATAL);
-		}
 		for (Enumeration e = props.propertyNames() ; e.hasMoreElements() ;) {
 			String k = (String) e.nextElement();
 			if(k.equals(SystemEnvironment.S_DBPASSWD))		continue;
@@ -87,10 +76,27 @@ public class Server
 			SDMSThread.doTrace(null, k + "=" + props.getProperty(k), SDMSThread.SEVERITY_INFO);
 		}
 
-		env = new SystemEnvironment(props, programLevel);
+		env = new SystemEnvironment(props, programLevel, this);
 		if(adminMode) env.disableConnect();
 		if(protectMode) SystemEnvironment.setProtectMode();
-		SystemEnvironment.server = this;
+	}
+
+	public Properties readProperties()
+	{
+		Properties props = new Properties();
+		InputStream ini;
+
+		ini = Server.class.getResourceAsStream(iniFile);
+		try {
+			if(ini == null)
+				ini = new FileInputStream(iniFile);
+			props.load(ini);
+		} catch(FileNotFoundException fnf) {
+			SDMSThread.doTrace(null, "Properties File not found : " + fnf, SDMSThread.SEVERITY_FATAL);
+		} catch(IOException ioe) {
+			SDMSThread.doTrace(null, "Error loading Properties file: " + ioe, SDMSThread.SEVERITY_FATAL);
+		}
+		return props;
 	}
 
 	public String getIniFile()
@@ -252,7 +258,7 @@ public class Server
 
 		SDMSThread.doTrace(null, "Starting Listener Thread(s)", SDMSThread.SEVERITY_INFO);
 		if (SystemEnvironment.port != 0)  {
-			ult = new OrdinaryListenThread(utg, SystemEnvironment.port, SystemEnvironment.maxConnects, cmdQueue, roCmdQueue, ListenThread.LISTENER);
+			ult = new OrdinaryListenThread(utg, SystemEnvironment.port, SystemEnvironment.plainIf, SystemEnvironment.maxConnects, cmdQueue, roCmdQueue, ListenThread.LISTENER);
 
 			ult.start();
 		} else {
@@ -261,7 +267,7 @@ public class Server
 		}
 
 		if (SystemEnvironment.service_port != 0) {
-			svt = new OrdinaryListenThread(utg, SystemEnvironment.service_port, 1, cmdQueue, roCmdQueue, ListenThread.SERVICE);
+			svt = new OrdinaryListenThread(utg, SystemEnvironment.service_port, SystemEnvironment.plainIf, 1, cmdQueue, roCmdQueue, ListenThread.SERVICE);
 
 			svt.start();
 		} else {
@@ -271,7 +277,7 @@ public class Server
 
 		if (SystemEnvironment.sslport != 0) {
 			try {
-				ssllt = new SSLListenThread(utg, SystemEnvironment.sslport, SystemEnvironment.maxConnects, cmdQueue, roCmdQueue, ListenThread.LISTENER);
+				ssllt = new SSLListenThread(utg, SystemEnvironment.sslport, SystemEnvironment.sslIf, SystemEnvironment.maxConnects, cmdQueue, roCmdQueue, ListenThread.LISTENER);
 			} catch (SDMSException e) {
 				SDMSThread.doTrace(null, e.toString(), SDMSThread.SEVERITY_FATAL);
 			}

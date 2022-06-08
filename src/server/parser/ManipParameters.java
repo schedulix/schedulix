@@ -30,6 +30,7 @@ package de.independit.scheduler.server.parser;
 import java.util.*;
 
 import de.independit.scheduler.server.SystemEnvironment;
+import de.independit.scheduler.server.SDMSConstants;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.output.SDMSOutputContainer;
@@ -38,8 +39,7 @@ public class ManipParameters
 {
 	public static final String __version = "@(#) $Id: ManipParameters.java,v 2.12.2.2 2013/06/18 09:49:34 ronald Exp $";
 
-	private static final Integer defaultType = new Integer (SDMSParameterDefinition.CONSTANT);
-	private static final Integer aggFkt = new Integer (SDMSParameterDefinition.NONE);
+	private static final Integer defaultType = SDMSConstants.PD_CONSTANT;
 
 	public static final void create (final SystemEnvironment sysEnv, final Long id, final WithHash parms)
 		throws SDMSException
@@ -72,7 +72,7 @@ public class ManipParameters
 
 			final String sic = (value == null ? value : '=' + value);
 
-			SDMSParameterDefinitionTable.table.create (sysEnv, id, name, t, aggFkt, sic, isLocal, null, exportName);
+			SDMSParameterDefinitionTable.table.create (sysEnv, id, name, t, SDMSConstants.PD_NONE, sic, isLocal, null, exportName);
 		}
 	}
 
@@ -135,7 +135,7 @@ public class ManipParameters
 				if(!allTypes)
 					t = defaultType;
 
-				Integer aggFunction = new Integer(SDMSParameterDefinition.NONE);
+				Integer aggFunction = SDMSConstants.PD_NONE;
 				Long linkPdId = null;
 				String pdef = (pv == null ? null : "=" + pv);
 				if(t.equals(defaultType) && pdef == null)
@@ -306,7 +306,7 @@ public class ManipParameters
 		c_desc.add ("REFERENCE_TYPE");
 
 		c_desc.add ("REFERENCE_PATH");
-
+		c_desc.add ("REFERENCE_ID");
 		c_desc.add ("REFERENCE_PRIVS");
 
 		c_desc.add ("REFERENCE_PARAMETER");
@@ -340,6 +340,7 @@ public class ManipParameters
 			final SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject (sysEnv, pd.getSeId (sysEnv));
 			c_data.add (se.getTypeAsString (sysEnv));
 			c_data.add (se.pathVector (sysEnv));
+			c_data.add (se.getId (sysEnv));
 			c_data.add (se.getPrivileges(sysEnv).toString());
 			c_data.add (lpd.getName (sysEnv));
 

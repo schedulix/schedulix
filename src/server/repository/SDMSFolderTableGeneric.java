@@ -176,23 +176,23 @@ public class SDMSFolderTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
+			id     = Long.valueOf (r.getLong(1));
 			name = r.getString(2);
-			ownerId = new Long (r.getLong(3));
-			envId = new Long (r.getLong(4));
+			ownerId = Long.valueOf (r.getLong(3));
+			envId = Long.valueOf (r.getLong(4));
 			if (r.wasNull()) envId = null;
-			parentId = new Long (r.getLong(5));
+			parentId = Long.valueOf (r.getLong(5));
 			if (r.wasNull()) parentId = null;
-			creatorUId = new Long (r.getLong(6));
-			createTs = new Long (r.getLong(7));
-			changerUId = new Long (r.getLong(8));
-			changeTs = new Long (r.getLong(9));
-			inheritPrivs = new Long (r.getLong(10));
+			creatorUId = Long.valueOf (r.getLong(6));
+			createTs = Long.valueOf (r.getLong(7));
+			changerUId = Long.valueOf (r.getLong(8));
+			changeTs = Long.valueOf (r.getLong(9));
+			inheritPrivs = Long.valueOf (r.getLong(10));
 			validFrom = r.getLong(11);
 			validTo = r.getLong(12);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "Folder: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "Folder: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSFolderGeneric(id,

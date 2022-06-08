@@ -108,10 +108,10 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 		int e = 1;
 		while (p_value.length() > 0) {
 			if (p_value.length() > SDMSVersionedExtentsProxyGeneric.getExtentMaxLength()) {
-				SDMSVersionedExtentsTable.table.create(env, getId(env), new Integer(e), p_value.substring(0, SDMSVersionedExtentsProxyGeneric.getExtentMaxLength()));
+				SDMSVersionedExtentsTable.table.create(env, getId(env), Integer.valueOf(e), p_value.substring(0, SDMSVersionedExtentsProxyGeneric.getExtentMaxLength()));
 				p_value = p_value.substring(SDMSVersionedExtentsProxyGeneric.getExtentMaxLength());
 			} else {
-				SDMSVersionedExtentsTable.table.create(env, getId(env), new Integer(e), p_value);
+				SDMSVersionedExtentsTable.table.create(env, getId(env), Integer.valueOf(e), p_value);
 				break;
 			}
 			e ++;

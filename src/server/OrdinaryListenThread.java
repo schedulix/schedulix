@@ -42,17 +42,20 @@ public class OrdinaryListenThread extends ListenThread
 
 	public final static String __version = "@(#) $Id: OrdinaryListenThread.java,v 2.1.6.1 2013/03/14 10:24:09 ronald Exp $";
 
-	public OrdinaryListenThread(ThreadGroup t, int p, int mc, SyncFifo f, SyncFifo rof, int type)
+	public OrdinaryListenThread(ThreadGroup t, int p, InetAddress iFace, int mc, SyncFifo f, SyncFifo rof, int type)
 	{
-		super(t, p, mc, f, rof, type);
+		super(t, p, iFace, mc, f, rof, type);
 	}
 
-	ServerSocket getServerSocket(int port)
+	ServerSocket getServerSocket(int port, InetAddress iFace)
 		throws IOException
 	{
 		ServerSocket soc = new ServerSocket();
 		soc.setPerformancePreferences(0, 1, 0);
-		soc.bind(new InetSocketAddress(port));
+		if (iFace == null)
+			soc.bind(new InetSocketAddress(port));
+		else
+			soc.bind(new InetSocketAddress(iFace, port));
 		return soc;
 	}
 

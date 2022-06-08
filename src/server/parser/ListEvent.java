@@ -91,6 +91,6 @@ public class ListEvent
 
 		result.setOutputContainer (table);
 
-		result.setFeedback (new SDMSMessage (sysEnv, "04203072329", "$1 Event(s) found", new Integer (table.lines)));
+		result.setFeedback (new SDMSMessage (sysEnv, "04203072329", "$1 Event(s) found", Integer.valueOf (table.lines)));
 	}
 }

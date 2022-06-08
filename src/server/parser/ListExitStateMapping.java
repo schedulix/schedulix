@@ -80,7 +80,7 @@ public class ListExitStateMapping extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "03111272344", "$1 Exit State Mapping(s) found",
-					new Integer(d_container.lines)));
+		                        Integer.valueOf(d_container.lines)));
 	}
 }
 

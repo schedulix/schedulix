@@ -32,7 +32,7 @@ import java.lang.*;
 import java.net.*;
 import javax.net.ssl.*;
 import java.security.*;
-import javax.xml.bind.DatatypeConverter;
+import java.util.Base64;
 
 import java.nio.charset.Charset;
 
@@ -256,7 +256,7 @@ public class SDMSServerConnection
 				try {
 					clientContext = WindowsSecurityContextImpl.getCurrent( "Negotiate", spn );
 					byteToken = clientContext.getToken();
-					strToken = DatatypeConverter.printBase64Binary(byteToken);
+					strToken = Base64.getEncoder().encodeToString(byteToken);
 				} catch (Throwable e) {
 					clientContext.dispose();
 					result = new SDMSOutput();
@@ -280,12 +280,12 @@ public class SDMSServerConnection
 				int idxToken = result.container.indexForName (null, "TOKEN");
 				Vector v_data = (Vector)(result.container.dataset.get(0));
 				strToken = (String)(v_data.get(idxToken));
-				byteToken = DatatypeConverter.parseBase64Binary(strToken);
+				byteToken = Base64.getDecoder().decode(strToken);
 				try {
 					SecBufferDesc continueToken = new SecBufferDesc(Sspi.SECBUFFER_TOKEN, byteToken);
 					clientContext.initialize(clientContext.getHandle(), continueToken, spn);
 					byteToken = clientContext.getToken();
-					strToken = DatatypeConverter.printBase64Binary(byteToken);
+					strToken = Base64.getEncoder().encodeToString(byteToken);
 				} catch (Throwable e) {
 					result = new SDMSOutput();
 					result.setError(new SDMSOutputError("Desktop-0006", "Exception getting clientToken:" + e.toString() + " !"));

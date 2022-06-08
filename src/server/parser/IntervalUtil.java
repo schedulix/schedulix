@@ -49,8 +49,8 @@ public class IntervalUtil
 
 	private static final Pattern ID_REPLACE = Pattern.compile ("\\d+");
 
-	private static final Integer ivalType = new Integer(SDMSInterval.INTERVAL);
-	private static final Integer dispType = new Integer(SDMSInterval.INTERVAL_DISPATCHER);
+	private static final Integer ivalType = SDMSConstants.IV_INTERVAL;
+	private static final Integer dispType = SDMSConstants.IV_INTERVAL_DISPATCHER;
 
 	public static final boolean matchesIdName (final String name)
 	{
@@ -136,7 +136,7 @@ public class IntervalUtil
 		final Integer multiplier = (Integer) with.get (ParseStr.S_MULT);
 
 		if (multiplier == null)
-			return new Integer (1);
+			return SDMSConstants.iONE;
 
 		if (multiplier.intValue() <= 0)
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "04207191659", "multiplier must be greater than 0"));
@@ -190,7 +190,7 @@ public class IntervalUtil
 			Object selectIval = dispRule.get(0);
 			Object filterIval = dispRule.get(1);
 			Boolean isEnabled = (Boolean) dispRule.get(2);
-			SDMSIntervalDispatcher intDisp = SDMSIntervalDispatcherTable.table.create(sysEnv, ivalId, new Integer(seqNo), name, null, null, isEnabled, isActive);
+			SDMSIntervalDispatcher intDisp = SDMSIntervalDispatcherTable.table.create(sysEnv, ivalId, Integer.valueOf(seqNo), name, null, null, isEnabled, isActive);
 			Long intDispId = intDisp.getId(sysEnv);
 			if (selectIval != null) {
 				if (selectIval instanceof String) {

@@ -57,7 +57,7 @@ public class AlterFootprint extends Node
 		super();
 		url = u;
 		resources = r;
-		add = new Boolean(a);
+		add = Boolean.valueOf(a);
 		noerr = ne.booleanValue();
 	}
 
@@ -128,7 +128,7 @@ public class AlterFootprint extends Node
 		Long   fId = f.getId(sysEnv);
 		Integer amount;
 		Integer keepMode;
-		Integer lockmode = new Integer(SDMSResourceRequirement.N);
+		Integer lockmode = SDMSConstants.RR_N;
 		Long rsmpId = null;
 		Boolean isSticky = Boolean.FALSE;
 		String stickyName = null;
@@ -151,10 +151,10 @@ public class AlterFootprint extends Node
 		nrId = nr.getId(sysEnv);
 
 		amount = (Integer) with.get(ParseStr.S_AMOUNT);
-		if(amount == null) amount = new Integer(0);
+		if(amount == null) amount = SDMSConstants.iZERO;
 
 		keepMode = (Integer) with.get(ParseStr.S_KEEP);
-		if(keepMode == null) keepMode = new Integer(SDMSResourceRequirement.NOKEEP);
+		if(keepMode == null) keepMode = SDMSConstants.RR_NOKEEP;
 
 		rr = SDMSResourceRequirementTable.table.create(sysEnv,
 				nrId, fId, amount, keepMode, isSticky, stickyName, stickyParent,

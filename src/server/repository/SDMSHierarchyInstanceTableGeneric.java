@@ -186,25 +186,25 @@ public class SDMSHierarchyInstanceTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			parentId = new Long (r.getLong(2));
-			childId = new Long (r.getLong(3));
-			shId = new Long (r.getLong(4));
-			nice = new Integer (r.getInt(5));
-			childEsdId = new Long (r.getLong(6));
+			id     = Long.valueOf (r.getLong(1));
+			parentId = Long.valueOf (r.getLong(2));
+			childId = Long.valueOf (r.getLong(3));
+			shId = Long.valueOf (r.getLong(4));
+			nice = Integer.valueOf (r.getInt(5));
+			childEsdId = Long.valueOf (r.getLong(6));
 			if (r.wasNull()) childEsdId = null;
-			childEsPreference = new Integer (r.getInt(7));
+			childEsPreference = Integer.valueOf (r.getInt(7));
 			if (r.wasNull()) childEsPreference = null;
-			seVersionHi = new Long (r.getLong(8));
-			creatorUId = new Long (r.getLong(9));
-			createTs = new Long (r.getLong(10));
-			changerUId = new Long (r.getLong(11));
-			changeTs = new Long (r.getLong(12));
+			seVersionHi = Long.valueOf (r.getLong(8));
+			creatorUId = Long.valueOf (r.getLong(9));
+			createTs = Long.valueOf (r.getLong(10));
+			changerUId = Long.valueOf (r.getLong(11));
+			changeTs = Long.valueOf (r.getLong(12));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "HierarchyInstance: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "HierarchyInstance: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSHierarchyInstanceGeneric(id,

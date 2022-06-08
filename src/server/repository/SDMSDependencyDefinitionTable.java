@@ -61,7 +61,7 @@ public class SDMSDependencyDefinitionTable extends SDMSDependencyDefinitionTable
 	                                      )
 	throws SDMSException
 	{
-		if(p_mode == null) p_mode = new Integer(SDMSDependencyDefinition.ALL_FINAL);
+		if(p_mode == null) p_mode = SDMSConstants.DD_ALL_FINAL;
 		if(p_mode.intValue() == SDMSDependencyDefinition.JOB_FINAL) {
 			SDMSSchedulingEntity rSe = SDMSSchedulingEntityTable.getObject(env, p_seRequiredId);
 			if(rSe.getType(env).intValue() != SDMSSchedulingEntity.JOB) {

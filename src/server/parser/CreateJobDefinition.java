@@ -80,7 +80,7 @@ public class CreateJobDefinition extends ManipJobDefinition
 						name,
 						folderId,
 						gId,
-						new Integer(type),
+			                	Integer.valueOf(type),
 						runProgram,
 						rerunProgram,
 						killProgram,
@@ -144,7 +144,7 @@ public class CreateJobDefinition extends ManipJobDefinition
 			if(replace) {
 				PathVector p = new PathVector(path);
 				p.addThis(name);
-				ObjectURL url = new ObjectURL(new Integer(Parser.JOB_DEFINITION), p);
+				ObjectURL url = new ObjectURL(SDMSConstants.PS_JOB_DEFINITION, p);
 				AlterJobDefinition ajd = new AlterJobDefinition(url, withs, Boolean.FALSE);
 				ajd.setEnv(env);
 				ajd.go(sysEnv);
@@ -161,7 +161,7 @@ public class CreateJobDefinition extends ManipJobDefinition
 		if((se.getPrivilegeMask() & lpriv) != lpriv) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061440", "Incompatible grant"));
 		}
-		se.setInheritPrivs(sysEnv, new Long(lpriv));
+		se.setInheritPrivs(sysEnv, Long.valueOf(lpriv));
 
 		if(dependencydeflist != null) {
 			Iterator i = dependencydeflist.iterator();

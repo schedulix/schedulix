@@ -202,28 +202,28 @@ public class SDMSParameterDefinitionTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			seId = new Long (r.getLong(2));
+			id     = Long.valueOf (r.getLong(1));
+			seId = Long.valueOf (r.getLong(2));
 			name = r.getString(3);
-			type = new Integer (r.getInt(4));
-			aggFunction = new Integer (r.getInt(5));
+			type = Integer.valueOf (r.getInt(4));
+			aggFunction = Integer.valueOf (r.getInt(5));
 			defaultValue = r.getString(6);
 			if (r.wasNull()) defaultValue = null;
-			isLocal = new Boolean ((r.getInt(7) == 0 ? false : true));
-			linkPdId = new Long (r.getLong(8));
+			isLocal = Boolean.valueOf ((r.getInt(7) == 0 ? false : true));
+			linkPdId = Long.valueOf (r.getLong(8));
 			if (r.wasNull()) linkPdId = null;
 			exportName = r.getString(9);
 			if (r.wasNull()) exportName = null;
-			isLong = new Boolean ((r.getInt(10) == 0 ? false : true));
-			creatorUId = new Long (r.getLong(11));
-			createTs = new Long (r.getLong(12));
-			changerUId = new Long (r.getLong(13));
-			changeTs = new Long (r.getLong(14));
+			isLong = Boolean.valueOf ((r.getInt(10) == 0 ? false : true));
+			creatorUId = Long.valueOf (r.getLong(11));
+			createTs = Long.valueOf (r.getLong(12));
+			changerUId = Long.valueOf (r.getLong(13));
+			changeTs = Long.valueOf (r.getLong(14));
 			validFrom = r.getLong(15);
 			validTo = r.getLong(16);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "ParameterDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "ParameterDefinition: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSParameterDefinitionGeneric(id,

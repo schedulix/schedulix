@@ -70,7 +70,7 @@ public class AlterNamedResource extends Node
 		gName = (String) with.get(ParseStr.S_GROUP);
 		if(gName == null) gName = (String) with.get(ParseStr.S_GROUP_CASCADE);
 		if(gName != null) {
-			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 		} else {
 			gId = null;
 		}
@@ -182,7 +182,7 @@ public class AlterNamedResource extends Node
 
 		if (with.containsKey(ParseStr.S_INHERIT)) {
 			Long inheritPrivs = (Long) with.get(ParseStr.S_INHERIT);
-			if (inheritPrivs == null) inheritPrivs = new Long(0);
+			if (inheritPrivs == null) inheritPrivs = SDMSConstants.lZERO;
 			long lpriv = inheritPrivs.longValue();
 			if((nr.getPrivilegeMask() & lpriv) != lpriv) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061135", "Incompatible grant"));
@@ -192,7 +192,7 @@ public class AlterNamedResource extends Node
 
 		int u = usage.intValue();
 
-		if(factor != null && !(factor.equals(new Float(1.0))))
+		if(factor != null && !(factor.equals(SDMSConstants.fONE)))
 			sysEnv.checkFeatureAvailability(SystemEnvironment.S_RESOURCE_TRACING);
 
 		if (with.containsKey (ParseStr.S_PARAMETERS))

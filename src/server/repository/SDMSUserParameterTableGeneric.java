@@ -166,21 +166,21 @@ public class SDMSUserParameterTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			uId = new Long (r.getLong(2));
+			id     = Long.valueOf (r.getLong(1));
+			uId = Long.valueOf (r.getLong(2));
 			name = r.getString(3);
 			value = r.getString(4);
 			if (r.wasNull()) value = null;
-			isLong = new Boolean ((r.getInt(5) == 0 ? false : true));
-			creatorUId = new Long (r.getLong(6));
-			createTs = new Long (r.getLong(7));
-			changerUId = new Long (r.getLong(8));
-			changeTs = new Long (r.getLong(9));
+			isLong = Boolean.valueOf ((r.getInt(5) == 0 ? false : true));
+			creatorUId = Long.valueOf (r.getLong(6));
+			createTs = Long.valueOf (r.getLong(7));
+			changerUId = Long.valueOf (r.getLong(8));
+			changeTs = Long.valueOf (r.getLong(9));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "UserParameter: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "UserParameter: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSUserParameterGeneric(id,

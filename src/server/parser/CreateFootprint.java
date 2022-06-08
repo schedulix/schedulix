@@ -60,7 +60,7 @@ public class CreateFootprint extends Node
 		Integer keepMode;
 
 		Long rsmpId = null;
-		Integer lockmode = new Integer(SDMSResourceRequirement.N);
+		Integer lockmode = SDMSConstants.RR_N;
 		Boolean isSticky = Boolean.FALSE;
 		String stickyName = null;
 		Long stickyParent = null;
@@ -82,10 +82,10 @@ public class CreateFootprint extends Node
 		nrId = nr.getId(sysEnv);
 
 		amount = (Integer) with.get(ParseStr.S_AMOUNT);
-		if(amount == null) amount = new Integer(0);
+		if(amount == null) amount = SDMSConstants.iZERO;
 
 		keepMode = (Integer) with.get(ParseStr.S_KEEP);
-		if(keepMode == null) keepMode = new Integer(SDMSResourceRequirement.NOKEEP);
+		if(keepMode == null) keepMode = SDMSConstants.RR_NOKEEP;
 
 		rr = SDMSResourceRequirementTable.table.create(sysEnv,
 					nrId, fId, amount, keepMode, isSticky, stickyName, stickyParent,
@@ -103,7 +103,7 @@ public class CreateFootprint extends Node
 			f = SDMSFootprintTable.table.create(sysEnv, name);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
-				AlterFootprint af = new AlterFootprint(new ObjectURL(new Integer(Parser.FOOTPRINT), name), resources, Boolean.FALSE);
+				AlterFootprint af = new AlterFootprint(new ObjectURL(SDMSConstants.PS_FOOTPRINT, name), resources, Boolean.FALSE);
 				af.setEnv(env);
 				af.go(sysEnv);
 				result = af.result;

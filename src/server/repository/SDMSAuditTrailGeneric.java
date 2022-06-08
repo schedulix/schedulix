@@ -96,6 +96,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	public static final int REJECT = 34;
 	public static final int APPROVAL_REQUEST = 35;
 	public static final int REVIEW_REQUEST = 36;
+	public static final int KILL_RECURSIVE = 37;
 
 	public final static int nr_id = 1;
 	public final static int nr_userId = 2;
@@ -338,6 +339,8 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				return "APPROVAL_REQUEST";
 			case SDMSAuditTrail.REVIEW_REQUEST:
 				return "REVIEW_REQUEST";
+			case SDMSAuditTrail.KILL_RECURSIVE:
+				return "KILL_RECURSIVE";
 		}
 		throw new FatalException (new SDMSMessage (env,
 		                          "01205252242",
@@ -745,7 +748,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			myInsert.setLong (15, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "AuditTrail: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -771,7 +774,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "AuditTrail: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -832,7 +835,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			myUpdate.setLong(15, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "AuditTrail: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -875,6 +878,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			case SDMSAuditTrail.REJECT:
 			case SDMSAuditTrail.APPROVAL_REQUEST:
 			case SDMSAuditTrail.REVIEW_REQUEST:
+			case SDMSAuditTrail.KILL_RECURSIVE:
 				return true;
 		}
 		return false;

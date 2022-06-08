@@ -41,7 +41,6 @@ public class ShowGroup extends ShowCommented
 
 	public final static String __version = "@(#) $Id: ShowGroup.java,v 2.9.4.2 2013/06/18 09:49:36 ronald Exp $";
 
-	private final static Long ZERO = new Long(0L);
 	private final static String USR = "user";
 	private final static String GRP = "group";
 	private final static String ESD = "exit state definition";
@@ -184,7 +183,7 @@ public class ShowGroup extends ShowCommented
 
 		SDMSPrivilege p = new SDMSPrivilege();
 		try {
-			SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
+			SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSConstants.lZERO, gId));
 			p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 		} catch (NotFoundException nfe) {
 

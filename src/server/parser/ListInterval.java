@@ -141,6 +141,6 @@ public class ListInterval
 
 		result.setOutputContainer (table);
 
-		result.setFeedback (new SDMSMessage (sysEnv, "04207192158", "$1 Interval(s) found", new Integer (table.lines)));
+		result.setFeedback (new SDMSMessage (sysEnv, "04207192158", "$1 Interval(s) found", Integer.valueOf (table.lines)));
 	}
 }

@@ -114,7 +114,7 @@ public class ListScope extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03201281436",
-				"$1 Object(s) found", new Integer(d_container.lines)));
+		                                   "$1 Object(s) found", Integer.valueOf(d_container.lines)));
 	}
 
 	private void fillVector(SystemEnvironment sysEnv, SDMSScope s, Vector v)
@@ -130,17 +130,17 @@ public class ListScope extends Node
 		v.add(s.getIsSuspended(sysEnv));
 		v.add(s.getIsEnabled(sysEnv));
 		v.add(s.getIsRegistered(sysEnv));
-		v.add(new Boolean(s.isConnected(sysEnv)));
+		v.add(Boolean.valueOf(s.isConnected(sysEnv)));
 		v.add(s.getStateAsString(sysEnv));
 		v.add(s.getPid(sysEnv));
 		v.add(s.getNode(sysEnv));
-		v.add(new Long(s.getIdle(sysEnv)));
+		v.add(Long.valueOf(s.getIdle(sysEnv)));
 		v.add(ScopeConfig.getItem(sysEnv, s, Config.NOP_DELAY));
 		v.add(s.getErrmsg(sysEnv));
 		Vector v1 = SDMSScopeTable.idx_parentId.getVector(sysEnv, s.getId(sysEnv));
 		Vector v2 = SDMSResourceTable.idx_scopeId.getVector(sysEnv, s.getId(sysEnv));
-		v.add(new Integer(v1.size()));
-		v.add(new Integer(v2.size()));
+		v.add(Integer.valueOf(v1.size()));
+		v.add(Integer.valueOf(v2.size()));
 		v.add(s.getPrivileges(sysEnv).toString());
 		v.add(s.idPathVector(sysEnv));
 	}

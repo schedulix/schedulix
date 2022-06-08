@@ -78,7 +78,7 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 	public void setToError(SystemEnvironment sysEnv, String msg)
 	throws SDMSException
 	{
-		setState(sysEnv, new Integer(ERROR));
+		setState(sysEnv, SDMSConstants.KJ_ERROR);
 		setErrorMsg(sysEnv, msg);
 	}
 
@@ -89,7 +89,7 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 		int newState = state.intValue();
 
 		Date dts = new Date();
-		Long ts = new Long (dts.getTime());
+		Long ts = Long.valueOf (dts.getTime());
 
 		if (newState == STARTING) {
 			synchronized(sysEnv.jidsStarting) {

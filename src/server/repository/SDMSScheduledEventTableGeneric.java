@@ -242,39 +242,39 @@ public class SDMSScheduledEventTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			ownerId = new Long (r.getLong(2));
-			sceId = new Long (r.getLong(3));
-			evtId = new Long (r.getLong(4));
-			isActive = new Boolean ((r.getInt(5) == 0 ? false : true));
-			isBroken = new Boolean ((r.getInt(6) == 0 ? false : true));
+			id     = Long.valueOf (r.getLong(1));
+			ownerId = Long.valueOf (r.getLong(2));
+			sceId = Long.valueOf (r.getLong(3));
+			evtId = Long.valueOf (r.getLong(4));
+			isActive = Boolean.valueOf ((r.getInt(5) == 0 ? false : true));
+			isBroken = Boolean.valueOf ((r.getInt(6) == 0 ? false : true));
 			errorCode = r.getString(7);
 			if (r.wasNull()) errorCode = null;
 			errorMsg = r.getString(8);
 			if (r.wasNull()) errorMsg = null;
-			lastStartTime = new Long (r.getLong(9));
+			lastStartTime = Long.valueOf (r.getLong(9));
 			if (r.wasNull()) lastStartTime = null;
-			nextActivityTime = new Long (r.getLong(10));
+			nextActivityTime = Long.valueOf (r.getLong(10));
 			if (r.wasNull()) nextActivityTime = null;
-			nextActivityIsTrigger = new Boolean ((r.getInt(11) == 0 ? false : true));
+			nextActivityIsTrigger = Boolean.valueOf ((r.getInt(11) == 0 ? false : true));
 			if (r.wasNull()) nextActivityIsTrigger = null;
-			backlogHandling = new Integer (r.getInt(12));
-			suspendLimit = new Integer (r.getInt(13));
+			backlogHandling = Integer.valueOf (r.getInt(12));
+			suspendLimit = Integer.valueOf (r.getInt(13));
 			if (r.wasNull()) suspendLimit = null;
-			suspendLimitMultiplier = new Integer (r.getInt(14));
+			suspendLimitMultiplier = Integer.valueOf (r.getInt(14));
 			if (r.wasNull()) suspendLimitMultiplier = null;
-			isCalendar = new Boolean ((r.getInt(15) == 0 ? false : true));
-			calendarHorizon = new Integer (r.getInt(16));
+			isCalendar = Boolean.valueOf ((r.getInt(15) == 0 ? false : true));
+			calendarHorizon = Integer.valueOf (r.getInt(16));
 			if (r.wasNull()) calendarHorizon = null;
-			creatorUId = new Long (r.getLong(17));
-			createTs = new Long (r.getLong(18));
-			changerUId = new Long (r.getLong(19));
-			changeTs = new Long (r.getLong(20));
+			creatorUId = Long.valueOf (r.getLong(17));
+			createTs = Long.valueOf (r.getLong(18));
+			changerUId = Long.valueOf (r.getLong(19));
+			changeTs = Long.valueOf (r.getLong(20));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "ScheduledEvent: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "ScheduledEvent: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSScheduledEventGeneric(id,

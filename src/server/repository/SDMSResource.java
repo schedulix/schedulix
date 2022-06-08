@@ -278,7 +278,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		final int crrAmount = (int) Math.ceil(irrAmount * factor);
 		if(crrAmount > dAmount && rr.getIsSticky(sysEnv).booleanValue()) {
 			try {
-				Long nStickyParent = new Long(-stickyParent.longValue());
+				Long nStickyParent = Long.valueOf(-stickyParent.longValue());
 				SDMSResourceAllocation mra = (SDMSResourceAllocation)
 					SDMSResourceAllocationTable.idx_smeId_rId_stickyName.getUnique(
 						sysEnv, new SDMSKey(nStickyParent, getId(sysEnv), rr.getStickyName(sysEnv)));
@@ -353,7 +353,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		Integer lock = rr.getLockmode(sysEnv);
 		boolean isMasterReservation = false;
 
-		if(lock == null) lock = new Integer(Lockmode.N);
+		if(lock == null) lock = SDMSConstants.RR_N;
 		for(int j = 0; j < rav.size(); j++) {
 			SDMSResourceAllocation ra = (SDMSResourceAllocation) rav.get(j);
 			int allocType = ra.getAllocationType(sysEnv).intValue();
@@ -387,7 +387,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			return this.getBase(sysEnv).syncCheckLockmode(sysEnv, lockmode, waitLockmode);
 
 		Vector rav = SDMSResourceAllocationTable.idx_rId.getVector(sysEnv, getId(sysEnv));
-		Integer lock = new Integer(lockmode);
+		Integer lock = Integer.valueOf(lockmode);
 		if(! Lockmode.isCompatible(waitLockmode, lock)) {
 			return false;
 		}
@@ -492,10 +492,10 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 						aAmount += raAmount.intValue();
 					}
 				}
-				fAmount = new Integer (a - aAmount);
+				fAmount = Integer.valueOf (a - aAmount);
 			} else {
 				fAmount = getFreeAmount(sysEnv);
-				fAmount = new Integer(fAmount.intValue() + a - oAmount.intValue());
+				fAmount = Integer.valueOf(fAmount.intValue() + a - oAmount.intValue());
 			}
 			setFreeAmount(sysEnv, fAmount, oAmount);
 		} else {
@@ -726,7 +726,7 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 
 		Integer rAmount = getFreeAmount(sysEnv);
 		if (rAmount != null) {
-			rAmount = new Integer(rAmount.intValue() + raAmount);
+			rAmount = Integer.valueOf(rAmount.intValue() + raAmount);
 			setFreeAmount(sysEnv, rAmount, getAmount(sysEnv));
 		}
 	}

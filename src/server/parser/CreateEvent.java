@@ -82,7 +82,7 @@ public class CreateEvent
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+			              sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 		}
 		se.checkSubmitForGroup(sysEnv, gId);
 

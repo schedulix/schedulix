@@ -88,7 +88,7 @@ public class ListGroup extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-			new SDMSMessage(sysEnv, "03312091455", "$1 Group(s) found", new Integer(d_container.lines)));
+		        new SDMSMessage(sysEnv, "03312091455", "$1 Group(s) found", Integer.valueOf(d_container.lines)));
 	}
 }
 

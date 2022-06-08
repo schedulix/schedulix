@@ -63,7 +63,7 @@ public class SDMSIndex
 		    t != UNIQUE   &&
 		    t != IDUNIQUE) {
 			throw new FatalException(new SDMSMessage(env,
-			                         "03110181526", "Invalid Indextype $1", new Integer(t)));
+			                         "03110181526", "Invalid Indextype $1", Integer.valueOf(t)));
 		}
 		this.table = table;
 		this.indexName = indexName;
@@ -173,11 +173,11 @@ public class SDMSIndex
 					Object[] p = new Object[7];
 					p[0] = key;
 					p[1] = old.id;
-					p[2] = new Long(old.validFrom);
-					p[3] = new Long(old.validTo);
+					p[2] = Long.valueOf(old.validFrom);
+					p[3] = Long.valueOf(old.validTo);
 					p[4] = o.id;
-					p[5] = new Long(o.validFrom);
-					p[6] = new Long(o.validTo);
+					p[5] = Long.valueOf(o.validFrom);
+					p[6] = Long.valueOf(o.validTo);
 					v.modCnt --;
 					throw new FatalException(new SDMSMessage(env, "03110181529",
 					                         "Duplicate Key $1: Overlapping versionrange with same id: o[$2:$3,$4], old[$5:$6,$7]", p));

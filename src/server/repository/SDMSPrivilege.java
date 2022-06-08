@@ -141,7 +141,7 @@ public class SDMSPrivilege
 
 	public final static long NOPRIVS		= 0x0000000000000000L;
 
-	public final static Long SYSPRIVOBJID		= new Long(0);
+	public final static Long SYSPRIVOBJID		= SDMSConstants.lZERO;
 
 	private long priv;
 
@@ -149,30 +149,30 @@ public class SDMSPrivilege
 
 	static
 	{
-		mapper.put(new Integer(Parser.VIEW),		new Long(SDMSPrivilege.VIEW));
-		mapper.put(new Integer(Parser.USE),		new Long(SDMSPrivilege.USE));
-		mapper.put(new Integer(Parser.EDIT),		new Long(SDMSPrivilege.EDIT));
-		mapper.put(new Integer(Parser.DROP),		new Long(SDMSPrivilege.DROP));
-		mapper.put(new Integer(Parser.SUBMIT),		new Long(SDMSPrivilege.SUBMIT));
-		mapper.put(new Integer(Parser.CREATE),		new Long(SDMSPrivilege.CREATE_CONTENT));
-		mapper.put(new Integer(Parser.MONITOR),		new Long(SDMSPrivilege.MONITOR));
-		mapper.put(new Integer(Parser.OPERATE),		new Long(SDMSPrivilege.OPERATE));
-		mapper.put(new Integer(Parser.RESOURCE),	new Long(SDMSPrivilege.RESOURCE));
-		mapper.put(new Integer(Parser.EXECUTE),		new Long(SDMSPrivilege.EXECUTE));
-		mapper.put(new Integer(Parser.CANCEL),		new Long(SDMSPrivilege.CANCEL));
-		mapper.put(new Integer(Parser.RERUN),		new Long(SDMSPrivilege.RERUN));
-		mapper.put(new Integer(Parser.ENABLE),		new Long(SDMSPrivilege.ENABLE));
-		mapper.put(new Integer(Parser.STATUS),		new Long(SDMSPrivilege.SET_STATE));
-		mapper.put(new Integer(Parser.DEPENDENCY),	new Long(SDMSPrivilege.IGN_DEPENDENCY));
-		mapper.put(new Integer(Parser.IGNORE),		new Long(SDMSPrivilege.IGN_RESOURCE));
-		mapper.put(new Integer(Parser.CLONE),		new Long(SDMSPrivilege.CLONE));
-		mapper.put(new Integer(Parser.SUSPEND),		new Long(SDMSPrivilege.SUSPEND));
-		mapper.put(new Integer(Parser.WARNING),		new Long(SDMSPrivilege.CLEAR_WARNING));
-		mapper.put(new Integer(Parser.PRIORITY),	new Long(SDMSPrivilege.PRIORITY));
-		mapper.put(new Integer(Parser.PARAMETERS),	new Long(SDMSPrivilege.MODIFY_PARAMETER));
-		mapper.put(new Integer(Parser.KILL),		new Long(SDMSPrivilege.KILL));
-		mapper.put(new Integer(Parser.APPROVE),		new Long(SDMSPrivilege.APPROVE));
-		mapper.put(new Integer(Parser.JOB_STATUS),	new Long(SDMSPrivilege.SET_JOB_STATE));
+		mapper.put(Integer.valueOf(Parser.VIEW),		Long.valueOf(SDMSPrivilege.VIEW));
+		mapper.put(Integer.valueOf(Parser.USE),		Long.valueOf(SDMSPrivilege.USE));
+		mapper.put(Integer.valueOf(Parser.EDIT),		Long.valueOf(SDMSPrivilege.EDIT));
+		mapper.put(Integer.valueOf(Parser.DROP),		Long.valueOf(SDMSPrivilege.DROP));
+		mapper.put(Integer.valueOf(Parser.SUBMIT),		Long.valueOf(SDMSPrivilege.SUBMIT));
+		mapper.put(Integer.valueOf(Parser.CREATE),		Long.valueOf(SDMSPrivilege.CREATE_CONTENT));
+		mapper.put(Integer.valueOf(Parser.MONITOR),		Long.valueOf(SDMSPrivilege.MONITOR));
+		mapper.put(Integer.valueOf(Parser.OPERATE),		Long.valueOf(SDMSPrivilege.OPERATE));
+		mapper.put(Integer.valueOf(Parser.RESOURCE),	Long.valueOf(SDMSPrivilege.RESOURCE));
+		mapper.put(Integer.valueOf(Parser.EXECUTE),		Long.valueOf(SDMSPrivilege.EXECUTE));
+		mapper.put(Integer.valueOf(Parser.CANCEL),		Long.valueOf(SDMSPrivilege.CANCEL));
+		mapper.put(Integer.valueOf(Parser.RERUN),		Long.valueOf(SDMSPrivilege.RERUN));
+		mapper.put(Integer.valueOf(Parser.ENABLE),		Long.valueOf(SDMSPrivilege.ENABLE));
+		mapper.put(Integer.valueOf(Parser.STATUS),		Long.valueOf(SDMSPrivilege.SET_STATE));
+		mapper.put(Integer.valueOf(Parser.DEPENDENCY),	Long.valueOf(SDMSPrivilege.IGN_DEPENDENCY));
+		mapper.put(Integer.valueOf(Parser.IGNORE),		Long.valueOf(SDMSPrivilege.IGN_RESOURCE));
+		mapper.put(Integer.valueOf(Parser.CLONE),		Long.valueOf(SDMSPrivilege.CLONE));
+		mapper.put(Integer.valueOf(Parser.SUSPEND),		Long.valueOf(SDMSPrivilege.SUSPEND));
+		mapper.put(Integer.valueOf(Parser.WARNING),		Long.valueOf(SDMSPrivilege.CLEAR_WARNING));
+		mapper.put(Integer.valueOf(Parser.PRIORITY),	Long.valueOf(SDMSPrivilege.PRIORITY));
+		mapper.put(Integer.valueOf(Parser.PARAMETERS),	Long.valueOf(SDMSPrivilege.MODIFY_PARAMETER));
+		mapper.put(Integer.valueOf(Parser.KILL),		Long.valueOf(SDMSPrivilege.KILL));
+		mapper.put(Integer.valueOf(Parser.APPROVE),		Long.valueOf(SDMSPrivilege.APPROVE));
+		mapper.put(Integer.valueOf(Parser.JOB_STATUS),	Long.valueOf(SDMSPrivilege.SET_JOB_STATE));
 	}
 
 	public SDMSPrivilege()
@@ -334,7 +334,7 @@ public class SDMSPrivilege
 
 	public Long toLong()
 	{
-		return new Long(priv);
+		return Long.valueOf(priv);
 	}
 
 	public void merge(SDMSPrivilege p)

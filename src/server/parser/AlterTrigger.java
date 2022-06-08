@@ -90,7 +90,7 @@ public class AlterTrigger extends ManipTrigger
 			if (with.containsKey(ParseStr.S_SUBMIT)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03108190858", "Submit and Rerun cannot be specified both"));
 			}
-			action = new Integer(SDMSTrigger.RERUN);
+			action = SDMSConstants.TR_RERUN;
 			iaction = SDMSTrigger.RERUN;
 			if (objType != SDMSTrigger.JOB_DEFINITION)
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03108111304", "Rerun triggers are valid for jobs only"));
@@ -189,7 +189,7 @@ public class AlterTrigger extends ManipTrigger
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "02402180855", "Group clause is not allowed for child triggers"));
 			}
 			submitOwnerId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(submitOwnerName, new Long(0))).getId(sysEnv);
+			                        sysEnv, new SDMSKey(submitOwnerName, SDMSConstants.lZERO)).getId(sysEnv);
 			checkSubmitOwnerId = submitOwnerId;
 		} else {
 			submitOwnerId = null;
@@ -309,6 +309,9 @@ public class AlterTrigger extends ManipTrigger
 		SDMSSchedulingEntity mainSe = null;
 
 		if (checkIsMaster.booleanValue()) {
+			if(!with.containsKey(ParseStr.S_GROUP) && checkSubmitOwnerId == null)
+				throw new CommonErrorException(
+				        new SDMSMessage(sysEnv, "02402180659", "Group clause is mandatory for master triggers"));
 			if (isMaster != null || seId != null) {
 				if (se == null)
 					se = SDMSSchedulingEntityTable.getObject(sysEnv, checkSeId);
@@ -389,7 +392,7 @@ public class AlterTrigger extends ManipTrigger
 				String expression = tp.getExpression(sysEnv);
 				String phExpression = (String) parmHash.get(name);
 				if (!expression.equals(phExpression)) {
-					t.checkParameterExpressionSyntax(sysEnv, phExpression);
+					phExpression = t.checkParameterExpressionSyntax(sysEnv, phExpression);
 					tp.setExpression(sysEnv, phExpression);
 				}
 				parmHash.remove(name);
@@ -402,7 +405,7 @@ public class AlterTrigger extends ManipTrigger
 		while (phi.hasNext()) {
 			String name = (String) phi.next();
 			String expression = (String) parmHash.get(name);
-			t.checkParameterExpressionSyntax(sysEnv, expression);
+			expression = t.checkParameterExpressionSyntax(sysEnv, expression);
 			SDMSTriggerParameterTable.table.create(sysEnv, name, expression, tId);
 		}
 	}

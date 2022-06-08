@@ -68,7 +68,7 @@ public class SDMSVersionList
 		for(i = versionList.size() - 1; i >= 0; --i) {
 			if(((Long) versionList.get(i)).longValue() <= v) break;
 		}
-		versionList.insertElementAt(new Long(v), i+1);
+		versionList.insertElementAt(Long.valueOf(v), i+1);
 	}
 
 	public synchronized int remove( long v)

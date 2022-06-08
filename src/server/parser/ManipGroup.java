@@ -41,8 +41,6 @@ public abstract class ManipGroup extends Node
 
 	public final static String __version = "@(#) $Id";
 
-	protected final static Long ZERO = new Long(0L);
-
 	protected ObjectURL url;
 	protected Vector userlist;
 	protected Vector addlist;
@@ -66,14 +64,13 @@ public abstract class ManipGroup extends Node
 	protected void evaluate_with(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		Long zero = new Long(0);
 		if(withEvaluated) return;
 
 		if(with.containsKey(ParseStr.S_USERLIST)) {
 			Vector v = (Vector) with.get(ParseStr.S_USERLIST);
 			Long uId;
 			for(int i = 0; i < v.size(); i++) {
-				uId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) v.get(i), zero)).getId(sysEnv);
+				uId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) v.get(i), SDMSConstants.lZERO)).getId(sysEnv);
 				userlist.add(uId);
 			}
 		}
@@ -82,7 +79,7 @@ public abstract class ManipGroup extends Node
 			Vector v = (Vector) with.get(ParseStr.S_ADDUSER);
 			Long uId;
 			for(int i = 0; i < v.size(); i++) {
-				uId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) v.get(i), zero)).getId(sysEnv);
+				uId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) v.get(i), SDMSConstants.lZERO)).getId(sysEnv);
 				addlist.add(uId);
 			}
 		}
@@ -91,7 +88,7 @@ public abstract class ManipGroup extends Node
 			Vector v = (Vector) with.get(ParseStr.S_DELUSER);
 			Long uId;
 			for(int i = 0; i < v.size(); i++) {
-				uId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) v.get(i), zero)).getId(sysEnv);
+				uId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) v.get(i), SDMSConstants.lZERO)).getId(sysEnv);
 				dellist.add(uId);
 			}
 		}

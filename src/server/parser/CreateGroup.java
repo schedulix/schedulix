@@ -69,7 +69,7 @@ public class CreateGroup extends ManipGroup
 			while (i.hasNext()) {
 				Long gId = (Long) i.next();
 				try {
-					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
+					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(SDMSConstants.lZERO, gId));
 					p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 				} catch (NotFoundException nfe) {
 
@@ -91,9 +91,9 @@ public class CreateGroup extends ManipGroup
 			}
 			while (i1.hasNext()) {
 				SDMSGroup g1 = (SDMSGroup)i1.next();
-				if (!g1.getDeleteVersion(sysEnv).equals(new Long(0))) {
+				if (!g1.getDeleteVersion(sysEnv).equals(SDMSConstants.lZERO)) {
 					replace = true;
-					g1.setDeleteVersion(sysEnv, new Long(0));
+					g1.setDeleteVersion(sysEnv, SDMSConstants.lZERO);
 					newGroupId = g1.getId(sysEnv);
 					Vector gv = SDMSGrantTable.idx_gId.getVector(sysEnv, newGroupId);
 					for (int i = 0; i < gv.size(); ++i) {
@@ -126,7 +126,7 @@ public class CreateGroup extends ManipGroup
 					setgid = true;
 				}
 
-				g = SDMSGroupTable.table.create( sysEnv, group, new Long(0));
+				g = SDMSGroupTable.table.create( sysEnv, group, SDMSConstants.lZERO);
 			} catch (DuplicateKeyException dke) {
 				if (setgid) {
 					sysEnv.cEnv.popGid(sysEnv);
@@ -134,7 +134,7 @@ public class CreateGroup extends ManipGroup
 				}
 				if(replace) {
 					try {
-						AlterGroup ag = new AlterGroup(new ObjectURL(new Integer(Parser.GROUP), group), with, Boolean.FALSE);
+						AlterGroup ag = new AlterGroup(new ObjectURL(SDMSConstants.PS_GROUP, group), with, Boolean.FALSE);
 						ag.setEnv(env);
 						ag.go(sysEnv);
 						result = ag.result;

@@ -42,14 +42,14 @@ public class ShowResource extends ShowCommented
 	private Vector path;
 	private Long rId;
 	private ObjectURL resource;
-	private final static Integer ALLOCATION         = new Integer(1);
-	private final static Integer MASTER_RESERVATION = new Integer(2);
-	private final static Integer RESERVATION        = new Integer(3);
-	private final static Integer AVAILABLE          = new Integer(4);
-	private final static Integer BLOCKED            = new Integer(5);
-	private final static Integer MASTER_REQUEST     = new Integer(6);
-	private final static Integer REQUESTED          = new Integer(7);
-	private final static Integer IGNORED            = new Integer(8);
+	private final static Integer ALLOCATION         = Integer.valueOf(1);
+	private final static Integer MASTER_RESERVATION = Integer.valueOf(2);
+	private final static Integer RESERVATION        = Integer.valueOf(3);
+	private final static Integer AVAILABLE          = Integer.valueOf(4);
+	private final static Integer BLOCKED            = Integer.valueOf(5);
+	private final static Integer MASTER_REQUEST     = Integer.valueOf(6);
+	private final static Integer REQUESTED          = Integer.valueOf(7);
+	private final static Integer IGNORED            = Integer.valueOf(8);
 	private final static int[] sortcols = { 11, 13, 1 };
 
 	public ShowResource(ObjectURL ra)
@@ -440,7 +440,7 @@ public class ShowResource extends ShowCommented
 
 		v.add(ra.getId(sysEnv));
 		smeId = ra.getSmeId(sysEnv).longValue();
-		oSmeId = new Long(smeId < 0 ? -smeId : smeId);
+		oSmeId = Long.valueOf(smeId < 0 ? -smeId : smeId);
 		v.add(oSmeId);
 		sme = SDMSSubmittedEntityTable.getObject(sysEnv, oSmeId);
 		v.add(sme.getMasterId(sysEnv));
@@ -517,7 +517,7 @@ public class ShowResource extends ShowCommented
 			}
 		}
 		v.add(sme.getPriority(sysEnv));
-		v.add(new Integer(SystemEnvironment.sched.getDynPriority(sysEnv, sme)));
+		v.add(Integer.valueOf(SystemEnvironment.sched.getDynPriority(sysEnv, sme)));
 		v.add(sme.getPrivileges(sysEnv).toString());
 
 		return v;
@@ -552,7 +552,7 @@ public class ShowResource extends ShowCommented
 					containerPath = f.pathString(sysEnv);
 				} catch (NotFoundException nfe2) {
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, scopeId);
-					containerPath = sme.getSubmitPathString(sysEnv, true);
+					containerPath = sme.getSubmitPathString(sysEnv, true) + "[" + scopeId.toString() + "]";
 				}
 			}
 		} else {

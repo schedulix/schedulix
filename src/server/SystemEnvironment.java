@@ -28,6 +28,7 @@ package de.independit.scheduler.server;
 import java.io.*;
 import java.util.*;
 import java.lang.*;
+import java.lang.reflect.Constructor;
 import java.text.*;
 import java.net.*;
 import java.sql.*;
@@ -128,6 +129,8 @@ public class SystemEnvironment implements Cloneable
 	public static String hostname;
 	public static int port;
 	public static int sslport;
+	public static InetAddress plainIf;
+	public static InetAddress sslIf;
 	public static int service_port;
 	public static int txRetryCount;
 	public static long preserveTime;
@@ -216,6 +219,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_AUTHCLASS             = "AuthenticationClass";
 	public static final String S_CALHORIZON            = "CalendarHorizon";
 	public static final String S_CALENTRIES            = "CalendarEntries";
+	public static final String S_CUSTOMERNAME          = "CustomerName";
 	public static final String S_DBLOADER              = "DbLoaders";
 	public static final String S_DBPASSWD              = "DbPasswd";
 	public static final String S_DBURL                 = "DbUrl";
@@ -225,6 +229,8 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_EXPORTVARIABLES       = "ExportVariables";
 	public static final String S_GCWAKEUP              = "GCWakeup";
 	public static final String S_HISTORY               = "History";
+	public static final String S_INTERFACE             = "Interface";
+	public static final String S_SSL_INTERFACE         = "SSLInterface";
 	public static final String S_DBHISTORY             = "DbHistory";
 	public static final String S_HISTORYLIMIT          = "HistoryLimit";
 	public static final String S_MINHISTORYCOUNT       = "MinHistoryCount";
@@ -245,6 +251,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_SESSIONTIMEOUT        = "SessionTimeout";
 	public static final String S_SHOWSTACKTRACE        = "ShowStackTrace";
 	public static final String S_SINGLESERVER          = "SingleServer";
+	public static final String S_SUPPORTKEY            = "SupportKey";
 	public static final String S_SSLPORT               = "SSLPort";
 	public static final String S_SYSPASSWD             = "SysPasswd";
 	public static final String S_TIMERHORIZON          = "TimerHorizon";
@@ -388,11 +395,12 @@ public class SystemEnvironment implements Cloneable
 	private static Random random = new Random();
 	private static ExecuteLock executeLock = new ExecuteLock();
 
-	public SystemEnvironment(Properties p, String programLevel)
+	public SystemEnvironment(Properties p, String programLevel, Server svr)
 	{
 		if (SystemEnvironment.programLevel == null)
 			SystemEnvironment.programLevel = programLevel;
 		props = p;
+		this.server = svr;
 		if(! got_properties) setProperties();
 		roTxList = new SDMSROTxList();
 		seVersionList = new SDMSSeVersionList();
@@ -483,6 +491,8 @@ public class SystemEnvironment implements Cloneable
 
 		getSSOconfig();
 
+		getInterfaces();
+
 		got_properties = true;
 	}
 
@@ -517,11 +527,14 @@ public class SystemEnvironment implements Cloneable
 			enhancedCmdParsing = false;
 	}
 
-	private void getCompatLevel()
+	public static synchronized void getCompatLevel()
 	{
 		compatLevel = props.getProperty(S_LEVEL, programLevel);
 		if (programLevel.equals(S_OPEN))
 			compatLevel = S_BASIC;
+		if (compatLevel != S_BASIC) {
+			compatLevel = S_BASIC;
+		}
 		if (!compatLevel.equals(programLevel)) {
 			if (programLevel.equals(S_PROFESSIONAL) && !compatLevel.equals(S_BASIC)) {
 				compatLevel = S_PROFESSIONAL;
@@ -638,7 +651,13 @@ public class SystemEnvironment implements Cloneable
 		if (s_authClass != null) {
 			try {
 				Class c = Class.forName(s_authClass);
-				auth = (de.independit.scheduler.server.util.Authenticator) c.newInstance();
+				Constructor[] constructors = c.getDeclaredConstructors();
+				for (Constructor cnst : constructors) {
+					if (cnst.getParameterCount() == 0) {
+						auth = (de.independit.scheduler.server.util.Authenticator) cnst.newInstance();
+						break;
+					}
+				}
 				SDMSThread.doTrace(null, "Using class " + s_authClass + " for Authentication", SDMSThread.SEVERITY_INFO);
 			} catch (Throwable t) {
 				SDMSThread.doTrace(null, "Problem loading class " + s_authClass + " : " + t.toString(), SDMSThread.SEVERITY_WARNING);
@@ -755,7 +774,14 @@ public class SystemEnvironment implements Cloneable
 				exceptionName = tmp;
 			try {
 				Class c = Class.forName(exceptionName);
-				SDMSException e = (SDMSException) c.newInstance();
+				Constructor[] constructors = c.getDeclaredConstructors();
+				SDMSException e = null;
+				for (Constructor cnst : constructors) {
+					if (cnst.getParameterCount() == 0) {
+						e = (SDMSException) cnst.newInstance();
+						break;
+					}
+				}
 				exceptionMask += e.getExceptionNumber();
 			} catch (Exception ee) {
 				SDMSThread.doTrace(null, "Invalid exception name " + tmp + ": class not found or no subclass of SDMSException (entry ignored)", SDMSThread.SEVERITY_WARNING);
@@ -790,7 +816,7 @@ public class SystemEnvironment implements Cloneable
 			SDMSThread.doTrace(null, "Invalid syntax in " + props.getProperty(S_SHOWSTACKTRACE) + ": missing closing bracket", SDMSThread.SEVERITY_WARNING);
 			throw new SDMSException();
 		}
-		showStackTrace.put(nodeName, new Long(exceptionMask));
+		showStackTrace.put(nodeName,Long.valueOf(exceptionMask));
 
 		return pos;
 	}
@@ -1285,6 +1311,33 @@ public class SystemEnvironment implements Cloneable
 		props.setProperty(S_NAMECASE, value);
 	}
 
+	private void getInterfaces()
+	{
+		plainIf = null;
+		sslIf = null;
+
+		String value = props.getProperty(S_INTERFACE);
+		if (port != 0 && value != null) {
+			try {
+				plainIf = InetAddress.getByName(value);
+			} catch (UnknownHostException uhe) {
+				SDMSThread.doTrace(null, "Invalid interface specification : '" + value + "'; the server will listen on all interfaces", SDMSThread.SEVERITY_WARNING);
+				plainIf = null;
+				props.setProperty(S_INTERFACE, "REMOVED");
+			}
+		}
+		value = props.getProperty(S_SSL_INTERFACE);
+		if (sslport != 0 && value != null) {
+			try {
+				sslIf = InetAddress.getByName(value);
+			} catch (UnknownHostException uhe) {
+				SDMSThread.doTrace(null, "Invalid SSL interface specification : '" + value + "'; the server will listen on all interfaces", SDMSThread.SEVERITY_WARNING);
+				sslIf = null;
+				props.setProperty(S_SSL_INTERFACE, "REMOVED");
+			}
+		}
+	}
+
 	private int checkIntProperty(String val, String name, int minval, int def, int maxval, String msg)
 	{
 		int rc;
@@ -1326,7 +1379,7 @@ public class SystemEnvironment implements Cloneable
 	public static void resetProtectMode()	{ protectMode = false; }
 	public static boolean getProtectMode()	{ return protectMode; }
 
-	public Long randomLong()		{ return new Long(java.lang.Math.abs(random.nextLong())); }
+	public Long randomLong() { return Long.valueOf(java.lang.Math.abs(random.nextLong())); }
 
 	public static synchronized int getTraceLevel()	{ return traceLevel; }
 	public static synchronized void setTraceLevel(int t) { traceLevel = t; }
@@ -1350,7 +1403,7 @@ public class SystemEnvironment implements Cloneable
 
 	public Long txTime()
 	{
-		return new Long(tx.startTime);
+		return Long.valueOf(tx.startTime);
 	}
 
 	public static final GregorianCalendar newGregorianCalendar()
