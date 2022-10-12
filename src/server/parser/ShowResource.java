@@ -68,6 +68,7 @@ public class ShowResource extends ShowCommented
 		desc.add("OWNER");
 		desc.add("LINK_ID");
 		desc.add("LINK_SCOPE");
+		desc.add("LINK_SCOPE_TYPE");
 		desc.add("BASE_ID");
 		desc.add("BASE_SCOPE");
 		desc.add("MANAGER_ID");
@@ -286,6 +287,7 @@ public class ShowResource extends ShowCommented
 				r = SDMSResourceTable.getObject(sysEnv, linkId);
 				SDMSScope s = SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv));
 				v.add(s.pathString(sysEnv));
+				v.add(s.getTypeAsString(sysEnv));
 				while (linkId != null) {
 					r = SDMSResourceTable.getObject(sysEnv, linkId);
 					linkId = r.getLinkId(sysEnv);
@@ -297,6 +299,7 @@ public class ShowResource extends ShowCommented
 				v.add(null);
 				v.add(null);
 				v.add(null);
+				v.add(null);
 			}
 			final Long managerId = r.getManagerId(sysEnv);
 			v.add(managerId);
@@ -304,6 +307,7 @@ public class ShowResource extends ShowCommented
 			v.add(null);
 			v.add(null);
 		} else {
+			v.add(null);
 			v.add(null);
 			v.add(null);
 			v.add(null);
