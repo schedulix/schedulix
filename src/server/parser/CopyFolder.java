@@ -105,7 +105,11 @@ public class CopyFolder extends Node
 		for (int i = 0; i < urlVector.size(); ++i) {
 			url = (ObjectURL) urlVector.get(i);
 			if (url.objType.equals(SDMSObjectComment.FOLDER)) {
-				f = (SDMSFolder) url.resolve(sysEnv);
+				try {
+					f = (SDMSFolder) url.resolve(sysEnv);
+				} catch (ClassCastException cce) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03209161248", "The object " + url.toString() + " is not a Folder"));
+				}
 				if(!f.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
 					throw new AccessViolationException(f.accessViolationMessage(sysEnv, "03203131453"));
 				opId = f.getParentId(sysEnv);
@@ -146,7 +150,11 @@ public class CopyFolder extends Node
 				SDMSFolder newF = f.copy(sysEnv, npId, name, relocationTable);
 				newFolders.addElement(newF);
 			} else {
-				se_o = (SDMSSchedulingEntity) url.resolve(sysEnv);
+				try {
+					se_o = (SDMSSchedulingEntity) url.resolve(sysEnv);
+				} catch (ClassCastException cce) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03209161249", "The object " + url.toString() + " is not a Job Definition"));
+				}
 				if(!se_o.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
 					throw new AccessViolationException(se_o.accessViolationMessage(sysEnv, "03203131454"));
 				if (keepName)
