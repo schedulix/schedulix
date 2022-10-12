@@ -81,6 +81,7 @@ public class ListScope extends Node
 		desc.add("NODE");
 		desc.add("IDLE");
 		desc.add("NOPDELAY");
+		desc.add("ONLINE_SERVER");
 		desc.add("ERRMSG");
 
 		desc.add("SUBSCOPES");
@@ -135,7 +136,16 @@ public class ListScope extends Node
 		v.add(s.getPid(sysEnv));
 		v.add(s.getNode(sysEnv));
 		v.add(Long.valueOf(s.getIdle(sysEnv)));
-		v.add(ScopeConfig.getItem(sysEnv, s, Config.NOP_DELAY));
+		Object nopDelay = ScopeConfig.getItem(sysEnv, s, Config.NOP_DELAY);
+		if (nopDelay == null) {
+			nopDelay = Config.getDefaultValue(Config.NOP_DELAY);
+		}
+		v.add(nopDelay.toString());
+		Object onlineServer = ScopeConfig.getItem(sysEnv, s, Config.ONLINE_SERVER);
+		if (onlineServer == null) {
+			onlineServer = Config.getDefaultValue(Config.ONLINE_SERVER);
+		}
+		v.add(onlineServer.toString());
 		v.add(s.getErrmsg(sysEnv));
 		Vector v1 = SDMSScopeTable.idx_parentId.getVector(sysEnv, s.getId(sysEnv));
 		Vector v2 = SDMSResourceTable.idx_scopeId.getVector(sysEnv, s.getId(sysEnv));

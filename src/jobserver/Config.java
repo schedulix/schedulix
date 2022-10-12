@@ -155,6 +155,16 @@ public class Config
 				put (defaultKeys [i], defaultValues [i]);
 	}
 
+	public static Object getDefaultValue(String key)
+	{
+		for (int i = 0; i < defaultKeys.length; ++i) {
+			if (defaultKeys[i].equals(key)) {
+				return defaultValues[i];
+			}
+		}
+		return null;
+	}
+
 	private final void initScanner()
 		throws IOException
 	{

@@ -250,6 +250,12 @@ public class ScopeParameter
 		return ManipParameters.get (sysEnv, id);
 	}
 
+	public static final SDMSOutputContainer getRecursive (final SystemEnvironment sysEnv, final SDMSScope obj)
+	throws SDMSException
+	{
+		return ManipParameters.getRecursive (sysEnv, obj);
+	}
+
 	private ScopeParameter()
 	{
 

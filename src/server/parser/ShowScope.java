@@ -165,7 +165,7 @@ public class ShowScope extends ShowCommented
 		v.add(s.getPrivileges(sysEnv).toString());
 		add_resources(sysEnv, s, v);
 		collectConfig (sysEnv, v);
-		v.add (ScopeParameter.get (sysEnv, sId));
+		v.add (ScopeParameter.getRecursive (sysEnv, s));
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv, "03201291430", "Scope"), desc, v);
 
@@ -279,8 +279,24 @@ public class ShowScope extends ShowCommented
 						row.add (key);
 						row.add (cfgValue);
 						row.add (Boolean.valueOf (isLocal));
-						row.add (getScopePath (sysEnv, isLocal ? ancestId : scopeId));
-						row.add (isLocal ? ancestVal : cfgValue);
+						if (isLocal) {
+							if (ancestId == null) {
+								Object defaultValue = Config.getDefaultValue(key);
+								if (defaultValue != null) {
+									row.add("DEFAULT");
+									row.add(defaultValue.toString());
+								} else {
+									row.add("");
+									row.add("");
+								}
+							} else {
+								row.add (getScopePath (sysEnv, ancestId));
+								row.add (ancestVal);
+							}
+						} else {
+							row.add (getScopePath (sysEnv, scopeId));
+							row.add (cfgValue);
+						}
 
 						cfgTable.addData (sysEnv, row);
 					}
@@ -300,9 +316,15 @@ public class ShowScope extends ShowCommented
 				final Vector row = new Vector();
 				row.add (key);
 				row.add (value == null ? "" : value);
-				row.add (Boolean.FALSE);
-				row.add ("DEFAULT");
-				row.add (value == null ? "" : value);
+				if (value != null) {
+					row.add (Boolean.FALSE);
+					row.add ("DEFAULT");
+					row.add (value);
+				} else {
+					row.add (Boolean.TRUE);
+					row.add ("");
+					row.add ("");
+				}
 
 				cfgTable.addData (sysEnv, row);
 			}
