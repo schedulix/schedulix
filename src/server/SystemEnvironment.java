@@ -1270,6 +1270,17 @@ public class SystemEnvironment implements Cloneable
 		props.setProperty(S_DMPLANGLEVEL, LANGLEVELS[dumpLangLevel]);
 	}
 
+	public static int checkLangLevel(String ll)
+	{
+		if (ll != null)
+			for (int i = 0; i < LANGLEVELS.length; ++i) {
+				if (ll.equals(LANGLEVELS[i]) || ll.equals("v" + LANGLEVELS[i]) || ll.equals("V" + LANGLEVELS[i])) {
+					return i;
+				}
+			}
+		return dumpLangLevel;
+	}
+
 	private void getSSOconfig()
 	{
 		String value;
@@ -1298,11 +1309,9 @@ public class SystemEnvironment implements Cloneable
 		value = props.getProperty(S_NAMECASE, S_CASE_UPPER).toUpperCase();
 		if (value.equals(S_CASE_UPPER)) {
 			nameCase = CASE_UPPER;
-		} else
-		if (value.equals(S_CASE_LOWER)) {
+		} else if (value.equals(S_CASE_LOWER)) {
 			nameCase = CASE_LOWER;
-		} else
-		if (value.equals(S_CASE_MIXED)) {
+		} else if (value.equals(S_CASE_MIXED)) {
 			nameCase = CASE_MIXED;
 		} else {
 			nameCase = CASE_UPPER;
