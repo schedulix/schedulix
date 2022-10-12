@@ -282,7 +282,7 @@ public class SDMSPrivilege
 		return new String(sb);
 	}
 
-	public String[] asString()
+	public String[] asString(int langLevel)
 	{
 		final Vector v = new Vector();
 		if((priv&CREATE)	== CREATE)			v.add("CREATE");
@@ -292,20 +292,22 @@ public class SDMSPrivilege
 		if((priv&EDIT)		== EDIT)			v.add("EDIT");
 		if((priv&MONITOR)	== MONITOR)			v.add("MONITOR");
 		if((priv&OPERATE)	== OPERATE)			v.add("OPERATE");
-		if((priv&CANCEL)	== CANCEL)			v.add("CANCEL");
-		if((priv&RERUN)		== RERUN)			v.add("RERUN");
-		if((priv&ENABLE)	== ENABLE)			v.add("ENABLE");
-		if((priv&SET_STATE)	== SET_STATE)			v.add("SET STATE");
-		if((priv&IGN_DEPENDENCY)== IGN_DEPENDENCY)		v.add("IGNORE DEPENDENCY");
-		if((priv&IGN_RESOURCE)	== IGN_RESOURCE)		v.add("IGNORE RESOURCE");
-		if((priv&CLONE)		== CLONE)			v.add("CLONE");
-		if((priv&SUSPEND)	== SUSPEND)			v.add("SUSPEND");
-		if((priv&CLEAR_WARNING)	== CLEAR_WARNING)		v.add("CLEAR WARNING");
-		if((priv&PRIORITY)	== PRIORITY)			v.add("PRIORITY");
-		if((priv&MODIFY_PARAMETER)== MODIFY_PARAMETER)		v.add("EDIT PARAMETER");
-		if((priv&KILL)		== KILL)			v.add("KILL");
-		if((priv&APPROVE)	== APPROVE)			v.add("APPROVE");
-		if((priv&SET_JOB_STATE)	== SET_JOB_STATE)		v.add("SET JOB STATE");
+		if (langLevel >= SystemEnvironment.LANGLEVEL211) {
+			if((priv&CANCEL)	== CANCEL)			v.add("CANCEL");
+			if((priv&RERUN)		== RERUN)			v.add("RERUN");
+			if((priv&ENABLE)	== ENABLE)			v.add("ENABLE");
+			if((priv&SET_STATE)	== SET_STATE)			v.add("SET STATE");
+			if((priv&IGN_DEPENDENCY)== IGN_DEPENDENCY)		v.add("IGNORE DEPENDENCY");
+			if((priv&IGN_RESOURCE)	== IGN_RESOURCE)		v.add("IGNORE RESOURCE");
+			if((priv&CLONE)		== CLONE)			v.add("CLONE");
+			if((priv&SUSPEND)	== SUSPEND)			v.add("SUSPEND");
+			if((priv&CLEAR_WARNING)	== CLEAR_WARNING)		v.add("CLEAR WARNING");
+			if((priv&PRIORITY)	== PRIORITY)			v.add("PRIORITY");
+			if((priv&MODIFY_PARAMETER)== MODIFY_PARAMETER)		v.add("EDIT PARAMETER");
+			if((priv&KILL)		== KILL)			v.add("KILL");
+			if((priv&APPROVE)	== APPROVE)			v.add("APPROVE");
+			if((priv&SET_JOB_STATE)	== SET_JOB_STATE)		v.add("SET JOB STATE");
+		}
 
 		if((priv&SUBMIT)	== SUBMIT)			v.add("SUBMIT");
 		if((priv&USE)		== USE)				v.add("USE");
