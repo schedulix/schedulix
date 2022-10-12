@@ -75,67 +75,82 @@ public class ShowUser extends ShowCommented
 		Vector c_desc = new Vector();
 		Long sip;
 		Date d = new Date();
+		boolean suActive = false;
+		Vector data = null;
 
-		if(name == null) {
-			u = SDMSUserTable.getObject(sysEnv, env.uid());
-		} else {
-			u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(name, SDMSConstants.lZERO));
-		}
-		if (u.getDeleteVersion(sysEnv) > 0)
-			throw new NotFoundException("User " + (name == null ? "" : name + " ") + " not found");
-		if(!u.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
-			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411728", "Insufficient privileges"));
-		Long uId = u.getId(sysEnv);
-
-		desc.add("ID");
-		desc.add("NAME");
-		desc.add("IS_ENABLED");
-		desc.add("DEFAULT_GROUP");
-		desc.add("CONNECTION_TYPE");
-		desc.add("CREATOR");
-		desc.add("CREATE_TIME");
-		desc.add("CHANGER");
-		desc.add("CHANGE_TIME");
-		desc.add("PRIVS");
-		desc.add("MANAGE_PRIVS");
-		desc.add("GROUPS");
-		desc.add("EQUIVALENT_USERS");
-		desc.add("PARAMETERS");
-		desc.add("COMMENTTYPE");
-		desc.add("COMMENT");
-		c_desc.add("TAG");
-		c_desc.add("COMMENT");
-
-		Vector data = new Vector();
-
-		data.add(uId);
-		data.add(u.getName(sysEnv));
-
-		data.add(u.getIsEnabled(sysEnv));
-		data.add(SDMSGroupTable.getObject(sysEnv, u.getDefaultGId(sysEnv)).getName(sysEnv));
-		data.add(u.getConnectionTypeAsString(sysEnv));
 		try {
-			data.add(SDMSUserTable.getObject(sysEnv, u.getCreatorUId(sysEnv)).getName(sysEnv));
-		} catch (NotFoundException nfe) {
-			data.add(SDMSUserTable.DROPPED_NAME);
-		}
-		d.setTime(u.getCreateTs(sysEnv).longValue());
-		data.add(sysEnv.systemDateFormat.format(d));
-		try {
-			data.add(SDMSUserTable.getObject(sysEnv, u.getChangerUId(sysEnv)).getName(sysEnv));
-		} catch (NotFoundException nfe) {
-			data.add(SDMSUserTable.DROPPED_NAME);
-		}
-		d.setTime(u.getChangeTs(sysEnv).longValue());
-		data.add(sysEnv.systemDateFormat.format(d));
-		data.add(u.getPrivileges(sysEnv).toString());
-		data.add(getManageList(sysEnv, uId));
-		data.add(getGroupList(sysEnv, uId));
-		data.add(getEquivUserList(sysEnv, uId));
-		data.add(getParms(sysEnv, uId));
+			if(name == null) {
+				u = SDMSUserTable.getObject(sysEnv, env.uid());
+			} else {
+				if (name.equals("FE_PROPERTIES")) {
+					HashSet hg = new HashSet();
+					hg.add(SDMSObject.adminGId);
+					sysEnv.cEnv.pushGid(sysEnv, hg);
+					suActive = true;
+				}
+				u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(name, SDMSConstants.lZERO));
+			}
+			if (u.getDeleteVersion(sysEnv) > 0) {
+				throw new NotFoundException("User " + (name == null ? "" : name + " ") + " not found");
+			}
+			if(!u.checkPrivileges(sysEnv, SDMSPrivilege.VIEW)) {
+				throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411728", "Insufficient privileges"));
+			}
+			Long uId = u.getId(sysEnv);
 
-		data.add(getCommentInfoType(sysEnv, uId));
-		data.add(getCommentContainer(sysEnv, uId));
+			desc.add("ID");
+			desc.add("NAME");
+			desc.add("IS_ENABLED");
+			desc.add("DEFAULT_GROUP");
+			desc.add("CONNECTION_TYPE");
+			desc.add("CREATOR");
+			desc.add("CREATE_TIME");
+			desc.add("CHANGER");
+			desc.add("CHANGE_TIME");
+			desc.add("PRIVS");
+			desc.add("MANAGE_PRIVS");
+			desc.add("GROUPS");
+			desc.add("EQUIVALENT_USERS");
+			desc.add("PARAMETERS");
+			desc.add("COMMENTTYPE");
+			desc.add("COMMENT");
+			c_desc.add("TAG");
+			c_desc.add("COMMENT");
+
+			data = new Vector();
+
+			data.add(uId);
+			data.add(u.getName(sysEnv));
+
+			data.add(u.getIsEnabled(sysEnv));
+			data.add(SDMSGroupTable.getObject(sysEnv, u.getDefaultGId(sysEnv)).getName(sysEnv));
+			data.add(u.getConnectionTypeAsString(sysEnv));
+			try {
+				data.add(SDMSUserTable.getObject(sysEnv, u.getCreatorUId(sysEnv)).getName(sysEnv));
+			} catch (NotFoundException nfe) {
+				data.add(SDMSUserTable.DROPPED_NAME);
+			}
+			d.setTime(u.getCreateTs(sysEnv).longValue());
+			data.add(sysEnv.systemDateFormat.format(d));
+			try {
+				data.add(SDMSUserTable.getObject(sysEnv, u.getChangerUId(sysEnv)).getName(sysEnv));
+			} catch (NotFoundException nfe) {
+				data.add(SDMSUserTable.DROPPED_NAME);
+			}
+			d.setTime(u.getChangeTs(sysEnv).longValue());
+			data.add(sysEnv.systemDateFormat.format(d));
+			data.add(u.getPrivileges(sysEnv).toString());
+			data.add(getManageList(sysEnv, uId));
+			data.add(getGroupList(sysEnv, uId));
+			data.add(getEquivUserList(sysEnv, uId));
+			data.add(getParms(sysEnv, uId));
+
+			data.add(getCommentInfoType(sysEnv, uId));
+			data.add(getCommentContainer(sysEnv, uId));
+		} finally {
+			if (suActive)
+				sysEnv.cEnv.popGid(sysEnv);
+		}
 
 		d_container = new SDMSOutputContainer(sysEnv, "User", desc, data);
 
