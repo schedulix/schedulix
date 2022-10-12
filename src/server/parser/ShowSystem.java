@@ -170,6 +170,8 @@ public class ShowSystem extends Node
 			    !str.equals(SystemEnvironment.S_SYSPASSWD)
 			  )
 				data.add(SystemEnvironment.props.get(str));
+			else if (str.equals(ExpireDate)) {
+			}
 		}
 		for(int j = 0; j < props.length; j++) {
 			String prop = props[j].toUpperCase();
