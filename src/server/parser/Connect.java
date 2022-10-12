@@ -427,18 +427,18 @@ public class Connect extends Node
 		int timeout;
 		String salt;
 		int method;
+		boolean isActive = false;
 
 		try {
 			pId = SDMSScopeTable.pathToId(sysEnv, path);
 
 			s = SDMSScopeTable.idx_parentId_name_getUnique(sysEnv, new SDMSKey(pId, jsName));
 			if(s.getType(sysEnv).intValue() != SDMSScope.SERVER) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202041546",
-						"Invalid jobservername or password"));
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202041546", "Invalid jobservername or password"));
 			}
 			if(!s.getIsEnabled(sysEnv).booleanValue()) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv,
-						"03202041508", "JobServer disabled"));
+				if (!s.hasActiveJobs(sysEnv))
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03202041508", "JobServer disabled"));
 			}
 			salt = s.getSalt(sysEnv);
 			method = s.getMethod(sysEnv).intValue();
@@ -447,12 +447,10 @@ public class Connect extends Node
 			else
 				passwd = CheckSum.mkstr(CheckSum.sha256((txtPasswd + (salt == null ? "" : salt)).getBytes()), false);
 			if(!s.getPasswd(sysEnv).equals(passwd)) {
-				throw new CommonErrorException(new SDMSMessage(sysEnv,
-						"03202041511", "Invalid jobservername or password"));
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202041511", "Invalid jobservername or password"));
 			}
 		} catch (NotFoundException nfe) {
-			throw new CommonErrorException(new SDMSMessage(sysEnv,
-					"03202041510", "Invalid jobservername or password"));
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202041510", "Invalid jobservername or password"));
 		}
 
 		SDMSnpSrvrSRFootprint sf = SDMSnpSrvrSRFootprintTable.idx_sId_getUniqueForUpdate(sysEnv, s.getId(sysEnv));
