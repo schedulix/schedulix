@@ -194,26 +194,22 @@ public class AlterScope
 		if (with.containsKey (ParseStr.S_ENABLE)) {
 			final Boolean enable = (Boolean) with.get (ParseStr.S_ENABLE);
 
-			if(!enable.booleanValue()) {
-				Vector v = SDMSSubmittedEntityTable.idx_scopeId.getVector(sysEnv, sId);
-				for(int i = 0; i < v.size(); i++) {
-					SDMSSubmittedEntity sme = (SDMSSubmittedEntity) v.get(i);
-					int state = sme.getState(sysEnv).intValue();
-					if (state == SDMSSubmittedEntity.STARTING ||
-					    state == SDMSSubmittedEntity.STARTED  ||
-					    state == SDMSSubmittedEntity.RUNNING  ||
-					    state == SDMSSubmittedEntity.TO_KILL  ||
-					    state == SDMSSubmittedEntity.KILLED) {
-						throw new CommonErrorException(new SDMSMessage(sysEnv, "03311031035",
-								"A scope cannot be disabled while jobs are still running"));
+			if(!enable.equals(s.getIsEnabled(sysEnv))) {
+				if (enable.booleanValue())
+					SystemEnvironment.sched.notifyChange(sysEnv, s, SchedulingThread.ENABLE);
+				else {
+					SystemEnvironment.sched.notifyChange(sysEnv, s, SchedulingThread.DISABLE);
+					if (!s.hasActiveJobs(sysEnv)) {
+						if(s.isConnected(sysEnv)) {
+							SDMSThread.doTrace(sysEnv.cEnv, "Trying to kill connection " + s.getConnectionId(sysEnv) + " of Jobserver " + s.pathString(sysEnv), SDMSThread.SEVERITY_MESSAGE);
+							SystemEnvironment.server.killUser(s.getConnectionId(sysEnv));
+							s.setIsRegistered(sysEnv, Boolean.FALSE);
+						}
+
 					}
 				}
-				if(s.isConnected(sysEnv)) {
-					SystemEnvironment.server.killUser(s.getConnectionId(sysEnv));
-				}
-				s.setIsRegistered(sysEnv, Boolean.FALSE);
+				s.setIsEnabled(sysEnv, enable);
 			}
-			s.setIsEnabled(sysEnv, enable);
 		}
 		if (with.containsKey (ParseStr.S_CONFIG))
 			ScopeConfig.alter (sysEnv, s, (WithHash) with.get (ParseStr.S_CONFIG));
@@ -225,6 +221,15 @@ public class AlterScope
 			                         sysEnv, new SDMSKey(gName, SDMSConstants.lZERO)).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId, s.getOwnerId(sysEnv));
 			s.setOwnerId(sysEnv, gId);
+		}
+		if (with.containsKey(ParseStr.S_INHERIT)) {
+			Long inheritPrivs = (Long) with.get(ParseStr.S_INHERIT);
+			if (inheritPrivs == null) inheritPrivs = SDMSConstants.lZERO;
+			long lpriv = inheritPrivs.longValue();
+			if((s.getPrivilegeMask() & lpriv) != lpriv) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061325", "Incompatible grant"));
+			}
+			s.setInheritPrivs(sysEnv, inheritPrivs);
 		}
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03201301103", "Job Server altered"));

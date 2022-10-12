@@ -293,6 +293,7 @@ public class AlterJob extends ManipJob
 	{
 		auditFlag = false;
 		Long sId = sme.getScopeId(sysEnv);
+		SDMSScope s = SDMSScopeTable.getObjectForUpdate(sysEnv, sId);
 		int actstate = sme.getState(sysEnv).intValue();
 		if (actstate != SDMSSubmittedEntity.STARTING &&
 		    actstate != SDMSSubmittedEntity.STARTED  &&
@@ -303,15 +304,22 @@ public class AlterJob extends ManipJob
 			result.setFeedback(new SDMSMessage(sysEnv, "03205141709", "Job altered"));
 			return;
 		}
-		if(!sysEnv.cEnv.uid().equals(sId)) {
+		if(sysEnv.cEnv.uid().equals(sId)) {
+			if(status != null) {
+				changeState(sysEnv, sme, false, status);
+			}
+			s.setLastActive(sysEnv, Long.valueOf(sysEnv.cEnv.last()));
+		} else {
 			result.setFeedback(new SDMSMessage(sysEnv, "03205141710", "Job altered"));
-			return;
 		}
-		if(status != null) {
-			changeState(sysEnv, sme, false, status);
+		if (!s.getIsEnabled(sysEnv).booleanValue() && !s.hasActiveJobs(sysEnv)) {
+			SDMSThread.doTrace(sysEnv.cEnv, "Trying to kill connection " + sysEnv.cEnv.getMe().id() + " of Jobserver " + s.pathString(sysEnv), SDMSThread.SEVERITY_MESSAGE);
+			if(s.isConnected(sysEnv)) {
+				SystemEnvironment.server.killUser(sysEnv.cEnv.getMe().id());
+			}
+			s.setIsRegistered(sysEnv, Boolean.FALSE);
 		}
-		SDMSScope s = SDMSScopeTable.getObjectForUpdate(sysEnv, sId);
-		s.setLastActive(sysEnv, Long.valueOf(sysEnv.cEnv.last()));
+
 	}
 
 	private void alterByOperator(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, long actVersion)
