@@ -94,6 +94,9 @@ public class CreateResource extends ManipResource
 				"You cannot put a resource into a group you do not belong to"));
 
 		nr = SDMSNamedResourceTable.getNamedResource(sysEnv, resourcepath);
+		if (nr.getUsage(sysEnv).intValue() == SDMSNamedResource.POOL) {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202211133", "Cannot create pools, use create pool instead"));
+		}
 		nrId = nr.getId(sysEnv);
 
 		try {
