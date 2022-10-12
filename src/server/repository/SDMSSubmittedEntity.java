@@ -100,6 +100,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	public static final String S_WARNING		= "LAST_WARNING";
 	public static final String S_RERUNSEQ		= "RERUNSEQ";
 	public static final String S_SCOPENAME		= "SCOPENAME";
+	public static final String S_EXITCODE		= "EXITCODE";
 	public static final String S_IDLE_TIME		= "IDLE_TIME";
 	public static final String S_DEPENDENCY_WAIT_TIME	= "DEPENDENCY_WAIT_TIME";
 	public static final String S_SUSPEND_TIME	= "SUSPEND_TIME";
@@ -561,26 +562,12 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			doDisable(sysEnv, true );
 		} else {
 			if (!getIsDisabled(sysEnv).booleanValue()) return;
-			if (getIsParentDisabled(sysEnv).booleanValue()) {
+			if (getDirectParentsAreDisabled(sysEnv).booleanValue()) {
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "03908251744",
 				                                "Cannot enable a submitted entity which is not at top level of the disabled subtree"));
 			}
 			doEnable(sysEnv);
 		}
-	}
-
-	public Boolean getIsParentDisabled (SystemEnvironment sysEnv)
-	throws SDMSException
-	{
-		Vector pv = SDMSHierarchyInstanceTable.idx_childId.getVector(sysEnv, getId(sysEnv));
-		for (int i = 0; i < pv.size(); ++i) {
-			SDMSHierarchyInstance hi = (SDMSHierarchyInstance) pv.get(i);
-			SDMSSubmittedEntity pSme = SDMSSubmittedEntityTable.getObject(sysEnv, hi.getParentId(sysEnv));
-			if (pSme.getIsDisabled(sysEnv).booleanValue() || pSme.getIsParentDisabled(sysEnv).booleanValue()) {
-				return Boolean.TRUE;
-			}
-		}
-		return Boolean.FALSE;
 	}
 
 	public Boolean getDirectParentsAreDisabled (SystemEnvironment sysEnv)
@@ -628,9 +615,11 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		int state = sme.getState(sysEnv).intValue();
 
 		if (state != SDMSSubmittedEntity.DEPENDENCY_WAIT) {
-			if (! (state == SDMSSubmittedEntity.CANCELLED && sme.getIsDisabled(sysEnv).booleanValue()))
+			if (state != SDMSSubmittedEntity.CANCELLED)
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "03908251740",
 				                                "Cannot enable a submitted entity that is not in DEPENDENCY WAIT state"));
+			else
+				return;
 		}
 		sme.setIsDisabled(sysEnv, Boolean.FALSE);
 		sme.checkDependencies(sysEnv);
@@ -1004,7 +993,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			int type = pd.getType(sysEnv).intValue();
 			if(type != SDMSParameterDefinition.PARAMETER) continue;
 			try {
-				SVR.getVariableValue(sysEnv, this, pd.getName(sysEnv), false, ParseStr.S_DEFAULT, false, null);
+				SVR.getVariableValue(sysEnv, this, pd.getName(sysEnv), false, ParseStr.S_DEFAULT, false, null, true);
 			} catch (NotFoundException nfe) {
 				final SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, getSeId(sysEnv), seVersion);
 				throw new NotFoundException (new SDMSMessage(sysEnv, "03606211020", "Couldn't resolve parameter $1 of $2",
@@ -1013,22 +1002,22 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 	}
 
-	public String getVariableValue(SystemEnvironment sysEnv, String key, boolean fastAccess, String mode, boolean triggercontext, SDMSScope evalScope)
+	public String getVariableValue(SystemEnvironment sysEnv, String key, boolean fastAccess, String mode, boolean triggercontext, SDMSScope evalScope, boolean doSubstitute)
 		throws SDMSException
 	{
-		return SVR.getVariableValue(sysEnv, this, key, fastAccess, mode, triggercontext, evalScope);
+		return SVR.getVariableValue(sysEnv, this, key, fastAccess, mode, triggercontext, evalScope, doSubstitute);
 	}
 
-	public String getVariableValue(SystemEnvironment sysEnv, String key, boolean fastAccess, String mode, boolean triggercontext)
+	public String getVariableValue(SystemEnvironment sysEnv, String key, boolean fastAccess, String mode, boolean triggercontext, boolean doSubstitute)
 		throws SDMSException
 	{
-		return SVR.getVariableValue(sysEnv, this, key, fastAccess, mode, triggercontext, null);
+		return SVR.getVariableValue(sysEnv, this, key, fastAccess, mode, triggercontext, null, doSubstitute);
 	}
 
-	public String getVariableValue(SystemEnvironment sysEnv, String key, boolean fastAccess, String mode)
+	public String getVariableValue(SystemEnvironment sysEnv, String key, boolean fastAccess, String mode, boolean doSubstitute)
 		throws SDMSException
 	{
-		return SVR.getVariableValue(sysEnv, this, key, fastAccess, mode, false, null);
+		return SVR.getVariableValue(sysEnv, this, key, fastAccess, mode, false, null, doSubstitute);
 	}
 
 	public void setVariableValue(SystemEnvironment sysEnv, String key, String value)
@@ -1832,14 +1821,17 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				switch (type) {
 					case SDMSSchedulingEntity.JOB:
 						boolean isRR = (getOldState(sysEnv) == null);
-						if (isRR) {
-							if ((getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND &&
-							     getParentSuspended(sysEnv).intValue() == 0) ||
-							    getRerunSeq(sysEnv).intValue() > 0) {
-								setState(sysEnv, SDMSConstants.SME_SYNCHRONIZE_WAIT);
+						boolean isDisabled = this.getIsDisabled(sysEnv).booleanValue();
+						if (!isDisabled) {
+							if (isRR) {
+								if ((getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND &&
+								     getParentSuspended(sysEnv).intValue() == 0) ||
+								    getRerunSeq(sysEnv).intValue() > 0) {
+									setState(sysEnv, SDMSConstants.SME_SYNCHRONIZE_WAIT);
+								}
 							}
+							break;
 						}
-						break;
 					case SDMSSchedulingEntity.BATCH:
 					case SDMSSchedulingEntity.MILESTONE:
 
@@ -2903,6 +2895,11 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			SystemEnvironment.sched.notifyChange(sysEnv, this, SchedulingThread.STATECHANGE);
 		}
 		if (newState == SYNCHRONIZE_WAIT) {
+			if (this.getIsDisabled(sysEnv).booleanValue()) {
+				SDMSMessage msg = new SDMSMessage(sysEnv, "03209291241", "Setting a disabled job to SYNCHRONIZE_WAIT!!!");
+				SDMSThread.doTrace(sysEnv.cEnv, msg.toString(), SDMSThread.SEVERITY_FATAL);
+				throw new CommonErrorException(msg.toString());
+			}
 			this.setOldState(sysEnv, Integer.valueOf(oldState));
 			SystemEnvironment.sched.addToRequestList(sysEnv, mySmeId);
 			setSyncTs(sysEnv, ts);
