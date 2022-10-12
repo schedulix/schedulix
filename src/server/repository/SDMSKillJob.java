@@ -57,12 +57,12 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 		super(p_object);
 	}
 
-	public String getVariableValue(SystemEnvironment sysEnv, String key)
+	public String getVariableValue(SystemEnvironment sysEnv, String key, boolean doSubstitute)
 	throws SDMSException
 	{
 		if(specialNames.contains(key)) return getSpecialValue(sysEnv, key);
 		SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, getSmeId(sysEnv));
-		return sme.getVariableValue(sysEnv, key, false, ParseStr.S_DEFAULT);
+		return sme.getVariableValue(sysEnv, key, false, ParseStr.S_DEFAULT, doSubstitute);
 	}
 
 	private String getSpecialValue(SystemEnvironment sysEnv, String key)

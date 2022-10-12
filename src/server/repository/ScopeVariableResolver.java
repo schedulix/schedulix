@@ -49,10 +49,11 @@ public class ScopeVariableResolver extends VariableResolver
 	                                  String mode,
 	                                  boolean triggercontext,
 	                                  long version,
-	                                  SDMSScope evalScope)
+	                                  SDMSScope evalScope,
+	                                  boolean doSubstitute)
 	throws SDMSException
 	{
-		final String retval = getInternalVariableValue(sysEnv, (SDMSScope) thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null);
+		final String retval = getInternalVariableValue(sysEnv, (SDMSScope) thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null, doSubstitute);
 
 		return retval;
 	}
@@ -65,7 +66,8 @@ public class ScopeVariableResolver extends VariableResolver
 	                boolean triggercontext,
 	                Stack recursionCheck,
 	                long version,
-	                SDMSScope evalScope)
+	                SDMSScope evalScope,
+	                boolean doSubstitute)
 	throws SDMSException
 	{
 		String retval;
@@ -77,7 +79,10 @@ public class ScopeVariableResolver extends VariableResolver
 			else
 				pd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique (sysEnv, new SDMSKey (thisScope.getId (sysEnv), key));
 			retval = pd.getDefaultValue (sysEnv).substring (1);
-			return parseAndSubstitute(sysEnv, thisScope, retval, fastAccess, mode, triggercontext, recursionCheck, version);
+			if (doSubstitute)
+				return parseAndSubstitute(sysEnv, thisScope, retval, fastAccess, mode, triggercontext, recursionCheck, version);
+			else
+				return retval;
 		} catch (final NotFoundException nfe) {
 			final Long parentId = thisScope.getParentId (sysEnv);
 			if (parentId == null)
@@ -88,7 +93,7 @@ public class ScopeVariableResolver extends VariableResolver
 				ps = SDMSScopeTable.getObject (sysEnv, parentId, version);
 			else
 				ps = SDMSScopeTable.getObject (sysEnv, parentId);
-			return getInternalVariableValue(sysEnv, ps, key, fastAccess, mode, triggercontext, recursionCheck, version);
+			return getInternalVariableValue(sysEnv, ps, key, fastAccess, mode, triggercontext, recursionCheck, version, doSubstitute);
 		}
 	}
 

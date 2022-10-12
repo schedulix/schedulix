@@ -293,7 +293,7 @@ public class ListSubmitted extends Node
 				if(w.equals(SDMSSubmittedEntity.S_KEY)) continue;
 				String parmVal;
 				try {
-					parmVal = se.getVariableValue(sysEnv, w, actVersion);
+					parmVal = se.getVariableValue(sysEnv, w, actVersion, true);
 				} catch(NotFoundException cee) {
 					parmVal = emptyString;
 				} catch(SDMSException e) {
@@ -637,7 +637,7 @@ public class ListSubmitted extends Node
 				if(w.equals(SDMSSubmittedEntity.S_KEY)) continue;
 				String parmVal;
 				try {
-					parmVal = job.getVariableValue(sysEnv, w, true, ParseStr.S_DEFAULT);
+					parmVal = job.getVariableValue(sysEnv, w, true, ParseStr.S_DEFAULT, true);
 				} catch(NotFoundException cee) {
 					parmVal = emptyString;
 				} catch(SDMSException e) {

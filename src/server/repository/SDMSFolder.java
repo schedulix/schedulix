@@ -37,7 +37,7 @@ import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.parser.ManipParameters;
 
 public class SDMSFolder extends SDMSFolderProxyGeneric
-	implements SDMSOwnedObject
+	implements SDMSOwnedObject, SDMSHierarchicalObject
 {
 
 	public final static String __version = "@(#) $Id: SDMSFolder.java,v 2.16.2.5 2013/03/19 17:16:51 ronald Exp $";
@@ -47,6 +47,15 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	protected SDMSFolder(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	public SDMSFolder getParent(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Long parentId = getParentId(sysEnv);
+		if (parentId == null) return null;
+		SDMSFolder parent = SDMSFolderTable.getObject(sysEnv, parentId);
+		return parent;
 	}
 
 	public SDMSFolder copy(SystemEnvironment sysEnv, Long targetFolderId, String name)
@@ -258,16 +267,16 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 		return dropped_all_resources;
 	}
 
-	public String getVariableValue(SystemEnvironment sysEnv, String key)
+	public String getVariableValue(SystemEnvironment sysEnv, String key, boolean doSubstitute)
 		throws SDMSException
 	{
-		return FVR.getVariableValue(sysEnv, this, key, -1);
+		return FVR.getVariableValue(sysEnv, this, key, -1, doSubstitute);
 	}
 
-	public String getVariableValue(SystemEnvironment sysEnv, String key, long version)
+	public String getVariableValue(SystemEnvironment sysEnv, String key, long version, boolean doSubstitute)
 		throws SDMSException
 	{
-		return FVR.getVariableValue(sysEnv, this, key, version);
+		return FVR.getVariableValue(sysEnv, this, key, version, doSubstitute);
 	}
 
 	public String getURLName(SystemEnvironment sysEnv)

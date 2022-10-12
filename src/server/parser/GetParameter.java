@@ -81,7 +81,7 @@ public class GetParameter extends Node
 		desc.add("VALUE");
 
 		try {
-			s = sme.getVariableValue(sysEnv, name, false, mode);
+			s = sme.getVariableValue(sysEnv, name, false, mode, true);
 		} catch (NotFoundException nfe) {
 
 			throw new NotFoundException(new SDMSMessage(sysEnv, "03209231453", "Couldn't resolve Parameter $1", name));

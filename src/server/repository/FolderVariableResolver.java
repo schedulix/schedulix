@@ -49,11 +49,12 @@ public class FolderVariableResolver extends VariableResolver
 					  String mode,
 					  boolean triggercontext,
 					  long version,
-					  SDMSScope evalScope)
+	                                  SDMSScope evalScope,
+	                                  boolean doSubstitute)
 		throws SDMSException
 	{
 		SDMSThread.doTrace(sysEnv.cEnv, "get valiable value : " + key, SDMSThread.SEVERITY_DEBUG);
-		final String retval = getInternalVariableValue(sysEnv, (SDMSFolder) thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null);
+		final String retval = getInternalVariableValue(sysEnv, (SDMSFolder) thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null, doSubstitute);
 
 		return retval;
 	}
@@ -66,7 +67,8 @@ public class FolderVariableResolver extends VariableResolver
 						boolean triggercontext,
 						Stack recursionCheck,
 						long version,
-						SDMSScope evalScope)
+	                SDMSScope evalScope,
+	                boolean doSubstitute)
 		throws SDMSException
 	{
 		String retval;
@@ -78,7 +80,10 @@ public class FolderVariableResolver extends VariableResolver
 			else
 				pd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(thisFolder.getId(sysEnv), key), version);
 			retval = pd.getDefaultValue(sysEnv).substring(1);
-			return parseAndSubstitute(sysEnv, thisFolder, retval, fastAccess, mode, triggercontext, recursionCheck, version);
+			if (doSubstitute)
+				return parseAndSubstitute(sysEnv, thisFolder, retval, fastAccess, mode, triggercontext, recursionCheck, version);
+			else
+				return retval;
 		} catch(NotFoundException nfe) {
 			Long parentId = thisFolder.getParentId(sysEnv);
 			if(parentId != null) {
@@ -87,7 +92,7 @@ public class FolderVariableResolver extends VariableResolver
 					pf = SDMSFolderTable.getObject(sysEnv, parentId, version);
 				else
 					pf = SDMSFolderTable.getObject(sysEnv, parentId);
-				return getInternalVariableValue(sysEnv, pf, key, fastAccess, mode, triggercontext, recursionCheck, version);
+				return getInternalVariableValue(sysEnv, pf, key, fastAccess, mode, triggercontext, recursionCheck, version, doSubstitute);
 			} else {
 				throw new NotFoundException(new SDMSMessage(sysEnv, "03209231454", "Couldn't resolve the variable $1", key));
 			}

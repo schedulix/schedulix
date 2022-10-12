@@ -45,6 +45,7 @@ public class SDMSParameterDefinitionProxyGeneric extends SDMSProxy
 	public static final int PARAMETER = 50;
 	public static final int EXPRESSION = 60;
 	public static final int IMPORT = 70;
+	public static final int IMPORT_UNRESOLVED = 71;
 	public static final int DYNAMIC = 80;
 	public static final int DYNAMICVALUE = 81;
 	public static final int LOCAL_CONSTANT = 90;

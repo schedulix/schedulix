@@ -117,14 +117,14 @@ public class ParameterFilter extends Filter
 				if (p instanceof SDMSSubmittedEntity) {
 					SDMSSubmittedEntity sme = (SDMSSubmittedEntity) p;
 					try {
-						parmVal = sme.getVariableValue(sysEnv, name, true, ParseStr.S_DEFAULT, (be != null));
+						parmVal = sme.getVariableValue(sysEnv, name, true, ParseStr.S_DEFAULT, (be != null), true);
 					} catch(NotFoundException cee) {
 						parmVal = null;
 					}
 				} else if (p instanceof SDMSSchedulingEntity) {
 					SDMSSchedulingEntity se = (SDMSSchedulingEntity) p;
 					try {
-						parmVal = se.getVariableValue(sysEnv, name);
+						parmVal = se.getVariableValue(sysEnv, name, true);
 					} catch (NotFoundException cee) {
 						parmVal = null;
 					}
@@ -133,7 +133,7 @@ public class ParameterFilter extends Filter
 						SDMSScheduledEvent scev = SDMSScheduledEventTable.getObject(sysEnv, ((SDMSCalendar)p).getScevId(sysEnv));
 						SDMSEvent ev = SDMSEventTable.getObject(sysEnv, scev.getEvtId(sysEnv));
 						SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, ev.getSeId(sysEnv));
-						parmVal = se.getVariableValue(sysEnv, name);
+						parmVal = se.getVariableValue(sysEnv, name, true);
 					} catch (NotFoundException cee) {
 						parmVal = null;
 					}
@@ -141,7 +141,7 @@ public class ParameterFilter extends Filter
 					try {
 						SDMSEvent ev = SDMSEventTable.getObject(sysEnv, ((SDMSScheduledEvent)p).getEvtId(sysEnv));
 						SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, ev.getSeId(sysEnv));
-						parmVal = se.getVariableValue(sysEnv, name);
+						parmVal = se.getVariableValue(sysEnv, name, true);
 					} catch (NotFoundException cee) {
 						parmVal = null;
 					}

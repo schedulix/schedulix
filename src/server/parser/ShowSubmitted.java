@@ -381,7 +381,7 @@ public class ShowSubmitted extends Node
 			else
 				isCancelled = Boolean.FALSE;
 		data.add(sme.getIsDisabled(sysEnv));
-		data.add(sme.getIsParentDisabled(sysEnv));
+		data.add(sme.getDirectParentsAreDisabled(sysEnv));
 		data.add(isCancelled);
 		esdId = sme.getJobEsdId(sysEnv);
 		if(esdId != null) {
@@ -722,7 +722,7 @@ public class ShowSubmitted extends Node
 			names.add(pd.getName(sysEnv));
 			c_data.add(pd.getTypeAsString(sysEnv));
 			try {
-				c_data.add(sme.getVariableValue(sysEnv, pd.getName(sysEnv), false, ParseStr.S_DEFAULT));
+				c_data.add(sme.getVariableValue(sysEnv, pd.getName(sysEnv), false, ParseStr.S_DEFAULT, true));
 			} catch(NotFoundException nfe) {
 				c_data.add(null);
 			} catch(CommonErrorException cee) {

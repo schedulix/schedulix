@@ -156,11 +156,11 @@ private ParseObject resolve(String o, int type)
 	String p = emptyString;
 	switch (type) {
 		case JPARAMETER:
-			p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
+			p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
 			break;
 		case RPARAMETER:
 			if (r != null)
-				p = r.getVariableValue(sysEnv, o);
+				p = r.getVariableValue(sysEnv, o, true);
 			break;
 		case TPARAMETER:
 			p = resolveTriggerVariable(o);
@@ -168,24 +168,24 @@ private ParseObject resolve(String o, int type)
 			break;
 		case RSPARAMETER:
 			if (requiredSme != null)
-				p = requiredSme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
+				p = requiredSme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
 			else
-				p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
+				p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
 			break;
 		case DSPARAMETER:
-			p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
+			p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
 			break;
 		case PARAMETER:
 			p = resolveTriggerVariable(o);
 			if(p != null) return new ParseObject(p);
 			if(sme != null)
-				p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
+				p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
 			else
 				if (requiredSme != null) 
-					p = requiredSme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope);
+					p = requiredSme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
 				else
 					if (r != null)
-						p = r.getVariableValue(sysEnv, o);
+						p = r.getVariableValue(sysEnv, o, true);
 					else
 						p = emptyString;
 			break;

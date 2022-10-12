@@ -234,6 +234,7 @@ public class ParseStr
 	public static final String S_KILL		= "KILL";
 	public static final String S_KILLED		= "KILLED";
 	public static final String S_KILL_PROGRAM	= "KILL_PROGRAM";
+	public static final String S_LANGUAGE		= "LANGUAGE";
 	public static final String S_LAST		= "LAST";
 	public static final String S_LEVEL		= "LEVEL";
 	public static final String S_LIBERAL		= "LIBERAL";
@@ -490,6 +491,7 @@ public class ParseStr
 	public final static Integer I_CHILDREFERENCE	= Integer.valueOf(SDMSParameterDefinition.CHILDREFERENCE);
 	public final static Integer I_RESULT		= Integer.valueOf(SDMSParameterDefinition.RESULT);
 	public final static Integer I_IMPORT		= Integer.valueOf(SDMSParameterDefinition.IMPORT);
+	public final static Integer I_IMPORT_UNRESOLVED	= Integer.valueOf(SDMSParameterDefinition.IMPORT_UNRESOLVED);
 	public final static Integer I_EXPRESSION	= Integer.valueOf(SDMSParameterDefinition.EXPRESSION);
 
 	public final static Integer I_PLAIN		= Integer.valueOf(SDMSUser.PLAIN);
@@ -720,6 +722,7 @@ public class ParseStr
 		mapper.put(Integer.valueOf(Parser.KILL),			ParseStr.S_KILL);
 		mapper.put(Integer.valueOf(Parser.KILLED),			ParseStr.S_KILLED);
 		mapper.put(Integer.valueOf(Parser.KILL_PROGRAM),		ParseStr.S_KILL_PROGRAM);
+		mapper.put(Integer.valueOf(Parser.LANGUAGE),			ParseStr.S_LANGUAGE);
 		mapper.put(Integer.valueOf(Parser.LAST),			ParseStr.S_LAST);
 		mapper.put(Integer.valueOf(Parser.LEVEL),			ParseStr.S_LEVEL);
 		mapper.put(Integer.valueOf(Parser.LIBERAL),			ParseStr.S_LIBERAL);

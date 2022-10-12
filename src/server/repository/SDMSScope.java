@@ -39,7 +39,7 @@ import de.independit.scheduler.server.parser.*;
 import de.independit.scheduler.jobserver.Config;
 
 public class SDMSScope extends SDMSScopeProxyGeneric
-	implements SDMSOwnedObject
+	implements SDMSOwnedObject, SDMSHierarchicalObject
 {
 
 	public final static String __version = "@(#) $Id: SDMSScope.java,v 2.27.2.4 2013/03/19 17:16:52 ronald Exp $";
@@ -48,6 +48,15 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	protected SDMSScope(SDMSObject p_object)
 	{
 		super(p_object);
+	}
+
+	public SDMSScope getParent(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Long parentId = getParentId(sysEnv);
+		if (parentId == null) return null;
+		SDMSScope parent = SDMSScopeTable.getObject(sysEnv, parentId);
+		return parent;
 	}
 
 	public SDMSScope copy(SystemEnvironment sysEnv, Long targetScopeId, String name)
@@ -176,7 +185,6 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 
 		for(int i=0; i<nt; i++) {
 			if(list[i] instanceof ListenThread) continue;
-			if(sysEnv.cEnv.getMe().equals(list[i])) continue;
 			uc = (UserConnection) list[i];
 			if(uc.iAmAlive()) {
 				ConnectionEnvironment env = uc.getEnv();
@@ -329,16 +337,16 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 		super.delete(sysEnv);
 	}
 
-	public String getVariableValue (final SystemEnvironment sysEnv, final String key)
+	public String getVariableValue (final SystemEnvironment sysEnv, final String key, boolean doSubstitute)
 		throws SDMSException
 	{
-		return SVR.getVariableValue (sysEnv, this, key, -1);
+		return SVR.getVariableValue (sysEnv, this, key, -1, doSubstitute);
 	}
 
-	public String getVariableValue (final SystemEnvironment sysEnv, final String key, final long version)
+	public String getVariableValue (final SystemEnvironment sysEnv, final String key, final long version, boolean doSubstitute)
 		throws SDMSException
 	{
-		return SVR.getVariableValue (sysEnv, this, key, version);
+		return SVR.getVariableValue (sysEnv, this, key, version, doSubstitute);
 	}
 
 	public long addImplicitPrivs(long priv)

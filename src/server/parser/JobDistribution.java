@@ -229,7 +229,7 @@ public abstract class JobDistribution extends Node
 			String exportName = pd.getExportName(sysEnv);
 			if (exportName != null) {
 				jobenv.add(exportName);
-				jobenv.add(sme.getVariableValue(sysEnv, pd.getName(sysEnv), false, ParseStr.S_DEFAULT));
+				jobenv.add(sme.getVariableValue(sysEnv, pd.getName(sysEnv), false, ParseStr.S_DEFAULT, true));
 			}
 		}
 		data.add(jobenv);
@@ -364,7 +364,7 @@ public abstract class JobDistribution extends Node
 			String exportName = pd.getExportName(sysEnv);
 			if (exportName != null) {
 				jobenv.add(exportName);
-				jobenv.add(sme.getVariableValue(sysEnv, pd.getName(sysEnv), false, ParseStr.S_DEFAULT));
+				jobenv.add(sme.getVariableValue(sysEnv, pd.getName(sysEnv), false, ParseStr.S_DEFAULT, true));
 			}
 		}
 
@@ -537,7 +537,7 @@ public abstract class JobDistribution extends Node
 		for(int i=0; i < SystemEnvironment.exportVariables.size(); i++) {
 			env.add(SystemEnvironment.exportVariables.get(i));
 			try {
-				env.add(sme.getVariableValue(sysEnv, (String) SystemEnvironment.exportVariables.get(i), false, ParseStr.S_DEFAULT));
+				env.add(sme.getVariableValue(sysEnv, (String) SystemEnvironment.exportVariables.get(i), false, ParseStr.S_DEFAULT, true));
 			} catch(NotFoundException cee) {
 				env.add("");
 			}
@@ -552,7 +552,7 @@ public abstract class JobDistribution extends Node
 		for(int i=0; i < SystemEnvironment.exportVariables.size(); i++) {
 			env.add(SystemEnvironment.exportVariables.get(i));
 			try {
-				env.add(kj.getVariableValue(sysEnv, (String) SystemEnvironment.exportVariables.get(i)));
+				env.add(kj.getVariableValue(sysEnv, (String) SystemEnvironment.exportVariables.get(i), true));
 			} catch(NotFoundException cee) {
 				env.add("");
 			}

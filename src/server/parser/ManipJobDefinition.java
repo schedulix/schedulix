@@ -424,12 +424,13 @@ public abstract class ManipJobDefinition extends Node
 		if(masterSubmittable == null) masterSubmittable = Boolean.FALSE;
 		if(dependencyOperation == null) dependencyOperation = SDMSConstants.SE_AND;
 		if(priority != null) {
-			priowarn = true;
 			if(priority.intValue() > SchedulingThread.MIN_PRIORITY) {
 				priority = SDMSConstants.ST_MIN_PRIORITY;
+				priowarn = true;
 			}
 			if(priority.intValue() < -SchedulingThread.MIN_PRIORITY) {
 				priority = SDMSConstants.ST_MINUS_MIN_PRIORITY;
+				priowarn = true;
 			}
 		} else  priority = SDMSConstants.iZERO;
 		minPriority = null;
@@ -785,6 +786,7 @@ public abstract class ManipJobDefinition extends Node
 				case SDMSParameterDefinition.PARAMETER:
 				case SDMSParameterDefinition.RESULT:
 				case SDMSParameterDefinition.IMPORT:
+				case SDMSParameterDefinition.IMPORT_UNRESOLVED:
 					if(pdef != null) pdef = "=" + pdef;
 					break;
 				case SDMSParameterDefinition.EXPRESSION:

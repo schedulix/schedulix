@@ -108,6 +108,8 @@ public abstract class VariableResolver
 		final char[] str = key.toCharArray();
 		boolean escape = false;
 
+		boolean singleQuote = false;
+
 		for(int i = 0; i < str.length; ++i) {
 			char c = str[i];
 			if (escape && pbs && c != prefix) {
@@ -115,17 +117,20 @@ public abstract class VariableResolver
 				escape = false;
 			}
 			if(escape) {
-				if(!pbs && c != '\\'&& c != prefix) {
+				if(!pbs && c != prefix) {
 					result.append('\\');
 				}
 				result.append(c);
 				escape = false;
 			} else {
-				if (c == prefix) {
-					i = readVar(sysEnv, thisObject, str, i, fastAccess, mode, triggercontext, result, recursionCheck, version, evalScope);
+				if (c == prefix && !singleQuote) {
+					i = readVar(sysEnv, thisObject, str, i, fastAccess, mode, triggercontext, result, recursionCheck, version, evalScope, true);
 				} else if (c == '\\') {
 					escape = true;
 				} else {
+					if (c == '\'') {
+						singleQuote = !singleQuote;
+					}
 					result.append(c);
 				}
 			}
@@ -146,7 +151,8 @@ public abstract class VariableResolver
 				StringBuffer result,
 				Stack recursionCheck,
 				long version,
-				SDMSScope evalScope)
+	                    SDMSScope evalScope,
+	                    boolean doSubstitute)
 		throws SDMSException
 	{
 		StringBuffer varbuf = new StringBuffer();
@@ -196,7 +202,7 @@ public abstract class VariableResolver
 		recursionCheck.push(k);
 		Boolean isDefault = (Boolean) sysEnv.tx.txData.get(SystemEnvironment.S_ISDEFAULT);
 		sysEnv.tx.txData.remove(SystemEnvironment.S_ISDEFAULT);
-		String tmp = getInternalVariableValue(sysEnv, thisObject, varName, fastAccess, mode, triggercontext, recursionCheck, version, evalScope);
+		String tmp = getInternalVariableValue(sysEnv, thisObject, varName, fastAccess, mode, triggercontext, recursionCheck, version, evalScope, doSubstitute);
 		result.append(tmp);
 		if(isDefault != null)
 			sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, isDefault);
@@ -211,10 +217,11 @@ public abstract class VariableResolver
 							String mode,
 							boolean triggercontext,
 							Stack recursionCheck,
-							long version)
+	                				long version,
+	                				boolean doSubstitute)
 		throws SDMSException
 	{
-		return getInternalVariableValue (sysEnv, thisObject, key, fastAccess, mode, triggercontext, recursionCheck, version, null);
+		return getInternalVariableValue (sysEnv, thisObject, key, fastAccess, mode, triggercontext, recursionCheck, version, null, doSubstitute);
 	}
 
 	abstract protected String getInternalVariableValue(SystemEnvironment sysEnv,
@@ -225,30 +232,31 @@ public abstract class VariableResolver
 							boolean triggercontext,
 							Stack recursionCheck,
 							long version,
-							SDMSScope evalScope)
+	                SDMSScope evalScope,
+	                boolean doSubstitute)
 		throws SDMSException;
 
-	public String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, boolean fastAccess, String mode, boolean triggercontext, SDMSScope evalScope)
+	public String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, boolean fastAccess, String mode, boolean triggercontext, SDMSScope evalScope, boolean doSubstitute)
 		throws SDMSException
 	{
-		return getVariableValue(sysEnv, thisObject, key, fastAccess, mode, triggercontext, -1, evalScope);
+		return getVariableValue(sysEnv, thisObject, key, fastAccess, mode, triggercontext, -1, evalScope, doSubstitute);
 	}
 
-	public String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, long version)
+	public String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, long version, boolean doSubstitute)
 		throws SDMSException
 	{
-		return getVariableValue(sysEnv, thisObject, key, false, ParseStr.S_DEFAULT, false, version, null);
+		return getVariableValue(sysEnv, thisObject, key, false, ParseStr.S_DEFAULT, false, version, null, doSubstitute);
 	}
 
-	public String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key)
+	public String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, boolean doSubstitute)
 		throws SDMSException
 	{
-		return getVariableValue(sysEnv, thisObject, key, false, ParseStr.S_DEFAULT, false, -1, null);
+		return getVariableValue(sysEnv, thisObject, key, false, ParseStr.S_DEFAULT, false, -1, null, doSubstitute);
 	}
-	public String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, SDMSSubmittedEntity sme)
+	public String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, SDMSSubmittedEntity sme, boolean doSubstitute)
 		throws SDMSException
 	{
-		return getVariableValue(sysEnv, thisObject, key, false, ParseStr.S_DEFAULT, false, -1, null, sme);
+		return getVariableValue(sysEnv, thisObject, key, false, ParseStr.S_DEFAULT, false, -1, null, sme, doSubstitute);
 	}
 
 	abstract protected String getVariableValue(SystemEnvironment sysEnv,
@@ -258,7 +266,8 @@ public abstract class VariableResolver
 							String mode,
 							boolean triggercontext,
 							long version,
-							SDMSScope evalScope)
+	                SDMSScope evalScope,
+	                boolean doSubstitute)
 		throws SDMSException;
 
 	protected String getVariableValue(SystemEnvironment sysEnv,
@@ -269,10 +278,11 @@ public abstract class VariableResolver
 							boolean triggercontext,
 							long version,
 							SDMSScope evalScope,
-							SDMSSubmittedEntity sme)
+	                                  		SDMSSubmittedEntity sme,
+	                                 		boolean doSubstitute)
 		throws SDMSException
 	{
-		return getVariableValue(sysEnv,thisObject,key,fastAccess,mode,triggercontext,version,evalScope);
+		return getVariableValue(sysEnv,thisObject,key,fastAccess,mode,triggercontext,version,evalScope, doSubstitute);
 	}
 
 	public VariableResolver()

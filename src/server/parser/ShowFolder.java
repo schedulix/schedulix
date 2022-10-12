@@ -78,6 +78,7 @@ public class ShowFolder extends ShowCommented
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411709", "Insufficient privileges"));
 
 		desc.add("ID");
+		desc.add("PARENT_ID");
 		desc.add("NAME");
 		desc.add("OWNER");
 		desc.add("TYPE");
@@ -96,6 +97,7 @@ public class ShowFolder extends ShowCommented
 		id = f.getId(sysEnv);
 		Vector v = new Vector();
 		v.add(id);
+		v.add(f.getParentId(sysEnv));
 		v.add(f.pathVector(sysEnv));
 		SDMSGroup g = SDMSGroupTable.getObject(sysEnv, f.getOwnerId(sysEnv));
 		v.add(g.getName(sysEnv));
@@ -127,7 +129,7 @@ public class ShowFolder extends ShowCommented
 		v.add(sysEnv.systemDateFormat.format(d));
 		v.add(f.getPrivileges(sysEnv).toString());
 
-		v.add(ManipParameters.get (sysEnv, f.getId (sysEnv)));
+		v.add(ManipParameters.getRecursive (sysEnv, f));
 		add_resources(sysEnv, f, v);
 
 		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv, "03112201803", "Folder"), desc, v);
@@ -143,6 +145,7 @@ public class ShowFolder extends ShowCommented
 		Vector data = new Vector();
 
 		desc.add("ID");
+		desc.add("PARENT_ID");
 		desc.add("NAME");
 		desc.add("OWNER");
 		desc.add("TYPE");
@@ -233,6 +236,7 @@ public class ShowFolder extends ShowCommented
 		SDMSGroup group;
 
 		data.add(seId);
+		data.add(se.getFolderId(sysEnv));
 		data.add(se.pathVector(sysEnv));
 		group = SDMSGroupTable.getObject(sysEnv, se.getOwnerId(sysEnv));
 		data.add(group.getName(sysEnv));

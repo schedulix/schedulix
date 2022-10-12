@@ -55,7 +55,7 @@ public class Parser
 %token <Token>	INFINITE INFO INHERIT INITIAL_STATUS INSTANCE INTERNAL INTERVAL INVERSE IS ISX IX
 %token <Token>	JOB JOB_DEFINITION JOB_DEFINITION_HIERARCHY JOB_FINAL JOB_SERVER JOB_STATUS JSON
 %token <Token>	KEEP KEEP_FINAL KILL KILLED KILL_PROGRAM
-%token <Token>	LAST LEADING LEVEL LIBERAL LIKE LIMIT LINE LINK LIST LOCAL LOCAL_CONSTANT LOCK LOCKMODE LOGFILE LOOPS
+%token <Token>	LANGUAGE LAST LEADING LEVEL LIBERAL LIKE LIMIT LINE LINK LIST LOCAL LOCAL_CONSTANT LOCK LOCKMODE LOGFILE LOOPS
 %token <Token>	MAIN MANAGE MANAGED MANAGE_SELECT MAP MAPPING MAPS MASTER MASTER_ID MAX MAXPCT MERGE MERGED MERGE_GLOBAL MERGE_LOCAL MERGE_MODE METHOD MILESTONE
 %token <Token>	MIN MINPCT MINUTE MODE MONITOR MONTH MOVE MULTICOMMAND MULTIPLIER
 %token <Token>	N NAME NAMED_RESOURCE NICE_PROFILE NICEVALUE NO NODE NOINVERSE NOKEEP NOMASTER NOMERGE NOMINALPCT NONE NONFATAL
@@ -63,10 +63,10 @@ public class Parser
 %token <Token>	OBJECT OF OFFLINE ON ONLINE ONLY OPERATE OR OTHER OWNER
 %token <Token>	PARENT PARAMETERS PASSWORD PATH PENDING PERFORMANCE PERL PID PLAIN POOL PRIORITY PROFILE PROTOCOL PUBLIC PYTHON
 %token <Token>	QUOTED
-%token <Token>	RAWPASSWORD REACHABLE READ REASSURE RECREATE RECURSIVE REFERENCE REGISTER REJECT RENAME RENICE REQUIRED REQUESTABLE_AMOUNT RERUN RERUN_PROGRAM RESOLVE RESOURCE
+%token <Token>	RAW RAWPASSWORD REACHABLE READ REASSURE RECREATE RECURSIVE REFERENCE REGISTER REJECT RENAME RENICE REQUIRED REQUESTABLE_AMOUNT RERUN RERUN_PROGRAM RESOLVE RESOURCE
 %token <Token>	RESOURCE_TEMPLATE RESOURCE_STATUS RESOURCE_STATUS_DEFINITION RESOURCE_STATUS_MAPPING RESOURCE_STATUS_PROFILE RESOURCE_WAIT
 %token <Token>	RESTARTABLE RESTRICT RESULT RESUME REVIEW REVOKE ROLLBACK ROOT RUN RUNNABLE RUNNING RUNTIME RUN_PROGRAM
-%token <Token>	S SALT SC SCHEDULE SCHEDULED_EVENT SCOPE SELECT SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT SQLSELECT SSL
+%token <Token>	S SALT SC SCHEDULE SCHEDULED SCHEDULED_EVENT SCOPE SELECT SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT SQLSELECT SSL
 %token <Token>	STARTED STARTING STARTTIME STATIC STATUS STATUS_MAPPING STATUS_PROFILE STICKY STOP STRICT STRING
 %token <Token>	SUBMIT SUBMITCOUNT SUBMITTAG SUBMITTED SUBMITTING_USER SUM SUSPEND SUSPEND_LIMIT SX SUSPENDED SYNCHRONIZE_WAIT SYNCHRONIZING SYNCTIME SYSTEM
 %token <Token>	TAG TERMINATED TEST TEXT TIME TIMEOUT TIMESTAMP TO TO_KILL TOKEN TOUCH TRACE TRANSLATION TREE TRIGGER TRUNC TYPE
@@ -2624,6 +2624,7 @@ jp_withitem:		PARAMETERS						{ $$ = new WithItem(ParseStr.I_PARAMETER, null); }
 										}
 	|		RESULT							{ $$ = new WithItem(ParseStr.I_RESULT, null); }
 	|		IMPORT							{ $$ = new WithItem(ParseStr.I_IMPORT, null); }
+	|		IMPORT UNRESOLVED					{ $$ = new WithItem(ParseStr.I_IMPORT_UNRESOLVED, null); }
 
 jp_optexport:									{ $$ = null; }
 	|		EXPORT '=' parametername				{ $$ = $3; }
@@ -2636,7 +2637,7 @@ jp_nondefwith:		CONSTANT '=' STRING					{ $$ = new WithItem(ParseStr.I_CONSTANT,
 										  $$ = new WithItem(ParseStr.I_EXPRESSION, v);
 										}
 
-jp_optid:									{ $$ = Long.valueOf(0); }
+jp_optid:									{ $$ = SDMSConstants.lZERO; }
 	|		'(' id ')'						{ $$ = $2; }
 
 jp_optdefault:									{ $$ = null; }
@@ -2718,6 +2719,7 @@ dump_withitem:	MULTICOMMAND							{ $$ = new WithItem (ParseStr.map($1.token), B
 	|	MODE '=' BACKUP							{ $$ = new WithItem (ParseStr.map($1.token), ParseStr.map($3.token)); }
 	|	MODE '=' DEPLOY							{ $$ = new WithItem (ParseStr.map($1.token), ParseStr.map($3.token)); }
 	|	IGNORE READ ERROR_TOKEN						{ $$ = new WithItem (ParseStr.map($1.token), Boolean.TRUE); }
+	|	LANGUAGE LEVEL '=' STRING					{ $$ = new WithItem (ParseStr.map($1.token), $4.textValue); }
 
 dump_expandlist: dump_expanditem						{ $$ = new PathVector(); $<PathVector>$.addElement ($1); }
 	|	dump_expandlist ',' dump_expanditem				{ $1.addElement ($3); }
@@ -2968,6 +2970,7 @@ lc_filteritem:		lc_filteratom						{ $$ = $1; }
 	|		NOT '(' lc_filterexpression ')'				{ $$ = new WithItem(ParseStr.S_NEGFILTER, $3);  }
 
 lc_filteratom:		NAME LIKE STRING					{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
+	|		OWNER IN '(' lj_userlist ')'				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
 	|		JOB '.' stridentifier cmpop rvalue			{ final WithHash w = new WithHash();
 										  w.addItem(new WithItem(ParseStr.S_NAME, $3));
 										  w.addItem(new WithItem(ParseStr.S_CMPOP, $4));
@@ -3457,6 +3460,7 @@ drop_scheduled_event:	drop scheduledevent_url					{ $$ = new DropScheduledEvent(
 //D:DESCRIPTION list_scheduled_event.tex
 //D:PURPOSE P146
 list_scheduled_event:	LIST SCHEDULED_EVENT					{ $$ = new ListScheduledEvent(); }
+	|		LIST SCHEDULED WITH lc_withlist				{ $$ = new ListScheduledEvent($4); }
 
 //D:MASTER
 //D:NT-ALIAS = show scheduled event

@@ -515,6 +515,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 					case SDMSParameterDefinition.PARAMETER:
 					case SDMSParameterDefinition.RESULT:
 					case SDMSParameterDefinition.IMPORT:
+					case SDMSParameterDefinition.IMPORT_UNRESOLVED:
 						if(pdef != null) pdef = "=" + pdef;
 						break;
 					case SDMSParameterDefinition.EXPRESSION:

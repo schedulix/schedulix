@@ -134,16 +134,16 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		return false;
 	}
 
-	public String getVariableValue(SystemEnvironment sysEnv, String key)
+	public String getVariableValue(SystemEnvironment sysEnv, String key, boolean doSubstitute)
 	throws SDMSException
 	{
-		return SEVR.getVariableValue(sysEnv, this, key, -1);
+		return SEVR.getVariableValue(sysEnv, this, key, -1, doSubstitute);
 	}
 
-	public String getVariableValue(SystemEnvironment sysEnv, String key, long version)
+	public String getVariableValue(SystemEnvironment sysEnv, String key, long version, boolean doSubstitute)
 	throws SDMSException
 	{
-		return SEVR.getVariableValue(sysEnv, this, key, version);
+		return SEVR.getVariableValue(sysEnv, this, key, version, doSubstitute);
 	}
 
 	public SDMSSubmittedEntity submitMaster (SystemEnvironment sysEnv, Vector params, Integer suspended, Long resumeTs, Long ownerId,

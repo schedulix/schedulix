@@ -46,6 +46,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 	public static final int PARAMETER = 50;
 	public static final int EXPRESSION = 60;
 	public static final int IMPORT = 70;
+	public static final int IMPORT_UNRESOLVED = 71;
 	public static final int DYNAMIC = 80;
 	public static final int DYNAMICVALUE = 81;
 	public static final int LOCAL_CONSTANT = 90;
@@ -237,6 +238,8 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 				return "EXPRESSION";
 			case SDMSParameterDefinition.IMPORT:
 				return "IMPORT";
+			case SDMSParameterDefinition.IMPORT_UNRESOLVED:
+				return "IMPORT_UNRESOLVED";
 			case SDMSParameterDefinition.DYNAMIC:
 				return "DYNAMIC";
 			case SDMSParameterDefinition.DYNAMICVALUE:
@@ -761,6 +764,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			case SDMSParameterDefinition.PARAMETER:
 			case SDMSParameterDefinition.EXPRESSION:
 			case SDMSParameterDefinition.IMPORT:
+			case SDMSParameterDefinition.IMPORT_UNRESOLVED:
 			case SDMSParameterDefinition.DYNAMIC:
 			case SDMSParameterDefinition.DYNAMICVALUE:
 			case SDMSParameterDefinition.LOCAL_CONSTANT:

@@ -1051,16 +1051,16 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 		return c_container;
 	}
 
-	public String getVariableValue(SystemEnvironment sysEnv, String name)
+	public String getVariableValue(SystemEnvironment sysEnv, String name, boolean doSubstitute)
 		throws SDMSException
 	{
-		return RVR.getVariableValue(sysEnv, this.getBase(sysEnv), name, null);
+		return RVR.getVariableValue(sysEnv, this.getBase(sysEnv), name, null, doSubstitute);
 	}
 
-	public String getVariableValue(SystemEnvironment sysEnv, String name, SDMSSubmittedEntity sme)
+	public String getVariableValue(SystemEnvironment sysEnv, String name, SDMSSubmittedEntity sme, boolean doSubstitute)
 		throws SDMSException
 	{
-		return RVR.getVariableValue(sysEnv, this.getBase(sysEnv), name, sme);
+		return RVR.getVariableValue(sysEnv, this.getBase(sysEnv), name, sme, doSubstitute);
 	}
 
 	public void setVariableValue(SystemEnvironment sysEnv, String name, Long smeId, String value)

@@ -71,11 +71,12 @@ public class ResourceVariableResolver extends VariableResolver
 					  String mode,
 					  boolean triggercontext,
 					  long version,
-					  SDMSScope evalScope)
+	                                  SDMSScope evalScope,
+	                                  boolean doSubstitute)
 		throws SDMSException
 	{
 		sme = null;
-		final String retval = getInternalVariableValue(sysEnv, (SDMSResource) thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null);
+		final String retval = getInternalVariableValue(sysEnv, (SDMSResource) thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null, doSubstitute);
 
 		return retval;
 	}
@@ -88,11 +89,12 @@ public class ResourceVariableResolver extends VariableResolver
 					  boolean triggercontext,
 					  long version,
 					  SDMSScope evalScope,
-					  SDMSSubmittedEntity sme)
+	                                  SDMSSubmittedEntity sme,
+	                                  boolean doSubstitute)
 		throws SDMSException
 	{
 		this.sme = sme;
-		final String retval = getInternalVariableValue(sysEnv, (SDMSResource) thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null);
+		final String retval = getInternalVariableValue(sysEnv, (SDMSResource) thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null, doSubstitute);
 
 		return retval;
 	}
@@ -146,7 +148,8 @@ public class ResourceVariableResolver extends VariableResolver
 						boolean triggercontext,
 						Stack recursionCheck,
 						long version,
-						SDMSScope evalScope)
+	                SDMSScope evalScope,
+	                boolean doSubstitute)
 		throws SDMSException
 	{
 		SDMSResource thisResource = (SDMSResource) thisObject;
@@ -179,8 +182,10 @@ public class ResourceVariableResolver extends VariableResolver
 				retVal = defaultValue;
 			}
 		}
-
-		return parseAndSubstitute(sysEnv, thisResource, retVal, fastAccess, mode, triggercontext, recursionCheck, version);
+		if (doSubstitute)
+			return parseAndSubstitute(sysEnv, thisResource, retVal, fastAccess, mode, triggercontext, recursionCheck, version);
+		else
+			return retVal;
 	}
 
 	public ResourceVariableResolver()

@@ -49,11 +49,11 @@ public class SeVariableResolver extends VariableResolver
 					  String mode,
 					  boolean triggercontext,
 					  long version,
-					  SDMSScope evalScope)
+	                                  SDMSScope evalScope,
+	                                  boolean doSubstitute)
 		throws SDMSException
 	{
-
-		final String retval = getInternalVariableValue(sysEnv, thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null);
+		final String retval = getInternalVariableValue(sysEnv, thisObject, key, fastAccess, mode, triggercontext, new Stack(), version, null, doSubstitute);
 
 		return retval;
 	}
@@ -66,7 +66,8 @@ public class SeVariableResolver extends VariableResolver
 						boolean triggercontext,
 						Stack recursionCheck,
 						long version,
-						SDMSScope evalScope)
+	                SDMSScope evalScope,
+	                boolean doSubstitute)
 		throws SDMSException
 	{
 		String retval;
@@ -80,7 +81,10 @@ public class SeVariableResolver extends VariableResolver
 			retval = pd.getDefaultValue(sysEnv);
 			if (retval != null) retval = retval.substring(1);
 			else return retval;
-			return parseAndSubstitute(sysEnv, thisSE, retval, fastAccess, mode, triggercontext, recursionCheck, version);
+			if (doSubstitute)
+				return parseAndSubstitute(sysEnv, thisSE, retval, fastAccess, mode, triggercontext, recursionCheck, version);
+			else
+				return retval;
 		} catch(NotFoundException nfe) {
 			Long folderId = thisSE.getFolderId(sysEnv);
 			if(folderId != null) {
@@ -89,7 +93,7 @@ public class SeVariableResolver extends VariableResolver
 					pf = SDMSFolderTable.getObject(sysEnv, folderId);
 				else
 					pf = SDMSFolderTable.getObject(sysEnv, folderId, version);
-				return pf.getVariableValue(sysEnv, key, version);
+				return pf.getVariableValue(sysEnv, key, version, doSubstitute);
 			} else {
 				throw new NotFoundException(new SDMSMessage(sysEnv, "03209231452", "Couldn't resolve the variable $1", key));
 			}
