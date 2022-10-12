@@ -60,6 +60,12 @@ public class TimerDate
 		isNaD = minutes == NaD;
 	}
 
+	public TimerDate (final long minutes)
+	{
+		super (minutes * 60 * 1000);
+		isNaD = minutes == NaD;
+	}
+
 	public TimerDate (final Date date)
 	{
 		super (date.getTime());

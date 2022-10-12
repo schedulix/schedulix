@@ -31,6 +31,7 @@ import java.util.*;
 
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
+import de.independit.scheduler.server.timer.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.output.*;
@@ -42,16 +43,40 @@ public class ListScheduledEvent
 	public static final String __version = "@(#) $Id: ListScheduledEvent.java,v 2.11.8.2 2013/06/18 09:49:34 ronald Exp $";
 
 	private static final String empty = "";
+	private DateTime starttime = null;
+	private DateTime endtime = null;
+	private TimeZone tz = null;
+	private ObjectFilter objFilter = new ObjectFilter();
+	private WithHash with;
+	private Vector filter;
 
 	public ListScheduledEvent()
 	{
 		super();
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
+		with = null;
+	}
+
+	public ListScheduledEvent(WithHash w)
+	{
+		super();
+		txMode = SDMSTransaction.READONLY;
+		auditFlag = false;
+		with = w;
 	}
 
 	public void go (SystemEnvironment sysEnv)
 		throws SDMSException
+	{
+		if (with == null)
+			plaingo(sysEnv);
+		else
+			scheduledGo(sysEnv);
+	}
+
+	public void plaingo (SystemEnvironment sysEnv)
+	throws SDMSException
 	{
 		Vector desc = new Vector();
 
@@ -178,6 +203,123 @@ public class ListScheduledEvent
 
 		Collections.sort (table.dataset, table.getComparator (sysEnv, 2, 3));
 
+		result.setOutputContainer (table);
+
+		result.setFeedback (new SDMSMessage (sysEnv, "04207261919", "$1 Scheduled Event(s) found", Integer.valueOf (table.lines)));
+	}
+
+	public void scheduledGo (SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Vector desc = new Vector();
+		desc.add("ID");
+		desc.add("SE_NAME");
+		desc.add("SE_TYPE");
+		desc.add("SE_ID");
+		desc.add("SE_OWNER");
+		desc.add("SE_PRIVS");
+		desc.add("SCE_NAME");
+		desc.add("SCE_ACTIVE");
+		desc.add("EVT_NAME");
+		desc.add("STARTTIME");
+		desc.add("EXPECTED_FINAL_TIME");
+		desc.add("TIME_ZONE");
+
+		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "List of scheduled submits", desc);
+
+		if (with.containsKey(ParseStr.S_STARTTIME)) {
+			starttime = (DateTime) with.get(ParseStr.S_STARTTIME);
+			starttime.suppressSeconds();
+			starttime.fixToMinDate();
+		} else {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03209051439", "Syntax Error: Start time is missing"));
+		}
+		if (with.containsKey(ParseStr.S_ENDTIME)) {
+			endtime = (DateTime) with.get(ParseStr.S_ENDTIME);
+			starttime.suppressSeconds();
+			endtime.fixToMinDate();
+		} else {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03209051440", "Syntax Error: End time is missing"));
+		}
+		if (with.containsKey(ParseStr.S_TIME)) {
+			tz = TimeZone.getTimeZone((String) with.get(ParseStr.S_TIME));
+		} else {
+			tz = TimeZone.getDefault();
+		}
+		if (with.containsKey(ParseStr.S_FILTER)) {
+			filter = objFilter.initialize_filter(sysEnv, (Vector) with.get(ParseStr.S_FILTER), 0, true );
+		} else {
+			filter = new Vector();
+		}
+
+		TimerDate finalDate = new TimerDate(endtime.getTimeInMillis()/(60*1000));
+		System.out.println("TimerDate finalDate = " + finalDate.toString());
+
+		final Iterator scevIt = SDMSScheduledEventTable.table.iterator (sysEnv);
+		while (scevIt.hasNext()) {
+			final SDMSScheduledEvent scev = (SDMSScheduledEvent) scevIt.next();
+			final Long scevId = scev.getId(sysEnv);
+
+			final Long sceId = scev.getSceId (sysEnv);
+			final SDMSSchedule sce = SDMSScheduleTable.getObject (sysEnv, sceId);
+			final PathVector sceName = sce.pathVector(sysEnv);
+			final Boolean sceActive = sce.getIsActive(sysEnv);
+			final TimeZone sceTz = TimeZone.getTimeZone(sce.getTimeZone(sysEnv));
+
+			final Long evtId = scev.getEvtId (sysEnv);
+			final SDMSEvent evt = SDMSEventTable.getObject (sysEnv, evtId);
+			final String evtName = evt.getName(sysEnv);
+
+			final Long seId = evt.getSeId(sysEnv);
+			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
+			if (!objFilter.doFilter(sysEnv, se, filter)) {
+				continue;
+			}
+			final PathVector seName = se.pathVector(sysEnv);
+			final String seType = se.getTypeAsString(sysEnv);
+			final Long seOwnerId = se.getOwnerId (sysEnv);
+			final SDMSGroup g = SDMSGroupTable.getObject (sysEnv, seOwnerId);
+			final String groupName = g.getName(sysEnv);
+			final String sePrivs = se.getPrivileges(sysEnv).toString();
+			Integer expFinalTime = se.getExpectedFinaltime(sysEnv);
+			String finalTime = expFinalTime == null ? "" : expFinalTime.toString();
+			GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
+			TimeZone sysTz = SystemEnvironment.systemTimeZone;
+			String tzId = sceTz.getID();
+
+			TimerDate trigDate = new TimerDate (starttime.getTimeInMillis()/(60*1000));
+			TimerDate baseDate = new TimerDate(trigDate);
+			int nrEntries = 0;
+			int maxEntries = sysEnv.maxNumCalEntries;
+			do {
+				final Vector row = new Vector();
+				trigDate = sce.getNextTriggerDate (sysEnv, baseDate);
+				if (trigDate == null) break;
+				if (trigDate.isNaD()) break;
+				gc.setTimeZone(sysTz);
+				gc.setTimeInMillis(trigDate.getTime());
+				gc.setTimeZone(sceTz);
+				TimerDate tmpDate = new TimerDate(gc.getTimeInMillis()/(60*1000));
+
+				if (trigDate.lt(finalDate)) {
+					row.add (scevId);
+					row.add (seName);
+					row.add (seType);
+					row.add (seId);
+					row.add (groupName);
+					row.add (sePrivs);
+					row.add (sceName);
+					row.add (sceActive);
+					row.add (evtName);
+					row.add (tmpDate.toString(sceTz));
+					row.add (finalTime);
+					row.add (tzId);
+					++nrEntries;
+					table.addData (sysEnv, row);
+				}
+				baseDate.set (trigDate.plus (1));
+			} while(baseDate.le(finalDate) && (nrEntries < maxEntries));
+		}
 		result.setOutputContainer (table);
 
 		result.setFeedback (new SDMSMessage (sysEnv, "04207261919", "$1 Scheduled Event(s) found", Integer.valueOf (table.lines)));
