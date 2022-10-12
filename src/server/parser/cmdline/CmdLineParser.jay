@@ -141,16 +141,173 @@ void print(Vector v)
 }
 
 Vector split(String s)
+		throws SDMSException
 {
 	Vector result = new Vector();
 	String[] sArr;
 
 	if (SystemEnvironment.enhancedCmdParsing) {
+
+/*
 		sArr = s.split("[ \t\f\r\n]+");
 		for (int i = 0; i < sArr.length; ++i) {
 			if (!sArr[i].equals(""))
 				result.add(sArr[i]);
 		}
+*/
+			char quote = '\0';
+			char escape = '\0';
+			char ignore = '\0';
+			String element = "";
+			for (int i = 0; i < s.length(); i++) {
+				char c = s.charAt(i);
+				switch (c) {
+					case '\'':
+						if (quote == '\0' && escape == '\0') {
+							quote = '\'';
+							// weiterlesen bis zum nächsten '
+							while (++i < s.length()) {
+								c = s.charAt(i);
+								if (escape == '\0') {
+									if (c != '\\') {
+										if (c != '\'') {
+											element += c;
+										}
+										else {
+											quote = '\0';
+											break;
+										}
+									}
+									else {
+										escape = '\\';
+									}
+								}
+								else {
+									if (c != '\'' && c != '\\') {
+										element += escape;
+									}
+									element += c;
+									escape = '\0';
+								}
+							}
+						}
+						else if (quote != '\0') {
+							// Double quoted context
+							if (escape == '\\') {
+								element += escape;
+								escape = '\0';
+							}
+							element += c;
+						}
+						else {
+							// Not quoted escaped (\')
+							escape = '\0';
+							element += c;
+						}
+						ignore = '\0';
+						break;
+					case '"':
+						if (quote == '\0') {
+							if ( escape == '\0') {
+								quote = '\"';
+							}
+							else {
+								escape = '\0';
+								element += c;
+							}
+						}
+						else {
+							if (escape == '\0') {
+								quote = '\0';
+							}
+							else {
+								escape = '\0';
+								element += c;
+							}
+						}
+						ignore = '\0';
+						break;
+					case '\n':
+					case '\r':
+						if (ignore != '\0' && ignore != c) {
+							ignore = '\0';
+							break;
+						}
+						if (quote == '\0') {
+							if (escape == '\0') {
+								if (element.length() > 0) {
+									result.add(element);
+									element = "";
+								}
+							}
+							else {
+								ignore = c;
+								escape = '\0';
+							}
+						}
+						else {
+							if (escape == '\\') {
+								element += escape;
+								escape = '\0';
+							}
+							element += c;
+						}
+						break;
+					case ' ':
+					case '\t':
+					case '\f':
+						if (quote == '\0') {
+							if (escape == '\0') {
+								if (element.length() > 0) {
+									result.add(element);
+									element = "";
+								}
+							}
+							else {
+								element += c;
+								escape = '\0';
+							}
+						}
+						else {
+							if (escape == '\\') {
+								element += escape;
+								escape = '\0';
+							}
+							element += c;
+						}
+						ignore = '\0';
+						break;
+					case '\\':
+						if (escape == '\\') {
+							element += escape;
+							escape = '\0';
+						}
+						else {
+							escape = '\\';
+						}
+						ignore = '\0';
+						break;
+					default:
+						if (escape == '\\') {
+							element += escape;
+						}
+						escape = '\0';
+						element += c;
+						ignore = '\0';
+						break;
+				}
+			}
+			if (quote != '\0') {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03209071136", "Missing $1 in parameter evaluation in: $2", (quote == '"' ? "double quote" : "single quote"), s));
+			}
+			if (escape == '\\') {
+				element += escape;
+			}
+			if (element.length() > 0) {
+				result.add(element);
+			}
+
+			// result.add(s);	// DEGUG ONLY remove again !!!!
 	} else {
 		result.add(s);
 	}
@@ -166,7 +323,7 @@ String resolve(Vector pv)
 	String rc;
 	String pn = (String) pv.remove(pv.size() - 1);
 
-	rc = sme.getVariableValue(sysEnv, pn, false, ParseStr.S_DEFAULT);	// full evaluation
+	rc = sme.getVariableValue(sysEnv, pn, false, ParseStr.S_DEFAULT, true);	// full evaluation
 	if(rc == null) {
 		throw new NotFoundException(new SDMSMessage(sysEnv, "03206041627", "Parameter $1 not found", pn));
 	}

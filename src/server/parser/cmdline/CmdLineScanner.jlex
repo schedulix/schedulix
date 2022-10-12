@@ -75,6 +75,8 @@ public Object value()
 alpha	=	[a-zA-Z_#@]
 alnum	=	[a-zA-Z_0-9#@]
 ws	=	[ \t\n\r\b\015]+
+sws	=	[ \t\b\015]
+nl	=	[\n\r]
 identifier =	{alpha}{alnum}*
 eidentifier =   [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z|])?
 
@@ -86,13 +88,15 @@ eidentifier =   [-!#%&(-,/-9;-Z_a-z|]([- !#%&(-,/-9;-Z_a-z|]*[-!#%&(-,/-9;-Z_a-z
 //
 
 <YYINITIAL>{ws}			{ proto("WS ");			return CmdLineParser.SEPARATOR; }
+<YYINITIAL>\\{nl}		{ proto("\\NL ");		value = ""; return CmdLineParser.CHAR; }
+<YYINITIAL>\\{sws}		{ proto("SWS ");		String s = new String(yytext()); value = s.substring(s.length()-1); return CmdLineParser.CHAR; }
 <YYINITIAL>\'			{				yybegin(SQSTRING); value = new String(""); eofProhibited = true; break; }
 <YYINITIAL>`			{ proto("BTSTRING_START");	yybegin(BTSTRING); value = new String("`"); eofProhibited = true; return CmdLineParser.DQSTRING_START; }
 <YYINITIAL>\\`			{ proto("BACKTICK ");		value = new String("`"); return CmdLineParser.CHAR; }
 <YYINITIAL>\"			{ proto("DQSTRING_START ");	yybegin(DQSTRING); value = new String(""); return CmdLineParser.DQSTRING_START; }
 <YYINITIAL>\\			{ proto("\\");			value = new String(yytext()); return CmdLineParser.CHAR; }
 <YYINITIAL>\\\\			{ proto("\\\\");		value = new String("\\"); return CmdLineParser.CHAR; }
-<YYINITIAL>\\\'			{ proto("SINGLE QUOTE ");	value = new String("\\'"); return CmdLineParser.CHAR; }
+<YYINITIAL>\\\'			{ proto("SINGLE QUOTE ");	value = new String("'"); return CmdLineParser.CHAR; }
 <YYINITIAL>\\\"			{ proto("DOUBLE QUOTE ");	value = new String("\""); return CmdLineParser.CHAR; }
 <YYINITIAL>\\\$			{ proto("DOLLAR ");		value = new String("$"); return CmdLineParser.CHAR; }
 <YYINITIAL>\${identifier}	{ 
