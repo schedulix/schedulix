@@ -118,9 +118,6 @@ public class AlterUser extends ManipUser
 			throw t;
 		}
 		sysEnv.cEnv.popGid(sysEnv);
-		if (with.size() != 0) {
-			throw new AccessViolationException (new SDMSMessage(sysEnv, "03011101420", "Insufficient privileges"));
-		}
 		result.setFeedback(feedbackMsg);
 	}
 
@@ -387,8 +384,12 @@ public class AlterUser extends ManipUser
 
 		if(sysEnv.cEnv.uid().equals(uId) && uId != 0) {
 			alterByUser(sysEnv, u);
-			if (!manageUser)
+			if (!manageUser) {
+				if (with.size() != 0) {
+					throw new AccessViolationException (new SDMSMessage(sysEnv, "03011101420", "Insufficient privileges"));
+				}
 				return;
+			}
 		} else {
 			if(passwd != null && uId != 0) {
 				u.setPasswd(sysEnv, passwd);
