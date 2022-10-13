@@ -327,7 +327,7 @@ RUNLOOP:	while (run) {
 					}
 				}
 			} catch (Exception e) {
-				Trace.error("[HttpThread] Something went wrong : " + e.toString());
+				Trace.error("[HttpThread] Something went wrong : " + e.toString() + "\n" + e.getStackTrace());
 				try {
 					if (run)
 						sleep(sleepInterval);
