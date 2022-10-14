@@ -193,15 +193,18 @@ public class SchedulingThread extends InternalSession
 				}
 				int state = sme.getState(sysEnv).intValue();
 				if (state == SDMSSubmittedEntity.DEPENDENCY_WAIT) {
+					boolean isDisabled = sme.getIsDisabled(sysEnv).booleanValue();
 					requestSyncSme(sysEnv, sme, oldState.intValue());
 
 					if (sme.getState(sysEnv).intValue() != SDMSSubmittedEntity.ERROR) {
 						if (os == SDMSSubmittedEntity.SUBMITTED ||
 						    os == SDMSSubmittedEntity.DEPENDENCY_WAIT ||
 						    os == SDMSSubmittedEntity.ERROR ||
-						    os == SDMSSubmittedEntity.UNREACHABLE)
+						    os == SDMSSubmittedEntity.UNREACHABLE ||
+						    isDisabled
+						   ) {
 							sme.checkDependencies(sysEnv);
-						else if ((sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND &&
+						} else if ((sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND &&
 						          sme.getParentSuspended(sysEnv).intValue() == 0) ||
 						         sme.getRerunSeq(sysEnv).intValue() > 0) {
 							sme.setState(sysEnv, SDMSSubmittedEntity.SYNCHRONIZE_WAIT);
@@ -405,13 +408,18 @@ public class SchedulingThread extends InternalSession
 				}
 			}
 
-			if (sme.getIsDisabled(sysEnv).booleanValue()) {
-				sme.finishDisabledOrBatch(sysEnv);
+			boolean isDisabled = sme.getIsDisabled(sysEnv).booleanValue();
+			if (isDisabled) {
+				sme.checkDependencies(sysEnv);
+				int tmpState = sme.getState(sysEnv).intValue();
+				if (tmpState == SDMSSubmittedEntity.FINISHED ||
+				    tmpState == SDMSSubmittedEntity.FINAL
+				   )
 				continue;
 			}
 			requestSyncSme(sysEnv, sme, SDMSSubmittedEntity.DEPENDENCY_WAIT);
 
-			if(sme.getState(sysEnv).intValue() == SDMSSubmittedEntity.ERROR)
+			if(sme.getState(sysEnv).intValue() == SDMSSubmittedEntity.ERROR || isDisabled)
 				continue;
 
 			reevaluateJSAssignment(sysEnv, sme);
@@ -464,7 +472,7 @@ public class SchedulingThread extends InternalSession
 			   sme.getParentSuspended(sysEnv).intValue() > 0			  ||
 			   sme.getOldState(sysEnv) != null)
 				continue;
-			if (sme.getIsDisabled(sysEnv) || sme.getIsParentDisabled(sysEnv)) {
+			if (sme.getIsDisabled(sysEnv)) {
 				sme.finishDisabledOrBatch(sysEnv);
 			} else {
 				syncScheduleSme(sysEnv, sme, resourceChain);
@@ -482,9 +490,11 @@ public class SchedulingThread extends InternalSession
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion);
 		if(se.getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) return;
 
-		Vector sv = getServerList(sysEnv, sme, se, actVersion);
+		if (!sme.getIsDisabled(sysEnv)) {
+			Vector sv = getServerList(sysEnv, sme, se, actVersion);
 
-		requestResourceSme(sysEnv, sme, se, sv, SDMSNamedResource.SYNCHRONIZING, actVersion, oldState);
+			requestResourceSme(sysEnv, sme, se, sv, SDMSNamedResource.SYNCHRONIZING, actVersion, oldState);
+		}
 		sme.setOldState(sysEnv, null);
 	}
 
@@ -498,9 +508,11 @@ public class SchedulingThread extends InternalSession
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion);
 		if(se.getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) return;
 
-		Vector sv = findRelevantJobserver (sysEnv, sme);
+		if (!sme.getIsDisabled(sysEnv)) {
+			Vector sv = findRelevantJobserver (sysEnv, sme);
 
-		requestResourceSme(sysEnv, sme, se, sv, SDMSNamedResource.SYSTEM, actVersion, SDMSSubmittedEntity.SYNCHRONIZE_WAIT);
+			requestResourceSme(sysEnv, sme, se, sv, SDMSNamedResource.SYSTEM, actVersion, SDMSSubmittedEntity.SYNCHRONIZE_WAIT);
+		}
 		sme.setOldState(sysEnv, null);
 	}
 
