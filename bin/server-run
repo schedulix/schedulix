@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# $Id: server-start,v 1.4 2008/05/05 15:58:01 dieter Exp $
+#
+# Copyright (C) 2002 topIT Informationstechnologie GmbH
+# Copyright (C) 2006 independIT Integrative Technologies GmbH
+#
+$BICSUITEHOME/bin/sdmsctl run "$@"

@@ -8,7 +8,20 @@
 print_usage()
 {
 	P=`basename $0`
-	echo "Usage: $P [start|stop]"
+	echo "Usage: $P [run|start|stop|test]"
+	echo "The 'run' option will start the server in the foreground"
+	echo "The 'start' option will start the server in the background"
+	echo "The 'stop' option will terminate the server"
+	echo "The 'test' option will read the configuration and, if OK, will try to connect to the database"
+	echo "           If the connect succeeds, it will terminate with exit code zero, else nonzero"
+}
+
+do_run()
+{
+	CMDSTRING="$BICSUITEJAVA_BS $BICSUITEJAVAFLAGS_BS -cp '$BICSUITECLASSPATH' de.independit.scheduler.BICServer '$BICSUITECONFIG/server.conf' $*"
+	echo 'Start Server'
+	eval $SCROLLLOG $LOGFILE -f -o - $SCROLLLOGOPTS -e $CMDSTRING
+	echo 'Server terminated'
 }
 
 do_start()
@@ -156,6 +169,9 @@ if [ -n "$OPERATION" ]; then shift; fi
 trap "rm -f $PIDFILE" 0 1 2 3
 
 case "$OPERATION" in
+	run)		ensure_pipe "$LOGFILE";
+			do_run "$@" ;;
+
 	start)		ensure_pipe "$LOGFILE";
 			do_start "$@" ;;
 
