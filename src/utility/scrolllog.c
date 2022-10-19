@@ -28,6 +28,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdarg.h>
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
@@ -76,7 +77,7 @@ void usage(char *argv[], char *msg)
 	fprintf(stdout, "-s NUMBER\tnumber of segments (default 3)\n");
 	fprintf(stdout, "-l NUMBER\tnumber of lines per segment (default 100.000)\n");
 	fprintf(stdout, "-n NAME  \tbasename of outputfiles (default same as named pipe)\n");
-	fprintf(stdout, "-f\t\tRun in foreground (don't daemonize)\n");
+	fprintf(stdout, "-f\t\tRun in foreground (don't daemonize); log messages are written to stdout too\n");
 	fprintf(stdout, "-h\t\tDisplays this message\n");
 	fprintf(stdout, "-v\t\tDisplays options\n");
 	fprintf(stdout, "-o FILESPEC\tFile for own errormessages (only valid if daemon, default = /dev/null)\n\n");
@@ -154,7 +155,6 @@ void getopts(int argc, char *argv[])
 	int got_bn  = 0;
 	int got_pn  = 0;
 	int got_of  = 0;
-	int got_f   = 0;
 	int got_wd  = 0;
 	int got_cmd = 0;
 	char *endptr;
@@ -204,9 +204,7 @@ void getopts(int argc, char *argv[])
 		} else if(!strcmp(argv[i], "-v")) {
 			verbose = 1;
 		} else if(!strcmp(argv[i], "-f")) {
-			if(got_f)	usage(argv, (char*) "Nodaemonflag specified twice");
 			run_as_daemon = 0;
-			got_f = 1;
 		} else if(!strcmp(argv[i], "-D")) {
 			i++;
 			if(i >= argc)	{
@@ -427,6 +425,31 @@ int open_pipe()
 	return 0;
 }
 
+int outf_printf(FILE *outf, const char *fmt, ...)
+{
+	va_list args;
+	int rc;
+	va_start (args, fmt);
+	rc = vfprintf(outf, fmt, args);
+	if (run_as_daemon == 0) {
+		vfprintf(stdout, fmt, args);
+	}
+	va_end (args);
+	fflush(outf);
+	return rc;
+}
+
+int outf_puts(FILE *outf, char *s)
+{
+	int rc;
+	rc = fputs(s, outf);
+	fflush(outf);
+	if (run_as_daemon == 0) {
+		fputs(s, stdout);
+	}
+	return rc;
+}
+
 int process()
 {
 #define BUFSIZE 2048
@@ -476,15 +499,13 @@ int process()
 				fclose(paip);
 				fflush(outf);
 				if (childpid) {
-					fprintf(outf, "[scrolllog] Waiting for child (%d) to terminate\n", (int) childpid);
-					fflush(outf);
+					outf_printf(outf, "[scrolllog] Waiting for child (%d) to terminate\n", (int) childpid);
 					do {
 						switch ((int)waitpid((pid_t) -1, &status, 0)) {
 						case -1:
 							if(errno == ECHILD) {
 
-								fprintf(outf, "[scrolllog] WARNING, childpid != 0 && ECHILD !\n");
-								fflush(outf);
+								outf_printf(outf, "[scrolllog] WARNING, childpid != 0 && ECHILD !\n");
 
 								restart   = 1;
 							}
@@ -496,8 +517,7 @@ int process()
 								status = 128 + WTERMSIG(status);
 							} else
 								continue;
-							fprintf(outf, "[scrolllog] Child exited with state %d\n", status);
-							fflush(outf);
+							outf_printf(outf, "[scrolllog] Child exited with state %d\n", status);
 							if (status == 0) restart = 0;
 							else restart = 1;
 						}
@@ -508,43 +528,38 @@ int process()
 				}
 				if(terminate == 1) {
 					if(restart && (cmd != NULL)) {
-						fprintf(outf, "[scrolllog] Try to restart child (child terminated with exit code <> 0)\n");
-						fflush(outf);
+						outf_printf(outf, "[scrolllog] Try to restart child (child terminated with exit code <> 0)\n");
 						if(start_cmd() != 0) {
-							fprintf(outf, "[scrolllog] restart of child failed\n");
-							fflush(outf);
+							outf_printf(outf, "[scrolllog] restart of child failed\n");
 							exit(9);
 						}
 						terminate = 0;
 					} else {
 						terminate = 2;
-						fprintf(outf, "[scrolllog] I terminate (after cleaning up)\n");
-						fflush(outf);
+						outf_printf(outf, "[scrolllog] I terminate (after cleaning up)\n");
 						break;
 					}
 				}
 				if(open_pipe()) {
 					terminate = 2;
-					fprintf(outf, "\n");
-					fprintf(outf, "\n[scrolllog] ****************************************");
-					fprintf(outf, "\n[scrolllog] **                                    **");
-					fprintf(outf, "\n[scrolllog] ** Couldn't open/lock pipe            **");
+					outf_printf(outf, "\n");
+					outf_printf(outf, "\n[scrolllog] ****************************************");
+					outf_printf(outf, "\n[scrolllog] **                                    **");
+					outf_printf(outf, "\n[scrolllog] ** Couldn't open/lock pipe            **");
 					if(childpid) {
-						fprintf(outf, "\n[scrolllog] ** scrolllog terminates and sends a   **");
-						fprintf(outf, "\n[scrolllog] ** SIGTERM to its child               **");
+						outf_printf(outf, "\n[scrolllog] ** scrolllog terminates and sends a   **");
+						outf_printf(outf, "\n[scrolllog] ** SIGTERM to its child               **");
 						kill(childpid, SIGTERM);
 						sleep(10);
 					}
-					fprintf(outf, "\n[scrolllog] **                                    **");
-					fprintf(outf, "\n[scrolllog] ****************************************\n");
-					fflush(outf);
+					outf_printf(outf, "\n[scrolllog] **                                    **");
+					outf_printf(outf, "\n[scrolllog] ****************************************\n");
 					return 10;
 				}
 
 				continue;
 			}
-			fputs(buf, outf);
-			fflush(outf);
+			outf_puts(outf, buf);
 			lineno++;
 		}
 		fclose(outf);

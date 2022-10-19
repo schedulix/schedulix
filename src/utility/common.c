@@ -94,7 +94,7 @@ int check_name(char *name, char **target)
 {
 	char *curdir;
 
-	if(*name != '/') {
+	if(*name != '/' && *name != '-') {
 		curdir = (char *) malloc(PATH_MAX + 1 + strlen(name) + 1);
 		if(curdir == NULL) {
 			fprintf(stderr, "Error while allocating memory\n");

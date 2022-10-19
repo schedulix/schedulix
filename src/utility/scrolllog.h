@@ -43,5 +43,7 @@ extern int start_cmd(void);
 extern int process(void);
 extern int mylock(int fd);
 extern int open_pipe(void);
+extern int outf_printf(FILE *outf, const char *fmt, ...);
+extern int outf_puts(FILE *outf, char *s);
 
 #endif
