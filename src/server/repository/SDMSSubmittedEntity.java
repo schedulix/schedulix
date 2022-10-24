@@ -561,6 +561,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		}
 		sme.setIsDisabled(sysEnv, Boolean.FALSE);
 		sme.checkDependencies(sysEnv);
+		sme.setState(sysEnv, SDMSSubmittedEntity.SUBMITTED);
+		sme.setState(sysEnv, SDMSSubmittedEntity.DEPENDENCY_WAIT);
 		Vector v = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, smeId);
 		Iterator i = v.iterator();
 		while (i.hasNext()) {
