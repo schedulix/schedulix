@@ -356,6 +356,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 								tmp = ntd[j];
 							}
 						}
+						break;
 					}
 				}
 			}

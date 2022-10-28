@@ -351,7 +351,7 @@ public class ShowSubmitted extends Node
 			else
 				isCancelled = Boolean.FALSE;
 		data.add(sme.getIsDisabled(sysEnv));
-		data.add(sme.getIsParentDisabled(sysEnv));
+		data.add(sme.getDirectParentsAreDisabled(sysEnv));
 		data.add(isCancelled);
 		esdId = sme.getJobEsdId(sysEnv);
 		if(esdId != null) {

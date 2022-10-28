@@ -503,26 +503,12 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			doDisable(sysEnv, true );
 		} else {
 			if (!getIsDisabled(sysEnv).booleanValue()) return;
-			if (getIsParentDisabled(sysEnv).booleanValue()) {
+			if (getDirectParentsAreDisabled(sysEnv).booleanValue()) {
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "03908251744",
 				                                "Cannot enable a submitted entity which is not at top level of the disabled subtree"));
 			}
 			doEnable(sysEnv);
 		}
-	}
-
-	public Boolean getIsParentDisabled (SystemEnvironment sysEnv)
-	throws SDMSException
-	{
-		Vector pv = SDMSHierarchyInstanceTable.idx_childId.getVector(sysEnv, getId(sysEnv));
-		for (int i = 0; i < pv.size(); ++i) {
-			SDMSHierarchyInstance hi = (SDMSHierarchyInstance) pv.get(i);
-			SDMSSubmittedEntity pSme = SDMSSubmittedEntityTable.getObject(sysEnv, hi.getParentId(sysEnv));
-			if (pSme.getIsDisabled(sysEnv).booleanValue() || pSme.getIsParentDisabled(sysEnv).booleanValue()) {
-				return Boolean.TRUE;
-			}
-		}
-		return Boolean.FALSE;
 	}
 
 	public Boolean getDirectParentsAreDisabled (SystemEnvironment sysEnv)
@@ -570,9 +556,11 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		int state = sme.getState(sysEnv).intValue();
 
 		if (state != SDMSSubmittedEntity.DEPENDENCY_WAIT) {
-			if (! (state == SDMSSubmittedEntity.CANCELLED && sme.getIsDisabled(sysEnv).booleanValue()))
+			if (state != SDMSSubmittedEntity.CANCELLED)
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "03908251740",
 				                                "Cannot enable a submitted entity that is not in DEPENDENCY WAIT state"));
+			else
+				return;
 		}
 		sme.setIsDisabled(sysEnv, Boolean.FALSE);
 		sme.checkDependencies(sysEnv);
@@ -1773,14 +1761,17 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				switch (type) {
 					case SDMSSchedulingEntity.JOB:
 						boolean isRR = (getOldState(sysEnv) == null);
-						if (isRR) {
-							if ((getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND &&
-							     getParentSuspended(sysEnv).intValue() == 0) ||
-							    getRerunSeq(sysEnv).intValue() > 0) {
-								setState(sysEnv, new Integer(SYNCHRONIZE_WAIT));
+						boolean isDisabled = this.getIsDisabled(sysEnv).booleanValue();
+						if (!isDisabled) {
+							if (isRR) {
+								if ((getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.NOSUSPEND &&
+								     getParentSuspended(sysEnv).intValue() == 0) ||
+								    getRerunSeq(sysEnv).intValue() > 0) {
+									setState(sysEnv, new Integer(SYNCHRONIZE_WAIT));
+								}
 							}
+							break;
 						}
-						break;
 					case SDMSSchedulingEntity.BATCH:
 					case SDMSSchedulingEntity.MILESTONE:
 
@@ -2844,7 +2835,12 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			SystemEnvironment.sched.notifyChange(sysEnv, this, SchedulingThread.STATECHANGE);
 		}
 		if (newState == SYNCHRONIZE_WAIT) {
-			this.setOldState(sysEnv, new Integer(oldState));
+			if (this.getIsDisabled(sysEnv).booleanValue()) {
+				SDMSMessage msg = new SDMSMessage(sysEnv, "03209291241", "Setting a disabled job to SYNCHRONIZE_WAIT!!!");
+				SDMSThread.doTrace(sysEnv.cEnv, msg.toString(), SDMSThread.SEVERITY_FATAL);
+				throw new CommonErrorException(msg.toString());
+			}
+			this.setOldState(sysEnv, Integer.valueOf(oldState));
 			SystemEnvironment.sched.addToRequestList(sysEnv, mySmeId);
 			setSyncTs(sysEnv, ts);
 			SystemEnvironment.sched.notifyChange(sysEnv, this, SchedulingThread.STATECHANGE);
