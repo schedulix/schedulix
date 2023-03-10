@@ -56,6 +56,7 @@ public class Config
 	public static final String NOTIFY_PORT     = "NOTIFYPORT";
 	public static final String HTTP_PORT       = "HTTPPORT";
 	public static final String HTTP_HOST       = "HTTPHOST";
+	public static final String HTTP_LOGENCODING= "HTTPLOGENCODING";
 	public static final String ONLINE_SERVER   = "ONLINE_SERVER";
 	public static final String NAME_PATTERN    = "NAME_PATTERN_";
 	public static final String KEYSTORE        = "KEYSTORE";
@@ -88,7 +89,7 @@ public class Config
 	public static final String[] ALL_VALUES = {REPO_HOST, REPO_PORT, RECONNECT_DELAY, DEFAULT_WORKDIR,
 						   USE_PATH, VERBOSE_LOGS, TRACE_LEVEL, BOOTTIME, NOP_DELAY,
 						   JOB_EXECUTOR, JOB_FILE_PREFIX, ENV_MAPPING, DYNAMIC,
-						   NOTIFY_PORT, HTTP_PORT, HTTP_HOST, ONLINE_SERVER,
+						   NOTIFY_PORT, HTTP_PORT, HTTP_HOST, HTTP_LOGENCODING, ONLINE_SERVER,
 						   NAME_PATTERN, KEYSTORE, TRUSTSTORE, KEYSTOREPW, TRUSTSTOREPW,
 						   USE_SSL, CREATE_WORKDIR
 						  };

@@ -209,8 +209,7 @@ public class SDMSVersions
 
 		if (s == 0)
 			table.hashMapRemove(id);
-		else
-			if (!table.isVersioned) {
+		else if (!table.isVersioned) {
 				((SDMSObject)(versions.elementAt(0))).validFrom = startVersion;
 			}
 		return remove;
