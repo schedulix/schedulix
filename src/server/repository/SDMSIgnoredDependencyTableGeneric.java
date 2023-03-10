@@ -189,7 +189,7 @@ public class SDMSIgnoredDependencyTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "SH_ID" + equote +
 		                                   ", " + squote + "DD_NAME" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
@@ -197,7 +197,7 @@ public class SDMSIgnoredDependencyTableGeneric extends SDMSTable
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
 		                                   ", VALID_FROM, VALID_TO " +
-		                                   " FROM " + tableName() +
+		                                   " FROM " + squote + tableName() + equote +
 		                                   " WHERE VALID_TO >= " + (postgres ?
 		                                                   "CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
 		                                                   "" + env.lowestActiveVersion) +

@@ -443,7 +443,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO ENTITY_VARIABLE (" +
+				        "INSERT INTO " + squote + "ENTITY_VARIABLE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "SME_ID" + equote +
 				        ", " + squote + "NAME" + equote +
@@ -505,8 +505,10 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM ENTITY_VARIABLE WHERE ID = ?";
+				        "DELETE FROM " + squote + "ENTITY_VARIABLE" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "EntityVariable: $1\n$2", stmt, sqle.toString()));
@@ -532,7 +534,7 @@ public class SDMSEntityVariableGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE ENTITY_VARIABLE SET " +
+				        "UPDATE " + squote + "ENTITY_VARIABLE" + equote + " SET " +
 				        "" + squote + "SME_ID" + equote + " = ? " +
 				        ", " + squote + "NAME" + equote + " = ? " +
 				        ", " + squote + "VALUE" + equote + " = ? " +

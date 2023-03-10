@@ -629,7 +629,7 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO PARAMETER_DEFINITION (" +
+				        "INSERT INTO " + squote + "PARAMETER_DEFINITION" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "SE_ID" + equote +
 				        ", " + squote + "NAME" + equote +
@@ -722,8 +722,10 @@ public class SDMSParameterDefinitionGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE PARAMETER_DEFINITION " +
+				        "UPDATE " + squote + "PARAMETER_DEFINITION" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

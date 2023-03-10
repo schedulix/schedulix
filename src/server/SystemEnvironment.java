@@ -56,6 +56,13 @@ public class SystemEnvironment implements Cloneable
 	public static final int ADMIN    = 1;
 	public static final int SHUTDOWN = 2;
 
+	public static final int UPH_ERROR = 0;
+	public static final int UPH_BLANK = 1;
+	public static final int UPH_ECHO  = 2;
+
+	public static final int PSH_ERROR = 0;
+	public static final int PSH_IGNORE = 1;
+
 	private static final String NONE = "NONE";
 	private static final String ALL = "ALL";
 
@@ -111,6 +118,8 @@ public class SystemEnvironment implements Cloneable
 	public static int traceLevel;
 	public static boolean traceExpressions;
 	public static String parameterHandling;
+	public static int unresolvedParameterHandling;
+	public static int parameterSyntaxHandling;
 	public static TimerUnit timerHorizon;
 	public static TimerUnit timerRecalc;
 	public static String hostname;
@@ -220,6 +229,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_JDBCDRIVER            = "JdbcDriver";
 	public static final String S_LEVEL                 = "CompatibilityLevel";
 	public static final String S_PARAMETERHANDLING     = "ParameterHandling";
+	public static final String S_PARAMETERSYNTAXHANDLING = "ParameterSyntaxHandling";
 	public static final String S_PORT                  = "Port";
 	public static final String S_PRIORITYDELAY         = "PriorityDelay";
 	public static final String S_PRIORITYLB            = "PriorityLowerBound";
@@ -246,6 +256,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_TXRETRYCOUNT          = "TxRetryCount";
 	public static final String S_USERTHREADS           = "UserThreads";
 	public static final String S_USEREXPORTVARIABLES   = "UserExportVariables";
+	public static final String S_UNRESPARMHANDLING     = "UnresolvedParameterHandling";
 	public static final String S_WORKERTHREADS         = "WorkerThreads";
 	public static final String S_WRITERTHREADS         = "WriterThreads";
 	public static final String S_KEYSTORE              = "KeyStore";
@@ -420,6 +431,8 @@ public class SystemEnvironment implements Cloneable
 		getArchive();
 		getArchiveCols();
 		getParameterHandling();
+		getUnresolvedParameterHandling();
+		getParameterSyntaxHandling();
 		getTimerHorizon();
 		getTimerRecalc();
 		getPort();
@@ -1042,6 +1055,30 @@ public class SystemEnvironment implements Cloneable
 			parameterHandling = "LIBERAL";
 		}
 		props.setProperty(S_PARAMETERHANDLING, parameterHandling);
+	}
+
+	private void getUnresolvedParameterHandling()
+	{
+		String pb = props.getProperty(S_UNRESPARMHANDLING, "ERROR").toUpperCase();
+		if(pb.equals("BLANK")) {
+			unresolvedParameterHandling = UPH_BLANK;
+		} else if(pb.equals("ECHO")) {
+			unresolvedParameterHandling = UPH_ECHO;
+		} else {
+			unresolvedParameterHandling = UPH_ERROR;
+		}
+		props.setProperty(S_UNRESPARMHANDLING, pb);
+	}
+
+	private void getParameterSyntaxHandling()
+	{
+		String pb = props.getProperty(S_PARAMETERSYNTAXHANDLING, "ERROR").toUpperCase();
+		if(pb.equals("IGNORE")) {
+			parameterSyntaxHandling = PSH_IGNORE;
+		} else if(pb.equals("ERROR")) {
+			unresolvedParameterHandling = PSH_ERROR;
+		}
+		props.setProperty(S_PARAMETERSYNTAXHANDLING, pb);
 	}
 
 	private Vector convertEntryToVector(String s, String msg)

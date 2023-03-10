@@ -780,7 +780,7 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO SCHEDULING_HIERARCHY (" +
+				        "INSERT INTO " + squote + "SCHEDULING_HIERARCHY" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "SE_PARENT_ID" + equote +
 				        ", " + squote + "SE_CHILD_ID" + equote +
@@ -894,8 +894,10 @@ public class SDMSSchedulingHierarchyGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE SCHEDULING_HIERARCHY " +
+				        "UPDATE " + squote + "SCHEDULING_HIERARCHY" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

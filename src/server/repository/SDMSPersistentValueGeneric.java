@@ -271,7 +271,7 @@ public class SDMSPersistentValueGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO PERSISTENT_VALUE (" +
+				        "INSERT INTO " + squote + "PERSISTENT_VALUE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "INT_VALUE" + equote +
@@ -318,8 +318,10 @@ public class SDMSPersistentValueGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM PERSISTENT_VALUE WHERE ID = ?";
+				        "DELETE FROM " + squote + "PERSISTENT_VALUE" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "PersistentValue: $1\n$2", stmt, sqle.toString()));
@@ -345,7 +347,7 @@ public class SDMSPersistentValueGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE PERSISTENT_VALUE SET " +
+				        "UPDATE " + squote + "PERSISTENT_VALUE" + equote + " SET " +
 				        "" + squote + "NAME" + equote + " = ? " +
 				        ", " + squote + "INT_VALUE" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +

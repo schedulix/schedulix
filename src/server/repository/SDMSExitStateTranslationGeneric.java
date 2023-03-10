@@ -328,7 +328,7 @@ public class SDMSExitStateTranslationGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO EXIT_STATE_TRANSLATION (" +
+				        "INSERT INTO " + squote + "EXIT_STATE_TRANSLATION" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "ESTP_ID" + equote +
 				        ", " + squote + "FROM_ESD_ID" + equote +
@@ -394,8 +394,10 @@ public class SDMSExitStateTranslationGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE EXIT_STATE_TRANSLATION " +
+				        "UPDATE " + squote + "EXIT_STATE_TRANSLATION" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

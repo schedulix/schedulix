@@ -807,7 +807,7 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO RESOURCE_ALLOCATION (" +
+				        "INSERT INTO " + squote + "RESOURCE_ALLOCATION" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "R_ID" + equote +
 				        ", " + squote + "SME_ID" + equote +
@@ -902,8 +902,10 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM RESOURCE_ALLOCATION WHERE ID = ?";
+				        "DELETE FROM " + squote + "RESOURCE_ALLOCATION" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "ResourceAllocation: $1\n$2", stmt, sqle.toString()));
@@ -929,7 +931,7 @@ public class SDMSResourceAllocationGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE RESOURCE_ALLOCATION SET " +
+				        "UPDATE " + squote + "RESOURCE_ALLOCATION" + equote + " SET " +
 				        "" + squote + "R_ID" + equote + " = ? " +
 				        ", " + squote + "SME_ID" + equote + " = ? " +
 				        ", " + squote + "NR_ID" + equote + " = ? " +

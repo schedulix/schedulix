@@ -381,7 +381,7 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO TRIGGER_QUEUE (" +
+				        "INSERT INTO " + squote + "TRIGGER_QUEUE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "SME_ID" + equote +
 				        ", " + squote + "TR_ID" + equote +
@@ -434,8 +434,10 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM TRIGGER_QUEUE WHERE ID = ?";
+				        "DELETE FROM " + squote + "TRIGGER_QUEUE" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "TriggerQueue: $1\n$2", stmt, sqle.toString()));
@@ -461,7 +463,7 @@ public class SDMSTriggerQueueGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE TRIGGER_QUEUE SET " +
+				        "UPDATE " + squote + "TRIGGER_QUEUE" + equote + " SET " +
 				        "" + squote + "SME_ID" + equote + " = ? " +
 				        ", " + squote + "TR_ID" + equote + " = ? " +
 				        ", " + squote + "NEXT_TRIGGER_TIME" + equote + " = ? " +

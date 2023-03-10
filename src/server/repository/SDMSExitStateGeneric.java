@@ -506,7 +506,7 @@ public class SDMSExitStateGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO EXIT_STATE (" +
+				        "INSERT INTO " + squote + "EXIT_STATE" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "PREFERENCE" + equote +
 				        ", " + squote + "IS_FINAL" + equote +
@@ -590,8 +590,10 @@ public class SDMSExitStateGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE EXIT_STATE " +
+				        "UPDATE " + squote + "EXIT_STATE" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

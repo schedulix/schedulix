@@ -367,7 +367,7 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO RESOURCE_STATE_MAPPING (" +
+				        "INSERT INTO " + squote + "RESOURCE_STATE_MAPPING" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "RSMP_ID" + equote +
 				        ", " + squote + "ESD_ID" + equote +
@@ -439,8 +439,10 @@ public class SDMSResourceStateMappingGeneric extends SDMSObject
 			try {
 				final String driverName = env.dbConnection.getMetaData().getDriverName();
 				final boolean postgres = driverName.startsWith("PostgreSQL");
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE RESOURCE_STATE_MAPPING " +
+				        "UPDATE " + squote + "RESOURCE_STATE_MAPPING" + equote +
 				        "SET VALID_TO = ?, " +
 				        "    CHANGE_TS = ?, " +
 				        "    CHANGER_U_ID = ? " +

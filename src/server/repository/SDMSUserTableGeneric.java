@@ -241,7 +241,7 @@ public class SDMSUserTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "NAME" + equote +
 		                                   ", " + squote + "PASSWD" + equote +
 		                                   ", " + squote + "SALT" + equote +
@@ -254,7 +254,7 @@ public class SDMSUserTableGeneric extends SDMSTable
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
-		                                   " FROM " + tableName() +
+		                                   " FROM " + squote + tableName() + equote +
 		                                   ""						  );
 		while(rset.next()) {
 			if(loadObject(env, rset)) ++loaded;

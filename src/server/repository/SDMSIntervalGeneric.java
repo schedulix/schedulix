@@ -737,7 +737,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "INSERT INTO INTERVALL (" +
+				        "INSERT INTO " + squote + "INTERVALL" + equote + " (" +
 				        "ID" +
 				        ", " + squote + "NAME" + equote +
 				        ", " + squote + "OWNER_ID" + equote +
@@ -844,8 +844,10 @@ public class SDMSIntervalGeneric extends SDMSObject
 		PreparedStatement myDelete;
 		if(pDelete[env.dbConnectionNr] == null) {
 			try {
+				String squote = SystemEnvironment.SQUOTE;
+				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "DELETE FROM INTERVALL WHERE ID = ?";
+				        "DELETE FROM " + squote + "INTERVALL" + equote + " WHERE ID = ?";
 				pDelete[env.dbConnectionNr] = env.dbConnection.prepareStatement(stmt);
 			} catch(SQLException sqle) {
 				throw new FatalException(new SDMSMessage(env, "01110182001", "Interval: $1\n$2", stmt, sqle.toString()));
@@ -871,7 +873,7 @@ public class SDMSIntervalGeneric extends SDMSObject
 				String squote = SystemEnvironment.SQUOTE;
 				String equote = SystemEnvironment.EQUOTE;
 				stmt =
-				        "UPDATE INTERVALL SET " +
+				        "UPDATE " + squote + "INTERVALL" + equote + " SET " +
 				        "" + squote + "NAME" + equote + " = ? " +
 				        ", " + squote + "OWNER_ID" + equote + " = ? " +
 				        ", " + squote + "START_TIME" + equote + " = ? " +

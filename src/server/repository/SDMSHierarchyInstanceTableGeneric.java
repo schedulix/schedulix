@@ -233,7 +233,7 @@ public class SDMSHierarchyInstanceTableGeneric extends SDMSTable
 		String equote = SystemEnvironment.EQUOTE;
 		Statement stmt = env.dbConnection.createStatement();
 		ResultSet rset = stmt.executeQuery("SELECT " +
-		                                   tableName() + ".ID" +
+		                                   squote + tableName() + equote + ".ID" +
 		                                   ", " + squote + "PARENT_ID" + equote +
 		                                   ", " + squote + "CHILD_ID" + equote +
 		                                   ", " + squote + "SH_ID" + equote +
@@ -245,9 +245,9 @@ public class SDMSHierarchyInstanceTableGeneric extends SDMSTable
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
 		                                   ", " + squote + "CHANGE_TS" + equote +
-		                                   "  FROM " + tableName() + ", " +
+		                                   "  FROM " + squote + tableName() + equote + ", " +
 		                                   "       SME2LOAD " +
-		                                   " WHERE " + tableName() + ".PARENT_ID = SME2LOAD.ID"
+		                                   " WHERE " + squote + tableName() + equote + ".PARENT_ID = SME2LOAD.ID"
 		                                  );
 		while(rset.next()) {
 			if(loadObject(env, rset)) ++loaded;
