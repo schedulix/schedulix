@@ -226,11 +226,8 @@ public class ProcessInfo
 				} catch (InterruptedException ie) {  }
 
 				try {
-					while (p.isAlive()) {
-						Thread.sleep(100);
-						p.destroy();
-						System.gc();
-					}
+					p.destroy();
+					System.gc();
 					p = null;
 					System.gc();
 				} catch (Exception e) {
@@ -291,11 +288,8 @@ public class ProcessInfo
 					p.waitFor();
 				} catch (InterruptedException ie) {  }
 				try {
-					while (p.isAlive()) {
-						Thread.sleep(100);
-						p.destroy();
-						System.gc();
-					}
+					p.destroy();
+					System.gc();
 					p = null;
 					System.gc();
 				} catch (Exception e) {

@@ -220,11 +220,18 @@ public class Server
 		final String jid[] = getJobFileIds();
 		for (int i = 0; i < jid.length; ++i) {
 			Trace.debug("Server:breeding jid " + jid[i] + " from breed()");
-			breed(jid[i], startTimes);
+			if (breed(jid[i], startTimes, true)) {
+				Trace.message("A BROKEN_FINISHED condition was detected for jid " + jid[i]);
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ioe) {
+				}
+				breed(jid[i], startTimes, false);
+			}
 		}
 	}
 
-	private final void breed(String jid, HashMap<String,Long> startTimes)
+	private final boolean breed(String jid, HashMap<String,Long> startTimes, boolean firstTime)
 	{
 		final Feil feil = Server.getFeil(cfg, jid);
 		boolean feil_expired = false;
@@ -256,7 +263,11 @@ public class Server
 							if (ProcessInfo.isAlive (feil.getExtPid(), startTimes)) {
 								feil.setStatus (Feil.STATUS_BROKEN_ACTIVE);
 							} else {
-								feil.setStatus (Feil.STATUS_BROKEN_FINISHED);
+								if (firstTime) {
+									feil.close();
+									return true;
+								} else
+									feil.setStatus (Feil.STATUS_BROKEN_FINISHED);
 							}
 						}
 					} else if (feil.getStatus().equals (Feil.STATUS_BROKEN_ACTIVE))
@@ -296,6 +307,7 @@ public class Server
 				} else
 					feil.close();
 			}
+			return false;
 		}
 	}
 
@@ -394,7 +406,13 @@ public class Server
 			while (i_tmp.hasNext()) {
 				String jid = i_tmp.next();
 				Trace.debug("Server:breeding jid " + jid + " from jidsToBreed");
-				breed(jid, startTimes);
+				if (breed(jid, startTimes, true)) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException ie) {
+					}
+					breed(jid, startTimes, false);
+				}
 			}
 
 			v_tmp.clear();
@@ -405,7 +423,13 @@ public class Server
 			while (i_tmp.hasNext()) {
 				String jid = i_tmp.next();
 				Trace.debug("Server:breeding jid " + jid + " from jidsAwaitRunning");
-				breed(jid, startTimes);
+				if (breed(jid, startTimes, true)) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException ie) {
+					}
+					breed(jid, startTimes, false);
+				}
 			}
 			long nopDelay = ((Long) cfg.get (Config.NOP_DELAY)).longValue();
 			if (notified || now - ts - nopDelay > 0) {
