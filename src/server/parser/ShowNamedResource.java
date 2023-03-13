@@ -161,6 +161,7 @@ public class ShowNamedResource extends ShowCommented
 
 		desc.add("ID");
 		desc.add("SCOPE");
+		desc.add("SCOPE_ID");
 		desc.add("TYPE");
 		desc.add("OWNER");
 		desc.add("STATE");
@@ -181,11 +182,13 @@ public class ShowNamedResource extends ShowCommented
 			try {
 				s = SDMSScopeTable.getObject(sysEnv, r.getScopeId(sysEnv));
 				data.add(s.pathVector(sysEnv));
+				data.add(s.getId(sysEnv));
 				data.add(s.getTypeAsString(sysEnv));
 			} catch (final NotFoundException nfe) {
 				try {
 					f = SDMSFolderTable.getObject(sysEnv, r.getScopeId(sysEnv));
 					data.add(f.pathVector(sysEnv));
+					data.add(f.getId(sysEnv));
 					data.add("FOLDER");
 				} catch (final NotFoundException nfe2) {
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, r.getScopeId(sysEnv));
@@ -193,6 +196,7 @@ public class ShowNamedResource extends ShowCommented
 					PathVector pv = se.pathVector(sysEnv, sme.getSeVersion(sysEnv).longValue());
 					pv.add("[" + sme.getId(sysEnv) + "]");
 					data.add(pv);
+					data.add(sme.getId(sysEnv));
 					data.add("JOB");
 				}
 			}
@@ -226,6 +230,7 @@ public class ShowNamedResource extends ShowCommented
 
 			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, rt.getSeId(sysEnv));
 			data.add(se.pathVector(sysEnv));
+			data.add(se.getId(sysEnv));
 			data.add("JOB");
 
 			g = SDMSGroupTable.getObject(sysEnv, rt.getOwnerId(sysEnv));
