@@ -310,6 +310,13 @@ TrustStorePassword=VerySecret
 SysPasswd=G0H0ME
 
 #
+# TicketInterval: Maximum time between two renewals of a ticket
+# Default = 20. Minimum = 3.
+# A standby server will wait 3 TicketIntervals before taking over
+#
+# TicketInterval=20
+
+#
 # TimerHorizon: Time (in years) the TimerThread "looks in the future"
 #
 TimerHorizon=2
