@@ -271,6 +271,12 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		return Long.valueOf(blockState.blockStart);
 	}
 
+	public Long getCurrentBlockEnd(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		return Long.valueOf(blockState.blockEnd);
+	}
+
 	private Long getNextDispatchTriggerDate(SystemEnvironment sysEnv, long minDate, long horizon, TimeZone tz, boolean mode, int indent)
 	throws SDMSException
 	{

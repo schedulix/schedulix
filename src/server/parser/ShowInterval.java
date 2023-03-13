@@ -40,7 +40,7 @@ public class ShowInterval
 {
 	public static final String __version = "@(#) $Id: ShowInterval.java,v 2.10.2.2 2013/06/18 09:49:36 ronald Exp $";
 
-	private static final TimeZone localTimeZone = TimeZone.getDefault();
+	private static final TimeZone localTimeZone = SystemEnvironment.systemTimeZone;
 
 	private static final SimpleDateFormat df = new SimpleDateFormat ("yyyy'-'MM'-'dd'T'HH':'mm", SystemEnvironment.systemLocale);
 
@@ -56,8 +56,8 @@ public class ShowInterval
 	private static final int cmpList[] = {1, 2, 3};
 
 	private final String name;
-	private final WithHash with;
 	private final Long ownerObject;
+	private final Vector edgesFromTo;
 
 	private final TimerDate edgePlusOne = new TimerDate();
 
@@ -73,24 +73,14 @@ public class ShowInterval
 		}
 	}
 
-	public ShowInterval (String n, WithHash w)
+	public ShowInterval (String n, Long oid, Vector v)
 	{
 		super();
 		name = n;
-		with = w;
-		ownerObject = null;
-		txMode = SDMSTransaction.READONLY;
-		auditFlag = false;
-	}
-
-	public ShowInterval (String n, Long oid)
-	{
-		super();
-		name = n;
-		with = null;
 		ownerObject = oid;
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
+		edgesFromTo = v;
 	}
 
 	public void go (SystemEnvironment sysEnv)
@@ -133,7 +123,7 @@ public class ShowInterval
 		desc.add ("COMMENT");
 		desc.add ("COMMENTTYPE");
 
-		if (with != null) {
+		if (edgesFromTo != null) {
 			desc.add ("EDGES");
 		}
 
@@ -216,6 +206,8 @@ public class ShowInterval
 
 		data.add(getCommentContainer(sysEnv, ivalId));
 		data.add(getCommentInfoType(sysEnv, ivalId));
+		if (edgesFromTo != null)
+			data.add(getEdgesList(sysEnv, ival));
 
 		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "Interval", desc, data);
 		result.setOutputContainer (table);
@@ -578,6 +570,80 @@ public class ShowInterval
 		if (fltIntId != null) {
 			collectHierarchy(sysEnv, fltIntId, ROLE_DISP_FILTER, drId, table, level + 1);
 		}
+	}
+
+	private SDMSOutputContainer getEdgesList (SystemEnvironment sysEnv, SDMSInterval ival)
+	throws SDMSException
+	{
+		final Vector desc = new Vector();
+		desc.add ("TRIGGER_DATE");
+		desc.add ("BLOCK_END");
+
+		int edgeCtr = 0;
+		int limit = SystemEnvironment.maxNumCalEntries;
+
+		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "List of Edges", desc);
+		GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
+
+		if (edgesFromTo == null)
+			return table;
+
+		TimerDate dtFrom, dtTo;
+		final DateTime dtF = (DateTime) edgesFromTo.get (0);
+		final DateTime dtT = (DateTime) edgesFromTo.get (1);
+		if (edgesFromTo.size() > 2)
+			limit = (Integer) edgesFromTo.get (2);
+		if (limit > SystemEnvironment.maxNumCalEntries)
+			limit = SystemEnvironment.maxNumCalEntries;
+		dtF.suppressSeconds();
+		dtF.fixToMinDate();
+		dtFrom = new TimerDate(dtF.toDate());
+
+		dtT.suppressSeconds();
+		dtT.fixToMaxDate();
+		dtTo = new TimerDate(dtT.toDate());
+
+		gc.setTimeInMillis(dtFrom.toMinutes() * 60 * 1000L);
+		gc.setTimeZone(localTimeZone);
+		long md = gc.getTimeInMillis();
+
+		if (dtFrom.ge(dtTo))
+			throw new CommonErrorException (new SDMSMessage (sysEnv, "04305011929", "lower limit must not be greater than upper limit"));
+
+		dtTo.plus(1);
+
+		Long ntd = ival.getNextTriggerDate(sysEnv, ((long) dtFrom.toMinutes()) * 60 * 1000L, ((long) dtTo.toMinutes()) * 60 * 1000L, localTimeZone, SDMSInterval.DRIVER);
+
+		TimerDate result = new TimerDate();
+		long lDtTo = ((long) dtTo.toMinutes()) * 60 * 1000L;
+		Long blockEnd;
+		while (ntd != null && ntd < lDtTo && edgeCtr < limit) {
+			final Vector row = new Vector();
+
+			md = ntd.longValue();
+			gc.setTimeInMillis(md);
+			gc.setTimeZone(localTimeZone);
+			result = new TimerDate((int)(gc.getTimeInMillis() / (60 * 1000)));
+			row.add (result.toString(false));
+
+			blockEnd = ival.getCurrentBlockEnd(sysEnv);
+			if (blockEnd == null) {
+				row.add(null);
+			} else {
+				md = blockEnd.longValue();
+				gc.setTimeInMillis(md);
+				gc.setTimeZone(localTimeZone);
+				result = new TimerDate((int)(gc.getTimeInMillis() / (60 * 1000)));
+				row.add (result.toString(false));
+			}
+
+			table.addData (sysEnv, row);
+			edgeCtr++;
+
+			ntd = ival.getNextTriggerDate(sysEnv, ntd+1, lDtTo, localTimeZone, SDMSInterval.DRIVER);
+		}
+
+		return table;
 	}
 
 }
