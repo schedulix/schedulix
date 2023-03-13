@@ -163,20 +163,37 @@ public class TimerDate
 
 	public final String toString()
 	{
-		return toString (SystemEnvironment.systemTimeZone);
+		return toString (SystemEnvironment.systemTimeZone, true);
+	}
+
+	public final String toString(boolean showTz)
+	{
+		return toString (SystemEnvironment.systemTimeZone, showTz);
+	}
+
+	public final String toString(TimeZone tz)
+	{
+		return toString (tz, true);
 	}
 
 	private static final SimpleDateFormat df = new SimpleDateFormat ("dd'.'MM'.'yyyy'-'HH':'mm", SystemEnvironment.systemLocale);
 
-	public final String toString (final TimeZone tz)
+	public final String toString (final TimeZone tz, boolean showTz)
 	{
 		if (isNaD)
 			return "NaD";
 
 		synchronized (df) {
-			df.setTimeZone (tz);
-
-			return df.format (this) + " " + tz.getID();
+			if (tz != null) {
+				df.setTimeZone (tz);
+			} else {
+				df.setTimeZone(SystemEnvironment.systemTimeZone);
+			}
+			if (showTz) {
+				return df.format (this) + " " + tz.getID();
+			} else {
+				return df.format (this);
+			}
 		}
 	}
 }
