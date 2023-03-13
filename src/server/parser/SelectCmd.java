@@ -214,12 +214,24 @@ public class SelectCmd extends Node
 		if(o == null) return null;
 		try {
 			switch(ctype[idx]) {
-				case CATEGORYTYPE:	pv = convert_category(sysEnv, o);	break;
-				case FOLDERTYPE:	pv = convert_folder(sysEnv, o);		break;
-				case JOBTYPE:		pv = convert_job(sysEnv, o);		break;
-				case RESOURCETYPE:	pv = convert_category(sysEnv, o);	break;
-				case SCHEDULETYPE:	pv = convert_schedule(sysEnv, o);	break;
-				case SCOPETYPE:		pv = convert_scope(sysEnv, o);		break;
+				case CATEGORYTYPE:
+					pv = convert_category(sysEnv, o);
+					break;
+				case FOLDERTYPE:
+					pv = convert_folder(sysEnv, o);
+					break;
+				case JOBTYPE:
+					pv = convert_job(sysEnv, o);
+					break;
+				case RESOURCETYPE:
+					pv = convert_category(sysEnv, o);
+					break;
+				case SCHEDULETYPE:
+					pv = convert_schedule(sysEnv, o);
+					break;
+				case SCOPETYPE:
+					pv = convert_scope(sysEnv, o);
+					break;
 			}
 		} catch (NotFoundException nfe) {
 			nfe.printStackTrace();

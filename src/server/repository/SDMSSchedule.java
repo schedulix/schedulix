@@ -79,8 +79,6 @@ public class SDMSSchedule
 		final Future<TimerDate> future = executor.submit(new Callable<TimerDate>() {
 			public TimerDate call() {
 				try {
-					SDMSThread.doTrace(sysEnv.cEnv, "SDMSSchedule: minDate = " + minDate.toString(), SDMSThread.SEVERITY_DEBUG);
-					long nts = System.currentTimeMillis();
 
 					long md = minDate.getTime();
 					GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
@@ -97,9 +95,6 @@ public class SDMSSchedule
 						gc.setTimeZone(SystemEnvironment.systemTimeZone);
 						result = new TimerDate((int)(gc.getTimeInMillis() / (60 * 1000)));
 					}
-
-					nts = System.currentTimeMillis() - nts;
-					SDMSThread.doTrace(sysEnv.cEnv, "SDMSSchedule: runtime = " + nts + " ms, result = " + result.toString(), SDMSThread.SEVERITY_DEBUG);
 
 					return result;
 				} catch (Exception e) {
