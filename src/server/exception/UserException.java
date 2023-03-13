@@ -45,6 +45,9 @@ public class UserException extends SDMSException
 		super(msg);
 	}
 
-	public int getExceptionNumber() { return 16384; }
+	public int getExceptionNumber()
+	{
+		return 16384;
+	}
 }
 

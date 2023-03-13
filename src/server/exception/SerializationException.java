@@ -25,11 +25,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package de.independit.scheduler.server.exception;
 
-public class SerializationException extends RecoverableException {
+public class SerializationException extends RecoverableException
+{
 
 	private static final long serialVersionUID = 1L;
 
-	public SerializationException () {
+	public SerializationException ()
+	{
 		super();
 	}
 
@@ -43,5 +45,8 @@ public class SerializationException extends RecoverableException {
 		super(msg);
 	}
 
-	public int getExceptionNumber() { return 8192; }
+	public int getExceptionNumber()
+	{
+		return 8192;
+	}
 }
