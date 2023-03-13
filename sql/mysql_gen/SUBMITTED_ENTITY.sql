@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE SUBMITTED_ENTITY (
+CREATE TABLE `SUBMITTED_ENTITY` (
     `ID`                           decimal(20) NOT NULL
     , `ACCESS_KEY`                   decimal(20)     NOT NULL
     , `MASTER_ID`                    decimal(20)     NOT NULL
@@ -128,7 +128,7 @@ CREATE TABLE SUBMITTED_ENTITY (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_SUBMITTED_ENTITY
-ON SUBMITTED_ENTITY(`ID`);
+ON `SUBMITTED_ENTITY`(`ID`);
 CREATE VIEW SCI_SUBMITTED_ENTITY AS
 SELECT
     ID
@@ -208,7 +208,7 @@ SELECT
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , ((IFNULL(`FINAL_TS`, UNIX_TIMESTAMP(NOW()) * 1000) - `SUBMIT_TS`) / 1000) - `DEPENDENCY_WAIT_TIME` AS `PROCESS_TIME`
-  FROM SUBMITTED_ENTITY;
+  FROM `SUBMITTED_ENTITY`;
 CREATE TABLE ARC_SUBMITTED_ENTITY (
     ID                             decimal(20) NOT NULL
     , `ACCESS_KEY`                   decimal(20)      NULL

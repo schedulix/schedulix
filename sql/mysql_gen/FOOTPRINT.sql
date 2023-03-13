@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE FOOTPRINT (
+CREATE TABLE `FOOTPRINT` (
     `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `CREATOR_U_ID`                 decimal(20)     NOT NULL
@@ -34,9 +34,9 @@ CREATE TABLE FOOTPRINT (
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
-CREATE UNIQUE INDEX PK_FOOTPRINT
-ON FOOTPRINT(`ID`);
-CREATE VIEW SCI_FOOTPRINT AS
+CREATE UNIQUE INDEX PK_`FOOTPRINT`
+ON `FOOTPRINT`(`ID`);
+CREATE VIEW SCI_`FOOTPRINT` AS
 SELECT
     ID
     , `NAME`                         AS `NAME`
@@ -44,4 +44,4 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM FOOTPRINT;
+  FROM `FOOTPRINT`;

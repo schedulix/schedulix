@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE POOL_DIST_CONFIG (
+CREATE TABLE `POOL_DIST_CONFIG` (
     `ID`                           decimal(20) NOT NULL
     , `PLD_ID`                       decimal(20)     NOT NULL
     , `PR_ID`                        decimal(20)     NOT NULL
@@ -41,7 +41,7 @@ CREATE TABLE POOL_DIST_CONFIG (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_POOL_DIST_CONFIG
-ON POOL_DIST_CONFIG(`ID`);
+ON `POOL_DIST_CONFIG`(`ID`);
 CREATE VIEW SCI_POOL_DIST_CONFIG AS
 SELECT
     ID
@@ -56,4 +56,4 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM POOL_DIST_CONFIG;
+  FROM `POOL_DIST_CONFIG`;

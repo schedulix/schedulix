@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE PARAMETER_DEFINITION (
+CREATE TABLE `PARAMETER_DEFINITION` (
     `ID`                           decimal(20) NOT NULL
     , `SE_ID`                        decimal(20)     NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
@@ -45,7 +45,7 @@ CREATE TABLE PARAMETER_DEFINITION (
     , `VALID_TO`                   decimal(20) NOT NULL
 ) ENGINE = INNODB;
 CREATE INDEX PK_PARAMETER_DEFINITION
-ON PARAMETER_DEFINITION(`ID`);
+ON `PARAMETER_DEFINITION`(`ID`);
 CREATE VIEW SCI_C_PARAMETER_DEFINITION AS
 SELECT
     ID
@@ -62,7 +62,7 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM PARAMETER_DEFINITION
+  FROM `PARAMETER_DEFINITION`
  WHERE VALID_TO = 9223372036854775807;
 CREATE VIEW SCI_V_PARAMETER_DEFINITION AS
 SELECT
@@ -82,4 +82,4 @@ SELECT
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , VALID_FROM
     , VALID_TO
-  FROM PARAMETER_DEFINITION;
+  FROM `PARAMETER_DEFINITION`;

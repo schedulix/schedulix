@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE HIERARCHY_INSTANCE (
+CREATE TABLE `HIERARCHY_INSTANCE` (
     `ID`                           decimal(20) NOT NULL
     , `PARENT_ID`                    decimal(20)     NOT NULL
     , `CHILD_ID`                     decimal(20)     NOT NULL
@@ -41,7 +41,7 @@ CREATE TABLE HIERARCHY_INSTANCE (
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_HIERARCHY_INSTANCE
-ON HIERARCHY_INSTANCE(`ID`);
+ON `HIERARCHY_INSTANCE`(`ID`);
 CREATE VIEW SCI_HIERARCHY_INSTANCE AS
 SELECT
     ID
@@ -56,7 +56,7 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM HIERARCHY_INSTANCE;
+  FROM `HIERARCHY_INSTANCE`;
 CREATE TABLE ARC_HIERARCHY_INSTANCE (
     ID                             decimal(20) NOT NULL
     , `PARENT_ID`                    decimal(20)      NULL

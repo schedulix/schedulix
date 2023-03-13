@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE EXIT_STATE_MAPPING (
+CREATE TABLE `EXIT_STATE_MAPPING` (
     `ID`                           decimal(20) NOT NULL
     , `ESMP_ID`                      decimal(20)     NOT NULL
     , `ESD_ID`                       decimal(20)     NOT NULL
@@ -39,9 +39,9 @@ CREATE TABLE EXIT_STATE_MAPPING (
     , `VALID_FROM`                 decimal(20) NOT NULL
     , `VALID_TO`                   decimal(20) NOT NULL
 ) ENGINE = INNODB;
-CREATE INDEX PK_EXIT_STATE_MAPPING
-ON EXIT_STATE_MAPPING(`ID`);
-CREATE VIEW SCI_C_EXIT_STATE_MAPPING AS
+CREATE INDEX PK_`EXIT_STATE_MAPPING`
+ON `EXIT_STATE_MAPPING`(`ID`);
+CREATE VIEW SCI_C_`EXIT_STATE_MAPPING` AS
 SELECT
     ID
     , `ESMP_ID`                      AS `ESMP_ID`
@@ -52,9 +52,9 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM EXIT_STATE_MAPPING
+  FROM `EXIT_STATE_MAPPING`
  WHERE VALID_TO = 9223372036854775807;
-CREATE VIEW SCI_V_EXIT_STATE_MAPPING AS
+CREATE VIEW SCI_V_`EXIT_STATE_MAPPING` AS
 SELECT
     ID
     , `ESMP_ID`                      AS `ESMP_ID`
@@ -67,4 +67,4 @@ SELECT
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , VALID_FROM
     , VALID_TO
-  FROM EXIT_STATE_MAPPING;
+  FROM `EXIT_STATE_MAPPING`;

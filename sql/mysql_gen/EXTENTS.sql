@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE EXTENTS (
+CREATE TABLE `EXTENTS` (
     `ID`                           decimal(20) NOT NULL
     , `O_ID`                         decimal(20)     NOT NULL
     , `SME_ID`                       decimal(20)     NOT NULL
@@ -37,9 +37,9 @@ CREATE TABLE EXTENTS (
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
     , `CHANGE_TS`                    decimal(20)     NOT NULL
 ) ENGINE = INNODB;
-CREATE UNIQUE INDEX PK_EXTENTS
-ON EXTENTS(`ID`);
-CREATE VIEW SCI_EXTENTS AS
+CREATE UNIQUE INDEX PK_`EXTENTS`
+ON `EXTENTS`(`ID`);
+CREATE VIEW SCI_`EXTENTS` AS
 SELECT
     ID
     , `O_ID`                         AS `O_ID`
@@ -50,8 +50,8 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM EXTENTS;
-CREATE TABLE ARC_EXTENTS (
+  FROM `EXTENTS`;
+CREATE TABLE ARC_`EXTENTS` (
     ID                             decimal(20) NOT NULL
     , `O_ID`                         decimal(20)      NULL
     , `SME_ID`                       decimal(20)      NULL

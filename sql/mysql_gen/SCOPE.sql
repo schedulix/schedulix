@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE SCOPE (
+CREATE TABLE `SCOPE` (
     `ID`                           decimal(20) NOT NULL
     , `NAME`                         varchar(64)     NOT NULL
     , `OWNER_ID`                     decimal(20)     NOT NULL
@@ -52,7 +52,7 @@ CREATE TABLE SCOPE (
     , `INHERIT_PRIVS`                decimal(20)     NOT NULL
 ) ENGINE = INNODB;
 CREATE UNIQUE INDEX PK_SCOPE
-ON SCOPE(`ID`);
+ON `SCOPE`(`ID`);
 CREATE VIEW SCI_SCOPE AS
 SELECT
     ID
@@ -75,4 +75,4 @@ SELECT
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , `INHERIT_PRIVS`                AS `INHERIT_PRIVS`
-  FROM SCOPE;
+  FROM `SCOPE`;

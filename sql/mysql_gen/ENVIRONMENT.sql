@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
-CREATE TABLE ENVIRONMENT (
+CREATE TABLE `ENVIRONMENT` (
     `ID`                           decimal(20) NOT NULL
     , `NE_ID`                        decimal(20)     NOT NULL
     , `NR_ID`                        decimal(20)     NOT NULL
@@ -38,9 +38,9 @@ CREATE TABLE ENVIRONMENT (
     , `VALID_FROM`                 decimal(20) NOT NULL
     , `VALID_TO`                   decimal(20) NOT NULL
 ) ENGINE = INNODB;
-CREATE INDEX PK_ENVIRONMENT
-ON ENVIRONMENT(`ID`);
-CREATE VIEW SCI_C_ENVIRONMENT AS
+CREATE INDEX PK_`ENVIRONMENT`
+ON `ENVIRONMENT`(`ID`);
+CREATE VIEW SCI_C_`ENVIRONMENT` AS
 SELECT
     ID
     , `NE_ID`                        AS `NE_ID`
@@ -50,9 +50,9 @@ SELECT
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM ENVIRONMENT
+  FROM `ENVIRONMENT`
  WHERE VALID_TO = 9223372036854775807;
-CREATE VIEW SCI_V_ENVIRONMENT AS
+CREATE VIEW SCI_V_`ENVIRONMENT` AS
 SELECT
     ID
     , `NE_ID`                        AS `NE_ID`
@@ -64,4 +64,4 @@ SELECT
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
     , VALID_FROM
     , VALID_TO
-  FROM ENVIRONMENT;
+  FROM `ENVIRONMENT`;
