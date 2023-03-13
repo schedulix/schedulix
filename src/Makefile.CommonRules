@@ -27,7 +27,8 @@ SKELETON = $(SDMSHOME)/tools/lib/skeleton
 JLEX = $(SDMSHOME)/tools/bin/jflex
 
 GUAVAJAR = $(SDMSHOME)/lib/guava-20.0.jar
-JNA_PLATFORMJAR = $(SDMSHOME)/lib/jna-platform-4.3.0.jar
+# JNA_PLATFORMJAR = $(SDMSHOME)/lib/jna-platform-4.3.0.jar
+JNA_PLATFORMJAR = /usr/share/java/jna-platform.jar
 WAFFLEJAR = $(SDMSHOME)/lib/waffle-jna-1.8.3.jar
 
 AWK := $(shell for fff in /usr/bin/gawk /usr/bin/nawk /usr/bin/awk; do if [ -f $$fff ]; then echo $$fff; break; fi; done;)
