@@ -218,51 +218,52 @@ public class ExpandParser
 	final static int C_SEFP_FOOTPRINT       = 25;
 	final static int C_ALLGR_GRANT          = 26;
 	final static int C_GRG_GROUP            = 27;
-	final static int C_SCINT_INTERVAL       = 28;
-	final static int C_FSE_JOB_DEFINITION   = 29;
-	final static int C_OT_JOB_DEFINITION	= 30;
-	final static int C_TRSE_JOB_DEFINITION  = 31;
-	final static int C_ENVNR_NAMED_RESOURCE = 32;
-	final static int C_FNR_NAMED_RESOURCE   = 33;
-	final static int C_FPNR_NAMED_RESOURCE  = 34;
-	final static int C_SENR_NAMED_RESOURCE  = 35;
-	final static int C_PLNR_NAMED_RESOURCE  = 36;
-	final static int C_RNR_NAMED_RESOURCE   = 37;
-	final static int C_RTNR_NAMED_RESOURCE  = 38;
-	final static int C_WT_OBJECT_MONITOR	= 39;
-	final static int C_ALLG_OWNER           = 40;
-	final static int C_FF_PARENTS           = 41;
-	final static int C_INTINT_PARENTS       = 42;
-	final static int C_SESE_PARENTS         = 43;
-	final static int C_NRNR_PARENTS         = 44;
-	final static int C_SCSC_PARENTS         = 45;
-	final static int C_SS_PARENTS           = 46;
-	final static int C_NRPL_POOL            = 47;
-	final static int C_PLPL_POOL            = 48;
-	final static int C_SPL_POOL             = 49;
-	final static int C_SESE_REQUIRED        = 50;
-	final static int C_FR_RESOURCE          = 51;
-	final static int C_NRR_RESOURCE         = 52;
-	final static int C_PLR_RESOURCE         = 53;
-	final static int C_SR_RESOURCE          = 54;
-	final static int C_SERT_RESOURCE_TMPL   = 55;
-	final static int C_RRSD_RSD             = 56;
-	final static int C_RTRSD_RSD            = 57;
-	final static int C_RSMRSD_RSD           = 58;
-	final static int C_RSPRSD_RSD           = 59;
-	final static int C_SERSM_RSM            = 60;
-	final static int C_NRRSP_RSP            = 61;
-	final static int C_SEVSC_SCHEDULE       = 62;
-	final static int C_EVSEV_SCHEDULED_EVENT= 63;
-	final static int C_PLS_SCOPE            = 64;
-	final static int C_RS_SCOPE             = 65;
-	final static int C_ALLNONE_STOP         = 66;
-	final static int C_SETR_TRIGGER         = 67;
-	final static int C_NRTR_TRIGGER         = 68;
-	final static int C_OT_TRIGGER		= 69;
-	final static int C_RTR_TRIGGER          = 70;
-	final static int C_GU_USER              = 71;
-	final static int C_OT_WATCH_TYPE	= 72;
+	final static int C_SEINT_INT		= 28;
+	final static int C_SCINT_INTERVAL       = 29;
+	final static int C_FSE_JOB_DEFINITION   = 30;
+	final static int C_OT_JOB_DEFINITION	= 31;
+	final static int C_TRSE_JOB_DEFINITION  = 32;
+	final static int C_ENVNR_NAMED_RESOURCE = 33;
+	final static int C_FNR_NAMED_RESOURCE   = 34;
+	final static int C_FPNR_NAMED_RESOURCE  = 35;
+	final static int C_SENR_NAMED_RESOURCE  = 36;
+	final static int C_PLNR_NAMED_RESOURCE  = 37;
+	final static int C_RNR_NAMED_RESOURCE   = 38;
+	final static int C_RTNR_NAMED_RESOURCE  = 39;
+	final static int C_WT_OBJECT_MONITOR	= 40;
+	final static int C_ALLG_OWNER           = 41;
+	final static int C_FF_PARENTS           = 42;
+	final static int C_INTINT_PARENTS       = 43;
+	final static int C_SESE_PARENTS         = 44;
+	final static int C_NRNR_PARENTS         = 45;
+	final static int C_SCSC_PARENTS         = 46;
+	final static int C_SS_PARENTS           = 47;
+	final static int C_NRPL_POOL            = 48;
+	final static int C_PLPL_POOL            = 49;
+	final static int C_SPL_POOL             = 50;
+	final static int C_SESE_REQUIRED        = 51;
+	final static int C_FR_RESOURCE          = 52;
+	final static int C_NRR_RESOURCE         = 53;
+	final static int C_PLR_RESOURCE         = 54;
+	final static int C_SR_RESOURCE          = 55;
+	final static int C_SERT_RESOURCE_TMPL   = 56;
+	final static int C_RRSD_RSD             = 57;
+	final static int C_RTRSD_RSD            = 58;
+	final static int C_RSMRSD_RSD           = 59;
+	final static int C_RSPRSD_RSD           = 60;
+	final static int C_SERSM_RSM            = 61;
+	final static int C_NRRSP_RSP            = 62;
+	final static int C_SEVSC_SCHEDULE       = 63;
+	final static int C_EVSEV_SCHEDULED_EVENT= 64;
+	final static int C_PLS_SCOPE            = 65;
+	final static int C_RS_SCOPE             = 66;
+	final static int C_ALLNONE_STOP         = 67;
+	final static int C_SETR_TRIGGER         = 68;
+	final static int C_NRTR_TRIGGER         = 69;
+	final static int C_OT_TRIGGER		= 70;
+	final static int C_RTR_TRIGGER          = 71;
+	final static int C_GU_USER              = 72;
+	final static int C_OT_WATCH_TYPE	= 73;
 
 	static
 	{
@@ -360,6 +361,7 @@ public class ExpandParser
 		expandClasses.put(Integer.valueOf(C_SEEVT_EVENT),		new SEEvent());
 		expandClasses.put(Integer.valueOf(C_SEVEVT_EVENT),		new SEVEvent());
 		expandClasses.put(Integer.valueOf(C_SEF_FOLDER),		new SEFolder());
+		expandClasses.put(Integer.valueOf(C_SEINT_INT),			new SEEnableInt());
 		expandClasses.put(Integer.valueOf(C_RF_FOLDER),			new RFolder());
 		expandClasses.put(Integer.valueOf(C_SEFP_FOOTPRINT),		new SEFootprint());
 		expandClasses.put(Integer.valueOf(C_ALLGR_GRANT),		new AllGrant());
@@ -440,6 +442,7 @@ public class ExpandParser
 		{O_FOOTPRINT,		T_JOB_DEFINITION,	T_FOOTPRINT},
 		{O_GRANT,		T_ALL,			T_GRANT},
 		{O_GROUP,		T_GRANT,		T_GROUP},
+		{O_INTERVAL,		T_JOB_DEFINITION,	T_INTERVAL},
 		{O_INTERVAL,		T_SCHEDULE,		T_INTERVAL},
 		{O_JOB_DEFINITION,	T_FOLDER,		T_JOB_DEFINITION},
 		{O_JOB_DEFINITION,	T_OBJECT_MONITOR,	T_JOB_DEFINITION},
