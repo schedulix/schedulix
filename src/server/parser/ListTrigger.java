@@ -192,6 +192,7 @@ public class ListTrigger extends Node
 		desc.add("STATES");
 		desc.add("SUBMIT_TYPE");
 		desc.add("SUBMIT_NAME");
+		desc.add("SUBMIT_ID");
 		desc.add("SUBMIT_SE_OWNER");
 		desc.add("SUBMIT_PRIVS");
 		desc.add("MAIN_TYPE");
@@ -328,6 +329,7 @@ public class ListTrigger extends Node
 			SDMSSchedulingEntity subm_se = SDMSSchedulingEntityTable.getObject(sysEnv, t.getSeId(sysEnv));
 			data.add(subm_se.getTypeAsString(sysEnv));
 			data.add(subm_se.pathVector(sysEnv));
+			data.add(subm_se.getId(sysEnv));
 			Long submitSeOwnerId = subm_se.getOwnerId (sysEnv);
 			SDMSGroup g = SDMSGroupTable.getObject (sysEnv, submitSeOwnerId);
 			data.add (g.getName (sysEnv));
