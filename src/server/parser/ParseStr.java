@@ -313,7 +313,6 @@ public class ParseStr
 	public static final String S_PASSWORD		= "PASSWORD";
 	public static final String S_PATH		= "PATH";
 	public static final String S_PENDING		= "PENDING";
-	public static final String S_PERFORMANCE	= "PERFORMANCE";
 	public static final String S_PERL		= "PERL";
 	public static final String S_PID		= "PID";
 	public static final String S_PIPELINE		= "PIPELINE";
@@ -791,7 +790,6 @@ public class ParseStr
 		mapper.put(Integer.valueOf(Parser.PASSWORD),			ParseStr.S_PASSWORD);
 		mapper.put(Integer.valueOf(Parser.PATH),			ParseStr.S_PATH);
 		mapper.put(Integer.valueOf(Parser.PENDING),			ParseStr.S_PENDING);
-		mapper.put(Integer.valueOf(Parser.PERFORMANCE),			ParseStr.S_PERFORMANCE);
 		mapper.put(Integer.valueOf(Parser.PERL),			ParseStr.S_PERL);
 		mapper.put(Integer.valueOf(Parser.PID),				ParseStr.S_PID);
 		mapper.put(Integer.valueOf(Parser.PRIORITY),			ParseStr.S_PRIORITY);

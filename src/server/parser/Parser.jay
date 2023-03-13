@@ -61,7 +61,7 @@ public class Parser
 %token <Token>	N NAME NAMED_RESOURCE NICE_PROFILE NICEVALUE NO NODE NOINVERSE NOKEEP NOMASTER NOMERGE NOMINALPCT NONE NONFATAL
 %token <Token>	NORESUME NOSTICKY NOSUSPEND NOT NOTRACE NOTRUNC NOWARN
 %token <Token>	OBJECT OF OFFLINE ON ONLINE ONLY OPERATE OR OTHER OWNER
-%token <Token>	PARENT PARAMETERS PASSWORD PATH PENDING PERFORMANCE PERL PID PLAIN POOL PRIORITY PROFILE PROTOCOL PUBLIC PYTHON
+%token <Token>	PARENT PARAMETERS PASSWORD PATH PENDING PERL PID PLAIN POOL PRIORITY PROFILE PROTOCOL PUBLIC PYTHON
 %token <Token>	QUOTED
 %token <Token>	RAW RAWPASSWORD REACHABLE READ REASSURE RECREATE RECURSIVE REFERENCE REGISTER REJECT RENAME RENICE REQUIRED REQUESTABLE_AMOUNT RERUN RERUN_PROGRAM RESOLVE RESOURCE
 %token <Token>	RESOURCE_TEMPLATE RESOURCE_STATUS RESOURCE_STATUS_DEFINITION RESOURCE_STATUS_MAPPING RESOURCE_STATUS_PROFILE RESOURCE_WAIT
@@ -164,7 +164,7 @@ public class Parser
 %type <Integer>	job_childdef_suspend, job_type, jobstate, jobstate2, jp_aggfunction, jrq_mode, jrq_resolve, jrq_unresolved
 %type <Integer>	lj_mode, lockmode, jrd_keep
 %type <Integer>	mergemode
-%type <Integer>	optall opt_integer, opt_quoted, opt_sid, opt_signed_integer, om_recreate
+%type <Integer>	optall opt_integer, opt_quoted, opt_si_limit, opt_sid, opt_signed_integer, om_recreate
 %type <Integer>	resource_usage
 %type <Integer>	schevbacklog, sid, signed_integer, sj_filteritem
 %type <Integer>	testid
@@ -192,7 +192,7 @@ public class Parser
 %type <Vector>	lc_filterexpression, lc_filterterm, lf_filterexpression, lf_filterterm, lj_exitstatelist, lj_jobserverlist, lj_nodelist, lj_parameterlist, lj_userlist 
 %type <Vector>	lnr_filterexpression, lnr_filterterm, lnr_usagelist
 %type <Vector>  npentrylist
-%type <Vector>	opt_dump_list, opt_env_with_clause, opt_esm_maplist, opt_lj_idlist
+%type <Vector>	opt_dump_list, opt_env_with_clause, opt_esm_maplist, opt_si_with, opt_lj_idlist
 %type <Vector>	opt_ordinarycmdlist, ordinarycmdlist
 %type <Vector>	parmlist
 %type <Vector>	resourcelist, system_resource_reqlist, rsm_with_clause, rsm_withitem, rsm_withitemlist
@@ -2417,8 +2417,8 @@ jcd_item:		folderpath '.' jobname					{ final WithHash w = new WithHash();
 	|		CONDITION '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
 	|		CONDITION '=' STRING					{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 			//D:DEFAULT
-	|		MODE '=' OR						{ $$ = new WithItem(ParseStr.map($1.token), SDMSSchedulingHierarchy.OR); }
 	|		MODE '=' AND						{ $$ = new WithItem(ParseStr.map($1.token), SDMSSchedulingHierarchy.AND); }
+	|		MODE '=' OR						{ $$ = new WithItem(ParseStr.map($1.token), SDMSSchedulingHierarchy.OR); }
 
 staticdynamic:		STATIC							{ $$ = SDMSConstants.SH_STATIC; }
 	|		DYNAMIC							{ $$ = SDMSConstants.SH_DYNAMIC; }
@@ -3281,7 +3281,16 @@ list_interval:		LIST INTERVAL						{ $$ = new ListInterval(false); }
 //D:NT-ALIAS = show interval
 //D:PURPOSE P136
 //D:DESCRIPTION show_interval.tex
-show_interval:		SHOW INTERVAL intervalname opt_ivowner			{ $$ = new ShowInterval($3, $4); }
+show_interval:		SHOW INTERVAL intervalname opt_ivowner opt_si_with	{ $$ = new ShowInterval($3, $4, $5); }
+
+opt_si_with:									{ $$ = null; }
+	|		WITH DAY BETWEEN datetime_notz AND datetime_notz opt_si_limit	{ $$ = new Vector();
+										  $<Vector>$.add($4);
+										  $<Vector>$.add($6);
+										  $<Vector>$.add($7);
+										}
+opt_si_limit:									{ $$ = SystemEnvironment.maxNumCalEntries; }
+	|		"," LIMIT '=' integer					{ $$ = $4; }
 
 opt_ivowner:									{ $$ = null; }
 	|		'(' id ')'						{ $$ = $2; }
@@ -4903,7 +4912,6 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	PASSWORD							{ $$ = (String) $1.value; }
 	|	PATH								{ $$ = (String) $1.value; }
 	|	PENDING								{ $$ = (String) $1.value; }
-	|	PERFORMANCE							{ $$ = (String) $1.value; }
 	|	PERL								{ $$ = (String) $1.value; }
 	|	PID								{ $$ = (String) $1.value; }
 	|	PLAIN								{ $$ = (String) $1.value; }

@@ -261,7 +261,6 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("PASSWORD",		Integer.valueOf(Parser.PASSWORD));
 	tokens.put("PATH",		Integer.valueOf(Parser.PATH));
 	tokens.put("PENDING",		Integer.valueOf(Parser.PENDING));
-	tokens.put("PERFORMANCE",	Integer.valueOf(Parser.PERFORMANCE));
 	tokens.put("PERL",		Integer.valueOf(Parser.PERL));
 	tokens.put("PID",		Integer.valueOf(Parser.PID));
 	tokens.put("PLAIN",		Integer.valueOf(Parser.PLAIN));
