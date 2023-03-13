@@ -122,7 +122,12 @@ public abstract class VariableResolver
 				escape = false;
 			} else {
 				if (c == prefix) {
-					i = readVar(sysEnv, thisObject, str, i, fastAccess, mode, triggercontext, result, recursionCheck, version, evalScope);
+					int varEnd;
+					varEnd = readVar(sysEnv, thisObject, str, i, fastAccess, mode, triggercontext, result, recursionCheck, version, evalScope);
+					if (varEnd == i)
+						result.append(c);
+					else
+						i = varEnd;
 				} else if (c == '\\') {
 					escape = true;
 				} else {
@@ -168,17 +173,30 @@ public abstract class VariableResolver
 		}
 		while(i < maxpos && (delimited || Arrays.binarySearch(searchChars, key[i]) >= 0)) {
 			if(delimited && ((!caseSensitive && key[i] == '}') || (caseSensitive && key[i] == '\''))) {
-				if (caseSensitive)
+				if (i >= maxpos - 1) {
+					SDMSThread.doTrace(sysEnv.cEnv, "Error parsing parameter value of " + objId + ", unterminated Parameter reference", SDMSThread.SEVERITY_WARNING);
+					if (SystemEnvironment.parameterSyntaxHandling == SystemEnvironment.PSH_ERROR)
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03303071558", "Syntax error: unterminated Parameter reference"));
+					return pos;
+				}
+				if (caseSensitive) {
 					if (key[i+1] == '}')
 						i++;
 					else {
-						throw new CommonErrorException(new SDMSMessage(sysEnv, "03312031425", "Syntax Error: unexpected Character '" + key[i+1] + "'"));
+						SDMSThread.doTrace(sysEnv.cEnv, "Error parsing parameter value of " + objId + ", unexpected character '" + key[i+1] + "'", SDMSThread.SEVERITY_WARNING);
+						if (SystemEnvironment.parameterSyntaxHandling == SystemEnvironment.PSH_ERROR)
+							throw new CommonErrorException(new SDMSMessage(sysEnv, "03303071558", "Syntax error: unexpected character '" + key[i+1] + "', expected a closing curly brace"));
+						return pos;
 					}
+				}
 				i++;
 				break;
 			} else {
 				if (delimited && Arrays.binarySearch(searchChars, key[i]) < 0) {
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03312031427", "Syntax Error: unexpected Character '" + key[i] + "'"));
+					SDMSThread.doTrace(sysEnv.cEnv, "Error parsing parameter value of " + objId + ", unexpected character '" + key[i] + "'", SDMSThread.SEVERITY_WARNING);
+					if (SystemEnvironment.parameterSyntaxHandling == SystemEnvironment.PSH_ERROR)
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03303071558", "Syntax error: invalid character '" + key[i] + "' in parameter name"));
+					return pos;
 				}
 				varbuf.append(key[i]);
 			}
@@ -194,13 +212,23 @@ public abstract class VariableResolver
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03603010059", "Run into a loop while trying to resolve variable $1", varName));
 		}
 		recursionCheck.push(k);
+		boolean resolveSucceeded = true;
 		Boolean isDefault = (Boolean) sysEnv.tx.txData.get(SystemEnvironment.S_ISDEFAULT);
 		sysEnv.tx.txData.remove(SystemEnvironment.S_ISDEFAULT);
-		String tmp = getInternalVariableValue(sysEnv, thisObject, varName, fastAccess, mode, triggercontext, recursionCheck, version, evalScope);
-		result.append(tmp);
+		try {
+			String tmp = getInternalVariableValue(sysEnv, thisObject, varName, fastAccess, mode, triggercontext, recursionCheck, version, evalScope);
+			result.append(tmp);
+		} catch (SDMSException e) {
+			if (SystemEnvironment.unresolvedParameterHandling == SystemEnvironment.UPH_ERROR)
+				throw e;
+			else
+				resolveSucceeded = false;
+		}
 		if(isDefault != null)
 			sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, isDefault);
 		recursionCheck.pop();
+		if (!resolveSucceeded && SystemEnvironment.unresolvedParameterHandling == SystemEnvironment.UPH_ECHO)
+			return pos;
 		return i;
 	}
 

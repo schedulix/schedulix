@@ -560,9 +560,9 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				                                "Cannot enable a submitted entity that is not in DEPENDENCY WAIT state"));
 		}
 		sme.setIsDisabled(sysEnv, Boolean.FALSE);
-		sme.checkDependencies(sysEnv);
 		sme.setState(sysEnv, SDMSSubmittedEntity.SUBMITTED);
 		sme.setState(sysEnv, SDMSSubmittedEntity.DEPENDENCY_WAIT);
+		sme.checkDependencies(sysEnv);
 		Vector v = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, smeId);
 		Iterator i = v.iterator();
 		while (i.hasNext()) {
