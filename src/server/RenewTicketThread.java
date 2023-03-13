@@ -45,10 +45,10 @@ public class RenewTicketThread extends SDMSThread
 
 	public  SystemEnvironment pSysEnv;
 	private final static int NR = 888888888;
-	private final static int TICKETINTERVAL = 60 * 1000;
 	private final static int TICKET_TOO_OLD = 3;
 	private long lastTicket;
 	private long ticketMinTime;
+	private int ticketInterval;
 	private boolean postgres = false;
 	private String updateString;
 	private String selectString;
@@ -71,6 +71,7 @@ public class RenewTicketThread extends SDMSThread
 		pSysEnv = null;
 		lastTicket = 0;
 		ticketMinTime = 3000;
+		ticketInterval = 20 * 1000;
 	}
 
 	public int id()
@@ -87,6 +88,11 @@ public class RenewTicketThread extends SDMSThread
 			throw new FatalException(new SDMSMessage(pSysEnv, "03302061654",
 							"Cannot Clone SystemEnvironment"));
 		}
+
+		ticketInterval = env.ticketInterval * 1000 ;
+		if (ticketInterval < 6000)
+			ticketMinTime = ticketInterval / 2;
+
 		try {
 			pSysEnv.dbConnection = Server.connectToDB(pSysEnv);
 		} catch(SDMSException e) {
@@ -229,10 +235,10 @@ public class RenewTicketThread extends SDMSThread
 							} else {
 								sysEnv.dbConnection.commit();
 								oldticket = ticket;
-								long now = System.currentTimeMillis() + TICKETINTERVAL * TICKET_TOO_OLD;
+								long now = System.currentTimeMillis() + ticketInterval * TICKET_TOO_OLD;
 								while(now > System.currentTimeMillis()) {
 									try {
-										sleep(TICKETINTERVAL);
+										sleep(ticketInterval);
 									} catch(Exception e) {  }
 								}
 								continue;
@@ -337,7 +343,7 @@ public class RenewTicketThread extends SDMSThread
 					throw new FatalException(new SDMSMessage(pSysEnv, "03302061657", "Error while committing transaction"));
 				}
 				try {
-					sleep(TICKETINTERVAL);
+					sleep(ticketInterval);
 				} catch(Exception e) {
 				}
 			}
