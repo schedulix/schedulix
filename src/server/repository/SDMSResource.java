@@ -1096,4 +1096,11 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			SDMSResourceVariableTable.table.create(sysEnv, pd.getId(sysEnv), rId, "=" + value);
 		}
 	}
+
+	public String getSubtypeName(SystemEnvironment env)
+	throws SDMSException
+	{
+		SDMSNamedResource nr = SDMSNamedResourceTable.getObject(env, getNrId(env));
+		return nr.getUsageAsString(env);
+	}
 }
