@@ -622,6 +622,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				return;
 		}
 		sme.setIsDisabled(sysEnv, Boolean.FALSE);
+		sme.setState(sysEnv, SDMSSubmittedEntity.SUBMITTED);
+		sme.setState(sysEnv, SDMSSubmittedEntity.DEPENDENCY_WAIT);
 		sme.checkDependencies(sysEnv);
 		Vector v = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, smeId);
 		Iterator i = v.iterator();
@@ -2854,20 +2856,22 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				setJobIsRestartable(sysEnv, Boolean.FALSE);
 			}
 		}
-		if (newState == ERROR ||
-		    newState == BROKEN_FINISHED) {
-			final Long espId = se.getEspId(sysEnv);
-			final SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, espId);
-			final Long brokenEsdId = esp.getBrokenState(sysEnv, actVersion);
-			if(brokenEsdId != null) {
-				final SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, brokenEsdId));
-				changeState(sysEnv, brokenEsdId, es, null, null, null, true);
-				int curState = getState(sysEnv).intValue();
-				if (curState == FINISHED) {
-					super.setState(sysEnv, state);
-					fixCntInParents(sysEnv, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0,
-							newState == BROKEN_FINISHED ? 1 : 0, newState == ERROR ? 1 : 0, 0, 0, 0, 0, 0 );
-				}
+		if (newState == ERROR || newState == BROKEN_FINISHED)  {
+			if (newState == ERROR || sysEnv.brokenFinishedHandling == true ) {
+				final Long espId = se.getEspId(sysEnv);
+				final SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, espId);
+				final Long brokenEsdId = esp.getBrokenState(sysEnv, actVersion);
+				if(brokenEsdId != null) {
+					final SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, brokenEsdId));
+					changeState(sysEnv, brokenEsdId, es, null, null, null, true);
+					int curState = getState(sysEnv).intValue();
+					if (curState == FINISHED) {
+						super.setState(sysEnv, state);
+						fixCntInParents(sysEnv, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0,
+						                newState == BROKEN_FINISHED ? 1 : 0, newState == ERROR ? 1 : 0, 0, 0, 0, 0, 0 );
+					}
+				} else
+					setJobIsRestartable(sysEnv, Boolean.TRUE);
 			} else
 				setJobIsRestartable(sysEnv, Boolean.TRUE);
 
