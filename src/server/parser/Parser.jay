@@ -2376,8 +2376,8 @@ jcd_item:		folderpath '.' jobname					{ final WithHash w = new WithHash();
 	|		CONDITION '=' NONE					{ $$ = new WithItem(ParseStr.map($1.token), null); }
 	|		CONDITION '=' STRING					{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
 			//D:DEFAULT
-	|		MODE '=' OR						{ $$ = new WithItem(ParseStr.map($1.token), SDMSSchedulingHierarchy.OR); }
 	|		MODE '=' AND						{ $$ = new WithItem(ParseStr.map($1.token), SDMSSchedulingHierarchy.AND); }
+	|		MODE '=' OR						{ $$ = new WithItem(ParseStr.map($1.token), SDMSSchedulingHierarchy.OR); }
 
 staticdynamic:		STATIC							{ $$ = new Boolean(SDMSSchedulingHierarchy.STATIC); }
 	|		DYNAMIC							{ $$ = new Boolean(SDMSSchedulingHierarchy.DYNAMIC); }
