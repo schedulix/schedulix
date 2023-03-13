@@ -149,15 +149,17 @@ public class SDMSResourceRequirement extends SDMSResourceRequirementProxyGeneric
 	public void setRsmpId(SystemEnvironment sysEnv, Long rsmpId)
 	throws SDMSException
 	{
-		Long nrId = this.getNrId(sysEnv);
-		SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, nrId);
-		Long rspId = nr.getRspId(sysEnv);
-		if (rspId == null) {
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03709071205",
-			                               "It is not allowed to specify a mapping for a resource ($1) without a resource state profile",
-			                               nr.pathString(sysEnv)));
+		if (rsmpId != null) {
+			Long nrId = this.getNrId(sysEnv);
+			SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, nrId);
+			Long rspId = nr.getRspId(sysEnv);
+			if (rspId == null) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03709071205",
+							       "It is not allowed to specify a mapping for a resource ($1) without a resource state profile",
+							       nr.pathString(sysEnv)));
+			}
+			checkMapping(sysEnv, rspId, rsmpId, nr);
 		}
-		checkMapping(sysEnv, rspId, rsmpId, nr);
 		super.setRsmpId(sysEnv, rsmpId);
 	}
 
