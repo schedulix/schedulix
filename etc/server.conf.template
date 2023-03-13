@@ -45,6 +45,17 @@ ArchiveStatsColumns=ALL
 # AuthenticationClass=de.independit.scheduler.server.util.ExampleAuthenticator
 
 #
+# BrokenFinishedHandling
+# In earlier releases a BROKEN_FINISHED situation was regarded to be BROKEN, just like an ERROR situation
+# If the Exit State Profile defines a Broken State, the Job in State BROKEN_FINISHED is set to that state.
+# With the BrokenFinishedHandling=CLASSICAL setting, this behaviour is preserved.
+# If BrokenFinishedHandling=RESTRICTED is defined, the exit state is not set.
+# If the parameter is omitted, the CLASSICAL policy is active
+#
+# BrokenFinishedHandling=CLASSICAL
+BrokenFinishedHandling=RESTRICTED
+
+#
 # CalendarEntries: The maximum number of starttimes stored in the calendar
 #
 CalendarEntries=250
@@ -194,6 +205,20 @@ MaxHistoryCount=0
 ParameterHandling=liberal
 
 #
+# ParameterSyntaxHandling: this parameter determines how the server responds to seemingly broken syntax.
+#                          As an example, a parameter value like "abc ${'abc'" is considered broken
+#			   since the parameter abc seems to be referenced, but the closing curly brace
+#			   is missing.
+#			   This is of course not optimal; it could even be the intended value.
+#			   There are now two strategies to respond to this situation:
+#
+#	   1. ERROR:  this installs the "old" behaviour of the server and it'll report an error
+#	   2. IGNORE: this is the more mature reaction to the situation; the string simply doesn't
+#		      match the format of the token used to reference parameters, hence why treat it that way.
+#
+ParameterSyntaxHandling=ignore
+
+#
 # Port: Portnumber for Listener
 #
 Port=2506
@@ -324,6 +349,13 @@ TrustStorePassword=VerySecret
 SysPasswd=G0H0ME
 
 #
+# TicketInterval: Maximum time between two renewals of a ticket
+# Default = 20. Minimum = 3.
+# A standby server will wait 3 TicketIntervals before taking over
+#
+# TicketInterval=20
+
+#
 # TimerHorizon: Time (in years) the TimerThread "looks in the future"
 #
 TimerHorizon=2
@@ -395,6 +427,21 @@ TTWakeup=30
 #               times
 #
 TxRetryCount=3
+
+#
+# UnresolvedParameterHandling: If a parameter is used within the value of another parameter, the
+#			       referenced parameter need not be found.
+#			       The value of UnresolvedParameterHandling defines how to respond to that:
+#
+#	1. ERROR	The situation is regarded an error and an exception is thrown
+#	2. BLANK	The server behaves like a Unix shell. If it can't resolve the referenced
+#			parameter, it replaces it with an empty string (like in "echo $DOESNOTEXIST")
+#	3. ECHO		The server behaves more like Windows and outputs the original text
+#			This is like "echo %DOESNOTEXIST%", which will print %DOESNOTEXIST%.
+#
+# The original behaviour was to issue an error if parameters can't be resolved
+#
+UnresolvedParameterHandling=ERROR
 
 #
 # UserExportVariables define the variables/parameters which are set in the 

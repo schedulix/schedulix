@@ -57,6 +57,13 @@ public class SystemEnvironment implements Cloneable
 	public static final int ADMIN    = 1;
 	public static final int SHUTDOWN = 2;
 
+	public static final int UPH_ERROR = 0;
+	public static final int UPH_BLANK = 1;
+	public static final int UPH_ECHO  = 2;
+
+	public static final int PSH_ERROR = 0;
+	public static final int PSH_IGNORE = 1;
+
 	private static final String NONE = "NONE";
 	private static final String ALL = "ALL";
 
@@ -124,6 +131,8 @@ public class SystemEnvironment implements Cloneable
 	public static int traceLevel;
 	public static boolean traceExpressions;
 	public static String parameterHandling;
+	public static int unresolvedParameterHandling;
+	public static int parameterSyntaxHandling;
 	public static TimerUnit timerHorizon;
 	public static TimerUnit timerRecalc;
 	public static String hostname;
@@ -149,6 +158,7 @@ public class SystemEnvironment implements Cloneable
 	public static String dbUser;
 	public static String dbPasswd;
 	public static String sysPasswd;
+	public static boolean brokenFinishedHandling;
 	public static int scheduleWakeupInterval;
 	public static int notifyDelay;
 	public static int priorityDelay;
@@ -160,6 +170,7 @@ public class SystemEnvironment implements Cloneable
 	public static int ttWakeupInterval;
 	public static int triggerSoftLimit;
 	public static int triggerHardLimit;
+	public static int ticketInterval;
 	public static int dbLoaders;
 	public static int sessionTimeout;
 	public static String compatLevel;
@@ -217,6 +228,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_AUDITFILE             = "AuditFile";
 	public static final String S_AUDITENTRIES          = "AuditEntries";
 	public static final String S_AUTHCLASS             = "AuthenticationClass";
+	public static final String S_BROKENFINISHEDHANDLING = "BrokenFinishedHandling";
 	public static final String S_CALHORIZON            = "CalendarHorizon";
 	public static final String S_CALENTRIES            = "CalendarEntries";
 	public static final String S_CUSTOMERNAME          = "CustomerName";
@@ -240,6 +252,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_JDBCDRIVER            = "JdbcDriver";
 	public static final String S_LEVEL                 = "CompatibilityLevel";
 	public static final String S_PARAMETERHANDLING     = "ParameterHandling";
+	public static final String S_PARAMETERSYNTAXHANDLING = "ParameterSyntaxHandling";
 	public static final String S_PORT                  = "Port";
 	public static final String S_PRIORITYDELAY         = "PriorityDelay";
 	public static final String S_PRIORITYLB            = "PriorityLowerBound";
@@ -254,6 +267,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_SUPPORTKEY            = "SupportKey";
 	public static final String S_SSLPORT               = "SSLPort";
 	public static final String S_SYSPASSWD             = "SysPasswd";
+	public static final String S_TICKETINTERVAL        = "TicketInterval";
 	public static final String S_TIMERHORIZON          = "TimerHorizon";
 	public static final String S_TIMERRECALC           = "TimerRecalc";
 	public static final String S_TIMERSUSPENDLIMIT     = "TimerSuspendLimit";
@@ -267,6 +281,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_TXRETRYCOUNT          = "TxRetryCount";
 	public static final String S_USERTHREADS           = "UserThreads";
 	public static final String S_USEREXPORTVARIABLES   = "UserExportVariables";
+	public static final String S_UNRESPARMHANDLING     = "UnresolvedParameterHandling";
 	public static final String S_WORKERTHREADS         = "WorkerThreads";
 	public static final String S_WRITERTHREADS         = "WriterThreads";
 	public static final String S_KEYSTORE              = "KeyStore";
@@ -444,6 +459,9 @@ public class SystemEnvironment implements Cloneable
 		getArchive();
 		getArchiveCols();
 		getParameterHandling();
+		getUnresolvedParameterHandling();
+		getParameterSyntaxHandling();
+		getTicketInterval();
 		getTimerHorizon();
 		getTimerRecalc();
 		getPort();
@@ -475,6 +493,7 @@ public class SystemEnvironment implements Cloneable
 		getSingleServer();
 		getMaxNumCalEntries();
 		getCalHorizon();
+		getBrokenFinishedHandling();
 
 		getTriggerSoftLimit();
 		getTriggerHardLimit();
@@ -835,6 +854,14 @@ public class SystemEnvironment implements Cloneable
 		props.setProperty(S_NOTIFYDELAY, "" + notifyDelay);
 	}
 
+	private void getTicketInterval()
+	{
+		final String s_ticketInterval = props.getProperty (S_TICKETINTERVAL, "20");
+		final int interval = checkIntProperty(s_ticketInterval, S_TICKETINTERVAL, 3, 20, 120, "Invalid TicketInterval : ");
+		ticketInterval = interval;
+		props.setProperty(S_TICKETINTERVAL, "" + interval);
+	}
+
 	private void getTimerHorizon()
 	{
 		final String s_timerHorizon = props.getProperty (S_TIMERHORIZON, "5");
@@ -935,6 +962,20 @@ public class SystemEnvironment implements Cloneable
 		String s_calHorizon = props.getProperty(S_CALHORIZON, "62");
 		defCalHorizon = checkIntProperty(s_calHorizon, S_CALHORIZON, 0, 62, 0, "Invalid Calendar Horizon : ");
 		props.setProperty(S_CALHORIZON, "" + defCalHorizon);
+	}
+
+	private void getBrokenFinishedHandling()
+	{
+		String s_bfHandling = props.getProperty(S_BROKENFINISHEDHANDLING, "CLASSICAL").toUpperCase();
+		if (s_bfHandling.equals("CLASSICAL"))
+			brokenFinishedHandling = true;
+		else {
+			brokenFinishedHandling = false;
+			if (!s_bfHandling.equals("RESTRICTED")) {
+				SDMSThread.doTrace(null, "BROKEN_FINISHED handling (" + s_bfHandling + ") is neither CLASSICAL nor RESTRICTED; RESTRICTED assumed", SDMSThread.SEVERITY_WARNING);
+			}
+		}
+		props.setProperty(S_BROKENFINISHEDHANDLING, s_bfHandling);
 	}
 
 	private void getMaxNumCalEntries()
@@ -1086,6 +1127,30 @@ public class SystemEnvironment implements Cloneable
 			parameterHandling = "LIBERAL";
 		}
 		props.setProperty(S_PARAMETERHANDLING, parameterHandling);
+	}
+
+	private void getUnresolvedParameterHandling()
+	{
+		String pb = props.getProperty(S_UNRESPARMHANDLING, "ERROR").toUpperCase();
+		if(pb.equals("BLANK")) {
+			unresolvedParameterHandling = UPH_BLANK;
+		} else if(pb.equals("ECHO")) {
+			unresolvedParameterHandling = UPH_ECHO;
+		} else {
+			unresolvedParameterHandling = UPH_ERROR;
+		}
+		props.setProperty(S_UNRESPARMHANDLING, pb);
+	}
+
+	private void getParameterSyntaxHandling()
+	{
+		String pb = props.getProperty(S_PARAMETERSYNTAXHANDLING, "ERROR").toUpperCase();
+		if(pb.equals("IGNORE")) {
+			parameterSyntaxHandling = PSH_IGNORE;
+		} else if(pb.equals("ERROR")) {
+			unresolvedParameterHandling = PSH_ERROR;
+		}
+		props.setProperty(S_PARAMETERSYNTAXHANDLING, pb);
 	}
 
 	private Vector convertEntryToVector(String s, String msg)
