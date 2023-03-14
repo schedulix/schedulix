@@ -45,6 +45,9 @@ public class RecoverableException extends UserException
 		super(msg);
 	}
 
-	public int getExceptionNumber() { return 512; }
+	public int getExceptionNumber()
+	{
+		return 512;
+	}
 }
 

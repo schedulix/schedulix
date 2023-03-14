@@ -45,6 +45,9 @@ public class DuplicateKeyException extends NonRecoverableException
 		super(msg);
 	}
 
-	public int getExceptionNumber() { return 8; }
+	public int getExceptionNumber()
+	{
+		return 8;
+	}
 }
 
