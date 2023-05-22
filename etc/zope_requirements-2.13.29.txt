@@ -44,7 +44,7 @@ pytz==2021.1
 repoze.retry==1.2
 repoze.tm2==1.0
 repoze.who==2.0
-requests==2.21.0
+requests==2.31.0
 six==1.12.0
 tempstorage==2.12.2
 toml==0.10.0
