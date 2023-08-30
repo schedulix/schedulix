@@ -24,7 +24,7 @@ Products.ZCTextIndex==2.13.5
 Products.ZCatalog==2.13.30
 Pygments==2.3.1
 Record==2.13.0
-RestrictedPython==3.6.0
+RestrictedPython==6.2
 Sphinx==1.0.8
 ZConfig==2.9.3
 ZODB3==3.10.7
