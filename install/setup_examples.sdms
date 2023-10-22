@@ -147,6 +147,76 @@ create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0015_PARAMETERS'.'
 with
 	TAG = none, TEXT = 'This example shows some methods of parameterizing jobs';
 
+create or alter folder SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'
+with
+	group = 'PUBLIC',
+	environment = none,
+	inherit grants = (CREATE CONTENT, DROP, EDIT, MONITOR, OPERATE, SUBMIT, VIEW, RESOURCE),
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'.'CUSTOM_PARAMETERS'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	inherit grants = (DROP, EDIT, MONITOR, OPERATE, SUBMIT, VIEW, RESOURCE),
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = (
+		'CHECKBOX',
+		'SELECT'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" "Checkbox: $CHECKBOX" "Select: $SELECT" -c "?:1=FAILURE:0=SUCCESS" "$SCOPENAME"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'.'CUSTOM_PARAMETERS'
+alter parameter = (
+		'CHECKBOX'
+			PARAMETER
+		EXPORT = NONE,
+		'SELECT'
+			PARAMETER
+		EXPORT = NONE
+	);
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'.'CUSTOM_PARAMETERS'
+with
+	TAG = none, TEXT = 'Custom Parameters is s simple job showing how to use checkboxes and selectlists for submit parameters
+See comments on parameters on how to configure checkboxes and select list parameters.
+The SELECT parameter uses { \'KEY\' : \'<ParemDictKey>\' } to use Values defined in Custom.ParamDict';
+
+create or alter comment on parameter 'CHECKBOX' of job definition SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'.'CUSTOM_PARAMETERS'
+with
+	TAG = none, TEXT = '<WEB_CONFIG>
+    \'TYPE\'          : \'CHECKBOX\',
+    \'TICKVALUE\'     : \'TRUE\',
+    \'OFFVALUE\'      : \'FALSE\',
+    \'DEFAULT\'       : \'FALSE\',
+    \'EDIT_ON_RERUN\' : \'true\'
+</WEB_CONFIG>';
+
+create or alter comment on parameter 'SELECT' of job definition SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'.'CUSTOM_PARAMETERS'
+with
+	TAG = none, TEXT = '<WEB_CONFIG>
+    \'TYPE\'          : \'SELECT\',
+    \'VALUES\'        : { \'KEY\' : \'YesNoMaybe\' },
+    \'DEFAULT\'       : { \'KEY\' : \'YesNoMaybeDefault\' },
+    \'EDIT_ON_RERUN\' : \'true\'
+</WEB_CONFIG>';
 
 create or alter folder SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'
 with
@@ -301,7 +371,6 @@ create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'.
 with
 	TAG = none, TEXT = 'This example shows a simple batch, containing two jobs called "START" and "END".
 The latter job depends on the successful execution of the former one.';
-
 
 create or alter folder SYSTEM.'EXAMPLES'.'E0025_BATCH_HIERARCHY'
 with
@@ -13191,7 +13260,6 @@ with map = (
 		4,	'FAILURE'
 );
 
-/* 13 */
 create or alter exit state mapping 'DOG_MOVE'
 with map = (
 			'ESCAPED',
@@ -13210,7 +13278,6 @@ with
 			'WEST' final
 		);
 
-/* 4 */
 create or alter exit state profile 'DOG_MOVE'
 with
 		default mapping = 'DOG_MOVE',
@@ -13928,7 +13995,6 @@ with map = (
 		4,	'FAILURE'
 );
 
-/* 13 */
 create or alter exit state mapping 'DOG_MOVE'
 with map = (
 			'ESCAPED',
@@ -13947,7 +14013,6 @@ with
 			'WEST' final
 		);
 
-/* 4 */
 create or alter exit state profile 'DOG_MOVE'
 with
 		default mapping = 'DOG_MOVE',
@@ -14450,7 +14515,6 @@ add or alter required = (
 		)
 );
 
-/* 13 */
 alter job definition SYSTEM.'EXAMPLES'.'E0450_DOG_ENTERPRISE'.'ESCAPED'
 add or alter required = (
 	SYSTEM.'EXAMPLES'.'E0450_DOG_ENTERPRISE'.'WALK'
@@ -14542,7 +14606,6 @@ add or alter children = (
 		ignore dependency = none
 );
 
-/* 18 */
 alter job definition SYSTEM.'EXAMPLES'.'E0450_DOG_ENTERPRISE'.'WHILE_NOT_ESCAPED'
 add or alter children = (
 	SYSTEM.'EXAMPLES'.'E0450_DOG_ENTERPRISE'.'MOVE'
