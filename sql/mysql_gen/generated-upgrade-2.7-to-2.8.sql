@@ -576,21 +576,6 @@ SELECT
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
   FROM `INTERVALL`;
 DROP VIEW SCI_INTERVAL_DISPATCHER;
-CREATE VIEW SCI_INTERVAL_DISPATCHER AS
-SELECT
-    ID
-    , `INT_ID`                       AS `INT_ID`
-    , `SEQ_NO`                       AS `SEQ_NO`
-    , `NAME`                         AS `NAME`
-    , `SELECT_INT_ID`                AS `SELECT_INT_ID`
-    , `FILTER_INT_ID`                AS `FILTER_INT_ID`
-    , CASE `IS_ENABLED` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_ENABLED`
-    , CASE `IS_ACTIVE` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_ACTIVE`
-    , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
-    , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
-    , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
-    , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM `INTERVAL_DISPATCHER`;
 DROP VIEW SCI_INTERVAL_HIERARCHY;
 CREATE VIEW SCI_INTERVAL_HIERARCHY AS
 SELECT
@@ -1708,31 +1693,6 @@ SELECT
   FROM `TRIGGER_DEFINITION`;
 DROP VIEW SCI_C_TRIGGER_PARAMETER;
 DROP VIEW SCI_V_TRIGGER_PARAMETER;
-CREATE VIEW SCI_C_TRIGGER_PARAMETER AS
-SELECT
-    ID
-    , `NAME`                         AS `NAME`
-    , `EXPRESSION`                   AS `EXPRESSION`
-    , `TRIGGER_ID`                   AS `TRIGGER_ID`
-    , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
-    , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
-    , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
-    , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM `TRIGGER_PARAMETER`
- WHERE VALID_TO = 9223372036854775807;
-CREATE VIEW SCI_V_TRIGGER_PARAMETER AS
-SELECT
-    ID
-    , `NAME`                         AS `NAME`
-    , `EXPRESSION`                   AS `EXPRESSION`
-    , `TRIGGER_ID`                   AS `TRIGGER_ID`
-    , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
-    , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
-    , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
-    , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-    , VALID_FROM
-    , VALID_TO
-  FROM `TRIGGER_PARAMETER`;
 DROP VIEW SCI_TRIGGER_QUEUE;
 CREATE VIEW SCI_TRIGGER_QUEUE AS
 SELECT
@@ -1818,30 +1778,7 @@ SELECT
     , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
   FROM `USER_EQUIV`;
 DROP VIEW SCI_USER_EXTENTS;
-CREATE VIEW SCI_USER_EXTENTS AS
-SELECT
-    ID
-    , `UP_ID`                        AS `UP_ID`
-    , `SEQUENCE`                     AS `SEQUENCE`
-    , `EXTENT`                       AS `EXTENT`
-    , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
-    , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
-    , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
-    , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM `USER_EXTENTS`;
 DROP VIEW SCI_USER_PARAMETER;
-CREATE VIEW SCI_USER_PARAMETER AS
-SELECT
-    ID
-    , `U_ID`                         AS `U_ID`
-    , `NAME`                         AS `NAME`
-    , `VALUE`                        AS `VALUE`
-    , CASE `IS_LONG` WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS `IS_LONG`
-    , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
-    , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
-    , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
-    , from_unixtime((`CHANGE_TS` & ~1125899906842624)/1000) AS `CHANGE_TS`
-  FROM `USER_PARAMETER`;
 -- Copyright (C) 2001,2002 topIT Informationstechnologie GmbH
 -- Copyright (C) 2003-2014 independIT Integrative Technologies GmbH
 
