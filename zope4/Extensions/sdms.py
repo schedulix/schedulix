@@ -867,7 +867,12 @@ def numericTime(s):
 	# local not supported under windows
 	# since we are using english anyway we skip that
 	# locale.setlocale(locale.LC_ALL, 'en_GB')
-	pt = parsedate_tz(s[:20])
+	# we cut off the first 21 characters, even if that's too much in most cases
+	# But in some environments "Sep" is rendered as "Sept" instead, which makes the date string one character longer
+	# The whole idea of using the first 20 or 21 characters is to chop off the time zone.
+	# And if we use 21 characters, we'll get a blank at the end of the date string but don't lose a digit of the seconds
+	# in case of "Sept". The parsedate_tz() function doesn't mind the trailing blank
+	pt = parsedate_tz(s[:21])
 	# ts = time.mktime(time.strptime(s[:20], '%d %b %Y %H:%M:%S'))
 	ts = time.mktime(pt[:9])
 	return ts

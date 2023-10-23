@@ -1785,30 +1785,7 @@ SELECT
     , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM USER_EQUIV;
 DROP VIEW SCI_USER_EXTENTS;
-CREATE VIEW SCI_USER_EXTENTS AS
-SELECT
-    ID
-    , UP_ID                          AS UP_ID
-    , SEQUENCE                       AS SEQUENCE
-    , EXTENT                         AS EXTENT
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-  FROM USER_EXTENTS;
 DROP VIEW SCI_USER_PARAMETER;
-CREATE VIEW SCI_USER_PARAMETER AS
-SELECT
-    ID
-    , U_ID                           AS U_ID
-    , NAME                           AS NAME
-    , VALUE                          AS VALUE
-    , CASE IS_LONG WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_LONG
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-  FROM USER_PARAMETER;
 DROP VIEW SCI_C_VERSIONED_EXTENTS;
 DROP VIEW SCI_V_VERSIONED_EXTENTS;
 CREATE VIEW SCI_C_VERSIONED_EXTENTS AS
