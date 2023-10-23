@@ -108,22 +108,15 @@ public abstract class VariableResolver
 		final char[] str = key.toCharArray();
 		boolean escape = false;
 
-		boolean singleQuote = false;
-
 		for(int i = 0; i < str.length; ++i) {
 			char c = str[i];
-			if (escape && pbs && c != prefix) {
-				result.append('\\');
-				escape = false;
-			}
 			if(escape) {
-				if(!pbs && c != prefix) {
+				if (c != '\\' && c != prefix)
 					result.append('\\');
-				}
 				result.append(c);
 				escape = false;
 			} else {
-				if (c == prefix && !singleQuote) {
+				if (c == prefix) {
 					int varEnd;
 					varEnd = readVar(sysEnv, thisObject, str, i, fastAccess, mode, triggercontext, result, recursionCheck, version, evalScope);
 					if (varEnd == i)
@@ -133,9 +126,6 @@ public abstract class VariableResolver
 				} else if (c == '\\') {
 					escape = true;
 				} else {
-					if (c == '\'') {
-						singleQuote = !singleQuote;
-					}
 					result.append(c);
 				}
 			}
