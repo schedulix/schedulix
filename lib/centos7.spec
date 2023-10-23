@@ -3,7 +3,7 @@
 #
 Name:		schedulix
 Version:	2.10
-Release:	14%{?dist}
+Release:	16%{?dist}
 Summary:	schedulix is an open source enterprise job scheduling system
 
 Group:		Applications/System
@@ -98,6 +98,88 @@ fi
 echo "executing preun base -- %version-%release"
 
 %files base
+%ghost %attr(-, schedulix, schedulix) /opt/schedulix/schedulix
+%defattr(644, schedulix, schedulix, 755)
+%dir %attr(755, schedulix, schedulix) /opt/schedulix
+%dir %attr(755, schedulix, schedulix) /opt/schedulix/etc
+%dir %attr(755, schedulix, schedulix) /opt/schedulix/log
+%dir %attr(755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}
+%dir %attr(755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc
+%dir %attr(755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/bin
+%dir %attr(755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib
+%doc %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/LICENSE
+%doc %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/CONTRIBUTING.md
+%doc %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/README.md
+     %attr(755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/bin/scrolllog
+     %attr(755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/bin/sdmsctl
+     %attr(755, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/bin/sdmsh
+     %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc/bicsuite.conf.template
+     %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc/java.conf.template
+     %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/BICsuite.jar
+     %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/functions.sh
+     %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc/zope_requirements-2.13.29.txt
+     %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/Waffle.Windows.AuthProvider.dll
+     %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/guava-20.0.jar
+     %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/jna-platform-4.3.0.jar
+     %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/waffle-jna-1.8.3.jar
+%ghost %config(noreplace) %attr(644, schedulix, schedulix) /opt/schedulix/etc/bicsuite.conf
+%ghost %config(noreplace) %attr(644, schedulix, schedulix) /opt/schedulix/etc/java.conf 
+%ghost %config(noreplace) %attr(644, schedulix, schedulix) /opt/schedulix/etc/SETTINGS
+#
+# exclude this spec file as it isn't required in any binary package
+#
+%exclude /opt/schedulix/schedulix-%{version}/lib/centos7.spec
+%exclude /opt/schedulix/schedulix-%{version}/lib/centos8.spec
+%exclude /opt/schedulix/schedulix-%{version}/lib/base_pre.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/base_post.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/server-mariadb_post.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/server-mariadb_pre.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/server-pg_post.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/server-pg_pre.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/server-rmt_post.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/server-rmt_pre.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/zope_post.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/zope_pre.script
+
+%package base-nojava
+# ----------------------------------------------------------------------------------------
+#
+# base package
+#
+# ----------------------------------------------------------------------------------------
+Summary:		The schedulix base package installs all files that are used both by the server and the client
+Group:			Applications/System
+Requires:		
+
+%description base
+%commonDescription
+
+The schedulix base package provides the files that are used by most other packages
+Note that the base-nojava package still requires Java (8 or better) but the requirement is omitted.
+This gives the user the opportunity to choose the Java release to install. Tested releases are 
+Java 8, 11, 13 and 17. Other releases are likely to work as well.
+
+
+%pre base-nojava
+%include ../lib/base_pre.script
+
+
+%post base-nojava
+%include ../lib/base_post.script
+
+
+%postun base-nojava
+echo "executing postun base -- %version-%release"
+if [ "$1" == "0" ]; then
+	userdel schedulix
+	rm -rf /var/spool/mail/schedulix
+	rm -rf /opt/schedulix
+fi
+
+%preun base-nojava
+echo "executing preun base -- %version-%release"
+
+%files base-nojava
 %ghost %attr(-, schedulix, schedulix) /opt/schedulix/schedulix
 %defattr(644, schedulix, schedulix, 755)
 %dir %attr(755, schedulix, schedulix) /opt/schedulix
