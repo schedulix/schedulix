@@ -165,6 +165,7 @@ public class RenewTicketThread extends SDMSThread
 					pInsert.close();
 					break;
 				} catch (SQLException sqle) {
+					doTrace(null, "Some exception was raised while trying to insert a new ticket : " + sqle.toString(), SEVERITY_INFO);
 					try {
 						sysEnv.dbConnection.rollback();
 					} catch (SQLException sqle2) {  }
