@@ -144,20 +144,23 @@ echo "executing preun base -- %version-%release"
 %package base-nojava
 # ----------------------------------------------------------------------------------------
 #
-# base package
+# base-nojava package
 #
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix base package installs all files that are used both by the server and the client
 Group:			Applications/System
-Requires:		
+# Requires:		
+Provides:		schedulix-base %{version}-%{release}
+Conflicts:		schedulix-base
 
-%description base
+%description base-nojava
 %commonDescription
 
 The schedulix base package provides the files that are used by most other packages
 Note that the base-nojava package still requires Java (8 or better) but the requirement is omitted.
 This gives the user the opportunity to choose the Java release to install. Tested releases are 
 Java 8, 11, 13 and 17. Other releases are likely to work as well.
+
 
 %pre base-nojava
 %include ../lib/base_pre.script
@@ -221,7 +224,6 @@ echo "executing preun base -- %version-%release"
 %exclude /opt/schedulix/schedulix-%{version}/lib/server-rmt_pre.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/zope_post.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/zope_pre.script
-
 
 %package server-rmt
 # ----------------------------------------------------------------------------------------
