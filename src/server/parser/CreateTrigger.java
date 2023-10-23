@@ -227,6 +227,12 @@ public class CreateTrigger extends ManipTrigger
 			} catch (NotFoundException nfe) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03509181230", "Specified exit state " + sLimitState + " not found"));
 			}
+			Long espId = fireJob.getEspId(sysEnv);
+			try {
+				SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, limitState));
+			} catch (NotFoundException nfe) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03310101437", "Specified exit state " + sLimitState + " not found in exit state profile"));
+			}
 		}
 
 		maxRetry = (Integer) with.get(ParseStr.S_SUBMITCOUNT);
