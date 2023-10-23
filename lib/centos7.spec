@@ -149,7 +149,7 @@ echo "executing preun base -- %version-%release"
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix base package installs all files that are used both by the server and the client
 Group:			Applications/System
-Requires:		
+# Requires:		
 Provides:		schedulix-base %{version}-%{release}
 Conflicts:		schedulix-base
 
