@@ -299,6 +299,7 @@ public class SystemEnvironment implements Cloneable
 
 	public static final String S_BASE_SME_ID           = "BASE_SME_ID";
 	public static final String S_TRIGGER_HASHSET       = "TRIGGER_HASH_SET";
+	public static final String S_TRIGGER_BROKENESDID   = "TRIGGER_BROKEN_ESD_ID";
 	public static final String S_CANCEL_HASHSET        = "CANCEL_HASH_SET";
 	public static final String S_MASTERTRIGGER_HASHSET = "MASTERTRIGGER_HASHSET";
 	public static final String S_ISDEFAULT             = "ISDEFAULT";
@@ -320,7 +321,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String defaultString = "<default>";
 	public static final String noneString = "<none>";
 	public static final TimeZone systemTimeZone = TimeZone.getTimeZone ("GMT");
-	public static final Locale systemLocale = new Locale("EN", "GB");
+	public static final Locale systemLocale = new Locale("EN", "US");
 	public static final SimpleDateFormat staticJSCommDateFormat = new SimpleDateFormat ("dd-MM-yyyy HH:mm:ss Z", systemLocale);
 	public static final SimpleDateFormat staticOldJSCommDateFormat = new SimpleDateFormat ("dd-MM-yyyy HH:mm:ss z", systemLocale);
 	public static final SimpleDateFormat staticSystemDateFormat = new SimpleDateFormat ("dd MMM yyyy HH:mm:ss z", systemLocale);
