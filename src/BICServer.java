@@ -47,6 +47,12 @@ public class BICServer
 	private static boolean protectMode	= false;
 	private static Server s;
 	public static String programLevel = null;
+	public static String buildDate = null;
+	public static String buildHash = null;
+
+	public static final String PROGRAMLEVEL = "Level";
+	public static final String BUILDHASH = "Build";
+	public static final String BUILDDATE = "Build-Date";
 
 	private static final String ADMIN_OPTION = "-admin";
 	private static final String PROTECT_OPTION = "-protected";
@@ -74,8 +80,9 @@ public class BICServer
 				String attrValue = a.getValue(attrName);
 				SDMSThread.doTrace(null, attrName + " : " + attrValue, SDMSThread.SEVERITY_INFO);
 			}
-
-			programLevel=a.getValue("Level");
+			programLevel=a.getValue(PROGRAMLEVEL);
+			buildDate = a.getValue(BUILDDATE);
+			buildHash = a.getValue(BUILDHASH);
 
 		} catch (Exception e) {
 
@@ -140,7 +147,7 @@ public class BICServer
 		say_hello(argv);
 		scan_args(argv);
 
-		s = new Server(inifile, adminMode, protectMode, programLevel);
+		s = new Server(inifile, adminMode, protectMode, programLevel, buildDate, buildHash);
 		s.serverMain();
 	}
 

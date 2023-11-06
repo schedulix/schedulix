@@ -62,7 +62,7 @@ public class Server
 
 	private SystemEnvironment env;
 
-	public Server(String inifile, boolean adminMode, boolean protectMode, String programLevel)
+	public Server(String inifile, boolean adminMode, boolean protectMode, String programLevel, String buildDate, String buildHash)
 	{
 		this.iniFile = inifile;
 		Properties props = readProperties();
@@ -76,7 +76,7 @@ public class Server
 			SDMSThread.doTrace(null, k + "=" + props.getProperty(k), SDMSThread.SEVERITY_INFO);
 		}
 
-		env = new SystemEnvironment(props, programLevel, this);
+		env = new SystemEnvironment(props, programLevel, buildDate, buildHash, this);
 		if(adminMode) env.disableConnect();
 		if(protectMode) SystemEnvironment.setProtectMode();
 	}

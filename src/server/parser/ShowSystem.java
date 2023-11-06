@@ -91,6 +91,8 @@ public class ShowSystem extends Node
 
 		desc.add("VERSION");
 		desc.add("MAX_LEVEL");
+		desc.add("BUILD_DATE");
+		desc.add("BUILD_HASH");
 		desc.add("NUM_CPU");
 		desc.add("MEM_USED");
 		desc.add("MEM_FREE");
@@ -132,6 +134,8 @@ public class ShowSystem extends Node
 		Vector data = new Vector();
 		data.add(SystemEnvironment.programVersion);
 		data.add(SystemEnvironment.programLevel);
+		data.add(SystemEnvironment.buildDate);
+		data.add(SystemEnvironment.buildHash);
 		data.add(Integer.valueOf(r.availableProcessors()));
 		data.add(Long.valueOf(r.totalMemory()));
 		data.add(Long.valueOf(r.freeMemory()));
