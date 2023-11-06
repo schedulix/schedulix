@@ -887,6 +887,19 @@ public class AlterJobDefinition extends ManipJobDefinition
 		if(!withs.containsKey(ParseStr.S_PROFILE))	{
 			espId = se.getEspId(sysEnv);
 			esp = SDMSExitStateProfileTable.getObject(sysEnv, espId);
+		} else {
+			Vector tv = SDMSTriggerTable.idx_seId.getVector(sysEnv, seId);
+			for(int tvi = 0; tvi < tv.size(); ++tvi) {
+				final SDMSTrigger tt = (SDMSTrigger) tv.get(tvi);
+				Long limitEsdId = tt.getLimitState(sysEnv);
+				if (limitEsdId == null)
+					continue;
+				if(!SDMSExitStateTable.idx_espId_esdId.containsKey(sysEnv, new SDMSKey(espId, limitEsdId))) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv,
+					                               "03310101634",
+					                               "The new exit state profile doesn't contain the limit state of trigger " + tt.getName(sysEnv)));
+				}
+			}
 		}
 		if(!withs.containsKey(ParseStr.S_ENVIRONMENT))		neId = se.getNeId(sysEnv);
 		if(!withs.containsKey(ParseStr.S_FOOTPRINT))		fpId = se.getFpId(sysEnv);

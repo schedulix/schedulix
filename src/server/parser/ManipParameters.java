@@ -256,7 +256,7 @@ public class ManipParameters
 				c_data.add (null);
 			}
 
-			Vector ocv = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, pdId);
+			Vector ocv = SDMSObjectCommentTable.idx_objectId.getSortedVector(sysEnv, pdId);
 			if (ocv.size() != 0) {
 				StringBuffer sb = new StringBuffer();
 				String tag;
@@ -309,6 +309,7 @@ public class ManipParameters
 		c_desc.add ("COMMENT");
 		c_desc.add ("COMMENTTYPE");
 		c_desc.add ("DEFINITION");
+		c_desc.add ("DEFINITION_TYPE");
 		final SDMSOutputContainer c_container = new SDMSOutputContainer (sysEnv, null, c_desc);
 
 		SDMSHierarchicalObject parent = obj;
@@ -373,7 +374,7 @@ public class ManipParameters
 					c_data.add (null);
 				}
 
-				Vector ocv = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, pdId);
+				Vector ocv = SDMSObjectCommentTable.idx_objectId.getSortedVector(sysEnv, pdId);
 				if (ocv.size() != 0) {
 					StringBuffer sb = new StringBuffer();
 					String tag;
@@ -399,6 +400,7 @@ public class ManipParameters
 					c_data.add (null);
 				}
 				c_data.add (parent.pathVector(sysEnv));
+				c_data.add (parent.getTypeAsString(sysEnv));
 
 				c_container.addData (sysEnv, c_data);
 			}

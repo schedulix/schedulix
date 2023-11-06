@@ -38,12 +38,12 @@ public class ApproveCmd extends ManipJob
 	final boolean isApproval;
 	final HashSet idList;
 
-	public ApproveCmd(boolean approval, HashSet idList, String msg)
+	public ApproveCmd(boolean approval, HashSet idList, String comment)
 	{
 		super();
 		isApproval = approval;
 		this.idList = idList;
-		this.message = msg;
+		this.comment = comment;
 	}
 
 	public void go(SystemEnvironment sysEnv)

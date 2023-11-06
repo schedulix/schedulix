@@ -46,7 +46,6 @@ public class SDMSSystemMessage extends SDMSSystemMessageProxyGeneric
 	public void delete(SystemEnvironment sysEnv)
 	throws SDMSException
 	{
-		SDMSThread.printMyStackTrace("SystemMessage.delete() Stacktrace\n");
 		if (getOperation(sysEnv).intValue() == MODIFY_PARAMETER) {
 			Long evId = getAdditionalLong(sysEnv);
 			if (evId != null) {

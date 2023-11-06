@@ -77,13 +77,85 @@ public abstract class ManipJob extends Node
 		super();
 	}
 
-	protected SDMSSystemMessage createSystemMessage(SystemEnvironment sysEnv, int msgType, Long smeId, Long masterId, int operation, boolean isMandatory, Long uid, String comment, Long additionalLong, Boolean additionalBool, Long secondLong, String opComment)
+	protected SDMSSystemMessage createSystemMessage(SystemEnvironment sysEnv,
+	                int msgType,
+	                Long smeId,
+	                Long masterId,
+	                int operation,
+	                boolean isMandatory,
+	                Long uid,
+	                String comment,
+	                Long additionalLong,
+	                Boolean additionalBool,
+	                Long secondLong,
+	                String opComment)
 	throws SDMSException
 	{
-		return SDMSSystemMessageTable.table.create(sysEnv, Integer.valueOf(msgType), smeId, masterId, Integer.valueOf(operation), Boolean.valueOf(isMandatory), uid, Long.valueOf ((new Date()).getTime()), comment, additionalLong, additionalBool, secondLong, opComment);
+		return createSystemMessage(sysEnv, msgType, smeId, masterId, operation, isMandatory, uid, comment, additionalLong, additionalBool, secondLong, null, opComment);
 	}
 
-	protected void setSomeFields(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Integer status)
+	protected SDMSSystemMessage createSystemMessage(SystemEnvironment sysEnv,
+	                int msgType,
+	                Long smeId,
+	                Long masterId,
+	                int operation,
+	                boolean isMandatory,
+	                Long uid,
+	                String comment,
+	                Long additionalLong,
+	                Boolean additionalBool,
+	                Long secondLong,
+	                String msgStrVal,
+	                String opComment)
+	throws SDMSException
+	{
+		SDMSSystemMessage sMsg = SDMSSystemMessageTable.table.create(sysEnv,
+		                         Integer.valueOf(msgType),
+		                         smeId, masterId,
+		                         Integer.valueOf(operation),
+		                         Boolean.valueOf(isMandatory),
+		                         uid,
+		                         Long.valueOf ((new Date()).getTime()),
+		                         comment,
+		                         additionalLong,
+		                         additionalBool,
+		                         secondLong,
+		                         msgStrVal == null ? opComment : msgStrVal);
+		String info = "Approval ID = " + sMsg.getId(sysEnv) + "; " + opComment;
+		return sMsg;
+	}
+
+	protected void evalSuspend(SystemEnvironment sysEnv, Long suspendFlag, Long resumeVal, SDMSSubmittedEntity sme)
+	throws SDMSException
+	{
+		boolean isLocal, isAdmin;
+		long now = now = System.currentTimeMillis();
+		if (suspendFlag != null) {
+			isLocal = ((suspendFlag.longValue() & 0x02l) != 0);
+			isAdmin = ((suspendFlag.longValue() & 0x04l) != 0);
+		} else {
+			isLocal = false;
+			isAdmin = false;
+		}
+		Long resumeTs = null;
+		if (resumeVal != null) {
+			if (resumeVal.longValue() < 0) {
+				resumeTs = Long.valueOf(now - resumeVal.longValue());
+			} else if (resumeVal.longValue() == 0) {
+				resumeTs = null;
+			} else {
+				resumeTs = resumeVal;
+			}
+		}
+		if (suspendFlag != null && (suspendFlag.longValue() & 1l) == 1) {
+			if (resumeTs == null || resumeTs.longValue() > now)
+				performSuspend(sysEnv, sme, true, isLocal, isAdmin, resumeTs);
+		} else {
+			performSuspend(sysEnv, sme, false, isLocal, isAdmin, resumeTs);
+		}
+	}
+
+	protected void setStateAndFields(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Integer status)
 	throws SDMSException
 	{
 		sme.setState(sysEnv, status);
@@ -117,14 +189,14 @@ public abstract class ManipJob extends Node
 	{
 		switch(status.intValue()) {
 			case SDMSSubmittedEntity.STARTED:
-				setSomeFields(sysEnv, sme, status);
+				setStateAndFields(sysEnv, sme, status);
 				if(tsLong != null)
 					sme.setStartTs(sysEnv, tsLong);
 				delFromQueue(sysEnv, sme);
 				break;
 			case SDMSSubmittedEntity.RUNNING:
 				int oldState = sme.getState(sysEnv);
-				setSomeFields(sysEnv, sme, status);
+				setStateAndFields(sysEnv, sme, status);
 				if (oldState != SDMSSubmittedEntity.STARTED && tsLong != null)
 					sme.setStartTs(sysEnv, tsLong);
 				delFromQueue(sysEnv, sme);
@@ -141,11 +213,11 @@ public abstract class ManipJob extends Node
 					delFromQueue(sysEnv, sme);
 				break;
 			case SDMSSubmittedEntity.BROKEN_ACTIVE:
-				setSomeFields(sysEnv, sme, status);
+				setStateAndFields(sysEnv, sme, status);
 				break;
 			case SDMSSubmittedEntity.BROKEN_FINISHED:
 				sme.releaseResources(sysEnv, status.intValue());
-				setSomeFields(sysEnv, sme, status);
+				setStateAndFields(sysEnv, sme, status);
 				break;
 			case SDMSSubmittedEntity.ERROR:
 				sme.releaseResources(sysEnv, status.intValue());
@@ -237,9 +309,12 @@ public abstract class ManipJob extends Node
 	{
 	}
 
-	void performClone(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Boolean shouldSuspend)
+	SDMSSubmittedEntity performClone(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
 	throws SDMSException
 	{
+		if (sme.getIsReplaced(sysEnv).booleanValue()) {
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311420", "Cannot clone an already replaced job or batch"));
+		}
 		SDMSSubmittedEntity psme = SDMSSubmittedEntityTable.getObject(sysEnv, sme.getParentId(sysEnv));
 		String childTag = "C_" + sysEnv.tx.txId;
 		Long replaceId = sme.getId (sysEnv);
@@ -256,11 +331,8 @@ public abstract class ManipJob extends Node
 		                                               );
 		if (childSme.getIsDisabled(sysEnv).booleanValue()) {
 			childSme.disable(sysEnv, Boolean.FALSE);
-		} else {
-			if (!shouldSuspend.booleanValue()) {
-				childSme.resume(sysEnv, true);
-			}
 		}
+		return childSme;
 	}
 
 	void performCancel(SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
@@ -273,7 +345,7 @@ public abstract class ManipJob extends Node
 	throws SDMSException
 	{
 		if(rerun.booleanValue()) {
-			sme.rerunRecursive(sysEnv, sme.getId(sysEnv), message, true);
+			sme.rerunRecursive(sysEnv, sme.getId(sysEnv), (message == null ? comment : message), true);
 		} else {
 			sme.rerun(sysEnv);
 		}

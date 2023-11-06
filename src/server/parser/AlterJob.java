@@ -39,8 +39,6 @@ import de.independit.scheduler.server.exception.*;
 public class AlterJob extends ManipJob
 {
 
-	public final static String __version = "@(#) $Id: AlterJob.java,v 2.35.2.4 2013/07/19 06:45:20 dieter Exp $";
-
 	public static final int LOCALSUSPEND      = 100;
 	public static final int LOCALADMINSUSPEND = 200;
 
@@ -76,9 +74,9 @@ public class AlterJob extends ManipJob
 	private static final int ES_ACTION = ES|ET|RU;
 	private static final int KI_ACTION = KI|ET;
 	private static final int CN_ACTION = KI|CN|ET;
-	private static final int DA_ACTION = DA|ET;
-	private static final int RC_ACTION = RC|ET;
-	private static final int CL_ACTION = CL|ET;
+	private static final int DA_ACTION = DA|ET|SU;
+	private static final int RC_ACTION = RC|ET|SU;
+	private static final int CL_ACTION = CL|ET|SU;
 
 	public AlterJob(Long id, WithHash w)
 	{
@@ -183,11 +181,13 @@ public class AlterJob extends ManipJob
 		runProgram = (String) with.get(ParseStr.S_RUN_PROGRAM);
 		rerunProgram = (String) with.get(ParseStr.S_RERUN_PROGRAM);
 		Object o = with.get(ParseStr.S_SUSPEND);
+		adminSuspend = Boolean.FALSE;
+		localSuspend = Boolean.FALSE;
+		System.err.println("ADMINSUSPEND = FALSE");
 		if (o != null) {
-			adminSuspend = Boolean.FALSE;
-			localSuspend = Boolean.FALSE;
 			if (o instanceof Boolean) {
 				suspend = (Boolean) o;
+				System.err.println("ADMINSUSPEND = FALSE -- simple suspend or resume");
 			} else {
 				suspend = Boolean.TRUE;
 
@@ -196,10 +196,13 @@ public class AlterJob extends ManipJob
 				if (suspendType == LOCALADMINSUSPEND) {
 					adminSuspend = Boolean.TRUE;
 					localSuspend = Boolean.TRUE;
+					System.err.println("ADMINSUSPEND = TRUE -- localadminsuspend");
 				} else if (suspendType == LOCALSUSPEND) {
 					localSuspend = Boolean.TRUE;
-				} else
+				} else {
 					adminSuspend = Boolean.TRUE;
+					System.err.println("ADMINSUSPEND = TRUE -- adminsuspend or resume");
+				}
 			}
 		}
 		resumeObj = with.get(ParseStr.S_RESUME);
@@ -216,12 +219,17 @@ public class AlterJob extends ManipJob
 		if (suspend != null) {
 			if(sysEnv.cEnv.isUser()) {
 				if(sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
-					if (!suspend.booleanValue())
+					if (!suspend.booleanValue()) {
 						adminSuspend = Boolean.TRUE;
+						System.err.println("ADMINSUSPEND = TRUE -- admin mode per default at resume");
+					}
 				} else if (adminSuspend != null && adminSuspend.booleanValue()) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408071555", "Insufficient privileges for admin suspend"));
 				}
-				if (adminSuspend == null) adminSuspend = Boolean.FALSE;
+				if (adminSuspend == null) {
+					adminSuspend = Boolean.FALSE;
+					System.err.println("ADMINSUSPEND = FALSE -- normal user");
+				}
 			}
 
 		}
@@ -322,163 +330,474 @@ public class AlterJob extends ManipJob
 
 	}
 
+	private void checkPendingApproval(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, int operation, String opName)
+	throws SDMSException
+	{
+		Long smeId = sme.getId(sysEnv);
+		Vector appv = SDMSSystemMessageTable.idx_smeId.getVector(sysEnv, smeId);
+		for (int i = 0; i < appv.size(); ++i) {
+			SDMSSystemMessage msg = (SDMSSystemMessage) appv.get(i);
+			if (!msg.getIsMandatory(sysEnv).booleanValue())
+				continue;
+			int msgOp = msg.getOperation(sysEnv).intValue();
+			if (msgOp == operation) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03309251616", "Approval request for " + opName + " already pending"));
+			}
+			if (msgOp == SDMSSystemMessage.CANCEL && operation == SDMSSystemMessage.KILL)
+				if (msg.getAdditionalBool(sysEnv).booleanValue())
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03309261342", "Approval request for " + opName + " already pending (cancel with kill)"));
+		}
+		return;
+	}
+
+	private Long checkChildApprovals(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, int operationBits)
+	throws SDMSException
+	{
+		int baseApprovalBits;
+		int approvalBits;
+		boolean isApproval;
+		int childApprovalMode = sme.getChildApprovalMode(sysEnv).intValue();
+		if ((childApprovalMode & operationBits) == 0) return null;
+		Long smeId = sme.getId(sysEnv);
+
+		Vector childv = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, smeId);
+		Vector<SDMSSubmittedEntity> interestingChildren = new Vector<SDMSSubmittedEntity>();
+		Iterator it = childv.iterator();
+		while (it.hasNext()) {
+			SDMSHierarchyInstance hi = (SDMSHierarchyInstance) it.next();
+			Long childSmeId = hi.getChildId(sysEnv);
+			SDMSSubmittedEntity childSme = SDMSSubmittedEntityTable.getObject(sysEnv, childSmeId);
+			if ((operationBits & SDMSSubmittedEntity.CLONE_BITS) == 0 && childSme.getJobIsFinal(sysEnv).booleanValue())
+				continue;
+
+			baseApprovalBits = childSme.getApprovalMode(sysEnv).intValue();
+			approvalBits = baseApprovalBits & operationBits;
+			if (approvalBits != 0) {
+				return childSmeId;
+			}
+			childApprovalMode = childSme.getChildApprovalMode(sysEnv);
+			if ((childApprovalMode & operationBits) != 0) {
+				interestingChildren.add(childSme);
+			}
+		}
+		for (int i = 0; i < interestingChildren.size(); ++i) {
+			SDMSSubmittedEntity childSme = interestingChildren.get(i);
+
+			Long tmp = checkChildApprovals(sysEnv, childSme, operationBits);
+			if (tmp != null) {
+				return tmp;
+			}
+		}
+		return null;
+	}
+
 	private void alterByOperator(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, long actVersion)
 		throws SDMSException
 	{
 		int baseApprovalBits = sme.getApprovalMode(sysEnv).intValue();
+		int childApprovalMode = sme.getChildApprovalMode(sysEnv).intValue();
 		SDMSPrivilege priv = sme.getPrivileges(sysEnv);
-		if(status != null) {
-			String oldState = sme.getStateAsString(sysEnv);
-			if (priv.can(SDMSPrivilege.SET_JOB_STATE)) {
-				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.SET_JOB_STATE_BITS;
-				if (approvalBits != 0) {
-					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SET_JOB_STATE,
-					                    ((approvalBits & SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL) == SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL),
-					                    sysEnv.cEnv.uid(), comment, Long.valueOf(status.intValue()), null, (exitCode != null ? Long.valueOf(exitCode.intValue()) : null), null);
-				}
-				if ((approvalBits & SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL) == 0) {
-					changeState(sysEnv, sme, true, status);
-				}
-			} else
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191534", "Insufficient privileges for set state"));
-		}
-		if(exitState != null) {
-			if (priv.can(SDMSPrivilege.SET_STATE)) {
-				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.SET_STATE_BITS;
-				Long esdId = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, exitState, actVersion).getId(sysEnv);
-				if (approvalBits != 0) {
-					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SET_STATE,
-					                    ((approvalBits & SDMSSubmittedEntity.SET_STATE_APPROVAL) == SDMSSubmittedEntity.SET_STATE_APPROVAL),
-					                    sysEnv.cEnv.uid(), comment, esdId, exitStateForce, null, null);
-				}
-				if ((approvalBits & SDMSSubmittedEntity.SET_STATE_APPROVAL) == 0) {
-					setExitState(sysEnv, sme, actVersion, esdId, exitStateForce);
-				}
-			} else
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191533", "Insufficient privileges for set state"));
-		}
-		if (noResume) {
-			sme.setResumeTs(sysEnv, null);
-		}
-		Long resumeTs = null;
-		if(resumeObj != null) {
-			resumeTs = SubmitJob.evalResumeObj(sysEnv, resumeObj, null, true, sme.getEffectiveTimeZone(sysEnv));
+		int operationBits = 0;
 
-			if (resumeTs == null || resumeTs.longValue() == -1l) {
-				if (sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND)
-					suspend = Boolean.FALSE;
-				else {
-					suspend = null;
-					resumeObj = null;
-				}
+		Long autoResumeVal = null;
+		Long suspendFlag = null;
+		if (resumeObj != null) {
+			if (resumeObj instanceof WithHash) {
+				WithHash wh = (WithHash) resumeObj;
+				autoResumeVal = Long.valueOf(- SubmitJob.getResumeInValue(sysEnv, (Integer) wh.get(ParseStr.S_MULT), (Integer) wh.get(ParseStr.S_INTERVAL)));
+			} else {
+				autoResumeVal = SubmitJob.evalResumeObj(sysEnv, (String) resumeObj, null, null, null, true, sme.getEffectiveTimeZone(sysEnv));
 			}
+			if (autoResumeVal.longValue() == -1l)
+				autoResumeVal = Long.valueOf(0l);
 		}
 		if(suspend != null) {
 			if (priv.can(SDMSPrivilege.SUSPEND)) {
-				if (!suspend.booleanValue() && sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.ADMINSUSPEND && !adminSuspend.booleanValue())
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408080757", "Insufficient privileges for admin resume"));
-				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.SUSPEND_BITS;
-				if (approvalBits != 0) {
-					int suspendType = 0;
-					if (localSuspend != null && localSuspend.booleanValue()) suspendType += 1;
-					if (adminSuspend.booleanValue()) suspendType += 2;
-					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SUSPEND,
-					                    ((approvalBits & SDMSSubmittedEntity.SUSPEND_APPROVAL) == SDMSSubmittedEntity.SUSPEND_APPROVAL),
-					                    sysEnv.cEnv.uid(), comment, Long.valueOf (suspendType), suspend, resumeTs, null);
-				}
-				if ((approvalBits & SDMSSubmittedEntity.SUSPEND_APPROVAL) == 0) {
-					performSuspend(sysEnv, sme, suspend, (localSuspend == null ? false : localSuspend.booleanValue()), adminSuspend.booleanValue(), resumeTs);
+				if (!suspend.booleanValue() && sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.ADMINSUSPEND && !adminSuspend.booleanValue()) {
+					System.err.println("ADMINSUSPEND = " + adminSuspend);
+					System.err.println("SUSPEND = " + suspend);
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408080758", "Insufficient privileges for admin resume"));
 				}
 			} else {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191535", "Insufficient privileges for suspend"));
 			}
+			if (suspend.booleanValue())	suspendFlag = Long.valueOf(0x01l);
+			else				suspendFlag = Long.valueOf(0x00l);
+			if (localSuspend != null && localSuspend.booleanValue()) suspendFlag |= 0x02l;
+			if (adminSuspend != null && adminSuspend.booleanValue()) suspendFlag |= 0x04l;
 		}
-		if(resumeObj != null && suspend == null) {
-			if (priv.can(SDMSPrivilege.SUSPEND)) {
-				Date d = new Date(resumeTs);
-				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.SUSPEND_BITS;
-				if (approvalBits != 0) {
-					int suspendType = 0;
-					if (localSuspend != null && localSuspend.booleanValue()) suspendType += 1;
-					if (adminSuspend != null && adminSuspend.booleanValue()) suspendType += 2;
-					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SUSPEND,
-					                    ((approvalBits & SDMSSubmittedEntity.SUSPEND_APPROVAL) == SDMSSubmittedEntity.SUSPEND_APPROVAL),
-					                    sysEnv.cEnv.uid(), comment, Long.valueOf (suspendType), suspend, resumeTs, null);
-				}
-				if ((approvalBits & SDMSSubmittedEntity.SUSPEND_APPROVAL) == 0) {
-					sme.setResumeTs(sysEnv, resumeTs);
-				}
-			} else {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03106151535", "Insufficient privileges for resume"));
+
+		if(status != null) {
+			String oldState = sme.getStateAsString(sysEnv);
+			String newState = SDMSSubmittedEntity.convertStateToString(status);
+			Long lExitCode = (exitCode != null ? Long.valueOf(exitCode.intValue()) : null);
+
+			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191534", "Insufficient privileges for set state"));
+			}
+			int approvalBits = baseApprovalBits & SDMSSubmittedEntity.SET_JOB_STATE_BITS;
+			boolean isApproval = ((approvalBits & SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL) == SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL);
+			if (approvalBits != 0) {
+				checkPendingApproval(sysEnv, sme, SDMSSystemMessage.SET_JOB_STATE, "Set Job State");
+				createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SET_JOB_STATE,
+				                    isApproval, sysEnv.cEnv.uid(), comment, Long.valueOf(status.intValue()), null, lExitCode,
+				                    "SET JOB STATE: old=" + oldState + ", new=" + newState + (lExitCode == null ? "" : ", Exit Code=" + lExitCode));
+			}
+			if (!isApproval) {
+				changeState(sysEnv, sme, true, status);
 			}
 		}
-		if(rerun != null) {
-			if (priv.can(SDMSPrivilege.RERUN)) {
-				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.RERUN_BITS;
-				if (approvalBits != 0) {
-					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.RERUN,
-					                    ((approvalBits & SDMSSubmittedEntity.RERUN_APPROVAL) == SDMSSubmittedEntity.RERUN_APPROVAL),
-					                    sysEnv.cEnv.uid(), comment, null, rerun, null, null);
-				}
-				if ((approvalBits & SDMSSubmittedEntity.RERUN_APPROVAL) == 0) {
-					performRerun(sysEnv, sme, rerun);
-				}
-			} else {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191539", "Insufficient privileges for rerun"));
+		if(exitState != null) {
+			if (!priv.can(SDMSPrivilege.SET_STATE)) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191533", "Insufficient privileges for set state"));
+			}
+			int approvalBits = baseApprovalBits & SDMSSubmittedEntity.SET_STATE_BITS;
+			boolean isApproval = ((approvalBits & SDMSSubmittedEntity.SET_STATE_APPROVAL) == SDMSSubmittedEntity.SET_STATE_APPROVAL);
+			Long esdId = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, exitState, actVersion).getId(sysEnv);
+			Long oldEsdId = sme.getJobEsdId(sysEnv);
+			String oldEsd;
+			if (oldEsdId != null)
+				oldEsd = SDMSExitStateDefinitionTable.getObject(sysEnv, oldEsdId).getName(sysEnv);
+			else
+				oldEsd = "<NOT SET>";
+			if (approvalBits != 0) {
+				checkPendingApproval(sysEnv, sme, SDMSSystemMessage.SET_STATE, "Set Exit State");
+				createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.SET_STATE,
+				                    isApproval, sysEnv.cEnv.uid(), comment, esdId, exitStateForce, null,
+				                    "SET EXIT STATE; old=" + oldEsd + ", new=" + exitState);
+			}
+			if (!isApproval) {
+				setExitState(sysEnv, sme, actVersion, esdId, exitStateForce);
 			}
 		}
-		if(kill != null) {
-			if (priv.can(SDMSPrivilege.KILL)) {
-				if(kill.booleanValue()) {
-					if(!killRecursive && SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getKillProgram(sysEnv) == null) {
-						throw new CommonErrorException(new SDMSMessage(sysEnv, "032070111145", "couldn't kill, no kill program defined"));
-					}
-					int approvalBits = baseApprovalBits & SDMSSubmittedEntity.KILL_BITS;
-					if (approvalBits != 0) {
-						createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.KILL,
-						                    ((approvalBits & SDMSSubmittedEntity.KILL_APPROVAL) == SDMSSubmittedEntity.KILL_APPROVAL),
-						                    sysEnv.cEnv.uid(), comment, null, kill, null, null);
-					}
-					if ((approvalBits & SDMSSubmittedEntity.KILL_APPROVAL) == 0) {
-						performKill(sysEnv, sme);
-					}
-				}
-			} else {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191549", "Insufficient privileges for kill"));
-			}
-		}
+
 		if(cancel != null) {
-			if (priv.can(SDMSPrivilege.CANCEL)) {
-				if(cancel.booleanValue()) {
-					int approvalBits = baseApprovalBits & SDMSSubmittedEntity.CANCEL_BITS;
-					if (approvalBits != 0) {
-						createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.CANCEL,
-						                    ((approvalBits & SDMSSubmittedEntity.CANCEL_APPROVAL) == SDMSSubmittedEntity.CANCEL_APPROVAL),
-						                    sysEnv.cEnv.uid(), comment, null, cancel, null, null);
-					}
-					if ((approvalBits & SDMSSubmittedEntity.CANCEL_APPROVAL) == 0) {
-						performCancel(sysEnv, sme);
-					}
-				}
-			} else {
+			if (!priv.can(SDMSPrivilege.CANCEL)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191551", "Insufficient privileges for cancel"));
 			}
-		}
-		if(disable != null) {
-			if (priv.can(SDMSPrivilege.ENABLE)) {
-				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.ENABLE_BITS;
-				if (approvalBits != 0) {
-					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.ENABLE,
-					                    ((approvalBits & SDMSSubmittedEntity.ENABLE_APPROVAL) == SDMSSubmittedEntity.ENABLE_APPROVAL),
-					                    sysEnv.cEnv.uid(), comment, null, disable, null, null);
+			boolean cancelWithKill = false;
+			if(kill != null) {
+				if (!priv.can(SDMSPrivilege.KILL)) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191549", "Insufficient privileges for kill"));
 				}
-				if ((approvalBits & SDMSSubmittedEntity.ENABLE_APPROVAL) == 0) {
-					performDisable(sysEnv, sme, disable);
-				}
+				cancelWithKill = true;
+				killRecursive = true;
+				kill = null;
+			}
+
+			int approvalBits = baseApprovalBits & SDMSSubmittedEntity.CANCEL_BITS;
+			boolean isApproval = ((approvalBits & SDMSSubmittedEntity.CANCEL_APPROVAL) == SDMSSubmittedEntity.CANCEL_APPROVAL);
+			boolean isReview = ((approvalBits & SDMSSubmittedEntity.CANCEL_REVIEW) == SDMSSubmittedEntity.CANCEL_REVIEW);
+			int killApprovalBits = baseApprovalBits & SDMSSubmittedEntity.KILL_BITS;
+			if (cancelWithKill) {
+				approvalBits |= killApprovalBits;
+				isApproval = isApproval || ((approvalBits & SDMSSubmittedEntity.KILL_APPROVAL) == SDMSSubmittedEntity.KILL_APPROVAL);
+				isReview = isReview || ((approvalBits & SDMSSubmittedEntity.KILL_REVIEW) == SDMSSubmittedEntity.KILL_REVIEW);
+			}
+			boolean childApproval = (childApprovalMode & SDMSSubmittedEntity.CANCEL_APPROVAL) == SDMSSubmittedEntity.CANCEL_APPROVAL ||
+			                        (cancelWithKill && (childApprovalMode & SDMSSubmittedEntity.KILL_APPROVAL) == SDMSSubmittedEntity.KILL_APPROVAL);
+			boolean childReview = (childApprovalMode & SDMSSubmittedEntity.CANCEL_REVIEW) == SDMSSubmittedEntity.CANCEL_REVIEW ||
+			                      (cancelWithKill && (childApprovalMode & SDMSSubmittedEntity.KILL_REVIEW) == SDMSSubmittedEntity.KILL_REVIEW);
+			if (childApproval) {
+				operationBits = SDMSSubmittedEntity.CANCEL_APPROVAL;
+				if (cancelWithKill)
+					operationBits |= SDMSSubmittedEntity.KILL_APPROVAL;
 			} else {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191552", "Insufficient privileges for enable/disable"));
+				if (childReview) {
+					operationBits = SDMSSubmittedEntity.CANCEL_REVIEW;
+					if (cancelWithKill)
+						operationBits |= SDMSSubmittedEntity.KILL_REVIEW;
+				}
+			}
+			Long childSmeId = null;
+			if (!isApproval) {
+				if (childApproval || (!isReview && childReview))
+					childSmeId = checkChildApprovals(sysEnv, sme, operationBits);
+				if (childSmeId == null) {
+					childApproval = false;
+					childReview = false;
+				}
+			}
+
+			if (isApproval || isReview || childApproval || childReview) {
+				checkPendingApproval(sysEnv, sme, SDMSSystemMessage.CANCEL, "Cancel");
+				String infomsg = "CANCEL" + (cancelWithKill ? " with KILL" : "");
+				if (!(isApproval || (isReview && !childApproval)))
+					infomsg = infomsg + " (" + (childApproval ? "approval" : "review") + " requested by a child job, such as " + childSmeId + ")";
+				createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.CANCEL,
+				                    isApproval || childApproval, sysEnv.cEnv.uid(), comment, null, cancelWithKill, null, infomsg);
+			}
+			if (!isApproval && !childApproval) {
+				if (cancelWithKill)
+					performKill(sysEnv, sme);
+				performCancel(sysEnv, sme);
 			}
 		}
+
+		if(kill != null) {
+			if (!priv.can(SDMSPrivilege.KILL)) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191549", "Insufficient privileges for kill"));
+			}
+			if(kill.booleanValue()) {
+				boolean childApproval = false;
+				boolean childReview = false;
+				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.KILL_BITS;
+				boolean isApproval = ((approvalBits & SDMSSubmittedEntity.KILL_APPROVAL) == SDMSSubmittedEntity.KILL_APPROVAL);
+				boolean isReview = ((approvalBits & SDMSSubmittedEntity.KILL_REVIEW) == SDMSSubmittedEntity.KILL_REVIEW);
+				if(!killRecursive && SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getKillProgram(sysEnv) == null) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "032070111145", "couldn't kill, no kill program defined"));
+				}
+				if (killRecursive) {
+					childApproval = ((childApprovalMode & SDMSSubmittedEntity.KILL_APPROVAL) == SDMSSubmittedEntity.KILL_APPROVAL);
+					childReview = ((childApprovalMode & SDMSSubmittedEntity.KILL_REVIEW) == SDMSSubmittedEntity.KILL_REVIEW);
+					if (childApproval) {
+						operationBits = SDMSSubmittedEntity.KILL_APPROVAL;
+					} else if (childReview) {
+						operationBits = SDMSSubmittedEntity.KILL_REVIEW;
+					}
+				}
+				Long childSmeId = null;
+				if (!isApproval) {
+					if (childApproval || (!isReview && childReview))
+						childSmeId = checkChildApprovals(sysEnv, sme, operationBits);
+					if (childSmeId == null) {
+						childApproval = false;
+						childReview = false;
+					}
+				}
+
+				if (isApproval || isReview || childApproval || childReview) {
+					checkPendingApproval(sysEnv, sme, SDMSSystemMessage.KILL, "Kill");
+					String infomsg = "KILL" + (killRecursive ? " RECURSIVE" : "");
+					if (!(isApproval || (isReview && !childApproval)))
+						infomsg = infomsg + " (" + (childApproval ? "approval" : "review") + " requested by a child job, such as " + childSmeId + ")";
+					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.KILL,
+					                    isApproval || childApproval, sysEnv.cEnv.uid(), comment, null, killRecursive, null, infomsg);
+				}
+				if (!isApproval && !childApproval) {
+					performKill(sysEnv, sme);
+				}
+			}
+		}
+
+		if(disable != null) {
+			if (!priv.can(SDMSPrivilege.ENABLE)) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191552", "Insufficient privileges for enable/disable"));
+			}
+			boolean childApproval = false;
+			boolean childReview = false;
+			int approvalBits = baseApprovalBits & SDMSSubmittedEntity.ENABLE_BITS;
+			boolean isApproval = ((approvalBits & SDMSSubmittedEntity.ENABLE_APPROVAL) == SDMSSubmittedEntity.ENABLE_APPROVAL);
+			boolean isReview = ((approvalBits & SDMSSubmittedEntity.ENABLE_REVIEW) == SDMSSubmittedEntity.ENABLE_REVIEW);
+			childApproval = ((childApprovalMode & SDMSSubmittedEntity.ENABLE_APPROVAL) == SDMSSubmittedEntity.ENABLE_APPROVAL);
+			childReview = ((childApprovalMode & SDMSSubmittedEntity.ENABLE_REVIEW) == SDMSSubmittedEntity.ENABLE_REVIEW);
+			if (childApproval) {
+				operationBits = SDMSSubmittedEntity.ENABLE_APPROVAL;
+			} else if (childReview) {
+				operationBits = SDMSSubmittedEntity.ENABLE_REVIEW;
+			}
+			Long childSmeId = null;
+			if (!isApproval) {
+				if (childApproval || (!isReview && childReview))
+					childSmeId = checkChildApprovals(sysEnv, sme, operationBits);
+				if (childSmeId == null) {
+					childApproval = false;
+					childReview = false;
+				}
+			}
+			if (isApproval || isReview || childApproval || childReview) {
+				checkPendingApproval(sysEnv, sme, SDMSSystemMessage.ENABLE, "Enable");
+				String infomsg = (disable ? "DISABLE" : "ENABLE") + (suspendFlag == null ? ", NOSUSPEND" : ((suspendFlag&1) == 1 ? ", SUSPEND" : ", RESUME"));
+				if (localSuspend) infomsg = infomsg + " LOCAL";
+				if (adminSuspend) infomsg = infomsg + " ADMIN";
+				if (autoResumeVal != null) {
+					if ((suspendFlag&1) == 1)
+						infomsg = infomsg + ", RESUME";
+					if (autoResumeVal > 0)
+						infomsg = infomsg + " AT " + (String) resumeObj;
+					else
+						infomsg = infomsg + " IN " + (autoResumeVal.longValue() / -60000) + " minute(s)";
+				}
+				if (!(isApproval || (isReview && !childApproval)))
+					infomsg = infomsg + " (" + (childApproval ? "approval" : "review") + " requested by a child job, such as " + childSmeId + ")";
+				createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.ENABLE,
+				                    isApproval || childApproval, sysEnv.cEnv.uid(), comment, suspendFlag, disable, autoResumeVal, infomsg);
+			}
+			if (!isApproval && !childApproval) {
+				performDisable(sysEnv, sme, disable);
+			} else {
+				suspend = null;
+				resumeObj = null;
+			}
+		}
+
+		if(priority != null || nicevalue != null || renice != null) {
+			if (!priv.can(SDMSPrivilege.PRIORITY)) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191556", "Insufficient privileges for set priority"));
+			}
+			Boolean isRenice = Boolean.FALSE;
+			if (priority != null) {
+				if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03211211229", "Cannot change the priority of a batch or milestone"));
+				}
+				if(priority.intValue() < SystemEnvironment.priorityLowerBound && !sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
+					priority = Integer.valueOf(SystemEnvironment.priorityLowerBound);
+
+				}
+				isRenice = Boolean.FALSE;
+
+			}
+			if (nicevalue != null) {
+				isRenice = Boolean.TRUE;
+				priority = nicevalue;
+			}
+			if(renice != null) {
+				int nv = renice.intValue() + sme.getNice(sysEnv).intValue();
+				isRenice = Boolean.TRUE;
+				priority = Integer.valueOf(nv);
+			}
+			performPriority(sysEnv, sme, isRenice, priority);
+		}
+
+		if (clone != null) {
+			if (!priv.can(SDMSPrivilege.CLONE)) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191559", "Insufficient privileges for clone"));
+			}
+			if(comment == null)
+				comment = "";
+			if (sme.getIsReplaced(sysEnv).booleanValue()) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311420", "Cannot clone an already replaced job or batch"));
+			}
+			if (sme.getState(sysEnv) != SDMSSubmittedEntity.FINAL) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311421", "Cannot clone a job or batch that is stil active"));
+			}
+			Long parentId = sme.getParentId(sysEnv);
+			if (parentId == null) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311422", "Cannot clone a master job or batch"));
+			}
+
+			boolean childApproval = false;
+			boolean childReview = false;
+			int approvalBits = baseApprovalBits & SDMSSubmittedEntity.CLONE_BITS;
+			boolean isApproval = ((approvalBits & SDMSSubmittedEntity.CLONE_APPROVAL) == SDMSSubmittedEntity.CLONE_APPROVAL);
+			boolean isReview = ((approvalBits & SDMSSubmittedEntity.CLONE_REVIEW) == SDMSSubmittedEntity.CLONE_REVIEW);
+			childApproval = ((childApprovalMode & SDMSSubmittedEntity.CLONE_APPROVAL) == SDMSSubmittedEntity.CLONE_APPROVAL);
+			childReview = ((childApprovalMode & SDMSSubmittedEntity.CLONE_REVIEW) == SDMSSubmittedEntity.CLONE_REVIEW);
+			if (childApproval) {
+				operationBits = SDMSSubmittedEntity.CLONE_APPROVAL;
+			} else if (childReview) {
+				operationBits = SDMSSubmittedEntity.CLONE_REVIEW;
+			}
+			Long childSmeId = null;
+			if (!isApproval) {
+				if (childApproval || (!isReview && childReview))
+					childSmeId = checkChildApprovals(sysEnv, sme, operationBits);
+				if (childSmeId == null) {
+					childApproval = false;
+					childReview = false;
+				}
+			}
+			if (isApproval || isReview || childApproval || childReview) {
+				checkPendingApproval(sysEnv, sme, SDMSSystemMessage.CLONE, "Clone");
+				if (clone.booleanValue() && suspendFlag == null) {
+					suspendFlag &= 0x01l;
+				}
+				String infomsg = "CLONE " + (suspendFlag == null ? ", NOSUSPEND" : ((suspendFlag&1) == 1 ? ", SUSPEND" : ", RESUME"));
+				if (localSuspend) infomsg = infomsg + " LOCAL";
+				if (adminSuspend) infomsg = infomsg + " ADMIN";
+				if (autoResumeVal != null) {
+					if ((suspendFlag&1) == 1)
+						infomsg = infomsg + ", RESUME";
+					if (autoResumeVal > 0)
+						infomsg = infomsg + " AT " + (String) resumeObj;
+					else
+						infomsg = infomsg + " IN " + (autoResumeVal.longValue() / -60000) + " minute(s)";
+				}
+				if (!(isApproval || (isReview && !childApproval)))
+					infomsg = infomsg + " (" + (childApproval ? "approval" : "review") + " requested by a child job, such as " + childSmeId + ")";
+				createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.CLONE,
+				                    isApproval || childApproval, sysEnv.cEnv.uid(), comment, suspendFlag, null, autoResumeVal, infomsg);
+			}
+			if (!isApproval && !childApproval) {
+				SDMSSubmittedEntity childSme = performClone(sysEnv, sme);
+				if (!clone.booleanValue()) {
+					childSme.resume(sysEnv, true);
+				}
+			} else {
+				suspend = null;
+				resumeObj = null;
+			}
+		}
+
+		if(rerun != null) {
+			if (!priv.can(SDMSPrivilege.RERUN)) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191539", "Insufficient privileges for rerun"));
+			}
+			boolean childApproval = false;
+			boolean childReview = false;
+			int approvalBits = baseApprovalBits & SDMSSubmittedEntity.RERUN_BITS;
+			boolean isApproval = ((approvalBits & SDMSSubmittedEntity.RERUN_APPROVAL) == SDMSSubmittedEntity.RERUN_APPROVAL);
+			boolean isReview = ((approvalBits & SDMSSubmittedEntity.RERUN_REVIEW) == SDMSSubmittedEntity.RERUN_REVIEW);
+			if (rerun) {
+				childApproval = ((childApprovalMode & SDMSSubmittedEntity.RERUN_APPROVAL) == SDMSSubmittedEntity.RERUN_APPROVAL);
+				childReview = ((childApprovalMode & SDMSSubmittedEntity.RERUN_REVIEW) == SDMSSubmittedEntity.RERUN_REVIEW);
+			}
+			if (childApproval) {
+				operationBits = SDMSSubmittedEntity.RERUN_APPROVAL;
+			} else if (childReview) {
+				operationBits = SDMSSubmittedEntity.RERUN_REVIEW;
+			}
+			Long childSmeId = null;
+			if (!isApproval) {
+				if (childApproval || (!isReview && childReview))
+					childSmeId = checkChildApprovals(sysEnv, sme, operationBits);
+				if (childSmeId == null) {
+					childApproval = false;
+					childReview = false;
+				}
+			}
+			if (isApproval || isReview || childApproval || childReview) {
+				checkPendingApproval(sysEnv, sme, SDMSSystemMessage.RERUN, "Rerun");
+				String infomsg = "RERUN " + (rerun ? "RECURSIVE" : "") + (suspendFlag == null ? ", NOSUSPEND" : ((suspendFlag&1) == 1 ? ", SUSPEND" : ", RESUME"));
+				if (localSuspend) infomsg = infomsg + " LOCAL";
+				if (adminSuspend) infomsg = infomsg + " ADMIN";
+				if (autoResumeVal != null) {
+					if ((suspendFlag&1) == 1)
+						infomsg = infomsg + ", RESUME";
+					if (autoResumeVal > 0)
+						infomsg = infomsg + " AT " + (String) resumeObj;
+					else
+						infomsg = infomsg + " IN " + (autoResumeVal.longValue() / -60000) + " minute(s)";
+				}
+				if (!(isApproval || (isReview && !childApproval)))
+					infomsg = infomsg + " (" + (childApproval ? "approval" : "review") + " requested by a child job, such as " + childSmeId + ")";
+				createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.RERUN,
+				                    isApproval || childApproval, sysEnv.cEnv.uid(), comment, suspendFlag, rerun, autoResumeVal, infomsg);
+			}
+			if (!isApproval && !childApproval) {
+				performRerun(sysEnv, sme, rerun);
+			} else {
+				suspend = null;
+				resumeObj = null;
+			}
+		}
+
+		if (noResume) {
+			sme.setResumeTs(sysEnv, null);
+		}
+		if(suspend != null || resumeObj != null) {
+			if (priv.can(SDMSPrivilege.SUSPEND)) {
+				if (suspend != null && !suspend.booleanValue() && sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.ADMINSUSPEND && !adminSuspend.booleanValue()) {
+					System.err.println("ADMINSUSPEND = " + adminSuspend);
+					System.err.println("SUSPEND = " + suspend);
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408080757", "Insufficient privileges for admin resume"));
+				}
+				evalSuspend(sysEnv, suspendFlag, autoResumeVal, sme);
+			} else {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191535", "Insufficient privileges for suspend"));
+			}
+		}
+
 		if(depsToIgnore != null) {
 			if (priv.can(SDMSPrivilege.IGN_DEPENDENCY)) {
 				ignoreDeps(sysEnv, sme);
@@ -491,70 +810,6 @@ public class AlterJob extends ManipJob
 				ignoreResources(sysEnv, sme);
 			} else {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191555", "Insufficient privileges for ignore resource"));
-			}
-		}
-		if(priority != null || nicevalue != null || renice != null) {
-			if (priv.can(SDMSPrivilege.PRIORITY)) {
-				int approvalBits = baseApprovalBits & SDMSSubmittedEntity.PRIORITY_BITS;
-				Boolean isRenice = Boolean.FALSE;
-				if (priority != null) {
-					if(SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), actVersion).getType(sysEnv).intValue() != SDMSSchedulingEntity.JOB) {
-						throw new CommonErrorException(new SDMSMessage(sysEnv, "03211211229", "Cannot change the priority of a batch or milestone"));
-					}
-					if(priority.intValue() < SystemEnvironment.priorityLowerBound && !sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
-						priority = Integer.valueOf(SystemEnvironment.priorityLowerBound);
-
-					}
-					isRenice = Boolean.FALSE;
-
-				}
-				if (nicevalue != null) {
-					isRenice = Boolean.TRUE;
-					priority = nicevalue;
-				}
-				if(renice != null) {
-					int nv = renice.intValue() + sme.getNice(sysEnv).intValue();
-					isRenice = Boolean.TRUE;
-					priority = Integer.valueOf(nv);
-				}
-				if (approvalBits != 0) {
-					createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.PRIORITY,
-					                    ((approvalBits & SDMSSubmittedEntity.PRIORITY_APPROVAL) == SDMSSubmittedEntity.PRIORITY_APPROVAL),
-					                    sysEnv.cEnv.uid(), comment, Long.valueOf(priority), isRenice, null, null);
-				}
-				if ((approvalBits & SDMSSubmittedEntity.PRIORITY_APPROVAL) == 0) {
-					performPriority(sysEnv, sme, isRenice, priority);
-				}
-			} else {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191556", "Insufficient privileges for set priority"));
-			}
-		}
-		if (clone != null) {
-			if (priv.can(SDMSPrivilege.CLONE)) {
-				if(comment == null)
-					comment = "";
-				if (sme.getIsReplaced(sysEnv).booleanValue()) {
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311420", "Cannot clone an already replaced job or batch"));
-				}
-				if (sme.getState(sysEnv) != SDMSSubmittedEntity.FINAL) {
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311421", "Cannot clone a job or batch that is stil active"));
-				}
-				Long parentId = sme.getParentId(sysEnv);
-				if (parentId == null) {
-					throw new CommonErrorException(new SDMSMessage(sysEnv, "03910311422", "Cannot clone a master job or batch"));
-				} else {
-					int approvalBits = baseApprovalBits & SDMSSubmittedEntity.CLONE_BITS;
-					if (approvalBits != 0) {
-						createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.CLONE,
-						                    ((approvalBits & SDMSSubmittedEntity.CLONE_APPROVAL) == SDMSSubmittedEntity.CLONE_APPROVAL),
-						                    sysEnv.cEnv.uid(), comment, null, clone, null, null);
-					}
-					if ((approvalBits & SDMSSubmittedEntity.CLONE_APPROVAL) == 0) {
-						performClone(sysEnv, sme, clone);
-					}
-				}
-			} else {
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03105191559", "Insufficient privileges for clone"));
 			}
 		}
 
@@ -697,19 +952,49 @@ public class AlterJob extends ManipJob
 		throws SDMSException
 	{
 		Vector v;
+		boolean childApproval = false;
+		boolean childReview = false;
+		int childApprovalMode = sme.getChildApprovalMode(sysEnv);
+		int approvalBits = sme.getApprovalMode(sysEnv).intValue() & SDMSSubmittedEntity.IGN_DEP_BITS;
+		boolean isApproval = ((approvalBits & SDMSSubmittedEntity.IGN_DEP_APPROVAL) == SDMSSubmittedEntity.IGN_DEP_APPROVAL);
+		boolean isReview = ((approvalBits & SDMSSubmittedEntity.IGN_DEP_REVIEW) == SDMSSubmittedEntity.IGN_DEP_REVIEW);
 
 		for(int i = 0; i < depsToIgnore.size(); i++) {
 			v = (Vector) depsToIgnore.get(i);
 			Long diId = (Long) v.get(0);
 			Boolean rec = (Boolean) v.get(1);
+			childApproval = false;
+			childReview = false;
 			SDMSDependencyInstance di = SDMSDependencyInstanceTable.getObject(sysEnv, diId);
-			int approvalBits = sme.getApprovalMode(sysEnv).intValue() & SDMSSubmittedEntity.IGN_DEP_BITS;
-			if (approvalBits != 0) {
-				createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.IGN_DEPENDENCY,
-				                    ((approvalBits & SDMSSubmittedEntity.IGN_DEP_APPROVAL) == SDMSSubmittedEntity.IGN_DEP_APPROVAL),
-				                    sysEnv.cEnv.uid(), comment, di.getId(sysEnv), rec, null, null);
+			Long childSmeId = null;
+			int operationBits = 0;
+			if (rec) {
+				childApproval = ((childApprovalMode & SDMSSubmittedEntity.IGN_DEP_APPROVAL) == SDMSSubmittedEntity.IGN_DEP_APPROVAL);
+				childReview = ((childApprovalMode & SDMSSubmittedEntity.IGN_DEP_REVIEW) == SDMSSubmittedEntity.IGN_DEP_REVIEW);
+				if (childApproval) {
+					operationBits = SDMSSubmittedEntity.IGN_DEP_APPROVAL;
+				} else if (childReview) {
+					operationBits = SDMSSubmittedEntity.IGN_DEP_REVIEW;
+				}
+				if (!isApproval) {
+					if (childApproval || (!isReview && childReview))
+						childSmeId = checkChildApprovals(sysEnv, sme, operationBits);
+					if (childSmeId == null) {
+						childApproval = false;
+						childReview = false;
+					}
+				}
 			}
-			if ((approvalBits & SDMSSubmittedEntity.IGN_DEP_APPROVAL) == 0) {
+			if (isApproval || isReview || childApproval || childReview) {
+				SDMSSubmittedEntity rsme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getRequiredId(sysEnv));
+				SDMSSchedulingEntity rse = SDMSSchedulingEntityTable.getObject(sysEnv, rsme.getSeId(sysEnv), sme.getSeVersion(sysEnv));
+				String infomsg = "Ignore Dependency " + (rec ? "RECURSIVE" : "") + " of " + rsme.getId(sysEnv) + " (" + rse.pathString(sysEnv) + ")";
+				if (!(isApproval || (isReview && !childApproval)))
+					infomsg = infomsg + " (" + (childApproval ? "approval" : "review") + " requested by a child job, such as " + childSmeId + ")";
+				createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.IGN_DEPENDENCY,
+				                    isApproval || childApproval, sysEnv.cEnv.uid(), comment, di.getId(sysEnv), rec, null, infomsg);
+			}
+			if (!isApproval && !childApproval) {
 				di.setIgnore(sysEnv, (rec.booleanValue()? SDMSDependencyInstance.RECURSIVE : SDMSDependencyInstance.YES),
 				             jobId, comment);
 			}
@@ -742,8 +1027,8 @@ public class AlterJob extends ManipJob
 			}
 			if (!raFound) continue;
 
+			SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, ra.getNrId(sysEnv));
 			if(se.checkParameterRI(sysEnv, ra.getNrId(sysEnv))) {
-				SDMSNamedResource nr = SDMSNamedResourceTable.getObject(sysEnv, ra.getNrId(sysEnv));
 				throw new CommonErrorException(
 					new SDMSMessage(sysEnv, "03409291444", "You cannot ignore resource $1, parameter references exist",
 						nr.pathString(sysEnv)
@@ -751,12 +1036,13 @@ public class AlterJob extends ManipJob
 				);
 			}
 			int approvalBits = sme.getApprovalMode(sysEnv).intValue() & SDMSSubmittedEntity.IGN_RSS_BITS;
+			boolean isApproval = ((approvalBits & SDMSSubmittedEntity.IGN_RSS_APPROVAL) == SDMSSubmittedEntity.IGN_RSS_APPROVAL);
 			if (approvalBits != 0) {
+				String info = "Ignore Resource " + rId.toString() + " (" + nr.pathString(sysEnv) + ")";;
 				createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.IGN_RESOURCE,
-				                    ((approvalBits & SDMSSubmittedEntity.IGN_RSS_APPROVAL) == SDMSSubmittedEntity.IGN_RSS_APPROVAL),
-				                    sysEnv.cEnv.uid(), comment, rId, null, null, null);
+				                    isApproval, sysEnv.cEnv.uid(), comment, rId, null, null, info);
 			}
-			if ((approvalBits & SDMSSubmittedEntity.IGN_RSS_APPROVAL) == 0) {
+			if (!isApproval) {
 				ra.ignore(sysEnv);
 			}
 		}

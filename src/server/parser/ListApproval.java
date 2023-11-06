@@ -28,6 +28,7 @@ package de.independit.scheduler.server.parser;
 import java.io.*;
 import java.util.*;
 import java.lang.*;
+import java.text.*;
 
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.repository.*;
@@ -63,28 +64,70 @@ public class ListApproval extends Node
 
 		switch (msg.getOperation(sysEnv).intValue()) {
 			case SDMSSystemMessage.CANCEL:
-				retval = EMPTY;
+				if (msg.getAdditionalBool(sysEnv).booleanValue())
+					retval = "Cancel with Kill";
+				else
+					retval = "Cancel";
 				break;
 			case SDMSSystemMessage.RERUN:
 				boolean recursive = msg.getAdditionalBool(sysEnv).booleanValue();
 				retval = (recursive ? "Recursive" : EMPTY);
+				long now = now = System.currentTimeMillis();
+				Long suspendFlag = msg.getAdditionalLong(sysEnv);
+				Long resumeVal = msg.getSecondLong(sysEnv);
+				if (suspendFlag != null) {
+					boolean isLocal, isAdmin;
+					isLocal = ((suspendFlag.longValue() & 0x02l) != 0);
+					isAdmin = ((suspendFlag.longValue() & 0x04l) != 0);
+					Long resumeTs = null;
+					if (resumeVal != null) {
+						if (resumeVal.longValue() < 0) {
+							resumeTs = Long.valueOf(now - resumeVal.longValue());
+						} else if (resumeVal.longValue() == 0) {
+							resumeTs = null;
+						} else {
+							resumeTs = resumeVal;
+						}
+					}
+					if ((suspendFlag.longValue() & 1l) == 1) {
+						if (resumeTs == null || resumeTs.longValue() > now) {
+							retval = retval + " Suspend";
+							if (resumeTs != 0) {
+								retval = retval + ", Resume";
+								if (resumeVal.longValue() < 0) {
+									retval = retval + " in " + (resumeVal.longValue() / -60000) + " minutes";
+								} else {
+									Date d = new Date();
+									d.setTime(resumeVal);
+									SimpleDateFormat sd = (SimpleDateFormat) sysEnv.systemDateFormat.clone();
+									sd.setTimeZone(sme.getEffectiveTimeZone(sysEnv));
+									retval = retval + " at " + sd.format(d);
+								}
+							}
+						}
+					} else {
+						retval = retval + " Resume";
+					}
+				}
 				break;
 			case SDMSSystemMessage.SET_STATE:
 				Long esdId = msg.getAdditionalLong(sysEnv);
+				Long actEsdId = sme.getJobEsdId(sysEnv);
 				SDMSExitStateDefinition esd = SDMSExitStateDefinitionTable.getObject(sysEnv, esdId, seVersion);
-				retval = esd.getName(sysEnv) + " " + (msg.getAdditionalBool(sysEnv).booleanValue() ? "[force]" : "");
+				SDMSExitStateDefinition actEsd = SDMSExitStateDefinitionTable.getObject(sysEnv, actEsdId, seVersion);
+				retval = "Current: " + actEsd.getName(sysEnv) + ", new: " + esd.getName(sysEnv) + " " + (msg.getAdditionalBool(sysEnv).booleanValue() ? "[force]" : "");
 				break;
 			case SDMSSystemMessage.IGN_DEPENDENCY:
 				Long diId = msg.getAdditionalLong(sysEnv);
 				SDMSDependencyInstance di = SDMSDependencyInstanceTable.getObject(sysEnv, diId);
+				final SDMSSubmittedEntity reqSme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getRequiredId(sysEnv));
 				Long reqId = di.getRequiredSeId(sysEnv);
 				if (reqId == null) {
-					final SDMSSubmittedEntity reqSme = SDMSSubmittedEntityTable.getObject(sysEnv, di.getRequiredId(sysEnv));
 					reqId = reqSme.getSeId(sysEnv);
 				}
 				SDMSSchedulingEntity dse = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), seVersion);
 				SDMSSchedulingEntity rse = SDMSSchedulingEntityTable.getObject(sysEnv, reqId, seVersion);
-				retval = rse.pathString(sysEnv) + " -> " + dse.pathString(sysEnv);
+				retval = rse.pathString(sysEnv) + " (" + reqSme.getId(sysEnv) + ") -> " + dse.pathString(sysEnv);
 				break;
 			case SDMSSystemMessage.IGN_RESOURCE:
 				Long rId = msg.getAdditionalLong(sysEnv);
@@ -111,25 +154,31 @@ public class ListApproval extends Node
 				Boolean shouldSuspend = msg.getAdditionalBool(sysEnv);
 				retval = (shouldSuspend.booleanValue() ? "SUSPEND" : "");
 				break;
-			case SDMSSystemMessage.CLEAR_WARNING:
-				retval = EMPTY;
-				break;
-			case SDMSSystemMessage.SET_WARNING:
-				retval = msg.getComment(sysEnv);
-				break;
 			case SDMSSystemMessage.MODIFY_PARAMETER:
 				String name = msg.getComment(sysEnv);
 				Long evId = msg.getAdditionalLong(sysEnv);
 				SDMSEntityVariable ev = SDMSEntityVariableTable.getObject(sysEnv, evId);
 				String newVal = ev.getValue(sysEnv);
+				String nl = " ";
+				if (newVal.contains("\n"))
+					nl = "\n";
 				if (msg.getIsMandatory(sysEnv).booleanValue()) {
-					retval = name + " will be changed to: '" + newVal + "'";
+					String oldValue;
+					try {
+						oldValue = sme.getVariableValue(sysEnv, name, true, ParseStr.S_DEFAULT, false, null, false);
+					} catch (SDMSException e) {
+						oldValue = "UNKNOWN";
+					}
+					if (nl.equals(" ") && oldValue.contains("\n"))
+						nl = "\n";
+					retval = name + " will be changed." + nl + "NEW VALUE =" + nl + "'" + newVal + "',\nOLD VALUE =" + nl + "'" + oldValue + "'";
 				} else {
-					retval = name + " has been changed to: '" + newVal + "'";
+					retval = name + " has been changed." + nl + "NEW VALUE =" + nl + "'" + newVal + "'";
 				}
 				break;
 			case SDMSSystemMessage.KILL:
-				retval = EMPTY;
+				Boolean recFlag = msg.getAdditionalBool(sysEnv);
+				retval = "KILL" + (recFlag.booleanValue() ? " RECURSIVE" : "");
 				break;
 			case SDMSSystemMessage.SET_JOB_STATE:
 				int status = msg.getAdditionalLong(sysEnv).intValue();
@@ -141,30 +190,8 @@ public class ListApproval extends Node
 				Boolean isDisable = msg.getAdditionalBool(sysEnv);
 				retval = (isDisable.booleanValue() ? "Disable" : "Enable");
 				break;
-			case SDMSSystemMessage.SUSPEND:
-			case SDMSSystemMessage.RESUME:
-				Long flags = msg.getAdditionalLong(sysEnv);
-				Boolean direction = msg.getAdditionalBool(sysEnv);
-				if (direction == null) direction = Boolean.FALSE;
-				boolean isAdmin = false, isLocal = false;
-				if (flags != null) {
-					if ((flags.longValue() & 0x01) != 0)   isLocal = true;
-					if ((flags.longValue() & 0x02) != 0)   isAdmin = true;
-				}
-				Long resumeTs = msg.getSecondLong(sysEnv);
-				Date d = null;
-				if (resumeTs != null) {
-					d = new Date();
-					d.setTime(resumeTs.longValue());
-				}
-				retval = (direction.booleanValue() ? "Suspend" : "Resume") + (isAdmin ? " Admin" : "") + (isLocal ? " Local" : "") + (d == null ? "" : " at " + sysEnv.systemDateFormat.format(d));
-				break;
-			case SDMSSystemMessage.PRIORITY:
-			case SDMSSystemMessage.RENICE:
-			case SDMSSystemMessage.NICEVALUE:
-				Boolean isRenice = msg.getAdditionalBool(sysEnv);
-				Long newPrio = msg.getAdditionalLong(sysEnv);
-				retval = (isRenice ? "renice with " : "priority is ") + newPrio;
+			default:
+				retval = "Unknown Operation";
 				break;
 
 		}
@@ -182,13 +209,16 @@ public class ListApproval extends Node
 		desc.add("ID");
 		desc.add("SME_ID");
 		desc.add("NAME");
+		desc.add("TYPE");
 		desc.add("MASTER_ID");
+		desc.add("MASTER_NAME");
+		desc.add("MASTER_TYPE");
 		desc.add("OPERATION");
 		desc.add("MODE");
 		desc.add("REQUESTING_USER");
 		desc.add("REQUEST_TS");
 		desc.add("REQUEST_MSG");
-		desc.add("ADDITIONAL INFORMATION");
+		desc.add("ADDITIONAL_INFORMATION");
 
 		d_container = new SDMSOutputContainer(sysEnv, "List of approval requests", desc);
 
@@ -209,7 +239,7 @@ public class ListApproval extends Node
 				continue;
 			}
 			SDMSUser reqUser = SDMSUserTable.getObject(sysEnv, o.getRequestUId(sysEnv));
-			if (reqUser.getId(sysEnv).equals(sysEnv.cEnv.uid()))
+			if (reqUser.getId(sysEnv).equals(sysEnv.cEnv.uid()) && !sysEnv.cEnv.gid().contains(SDMSObject.adminGId))
 				continue;
 
 			if (idList != null && !idList.contains(smeId))
@@ -219,7 +249,17 @@ public class ListApproval extends Node
 			v.add(smeId);
 			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), sme.getSeVersion(sysEnv));
 			v.add(se.pathString(sysEnv));
+			v.add(se.getTypeAsString(sysEnv));
 			v.add(sme.getMasterId(sysEnv));
+			if (sme.getMasterId(sysEnv) != smeId) {
+				SDMSSubmittedEntity msme = SDMSSubmittedEntityTable.getObject(sysEnv, sme.getMasterId(sysEnv));
+				SDMSSchedulingEntity mse = SDMSSchedulingEntityTable.getObject(sysEnv, msme.getSeId(sysEnv), sme.getSeVersion(sysEnv));
+				v.add(mse.pathString(sysEnv));
+				v.add(mse.getTypeAsString(sysEnv));
+			} else {
+				v.add(se.pathString(sysEnv));
+				v.add(se.getTypeAsString(sysEnv));
+			}
 			v.add(o.getOperationAsString(sysEnv));
 			if (o.getIsMandatory(sysEnv).booleanValue())
 				v.add("APPROVAL");

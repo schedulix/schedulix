@@ -101,6 +101,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 	                                  ,Integer p_warnCount
 	                                  ,Long p_warnLink
 	                                  ,Integer p_approvalMode
+	                                  ,Integer p_childApprovalMode
 	                                  ,Long p_submitTs
 	                                  ,Long p_resumeTs
 	                                  ,Long p_syncTs
@@ -201,6 +202,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       ,p_warnCount
 		                                       ,p_warnLink
 		                                       ,p_approvalMode
+		                                       ,p_childApprovalMode
 		                                       ,p_submitTs
 		                                       ,p_resumeTs
 		                                       ,p_syncTs
@@ -347,6 +349,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       ,SDMSConstants.iZERO
 		                                       ,SDMSConstants.iZERO
 		                                       ,null
+		                                       ,SDMSConstants.iZERO
 		                                       ,SDMSConstants.iZERO
 		                                       ,p_submitTs
 		                                       ,null
