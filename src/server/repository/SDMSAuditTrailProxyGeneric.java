@@ -301,6 +301,24 @@ public class SDMSAuditTrailProxyGeneric extends SDMSProxy
 	{
 		return (1024);
 	}
+	public Long getInfoId (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSAuditTrailGeneric)(object)).getInfoId (env));
+	}
+
+	public void setInfoId (SystemEnvironment env, Long p_infoId)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSAuditTrailGeneric)(object)).setInfoId (env, p_infoId);
+		return ;
+	}
 	public String getActionComment (SystemEnvironment env)
 	throws SDMSException
 	{

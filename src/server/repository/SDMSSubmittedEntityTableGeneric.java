@@ -98,6 +98,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		, "WARN_COUNT"
 		, "WARN_LINK"
 		, "APPROVAL_MODE"
+		, "CHILD_APPROVAL_MODE"
 		, "SUBMIT_TS"
 		, "RESUME_TS"
 		, "SYNC_TS"
@@ -238,6 +239,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                                  ,Integer p_warnCount
 	                                  ,Long p_warnLink
 	                                  ,Integer p_approvalMode
+	                                  ,Integer p_childApprovalMode
 	                                  ,Long p_submitTs
 	                                  ,Long p_resumeTs
 	                                  ,Long p_syncTs
@@ -345,6 +347,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		         , p_warnCount
 		         , p_warnLink
 		         , p_approvalMode
+		         , p_childApprovalMode
 		         , p_submitTs
 		         , p_resumeTs
 		         , p_syncTs
@@ -449,6 +452,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                , p_warnCount
 		                , p_warnLink
 		                , p_approvalMode
+		                , p_childApprovalMode
 		                , p_submitTs
 		                , p_resumeTs
 		                , p_syncTs
@@ -578,6 +582,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 	                        ,Integer p_warnCount
 	                        ,Long p_warnLink
 	                        ,Integer p_approvalMode
+	                        ,Integer p_childApprovalMode
 	                        ,Long p_submitTs
 	                        ,Long p_resumeTs
 	                        ,Long p_syncTs
@@ -695,6 +700,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		Integer warnCount;
 		Long warnLink;
 		Integer approvalMode;
+		Integer childApprovalMode;
 		Long submitTs;
 		Long resumeTs;
 		Long syncTs;
@@ -830,71 +836,72 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 			warnLink = Long.valueOf (r.getLong(55));
 			if (r.wasNull()) warnLink = null;
 			approvalMode = Integer.valueOf (r.getInt(56));
-			submitTs = Long.valueOf (r.getLong(57));
-			resumeTs = Long.valueOf (r.getLong(58));
+			childApprovalMode = Integer.valueOf (r.getInt(57));
+			submitTs = Long.valueOf (r.getLong(58));
+			resumeTs = Long.valueOf (r.getLong(59));
 			if (r.wasNull()) resumeTs = null;
-			syncTs = Long.valueOf (r.getLong(59));
+			syncTs = Long.valueOf (r.getLong(60));
 			if (r.wasNull()) syncTs = null;
-			resourceTs = Long.valueOf (r.getLong(60));
+			resourceTs = Long.valueOf (r.getLong(61));
 			if (r.wasNull()) resourceTs = null;
-			runnableTs = Long.valueOf (r.getLong(61));
+			runnableTs = Long.valueOf (r.getLong(62));
 			if (r.wasNull()) runnableTs = null;
-			startTs = Long.valueOf (r.getLong(62));
+			startTs = Long.valueOf (r.getLong(63));
 			if (r.wasNull()) startTs = null;
-			finishTs = Long.valueOf (r.getLong(63));
+			finishTs = Long.valueOf (r.getLong(64));
 			if (r.wasNull()) finishTs = null;
-			finalTs = Long.valueOf (r.getLong(64));
+			finalTs = Long.valueOf (r.getLong(65));
 			if (r.wasNull()) finalTs = null;
-			cntSubmitted = Integer.valueOf (r.getInt(65));
-			cntDependencyWait = Integer.valueOf (r.getInt(66));
-			cntSynchronizeWait = Integer.valueOf (r.getInt(67));
-			cntResourceWait = Integer.valueOf (r.getInt(68));
-			cntRunnable = Integer.valueOf (r.getInt(69));
-			cntStarting = Integer.valueOf (r.getInt(70));
-			cntStarted = Integer.valueOf (r.getInt(71));
-			cntRunning = Integer.valueOf (r.getInt(72));
-			cntToKill = Integer.valueOf (r.getInt(73));
-			cntKilled = Integer.valueOf (r.getInt(74));
-			cntCancelled = Integer.valueOf (r.getInt(75));
-			cntFinished = Integer.valueOf (r.getInt(76));
-			cntFinal = Integer.valueOf (r.getInt(77));
-			cntBrokenActive = Integer.valueOf (r.getInt(78));
-			cntBrokenFinished = Integer.valueOf (r.getInt(79));
-			cntError = Integer.valueOf (r.getInt(80));
-			cntUnreachable = Integer.valueOf (r.getInt(81));
-			cntRestartable = Integer.valueOf (r.getInt(82));
-			cntWarn = Integer.valueOf (r.getInt(83));
-			cntPending = Integer.valueOf (r.getInt(84));
-			idleTs = Integer.valueOf (r.getInt(85));
+			cntSubmitted = Integer.valueOf (r.getInt(66));
+			cntDependencyWait = Integer.valueOf (r.getInt(67));
+			cntSynchronizeWait = Integer.valueOf (r.getInt(68));
+			cntResourceWait = Integer.valueOf (r.getInt(69));
+			cntRunnable = Integer.valueOf (r.getInt(70));
+			cntStarting = Integer.valueOf (r.getInt(71));
+			cntStarted = Integer.valueOf (r.getInt(72));
+			cntRunning = Integer.valueOf (r.getInt(73));
+			cntToKill = Integer.valueOf (r.getInt(74));
+			cntKilled = Integer.valueOf (r.getInt(75));
+			cntCancelled = Integer.valueOf (r.getInt(76));
+			cntFinished = Integer.valueOf (r.getInt(77));
+			cntFinal = Integer.valueOf (r.getInt(78));
+			cntBrokenActive = Integer.valueOf (r.getInt(79));
+			cntBrokenFinished = Integer.valueOf (r.getInt(80));
+			cntError = Integer.valueOf (r.getInt(81));
+			cntUnreachable = Integer.valueOf (r.getInt(82));
+			cntRestartable = Integer.valueOf (r.getInt(83));
+			cntWarn = Integer.valueOf (r.getInt(84));
+			cntPending = Integer.valueOf (r.getInt(85));
+			idleTs = Integer.valueOf (r.getInt(86));
 			if (r.wasNull()) idleTs = null;
-			idleTime = Integer.valueOf (r.getInt(86));
+			idleTime = Integer.valueOf (r.getInt(87));
 			if (r.wasNull()) idleTime = null;
-			statisticTs = Integer.valueOf (r.getInt(87));
+			statisticTs = Integer.valueOf (r.getInt(88));
 			if (r.wasNull()) statisticTs = null;
-			dependencyWaitTime = Integer.valueOf (r.getInt(88));
+			dependencyWaitTime = Integer.valueOf (r.getInt(89));
 			if (r.wasNull()) dependencyWaitTime = null;
-			suspendTime = Integer.valueOf (r.getInt(89));
+			suspendTime = Integer.valueOf (r.getInt(90));
 			if (r.wasNull()) suspendTime = null;
-			syncTime = Integer.valueOf (r.getInt(90));
+			syncTime = Integer.valueOf (r.getInt(91));
 			if (r.wasNull()) syncTime = null;
-			resourceTime = Integer.valueOf (r.getInt(91));
+			resourceTime = Integer.valueOf (r.getInt(92));
 			if (r.wasNull()) resourceTime = null;
-			jobserverTime = Integer.valueOf (r.getInt(92));
+			jobserverTime = Integer.valueOf (r.getInt(93));
 			if (r.wasNull()) jobserverTime = null;
-			restartableTime = Integer.valueOf (r.getInt(93));
+			restartableTime = Integer.valueOf (r.getInt(94));
 			if (r.wasNull()) restartableTime = null;
-			childWaitTime = Integer.valueOf (r.getInt(94));
+			childWaitTime = Integer.valueOf (r.getInt(95));
 			if (r.wasNull()) childWaitTime = null;
-			opSusresTs = Long.valueOf (r.getLong(95));
+			opSusresTs = Long.valueOf (r.getLong(96));
 			if (r.wasNull()) opSusresTs = null;
-			npeId = Long.valueOf (r.getLong(96));
+			npeId = Long.valueOf (r.getLong(97));
 			if (r.wasNull()) npeId = null;
-			timeZone = r.getString(97);
+			timeZone = r.getString(98);
 			if (r.wasNull()) timeZone = null;
-			creatorUId = Long.valueOf (r.getLong(98));
-			createTs = Long.valueOf (r.getLong(99));
-			changerUId = Long.valueOf (r.getLong(100));
-			changeTs = Long.valueOf (r.getLong(101));
+			creatorUId = Long.valueOf (r.getLong(99));
+			createTs = Long.valueOf (r.getLong(100));
+			changerUId = Long.valueOf (r.getLong(101));
+			changeTs = Long.valueOf (r.getLong(102));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -958,6 +965,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                      warnCount,
 		                                      warnLink,
 		                                      approvalMode,
+		                                      childApprovalMode,
 		                                      submitTs,
 		                                      resumeTs,
 		                                      syncTs,
@@ -1073,6 +1081,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                   ", " + squote + "WARN_COUNT" + equote +
 		                                   ", " + squote + "WARN_LINK" + equote +
 		                                   ", " + squote + "APPROVAL_MODE" + equote +
+		                                   ", " + squote + "CHILD_APPROVAL_MODE" + equote +
 		                                   ", " + squote + "SUBMIT_TS" + equote +
 		                                   ", " + squote + "RESUME_TS" + equote +
 		                                   ", " + squote + "SYNC_TS" + equote +

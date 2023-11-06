@@ -45,17 +45,10 @@ public class SDMSSystemMessageProxyGeneric extends SDMSProxy
 	public static final int IGN_DEPENDENCY = 5;
 	public static final int IGN_RESOURCE = 6;
 	public static final int CLONE = 7;
-	public static final int SUSPEND = 8;
-	public static final int CLEAR_WARNING = 9;
-	public static final int SET_WARNING = 29;
-	public static final int PRIORITY = 10;
 	public static final int MODIFY_PARAMETER = 11;
 	public static final int KILL = 12;
 	public static final int SET_JOB_STATE = 13;
 	public static final int DISABLE = 23;
-	public static final int RESUME = 28;
-	public static final int RENICE = 30;
-	public static final int NICEVALUE = 50;
 	public static final int APPROVAL = 1;
 	public final static long privilegeMask = SDMSPrivilege.ALL;
 

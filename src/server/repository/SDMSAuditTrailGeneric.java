@@ -108,11 +108,12 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	public final static int nr_originId = 8;
 	public final static int nr_isSetWarning = 9;
 	public final static int nr_actionInfo = 10;
-	public final static int nr_actionComment = 11;
-	public final static int nr_creatorUId = 12;
-	public final static int nr_createTs = 13;
-	public final static int nr_changerUId = 14;
-	public final static int nr_changeTs = 15;
+	public final static int nr_infoId = 11;
+	public final static int nr_actionComment = 12;
+	public final static int nr_creatorUId = 13;
+	public final static int nr_createTs = 14;
+	public final static int nr_changerUId = 15;
+	public final static int nr_changeTs = 16;
 
 	public static String tableName = SDMSAuditTrailTableGeneric.tableName;
 
@@ -125,6 +126,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	protected Long originId;
 	protected Boolean isSetWarning;
 	protected String actionInfo;
+	protected Long infoId;
 	protected String actionComment;
 	protected Long creatorUId;
 	protected Long createTs;
@@ -146,6 +148,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	        Long p_originId,
 	        Boolean p_isSetWarning,
 	        String p_actionInfo,
+	        Long p_infoId,
 	        String p_actionComment,
 	        Long p_creatorUId,
 	        Long p_createTs,
@@ -167,6 +170,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			p_actionInfo = p_actionInfo.substring(0,1024);
 		}
 		actionInfo = p_actionInfo;
+		infoId = p_infoId;
 		if (p_actionComment != null && p_actionComment.length() > 1024) {
 			p_actionComment = p_actionComment.substring(0,1024);
 		}
@@ -518,6 +522,31 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		return;
 	}
 
+	public Long getInfoId (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (infoId);
+	}
+
+	public	void setInfoId (SystemEnvironment env, Long p_infoId)
+	throws SDMSException
+	{
+		if(p_infoId != null && p_infoId.equals(infoId)) return;
+		if(p_infoId == null && infoId == null) return;
+		SDMSAuditTrailGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(AuditTrail) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSAuditTrailGeneric) change(env);
+		o.infoId = p_infoId;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
 	public String getActionComment (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -644,6 +673,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 	                                Long p_originId,
 	                                Boolean p_isSetWarning,
 	                                String p_actionInfo,
+	                                Long p_infoId,
 	                                String p_actionComment,
 	                                Long p_creatorUId,
 	                                Long p_createTs,
@@ -661,6 +691,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		originId = p_originId;
 		isSetWarning = p_isSetWarning;
 		actionInfo = p_actionInfo;
+		infoId = p_infoId;
 		actionComment = p_actionComment;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
@@ -696,12 +727,14 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				        ", " + squote + "ORIGIN_ID" + equote +
 				        ", " + squote + "IS_SET_WARNING" + equote +
 				        ", " + squote + "ACTION_INFO" + equote +
+				        ", " + squote + "INFO_ID" + equote +
 				        ", " + squote + "ACTION_COMMENT" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ") VALUES (?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -738,14 +771,18 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				myInsert.setNull(10, Types.VARCHAR);
 			else
 				myInsert.setString(10, actionInfo);
-			if (actionComment == null)
-				myInsert.setNull(11, Types.VARCHAR);
+			if (infoId == null)
+				myInsert.setNull(11, Types.INTEGER);
 			else
-				myInsert.setString(11, actionComment);
-			myInsert.setLong (12, creatorUId.longValue());
-			myInsert.setLong (13, createTs.longValue());
-			myInsert.setLong (14, changerUId.longValue());
-			myInsert.setLong (15, changeTs.longValue());
+				myInsert.setLong (11, infoId.longValue());
+			if (actionComment == null)
+				myInsert.setNull(12, Types.VARCHAR);
+			else
+				myInsert.setString(12, actionComment);
+			myInsert.setLong (13, creatorUId.longValue());
+			myInsert.setLong (14, createTs.longValue());
+			myInsert.setLong (15, changerUId.longValue());
+			myInsert.setLong (16, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "AuditTrail: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
@@ -798,6 +835,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				        ", " + squote + "ORIGIN_ID" + equote + " = ? " +
 				        ", " + squote + "IS_SET_WARNING" + equote + " = ? " +
 				        ", " + squote + "ACTION_INFO" + equote + " = ? " +
+				        ", " + squote + "INFO_ID" + equote + " = ? " +
 				        ", " + squote + "ACTION_COMMENT" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +
 				        ", " + squote + "CREATE_TS" + equote + " = ? " +
@@ -824,15 +862,19 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 				myUpdate.setNull(9, Types.VARCHAR);
 			else
 				myUpdate.setString(9, actionInfo);
-			if (actionComment == null)
-				myUpdate.setNull(10, Types.VARCHAR);
+			if (infoId == null)
+				myUpdate.setNull(10, Types.INTEGER);
 			else
-				myUpdate.setString(10, actionComment);
-			myUpdate.setLong (11, creatorUId.longValue());
-			myUpdate.setLong (12, createTs.longValue());
-			myUpdate.setLong (13, changerUId.longValue());
-			myUpdate.setLong (14, changeTs.longValue());
-			myUpdate.setLong(15, id.longValue());
+				myUpdate.setLong (10, infoId.longValue());
+			if (actionComment == null)
+				myUpdate.setNull(11, Types.VARCHAR);
+			else
+				myUpdate.setString(11, actionComment);
+			myUpdate.setLong (12, creatorUId.longValue());
+			myUpdate.setLong (13, createTs.longValue());
+			myUpdate.setLong (14, changerUId.longValue());
+			myUpdate.setLong (15, changeTs.longValue());
+			myUpdate.setLong(16, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "AuditTrail: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
@@ -905,6 +947,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "originId : " + originId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "isSetWarning : " + isSetWarning, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "actionInfo : " + actionInfo, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "infoId : " + infoId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "actionComment : " + actionComment, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
@@ -931,6 +974,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 		        indentString + "originId      : " + originId + "\n" +
 		        indentString + "isSetWarning  : " + isSetWarning + "\n" +
 		        indentString + "actionInfo    : " + actionInfo + "\n" +
+		        indentString + "infoId        : " + infoId + "\n" +
 		        indentString + "actionComment : " + actionComment + "\n" +
 		        indentString + "creatorUId    : " + creatorUId + "\n" +
 		        indentString + "createTs      : " + createTs + "\n" +

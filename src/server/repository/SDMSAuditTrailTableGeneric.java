@@ -52,6 +52,7 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 		, "ORIGIN_ID"
 		, "IS_SET_WARNING"
 		, "ACTION_INFO"
+		, "INFO_ID"
 		, "ACTION_COMMENT"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
@@ -86,6 +87,7 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 	                             ,Long p_originId
 	                             ,Boolean p_isSetWarning
 	                             ,String p_actionInfo
+	                             ,Long p_infoId
 	                             ,String p_actionComment
 	                            )
 	throws SDMSException
@@ -107,6 +109,7 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 		         , p_originId
 		         , p_isSetWarning
 		         , p_actionInfo
+		         , p_infoId
 		         , p_actionComment
 		         , p_creatorUId
 		         , p_createTs
@@ -125,6 +128,7 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 		                , p_originId
 		                , p_isSetWarning
 		                , p_actionInfo
+		                , p_infoId
 		                , p_actionComment
 		                , p_creatorUId
 		                , p_createTs
@@ -172,6 +176,7 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 	                        ,Long p_originId
 	                        ,Boolean p_isSetWarning
 	                        ,String p_actionInfo
+	                        ,Long p_infoId
 	                        ,String p_actionComment
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
@@ -199,6 +204,7 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 		Long originId;
 		Boolean isSetWarning;
 		String actionInfo;
+		Long infoId;
 		String actionComment;
 		Long creatorUId;
 		Long createTs;
@@ -219,12 +225,14 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 			isSetWarning = Boolean.valueOf ((r.getInt(9) == 0 ? false : true));
 			actionInfo = r.getString(10);
 			if (r.wasNull()) actionInfo = null;
-			actionComment = r.getString(11);
+			infoId = Long.valueOf (r.getLong(11));
+			if (r.wasNull()) infoId = null;
+			actionComment = r.getString(12);
 			if (r.wasNull()) actionComment = null;
-			creatorUId = Long.valueOf (r.getLong(12));
-			createTs = Long.valueOf (r.getLong(13));
-			changerUId = Long.valueOf (r.getLong(14));
-			changeTs = Long.valueOf (r.getLong(15));
+			creatorUId = Long.valueOf (r.getLong(13));
+			createTs = Long.valueOf (r.getLong(14));
+			changerUId = Long.valueOf (r.getLong(15));
+			changeTs = Long.valueOf (r.getLong(16));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -242,6 +250,7 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 		                                 originId,
 		                                 isSetWarning,
 		                                 actionInfo,
+		                                 infoId,
 		                                 actionComment,
 		                                 creatorUId,
 		                                 createTs,
@@ -271,6 +280,7 @@ public class SDMSAuditTrailTableGeneric extends SDMSTable
 		                                   ", " + squote + "ORIGIN_ID" + equote +
 		                                   ", " + squote + "IS_SET_WARNING" + equote +
 		                                   ", " + squote + "ACTION_INFO" + equote +
+		                                   ", " + squote + "INFO_ID" + equote +
 		                                   ", " + squote + "ACTION_COMMENT" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +

@@ -170,51 +170,52 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	public final static int nr_warnCount = 54;
 	public final static int nr_warnLink = 55;
 	public final static int nr_approvalMode = 56;
-	public final static int nr_submitTs = 57;
-	public final static int nr_resumeTs = 58;
-	public final static int nr_syncTs = 59;
-	public final static int nr_resourceTs = 60;
-	public final static int nr_runnableTs = 61;
-	public final static int nr_startTs = 62;
-	public final static int nr_finishTs = 63;
-	public final static int nr_finalTs = 64;
-	public final static int nr_cntSubmitted = 65;
-	public final static int nr_cntDependencyWait = 66;
-	public final static int nr_cntSynchronizeWait = 67;
-	public final static int nr_cntResourceWait = 68;
-	public final static int nr_cntRunnable = 69;
-	public final static int nr_cntStarting = 70;
-	public final static int nr_cntStarted = 71;
-	public final static int nr_cntRunning = 72;
-	public final static int nr_cntToKill = 73;
-	public final static int nr_cntKilled = 74;
-	public final static int nr_cntCancelled = 75;
-	public final static int nr_cntFinished = 76;
-	public final static int nr_cntFinal = 77;
-	public final static int nr_cntBrokenActive = 78;
-	public final static int nr_cntBrokenFinished = 79;
-	public final static int nr_cntError = 80;
-	public final static int nr_cntUnreachable = 81;
-	public final static int nr_cntRestartable = 82;
-	public final static int nr_cntWarn = 83;
-	public final static int nr_cntPending = 84;
-	public final static int nr_idleTs = 85;
-	public final static int nr_idleTime = 86;
-	public final static int nr_statisticTs = 87;
-	public final static int nr_dependencyWaitTime = 88;
-	public final static int nr_suspendTime = 89;
-	public final static int nr_syncTime = 90;
-	public final static int nr_resourceTime = 91;
-	public final static int nr_jobserverTime = 92;
-	public final static int nr_restartableTime = 93;
-	public final static int nr_childWaitTime = 94;
-	public final static int nr_opSusresTs = 95;
-	public final static int nr_npeId = 96;
-	public final static int nr_timeZone = 97;
-	public final static int nr_creatorUId = 98;
-	public final static int nr_createTs = 99;
-	public final static int nr_changerUId = 100;
-	public final static int nr_changeTs = 101;
+	public final static int nr_childApprovalMode = 57;
+	public final static int nr_submitTs = 58;
+	public final static int nr_resumeTs = 59;
+	public final static int nr_syncTs = 60;
+	public final static int nr_resourceTs = 61;
+	public final static int nr_runnableTs = 62;
+	public final static int nr_startTs = 63;
+	public final static int nr_finishTs = 64;
+	public final static int nr_finalTs = 65;
+	public final static int nr_cntSubmitted = 66;
+	public final static int nr_cntDependencyWait = 67;
+	public final static int nr_cntSynchronizeWait = 68;
+	public final static int nr_cntResourceWait = 69;
+	public final static int nr_cntRunnable = 70;
+	public final static int nr_cntStarting = 71;
+	public final static int nr_cntStarted = 72;
+	public final static int nr_cntRunning = 73;
+	public final static int nr_cntToKill = 74;
+	public final static int nr_cntKilled = 75;
+	public final static int nr_cntCancelled = 76;
+	public final static int nr_cntFinished = 77;
+	public final static int nr_cntFinal = 78;
+	public final static int nr_cntBrokenActive = 79;
+	public final static int nr_cntBrokenFinished = 80;
+	public final static int nr_cntError = 81;
+	public final static int nr_cntUnreachable = 82;
+	public final static int nr_cntRestartable = 83;
+	public final static int nr_cntWarn = 84;
+	public final static int nr_cntPending = 85;
+	public final static int nr_idleTs = 86;
+	public final static int nr_idleTime = 87;
+	public final static int nr_statisticTs = 88;
+	public final static int nr_dependencyWaitTime = 89;
+	public final static int nr_suspendTime = 90;
+	public final static int nr_syncTime = 91;
+	public final static int nr_resourceTime = 92;
+	public final static int nr_jobserverTime = 93;
+	public final static int nr_restartableTime = 94;
+	public final static int nr_childWaitTime = 95;
+	public final static int nr_opSusresTs = 96;
+	public final static int nr_npeId = 97;
+	public final static int nr_timeZone = 98;
+	public final static int nr_creatorUId = 99;
+	public final static int nr_createTs = 100;
+	public final static int nr_changerUId = 101;
+	public final static int nr_changeTs = 102;
 
 	public static String tableName = SDMSSubmittedEntityTableGeneric.tableName;
 
@@ -273,6 +274,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	protected Integer warnCount;
 	protected Long warnLink;
 	protected Integer approvalMode;
+	protected Integer childApprovalMode;
 	protected Long submitTs;
 	protected Long resumeTs;
 	protected Long syncTs;
@@ -380,6 +382,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	        Integer p_warnCount,
 	        Long p_warnLink,
 	        Integer p_approvalMode,
+	        Integer p_childApprovalMode,
 	        Long p_submitTs,
 	        Long p_resumeTs,
 	        Long p_syncTs,
@@ -526,6 +529,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		warnCount = p_warnCount;
 		warnLink = p_warnLink;
 		approvalMode = p_approvalMode;
+		childApprovalMode = p_childApprovalMode;
 		submitTs = p_submitTs;
 		resumeTs = p_resumeTs;
 		syncTs = p_syncTs;
@@ -2152,6 +2156,30 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		return;
 	}
 
+	public Integer getChildApprovalMode (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (childApprovalMode);
+	}
+
+	public	void setChildApprovalMode (SystemEnvironment env, Integer p_childApprovalMode)
+	throws SDMSException
+	{
+		if(childApprovalMode.equals(p_childApprovalMode)) return;
+		SDMSSubmittedEntityGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(SubmittedEntity) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSubmittedEntityGeneric) change(env);
+		o.childApprovalMode = p_childApprovalMode;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
 	public Long getSubmitTs (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -3471,6 +3499,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 	                                     Integer p_warnCount,
 	                                     Long p_warnLink,
 	                                     Integer p_approvalMode,
+	                                     Integer p_childApprovalMode,
 	                                     Long p_submitTs,
 	                                     Long p_resumeTs,
 	                                     Long p_syncTs,
@@ -3574,6 +3603,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		warnCount = p_warnCount;
 		warnLink = p_warnLink;
 		approvalMode = p_approvalMode;
+		childApprovalMode = p_childApprovalMode;
 		submitTs = p_submitTs;
 		resumeTs = p_resumeTs;
 		syncTs = p_syncTs;
@@ -3695,6 +3725,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        ", " + squote + "WARN_COUNT" + equote +
 				        ", " + squote + "WARN_LINK" + equote +
 				        ", " + squote + "APPROVAL_MODE" + equote +
+				        ", " + squote + "CHILD_APPROVAL_MODE" + equote +
 				        ", " + squote + "SUBMIT_TS" + equote +
 				        ", " + squote + "RESUME_TS" + equote +
 				        ", " + squote + "SYNC_TS" + equote +
@@ -3741,6 +3772,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ") VALUES (?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -3996,111 +4028,112 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 			else
 				myInsert.setLong (55, warnLink.longValue());
 			myInsert.setInt(56, approvalMode.intValue());
-			myInsert.setLong (57, submitTs.longValue());
+			myInsert.setInt(57, childApprovalMode.intValue());
+			myInsert.setLong (58, submitTs.longValue());
 			if (resumeTs == null)
-				myInsert.setNull(58, Types.INTEGER);
-			else
-				myInsert.setLong (58, resumeTs.longValue());
-			if (syncTs == null)
 				myInsert.setNull(59, Types.INTEGER);
 			else
-				myInsert.setLong (59, syncTs.longValue());
-			if (resourceTs == null)
+				myInsert.setLong (59, resumeTs.longValue());
+			if (syncTs == null)
 				myInsert.setNull(60, Types.INTEGER);
 			else
-				myInsert.setLong (60, resourceTs.longValue());
-			if (runnableTs == null)
+				myInsert.setLong (60, syncTs.longValue());
+			if (resourceTs == null)
 				myInsert.setNull(61, Types.INTEGER);
 			else
-				myInsert.setLong (61, runnableTs.longValue());
-			if (startTs == null)
+				myInsert.setLong (61, resourceTs.longValue());
+			if (runnableTs == null)
 				myInsert.setNull(62, Types.INTEGER);
 			else
-				myInsert.setLong (62, startTs.longValue());
-			if (finishTs == null)
+				myInsert.setLong (62, runnableTs.longValue());
+			if (startTs == null)
 				myInsert.setNull(63, Types.INTEGER);
 			else
-				myInsert.setLong (63, finishTs.longValue());
-			if (finalTs == null)
+				myInsert.setLong (63, startTs.longValue());
+			if (finishTs == null)
 				myInsert.setNull(64, Types.INTEGER);
 			else
-				myInsert.setLong (64, finalTs.longValue());
-			myInsert.setInt(65, cntSubmitted.intValue());
-			myInsert.setInt(66, cntDependencyWait.intValue());
-			myInsert.setInt(67, cntSynchronizeWait.intValue());
-			myInsert.setInt(68, cntResourceWait.intValue());
-			myInsert.setInt(69, cntRunnable.intValue());
-			myInsert.setInt(70, cntStarting.intValue());
-			myInsert.setInt(71, cntStarted.intValue());
-			myInsert.setInt(72, cntRunning.intValue());
-			myInsert.setInt(73, cntToKill.intValue());
-			myInsert.setInt(74, cntKilled.intValue());
-			myInsert.setInt(75, cntCancelled.intValue());
-			myInsert.setInt(76, cntFinished.intValue());
-			myInsert.setInt(77, cntFinal.intValue());
-			myInsert.setInt(78, cntBrokenActive.intValue());
-			myInsert.setInt(79, cntBrokenFinished.intValue());
-			myInsert.setInt(80, cntError.intValue());
-			myInsert.setInt(81, cntUnreachable.intValue());
-			myInsert.setInt(82, cntRestartable.intValue());
-			myInsert.setInt(83, cntWarn.intValue());
-			myInsert.setInt(84, cntPending.intValue());
-			if (idleTs == null)
-				myInsert.setNull(85, Types.INTEGER);
+				myInsert.setLong (64, finishTs.longValue());
+			if (finalTs == null)
+				myInsert.setNull(65, Types.INTEGER);
 			else
-				myInsert.setInt(85, idleTs.intValue());
-			if (idleTime == null)
+				myInsert.setLong (65, finalTs.longValue());
+			myInsert.setInt(66, cntSubmitted.intValue());
+			myInsert.setInt(67, cntDependencyWait.intValue());
+			myInsert.setInt(68, cntSynchronizeWait.intValue());
+			myInsert.setInt(69, cntResourceWait.intValue());
+			myInsert.setInt(70, cntRunnable.intValue());
+			myInsert.setInt(71, cntStarting.intValue());
+			myInsert.setInt(72, cntStarted.intValue());
+			myInsert.setInt(73, cntRunning.intValue());
+			myInsert.setInt(74, cntToKill.intValue());
+			myInsert.setInt(75, cntKilled.intValue());
+			myInsert.setInt(76, cntCancelled.intValue());
+			myInsert.setInt(77, cntFinished.intValue());
+			myInsert.setInt(78, cntFinal.intValue());
+			myInsert.setInt(79, cntBrokenActive.intValue());
+			myInsert.setInt(80, cntBrokenFinished.intValue());
+			myInsert.setInt(81, cntError.intValue());
+			myInsert.setInt(82, cntUnreachable.intValue());
+			myInsert.setInt(83, cntRestartable.intValue());
+			myInsert.setInt(84, cntWarn.intValue());
+			myInsert.setInt(85, cntPending.intValue());
+			if (idleTs == null)
 				myInsert.setNull(86, Types.INTEGER);
 			else
-				myInsert.setInt(86, idleTime.intValue());
-			if (statisticTs == null)
+				myInsert.setInt(86, idleTs.intValue());
+			if (idleTime == null)
 				myInsert.setNull(87, Types.INTEGER);
 			else
-				myInsert.setInt(87, statisticTs.intValue());
-			if (dependencyWaitTime == null)
+				myInsert.setInt(87, idleTime.intValue());
+			if (statisticTs == null)
 				myInsert.setNull(88, Types.INTEGER);
 			else
-				myInsert.setInt(88, dependencyWaitTime.intValue());
-			if (suspendTime == null)
+				myInsert.setInt(88, statisticTs.intValue());
+			if (dependencyWaitTime == null)
 				myInsert.setNull(89, Types.INTEGER);
 			else
-				myInsert.setInt(89, suspendTime.intValue());
-			if (syncTime == null)
+				myInsert.setInt(89, dependencyWaitTime.intValue());
+			if (suspendTime == null)
 				myInsert.setNull(90, Types.INTEGER);
 			else
-				myInsert.setInt(90, syncTime.intValue());
-			if (resourceTime == null)
+				myInsert.setInt(90, suspendTime.intValue());
+			if (syncTime == null)
 				myInsert.setNull(91, Types.INTEGER);
 			else
-				myInsert.setInt(91, resourceTime.intValue());
-			if (jobserverTime == null)
+				myInsert.setInt(91, syncTime.intValue());
+			if (resourceTime == null)
 				myInsert.setNull(92, Types.INTEGER);
 			else
-				myInsert.setInt(92, jobserverTime.intValue());
-			if (restartableTime == null)
+				myInsert.setInt(92, resourceTime.intValue());
+			if (jobserverTime == null)
 				myInsert.setNull(93, Types.INTEGER);
 			else
-				myInsert.setInt(93, restartableTime.intValue());
-			if (childWaitTime == null)
+				myInsert.setInt(93, jobserverTime.intValue());
+			if (restartableTime == null)
 				myInsert.setNull(94, Types.INTEGER);
 			else
-				myInsert.setInt(94, childWaitTime.intValue());
-			if (opSusresTs == null)
+				myInsert.setInt(94, restartableTime.intValue());
+			if (childWaitTime == null)
 				myInsert.setNull(95, Types.INTEGER);
 			else
-				myInsert.setLong (95, opSusresTs.longValue());
-			if (npeId == null)
+				myInsert.setInt(95, childWaitTime.intValue());
+			if (opSusresTs == null)
 				myInsert.setNull(96, Types.INTEGER);
 			else
-				myInsert.setLong (96, npeId.longValue());
-			if (timeZone == null)
-				myInsert.setNull(97, Types.VARCHAR);
+				myInsert.setLong (96, opSusresTs.longValue());
+			if (npeId == null)
+				myInsert.setNull(97, Types.INTEGER);
 			else
-				myInsert.setString(97, timeZone);
-			myInsert.setLong (98, creatorUId.longValue());
-			myInsert.setLong (99, createTs.longValue());
-			myInsert.setLong (100, changerUId.longValue());
-			myInsert.setLong (101, changeTs.longValue());
+				myInsert.setLong (97, npeId.longValue());
+			if (timeZone == null)
+				myInsert.setNull(98, Types.VARCHAR);
+			else
+				myInsert.setString(98, timeZone);
+			myInsert.setLong (99, creatorUId.longValue());
+			myInsert.setLong (100, createTs.longValue());
+			myInsert.setLong (101, changerUId.longValue());
+			myInsert.setLong (102, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "SubmittedEntity: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
@@ -4199,6 +4232,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 				        ", " + squote + "WARN_COUNT" + equote + " = ? " +
 				        ", " + squote + "WARN_LINK" + equote + " = ? " +
 				        ", " + squote + "APPROVAL_MODE" + equote + " = ? " +
+				        ", " + squote + "CHILD_APPROVAL_MODE" + equote + " = ? " +
 				        ", " + squote + "SUBMIT_TS" + equote + " = ? " +
 				        ", " + squote + "RESUME_TS" + equote + " = ? " +
 				        ", " + squote + "SYNC_TS" + equote + " = ? " +
@@ -4398,112 +4432,113 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 			else
 				myUpdate.setLong (54, warnLink.longValue());
 			myUpdate.setInt(55, approvalMode.intValue());
-			myUpdate.setLong (56, submitTs.longValue());
+			myUpdate.setInt(56, childApprovalMode.intValue());
+			myUpdate.setLong (57, submitTs.longValue());
 			if (resumeTs == null)
-				myUpdate.setNull(57, Types.INTEGER);
-			else
-				myUpdate.setLong (57, resumeTs.longValue());
-			if (syncTs == null)
 				myUpdate.setNull(58, Types.INTEGER);
 			else
-				myUpdate.setLong (58, syncTs.longValue());
-			if (resourceTs == null)
+				myUpdate.setLong (58, resumeTs.longValue());
+			if (syncTs == null)
 				myUpdate.setNull(59, Types.INTEGER);
 			else
-				myUpdate.setLong (59, resourceTs.longValue());
-			if (runnableTs == null)
+				myUpdate.setLong (59, syncTs.longValue());
+			if (resourceTs == null)
 				myUpdate.setNull(60, Types.INTEGER);
 			else
-				myUpdate.setLong (60, runnableTs.longValue());
-			if (startTs == null)
+				myUpdate.setLong (60, resourceTs.longValue());
+			if (runnableTs == null)
 				myUpdate.setNull(61, Types.INTEGER);
 			else
-				myUpdate.setLong (61, startTs.longValue());
-			if (finishTs == null)
+				myUpdate.setLong (61, runnableTs.longValue());
+			if (startTs == null)
 				myUpdate.setNull(62, Types.INTEGER);
 			else
-				myUpdate.setLong (62, finishTs.longValue());
-			if (finalTs == null)
+				myUpdate.setLong (62, startTs.longValue());
+			if (finishTs == null)
 				myUpdate.setNull(63, Types.INTEGER);
 			else
-				myUpdate.setLong (63, finalTs.longValue());
-			myUpdate.setInt(64, cntSubmitted.intValue());
-			myUpdate.setInt(65, cntDependencyWait.intValue());
-			myUpdate.setInt(66, cntSynchronizeWait.intValue());
-			myUpdate.setInt(67, cntResourceWait.intValue());
-			myUpdate.setInt(68, cntRunnable.intValue());
-			myUpdate.setInt(69, cntStarting.intValue());
-			myUpdate.setInt(70, cntStarted.intValue());
-			myUpdate.setInt(71, cntRunning.intValue());
-			myUpdate.setInt(72, cntToKill.intValue());
-			myUpdate.setInt(73, cntKilled.intValue());
-			myUpdate.setInt(74, cntCancelled.intValue());
-			myUpdate.setInt(75, cntFinished.intValue());
-			myUpdate.setInt(76, cntFinal.intValue());
-			myUpdate.setInt(77, cntBrokenActive.intValue());
-			myUpdate.setInt(78, cntBrokenFinished.intValue());
-			myUpdate.setInt(79, cntError.intValue());
-			myUpdate.setInt(80, cntUnreachable.intValue());
-			myUpdate.setInt(81, cntRestartable.intValue());
-			myUpdate.setInt(82, cntWarn.intValue());
-			myUpdate.setInt(83, cntPending.intValue());
-			if (idleTs == null)
-				myUpdate.setNull(84, Types.INTEGER);
+				myUpdate.setLong (63, finishTs.longValue());
+			if (finalTs == null)
+				myUpdate.setNull(64, Types.INTEGER);
 			else
-				myUpdate.setInt(84, idleTs.intValue());
-			if (idleTime == null)
+				myUpdate.setLong (64, finalTs.longValue());
+			myUpdate.setInt(65, cntSubmitted.intValue());
+			myUpdate.setInt(66, cntDependencyWait.intValue());
+			myUpdate.setInt(67, cntSynchronizeWait.intValue());
+			myUpdate.setInt(68, cntResourceWait.intValue());
+			myUpdate.setInt(69, cntRunnable.intValue());
+			myUpdate.setInt(70, cntStarting.intValue());
+			myUpdate.setInt(71, cntStarted.intValue());
+			myUpdate.setInt(72, cntRunning.intValue());
+			myUpdate.setInt(73, cntToKill.intValue());
+			myUpdate.setInt(74, cntKilled.intValue());
+			myUpdate.setInt(75, cntCancelled.intValue());
+			myUpdate.setInt(76, cntFinished.intValue());
+			myUpdate.setInt(77, cntFinal.intValue());
+			myUpdate.setInt(78, cntBrokenActive.intValue());
+			myUpdate.setInt(79, cntBrokenFinished.intValue());
+			myUpdate.setInt(80, cntError.intValue());
+			myUpdate.setInt(81, cntUnreachable.intValue());
+			myUpdate.setInt(82, cntRestartable.intValue());
+			myUpdate.setInt(83, cntWarn.intValue());
+			myUpdate.setInt(84, cntPending.intValue());
+			if (idleTs == null)
 				myUpdate.setNull(85, Types.INTEGER);
 			else
-				myUpdate.setInt(85, idleTime.intValue());
-			if (statisticTs == null)
+				myUpdate.setInt(85, idleTs.intValue());
+			if (idleTime == null)
 				myUpdate.setNull(86, Types.INTEGER);
 			else
-				myUpdate.setInt(86, statisticTs.intValue());
-			if (dependencyWaitTime == null)
+				myUpdate.setInt(86, idleTime.intValue());
+			if (statisticTs == null)
 				myUpdate.setNull(87, Types.INTEGER);
 			else
-				myUpdate.setInt(87, dependencyWaitTime.intValue());
-			if (suspendTime == null)
+				myUpdate.setInt(87, statisticTs.intValue());
+			if (dependencyWaitTime == null)
 				myUpdate.setNull(88, Types.INTEGER);
 			else
-				myUpdate.setInt(88, suspendTime.intValue());
-			if (syncTime == null)
+				myUpdate.setInt(88, dependencyWaitTime.intValue());
+			if (suspendTime == null)
 				myUpdate.setNull(89, Types.INTEGER);
 			else
-				myUpdate.setInt(89, syncTime.intValue());
-			if (resourceTime == null)
+				myUpdate.setInt(89, suspendTime.intValue());
+			if (syncTime == null)
 				myUpdate.setNull(90, Types.INTEGER);
 			else
-				myUpdate.setInt(90, resourceTime.intValue());
-			if (jobserverTime == null)
+				myUpdate.setInt(90, syncTime.intValue());
+			if (resourceTime == null)
 				myUpdate.setNull(91, Types.INTEGER);
 			else
-				myUpdate.setInt(91, jobserverTime.intValue());
-			if (restartableTime == null)
+				myUpdate.setInt(91, resourceTime.intValue());
+			if (jobserverTime == null)
 				myUpdate.setNull(92, Types.INTEGER);
 			else
-				myUpdate.setInt(92, restartableTime.intValue());
-			if (childWaitTime == null)
+				myUpdate.setInt(92, jobserverTime.intValue());
+			if (restartableTime == null)
 				myUpdate.setNull(93, Types.INTEGER);
 			else
-				myUpdate.setInt(93, childWaitTime.intValue());
-			if (opSusresTs == null)
+				myUpdate.setInt(93, restartableTime.intValue());
+			if (childWaitTime == null)
 				myUpdate.setNull(94, Types.INTEGER);
 			else
-				myUpdate.setLong (94, opSusresTs.longValue());
-			if (npeId == null)
+				myUpdate.setInt(94, childWaitTime.intValue());
+			if (opSusresTs == null)
 				myUpdate.setNull(95, Types.INTEGER);
 			else
-				myUpdate.setLong (95, npeId.longValue());
-			if (timeZone == null)
-				myUpdate.setNull(96, Types.VARCHAR);
+				myUpdate.setLong (95, opSusresTs.longValue());
+			if (npeId == null)
+				myUpdate.setNull(96, Types.INTEGER);
 			else
-				myUpdate.setString(96, timeZone);
-			myUpdate.setLong (97, creatorUId.longValue());
-			myUpdate.setLong (98, createTs.longValue());
-			myUpdate.setLong (99, changerUId.longValue());
-			myUpdate.setLong (100, changeTs.longValue());
-			myUpdate.setLong(101, id.longValue());
+				myUpdate.setLong (96, npeId.longValue());
+			if (timeZone == null)
+				myUpdate.setNull(97, Types.VARCHAR);
+			else
+				myUpdate.setString(97, timeZone);
+			myUpdate.setLong (98, creatorUId.longValue());
+			myUpdate.setLong (99, createTs.longValue());
+			myUpdate.setLong (100, changerUId.longValue());
+			myUpdate.setLong (101, changeTs.longValue());
+			myUpdate.setLong(102, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "SubmittedEntity: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
@@ -4626,6 +4661,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "warnCount : " + warnCount, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "warnLink : " + warnLink, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "approvalMode : " + approvalMode, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "childApprovalMode : " + childApprovalMode, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "submitTs : " + submitTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "resumeTs : " + resumeTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "syncTs : " + syncTs, SDMSThread.SEVERITY_MESSAGE);
@@ -4738,6 +4774,7 @@ public class SDMSSubmittedEntityGeneric extends SDMSObject
 		        indentString + "warnCount          : " + warnCount + "\n" +
 		        indentString + "warnLink           : " + warnLink + "\n" +
 		        indentString + "approvalMode       : " + approvalMode + "\n" +
+		        indentString + "childApprovalMode  : " + childApprovalMode + "\n" +
 		        indentString + "submitTs           : " + submitTs + "\n" +
 		        indentString + "resumeTs           : " + resumeTs + "\n" +
 		        indentString + "syncTs             : " + syncTs + "\n" +

@@ -116,23 +116,17 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	public final static int nr_ignRssApproval = 48;
 	public final static int nr_cloneLeadFlag = 49;
 	public final static int nr_cloneApproval = 50;
-	public final static int nr_suspendLeadFlag = 51;
-	public final static int nr_suspendApproval = 52;
-	public final static int nr_clrWarnLeadFlag = 53;
-	public final static int nr_clrWarnApproval = 54;
-	public final static int nr_priorityLeadFlag = 55;
-	public final static int nr_priorityApproval = 56;
-	public final static int nr_editParmLeadFlag = 57;
-	public final static int nr_editParmApproval = 58;
-	public final static int nr_killLeadFlag = 59;
-	public final static int nr_killApproval = 60;
-	public final static int nr_setJobStateLeadFlag = 61;
-	public final static int nr_setJobStateApproval = 62;
-	public final static int nr_inheritPrivs = 63;
-	public final static int nr_creatorUId = 64;
-	public final static int nr_createTs = 65;
-	public final static int nr_changerUId = 66;
-	public final static int nr_changeTs = 67;
+	public final static int nr_editParmLeadFlag = 51;
+	public final static int nr_editParmApproval = 52;
+	public final static int nr_killLeadFlag = 53;
+	public final static int nr_killApproval = 54;
+	public final static int nr_setJobStateLeadFlag = 55;
+	public final static int nr_setJobStateApproval = 56;
+	public final static int nr_inheritPrivs = 57;
+	public final static int nr_creatorUId = 58;
+	public final static int nr_createTs = 59;
+	public final static int nr_changerUId = 60;
+	public final static int nr_changeTs = 61;
 
 	public static String tableName = SDMSSchedulingEntityTableGeneric.tableName;
 
@@ -185,12 +179,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	protected Integer ignRssApproval;
 	protected Boolean cloneLeadFlag;
 	protected Integer cloneApproval;
-	protected Boolean suspendLeadFlag;
-	protected Integer suspendApproval;
-	protected Boolean clrWarnLeadFlag;
-	protected Integer clrWarnApproval;
-	protected Boolean priorityLeadFlag;
-	protected Integer priorityApproval;
 	protected Boolean editParmLeadFlag;
 	protected Integer editParmApproval;
 	protected Boolean killLeadFlag;
@@ -258,12 +246,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	        Integer p_ignRssApproval,
 	        Boolean p_cloneLeadFlag,
 	        Integer p_cloneApproval,
-	        Boolean p_suspendLeadFlag,
-	        Integer p_suspendApproval,
-	        Boolean p_clrWarnLeadFlag,
-	        Integer p_clrWarnApproval,
-	        Boolean p_priorityLeadFlag,
-	        Integer p_priorityApproval,
 	        Boolean p_editParmLeadFlag,
 	        Integer p_editParmApproval,
 	        Boolean p_killLeadFlag,
@@ -382,12 +364,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		ignRssApproval = p_ignRssApproval;
 		cloneLeadFlag = p_cloneLeadFlag;
 		cloneApproval = p_cloneApproval;
-		suspendLeadFlag = p_suspendLeadFlag;
-		suspendApproval = p_suspendApproval;
-		clrWarnLeadFlag = p_clrWarnLeadFlag;
-		clrWarnApproval = p_clrWarnApproval;
-		priorityLeadFlag = p_priorityLeadFlag;
-		priorityApproval = p_priorityApproval;
 		editParmLeadFlag = p_editParmLeadFlag;
 		editParmApproval = p_editParmApproval;
 		killLeadFlag = p_killLeadFlag;
@@ -2078,216 +2054,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		return;
 	}
 
-	public Boolean getSuspendLeadFlag (SystemEnvironment env)
-	throws SDMSException
-	{
-		return (suspendLeadFlag);
-	}
-
-	public	void setSuspendLeadFlag (SystemEnvironment env, Boolean p_suspendLeadFlag)
-	throws SDMSException
-	{
-		if(suspendLeadFlag.equals(p_suspendLeadFlag)) return;
-		SDMSSchedulingEntityGeneric o = this;
-		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-			throw new CommonErrorException(
-			        new SDMSMessage (env, "02112141636", "(SchedulingEntity) Change of system object not allowed")
-			);
-		}
-		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
-		o.suspendLeadFlag = p_suspendLeadFlag;
-		o.changerUId = env.cEnv.uid();
-		o.changeTs = env.txTime();
-		if (o != this) o.versions.table.index(env, o, 0);
-		return;
-	}
-
-	public Integer getSuspendApproval (SystemEnvironment env)
-	throws SDMSException
-	{
-		return (suspendApproval);
-	}
-
-	public String getSuspendApprovalAsString (SystemEnvironment env)
-	throws SDMSException
-	{
-		final Integer v = getSuspendApproval (env);
-		switch (v.intValue()) {
-			case SDMSSchedulingEntity.DEFAULT:
-				return "DEFAULT";
-			case SDMSSchedulingEntity.PARENT:
-				return "PARENT";
-			case SDMSSchedulingEntity.NO:
-				return "NO";
-			case SDMSSchedulingEntity.APPROVE:
-				return "APPROVE";
-			case SDMSSchedulingEntity.REVIEW:
-				return "REVIEW";
-		}
-		throw new FatalException (new SDMSMessage (env,
-		                          "01205252242",
-		                          "Unknown SchedulingEntity.suspendApproval: $1",
-		                          getSuspendApproval (env)));
-	}
-
-	public	void setSuspendApproval (SystemEnvironment env, Integer p_suspendApproval)
-	throws SDMSException
-	{
-		if(suspendApproval.equals(p_suspendApproval)) return;
-		SDMSSchedulingEntityGeneric o = this;
-		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-			throw new CommonErrorException(
-			        new SDMSMessage (env, "02112141636", "(SchedulingEntity) Change of system object not allowed")
-			);
-		}
-		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
-		o.suspendApproval = p_suspendApproval;
-		o.changerUId = env.cEnv.uid();
-		o.changeTs = env.txTime();
-		if (o != this) o.versions.table.index(env, o, 0);
-		return;
-	}
-
-	public Boolean getClrWarnLeadFlag (SystemEnvironment env)
-	throws SDMSException
-	{
-		return (clrWarnLeadFlag);
-	}
-
-	public	void setClrWarnLeadFlag (SystemEnvironment env, Boolean p_clrWarnLeadFlag)
-	throws SDMSException
-	{
-		if(clrWarnLeadFlag.equals(p_clrWarnLeadFlag)) return;
-		SDMSSchedulingEntityGeneric o = this;
-		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-			throw new CommonErrorException(
-			        new SDMSMessage (env, "02112141636", "(SchedulingEntity) Change of system object not allowed")
-			);
-		}
-		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
-		o.clrWarnLeadFlag = p_clrWarnLeadFlag;
-		o.changerUId = env.cEnv.uid();
-		o.changeTs = env.txTime();
-		if (o != this) o.versions.table.index(env, o, 0);
-		return;
-	}
-
-	public Integer getClrWarnApproval (SystemEnvironment env)
-	throws SDMSException
-	{
-		return (clrWarnApproval);
-	}
-
-	public String getClrWarnApprovalAsString (SystemEnvironment env)
-	throws SDMSException
-	{
-		final Integer v = getClrWarnApproval (env);
-		switch (v.intValue()) {
-			case SDMSSchedulingEntity.DEFAULT:
-				return "DEFAULT";
-			case SDMSSchedulingEntity.PARENT:
-				return "PARENT";
-			case SDMSSchedulingEntity.NO:
-				return "NO";
-			case SDMSSchedulingEntity.APPROVE:
-				return "APPROVE";
-			case SDMSSchedulingEntity.REVIEW:
-				return "REVIEW";
-		}
-		throw new FatalException (new SDMSMessage (env,
-		                          "01205252242",
-		                          "Unknown SchedulingEntity.clrWarnApproval: $1",
-		                          getClrWarnApproval (env)));
-	}
-
-	public	void setClrWarnApproval (SystemEnvironment env, Integer p_clrWarnApproval)
-	throws SDMSException
-	{
-		if(clrWarnApproval.equals(p_clrWarnApproval)) return;
-		SDMSSchedulingEntityGeneric o = this;
-		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-			throw new CommonErrorException(
-			        new SDMSMessage (env, "02112141636", "(SchedulingEntity) Change of system object not allowed")
-			);
-		}
-		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
-		o.clrWarnApproval = p_clrWarnApproval;
-		o.changerUId = env.cEnv.uid();
-		o.changeTs = env.txTime();
-		if (o != this) o.versions.table.index(env, o, 0);
-		return;
-	}
-
-	public Boolean getPriorityLeadFlag (SystemEnvironment env)
-	throws SDMSException
-	{
-		return (priorityLeadFlag);
-	}
-
-	public	void setPriorityLeadFlag (SystemEnvironment env, Boolean p_priorityLeadFlag)
-	throws SDMSException
-	{
-		if(priorityLeadFlag.equals(p_priorityLeadFlag)) return;
-		SDMSSchedulingEntityGeneric o = this;
-		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-			throw new CommonErrorException(
-			        new SDMSMessage (env, "02112141636", "(SchedulingEntity) Change of system object not allowed")
-			);
-		}
-		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
-		o.priorityLeadFlag = p_priorityLeadFlag;
-		o.changerUId = env.cEnv.uid();
-		o.changeTs = env.txTime();
-		if (o != this) o.versions.table.index(env, o, 0);
-		return;
-	}
-
-	public Integer getPriorityApproval (SystemEnvironment env)
-	throws SDMSException
-	{
-		return (priorityApproval);
-	}
-
-	public String getPriorityApprovalAsString (SystemEnvironment env)
-	throws SDMSException
-	{
-		final Integer v = getPriorityApproval (env);
-		switch (v.intValue()) {
-			case SDMSSchedulingEntity.DEFAULT:
-				return "DEFAULT";
-			case SDMSSchedulingEntity.PARENT:
-				return "PARENT";
-			case SDMSSchedulingEntity.NO:
-				return "NO";
-			case SDMSSchedulingEntity.APPROVE:
-				return "APPROVE";
-			case SDMSSchedulingEntity.REVIEW:
-				return "REVIEW";
-		}
-		throw new FatalException (new SDMSMessage (env,
-		                          "01205252242",
-		                          "Unknown SchedulingEntity.priorityApproval: $1",
-		                          getPriorityApproval (env)));
-	}
-
-	public	void setPriorityApproval (SystemEnvironment env, Integer p_priorityApproval)
-	throws SDMSException
-	{
-		if(priorityApproval.equals(p_priorityApproval)) return;
-		SDMSSchedulingEntityGeneric o = this;
-		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
-			throw new CommonErrorException(
-			        new SDMSMessage (env, "02112141636", "(SchedulingEntity) Change of system object not allowed")
-			);
-		}
-		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSSchedulingEntityGeneric) change(env);
-		o.priorityApproval = p_priorityApproval;
-		o.changerUId = env.cEnv.uid();
-		o.changeTs = env.txTime();
-		if (o != this) o.versions.table.index(env, o, 0);
-		return;
-	}
-
 	public Boolean getEditParmLeadFlag (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -2718,12 +2484,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 	                                      Integer p_ignRssApproval,
 	                                      Boolean p_cloneLeadFlag,
 	                                      Integer p_cloneApproval,
-	                                      Boolean p_suspendLeadFlag,
-	                                      Integer p_suspendApproval,
-	                                      Boolean p_clrWarnLeadFlag,
-	                                      Integer p_clrWarnApproval,
-	                                      Boolean p_priorityLeadFlag,
-	                                      Integer p_priorityApproval,
 	                                      Boolean p_editParmLeadFlag,
 	                                      Integer p_editParmApproval,
 	                                      Boolean p_killLeadFlag,
@@ -2787,12 +2547,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		ignRssApproval = p_ignRssApproval;
 		cloneLeadFlag = p_cloneLeadFlag;
 		cloneApproval = p_cloneApproval;
-		suspendLeadFlag = p_suspendLeadFlag;
-		suspendApproval = p_suspendApproval;
-		clrWarnLeadFlag = p_clrWarnLeadFlag;
-		clrWarnApproval = p_clrWarnApproval;
-		priorityLeadFlag = p_priorityLeadFlag;
-		priorityApproval = p_priorityApproval;
 		editParmLeadFlag = p_editParmLeadFlag;
 		editParmApproval = p_editParmApproval;
 		killLeadFlag = p_killLeadFlag;
@@ -2874,12 +2628,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 				        ", " + squote + "IGN_RSS_APPROVAL" + equote +
 				        ", " + squote + "CLONE_LEAD_FLAG" + equote +
 				        ", " + squote + "CLONE_APPROVAL" + equote +
-				        ", " + squote + "SUSPEND_LEAD_FLAG" + equote +
-				        ", " + squote + "SUSPEND_APPROVAL" + equote +
-				        ", " + squote + "CLR_WARN_LEAD_FLAG" + equote +
-				        ", " + squote + "CLR_WARN_APPROVAL" + equote +
-				        ", " + squote + "PRIORITY_LEAD_FLAG" + equote +
-				        ", " + squote + "PRIORITY_APPROVAL" + equote +
 				        ", " + squote + "EDIT_PARM_LEAD_FLAG" + equote +
 				        ", " + squote + "EDIT_PARM_APPROVAL" + equote +
 				        ", " + squote + "KILL_LEAD_FLAG" + equote +
@@ -2893,12 +2641,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ", VALID_FROM, VALID_TO" +
 				        ") VALUES (?" +
-				        ", ?" +
-				        ", ?" +
-				        ", ?" +
-				        ", ?" +
-				        ", ?" +
-				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -3100,25 +2842,19 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 			myInsert.setInt(48, ignRssApproval.intValue());
 			myInsert.setInt (49, cloneLeadFlag.booleanValue() ? 1 : 0);
 			myInsert.setInt(50, cloneApproval.intValue());
-			myInsert.setInt (51, suspendLeadFlag.booleanValue() ? 1 : 0);
-			myInsert.setInt(52, suspendApproval.intValue());
-			myInsert.setInt (53, clrWarnLeadFlag.booleanValue() ? 1 : 0);
-			myInsert.setInt(54, clrWarnApproval.intValue());
-			myInsert.setInt (55, priorityLeadFlag.booleanValue() ? 1 : 0);
-			myInsert.setInt(56, priorityApproval.intValue());
-			myInsert.setInt (57, editParmLeadFlag.booleanValue() ? 1 : 0);
-			myInsert.setInt(58, editParmApproval.intValue());
-			myInsert.setInt (59, killLeadFlag.booleanValue() ? 1 : 0);
-			myInsert.setInt(60, killApproval.intValue());
-			myInsert.setInt (61, setJobStateLeadFlag.booleanValue() ? 1 : 0);
-			myInsert.setInt(62, setJobStateApproval.intValue());
-			myInsert.setLong (63, inheritPrivs.longValue());
-			myInsert.setLong (64, creatorUId.longValue());
-			myInsert.setLong (65, createTs.longValue());
-			myInsert.setLong (66, changerUId.longValue());
-			myInsert.setLong (67, changeTs.longValue());
-			myInsert.setLong(68, env.tx.versionId);
-			myInsert.setLong(69, Long.MAX_VALUE);
+			myInsert.setInt (51, editParmLeadFlag.booleanValue() ? 1 : 0);
+			myInsert.setInt(52, editParmApproval.intValue());
+			myInsert.setInt (53, killLeadFlag.booleanValue() ? 1 : 0);
+			myInsert.setInt(54, killApproval.intValue());
+			myInsert.setInt (55, setJobStateLeadFlag.booleanValue() ? 1 : 0);
+			myInsert.setInt(56, setJobStateApproval.intValue());
+			myInsert.setLong (57, inheritPrivs.longValue());
+			myInsert.setLong (58, creatorUId.longValue());
+			myInsert.setLong (59, createTs.longValue());
+			myInsert.setLong (60, changerUId.longValue());
+			myInsert.setLong (61, changeTs.longValue());
+			myInsert.setLong(62, env.tx.versionId);
+			myInsert.setLong(63, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "SchedulingEntity: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
@@ -3361,42 +3097,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		}
 		return false;
 	}
-	static public boolean checkSuspendApproval(Integer p)
-	{
-		switch (p.intValue()) {
-			case SDMSSchedulingEntity.DEFAULT:
-			case SDMSSchedulingEntity.PARENT:
-			case SDMSSchedulingEntity.NO:
-			case SDMSSchedulingEntity.APPROVE:
-			case SDMSSchedulingEntity.REVIEW:
-				return true;
-		}
-		return false;
-	}
-	static public boolean checkClrWarnApproval(Integer p)
-	{
-		switch (p.intValue()) {
-			case SDMSSchedulingEntity.DEFAULT:
-			case SDMSSchedulingEntity.PARENT:
-			case SDMSSchedulingEntity.NO:
-			case SDMSSchedulingEntity.APPROVE:
-			case SDMSSchedulingEntity.REVIEW:
-				return true;
-		}
-		return false;
-	}
-	static public boolean checkPriorityApproval(Integer p)
-	{
-		switch (p.intValue()) {
-			case SDMSSchedulingEntity.DEFAULT:
-			case SDMSSchedulingEntity.PARENT:
-			case SDMSSchedulingEntity.NO:
-			case SDMSSchedulingEntity.APPROVE:
-			case SDMSSchedulingEntity.REVIEW:
-				return true;
-		}
-		return false;
-	}
 	static public boolean checkEditParmApproval(Integer p)
 	{
 		switch (p.intValue()) {
@@ -3487,12 +3187,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "ignRssApproval : " + ignRssApproval, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "cloneLeadFlag : " + cloneLeadFlag, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "cloneApproval : " + cloneApproval, SDMSThread.SEVERITY_MESSAGE);
-		SDMSThread.doTrace(null, "suspendLeadFlag : " + suspendLeadFlag, SDMSThread.SEVERITY_MESSAGE);
-		SDMSThread.doTrace(null, "suspendApproval : " + suspendApproval, SDMSThread.SEVERITY_MESSAGE);
-		SDMSThread.doTrace(null, "clrWarnLeadFlag : " + clrWarnLeadFlag, SDMSThread.SEVERITY_MESSAGE);
-		SDMSThread.doTrace(null, "clrWarnApproval : " + clrWarnApproval, SDMSThread.SEVERITY_MESSAGE);
-		SDMSThread.doTrace(null, "priorityLeadFlag : " + priorityLeadFlag, SDMSThread.SEVERITY_MESSAGE);
-		SDMSThread.doTrace(null, "priorityApproval : " + priorityApproval, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "editParmLeadFlag : " + editParmLeadFlag, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "editParmApproval : " + editParmApproval, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "killLeadFlag : " + killLeadFlag, SDMSThread.SEVERITY_MESSAGE);
@@ -3565,12 +3259,6 @@ public class SDMSSchedulingEntityGeneric extends SDMSObject
 		        indentString + "ignRssApproval      : " + ignRssApproval + "\n" +
 		        indentString + "cloneLeadFlag       : " + cloneLeadFlag + "\n" +
 		        indentString + "cloneApproval       : " + cloneApproval + "\n" +
-		        indentString + "suspendLeadFlag     : " + suspendLeadFlag + "\n" +
-		        indentString + "suspendApproval     : " + suspendApproval + "\n" +
-		        indentString + "clrWarnLeadFlag     : " + clrWarnLeadFlag + "\n" +
-		        indentString + "clrWarnApproval     : " + clrWarnApproval + "\n" +
-		        indentString + "priorityLeadFlag    : " + priorityLeadFlag + "\n" +
-		        indentString + "priorityApproval    : " + priorityApproval + "\n" +
 		        indentString + "editParmLeadFlag    : " + editParmLeadFlag + "\n" +
 		        indentString + "editParmApproval    : " + editParmApproval + "\n" +
 		        indentString + "killLeadFlag        : " + killLeadFlag + "\n" +

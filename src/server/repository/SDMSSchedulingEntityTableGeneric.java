@@ -92,12 +92,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		, "IGN_RSS_APPROVAL"
 		, "CLONE_LEAD_FLAG"
 		, "CLONE_APPROVAL"
-		, "SUSPEND_LEAD_FLAG"
-		, "SUSPEND_APPROVAL"
-		, "CLR_WARN_LEAD_FLAG"
-		, "CLR_WARN_APPROVAL"
-		, "PRIORITY_LEAD_FLAG"
-		, "PRIORITY_APPROVAL"
 		, "EDIT_PARM_LEAD_FLAG"
 		, "EDIT_PARM_APPROVAL"
 		, "KILL_LEAD_FLAG"
@@ -188,12 +182,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 	                                   ,Integer p_ignRssApproval
 	                                   ,Boolean p_cloneLeadFlag
 	                                   ,Integer p_cloneApproval
-	                                   ,Boolean p_suspendLeadFlag
-	                                   ,Integer p_suspendApproval
-	                                   ,Boolean p_clrWarnLeadFlag
-	                                   ,Integer p_clrWarnApproval
-	                                   ,Boolean p_priorityLeadFlag
-	                                   ,Integer p_priorityApproval
 	                                   ,Boolean p_editParmLeadFlag
 	                                   ,Integer p_editParmApproval
 	                                   ,Boolean p_killLeadFlag
@@ -261,12 +249,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		         , p_ignRssApproval
 		         , p_cloneLeadFlag
 		         , p_cloneApproval
-		         , p_suspendLeadFlag
-		         , p_suspendApproval
-		         , p_clrWarnLeadFlag
-		         , p_clrWarnApproval
-		         , p_priorityLeadFlag
-		         , p_priorityApproval
 		         , p_editParmLeadFlag
 		         , p_editParmApproval
 		         , p_killLeadFlag
@@ -331,12 +313,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		                , p_ignRssApproval
 		                , p_cloneLeadFlag
 		                , p_cloneApproval
-		                , p_suspendLeadFlag
-		                , p_suspendApproval
-		                , p_clrWarnLeadFlag
-		                , p_clrWarnApproval
-		                , p_priorityLeadFlag
-		                , p_priorityApproval
 		                , p_editParmLeadFlag
 		                , p_editParmApproval
 		                , p_killLeadFlag
@@ -426,12 +402,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 	                        ,Integer p_ignRssApproval
 	                        ,Boolean p_cloneLeadFlag
 	                        ,Integer p_cloneApproval
-	                        ,Boolean p_suspendLeadFlag
-	                        ,Integer p_suspendApproval
-	                        ,Boolean p_clrWarnLeadFlag
-	                        ,Integer p_clrWarnApproval
-	                        ,Boolean p_priorityLeadFlag
-	                        ,Integer p_priorityApproval
 	                        ,Boolean p_editParmLeadFlag
 	                        ,Integer p_editParmApproval
 	                        ,Boolean p_killLeadFlag
@@ -482,12 +452,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "ignRssApproval", p_ignRssApproval));
 		if (!SDMSSchedulingEntityGeneric.checkCloneApproval(p_cloneApproval))
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "cloneApproval", p_cloneApproval));
-		if (!SDMSSchedulingEntityGeneric.checkSuspendApproval(p_suspendApproval))
-			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "suspendApproval", p_suspendApproval));
-		if (!SDMSSchedulingEntityGeneric.checkClrWarnApproval(p_clrWarnApproval))
-			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "clrWarnApproval", p_clrWarnApproval));
-		if (!SDMSSchedulingEntityGeneric.checkPriorityApproval(p_priorityApproval))
-			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "priorityApproval", p_priorityApproval));
 		if (!SDMSSchedulingEntityGeneric.checkEditParmApproval(p_editParmApproval))
 			throw new FatalException(new SDMSMessage(env, "01110182023", "SchedulingEntity: $1 $2", "editParmApproval", p_editParmApproval));
 		if (!SDMSSchedulingEntityGeneric.checkKillApproval(p_killApproval))
@@ -549,12 +513,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		Integer ignRssApproval;
 		Boolean cloneLeadFlag;
 		Integer cloneApproval;
-		Boolean suspendLeadFlag;
-		Integer suspendApproval;
-		Boolean clrWarnLeadFlag;
-		Integer clrWarnApproval;
-		Boolean priorityLeadFlag;
-		Integer priorityApproval;
 		Boolean editParmLeadFlag;
 		Integer editParmApproval;
 		Boolean killLeadFlag;
@@ -647,25 +605,19 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 			ignRssApproval = Integer.valueOf (r.getInt(48));
 			cloneLeadFlag = Boolean.valueOf ((r.getInt(49) == 0 ? false : true));
 			cloneApproval = Integer.valueOf (r.getInt(50));
-			suspendLeadFlag = Boolean.valueOf ((r.getInt(51) == 0 ? false : true));
-			suspendApproval = Integer.valueOf (r.getInt(52));
-			clrWarnLeadFlag = Boolean.valueOf ((r.getInt(53) == 0 ? false : true));
-			clrWarnApproval = Integer.valueOf (r.getInt(54));
-			priorityLeadFlag = Boolean.valueOf ((r.getInt(55) == 0 ? false : true));
-			priorityApproval = Integer.valueOf (r.getInt(56));
-			editParmLeadFlag = Boolean.valueOf ((r.getInt(57) == 0 ? false : true));
-			editParmApproval = Integer.valueOf (r.getInt(58));
-			killLeadFlag = Boolean.valueOf ((r.getInt(59) == 0 ? false : true));
-			killApproval = Integer.valueOf (r.getInt(60));
-			setJobStateLeadFlag = Boolean.valueOf ((r.getInt(61) == 0 ? false : true));
-			setJobStateApproval = Integer.valueOf (r.getInt(62));
-			inheritPrivs = Long.valueOf (r.getLong(63));
-			creatorUId = Long.valueOf (r.getLong(64));
-			createTs = Long.valueOf (r.getLong(65));
-			changerUId = Long.valueOf (r.getLong(66));
-			changeTs = Long.valueOf (r.getLong(67));
-			validFrom = r.getLong(68);
-			validTo = r.getLong(69);
+			editParmLeadFlag = Boolean.valueOf ((r.getInt(51) == 0 ? false : true));
+			editParmApproval = Integer.valueOf (r.getInt(52));
+			killLeadFlag = Boolean.valueOf ((r.getInt(53) == 0 ? false : true));
+			killApproval = Integer.valueOf (r.getInt(54));
+			setJobStateLeadFlag = Boolean.valueOf ((r.getInt(55) == 0 ? false : true));
+			setJobStateApproval = Integer.valueOf (r.getInt(56));
+			inheritPrivs = Long.valueOf (r.getLong(57));
+			creatorUId = Long.valueOf (r.getLong(58));
+			createTs = Long.valueOf (r.getLong(59));
+			changerUId = Long.valueOf (r.getLong(60));
+			changeTs = Long.valueOf (r.getLong(61));
+			validFrom = r.getLong(62);
+			validTo = r.getLong(63);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
 			throw new FatalException(new SDMSMessage(env, "01110182045", "SchedulingEntity: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
@@ -721,12 +673,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		                                       ignRssApproval,
 		                                       cloneLeadFlag,
 		                                       cloneApproval,
-		                                       suspendLeadFlag,
-		                                       suspendApproval,
-		                                       clrWarnLeadFlag,
-		                                       clrWarnApproval,
-		                                       priorityLeadFlag,
-		                                       priorityApproval,
 		                                       editParmLeadFlag,
 		                                       editParmApproval,
 		                                       killLeadFlag,
@@ -802,12 +748,6 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		                                   ", " + squote + "IGN_RSS_APPROVAL" + equote +
 		                                   ", " + squote + "CLONE_LEAD_FLAG" + equote +
 		                                   ", " + squote + "CLONE_APPROVAL" + equote +
-		                                   ", " + squote + "SUSPEND_LEAD_FLAG" + equote +
-		                                   ", " + squote + "SUSPEND_APPROVAL" + equote +
-		                                   ", " + squote + "CLR_WARN_LEAD_FLAG" + equote +
-		                                   ", " + squote + "CLR_WARN_APPROVAL" + equote +
-		                                   ", " + squote + "PRIORITY_LEAD_FLAG" + equote +
-		                                   ", " + squote + "PRIORITY_APPROVAL" + equote +
 		                                   ", " + squote + "EDIT_PARM_LEAD_FLAG" + equote +
 		                                   ", " + squote + "EDIT_PARM_APPROVAL" + equote +
 		                                   ", " + squote + "KILL_LEAD_FLAG" + equote +

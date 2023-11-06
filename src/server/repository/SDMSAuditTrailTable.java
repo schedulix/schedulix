@@ -59,8 +59,11 @@ public class SDMSAuditTrailTable extends SDMSAuditTrailTableGeneric
 	)
 		throws SDMSException
 	{
-		if (env.checkFeature(SystemEnvironment.S_AUDITTRAIL)) {
-			return super.create(env,p_userId,p_ts, Long.valueOf(env.tx.txId), p_action,p_objectType,p_objectId,p_originId,p_isSetWarning,p_actionInfo,p_actionComment);
-		} else return null;
+		if (!env.checkFeature(SystemEnvironment.S_AUDITTRAIL))
+			return null;
+		SDMSAuditTrail at = super.create(env, p_userId, p_ts, Long.valueOf(env.tx.txId), p_action, p_objectType, p_objectId, p_originId, p_isSetWarning, null, null, p_actionComment);
+		if (p_actionInfo != null)
+			at.setActionInfo(env, p_actionInfo);
+		return at;
 	}
 }

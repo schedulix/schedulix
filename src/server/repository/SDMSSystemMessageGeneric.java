@@ -46,17 +46,10 @@ public class SDMSSystemMessageGeneric extends SDMSObject
 	public static final int IGN_DEPENDENCY = 5;
 	public static final int IGN_RESOURCE = 6;
 	public static final int CLONE = 7;
-	public static final int SUSPEND = 8;
-	public static final int CLEAR_WARNING = 9;
-	public static final int SET_WARNING = 29;
-	public static final int PRIORITY = 10;
 	public static final int MODIFY_PARAMETER = 11;
 	public static final int KILL = 12;
 	public static final int SET_JOB_STATE = 13;
 	public static final int DISABLE = 23;
-	public static final int RESUME = 28;
-	public static final int RENICE = 30;
-	public static final int NICEVALUE = 50;
 	public static final int APPROVAL = 1;
 
 	public final static int nr_id = 1;
@@ -277,26 +270,12 @@ public class SDMSSystemMessageGeneric extends SDMSObject
 				return "IGN_RESOURCE";
 			case SDMSSystemMessage.CLONE:
 				return "CLONE";
-			case SDMSSystemMessage.SUSPEND:
-				return "SUSPEND";
-			case SDMSSystemMessage.CLEAR_WARNING:
-				return "CLEAR_WARNING";
-			case SDMSSystemMessage.PRIORITY:
-				return "PRIORITY";
 			case SDMSSystemMessage.MODIFY_PARAMETER:
 				return "MODIFY_PARAMETER";
 			case SDMSSystemMessage.KILL:
 				return "KILL";
 			case SDMSSystemMessage.DISABLE:
 				return "DISABLE";
-			case SDMSSystemMessage.RESUME:
-				return "RESUME";
-			case SDMSSystemMessage.SET_WARNING:
-				return "SET_WARNING";
-			case SDMSSystemMessage.RENICE:
-				return "RENICE";
-			case SDMSSystemMessage.NICEVALUE:
-				return "NICEVALUE";
 			case SDMSSystemMessage.SET_JOB_STATE:
 				return "SET_JOB_STATE";
 		}
@@ -876,16 +855,9 @@ public class SDMSSystemMessageGeneric extends SDMSObject
 			case SDMSSystemMessage.IGN_DEPENDENCY:
 			case SDMSSystemMessage.IGN_RESOURCE:
 			case SDMSSystemMessage.CLONE:
-			case SDMSSystemMessage.SUSPEND:
-			case SDMSSystemMessage.CLEAR_WARNING:
-			case SDMSSystemMessage.PRIORITY:
 			case SDMSSystemMessage.MODIFY_PARAMETER:
 			case SDMSSystemMessage.KILL:
 			case SDMSSystemMessage.DISABLE:
-			case SDMSSystemMessage.RESUME:
-			case SDMSSystemMessage.SET_WARNING:
-			case SDMSSystemMessage.RENICE:
-			case SDMSSystemMessage.NICEVALUE:
 			case SDMSSystemMessage.SET_JOB_STATE:
 				return true;
 		}

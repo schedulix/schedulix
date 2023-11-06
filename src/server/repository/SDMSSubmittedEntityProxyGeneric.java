@@ -1147,6 +1147,23 @@ public class SDMSSubmittedEntityProxyGeneric extends SDMSProxy
 		((SDMSSubmittedEntityGeneric)(object)).setApprovalMode (env, p_approvalMode);
 		return ;
 	}
+	public Integer getChildApprovalMode (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSSubmittedEntityGeneric)(object)).getChildApprovalMode (env));
+	}
+
+	public void setChildApprovalMode (SystemEnvironment env, Integer p_childApprovalMode)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		((SDMSSubmittedEntityGeneric)(object)).setChildApprovalMode (env, p_childApprovalMode);
+		return ;
+	}
 	public Long getSubmitTs (SystemEnvironment env)
 	throws SDMSException
 	{

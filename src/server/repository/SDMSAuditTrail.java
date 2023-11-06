@@ -79,6 +79,10 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 				return SDMSConstants.AT_ENABLE;
 			case Parser.CLONE:
 				return SDMSConstants.AT_CLONE;
+			case Parser.APPROVE:
+				return SDMSConstants.AT_APPROVE;
+			case Parser.REJECT:
+				return SDMSConstants.AT_REJECT;
 		}
 		return null;
 	}
@@ -86,6 +90,10 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 	public static Integer convert(Token t1, Token t2)
 	{
 		switch (t1.token.intValue()) {
+			case Parser.APPROVAL:
+				return SDMSConstants.AT_APPROVAL_REQUEST;
+			case Parser.REVIEW:
+				return SDMSConstants.AT_REVIEW_REQUEST;
 			case Parser.RERUN:
 				return SDMSConstants.AT_RERUN_RECURSIVE;
 			case Parser.CLONE:
@@ -143,6 +151,45 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 				return SDMSConstants.AT_JOB_IN_ERROR;
 		}
 		return null;
+	}
+
+	public String getActionInfo (SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		Long infoId = getInfoId(sysEnv);
+		if (infoId != null) {
+			SDMSEntityVariable ev = SDMSEntityVariableTable.getObject(sysEnv, infoId);
+			return ev.getValue(sysEnv);
+		} else {
+			return super.getActionInfo(sysEnv);
+		}
+	}
+
+	public void setActionInfo (SystemEnvironment sysEnv, String p_actionInfo)
+	throws SDMSException
+	{
+		Long smeId = getObjectId(sysEnv);
+		Long infoId = getInfoId(sysEnv);
+		SDMSEntityVariable ev = null;
+		if (infoId != null) {
+			ev = SDMSEntityVariableTable.getObject(sysEnv, infoId);
+			ev.delete(sysEnv);
+			ev = null;
+			setInfoId(sysEnv, null);
+		}
+		if (p_actionInfo == null) {
+			super.setActionInfo(sysEnv, p_actionInfo);
+			return;
+		}
+		if (p_actionInfo.length() > 1024) {
+			super.setActionInfo(sysEnv, null);
+			String name = SDMSConstants.AT_EVAUDITPREFIX + getId(sysEnv).toString();
+			ev = SDMSEntityVariableTable.table.create(sysEnv, smeId, name, p_actionInfo, Boolean.TRUE, null);
+			setInfoId(sysEnv, ev.getId(sysEnv));
+		} else {
+			super.setActionInfo(sysEnv, p_actionInfo);
+		}
+		return;
 	}
 
 	public long getPrivileges(SystemEnvironment env, long checkPrivs, boolean fastFail, Vector checkGroups)
