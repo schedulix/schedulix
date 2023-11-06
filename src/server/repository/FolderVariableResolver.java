@@ -81,7 +81,7 @@ public class FolderVariableResolver extends VariableResolver
 				pd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique(sysEnv, new SDMSKey(thisFolder.getId(sysEnv), key), version);
 			retval = pd.getDefaultValue(sysEnv).substring(1);
 			if (doSubstitute)
-				return parseAndSubstitute(sysEnv, thisFolder, retval, fastAccess, mode, triggercontext, recursionCheck, version);
+				return parseAndSubstitute(sysEnv, thisFolder, key, retval, fastAccess, mode, triggercontext, recursionCheck, version);
 			else
 				return retval;
 		} catch(NotFoundException nfe) {

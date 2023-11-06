@@ -80,7 +80,7 @@ public class ScopeVariableResolver extends VariableResolver
 				pd = SDMSParameterDefinitionTable.idx_seId_Name_getUnique (sysEnv, new SDMSKey (thisScope.getId (sysEnv), key));
 			retval = pd.getDefaultValue (sysEnv).substring (1);
 			if (doSubstitute)
-				return parseAndSubstitute(sysEnv, thisScope, retval, fastAccess, mode, triggercontext, recursionCheck, version);
+				return parseAndSubstitute(sysEnv, thisScope, key, retval, fastAccess, mode, triggercontext, recursionCheck, version);
 			else
 				return retval;
 		} catch (final NotFoundException nfe) {

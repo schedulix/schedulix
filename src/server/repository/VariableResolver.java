@@ -73,6 +73,7 @@ public abstract class VariableResolver
 	public String parseAndSubstitute(SystemEnvironment sysEnv,
 						SDMSProxy thisObject,
 						String key,
+	                                 String value,
 						boolean fastAccess,
 						String mode,
 						boolean triggercontext,
@@ -80,12 +81,13 @@ public abstract class VariableResolver
 						long version)
 		throws SDMSException
 	{
-		return parseAndSubstitute (sysEnv, thisObject, key, fastAccess, mode, triggercontext, recursionCheck, version, null);
+		return parseAndSubstitute (sysEnv, thisObject, key, value, fastAccess, mode, triggercontext, recursionCheck, version, null);
 	}
 
 	public String parseAndSubstitute(SystemEnvironment sysEnv,
 						SDMSProxy thisObject,
 						String key,
+	                                 String value,
 						boolean fastAccess,
 						String mode,
 						boolean triggercontext,
@@ -94,56 +96,60 @@ public abstract class VariableResolver
 						SDMSScope evalScope)
 		throws SDMSException
 	{
-		StringBuffer result = new StringBuffer();
-		final String BICSUITE_PRAGMA_VPFX = "BICSUITE_PRAGMA_VPFX:";
-		final String BICSUITE_PRAGMA_PBS = "BICSUITE_PRAGMA_PBS";
-		final int pfxOffset = BICSUITE_PRAGMA_VPFX.length();
-		final boolean pbs = key.indexOf(BICSUITE_PRAGMA_PBS) != -1;
-		final int index = key.indexOf(BICSUITE_PRAGMA_VPFX);
-		char prefix = '$';
-		if (index != -1) {
-			prefix = key.charAt (index + pfxOffset);
-			key = key.substring(0, index + pfxOffset) + "\\" + key.substring(index + pfxOffset);
-		}
-		final char[] str = key.toCharArray();
-		boolean escape = false;
-
-		boolean singleQuote = false;
-
-		for(int i = 0; i < str.length; ++i) {
-			char c = str[i];
-			if (escape && pbs && c != prefix) {
-				result.append('\\');
-				escape = false;
+		try {
+			recursionCheck.push(new SDMSKey(thisObject.getId(sysEnv), key));
+			StringBuffer result = new StringBuffer();
+			final String BICSUITE_PRAGMA_VPFX = "BICSUITE_PRAGMA_VPFX:";
+			final String BICSUITE_PRAGMA_PBS = "BICSUITE_PRAGMA_PBS";
+			final int pfxOffset = BICSUITE_PRAGMA_VPFX.length();
+			final boolean pbs = value.indexOf(BICSUITE_PRAGMA_PBS) != -1;
+			final int index = value.indexOf(BICSUITE_PRAGMA_VPFX);
+			char prefix = '$';
+			if (index != -1) {
+				prefix = value.charAt (index + pfxOffset);
+				value = value.substring(0, index + pfxOffset) + "\\" + value.substring(index + pfxOffset);
 			}
-			if(escape) {
-				if(!pbs && c != prefix) {
-					result.append('\\');
-				}
-				result.append(c);
-				escape = false;
-			} else {
-				if (c == prefix && !singleQuote) {
-					int varEnd;
-					varEnd = readVar(sysEnv, thisObject, str, i, fastAccess, mode, triggercontext, result, recursionCheck, version, evalScope, true);
-					if (varEnd == i)
-						result.append(c);
-					else
-						i = varEnd;
-				} else if (c == '\\') {
-					escape = true;
-				} else {
-					if (c == '\'') {
-						singleQuote = !singleQuote;
-					}
+			final char[] str = value.toCharArray();
+			boolean escape = false;
+
+			for(int i = 0; i < str.length; ++i) {
+				char c = str[i];
+				if(escape) {
+					if (c != '\\' && c != prefix)
+						result.append('\\');
 					result.append(c);
+					escape = false;
+				} else {
+					if (c == prefix) {
+						int varEnd;
+						try {
+							varEnd = readVar(sysEnv, thisObject, str, i, fastAccess, mode, triggercontext, result, recursionCheck, version, evalScope, true);
+						} catch (NotFoundException nfe) {
+							System.err.println ("recursionCheck:");
+							for (int rci = 0; rci < recursionCheck.size(); ++rci) {
+								System.err.println (recursionCheck.elementAt(rci).toString());
+							}
+							throw nfe;
+						}
+						if (varEnd == i)
+							result.append(c);
+						else
+							i = varEnd;
+					} else if (c == '\\') {
+						escape = true;
+					} else {
+						result.append(c);
+					}
 				}
 			}
-		}
-		if(escape)
-			result.append('\\');
+			if(escape)
+				result.append('\\');
 
-		return result.toString();
+			return result.toString();
+		} catch (NotFoundException nfe) {
+			recursionCheck.pop();
+			throw nfe;
+		}
 	}
 
 	private int readVar(SystemEnvironment sysEnv,
@@ -215,9 +221,13 @@ public abstract class VariableResolver
 		else			varName = varbuf.toString().toUpperCase();
 		SDMSKey k = new SDMSKey(objId, varName);
 		if(recursionCheck.search(k) >= 0) {
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03603010059", "Run into a loop while trying to resolve variable $1", varName));
+			String loopStr = "";
+			for (int rci = 0; rci < recursionCheck.size(); ++rci) {
+				loopStr += recursionCheck.elementAt(rci).toString() + "->";
+			}
+			loopStr += k.toString();
+			throw new CommonErrorException(new SDMSMessage(sysEnv, "03603010059", "Run into a loop while trying to resolve variable $1 ($2)", varName, loopStr));
 		}
-		recursionCheck.push(k);
 		boolean resolveSucceeded = true;
 		Boolean isDefault = (Boolean) sysEnv.tx.txData.get(SystemEnvironment.S_ISDEFAULT);
 		sysEnv.tx.txData.remove(SystemEnvironment.S_ISDEFAULT);
@@ -232,7 +242,6 @@ public abstract class VariableResolver
 		}
 		if(isDefault != null)
 			sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, isDefault);
-		recursionCheck.pop();
 		if (!resolveSucceeded && SystemEnvironment.unresolvedParameterHandling == SystemEnvironment.UPH_ECHO)
 			return pos;
 		return i;

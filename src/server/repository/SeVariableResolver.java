@@ -82,7 +82,7 @@ public class SeVariableResolver extends VariableResolver
 			if (retval != null) retval = retval.substring(1);
 			else return retval;
 			if (doSubstitute)
-				return parseAndSubstitute(sysEnv, thisSE, retval, fastAccess, mode, triggercontext, recursionCheck, version);
+				return parseAndSubstitute(sysEnv, thisSE, key, retval, fastAccess, mode, triggercontext, recursionCheck, version);
 			else
 				return retval;
 		} catch(NotFoundException nfe) {

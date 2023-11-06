@@ -301,7 +301,7 @@ public class SmeVariableResolver extends VariableResolver
 			}
 			retVal = ev.getValue(sysEnv).substring(1);
 			if (doSubstitute)
-				return parseAndSubstitute(sysEnv, thisSme, retVal, fastAccess, mode, triggercontext, recursionCheck, version, evalScope);
+				return parseAndSubstitute(sysEnv, thisSme, key, retVal, fastAccess, mode, triggercontext, recursionCheck, version, evalScope);
 			else
 				return retVal;
 
@@ -353,7 +353,7 @@ public class SmeVariableResolver extends VariableResolver
 					if(s != null) {
 						if (pd != null && pd.getType(sysEnv).intValue() == SDMSParameterDefinition.IMPORT_UNRESOLVED) {
 							nRetVal = s.getVariableValue(sysEnv, key, false);
-							nRetVal = parseAndSubstitute(sysEnv, thisSme, nRetVal, fastAccess, mode, triggercontext, recursionCheck, version, evalScope);
+							nRetVal = parseAndSubstitute(sysEnv, thisSme, key, nRetVal, fastAccess, mode, triggercontext, recursionCheck, version, evalScope);
 						} else
 							nRetVal =  s.getVariableValue(sysEnv, key, doSubstitute);
 					} else
@@ -361,7 +361,7 @@ public class SmeVariableResolver extends VariableResolver
 				} catch (NotFoundException nfe1) {
 					if (pd != null && pd.getType(sysEnv).intValue() == SDMSParameterDefinition.IMPORT_UNRESOLVED) {
 						nRetVal =  getFolderVariableValue(sysEnv, thisSme, key, f, seVersion, false);
-						nRetVal = parseAndSubstitute(sysEnv, thisSme, nRetVal, fastAccess, mode, triggercontext, recursionCheck, version, evalScope);
+						nRetVal = parseAndSubstitute(sysEnv, thisSme, key, nRetVal, fastAccess, mode, triggercontext, recursionCheck, version, evalScope);
 					} else
 						nRetVal =  getFolderVariableValue(sysEnv, thisSme, key, f, seVersion, doSubstitute);
 				}
@@ -401,7 +401,7 @@ public class SmeVariableResolver extends VariableResolver
 			}
 			sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, Boolean.FALSE);
 			if (doSubstitute)
-				return parseAndSubstitute(sysEnv, thisSme, ev.getValue(sysEnv).substring(1), fastAccess, mode, triggercontext, recursionCheck, -1, evalScope);
+				return parseAndSubstitute(sysEnv, thisSme, key, ev.getValue(sysEnv).substring(1), fastAccess, mode, triggercontext, recursionCheck, -1, evalScope);
 			else
 				return ev.getValue(sysEnv).substring(1);
 
@@ -852,7 +852,7 @@ public class SmeVariableResolver extends VariableResolver
 				} catch(NotFoundException nfe) {
 					if(defVal != null) {
 						if (doSubstitute)
-							return parseAndSubstitute(sysEnv, thisSme, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
+							return parseAndSubstitute(sysEnv, thisSme, key, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
 						else
 							return defVal.substring(1);
 					}
@@ -870,7 +870,7 @@ public class SmeVariableResolver extends VariableResolver
 				} catch(NotFoundException nfe) {
 					if(defVal != null) {
 						if (doSubstitute)
-							return parseAndSubstitute(sysEnv, thisSme, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
+							return parseAndSubstitute(sysEnv, thisSme, key, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
 						else
 							return defVal.substring(1);
 					}
@@ -885,13 +885,13 @@ public class SmeVariableResolver extends VariableResolver
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, parentId);
 					String result = getVariableValue(sysEnv, sme, baseSme, key, visited, fastAccess, mode, triggercontext, recursionCheck, evalScope, false);
 					if (doSubstitute)
-						return parseAndSubstitute(sysEnv, thisSme, result, false, mode, triggercontext, recursionCheck, -1);
+						return parseAndSubstitute(sysEnv, thisSme, key, result, false, mode, triggercontext, recursionCheck, -1);
 					else
 						return result;
 				} catch(NotFoundException nfe) {
 					if(defVal != null) {
 						if (doSubstitute)
-							return parseAndSubstitute(sysEnv, thisSme, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
+							return parseAndSubstitute(sysEnv, thisSme, key, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
 						else
 							return defVal.substring(1);
 					}
@@ -901,13 +901,13 @@ public class SmeVariableResolver extends VariableResolver
 				if(defVal == null) defVal = "=";
 				sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, Boolean.FALSE);
 				if (doSubstitute)
-					return parseAndSubstitute(sysEnv, thisSme, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
+					return parseAndSubstitute(sysEnv, thisSme, key, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
 				else
 					return defVal.substring(1);
 			case SDMSParameterDefinition.CONSTANT:
 				sysEnv.tx.txData.put(SystemEnvironment.S_ISDEFAULT, Boolean.FALSE);
 				if (doSubstitute)
-					return parseAndSubstitute(sysEnv, thisSme, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
+					return parseAndSubstitute(sysEnv, thisSme, key, defVal.substring(1), false, mode, triggercontext, recursionCheck, -1);
 				else
 					return defVal.substring(1);
 			case SDMSParameterDefinition.REFERENCE:

@@ -183,7 +183,7 @@ public class ResourceVariableResolver extends VariableResolver
 			}
 		}
 		if (doSubstitute)
-			return parseAndSubstitute(sysEnv, thisResource, retVal, fastAccess, mode, triggercontext, recursionCheck, version);
+			return parseAndSubstitute(sysEnv, thisResource, key, retVal, fastAccess, mode, triggercontext, recursionCheck, version);
 		else
 			return retVal;
 	}
