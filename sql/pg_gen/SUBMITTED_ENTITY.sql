@@ -83,6 +83,7 @@ CREATE TABLE SUBMITTED_ENTITY (
     , WARN_COUNT                     integer         NOT NULL
     , WARN_LINK                      decimal(20)         NULL
     , APPROVAL_MODE                  integer         NOT NULL
+    , CHILD_APPROVAL_MODE            integer         NOT NULL
     , SUBMIT_TS                      decimal(20)     NOT NULL
     , RESUME_TS                      decimal(20)         NULL
     , SYNC_TS                        decimal(20)         NULL
@@ -188,6 +189,7 @@ SELECT
     , WARN_COUNT                     AS WARN_COUNT
     , WARN_LINK                      AS WARN_LINK
     , APPROVAL_MODE                  AS APPROVAL_MODE
+    , CHILD_APPROVAL_MODE            AS CHILD_APPROVAL_MODE
     , timestamptz 'epoch' + cast(to_char(mod(SUBMIT_TS, 1125899906842624)/1000, '999999999999') as interval) AS SUBMIT_TS
     , timestamptz 'epoch' + cast(to_char(mod(RESUME_TS, 1125899906842624)/1000, '999999999999') as interval) AS RESUME_TS
     , timestamptz 'epoch' + cast(to_char(mod(SYNC_TS, 1125899906842624)/1000, '999999999999') as interval) AS SYNC_TS
@@ -270,6 +272,7 @@ CREATE TABLE ARC_SUBMITTED_ENTITY (
     , WARN_COUNT                     integer          NULL
     , WARN_LINK                      decimal(20)      NULL
     , APPROVAL_MODE                  integer          NULL
+    , CHILD_APPROVAL_MODE            integer          NULL
     , SUBMIT_TS                      decimal(20)      NULL
     , RESUME_TS                      decimal(20)      NULL
     , SYNC_TS                        decimal(20)      NULL

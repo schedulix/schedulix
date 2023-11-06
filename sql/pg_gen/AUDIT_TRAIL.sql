@@ -37,6 +37,7 @@ CREATE TABLE AUDIT_TRAIL (
     , ORIGIN_ID                      decimal(20)     NOT NULL
     , IS_SET_WARNING                 integer         NOT NULL
     , ACTION_INFO                    varchar(1024)       NULL
+    , INFO_ID                        decimal(20)         NULL
     , ACTION_COMMENT                 varchar(1024)       NULL
     , CREATOR_U_ID                   decimal(20)     NOT NULL
     , CREATE_TS                      decimal(20)     NOT NULL
@@ -57,6 +58,7 @@ SELECT
     , ORIGIN_ID                      AS ORIGIN_ID
     , CASE IS_SET_WARNING WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_SET_WARNING
     , ACTION_INFO                    AS ACTION_INFO
+    , INFO_ID                        AS INFO_ID
     , ACTION_COMMENT                 AS ACTION_COMMENT
     , CREATOR_U_ID                   AS CREATOR_U_ID
     , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
@@ -74,6 +76,7 @@ CREATE TABLE ARC_AUDIT_TRAIL (
     , ORIGIN_ID                      decimal(20)      NULL
     , IS_SET_WARNING                 integer          NULL
     , ACTION_INFO                    varchar(1024)    NULL
+    , INFO_ID                        decimal(20)      NULL
     , ACTION_COMMENT                 varchar(1024)    NULL
     , CREATOR_U_ID                   decimal(20)      NULL
     , CREATE_TS                      decimal(20)      NULL

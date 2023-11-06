@@ -434,18 +434,6 @@ SELECT
     , VALID_TO
   FROM EXIT_STATE_TRANS_PROFILE;
 DROP VIEW SCI_EXTENTS;
-CREATE VIEW SCI_EXTENTS AS
-SELECT
-    ID
-    , O_ID                           AS O_ID
-    , SME_ID                         AS SME_ID
-    , SEQUENCE                       AS SEQUENCE
-    , EXTENT                         AS EXTENT
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-  FROM EXTENTS;
 DROP VIEW SCI_C_FOLDER;
 DROP VIEW SCI_V_FOLDER;
 CREATE VIEW SCI_C_FOLDER AS
@@ -603,21 +591,6 @@ SELECT
     , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM INTERVALL;
 DROP VIEW SCI_INTERVAL_DISPATCHER;
-CREATE VIEW SCI_INTERVAL_DISPATCHER AS
-SELECT
-    ID
-    , INT_ID                         AS INT_ID
-    , SEQ_NO                         AS SEQ_NO
-    , NAME                           AS NAME
-    , SELECT_INT_ID                  AS SELECT_INT_ID
-    , FILTER_INT_ID                  AS FILTER_INT_ID
-    , CASE IS_ENABLED WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_ENABLED
-    , CASE IS_ACTIVE WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_ACTIVE
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-  FROM INTERVAL_DISPATCHER;
 DROP VIEW SCI_INTERVAL_HIERARCHY;
 CREATE VIEW SCI_INTERVAL_HIERARCHY AS
 SELECT
@@ -1714,50 +1687,7 @@ SELECT
     , ((COALESCE(FINAL_TS, EXTRACT(EPOCH FROM CURRENT_TIMESTAMP AT TIME ZONE 'GMT') * 1000) - SUBMIT_TS) / 1000) - DEPENDENCY_WAIT_TIME AS PROCESS_TIME
   FROM SUBMITTED_ENTITY;
 DROP VIEW SCI_SUBMITTED_ENTITY_STATS;
-CREATE VIEW SCI_SUBMITTED_ENTITY_STATS AS
-SELECT
-    ID
-    , SME_ID                         AS SME_ID
-    , RERUN_SEQ                      AS RERUN_SEQ
-    , SCOPE_ID                       AS SCOPE_ID
-    , JOB_ESD_ID                     AS JOB_ESD_ID
-    , EXIT_CODE                      AS EXIT_CODE
-    , COMMANDLINE                    AS COMMANDLINE
-    , WORKDIR                        AS WORKDIR
-    , LOGFILE                        AS LOGFILE
-    , ERRLOGFILE                     AS ERRLOGFILE
-    , EXTPID                         AS EXTPID
-    , timestamptz 'epoch' + cast(to_char(mod(SYNC_TS, 1125899906842624)/1000, '999999999999') as interval) AS SYNC_TS
-    , timestamptz 'epoch' + cast(to_char(mod(RESOURCE_TS, 1125899906842624)/1000, '999999999999') as interval) AS RESOURCE_TS
-    , timestamptz 'epoch' + cast(to_char(mod(RUNNABLE_TS, 1125899906842624)/1000, '999999999999') as interval) AS RUNNABLE_TS
-    , timestamptz 'epoch' + cast(to_char(mod(START_TS, 1125899906842624)/1000, '999999999999') as interval) AS START_TS
-    , timestamptz 'epoch' + cast(to_char(mod(FINISH_TS, 1125899906842624)/1000, '999999999999') as interval) AS FINISH_TS
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-  FROM SUBMITTED_ENTITY_STATS;
 DROP VIEW SCI_SYSTEM_MESSAGE;
-CREATE VIEW SCI_SYSTEM_MESSAGE AS
-SELECT
-    ID
-    , CASE MSG_TYPE WHEN 1 THEN 'APPROVAL' END AS MSG_TYPE
-    , SME_ID                         AS SME_ID
-    , MASTER_ID                      AS MASTER_ID
-    , CASE OPERATION WHEN 1 THEN 'CANCEL' WHEN 2 THEN 'RERUN' WHEN 3 THEN 'ENABLE' WHEN 4 THEN 'SET_STATE' WHEN 5 THEN 'IGN_DEPENDENCY' WHEN 6 THEN 'IGN_RESOURCE' WHEN 7 THEN 'CLONE' WHEN 8 THEN 'SUSPEND' WHEN 9 THEN 'CLEAR_WARNING' WHEN 10 THEN 'PRIORITY' WHEN 11 THEN 'MODIFY_PARAMETER' WHEN 12 THEN 'KILL' WHEN 23 THEN 'DISABLE' WHEN 28 THEN 'RESUME' WHEN 29 THEN 'SET_WARNING' WHEN 30 THEN 'RENICE' WHEN 50 THEN 'NICEVALUE' WHEN 13 THEN 'SET_JOB_STATE' END AS OPERATION
-    , CASE IS_MANDATORY WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_MANDATORY
-    , REQUEST_U_ID                   AS REQUEST_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(REQUEST_TS, 1125899906842624)/1000, '999999999999') as interval) AS REQUEST_TS
-    , REQUEST_MSG                    AS REQUEST_MSG
-    , ADDITIONAL_LONG                AS ADDITIONAL_LONG
-    , CASE ADDITIONAL_BOOL WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS ADDITIONAL_BOOL
-    , SECOND_LONG                    AS SECOND_LONG
-    , COMMENT                        AS COMMENT
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-  FROM SYSTEM_MESSAGE;
 DROP VIEW SCI_C_TEMPLATE_VARIABLE;
 DROP VIEW SCI_V_TEMPLATE_VARIABLE;
 CREATE VIEW SCI_C_TEMPLATE_VARIABLE AS
@@ -1856,31 +1786,6 @@ SELECT
   FROM TRIGGER_DEFINITION;
 DROP VIEW SCI_C_TRIGGER_PARAMETER;
 DROP VIEW SCI_V_TRIGGER_PARAMETER;
-CREATE VIEW SCI_C_TRIGGER_PARAMETER AS
-SELECT
-    ID
-    , NAME                           AS NAME
-    , EXPRESSION                     AS EXPRESSION
-    , TRIGGER_ID                     AS TRIGGER_ID
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-  FROM TRIGGER_PARAMETER
- WHERE VALID_TO = 9223372036854775807;
-CREATE VIEW SCI_V_TRIGGER_PARAMETER AS
-SELECT
-    ID
-    , NAME                           AS NAME
-    , EXPRESSION                     AS EXPRESSION
-    , TRIGGER_ID                     AS TRIGGER_ID
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-    , VALID_FROM
-    , VALID_TO
-  FROM TRIGGER_PARAMETER;
 DROP VIEW SCI_TRIGGER_QUEUE;
 CREATE VIEW SCI_TRIGGER_QUEUE AS
 SELECT
@@ -1936,69 +1841,10 @@ SELECT
     , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
   FROM USERS;
 DROP VIEW SCI_USER_EQUIV;
-CREATE VIEW SCI_USER_EQUIV AS
-SELECT
-    ID
-    , U_ID                           AS U_ID
-    , CASE ALT_U_TYPE WHEN 0 THEN 'USER' WHEN 1 THEN 'SERVER' END AS ALT_U_TYPE
-    , ALT_U_ID                       AS ALT_U_ID
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-  FROM USER_EQUIV;
 DROP VIEW SCI_USER_EXTENTS;
-CREATE VIEW SCI_USER_EXTENTS AS
-SELECT
-    ID
-    , UP_ID                          AS UP_ID
-    , SEQUENCE                       AS SEQUENCE
-    , EXTENT                         AS EXTENT
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-  FROM USER_EXTENTS;
 DROP VIEW SCI_USER_PARAMETER;
-CREATE VIEW SCI_USER_PARAMETER AS
-SELECT
-    ID
-    , U_ID                           AS U_ID
-    , NAME                           AS NAME
-    , VALUE                          AS VALUE
-    , CASE IS_LONG WHEN 1 THEN 'TRUE' WHEN 0 THEN 'FALSE' END AS IS_LONG
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-  FROM USER_PARAMETER;
 DROP VIEW SCI_C_VERSIONED_EXTENTS;
 DROP VIEW SCI_V_VERSIONED_EXTENTS;
-CREATE VIEW SCI_C_VERSIONED_EXTENTS AS
-SELECT
-    ID
-    , O_ID                           AS O_ID
-    , SEQUENCE                       AS SEQUENCE
-    , EXTENT                         AS EXTENT
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-  FROM VERSIONED_EXTENTS
- WHERE VALID_TO = 9223372036854775807;
-CREATE VIEW SCI_V_VERSIONED_EXTENTS AS
-SELECT
-    ID
-    , O_ID                           AS O_ID
-    , SEQUENCE                       AS SEQUENCE
-    , EXTENT                         AS EXTENT
-    , CREATOR_U_ID                   AS CREATOR_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CREATE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CREATE_TS
-    , CHANGER_U_ID                   AS CHANGER_U_ID
-    , timestamptz 'epoch' + cast(to_char(mod(CHANGE_TS, 1125899906842624)/1000, '999999999999') as interval) AS CHANGE_TS
-    , VALID_FROM
-    , VALID_TO
-  FROM VERSIONED_EXTENTS;
 DROP VIEW SCI_C_WATCH_TYPE;
 DROP VIEW SCI_V_WATCH_TYPE;
 CREATE VIEW SCI_C_WATCH_TYPE AS
