@@ -309,11 +309,14 @@ public class SchedulingThread extends InternalSession
 		myGroups.add(SDMSObject.adminGId);
 		sysEnv.cEnv.pushGid(sysEnv, myGroups);
 		sysEnv.cEnv.setUser();
+		Long jsId = sysEnv.cEnv.uid();
+		sysEnv.cEnv.uid = SDMSObject.internalUId;
 		try {
 			scheduleProtected(sysEnv);
 		} finally {
 			sysEnv.cEnv.popGid(sysEnv);
 			sysEnv.cEnv.setJobServer();
+			sysEnv.cEnv.uid = jsId;
 		}
 		return true;
 	}
@@ -1277,7 +1280,14 @@ public class SchedulingThread extends InternalSession
 				Long esdId, espId;
 				esdId = se.getTimeoutStateId(sysEnv);
 				espId = se.getEspId(sysEnv);
-				SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, esdId), actVersion);
+				SDMSExitState es;
+				try {
+					es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, esdId), actVersion);
+				} catch (NotFoundException nfe) {
+					SDMSExitStateDefinition esd = SDMSExitStateDefinitionTable.getObject(sysEnv, esdId, actVersion);
+					sme.setToError(sysEnv, "Invalid Timeout State : " + esd.getName(sysEnv));
+					return;
+				}
 
 				sme.changeState(sysEnv, esdId, es, sme.getExitCode(sysEnv), "Timeout", null );
 			} else {
