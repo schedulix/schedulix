@@ -144,14 +144,16 @@ echo "executing preun base -- %version-%release"
 %package base-nojava
 # ----------------------------------------------------------------------------------------
 #
-# base package
+# base-nojava package
 #
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix base package installs all files that are used both by the server and the client
 Group:			Applications/System
-Requires:		
+# Requires:		
+Provides:		schedulix-base %{version}-%{release}
+Conflicts:		schedulix-base
 
-%description base
+%description base-nojava
 %commonDescription
 
 The schedulix base package provides the files that are used by most other packages
