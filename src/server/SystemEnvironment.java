@@ -293,6 +293,7 @@ public class SystemEnvironment implements Cloneable
 
 	public static final String S_BASE_SME_ID           = "BASE_SME_ID";
 	public static final String S_TRIGGER_HASHSET       = "TRIGGER_HASH_SET";
+	public static final String S_TRIGGER_BROKENESDID   = "TRIGGER_BROKEN_ESD_ID";
 	public static final String S_CANCEL_HASHSET        = "CANCEL_HASH_SET";
 	public static final String S_MASTERTRIGGER_HASHSET = "MASTERTRIGGER_HASHSET";
 	public static final String S_ISDEFAULT             = "ISDEFAULT";

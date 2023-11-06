@@ -4,7 +4,6 @@ create or alter folder SYSTEM.'EXAMPLES'
 with
 	group = 'PUBLIC',
 	environment = none,
-	inherit grants = none,
 	parameters = (
 		'D' = '-d 10',
 		'RT' = '-t 10',
@@ -13191,7 +13190,6 @@ with map = (
 		4,	'FAILURE'
 );
 
-/* 13 */
 create or alter exit state mapping 'DOG_MOVE'
 with map = (
 			'ESCAPED',
@@ -13210,7 +13208,6 @@ with
 			'WEST' final
 		);
 
-/* 4 */
 create or alter exit state profile 'DOG_MOVE'
 with
 		default mapping = 'DOG_MOVE',
@@ -13471,7 +13468,6 @@ with
 	dependency mode = all,
 	errlog = none,
 	group = 'PUBLIC',
-	inherit grants = (DROP, EDIT, MONITOR, OPERATE, SUBMIT, VIEW, RESOURCE),
 	kill program = none,
 	logfile = none,
 	NOMASTER,
@@ -13928,7 +13924,6 @@ with map = (
 		4,	'FAILURE'
 );
 
-/* 13 */
 create or alter exit state mapping 'DOG_MOVE'
 with map = (
 			'ESCAPED',
@@ -13947,7 +13942,6 @@ with
 			'WEST' final
 		);
 
-/* 4 */
 create or alter exit state profile 'DOG_MOVE'
 with
 		default mapping = 'DOG_MOVE',
@@ -14265,7 +14259,6 @@ with
 	dependency mode = all,
 	errlog = none,
 	group = 'PUBLIC',
-	inherit grants = (DROP, EDIT, MONITOR, OPERATE, SUBMIT, VIEW, RESOURCE),
 	kill program = none,
 	logfile = none,
 	NOMASTER,
@@ -14450,7 +14443,6 @@ add or alter required = (
 		)
 );
 
-/* 13 */
 alter job definition SYSTEM.'EXAMPLES'.'E0450_DOG_ENTERPRISE'.'ESCAPED'
 add or alter required = (
 	SYSTEM.'EXAMPLES'.'E0450_DOG_ENTERPRISE'.'WALK'
@@ -14542,7 +14534,6 @@ add or alter children = (
 		ignore dependency = none
 );
 
-/* 18 */
 alter job definition SYSTEM.'EXAMPLES'.'E0450_DOG_ENTERPRISE'.'WHILE_NOT_ESCAPED'
 add or alter children = (
 	SYSTEM.'EXAMPLES'.'E0450_DOG_ENTERPRISE'.'MOVE'

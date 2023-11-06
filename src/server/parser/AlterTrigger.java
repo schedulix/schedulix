@@ -255,6 +255,12 @@ public class AlterTrigger extends ManipTrigger
 					} catch (NotFoundException nfe) {
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03509181338", "Specified exit state " + sLimitState + " not found"));
 					}
+					Long espId = fireSe.getEspId(sysEnv);
+					try {
+						SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, limitState));
+					} catch (NotFoundException nfe) {
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03310101439", "Specified exit state " + sLimitState + " not found in exit state profile"));
+					}
 				}
 			}
 		} else

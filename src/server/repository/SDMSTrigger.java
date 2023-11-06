@@ -256,10 +256,17 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				try {
 					es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, limitState), seVersion);
 				} catch (NotFoundException nfe) {
-					throw new FatalException(new SDMSMessage(sysEnv, "03602151332",
-					                         "Invalid limitState $1 not in exit state profile $2",
-					                         limitState, espId));
-
+					SDMSExitStateDefinition esd = SDMSExitStateDefinitionTable.getObject(sysEnv, limitState);
+					String msg = "The limit state " + esd.getName(sysEnv) + " of trigger " + this.getName(sysEnv) + " isn't contained in the job's exit state profile";
+					HashSet trBrokenEsdIdSet = (HashSet) sysEnv.tx.txData.get(SystemEnvironment.S_TRIGGER_BROKENESDID);
+					if (trBrokenEsdIdSet == null) {
+						trBrokenEsdIdSet = new HashSet();
+						sysEnv.tx.txData.put(SystemEnvironment.S_TRIGGER_BROKENESDID, trBrokenEsdIdSet);
+					}
+					trBrokenEsdIdSet.add(thisSme.getId(sysEnv));
+					thisSme.setToError(sysEnv, msg);
+					SDMSThread.doTrace(sysEnv.cEnv, "Definition error in job definition " + se.pathString(sysEnv) + ": " + msg, SDMSThread.SEVERITY_WARNING);
+					return fired;
 				}
 				thisSme.changeState(sysEnv, limitState, es, null, null, null, false);
 			}

@@ -2754,7 +2754,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			final Long espId = se.getEspId(sysEnv);
 			final SDMSExitStateProfile esp = SDMSExitStateProfileTable.getObject(sysEnv, espId);
 			final Long brokenEsdId = esp.getBrokenState(sysEnv, actVersion);
-			if(brokenEsdId != null) {
+			HashSet trBrokenEsdIdSet = (HashSet) sysEnv.tx.txData.get(SystemEnvironment.S_TRIGGER_BROKENESDID);
+			if(brokenEsdId != null && (trBrokenEsdIdSet == null || !trBrokenEsdIdSet.contains(getId(sysEnv)))) {
 				final SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, brokenEsdId));
 				changeState(sysEnv, brokenEsdId, es, null, null, null, true);
 				int curState = getState(sysEnv).intValue();
@@ -3822,7 +3823,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	public void setToError(SystemEnvironment sysEnv, String msg)
 		throws SDMSException
 	{
-		setState(sysEnv, new Integer(ERROR));
+		setState(sysEnv, SDMSSubmittedEntity.ERROR);
 		if(msg != null) {
 			setErrorMsg(sysEnv, msg);
 		}
