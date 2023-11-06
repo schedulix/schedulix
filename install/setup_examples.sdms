@@ -4,7 +4,6 @@ create or alter folder SYSTEM.'EXAMPLES'
 with
 	group = 'PUBLIC',
 	environment = none,
-	inherit grants = none,
 	parameters = (
 		'D' = '-d 10',
 		'RT' = '-t 10',
@@ -146,6 +145,83 @@ with
 create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0015_PARAMETERS'.'PARAMETERS'
 with
 	TAG = none, TEXT = 'This example shows some methods of parameterizing jobs';
+
+
+create or alter folder SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'
+with
+	group = 'PUBLIC',
+	environment = none,
+	parameters = none;
+
+create or alter job definition SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'.'CUSTOM_PARAMETERS'
+with
+	aging = none,
+	min priority = none,
+	children = none,
+	dependency mode = all,
+	environment = 'SERVER@LOCALHOST',
+	errlog = '${JOBID}.log' NOTRUNC,
+	group = 'PUBLIC',
+	kill program = none,
+	logfile = '${JOBID}.log' NOTRUNC,
+	MASTER,
+	priority = 50,
+	parameters = (
+		'CHECKBOX',
+		'SELECT'
+	),
+	profile = 'STANDARD',
+	required = none,
+	rerun program = none,
+	resource = none,
+	runtime = 0,
+	runtime final = 0,
+	run program = 'SDMSpopup.sh "$JOBNAME" "Checkbox: $CHECKBOX" "Select: $SELECT" -c "?:1=FAILURE:0=SUCCESS" "$SCOPENAME"',
+	NOSUSPEND,
+	type = JOB,
+	workdir = none;
+
+alter job definition SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'.'CUSTOM_PARAMETERS'
+alter parameter = (
+		'CHECKBOX'
+			PARAMETER
+		EXPORT = NONE,
+		'SELECT'
+			PARAMETER
+		EXPORT = NONE
+	);
+
+create or alter comment on job definition SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'.'CUSTOM_PARAMETERS'
+with
+	TAG = none, TEXT = 'Custom Parameters is s simple job showing how to use checkboxes and selectlists for submit parameters
+See comments on parameters on how to configure checkboxes and select list parameters.
+The SELECT parameter uses { \'KEY\' : \'<ParemDictKey>\' } to use Values defined in Custom.ParamDict';
+
+create or alter comment on parameter 'CHECKBOX' of job definition SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'.'CUSTOM_PARAMETERS'
+with
+	TAG = none, TEXT = '<WEB_CONFIG>
+    \'TYPE\'          : \'CHECKBOX\',
+    \'TICKVALUE\'     : \'TRUE\',
+    \'OFFVALUE\'      : \'FALSE\',
+    \'DEFAULT\'       : \'FALSE\',
+    \'EDIT_ON_RERUN\' : \'true\'
+</WEB_CONFIG>';
+
+create or alter comment on parameter 'SELECT' of job definition SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'.'CUSTOM_PARAMETERS'
+with
+	TAG = none, TEXT = '<WEB_CONFIG>
+    \'TYPE\'          : \'SELECT\',
+    \'VALUES\'        : { \'KEY\' : \'YesNoMaybe\' },
+    \'DEFAULT\'       : { \'KEY\' : \'YesNoMaybeDefault\' },
+    \'EDIT_ON_RERUN\' : \'true\'
+</WEB_CONFIG>';
+
+/* 
+Do not edit the content of this Comment !!!
+file may not be able to be imported using schedulix!Web otherwise
+EXPORT_TYPE=FOLDER
+EXPORT_NAME=SYSTEM.EXAMPLES.E0020_SIMPLEBATCH
+*/
 
 
 create or alter folder SYSTEM.'EXAMPLES'.'E0020_SIMPLEBATCH'
@@ -2002,7 +2078,7 @@ with
 		'RT' = '-t 30'
 	);
 
-create or alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEAP_THOUGHT'
+create or alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEEP_THOUGHT'
 with
 	aging = none,
 	min priority = none,
@@ -2083,7 +2159,7 @@ with
 
 alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'TELL_ANSWER'
 add or alter required = (
-	SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEAP_THOUGHT'
+	SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEEP_THOUGHT'
 		mode = ALL_FINAL
 		unresolved = ERROR
 		condition = none
@@ -2092,7 +2168,7 @@ add or alter required = (
 
 alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'JOBCOMM'
 add or alter children = (
-	SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEAP_THOUGHT'
+	SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEEP_THOUGHT'
 		alias = none
 		CHILDSUSPEND
 		nicevalue = 0
@@ -2110,7 +2186,7 @@ add or alter children = (
 		ignore dependency = none
 );
 
-alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEAP_THOUGHT'
+alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEEP_THOUGHT'
 alter parameter = (
 		'WISDOM'
 			RESULT
@@ -2120,7 +2196,7 @@ alter parameter = (
 alter job definition SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'TELL_ANSWER'
 alter parameter = (
 		'ANSWER'
-			reference SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEAP_THOUGHT' ('WISDOM')
+			reference SYSTEM.'EXAMPLES'.'E0060_JOBCOMM'.'DEEP_THOUGHT' ('WISDOM')
 		EXPORT = NONE,
 		'RT'
 			IMPORT default = '-t 30'
@@ -13191,7 +13267,6 @@ with map = (
 		4,	'FAILURE'
 );
 
-/* 13 */
 create or alter exit state mapping 'DOG_MOVE'
 with map = (
 			'ESCAPED',
@@ -13210,7 +13285,6 @@ with
 			'WEST' final
 		);
 
-/* 4 */
 create or alter exit state profile 'DOG_MOVE'
 with
 		default mapping = 'DOG_MOVE',
@@ -13471,7 +13545,6 @@ with
 	dependency mode = all,
 	errlog = none,
 	group = 'PUBLIC',
-	inherit grants = (DROP, EDIT, MONITOR, OPERATE, SUBMIT, VIEW, RESOURCE),
 	kill program = none,
 	logfile = none,
 	NOMASTER,
@@ -13928,7 +14001,6 @@ with map = (
 		4,	'FAILURE'
 );
 
-/* 13 */
 create or alter exit state mapping 'DOG_MOVE'
 with map = (
 			'ESCAPED',
@@ -13947,7 +14019,6 @@ with
 			'WEST' final
 		);
 
-/* 4 */
 create or alter exit state profile 'DOG_MOVE'
 with
 		default mapping = 'DOG_MOVE',
@@ -14265,7 +14336,6 @@ with
 	dependency mode = all,
 	errlog = none,
 	group = 'PUBLIC',
-	inherit grants = (DROP, EDIT, MONITOR, OPERATE, SUBMIT, VIEW, RESOURCE),
 	kill program = none,
 	logfile = none,
 	NOMASTER,
@@ -14450,7 +14520,6 @@ add or alter required = (
 		)
 );
 
-/* 13 */
 alter job definition SYSTEM.'EXAMPLES'.'E0450_DOG_ENTERPRISE'.'ESCAPED'
 add or alter required = (
 	SYSTEM.'EXAMPLES'.'E0450_DOG_ENTERPRISE'.'WALK'
@@ -14542,7 +14611,6 @@ add or alter children = (
 		ignore dependency = none
 );
 
-/* 18 */
 alter job definition SYSTEM.'EXAMPLES'.'E0450_DOG_ENTERPRISE'.'WHILE_NOT_ESCAPED'
 add or alter children = (
 	SYSTEM.'EXAMPLES'.'E0450_DOG_ENTERPRISE'.'MOVE'
