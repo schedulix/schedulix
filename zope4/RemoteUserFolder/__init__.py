@@ -11,8 +11,4 @@ def initialize(context):
 			RemoteUserFolder.manage_addRemoteUserFolder),
 		icon='RemoteUserFolder.gif'
 	)
-	try:
-		context.registerHelp()
-	except:
-		pass
 

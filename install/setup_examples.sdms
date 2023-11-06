@@ -4,7 +4,6 @@ create or alter folder SYSTEM.'EXAMPLES'
 with
 	group = 'PUBLIC',
 	environment = none,
-	inherit grants = none,
 	parameters = (
 		'D' = '-d 10',
 		'RT' = '-t 10',
@@ -151,7 +150,6 @@ create or alter folder SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'
 with
 	group = 'PUBLIC',
 	environment = none,
-	inherit grants = (CREATE CONTENT, DROP, EDIT, MONITOR, OPERATE, SUBMIT, VIEW, RESOURCE),
 	parameters = none;
 
 create or alter job definition SYSTEM.'EXAMPLES'.'E0016_CUSTOM_PARAMETERS'.'CUSTOM_PARAMETERS'
@@ -163,7 +161,6 @@ with
 	environment = 'SERVER@LOCALHOST',
 	errlog = '${JOBID}.log' NOTRUNC,
 	group = 'PUBLIC',
-	inherit grants = (DROP, EDIT, MONITOR, OPERATE, SUBMIT, VIEW, RESOURCE),
 	kill program = none,
 	logfile = '${JOBID}.log' NOTRUNC,
 	MASTER,
@@ -13538,7 +13535,6 @@ with
 	dependency mode = all,
 	errlog = none,
 	group = 'PUBLIC',
-	inherit grants = (DROP, EDIT, MONITOR, OPERATE, SUBMIT, VIEW, RESOURCE),
 	kill program = none,
 	logfile = none,
 	NOMASTER,
@@ -14330,7 +14326,6 @@ with
 	dependency mode = all,
 	errlog = none,
 	group = 'PUBLIC',
-	inherit grants = (DROP, EDIT, MONITOR, OPERATE, SUBMIT, VIEW, RESOURCE),
 	kill program = none,
 	logfile = none,
 	NOMASTER,

@@ -3870,7 +3870,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	public void setToError(SystemEnvironment sysEnv, String msg)
 		throws SDMSException
 	{
-		setState(sysEnv, new Integer(ERROR));
+		setState(sysEnv, SDMSSubmittedEntity.ERROR);
 		if(msg != null) {
 			setErrorMsg(sysEnv, msg);
 		}
