@@ -258,6 +258,12 @@ public class AlterTrigger extends ManipTrigger
 					} catch (NotFoundException nfe) {
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "03509181338", "Specified exit state " + sLimitState + " not found"));
 					}
+					Long espId = fireSe.getEspId(sysEnv);
+					try {
+						SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, limitState));
+					} catch (NotFoundException nfe) {
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03310101439", "Specified exit state " + sLimitState + " not found in exit state profile"));
+					}
 				}
 			}
 		} else
@@ -424,17 +430,14 @@ public class AlterTrigger extends ManipTrigger
 					v = SDMSTriggerTable.idx_seId_name.getVector(sysEnv, new SDMSKey(fireId, name));
 				else
 					v = SDMSTriggerTable.idx_fireId_name.getVector(sysEnv, new SDMSKey(fireId, name));
-				if (v.size() == 0) throw new NotFoundException();
 				int i;
 				for (i = 0; i < v.size(); ++i) {
 					t = (SDMSTrigger) v.get(i);
 					if (t.getIsInverse(sysEnv).equals(isInverse)) break;
 				}
-				if (i == v.size()) throw new NotFoundException();
+				if (i == v.size()) throw new NotFoundException(new SDMSMessage(sysEnv, "03309051240", "No trigger with name $1 found", name));
 			} else {
 				t = (SDMSTrigger) url.resolve(sysEnv);
-				if (t == null)
-					throw new NotFoundException(new SDMSMessage(sysEnv, "03906060937", "Couldn't resolve the trigger"));
 				fireId = t.getFireId(sysEnv);
 				fireType = t.getObjectType(sysEnv).intValue();
 

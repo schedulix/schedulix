@@ -227,6 +227,12 @@ public class CreateTrigger extends ManipTrigger
 			} catch (NotFoundException nfe) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03509181230", "Specified exit state " + sLimitState + " not found"));
 			}
+			Long espId = fireJob.getEspId(sysEnv);
+			try {
+				SDMSExitState es = SDMSExitStateTable.idx_espId_esdId_getUnique(sysEnv, new SDMSKey(espId, limitState));
+			} catch (NotFoundException nfe) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03310101437", "Specified exit state " + sLimitState + " not found in exit state profile"));
+			}
 		}
 
 		maxRetry = (Integer) with.get(ParseStr.S_SUBMITCOUNT);
@@ -469,7 +475,10 @@ public class CreateTrigger extends ManipTrigger
 							checkAmount, checkBase);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
-				AlterTrigger at = new AlterTrigger(name, fireId, objectType.intValue(), with, Boolean.FALSE);
+				Long fId = fireId;
+				if ((Boolean) with.get(ParseStr.S_INVERSE))
+					fId = seId;
+				AlterTrigger at = new AlterTrigger(name, fId, objectType.intValue(), with, Boolean.FALSE);
 				at.setEnv(env);
 				at.go(sysEnv);
 				result = at.result;

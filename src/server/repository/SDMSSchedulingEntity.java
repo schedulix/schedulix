@@ -274,15 +274,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		approval = getCloneApproval(sysEnv).intValue();
 		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.CLONE_APPROVAL;
 		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.CLONE_REVIEW;
-		approval = getSuspendApproval(sysEnv).intValue();
-		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.SUSPEND_APPROVAL;
-		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.SUSPEND_REVIEW;
-		approval = getClrWarnApproval(sysEnv).intValue();
-		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.CLR_WARN_APPROVAL;
-		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.CLR_WARN_REVIEW;
-		approval = getPriorityApproval(sysEnv).intValue();
-		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.PRIORITY_APPROVAL;
-		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.PRIORITY_REVIEW;
 		approval = getEditParmApproval(sysEnv).intValue();
 		if (approval == APPROVE) approvalMode |= SDMSSubmittedEntity.EDIT_PARM_APPROVAL;
 		if (approval == REVIEW) approvalMode |= SDMSSubmittedEntity.EDIT_PARM_REVIEW;
@@ -348,6 +339,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                                SDMSConstants.iZERO,
 		                                null,
 		                                Integer.valueOf(approvalMode),
+		                                SDMSConstants.iZERO,
 		                                submitTs,
 		                                resumeTs,
 		                                null,
@@ -400,7 +392,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			}
 		}
 
-		sme.submitChilds(sysEnv, suspended.intValue() == SDMSSubmittedEntity.NOSUSPEND ? 0 : 1, ownerId, null, nice.intValue() * 100, false );
+		sme.submitChildren(sysEnv, suspended.intValue() == SDMSSubmittedEntity.NOSUSPEND ? 0 : 1, ownerId, null, nice.intValue() * 100, false );
 
 		sme.resolveDependencies(sysEnv, true );
 
@@ -548,12 +540,6 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		                          getIgnRssApproval(sysEnv),
 		                          getCloneLeadFlag(sysEnv),
 		                          getCloneApproval(sysEnv),
-		                          getSuspendLeadFlag(sysEnv),
-		                          getSuspendApproval(sysEnv),
-		                          getClrWarnLeadFlag(sysEnv),
-		                          getClrWarnApproval(sysEnv),
-		                          getPriorityLeadFlag(sysEnv),
-		                          getPriorityApproval(sysEnv),
 		                          getEditParmLeadFlag(sysEnv),
 		                          getEditParmApproval(sysEnv),
 		                          getKillLeadFlag(sysEnv),
@@ -611,8 +597,15 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			                              pd.getLinkPdId(sysEnv),
 			                              pd.getExportName(sysEnv)
 			                                                                       );
+			Long npdId = npd.getId(sysEnv);
 			if(relocationTable != null) {
-				relocationTable.put(pd.getId(sysEnv), npd.getId(sysEnv));
+				relocationTable.put(pd.getId(sysEnv), npdId);
+			}
+			SDMSObjectComment oc;
+			Vector commentv = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, pd.getId(sysEnv));
+			for (int i = 0; i < commentv.size(); ++i) {
+				oc = (SDMSObjectComment) commentv.get(i);
+				SDMSObjectCommentTable.table.create(sysEnv, npdId, oc.getObjectType(sysEnv), oc.getInfoType(sysEnv), oc.getSequenceNumber(sysEnv), oc.getTag(sysEnv), oc.getDescription(sysEnv));
 			}
 		}
 		Vector v_dd = SDMSDependencyDefinitionTable.idx_seDependentId.getVector(sysEnv, id);
