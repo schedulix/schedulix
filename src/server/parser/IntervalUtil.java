@@ -195,6 +195,9 @@ public class IntervalUtil
 			if (selectIval != null) {
 				if (selectIval instanceof String) {
 					iv = (SDMSInterval) SDMSIntervalTable.idx_name_objId.getUnique(sysEnv, new SDMSKey((String) selectIval, null));
+					if ((iv.getPrivileges(sysEnv).toLong() & SDMSPrivilege.VIEW) != SDMSPrivilege.VIEW) {
+						throw new CommonErrorException (new SDMSMessage (sysEnv, "03308181538", "Insufficient privileges to use Interval " + selectIval.toString()));
+					}
 				} else {
 					CreateInterval ci = (CreateInterval) selectIval;
 					ci.setEnv(sysEnv.cEnv);
@@ -209,6 +212,9 @@ public class IntervalUtil
 			if (filterIval != null) {
 				if (filterIval instanceof String) {
 					iv = (SDMSInterval) SDMSIntervalTable.idx_name_objId.getUnique(sysEnv, new SDMSKey((String) filterIval, null));
+					if ((iv.getPrivileges(sysEnv).toLong() & SDMSPrivilege.VIEW) != SDMSPrivilege.VIEW) {
+						throw new CommonErrorException (new SDMSMessage (sysEnv, "03308181539", "Insufficient privileges to use Interval " + selectIval.toString()));
+					}
 				} else {
 					CreateInterval ci = (CreateInterval) filterIval;
 					ci.setEnv(sysEnv.cEnv);

@@ -1664,7 +1664,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		seId = getSeId(sysEnv);
 		if (seId == null || seId == 0) {
 			p = super.getPrivileges(sysEnv, checkPrivs, fastFail, checkGroups);
-			return p & checkPrivs;
+			return (p | SDMSPrivilege.VIEW) & checkPrivs;
 		}
 
 		if (checkGroups == null) {

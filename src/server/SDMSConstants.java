@@ -55,6 +55,7 @@ public final class SDMSConstants
 	public final static Integer iMIN_VALUE = Integer.valueOf(Integer.MIN_VALUE);
 
 	public static final Integer AT_APPROVE			= Integer.valueOf(SDMSAuditTrail.APPROVE);
+	public static final Integer AT_APPROVAL_REQUEST		= Integer.valueOf(SDMSAuditTrail.APPROVAL_REQUEST);
 	public static final Integer AT_CANCEL			= Integer.valueOf(SDMSAuditTrail.CANCEL);
 	public static final Integer AT_CHANGE_PRIORITY		= Integer.valueOf(SDMSAuditTrail.CHANGE_PRIORITY);
 	public static final Integer AT_CLEAR_WARNING		= Integer.valueOf(SDMSAuditTrail.CLEAR_WARNING);
@@ -72,10 +73,12 @@ public final class SDMSConstants
 	public static final Integer AT_IGNORE_RESOURCE		= Integer.valueOf(SDMSAuditTrail.IGNORE_RESOURCE);
 	public static final Integer AT_KILL			= Integer.valueOf(SDMSAuditTrail.KILL);
 	public static final Integer AT_KILL_RECURSIVE		= Integer.valueOf(SDMSAuditTrail.KILL_RECURSIVE);
+	public static final Integer AT_REJECT			= Integer.valueOf(SDMSAuditTrail.REJECT);
 	public static final Integer AT_RENICE			= Integer.valueOf(SDMSAuditTrail.RENICE);
 	public static final Integer AT_RERUN			= Integer.valueOf(SDMSAuditTrail.RERUN);
 	public static final Integer AT_RERUN_RECURSIVE		= Integer.valueOf(SDMSAuditTrail.RERUN_RECURSIVE);
 	public static final Integer AT_RESUME			= Integer.valueOf(SDMSAuditTrail.RESUME);
+	public static final Integer AT_REVIEW_REQUEST		= Integer.valueOf(SDMSAuditTrail.REVIEW_REQUEST);
 	public static final Integer AT_SET_EXIT_STATE		= Integer.valueOf(SDMSAuditTrail.SET_EXIT_STATE);
 	public static final Integer AT_SET_PARAMETERS		= Integer.valueOf(SDMSAuditTrail.SET_PARAMETERS);
 	public static final Integer AT_SET_RESOURCE_STATE	= Integer.valueOf(SDMSAuditTrail.SET_RESOURCE_STATE);
@@ -87,6 +90,7 @@ public final class SDMSConstants
 	public static final Integer AT_TIMEOUT			= Integer.valueOf(SDMSAuditTrail.TIMEOUT);
 	public static final Integer AT_TRIGGER_FAILED		= Integer.valueOf(SDMSAuditTrail.TRIGGER_FAILED);
 	public static final Integer AT_TRIGGER_SUBMIT		= Integer.valueOf(SDMSAuditTrail.TRIGGER_SUBMIT);
+	public static final String  AT_EVAUDITPREFIX		= "AUDIT.";
 
 	public static final Integer DD_ALL_FINAL		= Integer.valueOf(SDMSDependencyDefinition.ALL_FINAL);
 	public static final Integer DD_ALL_REACHABLE		= Integer.valueOf(SDMSDependencyDefinition.ALL_REACHABLE);

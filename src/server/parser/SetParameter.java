@@ -72,8 +72,7 @@ public class SetParameter extends ManipJob
 
 		final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, jobid);
 		SDMSPrivilege privs = sme.getPrivileges(sysEnv);
-		int baseApprovalBits = sme.getApprovalMode(sysEnv).intValue();
-		int approvalBits = baseApprovalBits & SDMSSubmittedEntity.EDIT_PARM_BITS;
+
 		if (!privs.can(SDMSPrivilege.MODIFY_PARAMETER))
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03105201628", "Insufficient privileges to modify job parameters"));
 
@@ -84,16 +83,32 @@ public class SetParameter extends ManipJob
 			final Vector tmp = (Vector) parms.get (name);
 			final String value = (String) tmp.get(1);
 
-			if ((cmdtype == Node.JOB_COMMAND) || (cmdtype == Node.USER_COMMAND && (approvalBits & SDMSSubmittedEntity.EDIT_PARM_APPROVAL) == 0)) {
+			if ((cmdtype == Node.JOB_COMMAND)) {
 				sme.setVariableValue(sysEnv, name, value);
-			}
-			if (cmdtype == Node.USER_COMMAND && approvalBits != 0) {
-				SDMSSystemMessage msg = createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.MODIFY_PARAMETER,
-				                        ((approvalBits & SDMSSubmittedEntity.EDIT_PARM_APPROVAL) == SDMSSubmittedEntity.EDIT_PARM_APPROVAL),
-				                        sysEnv.cEnv.uid(), auditComment, SDMSConstants.lZERO, null, null, name);
-				Long msgId = msg.getId(sysEnv);
-				SDMSEntityVariable ev = SDMSEntityVariableTable.table.create(sysEnv, msgId, name, value, Boolean.TRUE, null);
-				msg.setAdditionalLong(sysEnv, ev.getId(sysEnv));
+			} else {
+				String oldValue;
+				try {
+					oldValue = sme.getVariableValue(sysEnv, name, true, ParseStr.S_DEFAULT, false, null, false);
+				} catch (SDMSException e) {
+					oldValue = "UNKNOWN";
+				}
+				String nl = " ";
+				if (value.contains("\n") || oldValue.contains("\n"))
+					nl = "\n";
+				final String auditInfo = "Parameter '" + name + "'," + nl + "NEW VALUE =" + nl + "'" + value + "',\nOLD VALUE =" + nl + "'" + oldValue + "'";
+				final int baseApprovalBits = sme.getApprovalMode(sysEnv).intValue();
+				final int approvalBits = baseApprovalBits & SDMSSubmittedEntity.EDIT_PARM_BITS;
+				boolean isApproval = ((approvalBits & SDMSSubmittedEntity.EDIT_PARM_APPROVAL) == SDMSSubmittedEntity.EDIT_PARM_APPROVAL);
+				if (approvalBits != 0) {
+					SDMSSystemMessage msg = createSystemMessage(sysEnv, SDMSSystemMessage.APPROVAL, sme.getId(sysEnv), sme.getMasterId(sysEnv), SDMSSystemMessage.MODIFY_PARAMETER,
+					                        isApproval, sysEnv.cEnv.uid(), auditComment, SDMSConstants.lZERO, null, null, name, auditInfo);
+					Long msgId = msg.getId(sysEnv);
+					SDMSEntityVariable ev = SDMSEntityVariableTable.table.create(sysEnv, msgId, name, value, Boolean.TRUE, null);
+					msg.setAdditionalLong(sysEnv, ev.getId(sysEnv));
+				}
+				if (!isApproval) {
+					sme.setVariableValue(sysEnv, name, value);
+				}
 			}
 		}
 

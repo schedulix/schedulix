@@ -77,6 +77,8 @@ public class ListInterval
 		final Iterator ivalIter = SDMSIntervalTable.table.iterator (sysEnv);
 		while (ivalIter.hasNext()) {
 			ival = (SDMSInterval) ivalIter.next();
+			if (!ival.checkPrivileges(sysEnv, SDMSPrivilege.VIEW)) continue;
+
 			oId = ival.getObjId(sysEnv);
 			if (!all) {
 				if (oId != null) continue;

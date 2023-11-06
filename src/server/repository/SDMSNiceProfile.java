@@ -125,7 +125,9 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 		new SDMSFilter() {
 			public boolean isValid(SystemEnvironment sysEnv, SDMSProxy obj) throws SDMSException {
 				int state = ((SDMSSubmittedEntity)obj).getState(sysEnv).intValue();
-				if (state == SDMSSubmittedEntity.FINAL || state == SDMSSubmittedEntity.CANCELLED)
+				if (state == SDMSSubmittedEntity.FINAL ||
+				    state == SDMSSubmittedEntity.CANCELLED ||
+				    ((SDMSSubmittedEntity)obj).getIsCancelled(sysEnv).booleanValue())
 					return false;
 				Long npeId = ((SDMSSubmittedEntity)obj).getNpeId(sysEnv);
 				if (npeId != null) {
@@ -394,7 +396,10 @@ class NicedMastersFilter implements SDMSFilter
 	public boolean isValid(SystemEnvironment sysEnv, SDMSProxy obj) throws SDMSException
 	{
 		int state = ((SDMSSubmittedEntity)obj).getState(sysEnv).intValue();
-		if (state == SDMSSubmittedEntity.FINAL || state == SDMSSubmittedEntity.CANCELLED || !hs.contains(((SDMSSubmittedEntity)obj).getNpeId(sysEnv)))
+		if (state == SDMSSubmittedEntity.FINAL ||
+		    state == SDMSSubmittedEntity.CANCELLED ||
+		    ((SDMSSubmittedEntity)obj).getIsCancelled (sysEnv) ||
+		    !hs.contains(((SDMSSubmittedEntity)obj).getNpeId(sysEnv)))
 			return false;
 		return true;
 	}

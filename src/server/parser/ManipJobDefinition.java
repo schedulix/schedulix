@@ -102,9 +102,6 @@ public abstract class ManipJobDefinition extends Node
 	Boolean ignDepLeadFlag = Boolean.FALSE;
 	Boolean ignRssLeadFlag = Boolean.FALSE;
 	Boolean cloneLeadFlag = Boolean.FALSE;
-	Boolean suspendLeadFlag = Boolean.FALSE;
-	Boolean clrWarnLeadFlag = Boolean.FALSE;
-	Boolean priorityLeadFlag = Boolean.FALSE;
 	Boolean editParmLeadFlag = Boolean.FALSE;
 	Boolean killLeadFlag = Boolean.FALSE;
 	Boolean setJobStateLeadFlag = Boolean.FALSE;
@@ -115,9 +112,6 @@ public abstract class ManipJobDefinition extends Node
 	Integer ignDepApproval = 0;
 	Integer ignRssApproval = 0;
 	Integer cloneApproval = 0;
-	Integer suspendApproval = 0;
-	Integer clrWarnApproval = 0;
-	Integer priorityApproval = 0;
 	Integer editParmApproval = 0;
 	Integer killApproval = 0;
 	Integer setJobStateApproval = 0;

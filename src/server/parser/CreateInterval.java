@@ -67,8 +67,14 @@ public class CreateInterval
 		embeddedInterval = null;
 	}
 
-	public Long getIvalId() { return ivalId; }
-	public SDMSInterval getIval() { return ival; }
+	public Long getIvalId()
+	{
+		return ivalId;
+	}
+	public SDMSInterval getIval()
+	{
+		return ival;
+	}
 
 	public String toString()
 	{
@@ -174,6 +180,9 @@ public class CreateInterval
 								throw new CommonErrorException (new SDMSMessage (sysEnv, "04207191734", "interval cannot embed itself"));
 
 							final SDMSInterval embeddedIval = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey (IntervalUtil.mapIdName (embeddedName, obj.seId), null));
+							if ((embeddedIval.getPrivileges(sysEnv).toLong() & SDMSPrivilege.VIEW) != SDMSPrivilege.VIEW) {
+								throw new CommonErrorException (new SDMSMessage (sysEnv, "03308181458", "Insufficient privileges to use Interval " + embeddedName));
+							}
 							embeddedIntervalId = embeddedIval.getId (sysEnv);
 
 							if (duration != null)

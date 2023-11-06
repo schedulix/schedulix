@@ -178,6 +178,18 @@ public class GarbageThread extends InternalSession
 			first = purgeLow;
 		sysEnv.vPurgeSet.purge(sysEnv, first);
 
+		i = SDMSSystemMessageTable.table.iterator(sysEnv, null, false );
+		while (i.hasNext()) {
+			SDMSSystemMessage msg = (SDMSSystemMessage) i.next();
+			Integer msgType = msg.getMsgType(sysEnv);
+			if (msgType.intValue() != SDMSSystemMessage.APPROVAL)
+				continue;
+			Long msgSmeId = msg.getSmeId(sysEnv);
+			if (!SDMSSubmittedEntityTable.table.exists(sysEnv, msgSmeId)) {
+				msg.delete(sysEnv);
+			}
+		}
+
 		doTrace(cEnv, "End Garbage Collect", SEVERITY_INFO);
 	}
 }

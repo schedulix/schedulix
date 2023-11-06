@@ -289,6 +289,9 @@ public class SelectCmd extends Node
 			ResultSet rset = stmt.executeQuery(selectCmd);
 			ResultSetMetaData mdset = rset.getMetaData();
 			Vector desc = collist(mdset);
+			if (desc.size() == 0) {
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "03204170023", "Queries without selected columns are not supported in this context"));
+			}
 			d_container = new SDMSOutputContainer(sysEnv, "Selected Values", desc);
 			while(rset.next()) {
 				Vector data = new Vector();

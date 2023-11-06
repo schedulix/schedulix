@@ -239,7 +239,11 @@ public class ObjectURL
 				p = SDMSParameterDefinitionTable.getObject(sysEnv, objId);
 				break;
 			case SDMSObjectComment.RESOURCE:
-				p = SDMSResourceTable.getObject(sysEnv, objId);
+				try {
+					p = SDMSResourceTable.getObject(sysEnv, objId);
+				} catch (NotFoundException nfe) {
+					p = SDMSResourceTemplateTable.getObject(sysEnv, objId);
+				}
 				break;
 			case SDMSObjectComment.RESOURCE_STATE_DEFINITION:
 				p = SDMSResourceStateDefinitionTable.getObject(sysEnv, objId);
@@ -593,6 +597,8 @@ public class ObjectURL
 			if (p.getIsInverse(sysEnv).equals(isInverse)) break;
 			p = null;
 		}
+		if (p == null)
+			throw new NotFoundException(new SDMSMessage(sysEnv, "03309051227", "No trigger with name $1 found", name));
 		return p;
 	}
 

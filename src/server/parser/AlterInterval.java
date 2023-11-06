@@ -205,7 +205,6 @@ public class AlterInterval
 			if (embIvalId != null) {
 				SDMSInterval embIval = SDMSIntervalTable.getObject(sysEnv, embIvalId);
 				Long parentObjId = embIval.getObjId(sysEnv);
-				System.out.println("embIval = " + embIvalId + ", parentObjId = " + parentObjId + ", ivalId = " + ivalId);
 				if (ivalId.equals(parentObjId)) {
 					embIval.delete(sysEnv);
 				}
@@ -216,6 +215,10 @@ public class AlterInterval
 			if (embeddedName != null) {
 				if (embeddedName instanceof String) {
 					final SDMSInterval embeddedIval = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(IntervalUtil.mapIdName ((String) embeddedName, obj.seId), null));
+					if ((embeddedIval.getPrivileges(sysEnv).toLong() & SDMSPrivilege.VIEW) != SDMSPrivilege.VIEW) {
+						throw new CommonErrorException (new SDMSMessage (sysEnv, "03308181546", "Insufficient privileges to use Interval " + (String) embeddedName));
+					}
+
 					final Long embeddedIvalId = embeddedIval.getId (sysEnv);
 
 					ival.setEmbeddedIntervalId (sysEnv, embeddedIvalId);

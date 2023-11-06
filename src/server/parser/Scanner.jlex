@@ -285,6 +285,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("REJECT",		Integer.valueOf(Parser.REJECT));
 	tokens.put("RENAME",		Integer.valueOf(Parser.RENAME));
 	tokens.put("RENICE",		Integer.valueOf(Parser.RENICE));
+	tokens.put("REQUEST",		Integer.valueOf(Parser.REQUEST));
 	tokens.put("REQUIRED",		Integer.valueOf(Parser.REQUIRED));
 	tokens.put("RERUN",		Integer.valueOf(Parser.RERUN));
 	tokens.put("RESOLVE",		Integer.valueOf(Parser.RESOLVE));

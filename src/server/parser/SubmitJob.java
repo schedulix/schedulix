@@ -85,8 +85,38 @@ public class SubmitJob extends Node
 		return evalResumeObj(sysEnv, (String) resumeObj, null, null, refTime, adjust, tz);
 	}
 
-	public static Long evalResumeObj(SystemEnvironment sysEnv, String resumeAt, Integer resumeIn, Integer resumeBase, Long refTime, boolean adjust, TimeZone tz)
+	public static long getResumeInValue(SystemEnvironment sysEnv, Integer resumeIn, Integer resumeBase)
 		throws SDMSException
+	{
+		if (resumeIn == null) return 0;
+		if (resumeBase == null) return 0;
+		int m = resumeIn.intValue();
+		int i = resumeBase.intValue();
+		long no_msecs = m * 60000;
+		switch (i) {
+			case SDMSInterval.MINUTE:
+				break;
+			case SDMSInterval.HOUR:
+				no_msecs *= 60;
+				break;
+			case SDMSInterval.DAY:
+				no_msecs *= 24 * 60;
+				break;
+			case SDMSInterval.WEEK:
+				no_msecs *= 7 * 24 * 60;
+				break;
+			case SDMSInterval.MONTH:
+				no_msecs *= 30 * 24 * 60;
+				break;
+			case SDMSInterval.YEAR:
+				no_msecs *= 365 * 24 * 60;
+				break;
+		}
+		return no_msecs;
+	}
+
+	public static Long evalResumeObj(SystemEnvironment sysEnv, String resumeAt, Integer resumeIn, Integer resumeBase, Long refTime, boolean adjust, TimeZone tz)
+	throws SDMSException
 	{
 		Long resumeTs = null;
 		long now;
@@ -97,29 +127,7 @@ public class SubmitJob extends Node
 		if (resumeIn != null) {
 			if (resumeBase == null) {
 			}
-			int m = resumeIn.intValue();
-			int i = resumeBase.intValue();
-			long no_msecs = m * 60000;
-			switch (i) {
-				case SDMSInterval.MINUTE:
-					break;
-				case SDMSInterval.HOUR:
-					no_msecs *= 60;
-					break;
-				case SDMSInterval.DAY:
-					no_msecs *= 24 * 60;
-					break;
-				case SDMSInterval.WEEK:
-					no_msecs *= 7 * 24 * 60;
-					break;
-				case SDMSInterval.MONTH:
-					no_msecs *= 30 * 24 * 60;
-					break;
-				case SDMSInterval.YEAR:
-					no_msecs *= 365 * 24 * 60;
-					break;
-			}
-			resumeTs = Long.valueOf (now + no_msecs);
+			resumeTs = Long.valueOf (now + getResumeInValue(sysEnv, resumeIn, resumeBase));
 		} else {
 			if (resumeAt != null) {
 				DateTime dt = new DateTime(resumeAt, tz);

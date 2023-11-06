@@ -191,12 +191,6 @@ public class ShowFolder extends ShowCommented
 		desc.add("IGN_RESOURCE_APPROVAL");
 		desc.add("CLONE_LEAD_FLAG");
 		desc.add("CLONE_APPROVAL");
-		desc.add("SUSPEND_LEAD_FLAG");
-		desc.add("SUSPEND_APPROVAL");
-		desc.add("CLEAR_WARN_LEAD_FLAG");
-		desc.add("CLEAR_WARN_APPROVAL");
-		desc.add("PRIORITY_LEAD_FLAG");
-		desc.add("PRIORITY_APPROVAL");
 		desc.add("EDIT_PARAMETER_LEAD_FLAG");
 		desc.add("EDIT_PARAMETER_APPROVAL");
 		desc.add("KILL_LEAD_FLAG");
@@ -303,12 +297,6 @@ public class ShowFolder extends ShowCommented
 		data.add(se.getIgnRssApprovalAsString(sysEnv));
 		data.add(se.getCloneLeadFlag(sysEnv));
 		data.add(se.getCloneApprovalAsString(sysEnv));
-		data.add(se.getSuspendLeadFlag(sysEnv));
-		data.add(se.getSuspendApprovalAsString(sysEnv));
-		data.add(se.getClrWarnLeadFlag(sysEnv));
-		data.add(se.getClrWarnApprovalAsString(sysEnv));
-		data.add(se.getPriorityLeadFlag(sysEnv));
-		data.add(se.getPriorityApprovalAsString(sysEnv));
 		data.add(se.getEditParmLeadFlag(sysEnv));
 		data.add(se.getEditParmApprovalAsString(sysEnv));
 		data.add(se.getKillLeadFlag(sysEnv));

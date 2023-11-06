@@ -318,4 +318,10 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 		return path;
 	}
 
+	public String getTypeAsString(SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		return "FOLDER";
+	}
+
 }

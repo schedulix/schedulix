@@ -66,6 +66,7 @@ public class SsRFormatter implements Formatter
 		desc.add("OWNER");
 		desc.add("LINK_ID");
 		desc.add("LINK_SCOPE");
+		desc.add("LINK_SCOPE_TYPE");
 		desc.add("STATE");
 		desc.add("REQUESTABLE_AMOUNT");
 		desc.add("AMOUNT");
@@ -78,6 +79,7 @@ public class SsRFormatter implements Formatter
 		desc.add("MANAGER_ID");
 		desc.add("MANAGER_NAME");
 		desc.add("MANAGER_SCOPENAME");
+		desc.add("MANAGER_SCOPE_TYPE");
 		desc.add("HAS_CHILDREN");
 		desc.add("POOL_CHILD");
 		desc.add("TRACE_INTERVAL");
@@ -136,7 +138,9 @@ public class SsRFormatter implements Formatter
 				SDMSResource lr = SDMSResourceTable.getObject(sysEnv, myLinkId);
 				SDMSScope s = SDMSScopeTable.getObject(sysEnv, lr.getScopeId(sysEnv));
 				v.add(s.pathVector(sysEnv));
+				v.add(s.getTypeAsString(sysEnv));
 			} else {
+				v.add(null);
 				v.add(null);
 			}
 			if(r.getRsdId(sysEnv) != null) {
@@ -177,6 +181,7 @@ public class SsRFormatter implements Formatter
 			v.add(managerId);
 			v.add(null);
 			v.add(null);
+			v.add(null);
 			v.add(Boolean.FALSE);
 			v.add(Boolean.valueOf(pool_child));
 
@@ -207,6 +212,7 @@ public class SsRFormatter implements Formatter
 				v.add(SDMSGroupTable.getObject(sysEnv, rt.getOwnerId(sysEnv)).getName(sysEnv));
 				v.add(null);
 				v.add(null);
+				v.add(null);
 				if(rt.getRsdId(sysEnv) != null) {
 					v.add(SDMSResourceStateDefinitionTable.getObject(sysEnv, rt.getRsdId(sysEnv)).getName(sysEnv));
 				} else {
@@ -227,6 +233,7 @@ public class SsRFormatter implements Formatter
 				v.add(null);
 				v.add(null);
 				v.add(null);
+				v.add(null);
 				v.add(Boolean.FALSE);
 				v.add(Boolean.FALSE);
 				v.add(null);
@@ -244,6 +251,8 @@ public class SsRFormatter implements Formatter
 				v.add(nr.pathVector(sysEnv));
 				v.add(nr.getUsageAsString(sysEnv));
 				v.add(nr.getPrivileges(sysEnv).toString());
+				v.add(null);
+				v.add(null);
 				v.add(null);
 				v.add(null);
 				v.add(null);

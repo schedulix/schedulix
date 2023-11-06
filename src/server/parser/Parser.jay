@@ -63,7 +63,7 @@ public class Parser
 %token <Token>	OBJECT OF OFFLINE ON ONLINE ONLY OPERATE OR OTHER OWNER
 %token <Token>	PARENT PARAMETERS PASSWORD PATH PENDING PERL PID PLAIN POOL PRIORITY PROFILE PROTOCOL PUBLIC PYTHON
 %token <Token>	QUOTED
-%token <Token>	RAW RAWPASSWORD REACHABLE READ REASSURE RECREATE RECURSIVE REFERENCE REGISTER REJECT RENAME RENICE REQUIRED REQUESTABLE_AMOUNT RERUN RERUN_PROGRAM RESOLVE RESOURCE
+%token <Token>	RAW RAWPASSWORD REACHABLE READ REASSURE RECREATE RECURSIVE REFERENCE REGISTER REJECT RENAME RENICE REQUIRED REQUEST REQUESTABLE_AMOUNT RERUN RERUN_PROGRAM RESOLVE RESOURCE
 %token <Token>	RESOURCE_TEMPLATE RESOURCE_STATUS RESOURCE_STATUS_DEFINITION RESOURCE_STATUS_MAPPING RESOURCE_STATUS_PROFILE RESOURCE_WAIT
 %token <Token>	RESTARTABLE RESTRICT RESULT RESUME REVIEW REVOKE ROLLBACK ROOT RUN RUNNABLE RUNNING RUNTIME RUN_PROGRAM
 %token <Token>	S SALT SC SCHEDULE SCHEDULED SCHEDULED_EVENT SCOPE SELECT SECO SELECTION SERIAL SERVER SESSION SET SHOW SHUTDOWN SINGLE SORT SQLSELECT SSL
@@ -548,7 +548,7 @@ approve_cmd:	APPROVE idlist opt_app_with					{ $$ = new ApproveCmd(true, $2, $3)
 	|	REJECT idlist opt_app_with					{ $$ = new ApproveCmd(false, $2, $3); }
 
 opt_app_with:									{ $$ = null; }
-	|	WITH COMMENT '=' STRING						{ $$ = $4; }
+	|	WITH COMMENT '=' STRING						{ $$ = $4.textValue; }
 
 
 //D:MASTER USER
@@ -2846,6 +2846,7 @@ aj_withlist:	aj_withitem							{ $$ = new WithHash(); $<WithHash>$.addItem($1); 
 aj_withitem:	CANCEL								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
 	|	aj_disable							{ $$ = $1; }
 	|	CLEAR WARNING							{ $$ = new WithItem(ParseStr.S_CLEAR_WARN, Boolean.TRUE); }
+	|	CLONE 								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.FALSE); }
 	|	CLONE RESUME							{ $$ = new WithItem(ParseStr.map($1.token), Boolean.FALSE); }
 	|	CLONE SUSPEND							{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
 	|	COMMENT '=' STRING						{ $$ = new WithItem(ParseStr.map($1.token), $3.textValue); }
@@ -3134,6 +3135,10 @@ sj_filteritem:  RERUN								{ $$ = SDMSAuditTrail.convert($1); }
 	|	UNREACHABLE							{ $$ = SDMSAuditTrail.convert($1); }
 	|	DISABLE								{ $$ = SDMSAuditTrail.convert($1); }
 	|	ENABLE								{ $$ = SDMSAuditTrail.convert($1); }
+	|	APPROVE								{ $$ = SDMSAuditTrail.convert($1); }
+	|	REJECT								{ $$ = SDMSAuditTrail.convert($1); }
+	|	APPROVAL REQUEST						{ $$ = SDMSAuditTrail.convert($1, $2); }
+	|	REVIEW REQUEST							{ $$ = SDMSAuditTrail.convert($1, $2); }
 
 
 //-----------------------------------------------------------------------------
@@ -4930,6 +4935,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	REGISTER							{ $$ = (String) $1.value; }
 	|	REJECT								{ $$ = (String) $1.value; }
 	|	RENAME								{ $$ = (String) $1.value; }
+	|	REQUEST								{ $$ = (String) $1.value; }
 	|	REQUIRED							{ $$ = (String) $1.value; }
 	|	REQUESTABLE_AMOUNT						{ $$ = (String) $1.value; }
 	|	RERUN								{ $$ = (String) $1.value; }

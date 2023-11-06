@@ -59,71 +59,40 @@ public class ShowPool extends ShowCommented
 		Vector desc = new Vector();
 
 		desc.add("ID");
-
 		desc.add("NAME");
-
 		desc.add("SCOPENAME");
-
+		desc.add("SCOPE_TYPE");
 		desc.add("TAG");
-
 		desc.add("OWNER");
-
 		desc.add("MANAGER_ID");
-
 		desc.add("MANAGER_NAME");
-
 		desc.add("MANAGER_SCOPENAME");
-
+		desc.add("MANAGER_SCOPE_TYPE");
 		desc.add("DEFINED_AMOUNT");
-
 		desc.add("AMOUNT");
-
 		desc.add("FREE_AMOUNT");
-
 		desc.add("TOTAL_FREE_AMOUNT");
-
 		desc.add("CHILD_ALLOCATED");
-
 		desc.add("EVALUATION_CYCLE");
-
 		desc.add("NEXT_EVALUATION_TIME");
-
 		desc.add("ACTIVE_DISTRIBUTION");
-
 		desc.add("TRACE_INTERVAL");
-
 		desc.add("TRACE_BASE");
-
 		desc.add("TRACE_BASE_MULTIPLIER");
-
 		desc.add("TD0_AVG");
-
 		desc.add("TD1_AVG");
-
 		desc.add("TD2_AVG");
-
 		desc.add("LW_AVG");
-
 		desc.add("LAST_WRITE");
-
 		desc.add("COMMENT");
-
 		desc.add("COMMENTTYPE");
-
 		desc.add("CREATOR");
-
 		desc.add("CREATE_TIME");
-
 		desc.add("CHANGER");
-
 		desc.add("CHANGE_TIME");
-
 		desc.add("PRIVS");
-
 		desc.add("RESOURCES");
-
 		desc.add("DISTRIBUTION_NAMES");
-
 		desc.add("DISTRIBUTIONS");
 
 		Vector data = new Vector();

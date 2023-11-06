@@ -45,4 +45,7 @@ public interface SDMSHierarchicalObject
 
 	public PathVector pathVector(SystemEnvironment sysEnv)
 	throws SDMSException;
+
+	public String getTypeAsString(SystemEnvironment sysEnv)
+	throws SDMSException;
 }

@@ -65,6 +65,7 @@ public class ShowResource extends ShowCommented
 		desc.add("ID");
 		desc.add("NAME");
 		desc.add("SCOPENAME");
+		desc.add("SCOPE_TYPE");
 		desc.add("OWNER");
 		desc.add("LINK_ID");
 		desc.add("LINK_SCOPE");
@@ -74,6 +75,7 @@ public class ShowResource extends ShowCommented
 		desc.add("MANAGER_ID");
 		desc.add("MANAGER_NAME");
 		desc.add("MANAGER_SCOPENAME");
+		desc.add("MANAGER_SCOPE_TYPE");
 		desc.add("USAGE");
 		desc.add("RESOURCE_STATE_PROFILE");
 		desc.add("COMMENT");
@@ -256,13 +258,12 @@ public class ShowResource extends ShowCommented
 		SDMSOutputContainer vars = null;
 		if (r != null)
 			vars = r.getVariables(sysEnv);
-		else
-			if (rt != null)
-				vars = rt.getVariables(sysEnv);
+		else if (rt != null)
+			vars = rt.getVariables(sysEnv);
 		return vars;
 	}
 
-	private Vector fill_master(SystemEnvironment sysEnv, SDMSProxy prox, SDMSNamedResource nr, String containerPath)
+	private Vector fill_master(SystemEnvironment sysEnv, SDMSProxy prox, SDMSNamedResource nr, String containerPath, String containerType)
 		throws SDMSException
 	{
 		SDMSResource r = null;
@@ -279,6 +280,7 @@ public class ShowResource extends ShowCommented
 		v.add(getId(sysEnv, r, rt));
 		v.add(nr.pathString(sysEnv));
 		v.add(containerPath);
+		v.add(containerType);
 		v.add(SDMSGroupTable.getObject(sysEnv, getOwnerId(sysEnv, r, rt)).getName(sysEnv));
 		if (r != null) {
 			Long linkId = r.getLinkId(sysEnv);
@@ -306,7 +308,9 @@ public class ShowResource extends ShowCommented
 
 			v.add(null);
 			v.add(null);
+			v.add(null);
 		} else {
+			v.add(null);
 			v.add(null);
 			v.add(null);
 			v.add(null);
@@ -544,6 +548,7 @@ public class ShowResource extends ShowCommented
 		SDMSScope s;
 		SDMSFolder f;
 		String containerPath = null;
+		String containerType = null;
 		SDMSSchedulingEntity se;
 		SDMSSubmittedEntity sme;
 		SDMSOutputContainer d_container = null;
@@ -558,13 +563,17 @@ public class ShowResource extends ShowCommented
 			try {
 				s = SDMSScopeTable.getObject(sysEnv, scopeId);
 				containerPath = s.pathString(sysEnv);
+				containerType = s.getTypeAsString(sysEnv);
 			} catch (NotFoundException nfe) {
 				try {
 					f = SDMSFolderTable.getObject(sysEnv, scopeId);
 					containerPath = f.pathString(sysEnv);
+					containerType = "FOLDER";
 				} catch (NotFoundException nfe2) {
 					sme = SDMSSubmittedEntityTable.getObject(sysEnv, scopeId);
 					containerPath = sme.getSubmitPathString(sysEnv, true) + "[" + scopeId.toString() + "]";
+					se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv));
+					containerType = se.getTypeAsString(sysEnv);
 				}
 			}
 		} else {
@@ -575,10 +584,11 @@ public class ShowResource extends ShowCommented
 			Long seId = rt.getSeId(sysEnv);
 			se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
 			containerPath = se.pathString(sysEnv);
+			containerType = se.getTypeAsString(sysEnv);
 		}
 
 		d_container = new SDMSOutputContainer(sysEnv, "Resource", fill_desc(sysEnv),
-				fill_master(sysEnv, r == null ? (SDMSProxy) rt : (SDMSProxy) r, nr, containerPath));
+		                                      fill_master(sysEnv, r == null ? (SDMSProxy) rt : (SDMSProxy) r, nr, containerPath, containerType));
 
 		result.setOutputContainer(d_container);
 

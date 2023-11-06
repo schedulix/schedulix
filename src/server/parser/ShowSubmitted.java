@@ -734,10 +734,11 @@ public class ShowSubmitted extends Node
 		pd_v = SDMSEntityVariableTable.idx_smeId.getVector(sysEnv, sme.getId(sysEnv));
 		for(int i = 0; i < pd_v.size(); i++) {
 			ev = (SDMSEntityVariable) pd_v.get(i);
-			if(!names.contains(ev.getName(sysEnv))) {
+			String evName = ev.getName(sysEnv);
+			if(!names.contains(ev.getName(sysEnv)) && !evName.startsWith(SDMSConstants.AT_EVAUDITPREFIX)) {
 				c_data = new Vector();
 				c_data.add(ev.getId(sysEnv));
-				c_data.add(ev.getName(sysEnv));
+				c_data.add(evName);
 				c_data.add("LOCAL");
 				c_data.add(ev.getValue(sysEnv).substring(1));
 
