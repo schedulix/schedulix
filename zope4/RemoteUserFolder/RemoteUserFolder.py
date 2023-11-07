@@ -59,7 +59,6 @@ try:
 	from AccessControl.Role import RoleManager, DEFAULTMAXLISTUSERS
 except:
 	from AccessControl.rolemanager import RoleManager, DEFAULTMAXLISTUSERS
-#from AccessControl.User import User, BasicUserFolder, readUserAccessFile, UserFolder, _noroles
 from AccessControl.User import User, BasicUserFolder, readUserAccessFile, UserFolder
 from AccessControl.PermissionRole import PermissionRole
 from OFS.DTMLMethod import DTMLMethod
