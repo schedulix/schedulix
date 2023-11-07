@@ -183,11 +183,9 @@ public class AlterJob extends ManipJob
 		Object o = with.get(ParseStr.S_SUSPEND);
 		adminSuspend = Boolean.FALSE;
 		localSuspend = Boolean.FALSE;
-		System.err.println("ADMINSUSPEND = FALSE");
 		if (o != null) {
 			if (o instanceof Boolean) {
 				suspend = (Boolean) o;
-				System.err.println("ADMINSUSPEND = FALSE -- simple suspend or resume");
 			} else {
 				suspend = Boolean.TRUE;
 
@@ -196,12 +194,10 @@ public class AlterJob extends ManipJob
 				if (suspendType == LOCALADMINSUSPEND) {
 					adminSuspend = Boolean.TRUE;
 					localSuspend = Boolean.TRUE;
-					System.err.println("ADMINSUSPEND = TRUE -- localadminsuspend");
 				} else if (suspendType == LOCALSUSPEND) {
 					localSuspend = Boolean.TRUE;
 				} else {
 					adminSuspend = Boolean.TRUE;
-					System.err.println("ADMINSUSPEND = TRUE -- adminsuspend or resume");
 				}
 			}
 		}
@@ -221,14 +217,12 @@ public class AlterJob extends ManipJob
 				if(sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
 					if (!suspend.booleanValue()) {
 						adminSuspend = Boolean.TRUE;
-						System.err.println("ADMINSUSPEND = TRUE -- admin mode per default at resume");
 					}
 				} else if (adminSuspend != null && adminSuspend.booleanValue()) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408071555", "Insufficient privileges for admin suspend"));
 				}
 				if (adminSuspend == null) {
 					adminSuspend = Boolean.FALSE;
-					System.err.println("ADMINSUSPEND = FALSE -- normal user");
 				}
 			}
 
@@ -414,8 +408,6 @@ public class AlterJob extends ManipJob
 		if(suspend != null) {
 			if (priv.can(SDMSPrivilege.SUSPEND)) {
 				if (!suspend.booleanValue() && sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.ADMINSUSPEND && !adminSuspend.booleanValue()) {
-					System.err.println("ADMINSUSPEND = " + adminSuspend);
-					System.err.println("SUSPEND = " + suspend);
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408080758", "Insufficient privileges for admin resume"));
 				}
 			} else {
@@ -788,8 +780,6 @@ public class AlterJob extends ManipJob
 		if(suspend != null || resumeObj != null) {
 			if (priv.can(SDMSPrivilege.SUSPEND)) {
 				if (suspend != null && !suspend.booleanValue() && sme.getIsSuspended(sysEnv).intValue() == SDMSSubmittedEntity.ADMINSUSPEND && !adminSuspend.booleanValue()) {
-					System.err.println("ADMINSUSPEND = " + adminSuspend);
-					System.err.println("SUSPEND = " + suspend);
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03408080757", "Insufficient privileges for admin resume"));
 				}
 				evalSuspend(sysEnv, suspendFlag, autoResumeVal, sme);
