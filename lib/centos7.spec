@@ -117,7 +117,6 @@ echo "executing preun base -- %version-%release"
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc/java.conf.template
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/BICsuite.jar
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/functions.sh
-     %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/etc/zope_requirements-2.13.29.txt
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/Waffle.Windows.AuthProvider.dll
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/guava-20.0.jar
      %attr(644, schedulix, schedulix) /opt/schedulix/schedulix-%{version}/lib/jna-platform-4.3.0.jar
@@ -453,6 +452,9 @@ Conflicts:		schedulix-zope4
 
 %description zope
 %commonDescription
+Due to the fact that support for Python 2 has terminated, this package is now
+deprecated. It'll be possible to upgrade an existing installation, but a new
+installation of a zope 2 server isn't supported any longer.
 
 The schedulix zope package installs the zope application server and configures 
 it to access a locally installed server.

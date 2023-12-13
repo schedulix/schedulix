@@ -1,74 +1,14 @@
 echo "executing post zope -- %version-%release"
 if [ "$1" == "1" ]; then
-	echo "building zope instance"
-	ZOPEADMINUSER=sdmsadm
-	ZOPEADMINPASSWORD=sdmsadm
-	cd /opt/schedulix/software/Zope
-	su schedulix -c "bin/mkzopeinstance -d /opt/schedulix/schedulixweb -u $ZOPEADMINUSER:$ZOPEADMINPASSWORD"
-	ret=$?
-	if [ $ret != 0 ]; then
-		echo "Error creating Zope instance for schedulix!web"
-		exit 1
-	fi
-
-	echo "loading application"
-	su schedulix -c "
-	cd /opt/schedulix/schedulixweb;
-	mkdir Extensions;
-	cd Extensions;
-	ln -s /opt/schedulix/schedulix/zope/*.py .;
-	cd ../Products;
-	ln -s /opt/schedulix/schedulix/zope/BICsuiteSubmitMemory .;
-	ln -s /opt/schedulix/schedulix/zope/RemoteUserFolder .;
-	cd ../import;
-	ln -s /opt/schedulix/schedulix/zope/SDMS.zexp .;
-	cd ..;
-	"
-
-	su schedulix -c "/opt/schedulix/schedulixweb/bin/zopectl start"
-	ret=$?
-	if [ $ret != 0 ]; then
-		echo "Error starting Zope instance"
-		exit 1	
-	fi
-	sleep 5
-
-	CNT=0
-	QUIET="--quiet"
-	while [ $CNT -lt 5 ]; do
-		wget $QUIET --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null "http://localhost:8080/manage_importObject?file=SDMS.zexp"
-		ret=$?
-		if [ $ret != 0 ]; then
-			echo "Error importing SDMS.zexp"
-			QUIET="--verbose"
-		else
-			break;
-		fi
-		CNT=`expr $CNT + 1`
-		sleep 2
-	done
-	rm -f cookies.txt
-
-	wget --quiet --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null --keep-session-cookies --save-cookies cookies.txt "http://localhost:8080/SDMS/Install?manage_copyObjects:method=Copy&ids:list=User&ids:list=Custom"
-	ret=$?
-	if [ $ret != 0 ]; then
-		echo "Error copying User and Custom Zope template folders from Zope /SDMS/install"
-		exit 1
-	fi
-
-	wget --quiet --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null --load-cookies cookies.txt "http://localhost:8080?manage_pasteObjects:method=Paste"
-	ret=$?
-	if [ $ret != 0 ]; then
-		echo "Error pasting User and Custom Zope folders into Zope"
-		exit 1
-	fi
-	rm -f cookies.txt
-	# we shut the server down since the init.d script uses a different method of starting it
-	su schedulix -c "/opt/schedulix/schedulixweb/bin/zopectl stop"
-
-	# now we enable the service an start it
-	chkconfig schedulix-zope on
-	service schedulix-zope start
+	# This message was already issued by the pre-script. No need to repeat ourselves.
+	# It is left here as a kind of documentation for people that start reading the post script first.
+	#
+	# echo "Due to the missing support for Python2, Zope 2 is no longer supported for new installations."
+	# echo "Please consider to install the schedulix-zope4 package instead."
+	# echo "If you still have other active Zope 2 installations, it'll be possible to upgrade them with"
+	# echo "this rpm."
+	# echo "Buf even so, it is still recommended to install the latest Zope server that runs with Python3."
+	exit 1
 else
 	# create a temporary zope admin user
 	ZOPEADMINUSER=schedulix_zau

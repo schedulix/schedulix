@@ -1,54 +1,11 @@
 echo "executing pre zope -- %version-%release"
 if [ "$1" == "1" ]; then
-	# we set the umask such that the allowed access is user-only (if not overridden)
-	# nobody needs to read the zope directories at filesystem level, except for zope itself
-	umask 077
-	RHVER=`cat /etc/redhat-release | sed 's/.* release \([0-9][0-9]*\)\..*/\1/g'`
-	if [ $RHVER -ge 8 ]; then
-		VIRTUALENV=virtualenv-2
-	else
-		VIRTUALENV=virtualenv
-	fi
-	echo "fetching zope"
-	su schedulix -c "mkdir -p /opt/schedulix/software"
-	cd /opt/schedulix/software
-	su schedulix -c "$VIRTUALENV --no-site-packages Zope"
-	if [ $? != 0 ]; then
-		echo "Error creating python virtualenv environment"
-		exit 1
-	fi
-	cd /opt/schedulix/software/Zope
-	retryctr=1
-	maxretry=10
-	while true; do
-		# the first pip upgrade will change from release 9 to about 20
-		# the subsequent upgrade should upgrade the setuptools to some current release
-		su schedulix -c "
-		bin/pip install --upgrade pip
-		bin/pip install --upgrade setuptools
-		bin/pip install zc.recipe.egg==2.0.5 --no-binary=zc.recipe.egg
-		bin/pip install python-ldap
-		bin/pip install -r /opt/schedulix/schedulix/etc/zope_requirements-%{zope2version}.txt"
-		ret=$?
-		if [ $ret != 0 ]; then
-			echo "Error during easy_install of Zope2 version %{zope2version}"
-			if [ $retryctr -gt $maxretry ]; then
-				exit 1
-			fi
-			echo "retrying ...($retryctr/$maxretry)"
-			retryctr=`expr $retryctr + 1`
-		else
-			break;
-		fi
-	done
-
-	echo "building zope instance"
-	su schedulix -c "bin/mkzopeinstance -d /opt/schedulix/schedulixweb -u sdmsadm:sdmsadm"
-	ret=$?
-	if [ $ret != 0 ]; then
-		echo "Error creating Zope instance for schedulix!web"
-		exit 1
-	fi
+	echo "Due to the missing support for Python2, Zope 2 is no longer supported for new installations."
+	echo "Please consider to install the schedulix-zope4 package instead."
+	echo "If you still have other active Zope 2 installations, it'll be possible to upgrade them with"
+	echo "this rpm."
+	echo "Buf even so, it is still recommended to install the latest Zope server that runs with Python3."
+	exit 1
 else
 	echo "upgrading... software is already there"
 	service schedulix-zope stop || true
