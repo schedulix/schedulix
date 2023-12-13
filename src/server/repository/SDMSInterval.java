@@ -1625,7 +1625,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		Iterator i = ivv.iterator();
 		while (i.hasNext()) {
 			SDMSInterval iv = (SDMSInterval) i.next();
-			if (id.equals(iv.getObjId(sysEnv))) continue;
+			if (!id.equals(iv.getObjId(sysEnv))) continue;
 			try {
 				Long ivalId = iv.getId(sysEnv);
 				IntervalUtil.killFilter (sysEnv, ivalId);
