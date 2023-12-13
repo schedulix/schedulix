@@ -210,9 +210,6 @@ public class ShowSubmitted extends Node
 		desc.add("IGN_DEPENDENCY_APPROVAL");
 		desc.add("IGN_RESOURCE_APPROVAL");
 		desc.add("CLONE_APPROVAL");
-		desc.add("SUSPEND_APPROVAL");
-		desc.add("CLEAR_WARN_APPROVAL");
-		desc.add("PRIORITY_APPROVAL");
 		desc.add("EDIT_PARAMETER_APPROVAL");
 		desc.add("KILL_APPROVAL");
 		desc.add("SET_JOB_STATE_APPROVAL");
@@ -437,9 +434,6 @@ public class ShowSubmitted extends Node
 		setApprovalValue(data, approve, SDMSSubmittedEntity.IGN_DEP_BITS, SDMSSubmittedEntity.IGN_DEP_APPROVAL);
 		setApprovalValue(data, approve, SDMSSubmittedEntity.IGN_RSS_BITS, SDMSSubmittedEntity.IGN_RSS_APPROVAL);
 		setApprovalValue(data, approve, SDMSSubmittedEntity.CLONE_BITS, SDMSSubmittedEntity.CLONE_APPROVAL);
-		setApprovalValue(data, approve, SDMSSubmittedEntity.SUSPEND_BITS, SDMSSubmittedEntity.SUSPEND_APPROVAL);
-		setApprovalValue(data, approve, SDMSSubmittedEntity.CLR_WARN_BITS, SDMSSubmittedEntity.CLR_WARN_APPROVAL);
-		setApprovalValue(data, approve, SDMSSubmittedEntity.PRIORITY_BITS, SDMSSubmittedEntity.PRIORITY_APPROVAL);
 		setApprovalValue(data, approve, SDMSSubmittedEntity.EDIT_PARM_BITS, SDMSSubmittedEntity.EDIT_PARM_APPROVAL);
 		setApprovalValue(data, approve, SDMSSubmittedEntity.KILL_BITS, SDMSSubmittedEntity.KILL_APPROVAL);
 		setApprovalValue(data, approve, SDMSSubmittedEntity.SET_JOB_STATE_BITS, SDMSSubmittedEntity.SET_JOB_STATE_APPROVAL);
