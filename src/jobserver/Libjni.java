@@ -34,7 +34,7 @@ import de.independit.scheduler.server.SystemEnvironment;
 class Libjni
 {
 
-	public static final String copyright = "Copyright (c) 2002-2017";
+	public static final String copyright = "Copyright (c) 2002-2023";
 	public static final String company   = "independIT Integrative Technologies GmbH";
 	public static final String version   = SystemEnvironment.programVersion;
 	public static final String protocol  = "1.1";
