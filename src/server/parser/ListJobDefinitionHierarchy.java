@@ -221,7 +221,7 @@ public class ListJobDefinitionHierarchy extends Node
 		v.add(se.getPrivileges(sysEnv).toString());
 
 		d_container.addData(sysEnv, v);
-		add_childs(sysEnv, d_container, v1, sePath);
+		add_children(sysEnv, d_container, v1, sePath);
 
 		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, (isCondensed ? 27 : 37)));
 
@@ -231,7 +231,7 @@ public class ListJobDefinitionHierarchy extends Node
 		                                   "$1 Object(s) found", Integer.valueOf(d_container.lines)));
 	}
 
-	private void add_childs(SystemEnvironment sysEnv, SDMSOutputContainer oc, Vector vc, String hPath)
+	private void add_children(SystemEnvironment sysEnv, SDMSOutputContainer oc, Vector vc, String hPath)
 		throws SDMSException
 	{
 		SDMSExitStateProfile esp;
@@ -364,7 +364,7 @@ public class ListJobDefinitionHierarchy extends Node
 
 			if(expand && p.can(SDMSPrivilege.VIEW)) {
 				if(expandIds == null || expandIds.contains(shId)) {
-					add_childs(sysEnv, oc, v1, shPath);
+					add_children(sysEnv, oc, v1, shPath);
 				}
 			}
 		}
