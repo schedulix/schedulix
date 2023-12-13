@@ -112,6 +112,7 @@ public class ShowInterval
 		desc.add ("FILTER");
 		desc.add ("DISPATCHER");
 		desc.add ("HIERARCHY");
+		desc.add ("REFERENCES");
 		desc.add ("CREATOR");
 		desc.add ("CREATE_TIME");
 		desc.add ("CHANGER");
@@ -180,6 +181,8 @@ public class ShowInterval
 		data.add (getDispatcherList (sysEnv, ivalId));
 
 		data.add (getHierarchyList (sysEnv, ivalId));
+
+		data.add (getReferences(sysEnv, ival));
 
 		secondsIgnore = false;
 
@@ -343,6 +346,55 @@ public class ShowInterval
 		}
 
 		Collections.sort (table.dataset, table.getComparator (sysEnv, 1));
+
+		return table;
+	}
+
+	private SDMSOutputContainer getReferences (SystemEnvironment sysEnv, SDMSInterval interval)
+	throws SDMSException
+	{
+		final Vector desc = new Vector();
+		desc.add ("REFERER_ID");
+		desc.add ("REFERER_NAME");
+		desc.add ("REFERER_TYPE");
+		desc.add ("REFERENCE_TYPE");
+		desc.add ("CHILD_ID");
+		desc.add ("CHILD_NAME");
+		desc.add ("CHILD_TYPE");
+		desc.add ("REFERENCE_PATH");
+
+		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "List of Interval References", desc);
+		Vector references = interval.collectReferences(sysEnv, 0);
+
+		for (int i = 0; i < references.size(); ++i) {
+			Vector reference = (Vector)references.get(i);
+			int last = reference.size() - 1;
+			IntervalReference intervalReference = (IntervalReference)reference.get(last);
+
+			Vector row = new Vector();
+
+			row.add(intervalReference.refererId);
+			row.add(intervalReference.refererName);
+			if (intervalReference.refererType == RefererType.SCHEDULING_ENTITY) {
+				row.add(intervalReference.seType);
+			} else {
+				row.add(interval.refererTypeToString(intervalReference.refererType));
+			}
+			row.add(interval.referenceUsageToString(intervalReference.referenceUsage));
+			row.add(intervalReference.childId);
+			row.add(intervalReference.childName);
+			row.add(intervalReference.childType);
+			String referencePath = "";
+			String sep = "";
+			for (int r = 0; r < last; r++) {
+				IntervalReference iref = (IntervalReference)reference.get(r);
+				referencePath = iref.refererName + sep + referencePath;
+				sep = ".";
+			}
+			row.add(referencePath);
+
+			table.addData (sysEnv, row);
+		}
 
 		return table;
 	}

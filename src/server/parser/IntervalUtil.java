@@ -245,6 +245,20 @@ public class IntervalUtil
 		}
 	}
 
+	public static final void killEmbedded (final SystemEnvironment sysEnv, final Long ivalId)
+	throws SDMSException
+	{
+		SDMSInterval ival = SDMSIntervalTable.getObject(sysEnv, ivalId);
+		Long embIntId = ival.getEmbeddedIntervalId(sysEnv);
+		if (embIntId == null)
+			return;
+		SDMSInterval embIval = SDMSIntervalTable.getObject(sysEnv, embIntId);
+		Long objId = embIval.getObjId(sysEnv);
+		if (ivalId.equals(objId)) {
+			embIval.delete(sysEnv);
+		}
+	}
+
 	public static final boolean createFilter (final SystemEnvironment sysEnv, final Long ivalId, final WithHash with, int recursionLevel)
 	throws SDMSException
 	{

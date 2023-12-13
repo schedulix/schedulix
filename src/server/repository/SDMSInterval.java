@@ -29,6 +29,9 @@ package de.independit.scheduler.server.repository;
 
 import java.io.*;
 import java.util.*;
+
+import javax.lang.model.type.ReferenceType;
+
 import java.lang.*;
 import java.sql.*;
 
@@ -37,6 +40,9 @@ import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
 import de.independit.scheduler.server.timer.*;
 import de.independit.scheduler.server.parser.IntervalUtil;
+import de.independit.scheduler.server.repository.RefererType;
+import de.independit.scheduler.server.repository.ReferenceUsage;
+import de.independit.scheduler.server.repository.IntervalReference;
 
 public class SDMSInterval extends SDMSIntervalProxyGeneric
 	implements SDMSOwnedObject
@@ -1631,7 +1637,7 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		Iterator i = ivv.iterator();
 		while (i.hasNext()) {
 			SDMSInterval iv = (SDMSInterval) i.next();
-			if (id.equals(iv.getObjId(sysEnv))) continue;
+			if (!id.equals(iv.getObjId(sysEnv))) continue;
 			try {
 				Long ivalId = iv.getId(sysEnv);
 				IntervalUtil.killFilter (sysEnv, ivalId);
@@ -1689,6 +1695,218 @@ public class SDMSInterval extends SDMSIntervalProxyGeneric
 		}
 		p = addImplicitPrivs(p) & checkPrivs;
 		return p;
+	}
+
+	public boolean isDependent (SystemEnvironment sysEnv)
+	throws SDMSException
+	{
+		if ((this.getSeId(sysEnv) == null || this.getSeId(sysEnv) == 0) && this.getObjId(sysEnv) == null) {
+			return false;
+		}
+		return true;
+	}
+
+	public Vector collectReferences(SystemEnvironment sysEnv, int stopAfter)
+	throws SDMSException
+	{
+
+		Vector result = getReferences(sysEnv, stopAfter);
+
+		traverseReferences(sysEnv, result);
+
+		return result;
+	}
+
+	private Vector getReferences(SystemEnvironment sysEnv, int stopAfter)
+	throws SDMSException
+	{
+		int count = 0;
+		Long intervalId = this.getId(sysEnv);
+		Vector references = new Vector();
+		Vector reference;
+
+		Vector v = SDMSIntervalHierarchyTable.idx_childId.getVector(sysEnv, intervalId);
+		for (int i = 0; i < v.size(); ++i) {
+			try {
+				SDMSInterval interval = SDMSIntervalTable.getObject (sysEnv, ((SDMSIntervalHierarchy)(v.get(i))).getParentId(sysEnv));
+				reference = new Vector();
+				reference.add(new IntervalReference(
+				                      RefererType.INTERVAL, ReferenceUsage.FILTER, interval.getId(sysEnv), interval.getName(sysEnv), interval.isDependent(sysEnv)));
+
+				references.add(reference);
+				count ++;
+				if (stopAfter > 0 && count >= stopAfter) return references;
+			} catch (NotFoundException nfe) {
+			}
+		}
+		v = SDMSIntervalTable.idx_embeddedIntervalId.getVector(sysEnv, intervalId);
+		for (int i = 0; i < v.size(); ++i) {
+			SDMSInterval interval = (SDMSInterval)(v.get(i));
+			reference = new Vector();
+			reference.add(new IntervalReference(
+			                      RefererType.INTERVAL, ReferenceUsage.EMBEDD, interval.getId(sysEnv), interval.getName(sysEnv), interval.isDependent(sysEnv)));
+			references.add(reference);
+			count ++;
+			if (stopAfter > 0 && count >= stopAfter) return references;
+		}
+		v = SDMSIntervalDispatcherTable.idx_filterIntId.getVector(sysEnv, intervalId);
+		for (int i = 0; i < v.size(); ++i) {
+			SDMSIntervalDispatcher dispatcher = (SDMSIntervalDispatcher)(v.get(i));
+			reference = new Vector();
+			reference.add(new IntervalReference(
+			                      RefererType.DISPATCHER, ReferenceUsage.DISPATCH_FILTER, dispatcher.getId(sysEnv), dispatcher.getName(sysEnv), true));
+			references.add(reference);
+			count ++;
+			if (stopAfter > 0 && count >= stopAfter) return references;
+		}
+		v = SDMSIntervalDispatcherTable.idx_selectIntId.getVector(sysEnv, intervalId);
+		for (int i = 0; i < v.size(); ++i) {
+			SDMSIntervalDispatcher dispatcher = (SDMSIntervalDispatcher)(v.get(i));
+			reference = new Vector();
+			reference.add(new IntervalReference(
+			                      RefererType.DISPATCHER, ReferenceUsage.DISPATCH_SELECT, dispatcher.getId(sysEnv), dispatcher.getName(sysEnv), true));
+			references.add(reference);
+			count ++;
+			if (stopAfter > 0 && count >= stopAfter) return references;
+		}
+		v = SDMSSchedulingHierarchyTable.idx_intId.getVector(sysEnv, intervalId);
+		for (int i = 0; i < v.size(); ++i) {
+			SDMSSchedulingHierarchy schedulingHierarchy = (SDMSSchedulingHierarchy)(v.get(i));
+			Long seId = schedulingHierarchy.getSeParentId(sysEnv);
+			Long childId = schedulingHierarchy.getSeChildId(sysEnv);
+			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv,seId);
+			SDMSSchedulingEntity childSe = SDMSSchedulingEntityTable.getObject(sysEnv, childId);
+			IntervalReference intervalReference = new IntervalReference(
+			        RefererType.SCHEDULING_ENTITY, ReferenceUsage.CHILD_ENABLE, seId, se.pathString(sysEnv), false);
+			intervalReference.seType = se.getTypeAsString(sysEnv);
+			intervalReference.childId = childId;
+			intervalReference.childName = childSe.pathString(sysEnv);
+			intervalReference.childType = childSe.getTypeAsString(sysEnv);
+			reference = new Vector();
+			reference.add(intervalReference);
+			references.add(reference);
+			count ++;
+			if (stopAfter > 0 && count >= stopAfter) return references;
+		}
+		v = SDMSScheduleTable.idx_intId.getVector(sysEnv, intervalId);
+		for (int i = 0; i < v.size(); ++i) {
+			SDMSSchedule schedule = (SDMSSchedule)(v.get(i));
+			Long seId = schedule.getSeId(sysEnv);
+			SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv,seId);
+
+			reference = new Vector();
+			reference.add(new IntervalReference(
+			                      RefererType.SCHEDULE, ReferenceUsage.INTERVAL, schedule.getId(sysEnv), schedule.getName(sysEnv), true));
+			references.add(reference);
+			count ++;
+			if (stopAfter > 0 && count >= stopAfter) return references;
+		}
+		return references;
+	}
+
+	private void traverseReferences(SystemEnvironment sysEnv, Vector references)
+	throws SDMSException
+	{
+
+		for (int i = 0; i < references.size(); ++i) {
+			this.traverseReference(sysEnv, (Vector)references.get(i));
+		}
+	}
+
+	private void traverseReference(SystemEnvironment sysEnv, Vector referencePath)
+	throws SDMSException
+	{
+		IntervalReference referer = (IntervalReference)(referencePath.get(0));
+		while (referer.isDependent) {
+			IntervalReference next = this.getReferer(sysEnv, referer);
+			if (next == null) {
+				break;
+			}
+			referencePath.add(next);
+			referer = next;
+		}
+	}
+
+	private IntervalReference getReferer(SystemEnvironment sysEnv, IntervalReference reference)
+	throws SDMSException
+	{
+		IntervalReference referer = null;
+		SDMSInterval interval;
+		SDMSIntervalDispatcher dispatcher;
+		SDMSSchedule schedule;
+		SDMSSchedule parentSchedule;
+		switch (reference.refererType) {
+			case INTERVAL:
+				interval = SDMSIntervalTable.getObject(sysEnv,reference.refererId);
+				Vector references = interval.collectReferences(sysEnv, 1);
+				if (references.size() > 0) {
+					Vector references0 = (Vector)(references.get(0));
+					referer = (IntervalReference)(references0.get(0));
+				}
+				break;
+			case DISPATCHER:
+				dispatcher = SDMSIntervalDispatcherTable.getObject(sysEnv,reference.refererId);
+				interval = SDMSIntervalTable.getObject(sysEnv, dispatcher.getIntId(sysEnv));
+				referer = new IntervalReference(
+				        RefererType.INTERVAL, ReferenceUsage.DISPATCH, interval.getId(sysEnv), interval.getName(sysEnv), interval.isDependent(sysEnv));
+				break;
+			case SCHEDULING_ENTITY:
+				break;
+			case SCHEDULE:
+				schedule = SDMSScheduleTable.getObject(sysEnv,reference.refererId);
+				Long seId = schedule.getSeId(sysEnv);
+				Long parentId = schedule.getParentId(sysEnv);
+				parentSchedule = SDMSScheduleTable.getObject(sysEnv, parentId);
+				if (parentSchedule.getSeId(sysEnv) == seId) {
+					referer = new IntervalReference(
+					        RefererType.SCHEDULE, ReferenceUsage.SCHEDULE, parentSchedule.getId(sysEnv), parentSchedule.getName(sysEnv), true);
+				} else {
+					SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
+					referer = new IntervalReference(
+					        RefererType.SCHEDULING_ENTITY, ReferenceUsage.SCHEDULE, seId, se.pathString(sysEnv), false);
+					referer.seType = se.getTypeAsString(sysEnv);
+				}
+				break;
+		}
+		return referer;
+	}
+
+	public String referenceUsageToString(ReferenceUsage t)
+	{
+		switch (t) {
+			case FILTER:
+				return "FILTER";
+			case EMBEDD:
+				return "EMBEDD";
+			case DISPATCH:
+				return "DISPATCH";
+			case DISPATCH_SELECT:
+				return "DISPATCH_SELECT";
+			case DISPATCH_FILTER:
+				return "DISPATCH_FILTER";
+			case CHILD_ENABLE:
+				return "CHILD_ENABLE";
+			case INTERVAL:
+				return "INTERVAL";
+			case SCHEDULE:
+				return "SCHEDULE";
+		}
+		return "Unknown Reference Type";
+	}
+
+	public String refererTypeToString(RefererType t)
+	{
+		switch (t) {
+			case INTERVAL:
+				return "INTERVAL";
+			case SCHEDULING_ENTITY:
+				return "SCHEDULING_ENTITY";
+			case DISPATCHER:
+				return "DISPATCHER";
+			case SCHEDULE:
+				return "SCHEDULE";
+		}
+		return "Unknown Referer Type";
 	}
 }
 
