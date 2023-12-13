@@ -107,7 +107,7 @@ public class Parser
 %type <Node>	list_exit_status_mapping, list_exit_status_profile, list_exit_status_trans, list_folder, list_footprint, list_group, list_grant
 %type <Node>	list_interval, list_job
 %type <Node>	list_job_definition_hierarchy, list_named_resource, list_nice_profile, list_om, list_pool, list_resource_stat_def, list_rsm, list_rsp, list_schedule
-%type <Node>	list_scheduled_event, list_scope, list_session, list_trigger, list_user, list_wt
+%type <Node>	list_scheduled, list_scheduled_event, list_scope, list_session, list_trigger, list_user, list_wt
 %type <Node>	move_folder, move_job_definition, move_pool, move_schedule, move_scope, multicmd
 %type <Node>	ordinarycmd
 %type <Node>	reassure_cmd, register_cmd, rename_cmd, rename_dist, rename_environment, rename_event, rename_exit_status_prof, rename_exit_status_def
@@ -491,6 +491,7 @@ list_cmd:	list_named_resource						{ $$ = $1; }
 	|	list_rsp							{ $$ = $1; }
 	|	list_rsm							{ $$ = $1; }
 	|	list_schedule							{ $$ = $1; }
+	|	list_scheduled							{ $$ = $1; }
 	|	list_scheduled_event						{ $$ = $1; }
 	|	list_scope							{ $$ = $1; }
 	|	list_session							{ $$ = $1; }
@@ -543,7 +544,8 @@ empty_cmd:									{ $$ = new EmptyCmd(); }
 // ---------------------------------------------------------------------------------------------
 //D:MASTER USER
 //D:NT-ALIAS = approve
-//D:PURPOSE P9999
+//D:PURPOSE P212
+//D:DESCRIPTION approve.tex
 approve_cmd:	APPROVE idlist opt_app_with					{ $$ = new ApproveCmd(true, $2, $3); }
 	|	REJECT idlist opt_app_with					{ $$ = new ApproveCmd(false, $2, $3); }
 
@@ -553,7 +555,8 @@ opt_app_with:									{ $$ = null; }
 
 //D:MASTER USER
 //D:NT-ALIAS = list approval
-//D:PURPOSE P9998
+//D:PURPOSE P213
+//D:DESCRIPTION list_approval.tex
 list_approval:	LIST PENDING APPROVAL opt_la_with					{ $$ = new ListApproval($4); }
 	|	LIST APPROVAL opt_la_with						{ $$ = new ListApproval($3); }
 
@@ -2479,19 +2482,6 @@ jrq_resolve:		INTERNAL						{ $$ = ParseStr.I_DD_INTERNAL; }
 	|		EXTERNAL						{ $$ = ParseStr.I_DD_EXTERNAL; }
 	|		BOTH							{ $$ = ParseStr.I_DD_BOTH; }
 
-//			//D:DEFAULT
-//jrq_sort:		SUBMIT							{ $$ = ParseStr.I_DD_SUBMIT; }
-//	|		ALL_FINAL						{ $$ = ParseStr.I_DD_ALL_FINAL; }
-//	|		JOB_FINAL						{ $$ = ParseStr.I_DD_JOB_FINAL; }
-//
-//			//D:DEFAULT
-//jrq_selectmode:		LAST							{ $$ = ParseStr.I_DD_LAST; }
-//	|		ALL							{ $$ = ParseStr.I_DD_ALL; }
-//			
-//			//D:DEFAULT
-//jrq_failmode:		WAIT							{ $$ = ParseStr.I_DD_WAIT; }
-//	|		FAIL							{ $$ = ParseStr.I_DD_FAIL; }
-//
 			//D:DEFAULT
 jrq_unresolved:		ERROR_TOKEN						{ $$ = ParseStr.I_DD_ERROR; }
 	|		IGNORE							{ $$ = ParseStr.I_DD_IGNORE; }
@@ -3295,7 +3285,7 @@ opt_si_with:									{ $$ = null; }
 										  $<Vector>$.add($7);
 										}
 opt_si_limit:									{ $$ = SystemEnvironment.maxNumCalEntries; }
-	|		"," LIMIT '=' integer					{ $$ = $4; }
+	|		',' LIMIT '=' integer					{ $$ = $4; }
 
 opt_ivowner:									{ $$ = null; }
 	|		'(' id ')'						{ $$ = $2; }
@@ -3470,11 +3460,16 @@ alter_scheduled_event:	alter scheduledevent_url schevwithwith			{ $$ = new Alter
 drop_scheduled_event:	drop scheduledevent_url					{ $$ = new DropScheduledEvent($2, $1); }
 
 //D:MASTER
+//D:NT-ALIAS = list scheduled
+//D:DESCRIPTION list_scheduled.tex
+//D:PURPOSE P214
+list_scheduled:		LIST SCHEDULED WITH lc_withlist				{ $$ = new ListScheduledEvent($4); }
+
+//D:MASTER
 //D:NT-ALIAS = list scheduled event
 //D:DESCRIPTION list_scheduled_event.tex
 //D:PURPOSE P146
 list_scheduled_event:	LIST SCHEDULED_EVENT					{ $$ = new ListScheduledEvent(); }
-	|		LIST SCHEDULED WITH lc_withlist				{ $$ = new ListScheduledEvent($4); }
 
 //D:MASTER
 //D:NT-ALIAS = show scheduled event
