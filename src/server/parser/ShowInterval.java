@@ -55,7 +55,8 @@ public class ShowInterval
 
 	private static final int cmpList[] = {1, 2, 3};
 
-	private final String name;
+	private String name;
+	private Long intId;
 	private final Long ownerObject;
 	private final Vector edgesFromTo;
 
@@ -77,6 +78,18 @@ public class ShowInterval
 	{
 		super();
 		name = n;
+		intId = null;
+		ownerObject = oid;
+		txMode = SDMSTransaction.READONLY;
+		auditFlag = false;
+		edgesFromTo = v;
+	}
+
+	public ShowInterval (Long id, Long oid, Vector v)
+	{
+		super();
+		name = null;
+		intId = id;
 		ownerObject = oid;
 		txMode = SDMSTransaction.READONLY;
 		auditFlag = false;
@@ -87,7 +100,12 @@ public class ShowInterval
 	throws SDMSException
 	{
 
-		SDMSInterval ival = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(name, ownerObject));
+		SDMSInterval ival;
+		if (name != null) {
+			ival = SDMSIntervalTable.idx_name_objId_getUnique (sysEnv, new SDMSKey(name, ownerObject));
+		} else {
+			ival = SDMSIntervalTable.getObject (sysEnv, intId);
+		}
 		if(!ival.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411717", "Insufficient privileges"));
 		Long ivalId = ival.getId (sysEnv);

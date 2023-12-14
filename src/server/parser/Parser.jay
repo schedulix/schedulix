@@ -3277,6 +3277,8 @@ list_interval:		LIST INTERVAL						{ $$ = new ListInterval(false); }
 //D:PURPOSE P136
 //D:DESCRIPTION show_interval.tex
 show_interval:		SHOW INTERVAL intervalname opt_ivowner opt_si_with	{ $$ = new ShowInterval($3, $4, $5); }
+			//D:SUPPRESS
+	|		SHOW INTERVAL id opt_ivowner opt_si_with		{ $$ = new ShowInterval($3, $4, $5); }
 
 opt_si_with:									{ $$ = null; }
 	|		WITH DAY BETWEEN datetime_notz AND datetime_notz opt_si_limit	{ $$ = new Vector();
