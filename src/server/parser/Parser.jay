@@ -2652,6 +2652,7 @@ operate_approvelist: operate_approval						{ $$ = new WithHash(); $<WithHash>$.a
 operate_approval:	operate_priv approval_mode opt_leading			{ $$ = new WithItem(Long.valueOf($1), new SDMSKey($2, $3)); }
 
 approval_mode:		MASTER							{ $$ = SDMSConstants.SE_DEFAULT; }
+	|		DEFAULT							{ $$ = SDMSConstants.SE_DEFAULT; }
 	|		PARENT							{ $$ = SDMSConstants.SE_PARENT; }
 	|		NO							{ $$ = SDMSConstants.SE_NO; }
 	|		REVIEW							{ $$ = SDMSConstants.SE_REVIEW; }
