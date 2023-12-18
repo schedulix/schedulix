@@ -32,7 +32,8 @@ import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
 
-public class LockingSystem {
+public class LockingSystem
+{
 
 	public static int DEBUG_ALL = 1;
 	public static int DEBUG_WAIT_AND_NOTIFY = 2;
@@ -139,9 +140,8 @@ public class LockingSystem {
 				if ((debug & (DEBUG_ALL | DEBUG_DEADLOCK_DETECTION)) != 0)
 					System.out.println(Thread.currentThread().getName() + ":endDeadlockDetection notify waiting deadlock detection");
 				deadlockDetectionLock.notify();
-			} else
-				if ((debug & (DEBUG_ALL | DEBUG_DEADLOCK_DETECTION)) != 0)
-					System.out.println(Thread.currentThread().getName() + ":endDeadlockDetection no waiting deadlock detection");
+			} else if ((debug & (DEBUG_ALL | DEBUG_DEADLOCK_DETECTION)) != 0)
+				System.out.println(Thread.currentThread().getName() + ":endDeadlockDetection no waiting deadlock detection");
 		}
 	}
 

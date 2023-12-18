@@ -414,6 +414,8 @@ public class ShowInterval
 			table.addData (sysEnv, row);
 		}
 
+		Collections.sort (table.dataset, table.getComparator (sysEnv, 2));
+
 		return table;
 	}
 

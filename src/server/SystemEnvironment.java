@@ -728,8 +728,7 @@ public class SystemEnvironment implements Cloneable
 					result.add(tmp.toString());
 					tmp.delete(0, tmp.length());
 				}
-			} else
-			if (chr[i] == ',' || chr[i] == '(' || chr[i] == ')') {
+			} else if (chr[i] == ',' || chr[i] == '(' || chr[i] == ')') {
 				if (inIdentifier) {
 					inIdentifier = false;
 					result.add(tmp.toString());

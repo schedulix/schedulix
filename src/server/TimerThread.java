@@ -266,11 +266,10 @@ public class TimerThread
 						trigDate = nextActivityDate;
 					}
 
+				else if (backlogHandling != SDMSScheduledEvent.NONE)
+					baseDate = nextActivityDate;
 				else
-					if (backlogHandling != SDMSScheduledEvent.NONE)
-						baseDate = nextActivityDate;
-					else
-						baseDate = now;
+					baseDate = now;
 			}
 
 			if (trigDate == null)

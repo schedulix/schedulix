@@ -35,7 +35,8 @@ import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 
-public class LockingSystemSynchronized {
+public class LockingSystemSynchronized
+{
 
 	private static HashMap<SDMSThread, HashMap<Object, ObjectLock>> threads = new HashMap<SDMSThread, HashMap<Object, ObjectLock>> ();
 
@@ -270,8 +271,7 @@ public class LockingSystemSynchronized {
 							escalateDeadlock = true;
 						}
 						break;
-					} else
-						if (p.next.wait && !p.next.notify) throw new RuntimeException();
+					} else if (p.next.wait && !p.next.notify) throw new RuntimeException();
 
 					p = p.next;
 				}

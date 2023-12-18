@@ -28,7 +28,8 @@ package de.independit.scheduler.server.locking;
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.exception.*;
 
-public class SyncLock {
+public class SyncLock
+{
 
 	final ObjectLock lock;
 

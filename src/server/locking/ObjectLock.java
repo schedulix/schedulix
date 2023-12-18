@@ -33,7 +33,8 @@ import de.independit.scheduler.server.locking.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.util.*;
 
-public class ObjectLock {
+public class ObjectLock
+{
 
 	private static final boolean reUseLocks = true;
 
