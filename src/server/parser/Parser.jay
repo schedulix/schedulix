@@ -543,6 +543,7 @@ empty_cmd:									{ $$ = new EmptyCmd(); }
 // A P P R O V E   C O M M A N D
 // ---------------------------------------------------------------------------------------------
 //D:MASTER USER
+//D:LEVEL professional
 //D:NT-ALIAS = approve
 //D:PURPOSE P212
 //D:DESCRIPTION approve.tex
@@ -554,6 +555,7 @@ opt_app_with:									{ $$ = null; }
 
 
 //D:MASTER USER
+//D:LEVEL professional
 //D:NT-ALIAS = list approval
 //D:PURPOSE P213
 //D:DESCRIPTION list_approval.tex
@@ -2116,42 +2118,42 @@ est_trans:			statusname TO statusname			{ $$ = new StatusTranslation($1, $3); }
 // -----------------------------------------------------------------------------------
 
 //D:MASTER
-//D:LEVEL enterprise
+//D:LEVEL professional
 //D:NT-ALIAS = create nice profile
 //D:PURPOSE P206
 //D:DESCRIPTION create_nice_profile.tex
 create_nice_profile:	create NICE_PROFILE profilename	opt_npwith		{ $$ = new CreateNiceProfile($3, $4, $1); }
 
 //D:MASTER
-//D:LEVEL enterprise
+//D:LEVEL professional
 //D:NT-ALIAS = alter nice profile
 //D:PURPOSE P207
 //D:DESCRIPTION alter_nice_profile.tex
 alter_nice_profile:	alter np_url with npwith				{ $$ = new AlterNiceProfile($2, $4, $1); }
 
 //D:MASTER
-//D:LEVEL enterprise
+//D:LEVEL professional
 //D:NT-ALIAS = drop nice profile
 //D:PURPOSE P208
 //D:DESCRIPTION drop_nice_profile.tex
 drop_nice_profile:	drop np_url			 			{ $$ = new DropNiceProfile($2, $1); }
 
 //D:MASTER
-//D:LEVEL enterprise
+//D:LEVEL professional
 //D:NT-ALIAS = rename nice profile
 //D:PURPOSE P209
 //D:DESCRIPTION rename_nice_profile.tex
 rename_nice_profile:	RENAME np_url TO profilename				{ $$ = new RenameNiceProfile($2, $4); }
 
 //D:MASTER
-//D:LEVEL enterprise
+//D:LEVEL professional
 //D:NT-ALIAS = list nice profile
 //D:DESCRIPTION list_nice_profile.tex
 //D:PURPOSE P210
 list_nice_profile:	LIST NICE_PROFILE					{ $$ = new ListNiceProfile(); }
 
 //D:MASTER
-//D:LEVEL enterprise
+//D:LEVEL professional
 //D:NT-ALIAS = show nice profile
 //D:DESCRIPTION show_nice_profile.tex
 //D:PURPOSE P211
@@ -2303,6 +2305,7 @@ job_withitem:		RUN_PROGRAM '=' cmdline					{ $$ = new WithItem(ParseStr.map($1.t
 			//D:OPTION group
 	|		with_group						{ $$ = $1; }
 	|		with_inherit_grant					{ $$ = $1; }
+			//D:LEVEL professional
 	|		approval_required					{ $$ = $1; }
 
 
@@ -2643,6 +2646,7 @@ jp_aggfunction:		AVG							{ $$ = ParseStr.I_AVG; }
 	|		MIN							{ $$ = ParseStr.I_MIN; }
 	|		SUM							{ $$ = ParseStr.I_SUM; }
 
+			//D:LEVEL professional
 approval_required:	APPROVAL '=' '(' operate_approvelist ')'		{ $$ = new WithItem(ParseStr.S_APPROVE, $4); }
 	|		APPROVAL '=' NONE					{ $$ = new WithItem(ParseStr.S_APPROVE, new WithHash()); }
 
