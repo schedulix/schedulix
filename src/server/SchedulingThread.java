@@ -309,11 +309,14 @@ public class SchedulingThread extends InternalSession
 		myGroups.add(SDMSObject.adminGId);
 		sysEnv.cEnv.pushGid(sysEnv, myGroups);
 		sysEnv.cEnv.setUser();
+		Long jsId = sysEnv.cEnv.uid();
+		sysEnv.cEnv.uid = SDMSObject.internalUId;
 		try {
 			scheduleProtected(sysEnv);
 		} finally {
 			sysEnv.cEnv.popGid(sysEnv);
 			sysEnv.cEnv.setJobServer();
+			sysEnv.cEnv.uid = jsId;
 		}
 		return true;
 	}
