@@ -31,4 +31,4 @@ if table['hierarchy'] == 1:
 
 import generate
 generate.generate(table)
-" | python
+" | python2
