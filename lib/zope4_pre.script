@@ -1,52 +1,67 @@
 echo "executing pre zope -- %version-%release"
 export INSTALLHOME=/opt/schedulix;
 export PYTHONVENV=$INSTALLHOME/Zope4;
-export ZOPEVERSION=5.8.6;
+export ZOPEVERSION=5.7.3;
 export ZOPEINSTANCE=$INSTALLHOME/schedulixweb4;
+
 if [ "$1" == "1" ]; then
 	# we set the umask such that the allowed access is user-only (if not overridden)
 	# nobody needs to read the zope directories at filesystem level, except for zope itself
 	umask 077
 	echo "fetching zope4"
-	su schedulix -c "mkdir -p $PYTHONENV;
-	cd /opt/schedulix/Zope4;
-	python3 -m venv $PYTHONVENV;
-	$PYTHONVENV/bin/pip install -U pip;
-	$PYTHONVENV/bin/pip install "Zope[wsgi]==$ZOPEVERSION" -c https://zopefoundation.github.io/Zope/releases/$ZOPEVERSION/constraints.txt;
-	$PYTHONVENV/bin/pip install Products.ExternalMethod;
-	$PYTHONVENV/bin/pip install Products.Sessions;
-	$PYTHONVENV/bin/pip install Products.SiteErrorLog;
-	$PYTHONVENV/bin/pip install Products.PythonScripts;
-	$PYTHONVENV/bin/pip install python-ldap
-	$PYTHONVENV/bin/mkwsgiinstance -d $ZOPEINSTANCE -u sdmsadm:sdmsadm;
-	cd $ZOPEINSTANCE/etc;
-	mv zope.ini zope.ini.$$;
-	sed 's/^\(host[ 	]*=[ 	]*127.0.0.1\)/# \1/
-	     s/^\(^port[ 	]*=[ 	]*8080\)/# \1/i
-	     /port[ 	]*=[ 	]*8080/a listen = *:8080' < zope.ini.$$ > zope.ini;
-	rm -f zope.ini.$$;
-	ln -s /opt/schedulix/schedulix/zope4/Extensions $ZOPEINSTANCE;
-	ln -s /opt/schedulix/schedulix/zope4/BICsuiteSubmitMemory $PYTHONVENV/lib/python3.6/site-packages/Products;
-	ln -s /opt/schedulix/schedulix/zope4/StringFixer $PYTHONVENV/lib/python3.6/site-packages/Products;
-	ln -s /opt/schedulix/schedulix/zope4/RemoteUserFolder $PYTHONVENV/lib/python3.6/site-packages/Products;
-	mkdir $ZOPEINSTANCE/import;
-	ln -s /opt/schedulix/schedulix/zope4/import/SDMS.zexp $ZOPEINSTANCE/import
+	su schedulix -c "
+		echo creating directory $PYTHONVENV;
+		mkdir -p $PYTHONVENV;
+		ls -la $PYTHONVENV;
+		python3 -m venv $PYTHONVENV;
+		ls -la $PYTHONVENV;
+		cd $PYTHONVENV/lib;
+		pwd;
+		ls -la $PYTHONVENV/lib;
+		ls;
+	"
+	export PYTHONDIR=$(ls $PYTHONVENV/lib);
+	echo PYTHONDIR=$PYTHONDIR;
+	su schedulix -c "
+		echo PYTHONDIR=$PYTHONDIR;
+		$PYTHONVENV/bin/pip install -U pip;
+		$PYTHONVENV/bin/pip install "Zope[wsgi]==$ZOPEVERSION" -c https://zopefoundation.github.io/Zope/releases/$ZOPEVERSION/constraints.txt;
+		$PYTHONVENV/bin/pip install Products.ExternalMethod;
+		$PYTHONVENV/bin/pip install Products.Sessions;
+		$PYTHONVENV/bin/pip install Products.SiteErrorLog;
+		$PYTHONVENV/bin/pip install Products.PythonScripts;
+		$PYTHONVENV/bin/pip install python-ldap
+		$PYTHONVENV/bin/mkwsgiinstance -d $ZOPEINSTANCE -u sdmsadm:sdmsadm;
+		cd $ZOPEINSTANCE/etc;
+		mv zope.ini zope.ini.$$;
+		sed 's/^\(host[ 	]*=[ 	]*127.0.0.1\)/# \1/
+		     s/^\(^port[ 	]*=[ 	]*8080\)/# \1/i
+		     /port[ 	]*=[ 	]*8080/a listen = *:8080' < zope.ini.$$ > zope.ini;
+		rm -f zope.ini.$$;
+		ln -s /opt/schedulix/schedulix/zope4/Extensions $ZOPEINSTANCE;
+		ln -s /opt/schedulix/schedulix/zope4/BICsuiteSubmitMemory $PYTHONVENV/lib/$PYTHONDIR/site-packages/Products;
+		ln -s /opt/schedulix/schedulix/zope4/StringFixer $PYTHONVENV/lib/$PYTHONDIR/site-packages/Products;
+		ln -s /opt/schedulix/schedulix/zope4/RemoteUserFolder $PYTHONVENV/lib/$PYTHONDIR/site-packages/Products;
+		mkdir $ZOPEINSTANCE/import;
+		ln -s /opt/schedulix/schedulix/zope4/import/SDMS.zexp $ZOPEINSTANCE/import
 	"
 else
 	echo "upgrading... software is already there"
 	service schedulix-zope4 stop || true
+	cd /opt/schedulix/Zope4
+	PYTHONDIR=`ls lib`
         #
         # Due to a bug in previous (2.9) versions, links with a release number were created
         # If they are there, we'lll have to replace them whit the stable links
         #
-        if ls -l $PYTHONVENV/lib/python3.6/site-packages/Products/StringFixer | grep "schedulix-"; then
+        if ls -l $PYTHONVENV/lib/$PYTHONDIR/site-packages/Products/StringFixer | grep "schedulix-"; then
                 rm $ZOPEINSTANCE/Extensions
-                rm $PYTHONVENV/lib/python3.6/site-packages/Products/BICsuiteSubmitMemory
-                rm $PYTHONVENV/lib/python3.6/site-packages/Products/StringFixer
+                rm $PYTHONVENV/lib/$PYTHONDIR/site-packages/Products/BICsuiteSubmitMemory
+                rm $PYTHONVENV/lib/$PYTHONDIR/site-packages/Products/StringFixer
                 rm $ZOPEINSTANCE/import/SDMS.zexp
                 ln -s /opt/schedulix/schedulix/zope4/Extensions $ZOPEINSTANCE;
-                ln -s /opt/schedulix/schedulix/zope4/BICsuiteSubmitMemory $PYTHONVENV/lib/python3.6/site-packages/Products;
-                ln -s /opt/schedulix/schedulix/zope4/StringFixer $PYTHONVENV/lib/python3.6/site-packages/Products;
+                ln -s /opt/schedulix/schedulix/zope4/BICsuiteSubmitMemory $PYTHONVENV/lib/$PYTHONDIR/site-packages/Products;
+                ln -s /opt/schedulix/schedulix/zope4/StringFixer $PYTHONVENV/lib/$PYTHONDIR/site-packages/Products;
                 ln -s /opt/schedulix/schedulix/zope4/import/SDMS.zexp $ZOPEINSTANCE/import
         fi
 
