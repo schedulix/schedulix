@@ -89,7 +89,6 @@ Port=2506' > /opt/schedulix/etc/sdmshrc
 
 	ln -s /etc/init.d/schedulix-server-pg /etc/init.d/schedulix-server
 
-	chkconfig schedulix-server on
 	echo "Loading convenience package"
 	service schedulix-server start
 	su - schedulix -c ". \$HOME/.bashrc; sdmsh < /opt/schedulix/schedulix/install/convenience.sdms;"
