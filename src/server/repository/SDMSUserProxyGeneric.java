@@ -39,6 +39,7 @@ public class SDMSUserProxyGeneric extends SDMSProxy
 {
 
 	public final static String SYSTEM = "SYSTEM";
+	public final static String FE_PROPERTIES = "FE_PROPERTIES";
 	public final static String INTERNAL = "INTERNAL";
 	public final static String NOBODY = "NOBODY";
 	public final static int MD5 = 0;

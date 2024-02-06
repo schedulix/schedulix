@@ -79,6 +79,7 @@ public class ListUser extends Node
 			if(u.getDeleteVersion(sysEnv).longValue() != 0) continue;
 			if(u.getName(sysEnv).equals(SDMSUser.INTERNAL)) continue;
 			if(u.getName(sysEnv).equals(SDMSUser.NOBODY))	continue;
+			if(u.getName(sysEnv).equals(SDMSUser.FE_PROPERTIES))	continue;
 
 			SDMSPrivilege p = u.getPrivileges(sysEnv);
 			if (!p.can(SDMSPrivilege.VIEW) && !p.can(SDMSPrivilege.MANAGE_USER) && !sysPrivs.can(SDMSPrivilege.MANAGE_GROUP)) {
