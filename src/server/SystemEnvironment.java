@@ -495,7 +495,7 @@ public class SystemEnvironment implements Cloneable
 		getTimerSuspendLimit();
 		getTimerTimeout();
 		getDbLoader();
-		getCompatLevel();
+		getCompatLevel(false);
 		getSingleServer();
 		getMaxNumCalEntries();
 		getCalHorizon();
@@ -552,11 +552,11 @@ public class SystemEnvironment implements Cloneable
 			enhancedCmdParsing = false;
 	}
 
-	public static synchronized void getCompatLevel()
+	public static synchronized void getCompatLevel(boolean force)
 	{
 		Properties tmpProps = null;
 
-		compatLevel = props.getProperty(S_LEVEL, programLevel);
+		compatLevel = props.getProperty(S_LEVEL, programLevel).toUpperCase();
 		if (programLevel.equals(S_OPEN))
 			compatLevel = S_BASIC;
 		if (compatLevel != S_BASIC) {
