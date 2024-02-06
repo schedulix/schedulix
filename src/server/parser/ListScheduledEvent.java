@@ -221,6 +221,7 @@ public class ListScheduledEvent
 		desc.add("SCE_NAME");
 		desc.add("SCE_ACTIVE");
 		desc.add("EVT_NAME");
+		desc.add("STARTTIME_GMT");
 		desc.add("STARTTIME");
 		desc.add("EXPECTED_FINAL_TIME");
 		desc.add("TIME_ZONE");
@@ -311,6 +312,7 @@ public class ListScheduledEvent
 					row.add (sceName);
 					row.add (sceActive);
 					row.add (evtName);
+					row.add (tmpDate);
 					row.add (tmpDate.toString(sceTz));
 					row.add (finalTime);
 					row.add (tzId);
@@ -320,6 +322,7 @@ public class ListScheduledEvent
 				baseDate.set (trigDate.plus (1));
 			} while(baseDate.le(finalDate) && (nrEntries < maxEntries));
 		}
+		Collections.sort (table.dataset, table.getComparator (sysEnv, 10, 2));
 		result.setOutputContainer (table);
 
 		result.setFeedback (new SDMSMessage (sysEnv, "04207261919", "$1 Scheduled Event(s) found", Integer.valueOf (table.lines)));
