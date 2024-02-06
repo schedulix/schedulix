@@ -199,7 +199,10 @@ public class TriggerThread extends InternalSession
 			int type = t.getType(sysEnv).intValue();
 			if(type == SDMSTrigger.UNTIL_FINISHED) {
 				int smeState = sme.getState(sysEnv).intValue();
-				if(smeState == SDMSSubmittedEntity.FINISHED || smeState == SDMSSubmittedEntity.BROKEN_FINISHED) {
+				if(smeState == SDMSSubmittedEntity.FINISHED ||
+				    ((smeState == SDMSSubmittedEntity.TO_KILL || smeState == SDMSSubmittedEntity.KILLED) && sme.getJobEsdId(sysEnv) != null) ||
+				    smeState == SDMSSubmittedEntity.BROKEN_FINISHED
+				  ) {
 					return;
 				}
 			}

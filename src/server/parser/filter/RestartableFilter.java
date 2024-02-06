@@ -59,10 +59,13 @@ public class RestartableFilter extends Filter
 				   s == SDMSSubmittedEntity.ERROR) return true;
 			}
 			if(s != SDMSSubmittedEntity.FINAL &&
-			   s != SDMSSubmittedEntity.FINISHED) return false;
+			    s != SDMSSubmittedEntity.FINISHED &&
+			    !((s == SDMSSubmittedEntity.TO_KILL || s == SDMSSubmittedEntity.KILLED) && sme.getJobEsdId(sysEnv) == null)
+			  ) {
+				return false;
+			}
 			if(stateType.intValue() == SDMSExitState.FINAL) {
-				if(!sme.getJobIsFinal(sysEnv).booleanValue()) return false;
-				return true;
+				return sme.getJobIsFinal(sysEnv).booleanValue();
 			}
 			if(stateType.intValue() == SDMSExitState.PENDING) {
 				if(sme.getJobIsFinal(sysEnv).booleanValue()) return false;
