@@ -2855,7 +2855,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			setFinishTs(sysEnv, ts);
 		}
 		if (newState != FINISHED && newState != CANCELLED) {
-			if (newState != FINAL && !(newState == TO_KILL && oldState == FINISHED) && newState != KILLED) {
+			if (newState != FINAL && !(newState == TO_KILL && (oldState == FINISHED || oldState == KILLED)) && newState != KILLED) {
 				setJobEsdId(sysEnv, null);
 				setJobEsdPref(sysEnv, null);
 			}
