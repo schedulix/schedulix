@@ -89,6 +89,11 @@ public class SetParameter extends ManipJob
 				String oldValue;
 				try {
 					oldValue = sme.getVariableValue(sysEnv, name, true, ParseStr.S_DEFAULT, false, null, false);
+					if (oldValue.equals(value)) {
+						if (SDMSEntityVariableTable.idx_smeId_Name.containsKey(sysEnv, new SDMSKey(sme.getId(sysEnv), name))) {
+							continue;
+						}
+					}
 				} catch (SDMSException e) {
 					oldValue = "UNKNOWN";
 				}
