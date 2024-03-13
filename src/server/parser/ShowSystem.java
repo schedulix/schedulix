@@ -81,7 +81,7 @@ public class ShowSystem extends Node
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		SystemEnvironment.getCompatLevel();
+		SystemEnvironment.getCompatLevel(true);
 		SDMSOutputContainer d_container = null;
 		SDMSOutputContainer w_container = null;
 		Vector desc = new Vector();

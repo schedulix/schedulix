@@ -115,12 +115,20 @@ public class RegisterServer extends Node
 			switch (state) {
 				case SDMSSubmittedEntity.STARTED:
 				case SDMSSubmittedEntity.RUNNING:
-				case SDMSSubmittedEntity.TO_KILL:
-				case SDMSSubmittedEntity.KILLED:
 				case SDMSSubmittedEntity.BROKEN_ACTIVE:
 					sme.releaseResources(sysEnv, newState);
 					sme.setErrorMsg(sysEnv, "Jobserver deregistered");
 					sme.setState(sysEnv, Integer.valueOf(newState));
+					break;
+				case SDMSSubmittedEntity.TO_KILL:
+				case SDMSSubmittedEntity.KILLED:
+					if (sme.getJobEsdId(sysEnv) == null ) {
+						sme.releaseResources(sysEnv, newState);
+						sme.setErrorMsg(sysEnv, "Jobserver deregistered");
+						sme.setState(sysEnv, Integer.valueOf(newState));
+					} else {
+						sme.setState(sysEnv, SDMSSubmittedEntity.FINISHED);
+					}
 					break;
 				case SDMSSubmittedEntity.STARTING:
 					sme.setState(sysEnv, SDMSConstants.SME_RUNNABLE);

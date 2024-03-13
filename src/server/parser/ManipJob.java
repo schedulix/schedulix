@@ -250,11 +250,15 @@ public abstract class ManipJob extends Node
 		}
 
 		boolean isSuspended = (sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND);
-		if((state != SDMSSubmittedEntity.FINISHED && state != SDMSSubmittedEntity.BROKEN_FINISHED && state != SDMSSubmittedEntity.ERROR && !isSuspended) ||
+		if((state != SDMSSubmittedEntity.FINISHED && state != SDMSSubmittedEntity.BROKEN_FINISHED && state != SDMSSubmittedEntity.ERROR &&
+		    !(state == SDMSSubmittedEntity.TO_KILL && sme.getJobEsdId(sysEnv) != null) &&
+		    !(state == SDMSSubmittedEntity.KILLED  && sme.getJobEsdId(sysEnv) != null) &&
+		    !isSuspended
+		   ) ||
 		    (state == SDMSSubmittedEntity.ERROR && !sme.getJobIsRestartable(sysEnv).booleanValue()) ||
 		    (isSuspended && (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED ||
-		                     state == SDMSSubmittedEntity.RUNNING || state == SDMSSubmittedEntity.TO_KILL ||
-		                     state == SDMSSubmittedEntity.KILLED || state == SDMSSubmittedEntity.BROKEN_ACTIVE))) {
+		                     state == SDMSSubmittedEntity.RUNNING || (state == SDMSSubmittedEntity.TO_KILL && sme.getJobEsdId(sysEnv) == null) ||
+		                     (state == SDMSSubmittedEntity.KILLED  && sme.getJobEsdId(sysEnv) == null) || state == SDMSSubmittedEntity.BROKEN_ACTIVE))) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03207082043", "you can only set a state for a (broken) finished  or a suspended not active job"));
 		}
 		if(state != SDMSSubmittedEntity.BROKEN_FINISHED  && state != SDMSSubmittedEntity.ERROR) {

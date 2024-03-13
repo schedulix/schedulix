@@ -902,7 +902,11 @@ public class AlterJob extends ManipJob
 				break;
 			case SDMSSubmittedEntity.ERROR:
 				if(s == SDMSSubmittedEntity.TO_KILL) {
-					sme.setState(sysEnv, SDMSConstants.SME_RUNNING);
+					if (sme.getJobEsdId(sysEnv) == null) {
+						sme.setState(sysEnv, SDMSConstants.SME_RUNNING);
+					} else {
+						sme.setState(sysEnv, SDMSConstants.SME_FINISHED);
+					}
 				}
 				break;
 			default:

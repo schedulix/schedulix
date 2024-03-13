@@ -354,13 +354,14 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	{
 		int state = getState(sysEnv).intValue();
 
-		if (state != RUNNING && state != KILLED && state != BROKEN_ACTIVE) {
+		if (state == RUNNING || state == KILLED || state == BROKEN_ACTIVE || (state == FINISHED && isPending(sysEnv))) {
+			killSingleJob(sysEnv);
+		} else {
 			if (!killRecursive) {
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "03207081340",
 					"Cannot kill a submitted entity which is not in a running State"));
 			}
-		} else
-			killSingleJob(sysEnv);
+		}
 
 		if (killRecursive) {
 			Vector cv = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, getId(sysEnv));
@@ -416,8 +417,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		if (state == STARTING ||
 		    state == STARTED ||
 		    state == RUNNING ||
-		    state == TO_KILL ||
-		    state == KILLED ||
+		    (state == TO_KILL && getJobEsdId(sysEnv) == null) ||
+		    (state == KILLED  && getJobEsdId(sysEnv) == null) ||
 		    state == BROKEN_ACTIVE ||
 		    getCntStarting(sysEnv).intValue() +
 		    getCntStarted(sysEnv).intValue() +
@@ -2854,7 +2855,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			setFinishTs(sysEnv, ts);
 		}
 		if (newState != FINISHED && newState != CANCELLED) {
-			if (newState != FINAL) {
+			if (newState != FINAL && !(newState == TO_KILL && (oldState == FINISHED || oldState == KILLED)) && newState != KILLED) {
 				setJobEsdId(sysEnv, null);
 				setJobEsdPref(sysEnv, null);
 			}
@@ -3068,8 +3069,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		    state != SDMSSubmittedEntity.DEPENDENCY_WAIT &&
 		    state != SDMSSubmittedEntity.STARTED &&
 		    state != SDMSSubmittedEntity.RUNNING &&
-		    state != SDMSSubmittedEntity.TO_KILL &&
-		    state != SDMSSubmittedEntity.KILLED &&
+		    !(state == SDMSSubmittedEntity.TO_KILL && getJobEsdId(sysEnv) == null)  &&
+		    !(state == SDMSSubmittedEntity.KILLED && getJobEsdId(sysEnv) == null) &&
 		    state != SDMSSubmittedEntity.BROKEN_ACTIVE &&
 		    state != SDMSSubmittedEntity.FINAL &&
 		    state != SDMSSubmittedEntity.CANCELLED &&
@@ -4058,11 +4059,9 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				break;
 			case STARTED:
 			case RUNNING:
-			case TO_KILL:
 			case BROKEN_ACTIVE:
 			case CANCELLED:
 			case FINAL:
-			case KILLED:
 				newStatSelect = STAT_NONE;
 				break;
 
@@ -4071,6 +4070,17 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 					newStatSelect = STAT_RESTARTABLE;
 				else if (suspended) newStatSelect = STAT_SUSPEND;
 				else newStatSelect = STAT_CHILD_WAIT;
+				break;
+			case TO_KILL:
+			case KILLED:
+				if (getJobEsdId(sysEnv) == null) {
+					newStatSelect = STAT_NONE;
+				} else {
+					if (getJobIsRestartable(sysEnv).booleanValue())
+						newStatSelect = STAT_RESTARTABLE;
+					else if (suspended) newStatSelect = STAT_SUSPEND;
+					else newStatSelect = STAT_CHILD_WAIT;
+				}
 				break;
 			case BROKEN_FINISHED:
 			case ERROR:
