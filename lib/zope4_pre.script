@@ -23,7 +23,7 @@ if [ "$1" == "1" ]; then
 	mv zope.ini zope.ini.$$;
 	sed 's/^\(host[ 	]*=[ 	]*127.0.0.1\)/# \1/
 	     s/^\(^port[ 	]*=[ 	]*8080\)/# \1/i
-	     /port[ 	]*=[ 	]*8080/a listen = *:8080' < zope.ini.$$ > zope.ini;
+	     /port[ 	]*=[ 	]*8080/a listen = 0.0.0.0:8080' < zope.ini.$$ > zope.ini;
 	rm -f zope.ini.$$;
 	ln -s /opt/schedulix/schedulix/zope4/Extensions $ZOPEINSTANCE;
 	ln -s /opt/schedulix/schedulix/zope4/BICsuiteSubmitMemory $PYTHONVENV/lib/python3.6/site-packages/Products;

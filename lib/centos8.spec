@@ -125,7 +125,7 @@ echo "executing preun base -- %version-%release"
 %ghost %config(noreplace) %attr(644, schedulix, schedulix) /opt/schedulix/etc/java.conf 
 %ghost %config(noreplace) %attr(644, schedulix, schedulix) /opt/schedulix/etc/SETTINGS
 #
-# exclude this spec file as it isn't required in any binary package
+# exclude all spec files as they aren't required in any binary package
 #
 %exclude /opt/schedulix/schedulix-%{version}/lib/centos7.spec
 %exclude /opt/schedulix/schedulix-%{version}/lib/centos8.spec
@@ -139,6 +139,10 @@ echo "executing preun base -- %version-%release"
 %exclude /opt/schedulix/schedulix-%{version}/lib/server-rmt_pre.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/zope_post.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/zope_pre.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/zope4_post.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/zope4_pre.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/fe_post.script
+%exclude /opt/schedulix/schedulix-%{version}/lib/fe_preun.script
 
 %package server-rmt
 # ----------------------------------------------------------------------------------------
@@ -274,6 +278,7 @@ fi
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/server-restart
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/server-start
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/server-stop
+%attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/server-run
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/server.conf.template
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/sql/MASTER_STATE.sql
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/sql/REPOSITORY_LOCK.sql
@@ -349,6 +354,7 @@ fi
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/server-restart
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/server-start
 %attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/server-stop
+%attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/bin/server-run
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/server.conf.template
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/sql/MASTER_STATE.sql
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/sql/REPOSITORY_LOCK.sql
@@ -638,8 +644,6 @@ fi
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/schedulixweb4
 %attr(0744, root, root)             /etc/init.d/schedulix-zope4
 # exclude all compiled python files
-%exclude   /opt/schedulix/schedulix-%{version}/lib/zope4_post.script
-%exclude   /opt/schedulix/schedulix-%{version}/lib/zope4_pre.script
 %exclude   /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory/BICsuiteSubmitMemory.pyc
 %exclude   /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory/BICsuiteSubmitMemory.pyo
 %exclude   /opt/schedulix/schedulix-%{version}/zope4/BICsuiteSubmitMemory/__init__.pyc
@@ -657,6 +661,35 @@ fi
 %exclude   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/__init__.pyc
 %exclude   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/__init__.pyo
 
+%package fe
+# ----------------------------------------------------------------------------------------
+#
+# fe package
+#
+# ----------------------------------------------------------------------------------------
+Summary:		The schedulix fe package installs the angular based schedulix web frontend
+Group:			Applications/System
+Requires:		schedulix-zope4 = %{version}-%{release} wget curl
+
+%description fe
+%commonDescription
+
+The schedulix fe package installs the new angular based schedulix web frontend.
+WARNING: This is an experimental release of the GUI and it is recommended to keep the Zope4
+installation as a backup.
+
+%post fe
+%include ../lib/fe_post.script
+
+%preun fe
+%include ../lib/fe_preun.script
+
+%postun fe
+rm /opt/schedulix/schedulix-%{version}/zope4/import/schedulix-fe.zexp*
+echo "executing postun fe -- %version-%release"
+
+%files fe
+%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/import/schedulix-fe.zexp.gz
 
 %package examples
 # ----------------------------------------------------------------------------------------
