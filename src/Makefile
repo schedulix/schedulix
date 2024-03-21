@@ -61,7 +61,7 @@ COPYRIGHT = $(shell grep 'public static final String copyright' jobserver/Libjni
 COMPANY = $(shell grep 'public static final String company' jobserver/Libjni.java | sed 's/^[^"]*"\([^"]*\)".*$$/\1/')
 BUILD = $(shell if [ -d ../.git ]; then git log | awk '/commit/ { print $$2; exit }' | tee $(SDMSHOME)/buildhash; else cat ../buildhash; fi)
 SWDIR = $(shell basename $(SDMSHOME))
-RHREL = $(shell if [ -f /etc/redhat-release ]; then cat /etc/redhat-release | sed 's/.* release \([0-9][0-9]*\)\..*/\1/g'i; else echo 8; fi)
+RHREL = $(shell if [ -f /etc/redhat-release ]; then cat /etc/redhat-release | sed 's/.* release \([0-9][0-9]*\)\.*/\1/g'i; else echo 8; fi)
 
 JAR_FILE = $(SDMSHOME)/lib/BICsuite.jar
 MANIFEST = /tmp/sdms.manifest

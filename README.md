@@ -10,10 +10,10 @@ doc/online_de.pdf (German).
 
 -------------------------------------------------------------------------------------------
 
-The last stable branch is v2.10
+The last stable branch is v2.11
 It can be obtained by doing a
 
-git clone https://github.com/schedulix/schedulix.git -b v2.10
+git clone https://github.com/schedulix/schedulix.git -b v2.11
 
 -------------------------------------------------------------------------------------------
 
@@ -22,18 +22,31 @@ problems.
 
 -------------------------------------------------------------------------------------------
 
-We've added support for building rpms for RHEL8/CentOS8.
-Instead of Zope 2 it is possible to setup the GUI with Zope 4/5 which uses Python3.
-Since the support for Python2 has terminated we recommend to use the new Zope release.
-The downside is that we don't have an automated way of migrating the user information yet.
-As an interesting new feature we've added support for setting up single sign on in
-combination with Active Directory. The procedure to set up single sign on is described
-in the installation guide.
+With this release we start to reduce the support for Zope2.
+There won't be any rpms that will install a new Zope2 instance, but the schedulix-zope
+rpms will be able to upgrade the Zope2 GUI.
+Instead of Zope 2 it is reccomended to setup the GUI with Zope 4/5 which uses Python3.
+How to move from Zope2 to Zope5 is described in the installation guide.
+The next release probably won't support Zope2 any more.
+
+-------------------------------------------------------------------------------------------
+
+With this release we also publish a new GUI.
+Within the zope4 directory there is a compressed zexp file called schedulix-fe.zexp.gz.
+After gunzipping it it can be imported into a Zope 5 instance.
+With an URL like http://localhost:8080/schedulix-fe the new GUI will be opened.
+
+This GUI is still under development and should be regarded as an alpha release.
+It is entirely open source and the source code can be obtained by
+
+git clone https://gitlab.com/schedulix/schedulix-fe.git -b dev
 
 -------------------------------------------------------------------------------------------
 
 For those not so very interested in compiling the software themselves there are RPM 
-packages available that can be installed on RHEL/CentOS 7 and 8.
+packages available that can be installed on RHEL/CentOS 7 and 8. RPMs for RHEL9 are in 
+development. The required files for building the packages will soon be published both
+in the v2.11 branch as well in the master branch.
 The repository information can be downloaded from
 https://www.independit.de/Downloads/schedulix-repo.rpm
 

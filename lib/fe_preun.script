@@ -1,0 +1,39 @@
+echo "executing uninstall fe -- %version-%release"
+#
+# since we can't know whether this is an installation done much later than the original zope4 install,
+# or an installation done together with zope4, we'll have to assume the worst (the former option).
+
+export INSTALLHOME=/opt/schedulix;
+export ZOPEINSTANCE=$INSTALLHOME/schedulixweb4;
+
+# create a temporary zope admin user
+ZOPEADMINUSER=schedulix_zau
+ZOPEADMINPASSWORD=sdms$RANDOM$RANDOM
+export ZOPEADMINUSER ZOPEADMINPASSWORD
+
+# stop zope and create access file
+service schedulix-zope4 stop || true
+echo ""
+su - schedulix -c "
+	. /opt/schedulix/etc/SETTINGS;
+	cd /opt/schedulix/schedulixweb4;
+	OLDUMASK=`umask`;
+	umask 077;
+	echo "$ZOPEADMINUSER:$ZOPEADMINPASSWORD" > access;
+	chmod 0600 access;
+	umask $OLDUMASK
+"
+# start Zope again
+service schedulix-zope4 start
+sleep 10		# zope seems to need a little time to reflect about life, the universe and everything
+
+URL="http://localhost:8080/"
+REQUEST="${URL}manage_delObjects?ids=schedulix-fe"
+wget $QUIET --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null $REQUEST
+REQUEST="${URL}manage_delObjects?ids=custom"
+wget $QUIET --user=$ZOPEADMINUSER --password=$ZOPEADMINPASSWORD --output-document=/dev/null $REQUEST
+
+# stop Zope, remove "backdoor" and start it again
+service schedulix-zope4 stop
+rm -f /opt/schedulix/schedulixweb4/access
+service schedulix-zope4 start

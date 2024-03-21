@@ -1,0 +1,161 @@
+echo "executing post fe -- %version-%release"
+#
+# since we can't know whether this is an installation done much later than the original zope4 install,
+# or an installation done together with zope4, we'll have to assume the worst (the former option).
+
+export INSTALLHOME=/opt/schedulix;
+export ZOPEINSTANCE=$INSTALLHOME/schedulixweb4;
+
+# create a temporary zope admin user
+ZADMUSR=schedulix_zau
+ZADMPWD=sdms$RANDOM$RANDOM
+export ZADMUSR ZADMPWD
+
+# stop zope and create access file
+service schedulix-zope4 stop || true
+echo ""
+su - schedulix -c "
+	. /opt/schedulix/etc/SETTINGS;
+	cd /opt/schedulix/schedulixweb4;
+	OLDUMASK=`umask`;
+	umask 077;
+	echo "$ZADMUSR:$ZADMPWD" > access;
+	chmod 0600 access;
+	umask $OLDUMASK
+"
+# start Zope again
+service schedulix-zope4 start
+sleep 10		# zope seems to need a little time to reflect about life, the universe and everything
+
+QUIET="--quiet"
+
+echo "
+   ###########################################################################################
+   #                                                                                         #
+   #      W A R N I N G   W A R N I N G   W A R N I N G   W A R N I N G   W A R N I N G      #
+   #                                                                                         #
+   #      The password of Zope's sdmsadm user has been set back to the default sdmsadm       #
+   #      Please change the password again to some safe value after the installation         #
+   #      We apologize for the inconvenience                                                 #
+   #                                                                                         #
+   ###########################################################################################
+"
+#
+# We have to reset the sdmsadm password; the emergency user isn't allowed to create the objects we need to create
+#
+REQUEST="http://localhost:8080/acl_users/manage_users"
+POSTDATA="name=sdmsadm&password=sdmsadm&confirm=sdmsadm&domains%3Atokens=&roles%3Alist=Manager&submit=Change"
+wget $QUIET --user=$ZADMUSR --password=$ZADMPWD --output-document=/dev/null --post-data="$POSTDATA" "$REQUEST" >/dev/null 2>&1
+
+# now set the user and password back to sdmsadm/sdmsadm
+ZADMUSR=sdmsadm
+ZADMPWD=sdmsadm
+export ZADMUSR ZADMPWD
+
+echo ""
+cd /opt/schedulix/schedulix/zope4/import
+rm -f schedulix-fe.zexp
+# keep the original file. This way the rpm system doesn't get confused while uninstalling the schedulix-fe package
+gunzip -c schedulix-fe.zexp.gz > schedulix-fe.zexp
+if [ ! -L $ZOPEINSTANCE/import/schedulix-fe.zexp ]; then
+	ln -s /opt/schedulix/schedulix/zope4/import/schedulix-fe.zexp $ZOPEINSTANCE/import
+fi
+
+if [ "$1" == "1" ]; then
+	CNT=0
+	while [ $CNT -lt 5 ]; do
+		REQUEST="http://localhost:8080/manage_importObject?file=schedulix-fe.zexp&set_owner="
+		wget $QUIET --user=$ZADMUSR --password=$ZADMPWD --output-document=/dev/null "$REQUEST" >/dev/null 2>&1
+		ret=$?
+		if [ $ret != 0 ]; then
+			echo "Error importing schedulix-fe.zexp"
+			QUIET="--verbose"
+		else
+			break;
+		fi
+		CNT=`expr $CNT + 1`
+		sleep 2
+	done
+	rm -f cookies.txt
+
+	# now copy the custom folder from schedulix-fe to the root.
+	# since Zope is case sensitive, this doesn't interfere with the SDMS Custom folder
+	REQUEST="http://localhost:8080/schedulix-fe?manage_copyObjects:method=Copy&ids:list=custom"
+	wget --quiet --user=$ZADMUSR --password=$ZADMPWD --output-document=/dev/null --keep-session-cookies --save-cookies cookies.txt "$REQUEST" >/dev/null 2>&1
+	ret=$?
+	if [ $ret != 0 ]; then
+		echo "Error copying custom schedulix-fe template folder from Zope /schedulix-fe"
+		exit 1
+	fi
+	REQUEST="http://localhost:8080?manage_pasteObjects:method=Paste"
+	wget --quiet --user=$ZADMUSR --password=$ZADMPWD --output-document=/dev/null --load-cookies cookies.txt "$REQUEST" >/dev/null 2>&1
+	ret=$?
+	if [ $ret != 0 ]; then
+		echo "Error pasting custom Zope folder into Zope"
+		exit 1
+	fi
+	rm -f cookies.txt
+
+	# we now have to download the config.json script, edit it (set the correct ip address) and upload it again
+	wget --quiet --user=$ZADMUSR --password=$ZADMPWD --output-document=config.json.old "http://localhost:8080/custom/config.json" >/dev/null 2>&1
+	IP=`ip -4 -o address | grep -v "127.0.0.1" | awk '{p=match($4,/\//); print substr($4,1,p-1); }' | tail -1`
+	# if we didn't find an IP Address, we can keep the localhost configuration
+	# But if $IP is set, we'll have to modify the config.json file
+	if [ -n "$IP" ]; then
+		sed 's/127\.0\.0\.1/'"$IP"'/' < config.json.old > config.json
+		# rename the original config.json
+		REQUEST="http://localhost:8080/custom/manage_renameObjects?ids:list=config.json&new_ids:list=config.-old"
+		wget --user=$ZADMUSR --password=$ZADMPWD --output-document=/dev/null "$REQUEST" >/dev/null 2>&1
+		# now upload it 
+		REQUEST="http://localhost:8080/custom/manage_addProduct/OFSP/manage_addFile"
+		# wget --user=$ZADMUSR --password=$ZADMPWD --output-document=/dev/null --post-data="file=@/opt/schedulix/schedulix/zope4/import/config.json&id=config.json" "$REQUEST"
+		# Code with curl:
+		curl -s -u "$ZADMUSR":"$ZADMPWD" -o /dev/null -F "file=@/opt/schedulix/schedulix/zope4/import/config.json" -F "id=config.json" "$REQUEST" > /dev/null 2>&1
+		#
+		# Set the file type
+		REQUEST="http://localhost:8080/custom/config.json/manage_edit?content_type=text/json&title=&precondition="
+		wget -O - --http-user="$ZADMUSR" --http-passwd="$ZADMPWD" "$REQUEST" >/dev/null 2>&1
+	fi
+	rm -f config.json*
+else
+
+	# exchange schedulix-fe.zexp
+	TS=`date +%Y%m%d%H%M%S`
+	CNT=0
+	QUIET="--quiet"
+	while [ $CNT -lt 5 ]; do
+		REQUEST="http://localhost:8080/manage_renameObjects?ids:list=schedulix-fe&new_ids:list=schedulix-fe_$TS"
+		wget $QUIET --user=$ZADMUSR --password=$ZADMPWD --output-document=/dev/null "$REQUEST" >/dev/null 2>&1
+		ret=$?;
+		if [ $ret != 0 ]; then
+			echo "Error renaming SDMS folder";
+			QUIET="--verbose";
+		else
+			break;
+		fi;
+		CNT=`expr $CNT + 1`;
+		sleep 2;
+	done
+
+	CNT=0
+	QUIET="--quiet"
+	while [ $CNT -lt 5 ]; do
+		# Note: the last parameter "set_owner=" is filled with an empty string which evaluates to false in Python
+		REQUEST="http://localhost:8080/manage_importObject?file=schedulix-fe.zexp&set_owner="
+		wget $QUIET --user=$ZADMUSR --password=$ZADMPWD --output-document=/dev/null "$REQUEST" >/dev/null 2>&1
+		ret=$?;
+		if [ $ret != 0 ]; then
+			echo "Error importing schedulix-fe.zexp";
+			QUIET="--verbose";
+		else
+			break;
+		fi;
+		CNT=`expr $CNT + 1`;
+		sleep 2;
+	done
+
+fi
+# stop Zope, remove "backdoor" and start it again
+service schedulix-zope4 stop
+rm -f /opt/schedulix/schedulixweb4/access
+service schedulix-zope4 start
