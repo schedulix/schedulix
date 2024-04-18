@@ -444,9 +444,14 @@ public class Server
 				} else if (driverName.startsWith("MICROSOFT")) {
 					SystemEnvironment.SQUOTE = "[";
 					SystemEnvironment.EQUOTE = "]";
+				} else if (driverName.startsWith("POSTGRESQL")) {
+					SystemEnvironment.isPostgreSQL = true;
+					SystemEnvironment.SQUOTE = "";
+					SystemEnvironment.EQUOTE = "";
+				} else if (driverName.startsWith("ORACLE")) {
+					SystemEnvironment.SQUOTE = "\"";
+					SystemEnvironment.EQUOTE = "\"";
 				} else {
-					if (driverName.startsWith("POSTGRESQL"))
-						SystemEnvironment.isPostgreSQL = true;
 					SystemEnvironment.SQUOTE = "";
 					SystemEnvironment.EQUOTE = "";
 				}
