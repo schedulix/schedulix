@@ -84,7 +84,7 @@ public class AuditWriter
 	}
 
 	public static synchronized void write (SystemEnvironment sysEnv, ConnectionEnvironment cEnv, boolean stmtOK)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long versionId = cEnv.tx.versionId;
 		String stmt = cEnv.actstmt;
