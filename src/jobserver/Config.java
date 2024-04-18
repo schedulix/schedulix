@@ -120,6 +120,8 @@ public class Config
 							ONLINE_SERVER,
 							CREATE_WORKDIR,
 	                                                HTTP_LOGENCODING,
+	                                                HTTP_PORT,
+	                                                NOTIFY_PORT,
 	                                                CONVERT_NEWLINE,
 	                                                STARTTIME_JITTER
 						};
@@ -132,6 +134,8 @@ public class Config
 							Boolean.TRUE,
 							Boolean.FALSE,
 	                                                "utf-8",
+	                                                Long.valueOf(0),
+	                                                Long.valueOf(0),
 	                                                Long.valueOf(0),
 	                                                Long.valueOf(5)
 						};
@@ -308,12 +312,20 @@ public class Config
 		String keyStr = ((String) key).toUpperCase();
 
 		if (Utils.isOneOf (keyStr, LONG_VALUES) && ! (value instanceof Long)) {
-			try {
-				value =Long.valueOf (value.toString());
-			}
+			if (value == null || value.toString().trim().equals("")) {
+				Object o = getDefaultValue(keyStr);
+				if (o != null)
+					value = (Long) o;
+				else
+					value = Long.valueOf(0);
+			} else {
+				try {
+					value =Long.valueOf (value.toString());
+				}
 
-			catch (final NumberFormatException e) {
-				throw new IllegalArgumentException ("(04305141714) Error converting value: " + e.getMessage());
+				catch (final NumberFormatException e) {
+					throw new IllegalArgumentException ("(04305141714) Error converting value ('" + value.toString() + "'): " + e.getMessage());
+				}
 			}
 		}
 
