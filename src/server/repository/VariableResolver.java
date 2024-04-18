@@ -125,9 +125,9 @@ public abstract class VariableResolver
 						try {
 							varEnd = readVar(sysEnv, thisObject, str, i, fastAccess, mode, triggercontext, result, recursionCheck, version, evalScope, true);
 						} catch (NotFoundException nfe) {
-							System.err.println ("recursionCheck:");
+							SDMSThread.doTrace(sysEnv.cEnv, "recursionCheck:", SDMSThread.SEVERITY_WARNING);
 							for (int rci = 0; rci < recursionCheck.size(); ++rci) {
-								System.err.println (recursionCheck.elementAt(rci).toString());
+								SDMSThread.doTrace(sysEnv.cEnv, recursionCheck.elementAt(rci).toString(), SDMSThread.SEVERITY_WARNING);
 							}
 							throw nfe;
 						}
@@ -145,6 +145,7 @@ public abstract class VariableResolver
 			if(escape)
 				result.append('\\');
 
+			recursionCheck.pop();
 			return result.toString();
 		} catch (NotFoundException nfe) {
 			recursionCheck.pop();
@@ -234,7 +235,7 @@ public abstract class VariableResolver
 		try {
 			String tmp = getInternalVariableValue(sysEnv, thisObject, varName, fastAccess, mode, triggercontext, recursionCheck, version, evalScope, doSubstitute);
 			result.append(tmp);
-		} catch (SDMSException e) {
+		} catch (NotFoundException e) {
 			if (SystemEnvironment.unresolvedParameterHandling == SystemEnvironment.UPH_ERROR)
 				throw e;
 			else
