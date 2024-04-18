@@ -206,8 +206,13 @@ public class SDMSNiceProfileTableGeneric extends SDMSTable
 		                                   " FROM " + squote + tableName() + equote +
 		                                   ""						  );
 		while(rset.next()) {
-			if(loadObject(env, rset)) ++loaded;
-			++read;
+			try {
+				if(loadObject(env, rset)) ++loaded;
+				++read;
+			} catch (Exception e) {
+				SDMSThread.doTrace(null, "Exception caught while loading table " + tableName() + ", ID = " + Long.valueOf (rset.getLong(1)), SDMSThread.SEVERITY_ERROR);
+				throw(e);
+			}
 		}
 		stmt.close();
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
