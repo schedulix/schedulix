@@ -70,7 +70,6 @@ public class Connect extends Node
 		path = null;
 		withs = wh;
 		cmd = (Vector) withs.get(ParseStr.S_COMMAND);
-		auditFlag = false;
 		if (cmd == null && SystemEnvironment.auth == null) {
 			txMode = SDMSTransaction.READONLY;
 		} else {
@@ -102,7 +101,6 @@ public class Connect extends Node
 		path = null;
 		withs = wh;
 		cmd = (Vector) withs.get(ParseStr.S_COMMAND);
-		auditFlag = false;
 		if (cmd == null && SystemEnvironment.auth == null) {
 			txMode = SDMSTransaction.READONLY;
 		} else {
@@ -112,7 +110,6 @@ public class Connect extends Node
 					Node n = (Node) cmd.get(i);
 					if (n.txMode == SDMSTransaction.READWRITE) {
 						txMode = SDMSTransaction.READWRITE;
-						auditFlag = n.auditFlag;
 						break;
 					}
 				}
@@ -136,8 +133,7 @@ public class Connect extends Node
 		path = pth;
 		withs = wh;
 		cmd = (Vector) withs.get(ParseStr.S_COMMAND);
-		if (cmd == null) auditFlag = false;
-		else {
+		if (cmd != null) {
 			auditFlag = ((Node) cmd.get(0)).auditFlag;
 		}
 	}
@@ -156,11 +152,8 @@ public class Connect extends Node
 		path = null;
 		withs = wh;
 		cmd = (Vector) withs.get(ParseStr.S_COMMAND);
-		if (cmd == null) {
-			txMode = SDMSTransaction.READONLY;
-			auditFlag = false;
-		} else {
-			txMode = SDMSTransaction.READONLY;
+		txMode = SDMSTransaction.READONLY;
+		if (cmd != null) {
 			auditFlag = false;
 			for (int k = 0; k < cmd.size(); ++k) {
 				Node n = (Node) cmd.get(k);

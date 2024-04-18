@@ -56,7 +56,6 @@ public class AlterSession extends Node
 		baseUser = null;
 		cmdtype = Node.ANY_COMMAND;
 		txMode = SDMSTransaction.READONLY;
-		auditFlag = false;
 	}
 
 	public AlterSession(String userName, WithHash wh)
@@ -68,7 +67,6 @@ public class AlterSession extends Node
 		this.baseUser = null;
 		cmdtype = Node.USER_COMMAND;
 		txMode = SDMSTransaction.READONLY;
-		auditFlag = false;
 	}
 
 	public AlterSession(String userName, String baseUser, WithHash wh)
@@ -80,7 +78,6 @@ public class AlterSession extends Node
 		this.baseUser = baseUser;
 		cmdtype = Node.USER_COMMAND;
 		txMode = SDMSTransaction.READONLY;
-		auditFlag = false;
 	}
 
 	public AlterSession()
@@ -92,7 +89,6 @@ public class AlterSession extends Node
 		withs = null;
 		cmdtype = Node.USER_COMMAND;
 		txMode = SDMSTransaction.READONLY;
-		auditFlag = false;
 	}
 
 	private boolean setUser(SystemEnvironment sysEnv)
