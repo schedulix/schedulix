@@ -99,12 +99,14 @@ public class WorkerThread extends SDMSThread
 		Node n;
 		ConnectionEnvironment cEnv;
 		boolean succeeded;
+		boolean stmtOK = true;
 		PrintStream sav;
 
 		env.thread = this;
 
 		while(run) {
 			n = (Node) cmdQueue.get();
+			stmtOK = true;
 			if(!run) break;
 			if(n == null) {
 				continue;
@@ -183,15 +185,18 @@ public class WorkerThread extends SDMSThread
 					} catch (SDMSException se) {
 						i = retryCount;
 						n.result.setError(new SDMSOutputError(se.errNumber(), se.toString()));
+						stmtOK = false;
 					} catch (StackOverflowError soe) {
 						i = retryCount;
 						doTrace(null, soe.toString(), soe.getStackTrace(), SEVERITY_ERROR);
 						n.result.setError(new SDMSOutputError("03805150911", "Stack Overflow ! Contact your System Administrator !"));
+						stmtOK = false;
 					} catch(Exception fe) {
 						if (SystemEnvironment.fatalIsError) {
 							i = retryCount;
 							doTrace(null, fe.toString(), fe.getStackTrace(), SEVERITY_ERROR);
 							n.result.setError(new SDMSOutputError("03909211556", "Internal Error ! Contact your System Administrator !"));
+							stmtOK = false;
 						} else throw fe;
 					} catch(OutOfMemoryError ome) {
 						throw ome;
@@ -200,6 +205,7 @@ public class WorkerThread extends SDMSThread
 							i = retryCount;
 							doTrace(null, fe.toString(), fe.getStackTrace(), SEVERITY_ERROR);
 							n.result.setError(new SDMSOutputError("03909211653", "Internal Error ! Contact your System Administrator !"));
+							stmtOK = false;
 						} else throw fe;
 					} finally {
 						if(!succeeded)
@@ -217,7 +223,7 @@ public class WorkerThread extends SDMSThread
 				} while(i < retryCount);
 				if (SystemEnvironment.auditFile != null && n.auditFlag) {
 					if (cEnv.actstmt != null)
-						AuditWriter.write(env, cEnv.tx.versionId, cEnv.actstmt);
+						AuditWriter.write(env, cEnv, stmtOK);
 				}
 
 				cEnv.emptyGid(env);

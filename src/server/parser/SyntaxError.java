@@ -51,7 +51,6 @@ public class SyntaxError extends Node
 		message = p_message;
 		exp_message = "$1\nSyntax Error: expected $2";
 		txMode = SDMSTransaction.READONLY;
-		auditFlag = false;
 	}
 
 	public SyntaxError(String p_exp_message, String p_message)
