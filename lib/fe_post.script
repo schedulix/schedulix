@@ -120,7 +120,7 @@ if [ "$1" == "1" ]; then
 else
 
 	# exchange schedulix-fe.zexp
-	TS=`date +%Y%m%d%H%M%S`
+	TS=`date +%Y%m%d%H%M%''S`
 	CNT=0
 	QUIET="--quiet"
 	while [ $CNT -lt 5 ]; do

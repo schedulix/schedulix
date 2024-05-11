@@ -129,6 +129,7 @@ echo "executing preun base -- %version-%release"
 #
 %exclude /opt/schedulix/schedulix-%{version}/lib/centos7.spec
 %exclude /opt/schedulix/schedulix-%{version}/lib/centos8.spec
+%exclude /opt/schedulix/schedulix-%{version}/lib/centos9.spec
 %exclude /opt/schedulix/schedulix-%{version}/lib/base_pre.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/base_post.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/server-mariadb_post.script
