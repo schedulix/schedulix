@@ -71,7 +71,7 @@ your security concept). \
 # ----------------------------------------------------------------------------------------
 Summary:		The schedulix base package installs all files that are used both by the server and the client
 Group:			Applications/System
-Requires:		java-1.8.0-openjdk
+Requires:		java-1.8.0-openjdk chkconfig
 
 %description base
 %commonDescription
