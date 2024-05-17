@@ -19,8 +19,6 @@ Packager:	Ronald Jeninga <ronald.jeninga@schedulix.org>
 # disable debug package
 %global debug_package %{nil}
 
-%define zope2version 2.13.29
-
 #
 # this description will be the first part of every package description
 # any specialties regarding the specific package will follow this common description
@@ -125,7 +123,7 @@ echo "executing preun base -- %version-%release"
 %ghost %config(noreplace) %attr(644, schedulix, schedulix) /opt/schedulix/etc/java.conf 
 %ghost %config(noreplace) %attr(644, schedulix, schedulix) /opt/schedulix/etc/SETTINGS
 #
-# exclude all spec files as they aren't required in any binary package
+# exclude all spec and script files as they aren't required in any binary package
 #
 %exclude /opt/schedulix/schedulix-%{version}/lib/centos7.spec
 %exclude /opt/schedulix/schedulix-%{version}/lib/centos8.spec
@@ -144,6 +142,43 @@ echo "executing preun base -- %version-%release"
 %exclude /opt/schedulix/schedulix-%{version}/lib/zope4_pre.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/fe_post.script
 %exclude /opt/schedulix/schedulix-%{version}/lib/fe_preun.script
+#
+# exlude everything to do with Zope2 as it requires Python2 which is obsolete
+#
+%exclude /opt/schedulix/schedulix-%{version}/zope
+%exclude /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/help
+%exclude /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/BICsuiteSubmitMemory.pyc
+%exclude /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/BICsuiteSubmitMemory.pyo
+%exclude /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/__init__.pyc
+%exclude /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/__init__.pyo
+%exclude /opt/schedulix/schedulix-%{version}/zope/bicsuite_tx.pyc
+%exclude /opt/schedulix/schedulix-%{version}/zope/bicsuite_tx.pyo
+%exclude /opt/schedulix/schedulix-%{version}/zope/myeval.pyc
+%exclude /opt/schedulix/schedulix-%{version}/zope/myeval.pyo
+%exclude /opt/schedulix/schedulix-%{version}/zope/sdms.pyc
+%exclude /opt/schedulix/schedulix-%{version}/zope/sdms.pyo
+%exclude /opt/schedulix/schedulix-%{version}/zope/SDMS.zexp
+%exclude /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/BICsuiteSubmitMemory.py
+%exclude /opt/schedulix/schedulix-%{version}/zope/patch.sh
+%exclude /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/__init__.py
+%exclude /opt/schedulix/schedulix-%{version}/zope/bicsuite_tx.py
+%exclude /opt/schedulix/schedulix-%{version}/zope/myeval.py
+%exclude /opt/schedulix/schedulix-%{version}/zope/sdms.py
+%exclude /opt/schedulix/schedulix-%{version}/etc/ZopeSSO.conf.template
+%exclude /etc/init.d/schedulix-zope
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/addUser.dtml
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/editUser.dtml
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/userFolderProps.dtml
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/README.txt
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/Version.txt
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/RemoteUserFolder.py
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/RemoteUserFolder.gif
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/__init__.py
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/Refresh.txt
+%exclude /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/help/RemoteUser-Folder_Edit-Properties.stx
 
 %package server-rmt
 # ----------------------------------------------------------------------------------------
@@ -446,112 +481,6 @@ echo "executing postun client -- %version-%release"
 %attr(0744, root, root)             /etc/init.d/schedulix-client
 %dir %attr(1777, schedulix, schedulix) /opt/schedulix/taskfiles
 
-%package zope
-# ----------------------------------------------------------------------------------------
-#
-# zope FE package
-#
-# ----------------------------------------------------------------------------------------
-Summary:		The schedulix zope package installs the zope application server and configures it to access a locally installed server
-Group:			Applications/System
-Requires:		schedulix-base = %{version}-%{release} gcc python2 python2-devel python2-setuptools python2-virtualenv wget openldap-devel
-Conflicts:		schedulix-zope4
-
-%description zope
-%commonDescription
-Due to the fact that support for Python 2 has terminated, this package is now
-deprecated. It'll be possible to upgrade an existing installation, but a new
-installation of a zope 2 server isn't supported any longer.
-
-The schedulix zope package installs the zope application server and configures 
-it to access a locally installed server.
-Note: installing this package requires a working Internet connection as the Zope 
-software will be downloaded from http://download.zope.org.
-
-The initial user is 'sdmsadm' with a password that equals the user name.
-The Zope server will listen on port 8080.
-
-Due to the nature of the Zope software, there will be some messages like
-
-warning: no previously-included files matching '*.dll' found anywhere in distribution
-warning: no previously-included files matching '*.pyc' found anywhere in distribution
-warning: no previously-included files matching '*.pyo' found anywhere in distribution
-warning: no previously-included files matching '*.so' found anywhere in distribution
-
-which can be ignored. (Or, even better, tell me how to circumvent these).
-
-Another issue can be firewall related. In order to be able to access the Zope
-server you might need to add a rule to the iptables like:
-
--A INPUT -p tcp -m state --state NEW -m tcp --dport 8080 -j ACCEPT
-
-This will make the port 8080 accessible from other computers.
-(We don't do this, because we don't want to automagically introduce holes into
-your security concept).
-
-%pre zope
-%include ../lib/zope_pre.script
-
-
-%post zope
-%include ../lib/zope_post.script
-
-
-%preun zope
-echo "executing preun zope -- %version-%release"
-if [ "$1" == "0" ]; then
-	/etc/init.d/schedulix-zope stop || true
-	chkconfig schedulix-zope off
-fi
-
-
-%postun zope
-echo "executing postun zope -- %version-%release"
-if [ "$1" == "0" ]; then
-	rm -rf /opt/schedulix/software
-	rm -rf /opt/schedulix/schedulixweb
-fi
-
-
-%files zope
-%defattr(0644, schedulix, schedulix, 0755)
-%dir /opt/schedulix/schedulix-%{version}/zope
-%dir /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory
-%dir /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder
-%dir /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml
-%dir /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/help
-# we skip the compiled python files. Doesn't really make sense to compile them on the source system
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/SDMS.zexp
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/BICsuiteSubmitMemory.py
-%attr(0755, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/patch.sh
-%exclude   /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/BICsuiteSubmitMemory.pyc
-%exclude   /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/BICsuiteSubmitMemory.pyo
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/__init__.py
-%exclude   /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/__init__.pyc
-%exclude   /opt/schedulix/schedulix-%{version}/zope/BICsuiteSubmitMemory/__init__.pyo
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/bicsuite_tx.py
-%exclude   /opt/schedulix/schedulix-%{version}/zope/bicsuite_tx.pyc
-%exclude   /opt/schedulix/schedulix-%{version}/zope/bicsuite_tx.pyo
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/myeval.py
-%exclude   /opt/schedulix/schedulix-%{version}/zope/myeval.pyc
-%exclude   /opt/schedulix/schedulix-%{version}/zope/myeval.pyo
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/sdms.py
-%exclude   /opt/schedulix/schedulix-%{version}/zope/sdms.pyc
-%exclude   /opt/schedulix/schedulix-%{version}/zope/sdms.pyo
-%ghost %attr(0755, schedulix, schedulix) /opt/schedulix/software
-%ghost %attr(0755, schedulix, schedulix) /opt/schedulix/schedulixweb
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/etc/ZopeSSO.conf.template
-%attr(0744, root, root)             /etc/init.d/schedulix-zope
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/addUser.dtml
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/editUser.dtml
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/dtml/userFolderProps.dtml
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/README.txt
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/Version.txt
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/RemoteUserFolder.py
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/RemoteUserFolder.gif
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/__init__.py
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/Refresh.txt
-%attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope/RemoteUserFolder/help/RemoteUser-Folder_Edit-Properties.stx
 
 %package zope4
 # ----------------------------------------------------------------------------------------
