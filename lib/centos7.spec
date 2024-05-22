@@ -722,7 +722,7 @@ fi
 %attr(0644, schedulix, schedulix)   /opt/schedulix/schedulix-%{version}/zope4/RemoteUserFolder/help/RemoteUser-Folder_Edit-Properties.stx
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/Zope4
 %ghost %attr(0755, schedulix, schedulix) /opt/schedulix/schedulixweb4
-%attr(0744, root, root)             /etc/init.d/schedulix-zope4
+%attr(0744, schedulix, schedulix)   /etc/init.d/schedulix-zope4
 # exclude all compiled python files
 %exclude   /opt/schedulix/schedulix-%{version}/lib/zope4_post.script
 %exclude   /opt/schedulix/schedulix-%{version}/lib/zope4_pre.script
