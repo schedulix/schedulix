@@ -34,8 +34,8 @@ fi
 # This is why we now use the abbreviated hostname instead
 # In order to preserve the compatibility with previously created jobservers
 # we check both variants here
-HOSTNAME=`hostname -s | tr [a-z.-] [A-Z__]`
-ALTHOSTNAME=`hostname | tr [a-z.-] [A-Z__]`
+HOSTNAME=`hostname -s | tr "a-z0-9.-" "A-Z0-9__"`
+ALTHOSTNAME=`hostname | tr "a-z0-9.-" "A-Z0-9__"`
 
 SELF=$(cd $(dirname $0); pwd -P)/$(basename $0)
 
@@ -134,7 +134,7 @@ case "${1:-''}" in
 
   'reload'|'force-reload')
   	$LOG_WARNING_MSG "Reloading jobservers not supported; use 'restart' instead"
-	log_end_msg 0
+	$ECHO_SUCCESS
 	;;
 
   'status')
