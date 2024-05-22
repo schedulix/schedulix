@@ -60,7 +60,7 @@ case "${1:-''}" in
 
   'reload'|'force-reload')
   	$LOG_WARNING_MSG "Reloading schedulix!web not supported; use 'restart' instead"
-	log_end_msg 0
+	$ECHO_SUCCESS
 	;;
 
   'status')
