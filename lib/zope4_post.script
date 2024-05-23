@@ -71,7 +71,7 @@ else
 	echo ""
 
 	# exchange SDMS.zexp
-	TS=`date +%Y%m%d%H%M%S`
+	TS=`date +%Y%m%d%H%M%''S`
 	CNT=0
 	QUIET="--quiet"
 	while [ $CNT -lt 5 ]; do
