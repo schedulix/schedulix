@@ -63,24 +63,25 @@ case "${1:-''}" in
 				cd ..;
 			fi
 		done
-	fi
-	if [ -d /opt/schedulix/taskfiles/$ALTHOSTNAME ]; then
-		cd /opt/schedulix/taskfiles/$ALTHOSTNAME
-		for USR in *; do
-			if grep $USR /etc/passwd >/dev/null 2>&1; then
-				cd $USR;
-				for SVR in *; do
-					su - $USR -c "
-						[ -f \$HOME/.bashrc ] && . \$HOME/.bashrc;
-						if [ -f \$HOME/etc/$SVR.init ]; then 
-							. \$HOME/etc/$SVR.init;
-						fi
-						$BICSUITEHOME/bin/jobserver-run \$HOME/etc/$SVR.conf \$HOME/log/$SVR.out;
-					"
-				done
-				cd ..;
-			fi
-		done
+	else
+		if [ -d /opt/schedulix/taskfiles/$ALTHOSTNAME ]; then
+			cd /opt/schedulix/taskfiles/$ALTHOSTNAME
+			for USR in *; do
+				if grep $USR /etc/passwd >/dev/null 2>&1; then
+					cd $USR;
+					for SVR in *; do
+						su - $USR -c "
+							[ -f \$HOME/.bashrc ] && . \$HOME/.bashrc;
+							if [ -f \$HOME/etc/$SVR.init ]; then 
+								. \$HOME/etc/$SVR.init;
+							fi
+							$BICSUITEHOME/bin/jobserver-run \$HOME/etc/$SVR.conf \$HOME/log/$SVR.out;
+						"
+					done
+					cd ..;
+				fi
+			done
+		fi
 	fi
 	$ECHO_SUCCESS
 	;;
