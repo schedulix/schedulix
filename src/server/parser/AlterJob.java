@@ -636,8 +636,7 @@ public class AlterJob extends ManipJob
 					priority = Integer.valueOf(SystemEnvironment.priorityLowerBound);
 
 				}
-				isRenice = Boolean.FALSE;
-
+				performPriority(sysEnv, sme, isRenice, priority);
 			}
 			if (nicevalue != null) {
 				isRenice = Boolean.TRUE;
@@ -648,7 +647,8 @@ public class AlterJob extends ManipJob
 				isRenice = Boolean.TRUE;
 				priority = Integer.valueOf(nv);
 			}
-			performPriority(sysEnv, sme, isRenice, priority);
+			if (isRenice.booleanValue())
+				performPriority(sysEnv, sme, isRenice, priority);
 		}
 
 		if (clone != null) {
