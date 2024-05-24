@@ -50,7 +50,7 @@ public class ShowResource extends ShowCommented
 	private final static Integer MASTER_REQUEST     = Integer.valueOf(6);
 	private final static Integer REQUESTED          = Integer.valueOf(7);
 	private final static Integer IGNORED            = Integer.valueOf(8);
-	private final static int[] sortcols = { 11, 13, 1 };
+	private final static int[] sortcols = { 14, 16, 1 };
 
 	public ShowResource(ObjectURL ra)
 	{
