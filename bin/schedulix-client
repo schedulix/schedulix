@@ -63,7 +63,8 @@ case "${1:-''}" in
 				cd ..;
 			fi
 		done
-	else
+	fi
+	if [ "$ALTHOSTNAME" != "$HOSTNAME" ]; then
 		if [ -d /opt/schedulix/taskfiles/$ALTHOSTNAME ]; then
 			cd /opt/schedulix/taskfiles/$ALTHOSTNAME
 			for USR in *; do
