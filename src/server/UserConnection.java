@@ -96,7 +96,9 @@ public class UserConnection extends SDMSThread
 		env = new ConnectionEnvironment(i, svrtrc, ostream, f, rof, port, sock.getInetAddress(), isSSLConnection, isClientAuthenticated);
 		env.setMe(this);
 
-		doTrace(env, "UserConnection initialized", SEVERITY_MESSAGE);
+		InetAddress rmtIP = sock.getInetAddress();
+
+		doTrace(env, "UserConnection from " + (rmtIP != null ? rmtIP.getHostAddress() + ":" + sock.getPort() : "<unknown IP>") + " initialized", SEVERITY_MESSAGE);
 		ostream.flush();
 	}
 
