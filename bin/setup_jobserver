@@ -126,7 +126,7 @@ Password=$SDMSPWD
 		exit 1
 	fi
 	# check if we have admin rights
-	echo -e "show user $SDMSUSER;" | sdmsh --ini $SDMSHRC | grep -E "ADMIN *KDEMOVG$" >/dev/null
+	echo -e "show user $SDMSUSER;" | sdmsh --ini $SDMSHRC | grep -E " ADMIN *KDEMO.*VG$" >/dev/null
 	if [ "$?" -ne 0 ]; then
 		echo "ERROR: The specified user does not belong to group ADMIN"
 		exit 1
