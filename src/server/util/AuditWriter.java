@@ -83,14 +83,19 @@ public class AuditWriter
 		}
 	}
 
-	public static synchronized void write (SystemEnvironment sysEnv, Long versionId, String stmt)
+	public static synchronized void write (SystemEnvironment sysEnv, ConnectionEnvironment cEnv, boolean stmtOK)
 		throws SDMSException
 	{
+		Long versionId = cEnv.tx.versionId;
+		String stmt = cEnv.actstmt;
+		String ip = cEnv.ip();
+		if (ip == null)
+			ip = "INTERNAL";
 		try {
 			if (audit == null) {
 				openAuditFile(sysEnv);
 			}
-			audit.println(getHeader(sysEnv, versionId) + stmt);
+			audit.println("[" + ip + "]: " + getHeader(sysEnv, versionId) + stmt + "\n" + (stmtOK? "SUCCESS" : "FAILED"));
 			nrLinesWritten++;
 			if (nrLinesWritten >= SystemEnvironment.auditEntries) {
 				audit.close();
