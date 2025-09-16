@@ -565,6 +565,17 @@ public class SDMSResource extends SDMSResourceProxyGeneric
 			SDMSTrigger t = (SDMSTrigger) v.get(i);
 			t.trigger(sysEnv, this, oldRsdId, rsdId, causeSme);
 		}
+		SDMSResourceStateDefinition fromRSD = SDMSResourceStateDefinitionTable.getObject(sysEnv, getRsdId(sysEnv));
+		SDMSResourceStateDefinition toRSD = SDMSResourceStateDefinitionTable.getObject(sysEnv, rsdId);
+		String info;
+		if (causeSme != null) {
+			info = ", caused by submitted entity " + causeSme.getId(sysEnv);
+		} else {
+			SDMSUser user = SDMSUserTable.getObject(sysEnv, sysEnv.cEnv.uid());
+			info = ", by user " + user.getName(sysEnv);
+		}
+		SDMSThread.doTrace(sysEnv.cEnv, "Set Resource State of Resource " + getName(sysEnv) + "(" + getId(sysEnv) + ") from " + fromRSD.getName(sysEnv) + " to " + toRSD.getName(sysEnv) +
+		                   info, SDMSThread.SEVERITY_INFO);
 		super.setRsdId(sysEnv, rsdId);
 	}
 
