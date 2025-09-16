@@ -150,8 +150,14 @@ public class Grant extends Node
 
 		for (int i = 0; i < groupList.size(); i++) {
 			final String name = (String) groupList.get(i);
-			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(name, ZERO)).getId(sysEnv);
+			final SDMSGroup g = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(name, ZERO));
+			if (isGrant && !g.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
+				continue;
+			final Long gId = g.getId(sysEnv);
 			result.addElement(gId);
+		}
+		if (result.size() == 0) {
+			throw new AccessViolationException(new SDMSMessage(sysEnv, "03401171214", "Insufficient privileges"));
 		}
 		return result;
 	}
