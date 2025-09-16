@@ -47,7 +47,6 @@ public class KillSession extends Node
 		super();
 		sid = id.intValue();
 		txMode = SDMSTransaction.READONLY;
-		auditFlag = false;
 	}
 
 	public void go(SystemEnvironment sysEnv)

@@ -43,7 +43,6 @@ public class ShutdownServer extends ManipServer
 	public ShutdownServer(Vector p)
 	{
 		super(p);
-		auditFlag = false;
 	}
 
 	protected void action(SystemEnvironment sysEnv, SDMSScope s)
