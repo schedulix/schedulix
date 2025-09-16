@@ -393,6 +393,7 @@ void createErrorTaskfileName(char *tfn)
 		global.errorTaskfilePath = NULL;
 		return;
 	}
+	global.errorTaskfileName[0] = '\0';
 	strcat(global.errorTaskfileName, global.errorTaskfilePath);
 	strcat(global.errorTaskfileName, "/");
 	strcat(global.errorTaskfileName, filename);
@@ -784,7 +785,10 @@ HANDLE openTaskfile(callstatus *status)
 		tffd = open(global.taskfileName, O_RDWR|O_SYNC);
 #endif
 		if (tffd < 0) {
-			exit(1);
+			status->severity = SEVERITY_FATAL;
+			status->msg = INVALID_TASKFILE;
+			status->syserror = errno;
+			return NULL; /* exit(1); */
 		}
 		taskfile = fdopen(tffd, "r+");		/* we might or might not write */
 							/* but open for write is required for an exclusive lock */
@@ -1419,6 +1423,10 @@ void openLog(callstatus *status)
 
 	/* myLog will be NULL if this fails */
 	myLog = fdopen(myLogFd, "w");
+	/* Set the private log file to unbuffered; both Child and Parent write to it and the child shouldn't write
+           the buffer inherited from the Parent
+        */
+	setvbuf(myLog, NULL, _IONBF, 0);
 #else
 	myLog = CreateFile (
 			privateLog,
@@ -1612,6 +1620,7 @@ void run(callstatus *status)
 	}
 	global.myStartTime = time(NULL);	/* we're in the child, so we can overwrite the start time */
 	global.taskfile = openTaskfile(status);
+	if (status->severity != STATUS_OK) return;
 
 	default_all_signals (status);
 	if (status->severity != STATUS_OK) {
