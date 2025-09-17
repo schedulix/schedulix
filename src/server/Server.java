@@ -267,7 +267,7 @@ public class Server
 		}
 
 		if (SystemEnvironment.service_port != 0) {
-			svt = new OrdinaryListenThread(utg, SystemEnvironment.service_port, SystemEnvironment.plainIf, 1, cmdQueue, roCmdQueue, ListenThread.SERVICE);
+			svt = new OrdinaryListenThread(utg, SystemEnvironment.service_port, SystemEnvironment.serviceIf, 1, cmdQueue, roCmdQueue, ListenThread.SERVICE);
 
 			svt.start();
 		} else {

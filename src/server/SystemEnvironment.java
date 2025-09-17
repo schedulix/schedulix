@@ -139,10 +139,11 @@ public class SystemEnvironment implements Cloneable
 	public static TimerUnit timerRecalc;
 	public static String hostname;
 	public static int port;
+	public static int service_port;
 	public static int sslport;
 	public static InetAddress plainIf;
+	public static InetAddress serviceIf;
 	public static InetAddress sslIf;
-	public static int service_port;
 	public static int txRetryCount;
 	public static long preserveTime;
 	public static long maxPreserveTime;
@@ -244,6 +245,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String S_GCWAKEUP              = "GCWakeup";
 	public static final String S_HISTORY               = "History";
 	public static final String S_INTERFACE             = "Interface";
+	public static final String S_SERVICE_INTERFACE     = "ServiceInterface";
 	public static final String S_SSL_INTERFACE         = "SSLInterface";
 	public static final String S_DBHISTORY             = "DbHistory";
 	public static final String S_HISTORYLIMIT          = "HistoryLimit";
@@ -1395,6 +1397,7 @@ public class SystemEnvironment implements Cloneable
 	private void getInterfaces()
 	{
 		plainIf = null;
+		serviceIf = null;
 		sslIf = null;
 
 		String value = props.getProperty(S_INTERFACE);
@@ -1405,6 +1408,20 @@ public class SystemEnvironment implements Cloneable
 				SDMSThread.doTrace(null, "Invalid interface specification : '" + value + "'; the server will listen on all interfaces", SDMSThread.SEVERITY_WARNING);
 				plainIf = null;
 				props.setProperty(S_INTERFACE, "REMOVED");
+			}
+		}
+		value = props.getProperty(S_SERVICE_INTERFACE);
+		if (service_port != 0 && value != null) {
+			try {
+				serviceIf = InetAddress.getByName(value);
+			} catch (UnknownHostException uhe) {
+				SDMSThread.doTrace(null, "Invalid service port interface specification : '" + value + "'; the server will listen on all interfaces", SDMSThread.SEVERITY_WARNING);
+				serviceIf = null;
+				props.setProperty(S_SERVICE_INTERFACE, "REMOVED");
+			}
+		} else {
+			if (service_port != 0) {
+				serviceIf = plainIf;
 			}
 		}
 		value = props.getProperty(S_SSL_INTERFACE);

@@ -28,11 +28,17 @@ ArchiveStatsColumns=ALL
 # AuditFile
 # Filename of audit trail file
 # If set all commands changing data will be logged in the AuditFile.
-# On each startup of the scheduling server, a new file with a sequencial number extension is created.
-# AuditTrail=/tmp/auditfile will create files /tmp/audittrail.1 .. /tmp/audittrail.N
-# On heavy used systems have a look at the filesize and restart the server to start a new one from time to time and clean up or archive files no longer used.
+# On each startup of the scheduling server, a new file with a timestamp extension is created.
+# AuditTrail=/tmp/auditfile will create files like /tmp/auditfile.202312101514
 #
-# AuditFile=<full pathname of audir trail file to write>
+# AuditFile=<full pathname of audit trail file to write>
+#
+# AuditEntries
+# The number of statements that are written to the AuditFile (see above).
+# If that number is reached, a new AuditFile (with a new timestamp as extension) will be created.
+# The default is 100000
+#
+# AuditEntries=100000
 
 #
 # AuthenticationClass
@@ -192,14 +198,14 @@ MaxHistoryCount=0
 
 #
 # ParameterHandling:  Parameter handling - Parameters can be handled in either of three ways:
-# 
+#
 #          1. Strict  "GetParameter()" returns an error if the parameter is not
 #                     defined in the direct scope of the job.
-# 
+#
 #          2. Warn    A warning is written to the logfile if a parameter is not
 #                      defined in the direct scope of the job.
 #                      The parameter is resolved normally.
-# 
+#
 #          3. Liberal The parameter is just resolved (the default)
 #
 ParameterHandling=liberal
@@ -232,7 +238,7 @@ PriorityDelay=1
 #
 # PriorityLowerBound: The minimum priority number a job can reach by aging
 #                     (lower numbers are higher priorities)
-#                     Priorities below the PriorityLowerBound can be assigned by 
+#                     Priorities below the PriorityLowerBound can be assigned by
 #                     an administrator.
 #
 PriorityLowerBound=10
@@ -264,7 +270,13 @@ ScheduleWakeup=30
 #
 ServicePort=2505
 
+# ServiceInterface: If only a single interface should be used for listening,
+#            the value of this property should be set accordingly.
+#            If the value is invalid or not set, the server will listen
+#            on all interfaces
+# ServiceInterface=127.0.0.1
 #
+
 # SessionTimeout: The number of seconds after which an idle session is disconnected.
 #                 The session timeout can be specified at connect time, as well be
 #                 altered within the session itself.
