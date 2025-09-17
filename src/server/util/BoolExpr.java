@@ -40,6 +40,8 @@ import de.independit.scheduler.server.parser.triggerexpr.*;
 public class BoolExpr
 {
 	public static final String __version = "@(#) $Id: BoolExpr.java,v 2.4.8.1 2013/03/14 10:25:28 ronald Exp $";
+	private static final int BOOLEAN = 1;
+	private static final int ANYTYPE = 0;
 
 	final String condition;
 	final StringReader sr;
@@ -60,12 +62,17 @@ public class BoolExpr
 	private void initParser(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, SDMSSubmittedEntity requiredSme, SDMSResource r, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope s, boolean checkOnly)
 	throws SDMSException, IOException
 	{
+		if (sr == null) {
+			exprs = null;
+			exprp = null;
+			return;
+		}
 		if(exprs == null) {
 			exprs = new ExprScanner(sr);
 			exprp = new ExprParser();
 		} else {
 			sr.reset();
-			exprs.yyreset(sr);
+			exprs = new ExprScanner(sr);
 		}
 		exprp.set(sysEnv, sme, requiredSme, r, t, tq, s);
 		exprp.checkOnly = checkOnly;
@@ -91,34 +98,23 @@ public class BoolExpr
 	public boolean checkCondition(SystemEnvironment sysEnv, SDMSResource r, SDMSSubmittedEntity sme, SDMSSubmittedEntity requiredSme, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope s)
 	throws SDMSException
 	{
-		Object retval;
-		boolean rc = false;
+		Boolean retval;
 
 		if(condition == null) return true;
 
-		retval = evalExpression(sysEnv, r, sme, requiredSme, t, tq, s);
-		if (retval == null) return false;
-		if (retval instanceof Boolean)
-			rc = ((Boolean)retval).booleanValue();
-		else {
-			String msg = "The condition '" + condition + "' didn't return a boolean value";
-			SDMSThread.doTrace(sysEnv.cEnv, msg, SDMSThread.SEVERITY_ERROR);
-			if (r != null) {
-				SDMSThread.doTrace(sysEnv.cEnv, "Id of involved Resource = " + r.getId(sysEnv), SDMSThread.SEVERITY_ERROR);
-			}
-			if (sme != null) {
-				SDMSThread.doTrace(sysEnv.cEnv, "Id of involved Submitted Entity = " + sme.getId(sysEnv), SDMSThread.SEVERITY_ERROR);
-			}
-			if (t != null) {
-				SDMSThread.doTrace(sysEnv.cEnv, "Id of involved Trigger = " + t.getId(sysEnv), SDMSThread.SEVERITY_ERROR);
-			}
-			rc = false;
-		}
+		retval = (Boolean) evaluate(sysEnv, r, sme, requiredSme, t, tq, s, BOOLEAN);
 
-		return rc;
+		return retval.booleanValue();
 	}
 
 	public Object evalExpression(SystemEnvironment sysEnv, SDMSResource r, SDMSSubmittedEntity sme, SDMSSubmittedEntity requiredSme, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope s)
+	throws SDMSException
+	{
+		if (condition == null) return null;
+		return evaluate(sysEnv, r, sme, requiredSme, t, tq, s, ANYTYPE);
+	}
+
+	private Object evaluate(SystemEnvironment sysEnv, SDMSResource r, SDMSSubmittedEntity sme, SDMSSubmittedEntity requiredSme, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope s, int returnType)
 	throws SDMSException
 	{
 		Object rc = null;
@@ -127,8 +123,14 @@ public class BoolExpr
 		if(condition == null) return null;
 
 		try {
+			long now = System.currentTimeMillis();
 			initParser(sysEnv, sme, requiredSme, r, t, tq, s, false);
-			rc = exprp.yyparse(exprs);
+			if (exprp == null) return null;
+			if (returnType == BOOLEAN)
+				rc = exprp.parseBoolExpr(exprs);
+			else
+				rc = exprp.parseObjExpr(exprs);
+			now = System.currentTimeMillis() - now;
 		} catch (IOException ioe) {
 			msg = new SDMSMessage(sysEnv, "03506171435", "I/O Error parsing '$1'", condition);
 		} catch (NotFoundException nfe) {

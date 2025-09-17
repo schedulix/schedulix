@@ -31,30 +31,47 @@ public class ExprParser
 	private SDMSTriggerQueue tq = null;
 	private SystemEnvironment sysEnv = null;
 	private SDMSScope evalScope = null;
+	public static boolean debug = false;
 	public boolean checkOnly = false;
-	private static boolean debug = SystemEnvironment.traceExpressions;
 
-	// Names of Trigger Variables
-	public static final String S_TIMES_CHECKED = "TIMES_CHECKED";
-	public static final String S_TIMES_FIRED   = "TIMES_FIRED";
+	private ExprExecutor executor = null;
+	private boolean executorValid = false;
 
-	private static final String emptyString = "";
+	private ArrayList<Stmt> prog = new ArrayList<Stmt>(256);
+	// we assume that 32 levels of nesting within a question mark operator won't be easily exceeded
+	private static final int STACKSIZE = 32;
+	private int[] qomStack = new int[STACKSIZE];	// addresses of branch commands that jump to the else part of the question mark operator
+	private int[] qoeStack = new int[STACKSIZE];	// addresses of branch commands that jump to the end of the question mark operator statement
+	private int[] andStack = new int[STACKSIZE];	// addresses of branch commands that jump to the end of an OR expression
+	private int[] orStack  = new int[STACKSIZE];	// addresses of branch commands that jump to the end of an OR expression
+	private int qomNext = 0;			// stackpointer into qomStack
+	private int qoeNext = 0;			// stackpointer into qoeStack
+	private int andNext = 0;			// stackpointer into orStack
+	private int orNext  = 0;			// stackpointer into orStack
 
-	private static Integer I_PLUS = Integer.valueOf(278);
-	private static Integer I_MINUS = Integer.valueOf(276);
+	// Standard Statements that are used very often
+	static final Stmt StmtNOP    = new Stmt(Stmt.S_NOP);
+	static final Stmt StmtEOP    = new Stmt(Stmt.S_EOP);
+	static final Stmt StmtPUSH[] = { new Stmt(Stmt.S_PUSH, 0), new Stmt(Stmt.S_PUSH, 1), new Stmt(Stmt.S_PUSH, 2), new Stmt(Stmt.S_PUSH, 3) };
+	static final Stmt StmtPOP[]  = { new Stmt(Stmt.S_POP, 0), new Stmt(Stmt.S_POP, 1), new Stmt(Stmt.S_POP, 2), new Stmt(Stmt.S_POP, 3) };
 
-	private static Integer I_TIMES = Integer.valueOf(279);
-	private static Integer I_DIV = Integer.valueOf(275);
-	private static Integer I_MOD = Integer.valueOf(277);
 
-	private static Integer I_GT = Integer.valueOf(268);
-	private static Integer I_GE = Integer.valueOf(269);
-	private static Integer I_LT = Integer.valueOf(270);
-	private static Integer I_LE = Integer.valueOf(271);
-	private static Integer I_EQ = Integer.valueOf(267);
-	private static Integer I_NE = Integer.valueOf(272);
-	private static Integer I_MATCHES = Integer.valueOf(273);
-	private static Integer I_NOMATCH = Integer.valueOf(274);
+	static final Integer I_PLUS = Integer.valueOf(278);
+	static final Integer I_MINUS = Integer.valueOf(276);
+
+	static final Integer I_TIMES = Integer.valueOf(279);
+	static final Integer I_DIV = Integer.valueOf(275);
+	static final Integer I_MOD = Integer.valueOf(277);
+
+	static final Integer I_GT = Integer.valueOf(268);
+	static final Integer I_GE = Integer.valueOf(269);
+	static final Integer I_LT = Integer.valueOf(270);
+	static final Integer I_LE = Integer.valueOf(271);
+	static final Integer I_EQ = Integer.valueOf(267);
+	static final Integer I_NE = Integer.valueOf(272);
+	static final Integer I_MATCHES = Integer.valueOf(273);
+	static final Integer I_NOMATCH = Integer.valueOf(274);
+
 %}
 
 %token <String>	STRING 257 IDENTIFIER 258 PARAMETER 259 JPARAMETER 260 RPARAMETER 261 TPARAMETER 262 RSPARAMETER 263 DSPARAMETER 264
@@ -63,175 +80,314 @@ public class ExprParser
 %token EQ 267 GT 268 GE 269 LT 270 LE 271 NE 272 MATCHES 273 NOMATCH 274
 %token DIV 275 MINUS 276 MOD 277 PLUS 278 TIMES 279
 %token ABS 280 AND 281 DATE 282 FIELD 283 INT 284 LOWERCASE 285 NOT 286 NVL 287 OR 288 ROUND 289 SUBSTR 290 STR 291 TRIM 292 UPPERCASE 293
-
+/*
 %type <ParseObject>	expression function literal
 %type <ParseObject>	operand term
 %type <Boolean>	booloperand boolterm boolexp
+*/
 %type <Integer>	addop multop comparison
 
 %start triggerexp
 
 %%
-triggerexp:						{ debuginfo("triggerexp --> true"); if(stop == 0) return Boolean.TRUE; }
-	|	boolexp					{ debuginfo("triggerexp/boolexp --> " + $1); if(stop == 0) return($1); }
-	|	expression				{ debuginfo("triggerexp/expression --> " + $1.getValue()); if(stop == 0) return($1.getValue()); }
+triggerexp:						{ if(stop == 0) return Boolean.TRUE; }
+	|	boolexp					{ prog.add(StmtEOP);
+							  if (debug) render(prog);
+							  ParseObject p = null;
+							  // long now = System.currentTimeMillis();
+							  if (!checkOnly) {
+								p = executor.execute(prog);
+								executorValid = true;
+							  }
+							  // System.out.println("Execution : " + (System.currentTimeMillis() - now) + " ms");
+							  if(stop == 0) return p;
+							}
 
-boolexp:	boolterm				{ debuginfo("boolexp/boolterm"); $$ = $1; }
-	|	boolexp OR boolterm			{ debuginfo("boolexp/boolexp OR boolterm"); Boolean b = $1; if (b.booleanValue()) $$ = b; else $$ = $3; }
+boolexp:	boolterm				{ }
+	|	boolexp  				{ addPOPorMOV(1);
+							  prog.add(new Stmt(Stmt.S_BRT,1,0));
+							  orStack[orNext++] = prog.size() - 1;
+							  if (orNext == STACKSIZE)
+								throw new yyException("Condition too complex");
+							  prog.add(StmtPUSH[1]);	/* we've found a False, so we'll have to restore the stack */
+							}
+		OR boolterm				{ addPOPorMOV(1);
+							  addPOPorMOV(2);
+							  prog.add(new Stmt(Stmt.S_OR,1,2));
+							  prog.add(StmtPUSH[0]);
+							  prog.add(new Stmt(Stmt.S_JMP,prog.size()+2));	/* 0 = JMP Statement, 1 = PUSH, 2 = continuation */
+							  prog.get(orStack[--orNext]).setAddr(prog.size());
+							  prog.add(new Stmt(Stmt.S_PUSHL, Boolean.TRUE));
+							  prog.add(StmtNOP);	// block optimizations
+							}
 
-boolterm:	booloperand				{ debuginfo("boolterm/booloperand"); $$ = $1; }
-	|	boolterm AND booloperand		{ debuginfo("boolterm/boolterm AND booloperand"); Boolean b = $1; if (b.booleanValue()) $$ = $3; else $$ = b; }
+boolterm:	booloperand				{ }
+	|	boolterm				{ addPOPorMOV(1);
+							  prog.add(new Stmt(Stmt.S_BRF,1,0));
+							  andStack[andNext++] = prog.size() - 1;
+							  if (andNext == STACKSIZE)
+								throw new yyException("Condition too complex");
+							  prog.add(StmtPUSH[1]);	/* we've found a False, so we'll have to restore the stack */
+							}
+		AND booloperand				{ addPOPorMOV(1);
+							  addPOPorMOV(2);
+							  prog.add(new Stmt(Stmt.S_AND,1,2));
+							  prog.add(StmtPUSH[0]);
+							  prog.add(new Stmt(Stmt.S_JMP,prog.size()+2));	/* 0 = JMP Statement, 1 = PUSH, 2 = continuation */
+							  prog.get(andStack[--andNext]).setAddr(prog.size());
+							  prog.add(new Stmt(Stmt.S_PUSHL, Boolean.FALSE));
+							  prog.add(StmtNOP);	// block optimizations
+							}
 
-booloperand:	'(' boolexp ')'				{ debuginfo("booloperand/(boolexp)"); $$ = $2; }
-	|	NOT booloperand				{ debuginfo("booloperand/NOT booloperand"); $$ = Boolean.valueOf(! $2.booleanValue()); }
-	|	expression comparison expression	{ debuginfo("booloperand/expression (" + $1.toString() + ") comparison expression (" + $3.toString() + ")"); $$ = $1.compare($3, $2, checkOnly); }
-	|	BOOLEAN					{ debuginfo("booloperand/BOOLEAN"); $$ = $1; }
+booloperand:	NOT booloperand				{ addPOPorMOV(1);
+							  prog.add(new Stmt(Stmt.S_NOT,1));
+							  prog.add(StmtPUSH[0]);
+							}
+	|	expression comparison expression	{ addPOPorMOV(1);
+							  addPOPorMOV(2);
+							  prog.add(new Stmt(Stmt.S_CMP,$2,2,1));
+							  prog.add(StmtPUSH[0]);
+							}
+	|	expression				{ }
 
-expression:	term					{ debuginfo("expression/term"); $$ = $1; }
-	|	expression addop term			{ debuginfo("expression/expression addop term"); $$ = $1.add($3, $2, checkOnly); }
+expression:	term					{ }
+	|	expression addop term			{ addPOPorMOV(1);
+							  addPOPorMOV(2);
+							  prog.add(new Stmt(Stmt.S_ADD,$2,2,1));
+							  prog.add(StmtPUSH[0]);
+							}
 
-term:		operand					{ debuginfo("term/operand"); $$ = $1; }
-	|	term multop operand			{ debuginfo("term/term multop operand"); $$ = $1.mult($3, $2, checkOnly); }
+term:		operand					{ }
+	|	term multop operand			{ addPOPorMOV(1);
+							  addPOPorMOV(2);
+							  prog.add(new Stmt(Stmt.S_MULT,$2,2,1));
+							  prog.add(StmtPUSH[0]);
+							}
 
-addop:		PLUS					{ debuginfo("addop/PLUS");         $$ = I_PLUS; }
-	|	MINUS					{ debuginfo("addop/MINUS");        $$ = I_MINUS; }
+addop:		PLUS					{ $$ = I_PLUS; }
+	|	MINUS					{ $$ = I_MINUS; }
 
-multop:		TIMES					{ debuginfo("multop/TIMES");       $$ = I_TIMES; }
-	|	DIV					{ debuginfo("multop/DIV");         $$ = I_DIV; }
-	|	MOD					{ debuginfo("multop/MOD");         $$ = I_MOD; }
+multop:		TIMES					{ $$ = I_TIMES; }
+	|	DIV					{ $$ = I_DIV; }
+	|	MOD					{ $$ = I_MOD; }
 
-comparison:	GT					{ debuginfo("comparison/GT");      $$ = I_GT; }
-	|	GE					{ debuginfo("comparison/GE");      $$ = I_GE; }
-	|	LT					{ debuginfo("comparison/LT");      $$ = I_LT; }
-	|	LE					{ debuginfo("comparison/LE");      $$ = I_LE; }
-	|	EQ					{ debuginfo("comparison/EQ");      $$ = I_EQ; }
-	|	NE					{ debuginfo("comparison/NE");      $$ = I_NE; }
-	|	MATCHES					{ debuginfo("comparison/MATCHES"); $$ = I_MATCHES; }
-	|	NOMATCH					{ debuginfo("comparison/NOMATCH"); $$ = I_NOMATCH; }
+comparison:	GT					{ $$ = I_GT; }
+	|	GE					{ $$ = I_GE; }
+	|	LT					{ $$ = I_LT; }
+	|	LE					{ $$ = I_LE; }
+	|	EQ					{ $$ = I_EQ; }
+	|	NE					{ $$ = I_NE; }
+	|	MATCHES					{ $$ = I_MATCHES; }
+	|	NOMATCH					{ $$ = I_NOMATCH; }
 
-operand:	'(' expression ')'			{ debuginfo("operand/(expression)"); $$ = $2; }
-	|	addop operand				{ debuginfo("operand/addop operand)"); $$ = $2.changeSign($1, checkOnly); }
-	|	PARAMETER				{ debuginfo("operand/PARAMETER"); $$ = resolve($1, PARAMETER); }
-	|	JPARAMETER				{ debuginfo("operand/JPARAMETER"); $$ = resolve($1, JPARAMETER); }
-	|	RPARAMETER				{ debuginfo("operand/RPARAMETER"); $$ = resolve($1, RPARAMETER); }
-	|	TPARAMETER				{ debuginfo("operand/TPARAMETER"); $$ = resolve($1, TPARAMETER); }
-	|	RSPARAMETER				{ debuginfo("operand/RSPARAMETER"); $$ = resolve($1, RSPARAMETER); }
-	|	DSPARAMETER				{ debuginfo("operand/DSPARAMETER"); $$ = resolve($1, DSPARAMETER); }
-	|	literal					{ debuginfo("operand/literal"); $$ = $1; }
-	|	function				{ debuginfo("operand/function"); $$ = $1; }
-	|	'(' boolexp '?' expression ':' expression ')'	{ debuginfo("operand/?:"); $$ = ParseObject.question($2, $4, $6); }
+operand:	'(' boolexp ')'				{ }
+	|	addop operand				{ if ($1 == I_MINUS) {
+								  addPOPorMOV(1);
+								  prog.add(new Stmt(Stmt.S_CHGS,1));
+								  prog.add(StmtPUSH[0]);
+							  }
+							}
+	|	simpleoperand				{ }
+	|	function				{ }
+	|	'(' boolexp	{
+				    addPOPorMOV(1);
+				    prog.add(new Stmt(Stmt.S_BRF,1,0));
+				    qomStack[qomNext++] = prog.size() - 1;	/* array is zero based */
+				    if (qomNext == STACKSIZE)
+					 throw new yyException("Condition too complex");
+				}
+		'?' expression	{
+				    prog.add(new Stmt(Stmt.S_JMP,0));
+				    qoeStack[qoeNext++] = prog.size() - 1;
+				    if (qoeNext == STACKSIZE)
+					throw new yyException("Condition too complex");
+				}
+		':'		{
+				    prog.get(qomStack[--qomNext]).setAddr(prog.size());
+				    prog.add(StmtNOP);	// block optimizations
+			 	}
+		expression ')'	{
+				    prog.get(qoeStack[--qoeNext]).setAddr(prog.size());
+				    prog.add(StmtNOP);	// block optimizations
+				}
 
-function:	ABS '(' expression ')'						{ debuginfo("function/ABS(expression)"); $$ = $3.abs(checkOnly); }
-	|	INT '(' expression ')'						{ debuginfo("function/INT(expression)"); $$ = $3.to_int(checkOnly); }
-	|	DATE '(' expression ',' expression ')'				{ debuginfo("function/DATE(expression, expression)"); $$ = $3.to_date($5, checkOnly); }
-	|	FIELD '(' IDENTIFIER ')'					{ debuginfo("function/FIELD(expression)"); $$ = field(new ParseObject($3)); }
-	|	LOWERCASE '(' expression ')'					{ debuginfo("function/LOWERCASE(expression)"); $$ = $3.lowercase(checkOnly); }
-	|	NVL '(' expression ',' expression ')'				{ debuginfo("function/NVL(expression, expression)"); $$ = $3.nvl($5, checkOnly); }
-	|	ROUND '(' expression ')'					{ debuginfo("function/ROUND(expression)"); $$ = $3.round(checkOnly); }
-	|	STR '(' expression ')'						{ debuginfo("function/STR(expression)"); $$ = $3.adjust(ParseObject.STRING, checkOnly); }
-	|	SUBSTR '(' expression ',' expression ',' expression ')'		{ debuginfo("function/SUBSTR(expression, expression, expression)"); $$ = $3.substr($5, $7, checkOnly); }
-	|	SUBSTR '(' expression ',' expression ')'			{ debuginfo("function/SUBSTR(expression, expression)"); $$ = $3.substr($5, null, checkOnly); }
-	|	TRIM '(' expression ')'						{ debuginfo("function/TRIM(expression)"); $$ = $3.trim(checkOnly); }
-	|	UPPERCASE '(' expression ')'					{ debuginfo("function/UPPERCASE(expression)"); $$ = $3.uppercase(checkOnly); }
 
-literal:	NUMBER					{ debuginfo("literal/NUMBER"); $$ = new ParseObject($1); }
-	|	STRING					{ debuginfo("literal/STRING"); $$ = new ParseObject($1, ParseObject.STRING); }
+simpleoperand:  PARAMETER				{ prog.add(new Stmt(Stmt.S_RESOLVE, $1, PARAMETER));
+							  prog.add(StmtPUSH[0]);
+							}
+	|	JPARAMETER				{ prog.add(new Stmt(Stmt.S_RESOLVE, $1, JPARAMETER));
+							  prog.add(StmtPUSH[0]);
+							}
+	|	RPARAMETER				{ prog.add(new Stmt(Stmt.S_RESOLVE, $1, RPARAMETER));
+							  prog.add(StmtPUSH[0]);
+							}
+	|	TPARAMETER				{ prog.add(new Stmt(Stmt.S_RESOLVE, $1, TPARAMETER));
+							  prog.add(StmtPUSH[0]);
+							}
+	|	RSPARAMETER				{ prog.add(new Stmt(Stmt.S_RESOLVE, $1, RSPARAMETER));
+							  prog.add(StmtPUSH[0]);
+							}
+	|	DSPARAMETER				{ prog.add(new Stmt(Stmt.S_RESOLVE, $1, DSPARAMETER));
+							  prog.add(StmtPUSH[0]);
+							}
+	|	literal					{ }
+
+
+function:	ABS '(' expression ')'						{ addPOPorMOV(1);
+										  prog.add(new Stmt(Stmt.S_ABS,1));
+										  prog.add(StmtPUSH[0]);
+										}
+	|	INT '(' expression ')'						{ addPOPorMOV(1);
+										  prog.add(new Stmt(Stmt.S_INT,1));
+										  prog.add(StmtPUSH[0]);
+										}
+//	|	DATE '(' expression ',' expression ')'				{ System.out.println("POP(r1);\nPOP(r2;\nDATE(r1,r2);\nPUSH(r0);"); }
+//	|	FIELD '(' IDENTIFIER ')'					{ System.out.println("POP(r1);\nFIELD(r1);\nPUSH(r0);"); }
+	|	LOWERCASE '(' expression ')'					{ addPOPorMOV(1);
+										  prog.add(new Stmt(Stmt.S_LCASE,1));
+										  prog.add(StmtPUSH[0]);
+										}
+	|	NVL '(' expression ',' expression ')'				{ addPOPorMOV(1);
+										  addPOPorMOV(2);
+										  prog.add(new Stmt(Stmt.S_NVL,1,2));
+										  prog.add(StmtPUSH[0]);
+										}
+	|	ROUND '(' expression ')'					{ addPOPorMOV(1);
+										  prog.add(new Stmt(Stmt.S_ROUND,1));
+										  prog.add(StmtPUSH[0]);
+										}
+	|	STR '(' expression ')'						{ addPOPorMOV(1);
+										  prog.add(new Stmt(Stmt.S_STR,1));
+										  prog.add(StmtPUSH[0]);
+										}
+	|	SUBSTR '(' expression ',' expression ',' expression ')'		{ 
+										  addPOPorMOV(1);
+										  addPOPorMOV(2);
+										  addPOPorMOV(3);
+										  prog.add(new Stmt(Stmt.S_SUBSTR,3));
+										  prog.add(StmtPUSH[0]);
+										}
+	|	SUBSTR '(' expression ',' expression ')'			{ 
+										  addPOPorMOV(1);
+										  addPOPorMOV(2);
+										  prog.add(new Stmt(Stmt.S_SUBSTR,2));
+										  prog.add(StmtPUSH[0]);
+										}
+	|	TRIM '(' expression ')'						{ addPOPorMOV(1);
+										  prog.add(new Stmt(Stmt.S_TRIM,1));
+										  prog.add(StmtPUSH[0]);
+										}
+	|	UPPERCASE '(' expression ')'					{ addPOPorMOV(1);
+										  prog.add(new Stmt(Stmt.S_UCASE,1));
+										  prog.add(StmtPUSH[0]);
+										}
+
+literal:	NUMBER					{ prog.add(new Stmt(Stmt.S_PUSHL,$1)); }
+	|	STRING					{ prog.add(new Stmt(Stmt.S_PUSHL,$1)); }
+	|	BOOLEAN					{ prog.add(new Stmt(Stmt.S_PUSHL,$1)); }
 %%
 
-private ParseObject field(ParseObject o)
-{
-	return o;
-}
-
-private void debuginfo(String s)
-{
-	if (debug)
-		System.out.println(s);
-}
-
-private ParseObject resolve(String o, int type)
-	throws SDMSException
-{
-	if(checkOnly) return new ParseObject(emptyString);
-	String p = emptyString;
-	switch (type) {
-		case JPARAMETER:
-			p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
-			break;
-		case RPARAMETER:
-			if (r != null)
-				p = r.getVariableValue(sysEnv, o, true);
-			break;
-		case TPARAMETER:
-			p = resolveTriggerVariable(o);
-			if (p == null) p = emptyString;
-			break;
-		case RSPARAMETER:
-			if (requiredSme != null)
-				p = requiredSme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
-			else
-				p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
-			break;
-		case DSPARAMETER:
-			p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
-			break;
-		case PARAMETER:
-			p = resolveTriggerVariable(o);
-			if(p != null) return new ParseObject(p);
-			if(sme != null)
-				p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
-			else
-				if (requiredSme != null) 
-					p = requiredSme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
-				else
-					if (r != null)
-						p = r.getVariableValue(sysEnv, o, true);
-					else
-						p = emptyString;
-			break;
+/* Some helper functions */
+	private void addPOPorMOV(int target)
+	{
+		int ip = prog.size() - 1;
+		Stmt s = prog.get(ip);	// get the last Statement
+		switch (s.opcode) {
+			case Stmt.S_PUSH:
+				prog.set(ip, new Stmt(Stmt.S_MOV, s.src, target));
+				break;
+			case Stmt.S_PUSHL:
+				s.opcode = Stmt.S_MOVL;
+				s.target = target;
+				break;
+			case Stmt.S_MOV:
+			case Stmt.S_MOVL:
+				// we've just coalesced a push/pop pair into a move
+				// if the previous statement is a push, we can merge that with our current pop
+				s = prog.get(ip - 1);
+				if (s.opcode == Stmt.S_PUSH) {
+					prog.set(ip-1, new Stmt(Stmt.S_MOV, s.src, target));
+					break;
+				} else if (s.opcode == Stmt.S_PUSHL) {
+					s.opcode = Stmt.S_MOVL;
+					s.target = target;
+					break;
+				} else {
+					prog.add(StmtPOP[target]);
+				}
+				break;
+			default:
+				prog.add(StmtPOP[target]);
+		}
 	}
-	debuginfo(o + " -> " + p.toString());
-	return new ParseObject(p);
-}
 
-public void set(SystemEnvironment env, SDMSSubmittedEntity sme, SDMSSubmittedEntity requiredSme, SDMSResource rs, SDMSTrigger tr, SDMSTriggerQueue trq, SDMSScope s)
-{
-	this.sysEnv = env;
-	this.sme = sme;
-	this.requiredSme = requiredSme;
-	this.r = rs;
-	this.t = tr;
-	this.tq = trq;
-	this.evalScope = s;
-}
+	private void render(ArrayList<Stmt> prog)
+	{
+		for (int i = 0; i < prog.size(); ++i) {
+			System.out.println(i + ":\t" + prog.get(i).toString());
+		}
+	}
 
-public String resolveTriggerVariable(String key)
-{
-	if(tq == null) return null;
-	try {
-		if(key.equals(S_TIMES_CHECKED)) {
-			return tq.getTimesChecked(sysEnv).toString();
-		}
-		if(key.equals(S_TIMES_FIRED)) {
-			return tq.getTimesTriggered(sysEnv).toString();
-		}
-	} catch(SDMSException e) { /* ignore */ }
-	return null;
-}
+	public void set(SystemEnvironment env, SDMSSubmittedEntity sme, SDMSSubmittedEntity requiredSme, SDMSResource rs, SDMSTrigger tr, SDMSTriggerQueue trq, SDMSScope s)
+	{
+		this.sysEnv = env;
+		this.sme = sme;
+		this.requiredSme = requiredSme;
+		this.r = rs;
+		this.t = tr;
+		this.tq = trq;
+		this.evalScope = s;
+		executor = new ExprExecutor(env, sme, requiredSme, rs, tr, trq, s);
+	}
+
+	// a wrapper around yyparse that is guaranteed to return a Boolean
+	public Boolean parseBoolExpr(ExprScanner exprs)
+		throws java.io.IOException, yyException, SDMSException
+	{
+		Object p;
+		if (executorValid)
+			p = executor.execute(prog);
+		else
+			p = yyparse(exprs);
+		if (checkOnly)
+			return Boolean.TRUE;
+		if (p instanceof Boolean)
+			return (Boolean) p;
+		ParseObject po = (ParseObject) p;
+		po.adjust(ParseObject.BOOLEAN);
+		return po.bool;
+	}
+
+	// a wrapper around yyparse that is guaranteed to return a public class Object
+	public Object parseObjExpr(ExprScanner exprs)
+		throws java.io.IOException, yyException, SDMSException
+	{
+		Object p;
+		if (executorValid)
+			p = executor.execute(prog);
+		else
+			p = yyparse(exprs);
+		if (checkOnly)
+			return Boolean.TRUE;
+		ParseObject po = (ParseObject) p;
+		return po.toObject();
+	}
 
 }
 
 class ParseObject {
 
-	private BigDecimal number;
-	private String     string;
+	public BigDecimal number;
+	public String     string;
+	public Boolean    bool;
 
-	private int type;
+	public int type;
 
-	public static final int VOID   = 0;
-	public static final int STRING = 1;
-	public static final int NUMBER = 2;
-	public static final int DATE   = 3;
+	public static final int VOID    = 0;
+	public static final int STRING  = 1;
+	public static final int NUMBER  = 2;
+	public static final int DATE    = 3;
+	public static final int BOOLEAN = 4;
 	public static final int INDETERMINED = 99;	// this is stored as string, but hasn't a definite type yet
 
 	public static final BigDecimal one = new BigDecimal("1");
@@ -242,6 +398,7 @@ class ParseObject {
 		type = VOID;
 		number = null;
 		string = null;
+		bool = null;
 	}
 
 	public ParseObject(Object o)
@@ -262,6 +419,12 @@ class ParseObject {
 				type = STRING;
 			}
 		} else
+		if (o instanceof Boolean) {
+			bool = (Boolean) o;
+			type = BOOLEAN;
+			number = null;
+			string = null;
+		} else
 		if(o.getClass().getName().endsWith("Something date like")) {
 			type = DATE;
 			string = null;
@@ -278,22 +441,23 @@ class ParseObject {
 		if (type == VOID) return "VOID";
 		if (type == STRING) return string;
 		if (type == NUMBER) return number.toString();
+		if (type == BOOLEAN) return bool.toString();
+		if (type == INDETERMINED) {
+			if (string != null) return string;
+		}
 		return "Unknown";
 	}
 
-	public ParseObject(String s)
+	public Object toObject()
 	{
-		type = INDETERMINED;
-		string = s;
-		number = null;
-	}
-
-	public ParseObject(String s, int t)
-	{
-		type = t;
-		if (type == NUMBER) type = INDETERMINED;
-		string = s;
-		number = null;
+		if (type == VOID) return "VOID";
+		if (type == STRING) return string;
+		if (type == NUMBER) return number;
+		if (type == BOOLEAN) return bool;
+		if (type == INDETERMINED) {
+			if (string != null) return string;
+		}
+		return "Unknown";
 	}
 
 	public ParseObject(BigDecimal d)
@@ -301,6 +465,15 @@ class ParseObject {
 		type = NUMBER;
 		number = d;
 		string = null;
+		bool = null;
+	}
+
+	public ParseObject(Boolean b)
+	{
+		type = BOOLEAN;
+		number = null;
+		string = null;
+		bool = b;
 	}
 
 	public ParseObject(ParseObject p)
@@ -308,12 +481,7 @@ class ParseObject {
 		type = p.type;
 		number = p.number;
 		string = p.string;
-	}
-
-	public static ParseObject question(Boolean c, ParseObject t, ParseObject f)
-	{
-		if (c) return t;
-		return f;
+		bool = p.bool;
 	}
 
 	public Object getValue()
@@ -331,19 +499,21 @@ class ParseObject {
 				return Double.valueOf(d);
 			}
 		}
+		if (type == BOOLEAN) {
+			return bool;
+		}
 		return null;
 	}
 
-	public ParseObject adjust(ParseObject po, boolean checkOnly)
+	public ParseObject adjust(ParseObject po)
 		throws SDMSException
 	{
-		return adjust(po.type, checkOnly);
+		return adjust(po.type);
 	}
 
-	public ParseObject adjust(int t, boolean checkOnly)
+	public ParseObject adjust(int t)
 		throws SDMSException
 	{
-		if(checkOnly) return new ParseObject();
 		if(type == t) return new ParseObject(this);
 		ParseObject rc = new ParseObject(this);
 		try {
@@ -352,14 +522,33 @@ class ParseObject {
 				case STRING:
 					rc.type = STRING;
 					rc.number = null;
-					if(type == NUMBER)	rc.string = number.toString();
-					if(type == VOID)	rc.string = new String();
+					rc.bool = null;
+					if (type == NUMBER)	rc.string = number.toString();
+					if (type == BOOLEAN)	rc.string = bool.toString();
+					if (type == VOID)	rc.string = new String();
 					break;
 				case NUMBER:
 					rc.type = NUMBER;
 					rc.string = null;
-					if(type == STRING || type == INDETERMINED)	rc.number = new BigDecimal(string);
-					if(type == VOID)	rc.number = new BigDecimal("0");
+					rc.bool = null;
+					if (type == STRING || type == INDETERMINED)	rc.number = new BigDecimal(string);
+					if (type == BOOLEAN)	rc.number = new BigDecimal(bool ? 1 : 0);
+					if (type == VOID)	rc.number = new BigDecimal("0");
+					break;
+				case BOOLEAN:
+					rc.type = BOOLEAN;
+					rc.number = null;
+					rc.string = null;
+					if (type == NUMBER)	rc.bool = (number.compareTo(new BigDecimal(0)) != 0);
+					if (type == STRING) {
+						rc.bool = false;
+						if (string != null) {
+							String s = string.toUpperCase();
+							if (s.equals("TRUE") || s.equals("T"))
+								rc.bool = true;
+						}
+					}
+					if (type == BOOLEAN)	rc.bool = bool;
 					break;
 			}
 		} catch (NumberFormatException nfe) {
@@ -374,13 +563,12 @@ class ParseObject {
 		return rc;
 	}
 
-	public ParseObject mult(ParseObject o2, Integer s, boolean checkOnly)
+	public ParseObject mult(ParseObject o2, Integer s)
 		throws SDMSException
 	{
-		if(checkOnly) return new ParseObject();
 		int operator = s.intValue();
-		ParseObject op1 = adjust(ParseObject.NUMBER, checkOnly);
-		ParseObject op2 = o2.adjust(ParseObject.NUMBER, checkOnly);
+		ParseObject op1 = adjust(ParseObject.NUMBER);
+		ParseObject op2 = o2.adjust(ParseObject.NUMBER);
 		switch(operator) {
 			case ExprParser.DIV:
 				if (op2.number.equals(0))
@@ -399,7 +587,7 @@ class ParseObject {
 		return op1;
 	}
 
-	public ParseObject add(ParseObject o2, Integer s, boolean checkOnly)
+	public ParseObject add(ParseObject o2, Integer s)
 		throws SDMSException
 	{
 		// adding two parameters (operator == PLUS) is an ambiguous operation
@@ -408,10 +596,9 @@ class ParseObject {
 		// c. if "this" is a string, the result will be a string
 		// d. if "this" is indeterminated, it is tried to interpret it as a number first
 		//
-		ParseObject op1 = this;
+		ParseObject op1 = new ParseObject(this);
 		ParseObject op2 = null;
 
-		if(checkOnly) return new ParseObject();
 		int operator = s.intValue();
 		if (operator == ExprParser.PLUS) {
 			if (op1.type == INDETERMINED) {
@@ -419,14 +606,14 @@ class ParseObject {
 				// if that fails, it must be a string
 				// This is case d.
 				try {
-					op1 = adjust(NUMBER, checkOnly);
+					op1 = adjust(NUMBER);
 				} catch (CommonErrorException cee) {
-					op1 = adjust(STRING, checkOnly);
+					op1 = adjust(STRING);
 				}
 			}
 			if(op1.type == STRING) {
 				// Case c. or case d. in case of an invalid number format of "this"
-				op2 = o2.adjust(STRING, checkOnly);
+				op2 = o2.adjust(STRING);
 				op2.string = op1.string + op2.string;
 				return op2;
 			} else {
@@ -435,9 +622,9 @@ class ParseObject {
 				} else {
 					// Case b.
 					try {
-						op2 = o2.adjust(NUMBER, checkOnly);
+						op2 = o2.adjust(NUMBER);
 					} catch (CommonErrorException cee) {
-						op1 = op1.adjust(STRING, checkOnly);
+						op1 = op1.adjust(STRING);
 						op2.string = op1.string + op2.string;
 						return op2;
 					}
@@ -445,8 +632,8 @@ class ParseObject {
 			}
 		}
 		if (op1.type != NUMBER)
-			op1 = adjust(NUMBER, checkOnly);
-		op2 = o2.adjust(NUMBER, checkOnly);
+			op1 = adjust(NUMBER);
+		op2 = o2.adjust(NUMBER);
 		switch(operator) {
 			case ExprParser.PLUS:	op1.number = op1.number.add(op2.number); break;
 			case ExprParser.MINUS:	op1.number = op1.number.add(op2.number.negate()); break;
@@ -454,7 +641,7 @@ class ParseObject {
 		return op1;
 	}
 
-	public int compareTo(ParseObject o2, boolean checkOnly)
+	public int compareTo(ParseObject o2)
 		throws SDMSException
 	{
 		ParseObject op1 = this;
@@ -463,19 +650,19 @@ class ParseObject {
 			if (o2.type != INDETERMINED) {
 				try {
 					// this will work if o2 is a String, or "this" has a valid numerical format
-					op1 = adjust(o2.type, checkOnly);
+					op1 = adjust(o2.type);
 				} catch (CommonErrorException cee) {
 					// it is pretty certain that both aren't equal, but that doesn't play a role
 					// this method is simply not allowed to fail
-					op1 = adjust(STRING, checkOnly);
+					op1 = adjust(STRING);
 				}
 			} else {
 				// both are undetermined
 				// hence we regard them to be strings
-				op1 = adjust(STRING, checkOnly);
+				op1 = adjust(STRING);
 			}
 		}
-		ParseObject op2 = o2.adjust(op1.type, checkOnly);
+		ParseObject op2 = o2.adjust(op1.type);
 		int val = 0;
 		switch(op1.type) {
 			case NUMBER: val = op1.number.compareTo(op2.number); break;
@@ -484,62 +671,50 @@ class ParseObject {
 		return val;
 	}
 
-	public Boolean compare(ParseObject o2, Integer s, boolean checkOnly)
+	public ParseObject compare(ParseObject o2, Integer s)
 		throws SDMSException
 	{
-		if(checkOnly) return Boolean.TRUE;
 		int operator = s.intValue();
 		if(operator == ExprParser.MATCHES || operator == ExprParser.NOMATCH) {
-			ParseObject op1 = adjust(STRING, checkOnly);
-			ParseObject op2 = o2.adjust(STRING, checkOnly);
-			if(operator == ExprParser.MATCHES && op1.string.matches(op2.string)) return Boolean.TRUE;
-			if(operator == ExprParser.NOMATCH && !op1.string.matches(op2.string)) return Boolean.TRUE;
-			return Boolean.FALSE;
+			ParseObject op1 = adjust(STRING);
+			ParseObject op2 = o2.adjust(STRING);
+			if(operator == ExprParser.MATCHES && op1.string.matches(op2.string)) return new ParseObject(Boolean.TRUE);
+			if(operator == ExprParser.NOMATCH && !op1.string.matches(op2.string)) return new ParseObject(Boolean.TRUE);
+			return new ParseObject(Boolean.FALSE);
 		} else {
-			int val = compareTo(o2, checkOnly);
+			int val = compareTo(o2);
 			switch(operator) {
-				case ExprParser.EQ:	return Boolean.valueOf(val == 0);
-				case ExprParser.GE:	return Boolean.valueOf(val >= 0);
-				case ExprParser.GT:	return Boolean.valueOf(val > 0);
-				case ExprParser.LE:	return Boolean.valueOf(val <= 0);
-				case ExprParser.LT:	return Boolean.valueOf(val < 0);
-				case ExprParser.NE:	return Boolean.valueOf(val != 0);
+				case ExprParser.EQ:	return new ParseObject(Boolean.valueOf(val == 0));
+				case ExprParser.GE:	return new ParseObject(Boolean.valueOf(val >= 0));
+				case ExprParser.GT:	return new ParseObject(Boolean.valueOf(val > 0));
+				case ExprParser.LE:	return new ParseObject(Boolean.valueOf(val <= 0));
+				case ExprParser.LT:	return new ParseObject(Boolean.valueOf(val < 0));
+				case ExprParser.NE:	return new ParseObject(Boolean.valueOf(val != 0));
 			}
 		}
-		return Boolean.TRUE;
+		return new ParseObject(Boolean.TRUE);
 	}
 
-	public ParseObject changeSign(Integer s, boolean checkOnly)
+	public ParseObject changeSign()
 		throws SDMSException
 	{
-		if(checkOnly) return new ParseObject();
-		int operator = s.intValue();
-		ParseObject retval = adjust(ParseObject.NUMBER, checkOnly);
-		switch(operator) {
-			case ExprParser.PLUS:
-				// do nothing
-				break;
-			case ExprParser.MINUS:
-				retval.number = retval.number.negate();
-				break;
-		}
+		ParseObject retval = adjust(ParseObject.NUMBER);
+		retval.number = retval.number.negate();
 		return retval;
 	}
 
-	public ParseObject to_int(boolean checkOnly)
+	public ParseObject to_int()
 		throws SDMSException
 	{
-		if(checkOnly) return new ParseObject();
-		ParseObject retval = adjust(ParseObject.NUMBER, checkOnly);
+		ParseObject retval = adjust(ParseObject.NUMBER);
 		retval.number = new BigDecimal(retval.number.toBigInteger());
 		return retval;
 	}
 
-	public ParseObject to_date(ParseObject format, boolean checkOnly)
+	public ParseObject to_date(ParseObject format)
 		throws SDMSException
 	{
-		if(checkOnly) return new ParseObject();
-		if(type == NUMBER) return this.to_int(false);
+		if(type == NUMBER) return this.to_int();
 		if(type == VOID) return this;
 		ParseObject retval;
 		if(format.type == STRING) {
@@ -560,32 +735,29 @@ class ParseObject {
 		return retval;
 	}
 
-	public ParseObject abs(boolean checkOnly)
+	public ParseObject abs()
 		throws SDMSException
 	{
-		if(checkOnly) return new ParseObject();
-		ParseObject retval = adjust(ParseObject.NUMBER, checkOnly);
+		ParseObject retval = adjust(ParseObject.NUMBER);
 		retval.number = retval.number.abs();
 		return retval;
 	}
 
-	public ParseObject round(boolean checkOnly)
+	public ParseObject round()
 		throws SDMSException
 	{
-		if(checkOnly) return new ParseObject();
-		ParseObject retval = adjust(ParseObject.NUMBER, checkOnly);
+		ParseObject retval = adjust(ParseObject.NUMBER);
 		retval.number = retval.number.divide(one, RoundingMode.HALF_UP);
 		return retval;
 	}
 
-	public ParseObject substr(ParseObject v, ParseObject b, boolean checkOnly)
+	public ParseObject substr(ParseObject v, ParseObject b)
 		throws SDMSException
 	{
-		if(checkOnly) return new ParseObject();
-		ParseObject retval = adjust(STRING, checkOnly);
-		int von = v.adjust(NUMBER, checkOnly).number.intValue();
+		ParseObject retval = adjust(STRING);
+		int von = v.adjust(NUMBER).number.intValue();
 		if(b != null) {
-			int bis = b.adjust(NUMBER, checkOnly).number.intValue();
+			int bis = b.adjust(NUMBER).number.intValue();
 			retval.string = retval.string.substring(von, bis);
 		} else {
 			retval.string = retval.string.substring(von);
@@ -593,59 +765,653 @@ class ParseObject {
 		return retval;
 	}
 
-	public ParseObject trim(boolean checkOnly)
+	public ParseObject trim()
 		throws SDMSException
 	{
-		if(checkOnly) return new ParseObject();
-		ParseObject retval = adjust(STRING, checkOnly);
+		ParseObject retval = adjust(STRING);
 		retval.string = retval.string.trim();
 		return retval;
 	}
 
-	public ParseObject uppercase(boolean checkOnly)
+	public ParseObject uppercase()
 		throws SDMSException
 	{
-		if(checkOnly) return new ParseObject();
-		ParseObject retval = adjust(STRING, checkOnly);
+		ParseObject retval = adjust(STRING);
 		retval.string = retval.string.toUpperCase();
 		return retval;
 	}
 
-	public ParseObject lowercase(boolean checkOnly)
+	public ParseObject lowercase()
 		throws SDMSException
 	{
-		if(checkOnly) return new ParseObject();
-		ParseObject retval = adjust(STRING, checkOnly);
+		ParseObject retval = adjust(STRING);
 		retval.string = retval.string.toLowerCase();
 		return retval;
 	}
 
-	public ParseObject nvl(ParseObject replacement, boolean checkOnly)
+	public ParseObject nvl(ParseObject replacement)
 		throws SDMSException
 	{
-		if(checkOnly) return new ParseObject();
 		if ((type == VOID) ||
 		    (type == STRING && (string == null || string.equals(""))) ||
 		    (type == NUMBER && number == null) ||
 		    (type == DATE && number == null))
-			return replacement;
-		return this;
+			return new ParseObject(replacement);
+		return new ParseObject(this);
+	}
+
+	public ParseObject boolAND(ParseObject b)
+		throws SDMSException
+	{
+		ParseObject a = adjust(ParseObject.BOOLEAN);
+		if (a.bool)	// if a == true, the value of b will be the result of the expression
+			a = b.adjust(ParseObject.BOOLEAN);
+		return a;
+	}
+
+	public ParseObject boolOR(ParseObject b)
+		throws SDMSException
+	{
+		ParseObject a = adjust(ParseObject.BOOLEAN);
+		try {
+			if (!a.bool)	// if a == false, the value of b will be the result of the expression
+				a = b.adjust(ParseObject.BOOLEAN);
+			return a;
+		} catch (NullPointerException npe) {
+			System.out.println("this:" + this.toString());
+			System.out.println("b   :" + b.toString());
+			System.out.println("a   :" + a.toString());
+			throw npe;
+		}
+	}
+
+	public ParseObject boolNOT()
+		throws SDMSException
+	{
+		ParseObject a = adjust(ParseObject.BOOLEAN);
+		a.bool = !a.bool;
+		return a;
 	}
 }
 
-/*
-class DateParser {
+class Stmt {
+	static final int S_AND   =  1;	/* binary operator */
+	static final int S_OR    =  2;	/* binary operator */
+	static final int S_NOT   =  3;	/* unary operator  */
+	static final int S_CMP   =  4;	/* binary operator */
+	static final int S_PUSH  =  5;
+	static final int S_POP   =  6;
+	static final int S_BRF   =  7;	/* branch if top of stack is false */
+	static final int S_BRT   =  8;	/* branch if top of stack is true  */
+	static final int S_MULT  =  9;	/* binary operator */
+	static final int S_ADD   = 10;	/* binary operator */
+	static final int S_RESOLVE = 11;	/* Variable resolution, needs scope and name */
+	static final int S_ABS   = 12;	/* unary operator  */
+	static final int S_DATE  = 13;	/* not yet used    */
+	static final int S_FIELD = 14;	/* not yet used    */
+	static final int S_INT   = 15;	/* unary operator  */
+	static final int S_LCASE = 16;	/* unary operator  */
+	static final int S_NVL   = 17;	/* binary operator */
+	static final int S_ROUND = 18;	/* unary operator  */
+	static final int S_SUBSTR = 19;	/* takes 2 or 3 arguments, String, from [, to ] */
+	static final int S_STR   = 20;	/* unary operator  */
+	static final int S_TRIM  = 21;	/* unary operator  */
+	static final int S_UCASE = 22;	/* unary operator  */
+	static final int S_JMP   = 23;	/* unconditional jmp */
+	static final int S_MOV   = 24;  /* Move src to target */
+	static final int S_PUSHL = 25;  /* push literal    */
+	static final int S_CHGS  = 26;  /* change sign */
+	static final int S_NOP   = 27;	/* no operation */
+	static final int S_MOVL  = 28;	/* move literal */
+	static final int S_EOP   = 100;	/* End Of Program  */
 
-	// Special Characters
-	//
-	// DD   = day numeric (01 - 31)
-	// MM   = month numeric (01 - 12)
-	// YY   = year numeric (00 - 99) Values > 70 count as 19YY
-	// YYYY = year numeric (1970 - 9999)
-	// hh   = hour numeric (00 - 23)
-	// mm   = minute numeric (00 - 59)
-	// ss   = second numeric (00 - 59)
-	// ddd  = name of day (is ignored, any 3 character string is accepted)
-	//
+	static final int I_PLUS = 278;
+	static final int I_MINUS = 276;
+
+	static final int I_TIMES = 279;
+	static final int I_DIV = 275;
+	static final int I_MOD = 277;
+
+	static final int I_GT = 268;
+	static final int I_GE = 269;
+	static final int I_LT = 270;
+	static final int I_LE = 271;
+	static final int I_EQ = 267;
+	static final int I_NE = 272;
+	static final int I_MATCHES = 273;
+	static final int I_NOMATCH = 274;
+
+	static final int PARAMETER   = ExprParser.PARAMETER;
+	static final int JPARAMETER  = ExprParser.JPARAMETER;
+	static final int RPARAMETER  = ExprParser.RPARAMETER;
+	static final int TPARAMETER  = ExprParser.TPARAMETER;
+	static final int RSPARAMETER = ExprParser.RSPARAMETER;
+	static final int DSPARAMETER = ExprParser.DSPARAMETER;
+
+	public int opcode;
+	public int addr;
+	public int numargs;
+	public String varName;
+	public BigDecimal numVal;
+	public String strVal;
+	public boolean boolVal;
+	public int varScope;
+	public int operator;
+	public int src, target;
+
+	private void initStmt()
+	{
+		this.addr = 0;
+		this.numargs = 0;
+		this.varName = null;
+		this.varScope = 0;
+		this.operator = 0;
+		this.src = 0;
+		this.target = 0;
+		numVal = null;
+		strVal = null;
+		boolVal = false;
+	}
+
+	public Stmt(int opcode)
+	{
+		// case S_NOP
+		// case S_EOP
+		this.opcode = opcode;
+		initStmt();
+	}
+
+	public Stmt(int opcode, int additionalValue)
+	{
+		this.opcode = opcode;
+		initStmt();
+		switch(opcode) {
+			case S_JMP:
+				this.addr = additionalValue;
+				break;
+			case S_SUBSTR:
+				this.numargs = additionalValue;
+				break;
+			case S_POP:
+				this.target = additionalValue;
+				break;
+			case S_PUSH:
+			case S_NOT:
+			case S_TRIM:
+			case S_UCASE:
+			case S_LCASE:
+			case S_ABS:
+			case S_INT:
+			case S_STR:
+			case S_ROUND:
+			case S_CHGS:
+				this.src = additionalValue;
+				break;
+			default:
+				System.err.println("ERROR: no additional int value allowed for statement type " + opcode);
+				System.exit(1);
+		}
+	}
+
+	public Stmt(int opcode, BigDecimal numVal)
+	{
+		// case S_PUSHL
+		this.opcode = opcode;
+		initStmt();
+		this.numVal = numVal;
+	}
+
+	public Stmt(int opcode, Boolean boolVal)
+	{
+		// case S_PUSHL
+		this.opcode = opcode;
+		initStmt();
+		this.boolVal = boolVal;
+	}
+
+	public Stmt(int opcode, String strVal)
+	{
+		// case S_PUSHL
+		this.opcode = opcode;
+		initStmt();
+		this.strVal = strVal;
+	}
+
+	public Stmt(int opcode, BigDecimal numVal, int target)
+	{
+		// case S_MOVL
+		this.opcode = opcode;
+		initStmt();
+		this.numVal = numVal;
+		this.target = target;
+	}
+
+	public Stmt(int opcode, Boolean boolVal, int target)
+	{
+		// case S_MOVL
+		this.opcode = opcode;
+		initStmt();
+		this.boolVal = boolVal;
+		this.target = target;
+	}
+
+	public Stmt(int opcode, int src, int target)
+	{
+		this.opcode = opcode;
+		initStmt();
+		switch (opcode) {
+			case S_BRF:
+			case S_BRT:
+				this.src = src;
+				this.addr = target;
+				break;
+			case S_AND:
+			case S_OR:
+			case S_MOV:
+				this.src = src;
+				this.target = target;
+				break;
+			default:
+				System.err.println("ERROR: don't know what to do with two int values for statement type " + opcode);
+				System.exit(1);
+		}
+	}
+
+	public Stmt(int opcode, String name, int scope)
+	{
+		// case S_RESOLVE
+		this.opcode = opcode;
+		initStmt();
+		switch (opcode) {
+			case S_RESOLVE:
+				varName = name;
+				varScope = scope;
+				break;
+			case S_MOVL:
+				this.strVal = name;
+				this.target = scope;
+				break;
+		}
+	}
+
+	public Stmt(int opcode, int operator, int src, int target)
+	{
+		this.opcode = opcode;
+		initStmt();
+		switch(opcode) {
+			case S_ADD:
+			case S_MULT:
+			case S_CMP:
+				this.operator = operator;
+				this.src = src;
+				this.target = target;
+				break;
+			default:
+				System.err.println("ERROR: invalid arguments for statement type " + opcode);
+				System.exit(1);
+		}
+	}
+
+	public void setAddr(int addr)
+	{
+		this.addr = addr;
+	}
+
+	public static String opStr(int operator)
+	{
+		switch(operator) {
+			case I_PLUS:	return "PLUS";
+			case I_MINUS:	return "MINUS";
+			case I_TIMES:	return "TIMES";
+			case I_DIV:	return "DIV";
+			case I_MOD:	return "MOD";
+			case I_GT:	return "GT";
+			case I_GE:	return "GE";
+			case I_LT:	return "LT";
+			case I_LE:	return "LE";
+			case I_EQ:	return "EQ";
+			case I_NE:	return "NE";
+			case I_MATCHES:	return "MATCHES";
+			case I_NOMATCH:	return "NOMATCH";
+		}
+		return "unknown";
+	}
+
+	public static String scStr(int scope)
+	{
+		switch(scope) {
+			case PARAMETER:		return "PARAMETER";
+			case JPARAMETER:	return "JPARAMETER";
+			case RPARAMETER:	return "RPARAMETER";
+			case TPARAMETER:	return "TPARAMETER";
+			case RSPARAMETER:	return "RSPARAMETER";
+			case DSPARAMETER:	return "DSPARAMETER";
+		}
+		return "unknown";
+	}
+
+	public String toString()
+	{
+		switch (opcode) {
+			case S_AND:	return "AND(r" + src + ",r" + target + ")";
+			case S_OR:	return "OR(r" + src + ",r" + target + ")";
+			case S_NOT:	return "NOT(r" + src + ")";
+			case S_CMP:	return "CMP(" + opStr(operator) + ",r" + src + ",r" + target + ")";
+			case S_PUSH:	return "PUSH(r" + src + ")";
+			case S_POP:	return "POP(r" + target + ")";
+			case S_BRF:	return "BRF(r" + src + ","+ addr + ")";
+			case S_BRT:	return "BRT(r" + src + ","+ addr + ")";
+			case S_MULT:	return "MULT(" + opStr(operator) + ",r" + src + ",r" + target + ")";
+			case S_ADD:	return "ADD(" + opStr(operator) + ",r" + src + ",r" + target + ")";
+			case S_RESOLVE:	return "RESOLVE(" + varName + ", " + scStr(varScope) + ")";
+			case S_ABS:	return "ABS(r" + src + ")";
+			case S_DATE:	return "DATE(r" + src + ")";
+			case S_FIELD:	return "FIELD";
+			case S_INT:	return "INT(r" + src + ")";
+			case S_LCASE:	return "LCASE(r" + src + ")";
+			case S_NVL:	return "NVL";
+			case S_ROUND:	return "ROUND(r" + src + ")";
+			case S_SUBSTR:	return "SUBSTR(" + numargs + ")";
+			case S_STR:	return "STR(r" + src + ")";
+			case S_TRIM:	return "TRIM(r" + src + ")";
+			case S_UCASE:	return "UCASE(r" + src + ")";
+			case S_JMP:	return "JMP(" + addr + ")";
+			case S_MOV:	return "MOV(r" + src + ",r" + target + ")";
+			case S_MOVL:	return "MOVL(" + (strVal == null ? (numVal == null ? boolVal : numVal) : strVal) + ",r" + target + ")";
+			case S_PUSHL:	return "PUSHL(" + (strVal == null ? (numVal == null ? boolVal : numVal) : strVal) + ")";
+			case S_CHGS:	return "CHGS(r" + src + ")";
+			case S_EOP:	return "EOP";
+			case S_NOP:	return "NOP";
+		}
+		return null;
+	}
 }
-*/
+
+class ExprExecutor {
+
+	static final int STACKSIZE = 32;
+	static final int NUMREGS = 4;
+
+	private static final String emptyString = "";
+
+	// Names of Trigger Variables
+	public static final String S_TIMES_CHECKED = "TIMES_CHECKED";
+	public static final String S_TIMES_FIRED   = "TIMES_FIRED";
+
+	/* Execution contect */
+	ParseObject[] stack;
+	ParseObject[] regs;
+	int ip;	/* instruction pointer */
+	int sp;	/* stack pointer; points to top of stack + 1 (next stackentry) */
+
+	/* Execution environment */
+	private SDMSSubmittedEntity sme = null;
+	private SDMSSubmittedEntity requiredSme = null;
+	private SDMSResource r = null;
+	private SDMSTrigger t = null;
+	private SDMSTriggerQueue tq = null;
+	private SystemEnvironment sysEnv = null;
+	private SDMSScope evalScope = null;
+
+	// private HashMap<SDMSKey,ParseObject> cache = new HashMap<SDMSKey,ParseObject>();
+
+
+	public ExprExecutor(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, SDMSSubmittedEntity requiredSme,
+		SDMSResource r, SDMSTrigger t, SDMSTriggerQueue tq, SDMSScope evalScope)
+	{
+		stack = new ParseObject[STACKSIZE];
+		regs = new ParseObject[NUMREGS];
+		ip = 0;
+		sp = 0;
+
+		/* set up execution environment */
+		this.sysEnv = sysEnv;
+		this.sme = sme;
+		this.requiredSme = requiredSme;
+		this.r = r;
+		this.t = t;
+		this.tq = tq;
+		this.evalScope = evalScope;
+	}
+
+	private ParseObject resolve(String o, int type)
+		throws SDMSException
+	{
+		// SDMSKey k = new SDMSKey(o,type);
+		// ParseObject result = cache.get(k);
+		// if (result != null) return result;
+		String p = emptyString;
+		switch (type) {
+			case ExprParser.JPARAMETER:
+				p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
+				break;
+			case ExprParser.RPARAMETER:
+				if (r != null)
+					p = r.getVariableValue(sysEnv, o, true);
+				break;
+			case ExprParser.TPARAMETER:
+				p = resolveTriggerVariable(o);
+				if (p == null) p = emptyString;
+				break;
+			case ExprParser.RSPARAMETER:
+				if (requiredSme != null)
+					p = requiredSme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
+				else
+					p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
+				break;
+			case ExprParser.DSPARAMETER:
+				p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
+				break;
+			case ExprParser.PARAMETER:
+				p = resolveTriggerVariable(o);
+				if(p != null) return new ParseObject(p);
+				if(sme != null) {
+					p = sme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
+				} else {
+					if (requiredSme != null) 
+						p = requiredSme.getVariableValue(sysEnv, o, false, ParseStr.S_LIBERAL, true /* triggercontext */, evalScope, true);
+					else
+						if (r != null)
+							p = r.getVariableValue(sysEnv, o, true);
+						else
+							p = emptyString;
+				}
+				break;
+		}
+		return new ParseObject(p);
+	}
+	public String resolveTriggerVariable(String key)
+	{
+		if(tq == null) return null;
+		try {
+			if(key.equals(S_TIMES_CHECKED)) {
+				return tq.getTimesChecked(sysEnv).toString();
+			}
+			if(key.equals(S_TIMES_FIRED)) {
+				return tq.getTimesTriggered(sysEnv).toString();
+			}
+		} catch(SDMSException e) { /* ignore */ }
+		return null;
+	}
+
+	private void printHeader()
+	{
+		System.out.print("\t\t\t\t");
+		for (int i = 0; i < STACKSIZE/4; ++i) {
+			System.out.print("s[" + i + "]\t");
+		}
+		System.out.print("\t");
+		for (int i = 0; i < NUMREGS; ++i) {
+			System.out.print("r" + i + "\t");
+		}
+		System.out.println();
+	}
+
+	private void printState(Stmt s)
+	{
+		String str = s.toString();
+		int l = (3 - str.length()/8) + 1;
+		for (;l>0;--l) str = str + "\t";
+		System.out.print(str);
+
+		for (int i = 0; i < STACKSIZE/4; ++i) {
+			if (i >= sp)
+				System.out.print("-\t");
+			else
+				System.out.print(stack[i].toString() + "\t");
+		}
+		System.out.print("\t");
+		for (int i = 0; i < NUMREGS; ++i) {
+			if (regs[i] == null)
+				System.out.print("-\t");
+			else
+				System.out.print(regs[i].toString() + "\t");
+		}
+		System.out.println();
+	}
+
+
+	public ParseObject execute(ArrayList<Stmt> prog)
+		throws SDMSException
+	{
+		int parVal = 1;		// for debugging
+		ParseObject p = null;
+		if (ExprParser.debug)
+			printHeader();
+		int last = prog.size();
+		while (ip < last) {
+			Stmt s = prog.get(ip);
+			switch (s.opcode) {
+				case Stmt.S_AND:
+					regs[0] = regs[s.src].boolAND(regs[s.target]);
+					break;
+				case Stmt.S_OR:
+					regs[0] = regs[s.src].boolOR(regs[s.target]);
+					break;
+				case Stmt.S_NOT:
+					regs[0] = regs[s.src].boolNOT();
+					break;
+				case Stmt.S_CMP:
+					/* return "CMP(" + opStr(operator) + ",r" + src + ",r" + target + ")"; */
+					regs[0] = regs[s.src].compare(regs[s.target],s.operator);
+					break;
+				case Stmt.S_PUSH:
+					if (sp == STACKSIZE) {
+						throw new StackOverflowError("Stack overflow at statement " + ip);
+					}
+					stack[sp] = regs[s.src];
+					sp++;
+					break;
+				case Stmt.S_POP:
+					if (sp == 0) {
+						throw new StackOverflowError("Stack underflow at statement " + ip);
+					}
+					sp--;
+					regs[s.target] = stack[sp];
+					break;
+				case Stmt.S_BRF:
+					p = regs[s.src];
+					if (p.type != ParseObject.BOOLEAN) {
+						p = p.adjust(ParseObject.BOOLEAN);
+					}
+					if (!p.bool) {
+						ip = s.addr - 1;	/* subtract one, it is corrected after the switch */
+					}
+					break;
+				case Stmt.S_BRT:
+					p = regs[s.src];
+					if (p.type != ParseObject.BOOLEAN) {
+						p = p.adjust(ParseObject.BOOLEAN);
+					}
+					if (p.bool) {
+						ip = s.addr - 1;	/* subtract one, it is corrected after the switch */
+					}
+					break;
+				case Stmt.S_MULT:
+					regs[0] = regs[s.src].mult(regs[s.target], s.operator);
+					break;
+				case Stmt.S_ADD:
+					regs[0] = regs[s.src].add(regs[s.target], s.operator);
+					break;
+				case Stmt.S_RESOLVE:
+					/* for testing */
+					/* regs[0] = new ParseObject(new BigDecimal(parVal++)); */
+					regs[0] =  resolve(s.varName, s.varScope);
+					break;
+				case Stmt.S_ABS:
+					regs[0] = regs[s.src].abs();
+					break;
+				case Stmt.S_DATE:
+					/* return "DATE"; */
+					break;
+				case Stmt.S_FIELD:
+					/* return "FIELD"; */
+					break;
+				case Stmt.S_INT:
+					regs[0] = regs[s.src].to_int();
+					break;
+				case Stmt.S_LCASE:
+					regs[0] = regs[s.src].lowercase();
+					break;
+				case Stmt.S_NVL:
+					regs[0] = regs[s.src].nvl(regs[s.target]);
+					break;
+				case Stmt.S_ROUND:
+					regs[0] = regs[s.src].round();
+					break;
+				case Stmt.S_SUBSTR:
+					/* return "SUBSTR(" + numargs + ")"; */
+					if (s.numargs == 2)
+						regs[0] = regs[2].substr(regs[1], null);
+					else
+						regs[0] = regs[3].substr(regs[2], regs[1]);
+					break;
+				case Stmt.S_STR:
+					regs[0] = regs[s.src].adjust(ParseObject.STRING);
+					break;
+				case Stmt.S_TRIM:
+					regs[0] = regs[s.src].trim();
+					break;
+				case Stmt.S_UCASE:
+					regs[0] = regs[s.src].uppercase();
+					break;
+				case Stmt.S_JMP:
+					ip = s.addr - 1;	/* subtract one, it is corrected after the switch */
+					break;
+				case Stmt.S_MOV:
+					regs[s.target] = regs[s.src];
+					break;
+				case Stmt.S_MOVL:
+					p = new ParseObject(s.strVal == null ? (s.numVal == null ? s.boolVal : s.numVal) : s.strVal);
+					regs[s.target] = p;
+					break;
+				case Stmt.S_PUSHL:
+					if (sp == STACKSIZE) {
+						throw new StackOverflowError("Stack overflow at statement " + ip);
+					}
+					p = new ParseObject(s.strVal == null ? (s.numVal == null ? s.boolVal : s.numVal) : s.strVal);
+					stack[sp] = p;
+					sp++;
+					break;
+				case Stmt.S_CHGS:
+					regs[0] = regs[s.src].changeSign();
+					break;
+				case Stmt.S_EOP:	/* should be the last instruction anyway, but better be safe than sorry */
+					ip = last;
+					break;
+				case Stmt.S_NOP:	/* do nothing */
+					break;
+			}
+			if (ExprParser.debug)
+				printState(s);
+			ip++;
+		}
+		if (sp != 1) {
+			System.out.println("Stack corrupted. sp = " + sp);
+			for (int i = 0; i < sp; ++i)
+				System.out.println(i + " : " + stack[i]);
+		}
+		return stack[0];
+	}
+}
+
