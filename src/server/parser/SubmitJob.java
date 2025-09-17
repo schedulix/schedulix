@@ -261,7 +261,13 @@ public class SubmitJob extends Node
 		resumeTs = evalResumeObj(sysEnv, resumeObj, null, true, sme.getEffectiveTimeZone(sysEnv));
 
 		Integer state = sme.getState(sysEnv);
-		if (state == SDMSSubmittedEntity.STARTING || state == SDMSSubmittedEntity.STARTED || state == SDMSSubmittedEntity.RUNNING) {
+		if (state == SDMSSubmittedEntity.STARTING ||
+		    state == SDMSSubmittedEntity.STARTED ||
+		    state == SDMSSubmittedEntity.RUNNING ||
+		    state == SDMSSubmittedEntity.TO_KILL ||
+		    state == SDMSSubmittedEntity.KILLED ||
+		    state == SDMSSubmittedEntity.BROKEN_ACTIVE ||
+		    sme.getIsSuspended(sysEnv).intValue() != SDMSSubmittedEntity.NOSUSPEND) {
 			if (sme.getIsCancelled(sysEnv).booleanValue())
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03703020852", "Child submit rejected because job is cancelling"));
 			final SDMSSubmittedEntity smec = sme.submitChild(sysEnv, params, suspended, resumeTs, se.getId(sysEnv), childTag, null, submitTag, enable.booleanValue());
