@@ -7,6 +7,7 @@ import re
 import threading
 import os
 import locale
+import datetime
 try:
 	from zExceptions import Unauthorized
 	from ZODB.POSException import ConflictError
@@ -36,7 +37,7 @@ try:
 	from M2Crypto import SSL
 except:
 	pass
-	# print "Warning: M2Crypto not installed, SSL not available"
+	# doPrint "Warning: M2Crypto not installed, SSL not available"
 
 try:
 	import customcrypt
@@ -58,6 +59,13 @@ lock = threading.Lock()
 socketCache = {}
 
 yesList = [ 'TRUE', 'YES', 'Y', '1' ]
+
+# for logging with timestamps
+def doPrint(msg, raw=False):
+	if raw:
+		print(msg)
+	else:
+		print("[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f") + "]  " + msg)
 
 def getSocketKey(server):
 	return  server['HOST'] + ':' + \
@@ -97,7 +105,7 @@ def getSocket(server):
 			socketCache.update ( { socketKey : sockets } )
 		if len(sockets) == 0 or server.get('CACHE','NO') not in yesList:
 			soc = connect(server)
-			# print "new connection for server:" +str(server)
+			# doPrint "new connection for server:" +str(server)
 		else:
 			soc = sockets.pop()
 			timeout = soc.gettimeout()
@@ -105,7 +113,7 @@ def getSocket(server):
 			try:
 				dummy = soc.recv(0)
 				# no exception here so we assume server closed connection
-				# print "connection closed by server reconnect:" +str(server)
+				# doPrint "connection closed by server reconnect:" +str(server)
 				try:
 					# just to make sure socket is realle closed
 					soc.close()
@@ -115,7 +123,7 @@ def getSocket(server):
 				
 			except:
 				# socket is still alive if an exception is raised here
-				# print "reuse connection for server:" +str(server)
+				# doPrint "reuse connection for server:" +str(server)
 				soc.settimeout(timeout)
 	finally:
 		lock.release()
@@ -150,12 +158,12 @@ def releaseSocket(server,soc):
 		lock.acquire()
 		try:
 			socketCache[getSocketKey(server)].append(soc)
-			# print "released connection for server:" +str(server)
+			# doPrint "released connection for server:" +str(server)
 		finally:
 			lock.release()
 	else:
 		closeSocket(soc)
-		# print "closed connection for server:" +str(server)
+		# doPrint "closed connection for server:" +str(server)
 
 #
 # old version for backward compatibility
@@ -284,14 +292,14 @@ def initSsoConf ():
 	ssoConf = {}
 	ssoConfFileDir = os.getenv('BICSUITECONFIG', None)
 	if ssoConfFileDir == None:
-		print("initSsoConf:Exception (" + str(e) + ") getting BICSUITECONFIG ")
+		doPrint("initSsoConf:Exception (" + str(e) + ") getting BICSUITECONFIG ")
 		return False
 	ssoConfFileName = ssoConfFileDir + '/ZopeSSO.conf'
 	try:
 		ssoConfFile = open(ssoConfFileName, "r")
 		ssoConf = eval(ssoConfFile.read())
 	except Exception as e:
-		print("initSsoConf:Exception (" + str(e) + ") reading sso config from " + ssoConfFileName)
+		doPrint("initSsoConf:Exception (" + str(e) + ") reading sso config from " + ssoConfFileName)
 		return False
 	return True
 
@@ -316,7 +324,7 @@ def getSystemConnectData(server):
 	connectUser = getConfig ('AdminUser', None, server = server)
 	connectPass = getConfig ('AdminPassword', None, server = server)
 	if connectUser == None or connectPass == None:
-		print("getSystemConnectData(): Missing AdminUser and/or AdminPassword for server " + server['HOST'] + ':' + server['PORT'])
+		doPrint("getSystemConnectData(): Missing AdminUser and/or AdminPassword for server " + server['HOST'] + ':' + server['PORT'])
 		return None
 	return{ 'USER' : connectUser, 'PASS' : connectPass }
 
@@ -326,7 +334,7 @@ def getSDMSgroups(server, userName):
 		return None
 	data = SDMSUserConnectCommandV2(server, connectData['USER'], connectData['PASS'], "SHOW USER '" + userName + "'")
 	if 'ERROR' in data:
-		print("getSDMSgroups(): " + data['ERROR']['ERRORMESSAGE'])
+		doPrint("getSDMSgroups(): " + data['ERROR']['ERRORMESSAGE'])
 		return None
 	defaultGroup = data['DATA']['RECORD']['DEFAULT_GROUP']
 	groups = []
@@ -359,7 +367,7 @@ def getLdapGroups(server, userName, context):
 		LdapUsername = getConfig('LdapUsername', None, domain = domain)
 		LdapPassword = getConfig('LdapPassword', None, domain = domain)
 		if LdapServer == None or LdapBaseDn == None or LdapUsername == None or LdapPassword == None:
-			print('getLdapGroups(): Missing or uncomplete LDAP settings!')
+			doPrint('getLdapGroups(): Missing or uncomplete LDAP settings!')
 		else:
 			ldap_filter='(&(objectClass=user)(sAMAccountName=' + userName + '))'
 			attrs = ['memberOf']
@@ -432,7 +440,7 @@ def syncLdapGroups(server, userName, context):
 			return None
 		data = SDMSUserConnectCommandV2(server, connectData['USER'], connectData['PASS'], cmd)
 		if 'ERROR' in data:
-			print(data['ERROR']['ERRORMESSAGE'])
+			doPrint(data['ERROR']['ERRORMESSAGE'])
 			return None
 		return True
 	else:
@@ -451,7 +459,7 @@ def getServerUser(server, context):
 	domain = None
 	if domains == None or len(domains) < 1:
 		# This should not happen !
-		print("getServerUser(): Cannot obtain domains for user " + str(context.REQUEST['AUTHENTICATED_USER']) + ", server settings will be used")
+		doPrint("getServerUser(): Cannot obtain domains for user " + str(context.REQUEST['AUTHENTICATED_USER']) + ", server settings will be used")
 		ServerIncludeUserDomainNames = getConfig('ServerIncludeGroupDomainNames', False, server = server)
 		WebIncludeDomainNames = getConfig('WebIncludeDomainNames', False)
 		ServerUserNameCase = getConfig('ServerUserNameCase', 'UPPER')
@@ -480,7 +488,7 @@ def createSsoUser(server, userName, context = None):
 	connectPass=data['PASS']
 	data = SDMSUserConnectCommandV2(server, connectUser, connectPass, "CREATE USER '" + userName + "' WITH DEFAULT GROUP = PUBLIC, PASSWORD = '" + randomPassword() + "', ENABLE", context = context)
 	if 'ERROR' in data:
-		print("createSsoUser(): " + data['ERROR']['ERRORMESSAGE'])
+		doPrint("createSsoUser(): " + data['ERROR']['ERRORMESSAGE'])
 		return None
 	if syncLdapGroups(server, userName, context) == None:
 		return None
@@ -488,7 +496,7 @@ def createSsoUser(server, userName, context = None):
 
 def printCommand(command):
 	command = re.sub(r"([Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]'* *= *')[^']*'", r"\1******'", command)
-	print(command)
+	doPrint(command)
 
 #
 # New version
@@ -534,28 +542,30 @@ def SDMSUserConnectCommandV2(server, user, pwd , p_command, repeatable=0, outdic
 		first = 0
 		if retries > 0:
 			if timeout_secs != -1:
-				print(str(int((timeout_secs-last_time+start_time)/60)) + ' Minutes left until timeout')
-			print('Waiting ' + str(cycle_secs/60) + ' Minutes before retry')
+				doPrint(str(int((timeout_secs-last_time+start_time)/60)) + ' Minutes left until timeout')
+			doPrint('Waiting ' + str(cycle_secs/60) + ' Minutes before retry')
 			time.sleep(cycle_secs)
 		retries = retries + 1
 		last_time = time.time()
-		print(time.asctime() + ' ' + user)
+		# doPrint(time.asctime() + ' ' + user)
 		for retry in [0,1]:
 			try:
 				soc = getSocket(server)
 			except Exception as e:
 				data = { 'ERROR' : { 'ERRORCODE' : 'ZSI-10001', 'ERRORMESSAGE' : 'ConnectError(' + str(e) + ')' }}
 				error = data['ERROR']
-				print('Error connecting to BICsuite server')
-				print('    ERRORCODE ...: ' + error['ERRORCODE'])
-				print('    ERRORMESSAGE : ' + error['ERRORMESSAGE'])
+				doPrint('Error connecting to BICsuite server')
+				doPrint('    ERRORCODE ...: ' + error['ERRORCODE'])
+				doPrint('    ERRORMESSAGE : ' + error['ERRORMESSAGE'])
 				break
 
 			executions = executions + 1
 			command = p_command.rstrip('\n\t ;')
 			command = command + '\n' # important to avoid freeze if last line of command is a comment
+			origCommand = command;
 			repeats = 0
 			while repeats < 2:
+				command = origCommand
 				repeats = repeats + 1
 				connectCommand = "CONNECT '" + connectUser + "' IDENTIFIED BY '" + connectPass + "' WITH PROTOCOL = PYTHON ZERO TERMINATED"
 				if server.get('CACHE','NO').upper() in yesList:
@@ -596,7 +606,7 @@ def SDMSUserConnectCommandV2(server, user, pwd , p_command, repeatable=0, outdic
 						domain = None
 						if domains == None or len(domains) < 1:
 							# This should not happen !
-							print("SDMSUserConnectCommandV2(): Cannot obtain domains for user " + str(context.REQUEST['AUTHENTICATED_USER']) + ", server settings will be used")
+							doPrint("SDMSUserConnectCommandV2(): Cannot obtain domains for user " + str(context.REQUEST['AUTHENTICATED_USER']) + ", server settings will be used")
 							ServerAutoCreateUsers = getConfig('ServerAutoCreateUsers', False, server = server)
 						else:
 							domain = domains[0]
@@ -610,6 +620,8 @@ def SDMSUserConnectCommandV2(server, user, pwd , p_command, repeatable=0, outdic
 							if createSsoUser(server, userToCreate, context) == None:
 								output = { 'ERROR' : { 'ERRORCODE' : 'ZSI-10011', 'ERRORMESSAGE' : 'Error creating new SSO user ' + userToCreate }}
 								repeats = 2
+					else:
+						repeats = 2
 				else:
 					repeats = 2
 			try:
@@ -628,9 +640,9 @@ def SDMSUserConnectCommandV2(server, user, pwd , p_command, repeatable=0, outdic
 				else:
 					user_error = 1
 				error = data['ERROR']
-				print('Error executing command')
-				print('    ERRORCODE ...: ' + error['ERRORCODE'])
-				print('    ERRORMESSAGE : ' + error['ERRORMESSAGE'])
+				doPrint('Error executing command')
+				doPrint('    ERRORCODE ...: ' + error['ERRORCODE'])
+				doPrint('    ERRORMESSAGE : ' + error['ERRORMESSAGE'])
 			else:
 				done = 1
 
@@ -646,11 +658,12 @@ def SDMSUserConnectCommandV2(server, user, pwd , p_command, repeatable=0, outdic
 	if done == 0:
 		if user_error == 0:
 			if timeout_secs != 0:
-				print('Timeout reached')
+				doPrint('Timeout reached')
 
 	if outdict != None:
 		outdict.update ( { 'EXECUTIONS' : executions } )
 
+	# doPrint("Returning Data")
 	return data
 #
 # This one is used from scripts which should work fault tolerant on server switches
@@ -708,19 +721,19 @@ def SDMSBaseCommandV2(server, user, pwd , command, repeatable=0, outdict=None, t
 		first = 0
 		if retries > 0:
 			if timeout_secs != -1:
-				print(str(int((timeout_secs-last_time+start_time)/60)) + ' Minutes left until timeout')
-			print('Waiting ' + str(cycle_secs/60) + ' Minutes before retry')
+				doPrint(str(int((timeout_secs-last_time+start_time)/60)) + ' Minutes left until timeout')
+			doPrint('Waiting ' + str(cycle_secs/60) + ' Minutes before retry')
 			time.sleep(cycle_secs)
 		retries = retries + 1
 		last_time = time.time()
-		print(time.asctime() + ' ' + user)
+		doPrint(user)
 		soc = SDMSGenericConnectionOpenV2(server,user,pwd,type,session)
 		try:
 			if 'ERROR' in soc:	
 				error = soc['ERROR']
-				print('Error connecting to BICsuite server')
-				print('    ERRORCODE ...: ' + error['ERRORCODE'])
-				print('    ERRORMESSAGE : ' + error['ERRORMESSAGE'])
+				doPrint('Error connecting to BICsuite server')
+				doPrint('    ERRORCODE ...: ' + error['ERRORCODE'])
+				doPrint('    ERRORMESSAGE : ' + error['ERRORMESSAGE'])
 				closeSocket(soc)
 				#
 				# if ERROR is not a broken connection, we don't retry the submit
@@ -747,9 +760,9 @@ def SDMSBaseCommandV2(server, user, pwd , command, repeatable=0, outdict=None, t
 		except:
 			# this is nearly impossilble but can be the case if
 			# server returns an out not evaluable which should be never the case
-			print(user + ' ZSI-10003:Invalid Server Response')
-			print('Output was:')
-			print(output)
+			doPrint(user + ' ZSI-10003:Invalid Server Response')
+			doPrint('Output was:')
+			doPrint(output)
 			# we treat this as user error because looping until timeout not good in this fatal error case
 			user_error = 1
 			continue
@@ -760,9 +773,9 @@ def SDMSBaseCommandV2(server, user, pwd , command, repeatable=0, outdict=None, t
 				# ZSI-10002   : Broken Connection
 				continue
 			error = data['ERROR']
-			print('Error executing command')
-			print('    ERRORCODE ...: ' + error['ERRORCODE'])
-			print('    ERRORMESSAGE : ' + error['ERRORMESSAGE'])
+			doPrint('Error executing command')
+			doPrint('    ERRORCODE ...: ' + error['ERRORCODE'])
+			doPrint('    ERRORMESSAGE : ' + error['ERRORMESSAGE'])
 			closeSocket(soc)
 			# treat as user_error (no retry) because we don't know whether the command has been executed
 			user_error = 1
@@ -774,7 +787,7 @@ def SDMSBaseCommandV2(server, user, pwd , command, repeatable=0, outdict=None, t
 	if done == 0:
 		if user_error == 0:
 			if timeout_secs != 0:
-				print('Timeout reached')
+				doPrint('Timeout reached')
 
 	if outdict != None:
 		outdict.update ( { 'EXECUTIONS' : executions } )
@@ -789,18 +802,23 @@ def sendCommand(soc, command):
 	try:
 		soc.send(command.encode("utf-8"))
 	except Exception as e:
+		doPrint("sdms.py:sendCommand:exception in send() = '" + str(e) + "'")
+		doPrintCommand("Command = " + command)
 		return "{ 'ERROR' : { 'ERRORCODE' : 'ZSI-10002', 'ERRORMESSAGE' : 'Connection Broken' }}"
 	data = []
+	buf = ''
 	while True:
 		try:
 			buf = soc.recv(1024).decode("utf-8")
 		except Exception as e:
-			print("sdms.py:sendCommand:exception = '" + str(e) + "'")
+			doPrint("sdms.py:sendCommand:exception in recv() = '" + str(e) + "'")
+			doPrintCommand("Command = " + command)
 			buf = ''
 		if buf == '':
-			print('ZSI-10002:Connection broken')
-			print('data was:')
-			print(''.join(data))
+			doPrint('ZSI-10002:Connection broken (premature EOF)')
+			doPrintCommand("Command = " + command)
+			doPrint('data was:')
+			doPrint(''.join(data))
 			return "{ 'ERROR' : { 'ERRORCODE' : 'ZSI-10002', 'ERRORMESSAGE' : 'Connection Broken' }}"
 		if buf[len(buf) - 1] == '\0':
 			data.append(buf[:-1])
@@ -819,7 +837,7 @@ def convertFormat(s, timeformat = '%d.%m.%Y %H:%M:%S', timezone = None):
 	return convertClockTime(mktime_tz(parsedate_tz(s)), timeformat, timezone)
 
 def convertClockTime(ct, timeformat = '%d.%m.%Y %H:%M:%S', timezone = None):
-	# print str(ct) + ' ' + timeformat + ' ' + str(timezone)
+	# doPrint str(ct) + ' ' + timeformat + ' ' + str(timezone)
 	if timezone == None or have_pytz == False:
 		return time.strftime(timeformat, time.localtime(ct))
 	else:
@@ -857,7 +875,7 @@ def clockTime(s):
 	# return time.mktime(time.strptime(s[:20], '%d %b %Y %H:%M:%S'))
 	return mktime_tz(parsedate_tz(s))
 	# pt = parsedate_tz(s[:20])
-	# print pt
+	# doPrint pt
 	# return time.mktime(pt[:9])
 
 def validate_identifier(str):
@@ -926,8 +944,8 @@ def SDMSQueryWithSoc(soc, cmd, qry):
 	result = SDMSCommandWithSoc(soc,cmd)
 	if 'ERROR' in result:
 		error = result['ERROR']
-		print('ERRORCODE   : ' + error['ERRORCODE'])
-		print('ERRORMESSAGE: ' + error['ERRORMESSAGE'])
+		doPrint('ERRORCODE   : ' + error['ERRORCODE'])
+		doPrint('ERRORMESSAGE: ' + error['ERRORMESSAGE'])
 	#
 	# Process qry
 	#
@@ -943,7 +961,7 @@ def SDMSQueryWithSoc(soc, cmd, qry):
 		return tblqry(data['TABLE'],qry)
 
 def log(str):
-	print(str)
+	doPrint(str)
 
 def sleep(s):
 	time.sleep(s)
@@ -1042,17 +1060,17 @@ logoutBrowserIds = {}
 
 def registerLogout(browserId):
 	logoutBrowserIds.update ( { str(browserId) : True } )
-	# print 'logoutBrowserIds = ' + str(logoutBrowserIds)
+	# doPrint 'logoutBrowserIds = ' + str(logoutBrowserIds)
 
 def raiseUnauthorized(browserId):
-	# print "raiseUnauthorized called with browserId " + str(browserId)
+	# doPrint "raiseUnauthorized called with browserId " + str(browserId)
 	if browserId == None:
 		raise Unauthorized
 	else:
-		# print 'logoutBrowserIds = ' + str(logoutBrowserIds)
+		# doPrint 'logoutBrowserIds = ' + str(logoutBrowserIds)
 		if str(browserId) in logoutBrowserIds:
 			del logoutBrowserIds[str(browserId)]
-			# print 'raise Unauthorized'
+			# doPrint 'raise Unauthorized'
 			raise Unauthorized
 
 def abortAndRetryTransaction():
@@ -1062,8 +1080,8 @@ translations = None
 
 def translate(context, text, lang):
 	global translations
-	# print "translate(" + text + ")"
-	# print str(translations)
+	# doPrint "translate(" + text + ")"
+	# doPrint str(translations)
 	if translations == None:
 		translations = context.Common.translations()
 		customTranslations = getattr(context.Custom.aq_inner.aq_explicit, 'translations', None)
