@@ -63,6 +63,7 @@ public abstract class ManipJobDefinition extends Node
 	Integer agingAmount = null;
 	Integer agingBase = null;
 	Boolean submitSuspended;
+	Boolean isNoResume = Boolean.FALSE;
 	String resumeAt = null;
 	Integer resumeIn = null;
 	Integer resumeBase = null;
@@ -205,7 +206,8 @@ public abstract class ManipJobDefinition extends Node
 				resumeIn = (Integer) wh.get(ParseStr.S_MULT);
 				resumeBase = (Integer) wh.get(ParseStr.S_INTERVAL);
 			}
-		}
+		} else if (withs.containsKey(ParseStr.S_RESUME))
+				isNoResume = true;
 
 		masterSubmittable = (Boolean) withs.get(ParseStr.S_MASTER);
 
