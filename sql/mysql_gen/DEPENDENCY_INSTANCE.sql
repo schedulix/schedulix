@@ -38,6 +38,7 @@ CREATE TABLE `DEPENDENCY_INSTANCE` (
     , `IGNORE`                       integer         NOT NULL
     , `DI_ID_ORIG`                   decimal(20)     NOT NULL
     , `SE_VERSION`                   decimal(20)     NOT NULL
+    , `IGNORE_TS`                    decimal(20)         NULL
     , `CREATOR_U_ID`                 decimal(20)     NOT NULL
     , `CREATE_TS`                    decimal(20)     NOT NULL
     , `CHANGER_U_ID`                 decimal(20)     NOT NULL
@@ -58,6 +59,7 @@ SELECT
     , CASE `IGNORE` WHEN 0 THEN 'NO' WHEN 1 THEN 'YES' WHEN 2 THEN 'RECURSIVE' END AS `IGNORE`
     , `DI_ID_ORIG`                   AS `DI_ID_ORIG`
     , `SE_VERSION`                   AS `SE_VERSION`
+    , from_unixtime((`IGNORE_TS` & ~1125899906842624)/1000) AS `IGNORE_TS`
     , `CREATOR_U_ID`                 AS `CREATOR_U_ID`
     , from_unixtime((`CREATE_TS` & ~1125899906842624)/1000) AS `CREATE_TS`
     , `CHANGER_U_ID`                 AS `CHANGER_U_ID`
@@ -75,6 +77,7 @@ CREATE TABLE ARC_DEPENDENCY_INSTANCE (
     , `IGNORE`                       integer          NULL
     , `DI_ID_ORIG`                   decimal(20)      NULL
     , `SE_VERSION`                   decimal(20)      NULL
+    , `IGNORE_TS`                    decimal(20)      NULL
     , `CREATOR_U_ID`                 decimal(20)      NULL
     , `CREATE_TS`                    decimal(20)      NULL
     , `CHANGER_U_ID`                 decimal(20)      NULL
