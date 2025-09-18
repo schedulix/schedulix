@@ -42,9 +42,9 @@ public class Parser
 %token <Token>	ALIAS ALL ALL_FINAL ALTER AMOUNT AND ANY AT APPROVE APPROVAL AUDIT AUTHENTICATED AVG
 %token <Token>	BACKLOG_HANDLING BACKUP BASE BATCH BEFORE BEFORE_FINAL BETWEEN BMULTICMD BOTH BROKEN BROKEN_ACTIVE BROKEN_FINISHED BY
 %token <Token>	CALENDAR CANCEL CANCELLED CASCADE CATEGORY CHANGE_STATUS CHANGE CHILD CHECK CHILDREN CHILDSUSPEND CHILDTAG CLEANUP CLEAR CLONE CMPOP
-%token <Token>	COMMAND COMMENT CONDENSED CONDITION CONFIG CONNECT CONSTANT CONTENT CONTINUE COPY COUNT CREATE CYCLE
-%token <Token>	DAY DEFAULT DEFAULT_MAPPING DEFER DEFER_IGNORE DEFINITION DELAY DELETE DEPENDENCY DEPENDENCY_DEFINITION
-%token <Token>	DEPENDENCY_HIERARCHY DEPENDENCY_MODE DEPENDENCY_WAIT DEPLOY DEREGISTER DIR DISABLE DISCONNECT DISPATCH DISTRIBUTION DROP DUMP DURATION DYNAMIC
+%token <Token>	COMMAND COMMENT CONDENSED CONDITION CONFIG CONNECT CONSTANT CONTENT CONTINUE COPY COUNT CREATE CRITICAL CYCLE
+%token <Token>	DAY DEFAULT DEFAULT_MAPPING DEFER DEFER_IGNORE DEFINITION DELAY DELETE DELTA DEPENDENCY DEPENDENCY_DEFINITION
+%token <Token>	DEPENDENCY_HIERARCHY DEPENDENCY_MODE DEPENDENCY_WAIT DEPLOY DEREGISTER DIR DISABLE DISCONNECT DISPATCH DISTRIBUTION DOLLAR DROP DUMP DURATION DYNAMIC
 %token <Token>	EDIT EMBEDDED EMULTICMD ENABLE ENABLED ENDTIME ENVIRONMENT ERRLOG ERROR_TEXT ERROR_TOKEN EQUIVALENT EVENT EXECUTE EXEC_PID
 %token <Token>	EXISTING EXIT_CODE EXIT_STATUS EXIT_STATUS_DEFINITION EXIT_STATUS_MAPPING EXIT_STATUS_PROFILE
 %token <Token>	EXIT_STATUS_TRANSLATION EXPAND EXPIRED EXPORT EXPR EXT_PID EXTERNAL
@@ -115,7 +115,7 @@ public class Parser
 %type <Node>	move_named_resource, rename_named_resource, rename_nice_profile, rename_om, rename_resource_stat_def, rename_rsm, rename_rsp, rename_scope, rename_schedule,
 %type <Node>	rename_trigger, rename_user, rename_wt, resume_cmd, revoke_cmd, run_test_cmd
 %type <Node>	select_cmd, set_parm_cmd, set_status_cmd
-%type <Node>	show_comment, show_cmd, show_dist, show_environment, show_event, show_exit_status_def, show_exit_status_mapping
+%type <Node>	show_comment, show_cmd, show_critical_path, show_dist, show_environment, show_event, show_exit_status_def, show_exit_status_mapping
 %type <Node>	show_exit_status_profile, show_exit_status_trans, show_folder, show_footprint, show_group, show_interval, show_job, show_job_definition
 %type <Node>	show_named_resource, show_nice_profile, show_om, show_pool, show_resource, show_resource_stat_def, show_rsm, show_rsp, show_schedule
 %type <Node>	show_scheduled_event, show_scope
@@ -216,12 +216,12 @@ public class Parser
 %type <WithHash>	jrd_sticky, js_with, js_withwith, jw_filespec
 %type <WithHash>	lc_withlist, lf_withlist, lj_withlist, lnr_withlist, lnr_withwith
 %type <WithHash>	npwith, npentry
-%type <WithHash>	opt_connect_with, opt_dump_with, opt_event_submit_with, opt_ival_with, opt_gr_with, opt_lc_withlist, opt_lf_withlist, opt_lj_withlist, opt_lnr_withwith
-%type <WithHash>	opt_npwith, opt_om_instancelist, opt_period, opt_schevwith, /* opt_show_with, */ opt_schedwith, opt_sel_with, opt_sj_with, opt_sp_with, opt_stickyspec, opt_submit_with,
 %type <WithHash>	om_parameterlist, om_period, om_with_clause, om_withitemlist, om_instancelist
+%type <WithHash>	opt_connect_with, opt_dump_with, opt_event_submit_with, opt_ival_with, opt_gr_with, opt_lc_withlist, opt_lf_withlist, opt_lj_withlist, opt_lnr_withwith
+%type <WithHash>	opt_npwith, opt_om_instancelist, opt_period, opt_schevwith, opt_schedwith, opt_sel_with, opt_sj_with, opt_sp_with, opt_stickyspec, opt_scp_with, opt_submit_with
 %type <WithHash>	period, protocol
 %type <WithHash>	system_resource_req, rsp_with_clause, rsp_withitemlist
-%type <WithHash>	schedwithlist, schedwithwith, schevwithlist, schevwithwith, scope_cfg, scope_cfg_list, scope_cfg_envlist, scope_parm, scope_parmlist, select_with
+%type <WithHash>	schedwithlist, schedwithwith, schevwithlist, schevwithwith, scope_cfg, scope_cfg_list, scope_cfg_envlist, scope_parm, scope_parmlist, scp_withlist, select_with
 %type <WithHash>	selwithlist, signed_period, signed_period_rj, sj_withlist, stickyspec, submit_with, submit_withlist, sp_with
 %type <WithHash>	us_add_dellist, us_parmlist, us_with, us_withlist, wt_with_clause, wt_withitemlist
 
@@ -239,7 +239,7 @@ public class Parser
 %type <WithItem>	opt_ival_inverse, opt_jp_withitem, om_parameteritem, om_withitem, om_instanceitem, opt_zero
 %type <WithItem>	password, parm_is_string
 %type <WithItem>	resume, rsp_withitem
-%type <WithItem>	schedwith, schevwithitem, scope_cfg_item, scope_parmitem, se_spec, selwithitem, sj_withitem, submit_param, submit_withitem, suspend
+%type <WithItem>	schedwith, schevwithitem, scope_cfg_item, scope_parmitem, scp_withitem, se_spec, selwithitem, sj_withitem, submit_param, submit_withitem, suspend
 %type <WithItem>	us_add_delitem, us_withitem, wt_withitem, with_group, with_inherit_grant
 
 %type <ObjectURL>	all_dump_url, dist_url, dump_objecturl, env_url, esd_url, esm_url, esp_url, est_url, event_url, folder_url, folderresource_url, fp_url
@@ -501,6 +501,7 @@ list_cmd:	list_named_resource						{ $$ = $1; }
 
 show_cmd:	show_named_resource						{ $$ = $1; }
 	|	show_comment							{ $$ = $1; }
+	|	show_critical_path						{ $$ = $1; }
 	|	show_dist							{ $$ = $1; }
 	|	show_environment						{ $$ = $1; }
 	|	show_exit_status_def						{ $$ = $1; }
@@ -3035,6 +3036,12 @@ filteratom:		EXIT_STATUS IN '(' lj_exitstatelist ')'			{ $$ = new WithItem(Parse
 										  $$ = new WithItem(ParseStr.map($1.token), v); }
 	|		MASTER_ID IN '(' jobid_list ')'				{ $$ = new WithItem(ParseStr.map($1.token), $4); }
 	|		NAME IN '(' folderpathlist ')'				{ $$ = new WithItem(ParseStr.S_NAMELIST, $4); }
+	|		DOLLAR stridentifier cmpop rvalue			{ final WithHash w = new WithHash();
+										  w.addItem(new WithItem(ParseStr.S_NAME, $2));
+										  w.addItem(new WithItem(ParseStr.S_CMPOP, $3));
+										  w.addItem(new WithItem(ParseStr.S_VALUE, $4));
+										  $$ = new WithItem(ParseStr.S_PARAMETERS, w);
+										}
 	|		JOB '.' stridentifier cmpop rvalue			{ final WithHash w = new WithHash();
 										  w.addItem(new WithItem(ParseStr.S_NAME, $3));
 										  w.addItem(new WithItem(ParseStr.S_CMPOP, $4));
@@ -3073,6 +3080,24 @@ lj_parameterlist:	parametername						{ $$ = new Vector(); $<Vector>$.addElement(
 folderpathlist:		folderpath						{ $$ = new Vector(); $<Vector>$.addElement($1); }
 	|		folderpathlist ',' folderpath				{ $1.addElement($3); }
 
+
+//-----------------------------------------------------------------------------
+//  S H O W   C R I T I C A L   P A T H 
+//-----------------------------------------------------------------------------
+//D:MASTER
+//D:NT-ALIAS = show critical path
+//D:DESCRIPTION show_critical_path.tex
+//D:PURPOSE P999
+show_critical_path:	SHOW CRITICAL PATH FOR jobid opt_scp_with		{ $$ = new ShowCriticalPath($5, $6); }
+
+opt_scp_with:									{ $$ = null; }
+	|	WITH scp_withlist						{ $$ = $2; }
+
+scp_withlist: scp_withitem							{ $$ = new WithHash(); $<WithHash>$.addItem($1); }
+	| scp_withlist ',' scp_withitem						{ $1.addItem($3); }
+
+scp_withitem: DELTA '=' integer							{ $$ = new WithItem(ParseStr.map($1.token), $3); }
+	| GLOBAL								{ $$ = new WithItem(ParseStr.map($1.token), Boolean.TRUE); }
 
 
 //-----------------------------------------------------------------------------
@@ -4789,6 +4814,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	COPY								{ $$ = (String) $1.value; }
 	|	COUNT								{ $$ = (String) $1.value; }
 	|	CREATE								{ $$ = (String) $1.value; }
+	|	CRITICAL							{ $$ = (String) $1.value; }
 	|	CYCLE								{ $$ = (String) $1.value; }
 	|	DAY								{ $$ = (String) $1.value; }
 	|	DEFAULT								{ $$ = (String) $1.value; }
@@ -4796,6 +4822,7 @@ keywords:	ACTIVATE							{ $$ = (String) $1.value; }
 	|	DEFER								{ $$ = (String) $1.value; }
 	|	DELAY								{ $$ = (String) $1.value; }
 	|	DELETE								{ $$ = (String) $1.value; }
+	|	DELTA								{ $$ = (String) $1.value; }
 	|	DEPENDENCY							{ $$ = (String) $1.value; }
 	|	DEREGISTER							{ $$ = (String) $1.value; }
 	|	DIR								{ $$ = (String) $1.value; }

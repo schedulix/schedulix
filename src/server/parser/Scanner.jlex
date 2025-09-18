@@ -88,6 +88,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("COPY",		Integer.valueOf(Parser.COPY));
 	tokens.put("COUNT",		Integer.valueOf(Parser.COUNT));
 	tokens.put("CREATE",		Integer.valueOf(Parser.CREATE));
+	tokens.put("CRITICAL",		Integer.valueOf(Parser.CRITICAL));
 	tokens.put("CYCLE",		Integer.valueOf(Parser.CYCLE));
 	tokens.put("DAY",		Integer.valueOf(Parser.DAY));
 	tokens.put("DAYS",		Integer.valueOf(Parser.DAY));
@@ -97,6 +98,7 @@ import de.independit.scheduler.server.exception.*;
 	tokens.put("DEFINITIONS",	Integer.valueOf(Parser.DEFINITION));
 	tokens.put("DELAY",		Integer.valueOf(Parser.DELAY));
 	tokens.put("DELETE",		Integer.valueOf(Parser.DELETE));
+	tokens.put("DELTA",		Integer.valueOf(Parser.DELTA));
 	tokens.put("DEPENDENCIES",	Integer.valueOf(Parser.DEPENDENCY));
 	tokens.put("DEPENDENCY",	Integer.valueOf(Parser.DEPENDENCY));
 	tokens.put("DEPLOY",		Integer.valueOf(Parser.DEPLOY));
@@ -497,6 +499,7 @@ alpha	=	[a-zA-Z_@#]
 alnum	=	[a-zA-Z_0-9@#]
 dec	=	[0-9]
 sign	=	[-+]?
+dollar  =	"$"
 exp	=	([eE]{sign}{dec}+)
 fp	=	({dec}+"."{dec}*{exp}?|"."{dec}+{exp}?|{dec}+{exp})
 ws	=	[ \t\n\r\b\015\u2028\u2029\u000B\u000C\u0085\u00A0]
@@ -676,6 +679,7 @@ until_finished =	{until}{uscore}{finished}
 					  return Parser.FLOAT;
 					}
 <YYINITIAL>{nulbyte}			{ tell_input(); value = ""; t = new Token(Parser.FORCED_EOC, (String)  value);		return Parser.FORCED_EOC; }
+<YYINITIAL>{dollar}			{ proto_input(yytext()); t = new Token(Parser.DOLLAR, yytext());			return Parser.DOLLAR; }
 <YYINITIAL>{cmpop}			{ proto_input(yytext()); value = yytext(); t = new Token(Parser.CMPOP, yytext());	return Parser.CMPOP; }
 <YYINITIAL>{ws}				{ if(stmt.length() != 0) proto_input(yytext()); /* do nothing */ break; }
 <YYINITIAL>{after_final}		{ proto_input(yytext()); t = new Token(Parser.AFTER_FINAL, yytext());			return Parser.AFTER_FINAL; }

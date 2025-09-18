@@ -114,6 +114,7 @@ public class ParseStr
 	public static final String S_DELAY		= "DELAY";
 	public static final String S_DELCHILD		= "DELCHILD";
 	public static final String S_DELETE		= "DELETE";
+	public static final String S_DELTA		= "DELTA";
 	public static final String S_DELGROUP		= "DELGROUP";
 	public static final String S_DELPARM		= "DELPARM";
 	public static final String S_DELREQ		= "DELREQ";
@@ -621,6 +622,7 @@ public class ParseStr
 		mapper.put(Integer.valueOf(Parser.DEFINITION),			ParseStr.S_DEFINITION);
 		mapper.put(Integer.valueOf(Parser.DELAY),			ParseStr.S_DELAY);
 		mapper.put(Integer.valueOf(Parser.DELETE),			ParseStr.S_DELETE);
+		mapper.put(Integer.valueOf(Parser.DELTA),			ParseStr.S_DELTA);
 		mapper.put(Integer.valueOf(Parser.DEPENDENCY),			ParseStr.S_DEPENDENCY);
 		mapper.put(Integer.valueOf(Parser.DEPENDENCY_DEFINITION),	ParseStr.S_DEPENDENCY_DEFINITION);
 		mapper.put(Integer.valueOf(Parser.DEPENDENCY_HIERARCHY),	ParseStr.S_DEPENDENCY_HIERARCHY);
