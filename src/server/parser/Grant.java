@@ -109,7 +109,7 @@ public class Grant extends Node
 			case SDMSGrant.SYSTEM:				return SDMSPrivilege.MANAGE_SYS;
 			case SDMSGrant.SELECT:				return SDMSPrivilege.MANAGE_SEL;
 			case SDMSGrant.NICE_PROFILE:			return SDMSPrivilege.MANAGE_NP;
-			case SDMSGrant.WATCH_TYPE: return SDMSPrivilege.MANAGE_WT;
+			case SDMSGrant.WATCH_TYPE:			return SDMSPrivilege.MANAGE_WT;
 		}
 		return SDMSConstants.PR_NOPRIVS;
 	}
