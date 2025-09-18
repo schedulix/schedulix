@@ -82,6 +82,7 @@ public class SmeVariableResolver extends VariableResolver
 	public final static String S_WARNING	= SDMSSubmittedEntity.S_WARNING;
 	public final static String S_RERUNSEQ	= SDMSSubmittedEntity.S_RERUNSEQ;
 	public final static String S_SCOPENAME	= SDMSSubmittedEntity.S_SCOPENAME;
+	public final static String S_SCOPEID	= SDMSSubmittedEntity.S_SCOPEID;
 	public final static String S_EXITCODE   = SDMSSubmittedEntity.S_EXITCODE;
 
 	public final static String S_IDLE_TIME	= SDMSSubmittedEntity.S_IDLE_TIME;
@@ -161,6 +162,7 @@ public class SmeVariableResolver extends VariableResolver
 	public final static int I_ENVIRONMENT		= 59;
 	public final static int I_SEOWNER		= 60;
 	public final static int I_EXITCODE		= 61;
+	public final static int I_SCOPEID	= 62;
 
 	private final static HashMap specialNames = new HashMap();
 
@@ -210,6 +212,7 @@ public class SmeVariableResolver extends VariableResolver
 		specialNames.put(S_WARNING,	Integer.valueOf(I_WARNING));
 		specialNames.put(S_RERUNSEQ,	Integer.valueOf(I_RERUNSEQ));
 		specialNames.put(S_SCOPENAME,	Integer.valueOf(I_SCOPENAME));
+		specialNames.put(S_SCOPEID,	Integer.valueOf(I_SCOPEID));
 		specialNames.put(S_IDLE_TIME,	Integer.valueOf(I_IDLE_TIME));
 		specialNames.put(S_SUSPEND_TIME,	Integer.valueOf(I_SUSPEND_TIME));
 		specialNames.put(S_DEPENDENCY_WAIT_TIME,	Integer.valueOf(I_DEPENDENCY_WAIT_TIME));
@@ -691,14 +694,19 @@ public class SmeVariableResolver extends VariableResolver
 					return emptyString + thisSme.getRerunSeq(sysEnv);
 
 				case I_SCOPENAME:
+				case I_SCOPEID:
 					SDMSScope scope;
 					Long scopeId = thisSme.getScopeId(sysEnv);
 					if (scopeId != null)
 						scope = SDMSScopeTable.getObject(sysEnv, scopeId);
 					else {
 						scope = evalScope;
+						scopeId = (evalScope == null ? null : evalScope.getId(sysEnv));
 					}
-					return (scope == null ? emptyString : scope.pathString(sysEnv));
+					if (varno == I_SCOPENAME)
+						return (scope == null ? emptyString : scope.pathString(sysEnv));
+					else
+						return (scopeId == null ? emptyString : scopeId.toString());
 
 				case I_IDLE_TIME:
 					return thisSme.evaluateTime(sysEnv, thisSme.getIdleTime(sysEnv), thisSme.getIdleTs(sysEnv), -1).toString();
