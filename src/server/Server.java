@@ -58,13 +58,13 @@ public class Server
 	private RenewTicketThread rtt;
 	private DBCleanupThread dbct;
 	private NotifierThread notifier;
-	private String iniFile;
+	private static String iniFile = null;
 
 	private SystemEnvironment env;
 
 	public Server(String inifile, boolean adminMode, boolean protectMode, String programLevel, String buildDate, String buildHash)
 	{
-		this.iniFile = inifile;
+		Server.setIniFile(inifile);
 		Properties props = readProperties();
 
 		for (Enumeration e = props.propertyNames() ; e.hasMoreElements() ;) {
@@ -81,7 +81,7 @@ public class Server
 		if(protectMode) SystemEnvironment.setProtectMode();
 	}
 
-	public Properties readProperties()
+	public static Properties readProperties()
 	{
 		Properties props = new Properties();
 		InputStream ini;
@@ -102,6 +102,12 @@ public class Server
 	public String getIniFile()
 	{
 		return iniFile;
+	}
+
+	synchronized public static void setIniFile(String ini)
+	{
+		if (iniFile == null)
+			Server.iniFile = ini;
 	}
 
 	private void initShutdownThread()
@@ -267,7 +273,7 @@ public class Server
 		}
 
 		if (SystemEnvironment.service_port != 0) {
-			svt = new OrdinaryListenThread(utg, SystemEnvironment.service_port, SystemEnvironment.plainIf, 1, cmdQueue, roCmdQueue, ListenThread.SERVICE);
+			svt = new OrdinaryListenThread(utg, SystemEnvironment.service_port, SystemEnvironment.serviceIf, 1, cmdQueue, roCmdQueue, ListenThread.SERVICE);
 
 			svt.start();
 		} else {
@@ -407,6 +413,13 @@ public class Server
 		String dbUser = SystemEnvironment.dbUser;
 		String dbPasswd = SystemEnvironment.dbPasswd;
 		Connection c;
+
+		Properties tmpProps = readProperties();
+		String tmpPwd = tmpProps.getProperty(SystemEnvironment.S_DBPASSWD, "");
+		if (tmpPwd != null && ! tmpPwd.equals(dbPasswd)) {
+			dbPasswd = tmpPwd;
+			SystemEnvironment.dbPasswd = tmpPwd;
+		}
 
 		if(jdbcDriver == null)
 			throw new FatalException(new SDMSMessage(env,
