@@ -23,6 +23,20 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+CREATE VIEW SCI_SME_QUARTER_HELP (
+	JAHR,
+	QUARTAL,
+	ANZAHL,
+	NUM_DAYS_ACTQ,
+	PAST_DAYS_ACTQ
+) AS
+SELECT JAHR, floor((monat-1)/3+1), ANZAHL,
+       DATEDIFF(str_to_date(concat(JAHR,'-',floor((monat-1)/3) * 3 + 1,'-1'),'%Y-%m-%d') + INTERVAL 3 MONTH,
+                str_to_date(concat(JAHR,'-',floor((monat-1)/3) * 3 + 1,'-1'),'%Y-%m-%d')
+       ),
+       DATEDIFF(current_date(), str_to_date(concat(JAHR,'-',floor((monat-1)/3) * 3 + 1,'-1'),'%Y-%m-%d'))
+FROM SCI_SME_COUNTER;
+
 CREATE VIEW SCI_SME_QUARTER (
         JAHR,
         QUARTAL,
@@ -32,41 +46,18 @@ CREATE VIEW SCI_SME_QUARTER (
 AS
 SELECT
 	JAHR,
-	floor((monat-1)/3)+1,
+	QUARTAL,
 	SUM(ANZAHL),
 	ROUND(CASE date_format(current_date(),'%Y') * 100 + (floor((date_format(current_date(),'%m')-1)/3)+1)
-		WHEN JAHR*100+(floor((MONAT-1)/3)+1)
-		THEN
-			SUM(ANZAHL) *
-
-			DATEDIFF(
-				str_to_date(concat(JAHR,'-',floor((monat-1)/3) * 3 + 1,'-1'),'%Y-%m-%d') + INTERVAL 3 MONTH,
-				str_to_date(concat(JAHR,'-',floor((monat-1)/3) * 3 + 1,'-1'),'%Y-%m-%d')
-			) /
-
-			DATEDIFF(
-				current_date(),
-				str_to_date(concat(JAHR,'-',floor((monat-1)/3) * 3 + 1,'-1'),'%Y-%m-%d')
-			)
-		ELSE
-			SUM(ANZAHL)
+		WHEN JAHR*100+QUARTAL
+		THEN SUM(ANZAHL * NUM_DAYS_ACTQ/PAST_DAYS_ACTQ)
+		ELSE SUM(ANZAHL)
 		END, 2),
 	ROUND(CASE date_format(current_date(),'%Y') * 100 + (floor((date_format(current_date(),'%m')-1)/3)+1)
-		WHEN JAHR*100+(floor((MONAT-1)/3)+1)
-		THEN
-			SUM(ANZAHL) /
-
-			DATEDIFF(
-				current_date(),
-				str_to_date(concat(JAHR,'-',floor((monat-1)/3) * 3 + 1,'-1'),'%Y-%m-%d')
-			)
-		ELSE
-			SUM(ANZAHL) /
-
-			DATEDIFF(
-				str_to_date(concat(JAHR,'-',floor((monat-1)/3) * 3 + 1,'-1'),'%Y-%m-%d') + INTERVAL 3 MONTH,
-				str_to_date(concat(JAHR,'-',floor((monat-1)/3) * 3 + 1,'-1'),'%Y-%m-%d')
-			)
+		WHEN JAHR*100+QUARTAL
+		THEN SUM(ANZAHL / PAST_DAYS_ACTQ)
+		ELSE SUM(ANZAHL / NUM_DAYS_ACTQ)
 		END, 2)
-FROM SCI_SME_COUNTER
-GROUP BY JAHR, floor((monat-1)/3)+1;
+FROM SCI_SME_QUARTER_HELP
+GROUP BY JAHR, QUARTAL;
+
