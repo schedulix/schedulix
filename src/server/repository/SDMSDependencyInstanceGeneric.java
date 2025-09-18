@@ -62,10 +62,11 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	public final static int nr_ignore = 9;
 	public final static int nr_diIdOrig = 10;
 	public final static int nr_seVersion = 11;
-	public final static int nr_creatorUId = 12;
-	public final static int nr_createTs = 13;
-	public final static int nr_changerUId = 14;
-	public final static int nr_changeTs = 15;
+	public final static int nr_ignoreTs = 12;
+	public final static int nr_creatorUId = 13;
+	public final static int nr_createTs = 14;
+	public final static int nr_changerUId = 15;
+	public final static int nr_changeTs = 16;
 
 	public static String tableName = SDMSDependencyInstanceTableGeneric.tableName;
 
@@ -79,6 +80,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	protected Integer ignore;
 	protected Long diIdOrig;
 	protected Long seVersion;
+	protected Long ignoreTs;
 	protected Long creatorUId;
 	protected Long createTs;
 	protected Long changerUId;
@@ -100,6 +102,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	        Integer p_ignore,
 	        Long p_diIdOrig,
 	        Long p_seVersion,
+	        Long p_ignoreTs,
 	        Long p_creatorUId,
 	        Long p_createTs,
 	        Long p_changerUId,
@@ -118,6 +121,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		ignore = p_ignore;
 		diIdOrig = p_diIdOrig;
 		seVersion = p_seVersion;
+		ignoreTs = p_ignoreTs;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -465,6 +469,31 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		return;
 	}
 
+	public Long getIgnoreTs (SystemEnvironment env)
+	throws SDMSException
+	{
+		return (ignoreTs);
+	}
+
+	public	void setIgnoreTs (SystemEnvironment env, Long p_ignoreTs)
+	throws SDMSException
+	{
+		if(p_ignoreTs != null && p_ignoreTs.equals(ignoreTs)) return;
+		if(p_ignoreTs == null && ignoreTs == null) return;
+		SDMSDependencyInstanceGeneric o = this;
+		if (versions.id.longValue() < SystemEnvironment.SYSTEM_OBJECTS_BOUNDARY) {
+			throw new CommonErrorException(
+			        new SDMSMessage (env, "02112141636", "(DependencyInstance) Change of system object not allowed")
+			);
+		}
+		if (o.versions.o_v == null || o.versions.o_v.size() == 0 || o.subTxId != env.tx.subTxId) o = (SDMSDependencyInstanceGeneric) change(env);
+		o.ignoreTs = p_ignoreTs;
+		o.changerUId = env.cEnv.uid();
+		o.changeTs = env.txTime();
+		if (o != this) o.versions.table.index(env, o, 0);
+		return;
+	}
+
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{
@@ -618,6 +647,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 	                                        Integer p_ignore,
 	                                        Long p_diIdOrig,
 	                                        Long p_seVersion,
+	                                        Long p_ignoreTs,
 	                                        Long p_creatorUId,
 	                                        Long p_createTs,
 	                                        Long p_changerUId,
@@ -635,6 +665,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		ignore = p_ignore;
 		diIdOrig = p_diIdOrig;
 		seVersion = p_seVersion;
+		ignoreTs = p_ignoreTs;
 		creatorUId = p_creatorUId;
 		createTs = p_createTs;
 		changerUId = p_changerUId;
@@ -670,11 +701,13 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 				        ", " + squote + "IGNORE" + equote +
 				        ", " + squote + "DI_ID_ORIG" + equote +
 				        ", " + squote + "SE_VERSION" + equote +
+				        ", " + squote + "IGNORE_TS" + equote +
 				        ", " + squote + "CREATOR_U_ID" + equote +
 				        ", " + squote + "CREATE_TS" + equote +
 				        ", " + squote + "CHANGER_U_ID" + equote +
 				        ", " + squote + "CHANGE_TS" + equote +
 				        ") VALUES (?" +
+				        ", ?" +
 				        ", ?" +
 				        ", ?" +
 				        ", ?" +
@@ -712,10 +745,14 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			myInsert.setInt(9, ignore.intValue());
 			myInsert.setLong (10, diIdOrig.longValue());
 			myInsert.setLong (11, seVersion.longValue());
-			myInsert.setLong (12, creatorUId.longValue());
-			myInsert.setLong (13, createTs.longValue());
-			myInsert.setLong (14, changerUId.longValue());
-			myInsert.setLong (15, changeTs.longValue());
+			if (ignoreTs == null)
+				myInsert.setNull(12, Types.INTEGER);
+			else
+				myInsert.setLong (12, ignoreTs.longValue());
+			myInsert.setLong (13, creatorUId.longValue());
+			myInsert.setLong (14, createTs.longValue());
+			myInsert.setLong (15, changerUId.longValue());
+			myInsert.setLong (16, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "DependencyInstance: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
@@ -769,6 +806,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 				        ", " + squote + "IGNORE" + equote + " = ? " +
 				        ", " + squote + "DI_ID_ORIG" + equote + " = ? " +
 				        ", " + squote + "SE_VERSION" + equote + " = ? " +
+				        ", " + squote + "IGNORE_TS" + equote + " = ? " +
 				        ", " + squote + "CREATOR_U_ID" + equote + " = ? " +
 				        ", " + squote + "CREATE_TS" + equote + " = ? " +
 				        ", " + squote + "CHANGER_U_ID" + equote + " = ? " +
@@ -795,11 +833,15 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 			myUpdate.setInt(8, ignore.intValue());
 			myUpdate.setLong (9, diIdOrig.longValue());
 			myUpdate.setLong (10, seVersion.longValue());
-			myUpdate.setLong (11, creatorUId.longValue());
-			myUpdate.setLong (12, createTs.longValue());
-			myUpdate.setLong (13, changerUId.longValue());
-			myUpdate.setLong (14, changeTs.longValue());
-			myUpdate.setLong(15, id.longValue());
+			if (ignoreTs == null)
+				myUpdate.setNull(11, Types.INTEGER);
+			else
+				myUpdate.setLong (11, ignoreTs.longValue());
+			myUpdate.setLong (12, creatorUId.longValue());
+			myUpdate.setLong (13, createTs.longValue());
+			myUpdate.setLong (14, changerUId.longValue());
+			myUpdate.setLong (15, changeTs.longValue());
+			myUpdate.setLong(16, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "DependencyInstance: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
@@ -853,6 +895,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		SDMSThread.doTrace(null, "ignore : " + ignore, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "diIdOrig : " + diIdOrig, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "seVersion : " + seVersion, SDMSThread.SEVERITY_MESSAGE);
+		SDMSThread.doTrace(null, "ignoreTs : " + ignoreTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "creatorUId : " + creatorUId, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "createTs : " + createTs, SDMSThread.SEVERITY_MESSAGE);
 		SDMSThread.doTrace(null, "changerUId : " + changerUId, SDMSThread.SEVERITY_MESSAGE);
@@ -879,6 +922,7 @@ public class SDMSDependencyInstanceGeneric extends SDMSObject
 		        indentString + "ignore              : " + ignore + "\n" +
 		        indentString + "diIdOrig            : " + diIdOrig + "\n" +
 		        indentString + "seVersion           : " + seVersion + "\n" +
+		        indentString + "ignoreTs            : " + ignoreTs + "\n" +
 		        indentString + "creatorUId          : " + creatorUId + "\n" +
 		        indentString + "createTs            : " + createTs + "\n" +
 		        indentString + "changerUId          : " + changerUId + "\n" +

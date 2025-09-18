@@ -224,6 +224,20 @@ public class SDMSDependencyInstance extends SDMSDependencyInstanceProxyGeneric
 		return diState;
 	}
 
+	public void setIgnore (SystemEnvironment env, Integer p_ignore)
+	throws SDMSException
+	{
+		Integer ignore = getIgnore(env);
+		if(ignore != null && ignore.equals(p_ignore)) {
+			return;
+		}
+		if (p_ignore != SDMSDependencyInstance.NO) {
+			setIgnoreTs(env, env.txTime());
+		}
+		super.setIgnore(env, p_ignore);
+		return;
+	}
+
 	public void setIgnore(SystemEnvironment sysEnv, int mode, Long originId, String comment)
 		throws SDMSException
 	{

@@ -272,6 +272,24 @@ public class SDMSDependencyInstanceProxyGeneric extends SDMSProxy
 		((SDMSDependencyInstanceGeneric)(object)).setSeVersion (env, p_seVersion);
 		return ;
 	}
+	public Long getIgnoreTs (SystemEnvironment env)
+	throws SDMSException
+	{
+		checkRead(env);
+		return (((SDMSDependencyInstanceGeneric)(object)).getIgnoreTs (env));
+	}
+
+	public void setIgnoreTs (SystemEnvironment env, Long p_ignoreTs)
+	throws SDMSException
+	{
+		checkWrite(env);
+		if(!checkPrivileges(env, SDMSPrivilege.EDIT))
+			throw new AccessViolationException (accessViolationMessage(env, "01312181241"));
+
+		touchMaster(env);
+		((SDMSDependencyInstanceGeneric)(object)).setIgnoreTs (env, p_ignoreTs);
+		return ;
+	}
 	public Long getCreatorUId (SystemEnvironment env)
 	throws SDMSException
 	{

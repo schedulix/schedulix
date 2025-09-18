@@ -53,6 +53,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		, "IGNORE"
 		, "DI_ID_ORIG"
 		, "SE_VERSION"
+		, "IGNORE_TS"
 		, "CREATOR_U_ID"
 		, "CREATE_TS"
 		, "CHANGER_U_ID"
@@ -95,6 +96,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 	                                     ,Integer p_ignore
 	                                     ,Long p_diIdOrig
 	                                     ,Long p_seVersion
+	                                     ,Long p_ignoreTs
 	                                    )
 	throws SDMSException
 	{
@@ -116,6 +118,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		         , p_ignore
 		         , p_diIdOrig
 		         , p_seVersion
+		         , p_ignoreTs
 		         , p_creatorUId
 		         , p_createTs
 		         , p_changerUId
@@ -134,6 +137,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		                , p_ignore
 		                , p_diIdOrig
 		                , p_seVersion
+		                , p_ignoreTs
 		                , p_creatorUId
 		                , p_createTs
 		                , p_changerUId
@@ -181,6 +185,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 	                        ,Integer p_ignore
 	                        ,Long p_diIdOrig
 	                        ,Long p_seVersion
+	                        ,Long p_ignoreTs
 	                        ,Long p_creatorUId
 	                        ,Long p_createTs
 	                        ,Long p_changerUId
@@ -210,6 +215,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		Integer ignore;
 		Long diIdOrig;
 		Long seVersion;
+		Long ignoreTs;
 		Long creatorUId;
 		Long createTs;
 		Long changerUId;
@@ -230,10 +236,12 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 			ignore = Integer.valueOf (r.getInt(9));
 			diIdOrig = Long.valueOf (r.getLong(10));
 			seVersion = Long.valueOf (r.getLong(11));
-			creatorUId = Long.valueOf (r.getLong(12));
-			createTs = Long.valueOf (r.getLong(13));
-			changerUId = Long.valueOf (r.getLong(14));
-			changeTs = Long.valueOf (r.getLong(15));
+			ignoreTs = Long.valueOf (r.getLong(12));
+			if (r.wasNull()) ignoreTs = null;
+			creatorUId = Long.valueOf (r.getLong(13));
+			createTs = Long.valueOf (r.getLong(14));
+			changerUId = Long.valueOf (r.getLong(15));
+			changeTs = Long.valueOf (r.getLong(16));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
@@ -252,6 +260,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		                ignore,
 		                diIdOrig,
 		                seVersion,
+		                ignoreTs,
 		                creatorUId,
 		                createTs,
 		                changerUId,
@@ -281,6 +290,7 @@ public class SDMSDependencyInstanceTableGeneric extends SDMSTable
 		                                   ", " + squote + "IGNORE" + equote +
 		                                   ", " + squote + "DI_ID_ORIG" + equote +
 		                                   ", " + squote + "SE_VERSION" + equote +
+		                                   ", " + squote + "IGNORE_TS" + equote +
 		                                   ", " + squote + "CREATOR_U_ID" + equote +
 		                                   ", " + squote + "CREATE_TS" + equote +
 		                                   ", " + squote + "CHANGER_U_ID" + equote +
