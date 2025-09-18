@@ -100,6 +100,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 	public static final String S_WARNING		= "LAST_WARNING";
 	public static final String S_RERUNSEQ		= "RERUNSEQ";
 	public static final String S_SCOPENAME		= "SCOPENAME";
+	public static final String S_SCOPEID		= "SCOPEID";
 	public static final String S_EXITCODE		= "EXITCODE";
 	public static final String S_IDLE_TIME		= "IDLE_TIME";
 	public static final String S_DEPENDENCY_WAIT_TIME	= "DEPENDENCY_WAIT_TIME";
@@ -958,6 +959,7 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			Integer childParentSuspended = child_sme.getParentSuspended(sysEnv).intValue();
 			int newParentSuspended = parentSuspended + childParentSuspended;
 			child_sme.setParentSuspended(sysEnv, Integer.valueOf (newParentSuspended));
+			child_sme.updateStatistics(sysEnv);
 			if (newParentSuspended == 0 && child_sme.getIsSuspended(sysEnv).intValue() == NOSUSPEND) {
 				child_sme.testDependencies(sysEnv);
 			}
@@ -1167,7 +1169,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 						state,
 						ignore,
 				                SDMSConstants.lZERO,
-				                Long.valueOf(seVersion)
+				                Long.valueOf(seVersion),
+				                null
 					);
 
 				Long diIdOrig = di.getId(sysEnv);
@@ -1346,7 +1349,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 										state,
 										ignore,
 						                                SDMSConstants.lZERO,
-										ddSeVersion
+						                            ddSeVersion,
+						                            null
 							);
 						Long diIdOrig = di.getId(sysEnv);
 						di.setDiIdOrig(sysEnv, diIdOrig);
@@ -1385,6 +1389,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			Long smeId = sme.getId(sysEnv);
 
 			try {
+				Long ignoreTs = null;
+				if (ignore != SDMSDependencyInstance.NO) {
+					ignoreTs = sysEnv.txTime();
+				}
 				SDMSDependencyInstanceTable.table.create(sysEnv,
 						ddId,
 						smeId,
@@ -1395,7 +1403,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 						state,
 						ignore,
 						diIdOrig,
-						seVersion
+				                seVersion,
+				                ignoreTs
 					);
 				sme.createChildDependencyInstances (sysEnv,
 						ddId,
@@ -2364,8 +2373,10 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 			}
 			try {
 				Integer ignore;
+				Long ignoreTs = null;
 				if (di.getIgnore(sysEnv).intValue() == SDMSDependencyInstance.RECURSIVE) {
 					ignore = SDMSConstants.DI_RECURSIVE;
+					ignoreTs = sysEnv.txTime();
 				} else {
 					ignore = SDMSConstants.DI_NO;
 				}
@@ -2385,7 +2396,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 						state,
 						ignore,
 						diIdOrig,
-				                Long.valueOf(seVersion)
+				                Long.valueOf(seVersion),
+				                ignoreTs
 				);
 				sme.createChildDependencyInstances (sysEnv, ddId, ddName, dependentIdOrig,
 				                                    dependencyOperation, requiredId, requiredSeId, state, ignore, diIdOrig, Long.valueOf(seVersion));
