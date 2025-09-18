@@ -504,7 +504,8 @@ public class ShowSubmitted extends Node
 		data.add(idleTime.toString());
 		Integer dwTime = sme.evaluateTime(sysEnv, sme.getDependencyWaitTime(sysEnv), sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_DEPENDENCY_WAIT);
 		data.add(dwTime.toString());
-		Integer suspendTime = sme.evaluateTime(sysEnv, sme.getSuspendTime(sysEnv), sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SUSPEND);
+		int smeSuspendTime = sme.getSuspendTime(sysEnv);
+		Integer suspendTime = sme.evaluateTime(sysEnv, smeSuspendTime, sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SUSPEND);
 		data.add(suspendTime.toString());
 		Integer syncTime = sme.evaluateTime(sysEnv, sme.getSyncTime(sysEnv), sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SYNCHRONIZE);
 		data.add(syncTime.toString());
