@@ -57,7 +57,6 @@ public class TestConfig
 
 	private static SystemEnvironment env;
 
-
 	private static void say_hello(String argv[])
 	{
 		final String serverStart = "**************************************************************************";
@@ -113,14 +112,14 @@ public class TestConfig
 
 		for(i = 0; i < argv.length; i++) {
 			if(argv[i].toLowerCase().equals(ADMIN_OPTION)) {
-				SDMSThread.doTrace(null, "Server will start in admin mode, logins disabled" , SDMSThread.SEVERITY_INFO);
+				SDMSThread.doTrace(null, "Server will start in admin mode, logins disabled", SDMSThread.SEVERITY_INFO);
 				if(gotAdmin) {
 					SDMSThread.doTrace(null, "Duplicate option: " + ADMIN_OPTION, SDMSThread.SEVERITY_INFO);
 				}
 				adminMode = true;
 				gotAdmin = true;
 			} else if(argv[i].toLowerCase().equals(PROTECT_OPTION)) {
-				SDMSThread.doTrace(null, "Server will start in protected mode, logins and internal threads disabled" ,
+				SDMSThread.doTrace(null, "Server will start in protected mode, logins and internal threads disabled",
 							SDMSThread.SEVERITY_INFO);
 				if(gotProtect) {
 					SDMSThread.doTrace(null, "Duplicate option: " + PROTECT_OPTION, SDMSThread.SEVERITY_INFO);
@@ -176,7 +175,7 @@ public class TestConfig
 			if(k.equals(SystemEnvironment.S_TRUSTSTOREPASSWORD))	continue;	// for security reasons we skip the password
 			SDMSThread.doTrace(null, k + "=" + props.getProperty(k), SDMSThread.SEVERITY_INFO);
 		}
-		      
+
 		env = new SystemEnvironment(props, programLevel, buildDate, buildHash, null);
 		Server.setIniFile(inifile);
 
