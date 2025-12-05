@@ -43,7 +43,6 @@ public class AlterTrigger extends ManipTrigger
 
 	protected Long submitOwnerId;
 	protected Long fireId;
-	protected Long checkFireId;
 	protected int fireType;
 
 	protected SDMSSchedulingEntity fireSe = null;
@@ -133,8 +132,12 @@ public class AlterTrigger extends ManipTrigger
 			se = SDMSSchedulingEntityTable.get(sysEnv, folderpath, n);
 			if (isInverse.booleanValue()) {
 				fireId = se.getId(sysEnv);
-				checkFireId = fireId;
 				seId = t.getSeId(sysEnv);
+				se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
+				if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
+					throw new AccessViolationException(
+					        new SDMSMessage(sysEnv, "03511251420", "Submit privilege on $1 missing", se.pathString(sysEnv))
+					);
 			} else {
 				if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
 					throw new AccessViolationException(

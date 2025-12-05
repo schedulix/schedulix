@@ -469,11 +469,16 @@ public class CreateTrigger extends ManipTrigger
 		}
 
 		try {
+			sysEnv.tx.beginSubTransaction(sysEnv);
+
 			t = SDMSTriggerTable.table.create(sysEnv, name, fireId, objectType, seId, mainSeId, parentSeId, active, isInverse, action,
 							triggertype, isMaster, isSuspend, isCreate, isChange, isDelete, isGroup,
 							resumeAt, resumeIn, resumeBase, isWarnOnLimit, limitState, maxRetry, gId, condition,
 							checkAmount, checkBase);
+			checkUniqueness(sysEnv, name, fireId, seId, isInverse);
+			sysEnv.tx.commitSubTransaction(sysEnv);
 		} catch(DuplicateKeyException dke) {
+			sysEnv.tx.rollbackSubTransaction(sysEnv);
 			if(replace) {
 				Long fId = fireId;
 				if ((Boolean) with.get(ParseStr.S_INVERSE))
@@ -486,17 +491,15 @@ public class CreateTrigger extends ManipTrigger
 			} else {
 				throw dke;
 			}
+		} catch (Exception e) {
+			sysEnv.tx.rollbackSubTransaction(sysEnv);
+			throw e;
 		}
 		t.checkConditionSyntax(sysEnv);
 
 		if (with.containsKey(ParseStr.S_PARAMETERS)) {
 			checkAndCreateParameters(sysEnv, t);
 		}
-
-		if (isInverse.booleanValue())
-			checkUniqueness(sysEnv, name, fireId, seId, isInverse);
-		else
-			checkUniqueness(sysEnv, name, fireId, seId, isInverse);
 
 		tId = t.getId(sysEnv);
 
