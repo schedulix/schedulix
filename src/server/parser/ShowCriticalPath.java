@@ -69,7 +69,7 @@ public class ShowCriticalPath extends Node
 	throws SDMSException
 	{
 		SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.getObject(sysEnv, smeId);
-		Long latestFinalTs = new Long(0);
+		Long latestFinalTs = Long.valueOf(0);
 		if (sme.getState(sysEnv) == SDMSSubmittedEntity.FINAL) {
 			Vector cld_v = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, smeId);
 			Iterator cld_i = cld_v.iterator();
@@ -134,7 +134,7 @@ public class ShowCriticalPath extends Node
 		if (duration == null) {
 			return "0";
 		} else {
-			return new Long(Math.floorDiv(duration, 1000)).toString();
+			return Long.valueOf(Math.floorDiv(duration, 1000)).toString();
 		}
 	}
 
@@ -228,7 +228,7 @@ public class ShowCriticalPath extends Node
 		} else {
 			v.add("");
 		}
-		Long suspendTime = new Long (node.sme.evaluateTime(sysEnv, node.sme.getSuspendTime(sysEnv), node.sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SUSPEND));
+		Long suspendTime = Long.valueOf (node.sme.evaluateTime(sysEnv, node.sme.getSuspendTime(sysEnv), node.sme.getStatisticTs(sysEnv), SDMSSubmittedEntity.STAT_SUSPEND));
 		v.add(suspendTime);
 		if (node.contTs != null ) {
 			v.add(formatTs(sysEnv, node.contTs));
@@ -688,7 +688,7 @@ class PathNode
 			}
 		}
 
-		return latestFinalTs > 0 ? new Long(latestFinalTs) : null;
+		return latestFinalTs > 0 ? Long.valueOf(latestFinalTs) : null;
 	}
 
 	private Vector<PathNode> getRequiredPathNodesForLatestFinalTs (SystemEnvironment sysEnv, HashMap<Long, Vector<SDMSDependencyInstance>> origMap, long latestFinalTs, long delta, boolean isGlobal)
@@ -719,14 +719,14 @@ class PathNode
 
 				if (di.getIgnore(sysEnv) != SDMSDependencyInstance.NO) {
 					contTs = di.getIgnoreTs(sysEnv);
-					contType = new Integer (PathNode.IGNORE);
+					contType = Integer.valueOf(PathNode.IGNORE);
 				} else {
 					if (ddMode == SDMSDependencyDefinition.ALL_FINAL) {
 						contTs = (reqSme.getFinalTs(sysEnv).longValue() / 1000) * 1000;
-						contType = new Integer (PathNode.ALL_FINAL);
+						contType = Integer.valueOf (PathNode.ALL_FINAL);
 					} else {
 						contTs = reqSme.getFinishTs(sysEnv).longValue();
-						contType = new Integer (PathNode.JOB_FINAL);
+						contType = Integer.valueOf (PathNode.JOB_FINAL);
 					}
 				}
 				if (reqSme.getMasterId(sysEnv) != this.sme.getMasterId(sysEnv) && contTs <= this.sme.getSubmitTs(sysEnv)) {
