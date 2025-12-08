@@ -91,13 +91,13 @@ public class SDMSUserExtentsTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSUserExtentsGeneric o = new SDMSUserExtentsGeneric(env
-		                , p_upId
-		                , p_sequence
-		                , p_extent
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_upId
+				, p_sequence
+				, p_extent
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                                     );
 
 		SDMSUserExtents p;
