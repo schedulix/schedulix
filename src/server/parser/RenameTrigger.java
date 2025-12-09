@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -35,7 +33,7 @@ import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 
-public class RenameTrigger extends Node
+public class RenameTrigger extends ManipTrigger
 {
 
 	public final static String __version = "@(#) $Id: RenameTrigger.java,v 2.2.4.1 2013/03/14 10:24:45 ronald Exp $";
@@ -56,6 +54,7 @@ public class RenameTrigger extends Node
 		SDMSTrigger t = (SDMSTrigger) url.resolve(sysEnv);
 
 		t.setName(sysEnv, name2);
+		checkUniqueness(sysEnv, name2, t.getFireId(sysEnv), t.getSeId(sysEnv), t.getIsInverse(sysEnv));
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03206191506", "Trigger renamed"));
 	}

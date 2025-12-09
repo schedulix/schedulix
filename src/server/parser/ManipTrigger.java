@@ -81,7 +81,6 @@ public abstract class ManipTrigger extends Node
 			resumeIn = (Integer) ((WithHash) resumeObj).get(ParseStr.S_MULT);
 			resumeBase = (Integer) ((WithHash) resumeObj).get(ParseStr.S_INTERVAL);
 		} else {
-
 			resumeAt = (String) resumeObj;
 		}
 	}
@@ -89,12 +88,14 @@ public abstract class ManipTrigger extends Node
 	protected void checkUniqueness(SystemEnvironment sysEnv, String name, Long fireId, Long seId, Boolean isInverse)
 		throws SDMSException
 	{
-		Vector tv = SDMSTriggerTable.idx_fireId.getVector(sysEnv, seId);
+		Vector tvp, tvi;
 		SDMSTrigger t;
+		Long ownerId;
 		int cnt = 0;
 
-		for (int i = 0; i < tv.size(); ++i) {
-			t = (SDMSTrigger) tv.get(i);
+		tvp = SDMSTriggerTable.idx_fireId.getVector(sysEnv, seId);
+		for (int i = 0; i < tvp.size(); ++i) {
+			t = (SDMSTrigger) tvp.get(i);
 			if (t.getAction(sysEnv).intValue() == SDMSTrigger.RERUN) ++cnt;
 		}
 
@@ -102,19 +103,28 @@ public abstract class ManipTrigger extends Node
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03108111353", "Only one rerun trigger per job allowed"));
 
 		if (isInverse.booleanValue()) {
-			tv = SDMSTriggerTable.idx_seId_name.getVector(sysEnv, new SDMSKey(seId, name));
+			ownerId = seId;
 		} else {
-			tv = SDMSTriggerTable.idx_fireId_name.getVector(sysEnv, new SDMSKey(fireId, name));
+			ownerId = fireId;
 		}
+		SDMSKey k = new SDMSKey(ownerId, name);
+		tvp = SDMSTriggerTable.idx_fireId_name.getVector(sysEnv, k);
+		tvi = SDMSTriggerTable.idx_seId_name.getVector(sysEnv, k);
 		cnt = 0;
-		for (int i = 0; i < tv.size(); ++i) {
-			t = (SDMSTrigger) tv.get(i);
-			if (t.getIsInverse(sysEnv).equals(isInverse)) {
+		for (int i = 0; i < tvp.size(); ++i) {
+			t = (SDMSTrigger) tvp.get(i);
+			if (!t.getIsInverse(sysEnv).booleanValue()) {
+				cnt++;
+			}
+		}
+		for (int i = 0; i < tvi.size(); ++i) {
+			t = (SDMSTrigger) tvi.get(i);
+			if (t.getIsInverse(sysEnv).booleanValue()) {
 				cnt++;
 			}
 		}
 		if (cnt > 1)
-			throw new CommonErrorException(new SDMSMessage(sysEnv, "03506261701", "Duplicate names are not allowed"));
+			throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03506261701", "Duplicate names are not allowed"));
 	}
 
 	public abstract void go(SystemEnvironment sysEnv)
