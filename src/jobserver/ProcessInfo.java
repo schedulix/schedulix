@@ -44,6 +44,8 @@ public class ProcessInfo
 {
 	static final long BOOTTIME_JITTER  = 90;
 	static Long STARTTIME_JITTER = null;
+	static final String[] netCmd = { "net", "stats", "srv" };
+	static final String[] uptimeCmd = { "uptime" };
 
 	public static final char BOOTTIME_NONE   = 'N';
 	public static final char BOOTTIME_SYSTEM = 'S';
@@ -113,7 +115,7 @@ public class ProcessInfo
 			long bootTime = -1;
 			String os = System.getProperty("os.name").toLowerCase();
 			if (os.contains("win")) {
-				Process p = Runtime.getRuntime().exec("net stats srv");
+				Process p = Runtime.getRuntime().exec(netCmd);
 				BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				String line;
 				String pattern = getPattern();
@@ -132,7 +134,7 @@ public class ProcessInfo
 					}
 				}
 			} else if (os.contains("mac") || os.contains("nix") || os.contains("nux") || os.contains("aix") || os.contains("sunos")) {
-				Process p = Runtime.getRuntime().exec("uptime");
+				Process p = Runtime.getRuntime().exec(uptimeCmd);
 				BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				String line = in.readLine();
 				if (line != null) {
