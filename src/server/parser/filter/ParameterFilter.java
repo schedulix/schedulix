@@ -29,6 +29,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 import java.lang.*;
+import java.math.BigDecimal;
 
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.repository.*;
@@ -165,6 +166,15 @@ public class ParameterFilter extends Filter
 					} else if (o instanceof Double) {
 						cst = dblCaster;
 						c.setValue((Double) o);
+					} else if (o instanceof BigDecimal) {
+						try {
+							cst = intCaster;
+							c.setValue(Long.valueOf(((BigDecimal) o).longValueExact()));
+						} catch(ArithmeticException ae) {
+
+							cst = dblCaster;
+							c.setValue(Double.valueOf(((BigDecimal) o).doubleValue()));
+						}
 					}
 				}
 				return c.cmp(cst.cast(parmVal));

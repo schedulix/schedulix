@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -147,14 +147,14 @@ public class TimerDate
 			gc.setTime (this);
 
 			switch (incr.unit()) {
-			case TimerUnit.YEAR:   gc.add (Calendar.YEAR,         mult * incr.mult()); break;
-			case TimerUnit.MONTH:  gc.add (Calendar.MONTH,        mult * incr.mult()); break;
-			case TimerUnit.WEEK:   gc.add (Calendar.WEEK_OF_YEAR, mult * incr.mult()); break;
-			case TimerUnit.DAY:    gc.add (Calendar.DAY_OF_MONTH, mult * incr.mult()); break;
-			case TimerUnit.HOUR:   gc.add (Calendar.HOUR_OF_DAY,  mult * incr.mult()); break;
-			case TimerUnit.MINUTE: gc.add (Calendar.MINUTE,       mult * incr.mult()); break;
-			default:
-				throw new IllegalArgumentException ("(04304041905) unexpected TimerUnit: " + incr);
+				case TimerUnit.YEAR:   gc.add (Calendar.YEAR,         mult * incr.mult()); break;
+				case TimerUnit.MONTH:  gc.add (Calendar.MONTH,        mult * incr.mult()); break;
+				case TimerUnit.WEEK:   gc.add (Calendar.WEEK_OF_YEAR, mult * incr.mult()); break;
+				case TimerUnit.DAY:    gc.add (Calendar.DAY_OF_MONTH, mult * incr.mult()); break;
+				case TimerUnit.HOUR:   gc.add (Calendar.HOUR_OF_DAY,  mult * incr.mult()); break;
+				case TimerUnit.MINUTE: gc.add (Calendar.MINUTE,       mult * incr.mult()); break;
+				default:
+					throw new IllegalArgumentException ("(04304041905) unexpected TimerUnit: " + incr);
 			}
 
 			return fromMillis (gc.getTimeInMillis());

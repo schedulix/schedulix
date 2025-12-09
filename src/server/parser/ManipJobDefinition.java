@@ -659,7 +659,7 @@ public abstract class ManipJobDefinition extends Node
 		if(isAdd) {
 			try {
 				sh = SDMSSchedulingHierarchyTable.table.create(sysEnv, parentId, childId, aliasName, isStatic, isDisabled, prio,
-				                suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId, intId, enableCondition, enableMode);
+				        suspend, shResumeAt, shResumeIn, shResumeBase, mergeMode, estpId, intId, enableCondition, enableMode);
 			} catch (DuplicateKeyException dke) {
 				if(processError) {
 					sh = SDMSSchedulingHierarchyTable.idx_parentId_childId_getUnique(sysEnv, new SDMSKey(parentId, childId));
@@ -1120,11 +1120,11 @@ public abstract class ManipJobDefinition extends Node
 						unresolved,
 						mode,
 						stateSelection,
-				                condition,
-				                resolveMode,
-				                expiredAmount,
-				                expiredBase,
-				                selectCondition
+						condition,
+						resolveMode,
+						expiredAmount,
+						expiredBase,
+						selectCondition
 				);
 			} catch (DuplicateKeyException dke) {
 				if(processError) {

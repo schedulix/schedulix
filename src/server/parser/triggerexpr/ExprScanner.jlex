@@ -3,22 +3,6 @@
 //
 // Copyright (C) 2004 independIT Integrative Technologies GmbH
 //
-// $Log: ExprScanner.jlex,v $
-// Revision 1.4.18.1  2013/03/14 10:25:16  ronald
-// Umstellung auf standard konforme package bezeichnungen
-//
-// Revision 1.4  2004/11/22 09:23:12  ronald
-// Eliminated compiler warnings
-//
-// Revision 1.3  2004/10/06 06:51:38  ronald
-// WIP. Resource Variablen. Joblocal/Folderlocal Resources. Checkin wg. Abgleich
-//
-// Revision 1.2  2004/07/23 09:32:49  ronald
-// #Issue 80: Expression Trigger. Einige grundsaetzliche Verbesserungen
-//
-// Revision 1.1  2004/07/14 21:27:59  ronald
-// Issue #80: Expression Trigger. Teil I Infrastruktur
-//
 //
 
 package de.independit.scheduler.server.parser.triggerexpr;
