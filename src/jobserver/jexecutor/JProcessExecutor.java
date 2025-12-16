@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,7 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 package de.independit.scheduler.jobserver.jexecutor;
 
@@ -39,7 +38,6 @@ import de.independit.scheduler.jobserver.Utils.*;
 
 public class JProcessExecutor extends Jexecutor
 {
-
 	private boolean isComplete;
 	private boolean usePath;
 
@@ -112,12 +110,10 @@ public class JProcessExecutor extends Jexecutor
 
 		File fLog = new File(logfile);
 		try {
-
 			if (!fLog.isAbsolute()) {
 				fLog = new File(workdir + File.separator + logfile);
 			}
 			FileOutputStream fosLog = new FileOutputStream(fLog, logappend);
-
 			if (!logappend) {
 				fosLog.close();
 				fosLog = new FileOutputStream(fLog, true);
@@ -132,7 +128,6 @@ public class JProcessExecutor extends Jexecutor
 
 		File fErr = new File(errlog);
 		try {
-
 			if (!fErr.isAbsolute()) {
 				fErr = new File(workdir + File.separator + errlog);
 			}
@@ -162,7 +157,6 @@ public class JProcessExecutor extends Jexecutor
 			process = pb.start();
 			userStartTime = System.currentTimeMillis() / 1000;
 		} catch (IOException ioe) {
-
 			try {
 				taskfile.open();
 				taskfile.append(Feil.STATUS_CHILD_ERROR, "(02310220819) Cannot execute " + command + " : " + ioe.toString());
@@ -188,7 +182,6 @@ public class JProcessExecutor extends Jexecutor
 
 	private void getTaskfileInfo()
 	{
-
 		if (argsType != ARGS_RUN)
 			throw new RuntimeException("Programm arguments not evaluated");
 
@@ -213,7 +206,6 @@ public class JProcessExecutor extends Jexecutor
 	public void run ()
 	{
 		myStartTime = System.currentTimeMillis() / 1000;
-
 		getTaskfileInfo();
 
 		String cmd[] = new String[arguments.size() + 1];
@@ -257,13 +249,12 @@ public class JProcessExecutor extends Jexecutor
 
 			try {
 				taskfile.open();
-				taskfile.append(Feil.RETURNCODE, new Integer(process.exitValue()).toString());
+				taskfile.append(Feil.RETURNCODE, Integer.valueOf(process.exitValue()).toString());
 				taskfile.append(Feil.STATUS,     Feil.STATUS_FINISHED);
 			} catch (IOException ioe) {
 				throw new RuntimeException ("(02310220942) Cannot write taskfile : " + ioe.toString());
 			}
 		}
-
 		userLog.close();
 
 	}
@@ -299,7 +290,6 @@ public class JProcessExecutor extends Jexecutor
 			System.out.println(e.getMessage());
 			System.exit(1);
 		}
-
 		System.exit(0);
 	}
 }

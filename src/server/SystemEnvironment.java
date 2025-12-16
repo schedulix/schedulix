@@ -321,7 +321,7 @@ public class SystemEnvironment implements Cloneable
 	public static final String defaultString = "<default>";
 	public static final String noneString = "<none>";
 	public static final TimeZone systemTimeZone = TimeZone.getTimeZone ("GMT");
-	public static final Locale systemLocale = new Locale("EN", "US");
+	public static final Locale systemLocale = new Locale.Builder().setLanguage("en").setScript("Latn").setRegion("US").build();
 	public static final SimpleDateFormat staticJSCommDateFormat = new SimpleDateFormat ("dd-MM-yyyy HH:mm:ss Z", systemLocale);
 	public static final SimpleDateFormat staticOldJSCommDateFormat = new SimpleDateFormat ("dd-MM-yyyy HH:mm:ss z", systemLocale);
 	public static final SimpleDateFormat staticSystemDateFormat = new SimpleDateFormat ("dd MMM yyyy HH:mm:ss z", systemLocale);
@@ -801,7 +801,7 @@ public class SystemEnvironment implements Cloneable
 			SDMSThread.doTrace(null, "Invalid syntax in " + props.getProperty(S_SHOWSTACKTRACE) + ": missing closing bracket", SDMSThread.SEVERITY_WARNING);
 			throw new SDMSException();
 		}
-		showStackTrace.put(nodeName, new Long(exceptionMask));
+		showStackTrace.put(nodeName, Long.valueOf(exceptionMask));
 
 		return pos;
 	}
@@ -1369,7 +1369,7 @@ public class SystemEnvironment implements Cloneable
 	public static void resetProtectMode()	{ protectMode = false; }
 	public static boolean getProtectMode()	{ return protectMode; }
 
-	public Long randomLong()		{ return new Long(java.lang.Math.abs(random.nextLong())); }
+	public Long randomLong()		{ return Long.valueOf(java.lang.Math.abs(random.nextLong())); }
 
 	public static synchronized int getTraceLevel()	{ return traceLevel; }
 	public static synchronized void setTraceLevel(int t) { traceLevel = t; }
@@ -1393,7 +1393,7 @@ public class SystemEnvironment implements Cloneable
 
 	public Long txTime()
 	{
-		return new Long(tx.startTime);
+		return Long.valueOf(tx.startTime);
 	}
 
 	public static final GregorianCalendar newGregorianCalendar()

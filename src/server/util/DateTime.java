@@ -90,9 +90,9 @@ public class DateTime
 	private static final int MINUTE = 5;
 	private static final int SECOND = 6;
 
-	private static final DateTime MIN_VALUE = new DateTime (new Long (GMT_VALID | (0L << GMT_SHIFT)));
+	private static final DateTime MIN_VALUE = new DateTime (Long.valueOf (GMT_VALID | (0L << GMT_SHIFT)));
 
-	public static final DateTime ZERO = new DateTime (new Long (DURATION_VALID | MINUTE_VALID));
+	public static final DateTime ZERO = new DateTime (Long.valueOf (DURATION_VALID | MINUTE_VALID));
 
 	private final int parseNumber (final String str, final String what, final int ofs, final int len, final int min, final int max)
 		throws SDMSEscape
@@ -136,74 +136,74 @@ public class DateTime
 		while (i < pattern.length()) {
 			final char p = pattern.charAt (i);
 			switch (p) {
-			case 'Y':
-				year = parseNumber (str, "year", i, 4, 0, 9999);
-				if (year == -1)
-					return false;
-				i += 4;
-				break;
+				case 'Y':
+					year = parseNumber (str, "year", i, 4, 0, 9999);
+					if (year == -1)
+						return false;
+					i += 4;
+					break;
 
-			case 'M':
-				month = parseNumber (str, "month", i, 2, 1, 12);
-				if (month == -1)
-					return false;
-				i += 2;
-				break;
+				case 'M':
+					month = parseNumber (str, "month", i, 2, 1, 12);
+					if (month == -1)
+						return false;
+					i += 2;
+					break;
 
-			case 'D':
-				day = parseNumber (str, "day of month", i, 2, 1, 31);
-				if (day == -1)
-					return false;
-				i += 2;
-				break;
+				case 'D':
+					day = parseNumber (str, "day of month", i, 2, 1, 31);
+					if (day == -1)
+						return false;
+					i += 2;
+					break;
 
-			case 'w':
-				week = parseNumber (str, "week of year", i, 2, 1, 53);
-				if (week == -1)
-					return false;
-				i += 2;
-				break;
+				case 'w':
+					week = parseNumber (str, "week of year", i, 2, 1, 53);
+					if (week == -1)
+						return false;
+					i += 2;
+					break;
 
-			case 'h':
-				hour = parseNumber (str, "hour", i, 2, 0, 23);
-				if (hour == -1)
-					return false;
-				i += 2;
-				break;
+				case 'h':
+					hour = parseNumber (str, "hour", i, 2, 0, 23);
+					if (hour == -1)
+						return false;
+					i += 2;
+					break;
 
-			case 'm':
-				minute = parseNumber (str, "minute", i, 2, 0, 59);
-				if (minute == -1)
-					return false;
-				i += 2;
-				break;
+				case 'm':
+					minute = parseNumber (str, "minute", i, 2, 0, 59);
+					if (minute == -1)
+						return false;
+					i += 2;
+					break;
 
-			case 's':
-				second = parseNumber (str, "second", i, 2, 0, 59);
-				if (second == -1)
-					return false;
-				i += 2;
-				break;
+				case 's':
+					second = parseNumber (str, "second", i, 2, 0, 59);
+					if (second == -1)
+						return false;
+					i += 2;
+					break;
 
-			case 'z':
-				if (str.charAt (i) != ' ')
-					return false;
-				++i;
+				case 'z':
+					if (str.charAt (i) != ' ')
+						return false;
+					++i;
 
-				final String tzID = str.substring (i);
-				if (!ignoreTz) {
-					tz = TimeZone.getTimeZone (tzID);
-					if (! tz.getID().equals (tzID))
-						throw new SDMSEscape ("(04304091448) unknown timezone: \"" + tzID + '"');
-				}
-				i += tzID.length();
-				break;
+					final String tzID = str.substring (i);
+					if (!ignoreTz) {
+						tz = TimeZone.getTimeZone (tzID);
+						if (! tz.getID().equals (tzID))
+							throw new SDMSEscape ("(04304091448) unknown timezone: \"" + tzID + '"');
+					}
+					i += tzID.length();
+					break;
 
-			default:
-				if (str.length() <= i) return false;
-				if (Character.toUpperCase (str.charAt (i)) != Character.toUpperCase (p))
-					return false;
-				++i;
+				default:
+					if (str.length() <= i) return false;
+					if (Character.toUpperCase (str.charAt (i)) != Character.toUpperCase (p))
+						return false;
+					++i;
 			}
 		}
 
@@ -213,28 +213,28 @@ public class DateTime
 		if (day != -1) {
 			final int maxdays;
 			switch (month) {
-			case -1:
-				maxdays = 31;
-				break;
+				case -1:
+					maxdays = 31;
+					break;
 
-			case 2:
-				if (year == -1)
-					maxdays = 29;
-				else {
-					gc.setTimeZone (tz);
-					maxdays = gc.isLeapYear (year) ? 29 : 28;
-				}
-				break;
+				case 2:
+					if (year == -1)
+						maxdays = 29;
+					else {
+						gc.setTimeZone (tz);
+						maxdays = gc.isLeapYear (year) ? 29 : 28;
+					}
+					break;
 
-			case 4:
-			case 6:
-			case 9:
-			case 11:
-				maxdays = 30;
-				break;
+				case 4:
+				case 6:
+				case 9:
+				case 11:
+					maxdays = 30;
+					break;
 
-			default:
-				maxdays = 31;
+				default:
+					maxdays = 31;
 			}
 
 			if ((day > maxdays))
@@ -698,7 +698,7 @@ public class DateTime
 		if (secondsSuppressed)
 			result |= SECONDS_SUPPRESSED;
 
-		return new Long (result);
+		return Long.valueOf (result);
 	}
 
 	public final Date toDate()

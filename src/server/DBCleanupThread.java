@@ -274,7 +274,7 @@ public class DBCleanupThread extends SDMSThread
 			loadSmeForMaster.setLong(1, id);
 			ResultSet rs = loadSmeForMaster.executeQuery();
 			while(rs.next()) {
-				sme_v.add(new Long(rs.getLong(1)));
+				sme_v.add(Long.valueOf(rs.getLong(1)));
 			}
 		} catch (SQLException sqle) {
 			try {

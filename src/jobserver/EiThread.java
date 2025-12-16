@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -34,7 +34,7 @@ public class EiThread
 	extends Thread
 {
 	private static final long DEFAULT_NOP_DELAY = 30000;
-	private static final Long ZERO = new Long(0);
+	private static final Long ZERO = Long.valueOf(0);
 
 	private final RepoIface ri;
 	private final Config    cfg;

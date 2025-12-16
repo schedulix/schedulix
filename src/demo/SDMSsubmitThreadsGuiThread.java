@@ -210,7 +210,7 @@ public class SDMSsubmitThreadsGuiThread extends Thread
 
 			shell.pack();
 
-			number_field.setText(new Integer(SDMSsubmitThreads.number).toString());
+			number_field.setText(Integer.valueOf(SDMSsubmitThreads.number).toString());
 			number_field.selectAll();
 			number_field.setFocus();
 
@@ -264,7 +264,7 @@ public class SDMSsubmitThreadsGuiThread extends Thread
 		ok_button.setEnabled(false);
 
 		try {
-			SDMSsubmitThreads.number = new Integer(number_field.getText()).intValue();
+			SDMSsubmitThreads.number = Integer.valueOf(number_field.getText()).intValue();
 		} catch (Exception evt) {
 			System.err.println("invalid -n|--number option " + number_field.getText());
 			System.exit(1);

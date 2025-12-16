@@ -35,7 +35,8 @@ import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.repository.*;
 import de.independit.scheduler.server.exception.*;
 
-public class LockingSystemSynchronized {
+public class LockingSystemSynchronized
+{
 
 	private static HashMap<SDMSThread, HashMap<Object, ObjectLock>> threads = new HashMap<SDMSThread, HashMap<Object, ObjectLock>> ();
 

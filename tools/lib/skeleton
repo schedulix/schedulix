@@ -58,7 +58,7 @@ t
 .  	for (int n = 0; n < result.length; n += 10) {
 .  		st = new java.util.StringTokenizer(in.readLine(), ", \t\r\n");
 .  		for (int m = 0; st.hasMoreTokens(); ++ m)
-.  			result[n+m] = new Short(st.nextToken()).shortValue();
+.  			result[n+m] = Short.valueOf(st.nextToken()).shortValue();
 .  	}
 .  	return result;
 .  }

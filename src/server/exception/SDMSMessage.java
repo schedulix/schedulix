@@ -41,9 +41,7 @@ public class SDMSMessage
 	private Object o[];
 	private SystemEnvironment env;
 	private static boolean translationEnabled = true;
-
 	private static HashMap trans1 = null;
-
 	private static HashMap trans2 = null;
 
 	private void initTranslationTables(SystemEnvironment p_env)
@@ -53,13 +51,11 @@ public class SDMSMessage
 
 		try {
 			InputStream is = SDMSMessage.class.getResourceAsStream("/server/messages/MessageTable1.dat");
-
 			Properties prop = new Properties();
 			if(is != null) {
 				prop.load(is);
 			}
 		} catch (IOException ioe) {
-
 			translationEnabled = false;
 		}
 	}
@@ -73,31 +69,6 @@ public class SDMSMessage
 		if(trans1 == null) {
 			initTranslationTables(p_env);
 		}
-	}
-
-	public SDMSMessage(SystemEnvironment p_env, String p_errId)
-	{
-		this(p_env, p_errId, (String) null, (Object[]) null);
-	}
-
-	public SDMSMessage(SystemEnvironment p_env, String p_errId, Object p1)
-	{
-		this(p_env, p_errId, (String) null, new Object[] {p1});
-	}
-
-	public SDMSMessage(SystemEnvironment p_env, String p_errId, Object p1, Object p2)
-	{
-		this(p_env, p_errId, (String) null, new Object[] {p1, p2});
-	}
-
-	public SDMSMessage(SystemEnvironment p_env, String p_errId, Object p1, Object p2, Object p3)
-	{
-		this(p_env, p_errId, (String) null, new Object[] {p1, p2, p3});
-	}
-
-	public SDMSMessage(SystemEnvironment p_env, String p_errId, Object p[])
-	{
-		this(p_env, p_errId, (String) null, p);
 	}
 
 	public SDMSMessage(SystemEnvironment p_env, String p_errId, String p_msg)
@@ -125,7 +96,6 @@ public class SDMSMessage
 		if(p_msg == null) return null;
 		int lgth = p_msg.length();
 		StringBuffer r = new StringBuffer(lgth + (o == null ? 0 : o.length*16));
-
 		boolean ind[] = new boolean[o == null ? 0 : o.length];
 
 		int i, j;
@@ -154,7 +124,6 @@ public class SDMSMessage
 				ind[pnr-1] = true;
 			}
 			j = i;
-
 		}
 		if(j<lgth)
 			r.append(p_msg.substring(j,i));
@@ -178,7 +147,6 @@ public class SDMSMessage
 
 	public String toString()
 	{
-
 		if(!translationEnabled) {
 			return (msg == null ? errId : subst(msg));
 		}

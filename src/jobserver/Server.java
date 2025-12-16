@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -189,24 +189,24 @@ public class Server
 				}
 
 				switch (ri.reassureJob (feil)) {
-				case RepoIface.START_JOB:
-					feil.close();
-					synchronized (jidsWithEiThread) {
-						jidsWithEiThread.add(jid[i]);
-					}
-					new EiThread (ri, cfg, jid [i]).start();
-					break;
+					case RepoIface.START_JOB:
+						feil.close();
+						synchronized (jidsWithEiThread) {
+							jidsWithEiThread.add(jid[i]);
+						}
+						new EiThread (ri, cfg, jid [i]).start();
+						break;
 
-				case RepoIface.DISPOSE_JOB:
-					Server.removeFeil(jid[i]);
-					break;
+					case RepoIface.DISPOSE_JOB:
+						Server.removeFeil(jid[i]);
+						break;
 
-				case RepoIface.SHUTDOWN_SERVER:
-					feil.close();
-					return false;
+					case RepoIface.SHUTDOWN_SERVER:
+						feil.close();
+						return false;
 
-				default:
-					Utils.abortProgram (ri, "(04301271509) Internal error");
+					default:
+						Utils.abortProgram (ri, "(04301271509) Internal error");
 				}
 			}
 		}
@@ -374,7 +374,7 @@ public class Server
 	public final void runServer ()
 	{
 		int status = 0;
-		final Long id = new Long(0);
+		final Long id = Long.valueOf(0);
 		Thread currentThread = Thread.currentThread();
 		startWakeupThread(cfg);
 		startHttpThread(cfg);

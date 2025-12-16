@@ -32,7 +32,8 @@ import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
 import de.independit.scheduler.server.exception.*;
 
-public class LockingSystem {
+public class LockingSystem
+{
 
 	public static int DEBUG_ALL = 1;
 	public static int DEBUG_WAIT_AND_NOTIFY = 2;

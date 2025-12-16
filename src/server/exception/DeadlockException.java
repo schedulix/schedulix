@@ -31,7 +31,7 @@ public class DeadlockException extends SerializationException
 {
 
 	private static HashMap<String,Long> stackTraces = new HashMap<String,Long>();
-	private static final Long ONE = new Long(1);
+	private static final Long ONE = Long.valueOf(1);
 
 	public DeadlockException()
 	{
@@ -55,7 +55,7 @@ public class DeadlockException extends SerializationException
 			if (ctr == null) {
 				stackTraces.put(stackTrace, ONE);
 			} else {
-				stackTraces.put(stackTrace, new Long(ctr.longValue() + 1));
+				stackTraces.put(stackTrace, Long.valueOf(ctr.longValue() + 1));
 			}
 		}
 	}
@@ -82,7 +82,7 @@ public class DeadlockException extends SerializationException
 			while (i.hasNext() && topHitCtr > 0) {
 				topHitCtr --;
 				Map.Entry<String,Long> me = i.next();
-				me.setValue(new Long(me.getValue()));
+				me.setValue(Long.valueOf(me.getValue()));
 				w.add(me);
 			}
 			m = w.toArray(m);
