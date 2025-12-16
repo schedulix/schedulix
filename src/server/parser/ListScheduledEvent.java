@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -54,41 +52,24 @@ public class ListScheduledEvent
 		throws SDMSException
 	{
 		Vector desc = new Vector();
-
 		desc.add ("ID");
 		desc.add ("OWNER");
-
 		desc.add ("SCHEDULE");
-
 		desc.add ("EVENT");
-
 		desc.add ("ACTIVE");
-
 		desc.add ("EFF_ACTIVE");
-
 		desc.add ("BROKEN");
-
 		desc.add ("ERROR_CODE");
-
 		desc.add ("ERROR_MSG");
-
 		desc.add ("LAST_START");
-
 		desc.add ("NEXT_START");
-
 		desc.add ("NEXT_CALC");
 		desc.add ("PRIVS");
-
 		desc.add ("BACKLOG_HANDLING");
-
 		desc.add ("SUSPEND_LIMIT");
-
 		desc.add ("EFFECTIVE_SUSPEND_LIMIT");
-
 		desc.add ("CALENDAR");
-
 		desc.add ("CALENDAR_HORIZON");
-
 		desc.add ("EFFECTIVE_CALENDAR_HORIZON");
 
 		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "List of Scheduled Events", desc);
@@ -114,7 +95,7 @@ public class ListScheduledEvent
 
 			row.add (scev.getIsActive (sysEnv));
 
-			row.add (new Boolean (scev.isReallyActive (sysEnv)));
+			row.add (Boolean.valueOf (scev.isReallyActive (sysEnv)));
 
 			row.add (scev.getIsBroken (sysEnv));
 
@@ -180,6 +161,6 @@ public class ListScheduledEvent
 
 		result.setOutputContainer (table);
 
-		result.setFeedback (new SDMSMessage (sysEnv, "04207261919", "$1 Scheduled Event(s) found", new Integer (table.lines)));
+		result.setFeedback (new SDMSMessage (sysEnv, "04207261919", "$1 Scheduled Event(s) found", Integer.valueOf (table.lines)));
 	}
 }

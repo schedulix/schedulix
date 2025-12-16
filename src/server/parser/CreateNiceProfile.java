@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -37,7 +35,7 @@ import de.independit.scheduler.server.exception.*;
 
 public class CreateNiceProfile extends Node
 {
-	private static final Integer ZERO = new Integer(0);
+	private static final Integer ZERO = Integer.valueOf(0);
 
 	private String name;
 	private WithHash items;

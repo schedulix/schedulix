@@ -47,7 +47,7 @@ public class AlterEnvironment extends Node
 	{
 		super();
 		url = u;
-		add = new Boolean(a);
+		add = Boolean.valueOf(a);
 		resourceList = r;
 		noerr = ne.booleanValue();
 	}

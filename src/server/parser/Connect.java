@@ -42,7 +42,7 @@ public class Connect extends Node
 	public final static String __version = "@(#) $Id: Connect.java,v 2.20.2.1 2013/03/14 10:24:24 ronald Exp $";
 
 	public static final String JS_ALREADY_CONNECTED = "Server already connected";
-	protected final static Long zero = new Long(0);
+	protected final static Long zero = Long.valueOf(0);
 
 	protected String user;
 	private String jsName;
@@ -190,7 +190,7 @@ public class Connect extends Node
 		method = SDMSUser.SHA256;
 
 		u.setSalt(sysEnv, salt);
-		u.setMethod(sysEnv, new Integer(method));
+		u.setMethod(sysEnv, Integer.valueOf(method));
 		u.setPasswd(sysEnv, pwdHash);
 	}
 
@@ -270,7 +270,7 @@ public class Connect extends Node
 	{
 		SDMSUser u;
 		Long uId;
-		Integer method = new Integer(SDMSUser.SHA256);
+		Integer method = Integer.valueOf(SDMSUser.SHA256);
 		boolean suActive = false;
 		Vector members = null;
 		boolean freshMeat = false;
@@ -303,7 +303,7 @@ public class Connect extends Node
 			if (u == null) {
 				String passwd = "Internal Authentication Disabled";
 				Boolean enable = Boolean.TRUE;
-				u = SDMSUserTable.table.create(sysEnv, user, passwd, passwd, method, enable, SDMSObject.publicGId, new Integer(SDMSUser.PLAIN), zero);
+				u = SDMSUserTable.table.create(sysEnv, user, passwd, passwd, method, enable, SDMSObject.publicGId, Integer.valueOf(SDMSUser.PLAIN), zero);
 				SDMSMemberTable.table.create(sysEnv, SDMSObject.publicGId, u.getId(sysEnv));
 				freshMeat = true;
 			} else {
@@ -453,7 +453,7 @@ public class Connect extends Node
 		if(s.isConnected(sysEnv)) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03204102020", JS_ALREADY_CONNECTED));
 		} else {
-			sf.setSessionId(sysEnv, new Integer(env.id()));
+			sf.setSessionId(sysEnv, Integer.valueOf(env.id()));
 		}
 
 		sysEnv.cEnv.setUid(s.getId(sysEnv));
@@ -480,7 +480,7 @@ public class Connect extends Node
 				sme = SDMSSubmittedEntityTable.getObject(sysEnv, kj.getSmeId(sysEnv));
 			}
 			try {
-				accessKey = new Long(Long.parseLong(key));
+				accessKey = Long.valueOf(Long.parseLong(key));
 			} catch (NumberFormatException nfe) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv,
 						"03206031607", "Invalid username or password"));
@@ -588,21 +588,21 @@ public class Connect extends Node
 					stmtnr++;
 					Node n = (Node) cmd.get(i);
 					actual_cmd = n;
-			sysEnv.tx.beginSubTransaction(sysEnv);
-			while(true) {
-				if(env.isUser()) {
-					if((n.cmdtype & USER_COMMAND) != 0) break;
-				} else if(env.isJobServer()) {
-					if((n.cmdtype & SERVER_COMMAND) != 0) break;
-				} else {
-					if((n.cmdtype & JOB_COMMAND) != 0) break;
-				}
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "03603041709", "Illegal commandtype within connect command"));
-			}
-			if (n.contextVersion != null)
-				sysEnv.tx.setContextVersionId(sysEnv, n.contextVersion);
-			n.env = env;
-			n.go(sysEnv);
+					sysEnv.tx.beginSubTransaction(sysEnv);
+					while(true) {
+						if(env.isUser()) {
+							if((n.cmdtype & USER_COMMAND) != 0) break;
+						} else if(env.isJobServer()) {
+							if((n.cmdtype & SERVER_COMMAND) != 0) break;
+						} else {
+							if((n.cmdtype & JOB_COMMAND) != 0) break;
+						}
+						throw new CommonErrorException(new SDMSMessage(sysEnv, "03603041709", "Illegal commandtype within connect command"));
+					}
+					if (n.contextVersion != null)
+						sysEnv.tx.setContextVersionId(sysEnv, n.contextVersion);
+					n.env = env;
+					n.go(sysEnv);
 					sysEnv.tx.commitSubTransaction(sysEnv);
 					actual_cmd = null;
 					result = n.result;

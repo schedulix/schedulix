@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -67,7 +65,7 @@ public class ListWt extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "02108241006", "$1 Watch Type(s) found",
-					new Integer(d_container.lines)));
+					Integer.valueOf(d_container.lines)));
 	}
 
 }

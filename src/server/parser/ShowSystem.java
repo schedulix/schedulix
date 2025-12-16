@@ -124,10 +124,10 @@ public class ShowSystem extends Node
 		Vector data = new Vector();
 		data.add(SystemEnvironment.programVersion);
 		data.add(SystemEnvironment.programLevel);
-		data.add(new Integer(r.availableProcessors()));
-		data.add(new Long(r.totalMemory()));
-		data.add(new Long(r.freeMemory()));
-		data.add(new Long(r.maxMemory()));
+		data.add(Integer.valueOf(r.availableProcessors()));
+		data.add(Long.valueOf(r.totalMemory()));
+		data.add(Long.valueOf(r.freeMemory()));
+		data.add(Long.valueOf(r.maxMemory()));
 		data.add(new Date(SystemEnvironment.startTime));
 		long uptime = (System.currentTimeMillis() - SystemEnvironment.startTime)/1000;
 		int upsec = (int) uptime%60;
@@ -145,13 +145,13 @@ public class ShowSystem extends Node
 		else
 			data.add("" + (int) (SystemEnvironment.sched.envhit * 100.0)/(SystemEnvironment.sched.envhit + SystemEnvironment.sched.envmiss) + " %");
 
-		data.add(new Long(ObjectLock.lockHWM));
-		data.add(new Long(ObjectLock.lockRequest));
-		data.add(new Long(ObjectLock.lockUsed));
-		data.add(new Long(ObjectLock.lockDiscarded));
-		data.add(new Long(SystemEnvironment.cntRwTx));
-		data.add(new Long(SystemEnvironment.cntDl));
-		data.add(new Long(SystemEnvironment.cntWl));
+		data.add(Long.valueOf(ObjectLock.lockHWM));
+		data.add(Long.valueOf(ObjectLock.lockRequest));
+		data.add(Long.valueOf(ObjectLock.lockUsed));
+		data.add(Long.valueOf(ObjectLock.lockDiscarded));
+		data.add(Long.valueOf(SystemEnvironment.cntRwTx));
+		data.add(Long.valueOf(SystemEnvironment.cntDl));
+		data.add(Long.valueOf(SystemEnvironment.cntWl));
 		i = conf.iterator();
 		while(i.hasNext()) {
 			String str = (String) i.next();
@@ -202,7 +202,7 @@ public class ShowSystem extends Node
 				if(wt[i] != null) {
 					if(wt[i].isAlive()) {
 						data = new Vector();
-						data.add(new Integer(wt[i].id()));
+						data.add(Integer.valueOf(wt[i].id()));
 						data.add(i < SystemEnvironment.maxWriter ? "RW" : "RO");
 						data.add(wt[i].getName());
 						data.add(wt[i].getWorkerState());

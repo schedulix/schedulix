@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -65,11 +63,11 @@ public class CreateComment extends Node
 		obj.resolve(sysEnv);
 
 		if (with.containsKey(ParseStr.S_URL)) {
-			infoType = new Integer(SDMSObjectComment.URL);
+			infoType = Integer.valueOf(SDMSObjectComment.URL);
 			text = (String) with.get(ParseStr.S_URL);
 			tag = null;
 		} else {
-			infoType = new Integer(SDMSObjectComment.TEXT);
+			infoType = Integer.valueOf(SDMSObjectComment.TEXT);
 		}
 
 		Vector v = SDMSObjectCommentTable.idx_objectId.getVector(sysEnv, obj.objId);
@@ -86,15 +84,14 @@ public class CreateComment extends Node
 		}
 
 		if (infoType.intValue() == SDMSObjectComment.URL)
-			SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(1), tag, text);
+			SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, Integer.valueOf(1), tag, text);
 		else {
 			v = (Vector) with.get(ParseStr.S_TEXT);
 			for (int i = 0; i < v.size(); ++i) {
 				Vector tt = (Vector) v.get(i);
 				tag = (String) tt.get(0);
 				text = (String) tt.get(1);
-
-				SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(i+1), tag, text);
+				SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, Integer.valueOf(i+1), tag, text);
 			}
 		}
 

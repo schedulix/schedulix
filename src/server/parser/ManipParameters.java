@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -38,8 +36,8 @@ public class ManipParameters
 {
 	public static final String __version = "@(#) $Id: ManipParameters.java,v 2.12.2.2 2013/06/18 09:49:34 ronald Exp $";
 
-	private static final Integer defaultType = new Integer (SDMSParameterDefinition.CONSTANT);
-	private static final Integer aggFkt = new Integer (SDMSParameterDefinition.NONE);
+	private static final Integer defaultType = Integer.valueOf (SDMSParameterDefinition.CONSTANT);
+	private static final Integer aggFkt = Integer.valueOf (SDMSParameterDefinition.NONE);
 
 	public static final void create (final SystemEnvironment sysEnv, final Long id, final WithHash parms)
 		throws SDMSException
@@ -100,8 +98,8 @@ public class ManipParameters
 								pd.getAggFunction (sysEnv),
 								pd.getDefaultValue (sysEnv),
 								pd.getIsLocal (sysEnv),
-			                null,
-			                pd.getExportName(sysEnv));
+			                			null,
+			                			pd.getExportName(sysEnv));
 		}
 	}
 
@@ -135,7 +133,7 @@ public class ManipParameters
 				if(!allTypes)
 					t = defaultType;
 
-				Integer aggFunction = new Integer(SDMSParameterDefinition.NONE);
+				Integer aggFunction = Integer.valueOf(SDMSParameterDefinition.NONE);
 				Long linkPdId = null;
 				String pdef = (pv == null ? null : "=" + pv);
 				if(t.equals(defaultType) && pdef == null)
@@ -147,7 +145,6 @@ public class ManipParameters
 					if(oldnm.equals(pn)) {
 						act_parms.removeElementAt(idx);
 						idx = -1;
-
 						pd.setType(sysEnv, t);
 						pd.setAggFunction(sysEnv, aggFunction);
 						pd.setDefaultValue(sysEnv, pdef);
@@ -158,7 +155,6 @@ public class ManipParameters
 					}
 				}
 				if(idx >= act_parms.size()) {
-
 					SDMSParameterDefinitionTable.table.create(sysEnv, id, pn, t, aggFunction, pdef, isLocal, linkPdId, exportName);
 				}
 			}
@@ -174,27 +170,16 @@ public class ManipParameters
 		throws SDMSException
 	{
 		final Vector c_desc = new Vector();
-
 		c_desc.add ("ID");
-
 		c_desc.add ("NAME");
-
 		c_desc.add ("EXPORT_NAME");
-
 		c_desc.add ("TYPE");
-
 		c_desc.add ("IS_LOCAL");
-
 		c_desc.add ("EXPRESSION");
-
 		c_desc.add ("DEFAULT_VALUE");
-
 		c_desc.add ("REFERENCE_TYPE");
-
 		c_desc.add ("REFERENCE_PATH");
-
 		c_desc.add ("REFERENCE_PRIVS");
-
 		c_desc.add ("REFERENCE_PARAMETER");
 		c_desc.add ("COMMENT");
 		c_desc.add ("COMMENTTYPE");
@@ -294,21 +279,13 @@ public class ManipParameters
 		throws SDMSException
 	{
 		final Vector c_desc = new Vector();
-
 		c_desc.add ("ID");
-
 		c_desc.add ("NAME");
-
 		c_desc.add ("TYPE");
-
 		c_desc.add ("IS_LOCAL");
-
 		c_desc.add ("REFERENCE_TYPE");
-
 		c_desc.add ("REFERENCE_PATH");
-
 		c_desc.add ("REFERENCE_PRIVS");
-
 		c_desc.add ("REFERENCE_PARAMETER");
 		c_desc.add ("COMMENT");
 		c_desc.add ("COMMENTTYPE");
@@ -379,6 +356,5 @@ public class ManipParameters
 
 	private ManipParameters()
 	{
-
 	}
 }

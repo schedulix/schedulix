@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -59,7 +57,7 @@ public class CreateScheduledEvent
 		try {
 			obj.resolve(sysEnv);
 		} catch (final NotFoundException nfe) {
-
+			/* do nothing */
 		}
 
 		final Long uId = env.uid();
@@ -70,7 +68,7 @@ public class CreateScheduledEvent
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, Long.valueOf(0))).getId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId)) &&
 			   !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03312162143",
@@ -79,7 +77,7 @@ public class CreateScheduledEvent
 		}
 
 		final Integer backlogHandling = with.containsKey (ParseStr.S_BACKLOG_HANDLING) ? (Integer) with.get (ParseStr.S_BACKLOG_HANDLING) :
-						new Integer (SDMSScheduledEvent.LAST);
+						Integer.valueOf (SDMSScheduledEvent.LAST);
 
 		Integer suspendLimit = null;
 		Integer suspendLimitMultiplier = null;

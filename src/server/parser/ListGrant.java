@@ -233,7 +233,7 @@ public class ListGrant extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-			new SDMSMessage(sysEnv, "03402110100", "$1 Grant(s) found", new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "03402110100", "$1 Grant(s) found", Integer.valueOf(d_container.lines)));
 	}
 
 	private SDMSProxy resolveById(SystemEnvironment sysEnv, Integer objType, Long objId)
@@ -252,10 +252,10 @@ public class ListGrant extends Node
 				case SDMSObjectComment.JOB_DEFINITION:
 					try {
 						p = SDMSFolderTable.getObject(sysEnv, objId);
-						objType = new Integer(SDMSObjectComment.FOLDER);
+						objType = Integer.valueOf(SDMSObjectComment.FOLDER);
 					} catch (NotFoundException nfe) {
 						p = SDMSSchedulingEntityTable.getObject(sysEnv, objId);
-						objType = new Integer(SDMSObjectComment.JOB_DEFINITION);
+						objType = Integer.valueOf(SDMSObjectComment.JOB_DEFINITION);
 					}
 					break;
 				case SDMSObjectComment.FOOTPRINT:		p = SDMSFootprintTable.getObject(sysEnv, objId);		break;
@@ -378,7 +378,7 @@ public class ListGrant extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-			new SDMSMessage(sysEnv, "03402110100", "$1 Grant(s) found", new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "03402110100", "$1 Grant(s) found", Integer.valueOf(d_container.lines)));
 	}
 
 	public void go(SystemEnvironment sysEnv)

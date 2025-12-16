@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -87,7 +85,7 @@ public class MultiCommand extends Node
 			sysEnv.tx.commitSubTransaction(sysEnv);
 		}
 		if (commit)
-			result.setFeedback(new SDMSMessage(sysEnv, "03204041823", "$1 Command(s) processed", new Integer (cmdlist.size())));
+			result.setFeedback(new SDMSMessage(sysEnv, "03204041823", "$1 Command(s) processed", Integer.valueOf (cmdlist.size())));
 		else {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03704251206", "Abort by user request (Rollback option specified)"));
 		}

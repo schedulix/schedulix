@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -80,7 +78,7 @@ public class ListExitStatusDef extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "03111272323", "$1 Exit State Definition(s) found",
-					new Integer(d_container.lines)));
+					Integer.valueOf(d_container.lines)));
 	}
 }
 

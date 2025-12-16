@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -54,44 +52,28 @@ public class ListPool extends Node
 		sysEnv.checkFeatureAvailability(SystemEnvironment.S_POOL);
 
 		desc.add("ID");
-
 		desc.add("NAME");
-
 		desc.add("SCOPENAME");
-
 		desc.add("OWNER");
-
 		desc.add("MANAGER_ID");
-
 		desc.add("MANAGER_NAME");
-
 		desc.add("MANAGER_SCOPENAME");
-
 		desc.add("DEFINED_AMOUNT");
-
 		desc.add("AMOUNT");
-
 		desc.add("FREE_AMOUNT");
-
 		desc.add("EVALUATION_CYCLE");
-
 		desc.add("NEXT_EVALUATION_TIME");
-
 		desc.add("CREATOR");
-
 		desc.add("CREATE_TIME");
-
 		desc.add("CHANGER");
-
 		desc.add("CHANGE_TIME");
-
 		desc.add("PRIVS");
 
 		SDMSOutputContainer s_container = new SDMSOutputContainer(sysEnv, null, desc);
 
 		result.setOutputContainer(s_container);
 
-		result.setFeedback(new SDMSMessage(sysEnv,"03603151712", "$1 Pool(s) found", new Integer(s_container.lines)));
+		result.setFeedback(new SDMSMessage(sysEnv,"03603151712", "$1 Pool(s) found", Integer.valueOf(s_container.lines)));
 	}
 
 }

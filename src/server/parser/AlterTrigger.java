@@ -43,7 +43,6 @@ public class AlterTrigger extends ManipTrigger
 
 	protected Long submitOwnerId;
 	protected Long fireId;
-	protected Long checkFireId;
 	protected int fireType;
 
 	protected SDMSSchedulingEntity fireSe = null;
@@ -87,7 +86,7 @@ public class AlterTrigger extends ManipTrigger
 			if (with.containsKey(ParseStr.S_SUBMIT)) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03108190858", "Submit and Rerun cannot be specified both"));
 			}
-			action = new Integer(SDMSTrigger.RERUN);
+			action = Integer.valueOf(SDMSTrigger.RERUN);
 			iaction = SDMSTrigger.RERUN;
 			if (objType != SDMSTrigger.JOB_DEFINITION)
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03108111304", "Rerun triggers are valid for jobs only"));
@@ -130,8 +129,12 @@ public class AlterTrigger extends ManipTrigger
 			se = SDMSSchedulingEntityTable.get(sysEnv, folderpath, n);
 			if (isInverse.booleanValue()) {
 				fireId = se.getId(sysEnv);
-				checkFireId = fireId;
 				seId = t.getSeId(sysEnv);
+				se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
+				if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
+					throw new AccessViolationException(
+					        new SDMSMessage(sysEnv, "03511251420", "Submit privilege on $1 missing", se.pathString(sysEnv))
+					);
 			} else {
 				if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
 					throw new AccessViolationException(
@@ -186,7 +189,7 @@ public class AlterTrigger extends ManipTrigger
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "02402180855", "Group clause is not allowed for child triggers"));
 			}
 			submitOwnerId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(submitOwnerName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(submitOwnerName, Long.valueOf(0))).getId(sysEnv);
 			checkSubmitOwnerId = submitOwnerId;
 		} else {
 			submitOwnerId = null;

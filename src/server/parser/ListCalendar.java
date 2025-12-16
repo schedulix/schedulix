@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -72,7 +70,7 @@ public class ListCalendar extends Node
 		String evtName = evt.getName(sysEnv);
 		Integer expFinalTime = se.getExpectedFinaltime(sysEnv);
 		String finalTime = expFinalTime == null ? "" : expFinalTime.toString();
-		if (expFinalTime == null) expFinalTime = new Integer(0);
+		if (expFinalTime == null) expFinalTime = Integer.valueOf(0);
 		GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
 		TimeZone gmtTz = SystemEnvironment.systemTimeZone;
 		String tzId = tz.getID();
@@ -83,7 +81,7 @@ public class ListCalendar extends Node
 			gc.setTimeInMillis(c.getStarttime(sysEnv) * 1000);
 			gc.setTimeZone(tz);
 			DateTime cStartTime = new DateTime(gc.getTimeInMillis() / 1000);
-			DateTime cmpTime = new DateTime(new Long((gc.getTimeInMillis() + expFinalTime.longValue() * 1000) / 1000));
+			DateTime cmpTime = new DateTime(Long.valueOf((gc.getTimeInMillis() + expFinalTime.longValue() * 1000) / 1000));
 			if (starttime == null || starttime.compareTo(cmpTime) <= 0) {
 				if (endtime == null || endtime.compareTo(cStartTime) >= 0) {
 					Vector v = new Vector();
@@ -110,7 +108,7 @@ public class ListCalendar extends Node
 	{
 		Vector filter;
 		if (with.containsKey(ParseStr.S_FILTER)) {
-			filter = objFilter.initialize_filter(sysEnv, (Vector) with.get(ParseStr.S_FILTER), 0 , true );
+			filter = objFilter.initialize_filter(sysEnv, (Vector) with.get(ParseStr.S_FILTER), 0, true );
 		} else {
 			filter = new Vector();
 		}
@@ -136,27 +134,16 @@ public class ListCalendar extends Node
 		Vector desc = new Vector();
 
 		desc.add("ID");
-
 		desc.add("SE_NAME");
-
 		desc.add("SE_TYPE");
-
 		desc.add("SE_ID");
-
 		desc.add("SE_OWNER");
-
 		desc.add("SE_PRIVS");
-
 		desc.add("SCE_NAME");
-
 		desc.add("SCE_ACTIVE");
-
 		desc.add("EVT_NAME");
-
 		desc.add("STARTTIME");
-
 		desc.add("EXPECTED_FINAL_TIME");
-
 		desc.add("TIME_ZONE");
 
 		if (with.containsKey(ParseStr.S_STARTTIME)) {

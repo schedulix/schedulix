@@ -209,7 +209,7 @@ public class AlterJob extends Node
 			}
 			final GregorianCalendar gc = SystemEnvironment.newGregorianCalendar();
 			gc.setTime(d);
-			tsLong = new Long(gc.getTimeInMillis());
+			tsLong = Long.valueOf(gc.getTimeInMillis());
 		}
 
 		exitCode = (Integer) with.get(ParseStr.S_EXIT_CODE);
@@ -462,7 +462,7 @@ public class AlterJob extends Node
 			changeState(sysEnv, sme, false);
 		}
 		SDMSScope s = SDMSScopeTable.getObjectForUpdate(sysEnv, sId);
-		s.setLastActive(sysEnv, new Long(sysEnv.cEnv.last()));
+		s.setLastActive(sysEnv, Long.valueOf(sysEnv.cEnv.last()));
 	}
 
 	private void alterByOperator(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, long actVersion)
@@ -543,7 +543,7 @@ public class AlterJob extends Node
 			}
 
 			if(priority.intValue() < SystemEnvironment.priorityLowerBound && !sysEnv.cEnv.gid().contains(SDMSObject.adminGId))
-				priority = new Integer(SystemEnvironment.priorityLowerBound);
+				priority = Integer.valueOf(SystemEnvironment.priorityLowerBound);
 			sme.setPriority(sysEnv, priority);
 		}
 		if(nicevalue != null) {
@@ -551,7 +551,7 @@ public class AlterJob extends Node
 		}
 		if(renice != null) {
 			int nv = renice.intValue() + sme.getNice(sysEnv).intValue();
-			sme.renice(sysEnv, new Integer(nv), null, comment);
+			sme.renice(sysEnv, Integer.valueOf(nv), null, comment);
 		}
 		if (clone != null) {
 			if (sme.getIsReplaced(sysEnv).booleanValue()) {
@@ -570,7 +570,7 @@ public class AlterJob extends Node
 				Long submitSeId = sme.getSeId(sysEnv);
 				SDMSSubmittedEntity childSme = psme.submitChild(sysEnv,
 				                               null,
-				                               new Integer (SDMSSubmittedEntity.SUSPEND),
+				                               Integer.valueOf (SDMSSubmittedEntity.SUSPEND),
 				                               null,
 				                               submitSeId,
 				                               childTag,
@@ -675,19 +675,19 @@ public class AlterJob extends Node
 					sme.setKillExitCode(sysEnv, exitCode);
 				}
 				if(s == SDMSSubmittedEntity.TO_KILL) {
-					sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.KILLED));
+					sme.setState(sysEnv, Integer.valueOf(SDMSSubmittedEntity.KILLED));
 				}
 				break;
 			case SDMSSubmittedEntity.BROKEN_ACTIVE:
 				break;
 			case SDMSSubmittedEntity.BROKEN_FINISHED:
 				if(s == SDMSSubmittedEntity.TO_KILL) {
-					sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.KILLED));
+					sme.setState(sysEnv, Integer.valueOf(SDMSSubmittedEntity.KILLED));
 				}
 				break;
 			case SDMSSubmittedEntity.ERROR:
 				if(s == SDMSSubmittedEntity.TO_KILL) {
-					sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.RUNNING));
+					sme.setState(sysEnv, Integer.valueOf(SDMSSubmittedEntity.RUNNING));
 				}
 				break;
 			default:

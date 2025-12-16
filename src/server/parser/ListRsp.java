@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -57,7 +55,6 @@ public class ListRsp extends Node
 
 		desc.add("ID");
 		desc.add("NAME");
-
 		desc.add("INITIAL_STATE");
 		desc.add("PRIVS");
 
@@ -88,7 +85,7 @@ public class ListRsp extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "03201101444", "$1 Resource State Profile(s) found",
-					new Integer(d_container.lines)));
+					Integer.valueOf(d_container.lines)));
 
 	}
 

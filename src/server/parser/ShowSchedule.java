@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -58,19 +56,13 @@ public class ShowSchedule
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411723", "Insufficient privileges"));
 
 		Vector desc = new Vector();
-
 		desc.add ("ID");
 		desc.add ("NAME");
 		desc.add ("OWNER");
-
 		desc.add("INHERIT_PRIVS");
-
 		desc.add ("INTERVAL");
-
 		desc.add ("TIME_ZONE");
-
 		desc.add ("ACTIVE");
-
 		desc.add ("EFF_ACTIVE");
 		desc.add ("CREATOR");
 		desc.add ("CREATE_TIME");
@@ -98,7 +90,7 @@ public class ShowSchedule
 
 		data.add (sce.getIsActive (sysEnv));
 
-		data.add (new Boolean (sce.isReallyActive (sysEnv)));
+		data.add (Boolean.valueOf (sce.isReallyActive (sysEnv)));
 
 		final Date d = new Date();
 		try {

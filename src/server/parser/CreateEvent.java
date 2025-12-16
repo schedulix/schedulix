@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -58,7 +56,7 @@ public class CreateEvent
 		try {
 			obj.resolve(sysEnv);
 		} catch (final NotFoundException nfe) {
-
+			/* do nothing */
 		}
 
 		if(!with.containsKey(ParseStr.S_ACTION)) {
@@ -82,7 +80,7 @@ public class CreateEvent
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, Long.valueOf(0))).getId(sysEnv);
 		}
 		se.checkSubmitForGroup(sysEnv, gId);
 

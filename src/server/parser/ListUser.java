@@ -102,7 +102,7 @@ public class ListUser extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-			new SDMSMessage(sysEnv, "02111101419", "$1 User(s) found", new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "02111101419", "$1 User(s) found", Integer.valueOf(d_container.lines)));
 	}
 }
 

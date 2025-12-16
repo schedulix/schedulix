@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -50,11 +48,9 @@ public class ListEvent
 	throws SDMSException
 	{
 		Vector desc = new Vector();
-
 		desc.add ("ID");
 		desc.add ("NAME");
 		desc.add ("OWNER");
-
 		desc.add ("SCHEDULING_ENTITY");
 		desc.add ("PRIVS");
 
@@ -91,6 +87,6 @@ public class ListEvent
 
 		result.setOutputContainer (table);
 
-		result.setFeedback (new SDMSMessage (sysEnv, "04203072329", "$1 Event(s) found", new Integer (table.lines)));
+		result.setFeedback (new SDMSMessage (sysEnv, "04203072329", "$1 Event(s) found", Integer.valueOf (table.lines)));
 	}
 }

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -57,7 +55,7 @@ public class AlterFootprint extends Node
 		super();
 		url = u;
 		resources = r;
-		add = new Boolean(a);
+		add = Boolean.valueOf(a);
 		noerr = ne.booleanValue();
 	}
 
@@ -128,7 +126,7 @@ public class AlterFootprint extends Node
 		Long   fId = f.getId(sysEnv);
 		Integer amount;
 		Integer keepMode;
-		Integer lockmode = new Integer(SDMSResourceRequirement.N);
+		Integer lockmode = Integer.valueOf(SDMSResourceRequirement.N);
 		Long rsmpId = null;
 		Boolean isSticky = Boolean.FALSE;
 		String stickyName = null;
@@ -151,10 +149,10 @@ public class AlterFootprint extends Node
 		nrId = nr.getId(sysEnv);
 
 		amount = (Integer) with.get(ParseStr.S_AMOUNT);
-		if(amount == null) amount = new Integer(0);
+		if(amount == null) amount = Integer.valueOf(0);
 
 		keepMode = (Integer) with.get(ParseStr.S_KEEP);
-		if(keepMode == null) keepMode = new Integer(SDMSResourceRequirement.NOKEEP);
+		if(keepMode == null) keepMode = Integer.valueOf(SDMSResourceRequirement.NOKEEP);
 
 		rr = SDMSResourceRequirementTable.table.create(sysEnv,
 				nrId, fId, amount, keepMode, isSticky, stickyName, stickyParent,

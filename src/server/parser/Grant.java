@@ -47,9 +47,9 @@ public class Grant extends Node
 	private Boolean childrenOnly;
 	private int thisType;
 
-	private static final Integer SYSTEM = new Integer(SDMSGrant.SYSTEM);
-	private static final Long NOPRIVS = new Long(SDMSPrivilege.NOPRIVS);
-	private static final Long ZERO = new Long(0L);
+	private static final Integer SYSTEM = Integer.valueOf(SDMSGrant.SYSTEM);
+	private static final Long NOPRIVS = Long.valueOf(SDMSPrivilege.NOPRIVS);
+	private static final Long ZERO = Long.valueOf(0L);
 
 	public Grant(Boolean g, Long p, ObjectURL u, Vector grp, Boolean r, Boolean c)
 	{
@@ -198,7 +198,7 @@ public class Grant extends Node
 			try {
 				g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(oId, gId));
 			} catch (NotFoundException nfe) {
-				g = SDMSGrantTable.table.create(sysEnv, oId, gId, new Integer(thisType), NOPRIVS, null);
+				g = SDMSGrantTable.table.create(sysEnv, oId, gId, Integer.valueOf(thisType), NOPRIVS, null);
 			}
 			oldPrivs = g.getPrivs(sysEnv);
 			if(isGrant) {

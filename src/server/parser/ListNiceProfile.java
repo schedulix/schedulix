@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -56,11 +54,8 @@ public class ListNiceProfile extends Node
 
 		desc.add("ID");
 		desc.add("NAME");
-
 		desc.add("IS_ACTIVE");
-
 		desc.add("ACTIVE_TS");
-
 		desc.add("ACTIVE_SEQ");
 		desc.add("PRIVS");
 
@@ -91,7 +86,7 @@ public class ListNiceProfile extends Node
 				d.setTime(activeTs.longValue());
 				v.add(sysEnv.systemDateFormat.format(d));
 				seq++;
-				v.add(new Integer(seq));
+				v.add(Integer.valueOf(seq));
 			} else {
 				v.add(null);
 				v.add(null);
@@ -100,11 +95,11 @@ public class ListNiceProfile extends Node
 			d_container.addData(sysEnv, v);
 		}
 
-		Collections.sort(d_container.dataset , d_container.getComparator(sysEnv, 1));
+		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, 1));
 
 		result.setOutputContainer(d_container);
 
-		result.setFeedback(new SDMSMessage(sysEnv, "03408110806", "$1 Nice Profile(s) found", new Integer(d_container.lines)));
+		result.setFeedback(new SDMSMessage(sysEnv, "03408110806", "$1 Nice Profile(s) found", Integer.valueOf(d_container.lines)));
 	}
 }
 

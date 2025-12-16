@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -62,7 +60,6 @@ public class ShowScheduledEvent
 		throws SDMSException
 	{
 		Vector desc = new Vector();
-
 		desc.add ("ID");
 		desc.add ("STARTTIME");
 
@@ -105,49 +102,31 @@ public class ShowScheduledEvent
 			throw new AccessViolationException(new SDMSMessage(sysEnv, "034020411724", "Insufficient privileges"));
 
 		Vector desc = new Vector();
-
 		desc.add ("ID");
 		desc.add ("OWNER");
-
 		desc.add ("SCHEDULE");
-
 		desc.add ("EVENT");
-
 		desc.add ("ACTIVE");
-
 		desc.add ("EFF_ACTIVE");
-
 		desc.add ("BROKEN");
-
 		desc.add ("ERROR_CODE");
-
 		desc.add ("ERROR_MSG");
-
 		desc.add ("LAST_START");
-
 		desc.add ("NEXT_START");
-
 		desc.add ("NEXT_CALC");
 		desc.add ("CREATOR");
 		desc.add ("CREATE_TIME");
 		desc.add ("CHANGER");
 		desc.add ("CHANGE_TIME");
 		desc.add ("PRIVS");
-
 		desc.add ("BACKLOG_HANDLING");
-
 		desc.add ("SUSPEND_LIMIT");
-
 		desc.add ("EFFECTIVE_SUSPEND_LIMIT");
-
 		desc.add ("CALENDAR");
-
 		desc.add ("CALENDAR_HORIZON");
-
 		desc.add ("EFFECTIVE_CALENDAR_HORIZON");
 		desc.add ("COMMENT");
 		desc.add ("COMMENTTYPE");
-
 		desc.add ("CALENDAR_TABLE");
 
 		final Vector data = new Vector();
@@ -165,7 +144,7 @@ public class ShowScheduledEvent
 
 		data.add (scev.getIsActive (sysEnv));
 
-		data.add (new Boolean (scev.isReallyActive (sysEnv)));
+		data.add (Boolean.valueOf (scev.isReallyActive (sysEnv)));
 
 		data.add (scev.getIsBroken (sysEnv));
 

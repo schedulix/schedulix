@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -41,7 +39,7 @@ public abstract class ManipGroup extends Node
 
 	public final static String __version = "@(#) $Id";
 
-	protected final static Long ZERO = new Long(0L);
+	protected final static Long ZERO = Long.valueOf(0L);
 
 	protected ObjectURL url;
 	protected Vector userlist;
@@ -66,7 +64,7 @@ public abstract class ManipGroup extends Node
 	protected void evaluate_with(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-		Long zero = new Long(0);
+		Long zero = Long.valueOf(0);
 		if(withEvaluated) return;
 
 		if(with.containsKey(ParseStr.S_USERLIST)) {

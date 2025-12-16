@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.Vector;
@@ -127,7 +125,7 @@ public class AlterScope
 				gName = (String) with.get(ParseStr.S_GROUP_CASCADE);
 			}
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, Long.valueOf(0))).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId);
 			s.setOwnerId(sysEnv, gId);
 			if(with.containsKey (ParseStr.S_GROUP_CASCADE)) {
@@ -137,7 +135,7 @@ public class AlterScope
 
 		if (with.containsKey(ParseStr.S_INHERIT)) {
 			Long inheritPrivs = (Long) with.get(ParseStr.S_INHERIT);
-			if (inheritPrivs == null) inheritPrivs = new Long(0);
+			if (inheritPrivs == null) inheritPrivs = Long.valueOf(0);
 			long lpriv = inheritPrivs.longValue();
 			if((s.getPrivilegeMask() & lpriv) != lpriv) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061325", "Incompatible grant"));
@@ -154,7 +152,7 @@ public class AlterScope
 	{
 		final Long sId = s.getId(sysEnv);
 		String salt = null;
-		Integer method = new Integer(SDMSScope.SHA256);
+		Integer method = Integer.valueOf(SDMSScope.SHA256);
 
 		s.notify(sysEnv);
 
@@ -176,7 +174,7 @@ public class AlterScope
 				salt = (String) v.get(1);
 
 				if (passwd.length() == ManipUser.MD5LENGTH)
-					method = new Integer(SDMSScope.MD5);
+					method = Integer.valueOf(SDMSScope.MD5);
 			} else
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "04312151811", "Both " + ParseStr.S_PASSWORD + " and " + ParseStr.S_RAWPASSWORD + " are not allowed"));
 		}
@@ -221,7 +219,7 @@ public class AlterScope
 		if (with.containsKey (ParseStr.S_GROUP)) {
 			final String gName = (String) with.get (ParseStr.S_GROUP);
 			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, Long.valueOf(0))).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId);
 			s.setOwnerId(sysEnv, gId);
 		}
@@ -238,7 +236,7 @@ public class AlterScope
 			try {
 				s.setOwnerId(sysEnv, groupId);
 			} catch (AccessViolationException ave) {
-
+				/* do nothing */
 			}
 			changeChildGroup(sysEnv, s.getId(sysEnv), groupId);
 		}
@@ -256,12 +254,9 @@ public class AlterScope
 		}
 
 		if(fatal) {
-
-			s.setState(sysEnv, new Integer(SDMSScope.FATAL));
+			s.setState(sysEnv, Integer.valueOf(SDMSScope.FATAL));
 		} else {
-
-			s.setState(sysEnv, new Integer (SDMSScope.NONFATAL));
-
+			s.setState(sysEnv, Integer.valueOf (SDMSScope.NONFATAL));
 		}
 		SDMSThread.doTrace(env, errmsg, SDMSThread.SEVERITY_ERROR);
 		s.setErrmsg(sysEnv, errmsg);

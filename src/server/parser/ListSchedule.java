@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -85,7 +83,7 @@ public class ListSchedule
 			row.add (ScheduleUtil.getIvalName (sysEnv, sub));
 			row.add (sub.getTimeZone (sysEnv));
 			row.add (sub.getIsActive (sysEnv));
-			row.add (new Boolean (sub.isReallyActive (sysEnv)));
+			row.add (Boolean.valueOf (sub.isReallyActive (sysEnv)));
 			row.add (sub.getPrivileges(sysEnv).toString());
 
 			table.addData (sysEnv, row);
@@ -99,17 +97,12 @@ public class ListSchedule
 	throws SDMSException
 	{
 		Vector desc = new Vector();
-
 		desc.add ("ID");
 		desc.add ("NAME");
 		desc.add ("OWNER");
-
 		desc.add ("INTERVAL");
-
 		desc.add ("TIME_ZONE");
-
 		desc.add ("ACTIVE");
-
 		desc.add ("EFF_ACTIVE");
 		desc.add ("PRIVS");
 
@@ -140,7 +133,7 @@ public class ListSchedule
 		row.add (sce.getTimeZone (sysEnv));
 		row.add (sce.getIsActive (sysEnv));
 
-		row.add (new Boolean (sce.isReallyActive (sysEnv)));
+		row.add (Boolean.valueOf (sce.isReallyActive (sysEnv)));
 
 		row.add (sce.getPrivileges(sysEnv).toString());
 
@@ -153,6 +146,6 @@ public class ListSchedule
 
 		result.setOutputContainer (table);
 
-		result.setFeedback (new SDMSMessage (sysEnv, "04207252340", "$1 Schedule(s) found", new Integer (table.lines)));
+		result.setFeedback (new SDMSMessage (sysEnv, "04207252340", "$1 Schedule(s) found", Integer.valueOf (table.lines)));
 	}
 }

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -67,9 +65,7 @@ public class ListGroup extends Node
 			if(g.getDeleteVersion(sysEnv).longValue() != 0) continue;
 			Long gId = g.getId(sysEnv);
 			SDMSPrivilege p = g.getPrivileges(sysEnv);
-
 			if (!p.can(SDMSPrivilege.VIEW) && !p.can(SDMSPrivilege.MANAGE_GROUP)) {
-
 				if(!sysEnv.cEnv.gid().contains(gId))
 					continue;
 			}
@@ -88,7 +84,7 @@ public class ListGroup extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
-			new SDMSMessage(sysEnv, "03312091455", "$1 Group(s) found", new Integer(d_container.lines)));
+			new SDMSMessage(sysEnv, "03312091455", "$1 Group(s) found", Integer.valueOf(d_container.lines)));
 	}
 }
 

@@ -110,7 +110,7 @@ public class SubmitJob extends Node
 					no_msecs *= 365 * 24 * 60;
 					break;
 			}
-			resumeTs = new Long (now + no_msecs);
+			resumeTs = Long.valueOf (now + no_msecs);
 		} else {
 			if (resumeAt != null) {
 				DateTime dt = new DateTime(resumeAt, tz);
@@ -124,7 +124,7 @@ public class SubmitJob extends Node
 			}
 		}
 
-		if (resumeTs.longValue() <= now) return new Long(-1);
+		if (resumeTs.longValue() <= now) return Long.valueOf(-1);
 
 		return resumeTs;
 	}
@@ -164,7 +164,7 @@ public class SubmitJob extends Node
 			} else {
 				final String gName = (String) with.get(ParseStr.S_GROUP);
 				gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-						sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+						sysEnv, new SDMSKey(gName, Long.valueOf(0))).getId(sysEnv);
 			}
 			auditMsg = "manually submitted";
 		} else {
@@ -197,12 +197,12 @@ public class SubmitJob extends Node
 			resumeTs = evalResumeObj(sysEnv, resumeObj, null, true, TimeZone.getTimeZone(timeZone));
 
 			if (resumeTs != null && resumeTs.longValue() == -1l) {
-				suspend = new Boolean(false);
+				suspend = Boolean.valueOf(false);
 				resumeTs = null;
 			}
 		}
 
-		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, params, suspend == null ? null : new Integer(suspend ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
+		final SDMSSubmittedEntity sme = se.submitMaster (sysEnv, params, suspend == null ? null : Integer.valueOf(suspend ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
 								resumeTs, gId, niceValue,
 								auditMsg, submitTag, childTag, unresolvedHandling, timeZone);
 		return sme.getId(sysEnv);

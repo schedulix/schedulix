@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -60,7 +58,7 @@ public class CreateExitStatusMapping extends Node
 			esmp = SDMSExitStateMappingProfileTable.table.create (sysEnv, name);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
-				AlterExitStateMapping aesm = new AlterExitStateMapping(new ObjectURL(new Integer(Parser.EXIT_STATUS_MAPPING), name), maps, Boolean.FALSE);
+				AlterExitStateMapping aesm = new AlterExitStateMapping(new ObjectURL(Integer.valueOf(Parser.EXIT_STATUS_MAPPING), name), maps, Boolean.FALSE);
 				aesm.setEnv(env);
 				aesm.go(sysEnv);
 				result = aesm.result;
@@ -90,14 +88,14 @@ public class CreateExitStatusMapping extends Node
 				}
 				SDMSExitStateMappingTable.table.create (
 						sysEnv, esmpId, esd.getId(sysEnv),
-						new Integer(exitCode), new Integer (esmMap.from().intValue() - 1));
+						Integer.valueOf(exitCode), Integer.valueOf (esmMap.from().intValue() - 1));
 			}
 			idx = idx + 1;
 			exitCode = esmMap.from().intValue();
 			esd = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, esmMap.name());
 		}
 		SDMSExitStateMappingTable.table.create (sysEnv, esmpId, esd.getId(sysEnv),
-							new Integer(exitCode), new Integer(Integer.MAX_VALUE));
+							Integer.valueOf(exitCode), Integer.valueOf(Integer.MAX_VALUE));
 
 		result.setFeedback(new SDMSMessage(sysEnv, "03201161956", "Exit State Mapping created"));
 
