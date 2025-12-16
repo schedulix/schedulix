@@ -53,7 +53,7 @@ public class SchedulingThread extends InternalSession
 	private Locklist publl = null;
 	private Vector<Long> resourceRequestList = null;
 	private final Object resourceRequestLock = new Object();
-	private final Integer lock = new Integer(0);
+	private final Object lock = new Object();
 	private Vector<Long> actualRequestList;
 
 	public static final int CREATE	= 1;
@@ -83,7 +83,7 @@ public class SchedulingThread extends InternalSession
 	public final static int FP_FOLDER	= 1;
 	public final static int FP_LOCAL	= 2;
 
-	private final static Integer ONE = new Integer(1);
+	private final static Integer ONE = Integer.valueOf(1);
 
 	public long envhit = 0;
 	public long envmiss = 0;
@@ -171,7 +171,7 @@ public class SchedulingThread extends InternalSession
 	}
 
 	private void processRequestList(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector<Long> v = getRequestList();
 		actualRequestList = v;
@@ -342,28 +342,28 @@ public class SchedulingThread extends InternalSession
 		pc.setNow();
 		needReSched = false;
 
-		Vector sv = SDMSScopeTable.idx_type.getVectorForUpdate(sysEnv, new Integer(SDMSScope.SERVER));
+		Vector sv = SDMSScopeTable.idx_type.getVectorForUpdate(sysEnv, Integer.valueOf(SDMSScope.SERVER));
 
-		Vector rjv = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, new Integer(SDMSSubmittedEntity.RUNNABLE), null, Integer.MAX_VALUE);
+		Vector rjv = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, Integer.valueOf(SDMSSubmittedEntity.RUNNABLE), null, Integer.MAX_VALUE);
 		doTrace(cEnv, "Number of Runnable Jobs found: " + rjv.size(), SEVERITY_MESSAGE);
 
 		doTrace(cEnv, "==============> Rescheduling Runnables <=================\nStartTime = " + (dts.getTime() - timer), SEVERITY_MESSAGE);
 		rescheduleVector(sysEnv, rjv, sv, SDMSSubmittedEntity.RUNNABLE);
 
 		doTrace(cEnv, "==============> Rescheduling Resource Wait <=================\nStartTime = " + (dts.getTime() - timer), SEVERITY_MESSAGE);
-		Vector smev = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, new Integer(SDMSSubmittedEntity.RESOURCE_WAIT), null, Integer.MAX_VALUE);
+		Vector smev = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, Integer.valueOf(SDMSSubmittedEntity.RESOURCE_WAIT), null, Integer.MAX_VALUE);
 		doTrace(cEnv, "Number of Jobs in Resource Wait found: " + smev.size(), SEVERITY_MESSAGE);
 
 		rescheduleVector(sysEnv, smev, sv, SDMSSubmittedEntity.RESOURCE_WAIT);
 
 		doTrace(cEnv, "==============> Rescheduling Synchronize Wait <=================\nStartTime = " + (dts.getTime() - timer), SEVERITY_MESSAGE);
-		smev = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, new Integer(SDMSSubmittedEntity.SYNCHRONIZE_WAIT), null, Integer.MAX_VALUE);
+		smev = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, Integer.valueOf(SDMSSubmittedEntity.SYNCHRONIZE_WAIT), null, Integer.MAX_VALUE);
 		doTrace(cEnv, "Number of Jobs in Synchronize Wait found: " + smev.size(), SEVERITY_MESSAGE);
 
 		rescheduleVector(sysEnv, smev, sv, SDMSSubmittedEntity.SYNCHRONIZE_WAIT);
 
 		doTrace(cEnv, "==============> Rescheduling Dependency Wait <=================\nStartTime = " + (dts.getTime() - timer), SEVERITY_MESSAGE);
-		smev = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, new Integer(SDMSSubmittedEntity.DEPENDENCY_WAIT), null, Integer.MAX_VALUE);
+		smev = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, Integer.valueOf(SDMSSubmittedEntity.DEPENDENCY_WAIT), null, Integer.MAX_VALUE);
 		doTrace(cEnv, "Number of Jobs in Dependency Wait found: " + smev.size(), SEVERITY_MESSAGE);
 
 		rescheduleVector(sysEnv, smev, sv, SDMSSubmittedEntity.DEPENDENCY_WAIT);
@@ -455,8 +455,8 @@ public class SchedulingThread extends InternalSession
 		SDMSSubmittedEntity sme;
 		int i;
 
-		Vector smev = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, new Integer(SDMSSubmittedEntity.SYNCHRONIZE_WAIT), null, Integer.MAX_VALUE);
-		Vector sv = SDMSScopeTable.idx_type.getVector(sysEnv, new Integer(SDMSScope.SERVER));
+		Vector smev = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, Integer.valueOf(SDMSSubmittedEntity.SYNCHRONIZE_WAIT), null, Integer.MAX_VALUE);
+		Vector sv = SDMSScopeTable.idx_type.getVector(sysEnv, Integer.valueOf(SDMSScope.SERVER));
 		doTrace(cEnv, "Number of Job Server : " + sv.size(), SEVERITY_DEBUG);
 		doTrace(cEnv, "Number of Jobs in SYNCHRONIZE_WAIT : " + smev.size(), SEVERITY_DEBUG);
 		if(sv.size() == 0) {
@@ -493,7 +493,6 @@ public class SchedulingThread extends InternalSession
 
 		if (!sme.getIsDisabled(sysEnv)) {
 			Vector sv = getServerList(sysEnv, sme, se, actVersion);
-
 			requestResourceSme(sysEnv, sme, se, sv, SDMSNamedResource.SYNCHRONIZING, actVersion, oldState);
 		}
 		sme.setOldState(sysEnv, null);
@@ -548,9 +547,9 @@ public class SchedulingThread extends InternalSession
 			++envmiss;
 			Vector envv = SDMSEnvironmentTable.idx_neId.getVector(sysEnv, envId, actVersion);
 			SDMSNamedEnvironment ne = SDMSNamedEnvironmentTable.getObject(sysEnv, envId, actVersion);
-			validFrom = new Long(ne.getValidFrom(sysEnv));
-			validTo = new Long(ne.getValidTo(sysEnv));
-			result = SDMSScopeTable.idx_type.getVectorForUpdate(sysEnv, new Integer(SDMSScope.SERVER));
+			validFrom = Long.valueOf(ne.getValidFrom(sysEnv));
+			validTo = Long.valueOf(ne.getValidTo(sysEnv));
+			result = SDMSScopeTable.idx_type.getVectorForUpdate(sysEnv, Integer.valueOf(SDMSScope.SERVER));
 			Iterator i = result.iterator();
 			while (i.hasNext()) {
 				SDMSScope s = (SDMSScope) i.next();
@@ -626,12 +625,12 @@ public class SchedulingThread extends InternalSession
 			nrId = r.getNrId(sysEnv);
 			if(ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.RESERVATION) {
 				if(fpFolder.containsKey(nrId) || fpLocal.containsKey(nrId)) {
-					ra.setAllocationType(sysEnv, new Integer(SDMSResourceAllocation.ALLOCATION));
+					ra.setAllocationType(sysEnv, Integer.valueOf(SDMSResourceAllocation.ALLOCATION));
 				} else {
 					srId = (Long) sfp.get(nrId);
 					sr = SDMSResourceTable.getObjectForUpdate(sysEnv, srId);
 					if(sr.getId(sysEnv).equals(rId)) {
-						ra.setAllocationType(sysEnv, new Integer(SDMSResourceAllocation.ALLOCATION));
+						ra.setAllocationType(sysEnv, Integer.valueOf(SDMSResourceAllocation.ALLOCATION));
 					}
 				}
 				if (ra.getIsSticky(sysEnv).booleanValue()) {
@@ -902,7 +901,7 @@ public class SchedulingThread extends InternalSession
 	}
 
 	private boolean isVisible(SystemEnvironment sysEnv, SDMSSubmittedEntity sme, Long folderId)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long seVersion = sme.getSeVersion(sysEnv);
 		SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), seVersion);
@@ -931,7 +930,7 @@ public class SchedulingThread extends InternalSession
 		try {
 			SDMSResourceAllocation ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUniqueForUpdate(
 				sysEnv, new SDMSKey(smeId, rId, rr.getStickyName(sysEnv)));
-			ra.setRefcount(sysEnv, new Integer(ra.getRefcount(sysEnv).intValue() + 1));
+			ra.setRefcount(sysEnv, Integer.valueOf(ra.getRefcount(sysEnv).intValue() + 1));
 			return;
 		} catch (NotFoundException nfe) {
 		}
@@ -939,7 +938,7 @@ public class SchedulingThread extends InternalSession
 
 		if(type == SDMSNamedResource.SYNCHRONIZING) {
 			lock = rr.getLockmode(sysEnv);
-			if(lock == null) lock = new Integer(Lockmode.N);
+			if(lock == null) lock = Integer.valueOf(Lockmode.N);
 			rsmpId = rr.getRsmpId(sysEnv);
 			Long stickyParentSeId = rr.getStickyParent(sysEnv);
 			if (rr.getIsSticky(sysEnv).booleanValue()) {
@@ -981,15 +980,15 @@ public class SchedulingThread extends InternalSession
 				}
 			}
 		} else {
-			lock = new Integer(Lockmode.N);
+			lock = Integer.valueOf(Lockmode.N);
 			rsmpId = null;
 		}
 
-		Integer reqAmount = new Integer((int) Math.ceil(rr.getAmount(sysEnv).intValue() * factor));
+		Integer reqAmount = Integer.valueOf((int) Math.ceil(rr.getAmount(sysEnv).intValue() * factor));
 
 		if (rr.getIsSticky(sysEnv).booleanValue()) {
 			String stickyName = rr.getStickyName(sysEnv);
-			Long nStickyParentId = new Long(- stickyParentId.longValue());
+			Long nStickyParentId = Long.valueOf(- stickyParentId.longValue());
 			SDMSKey masterKey = new SDMSKey(nStickyParentId, stickyName, nrId);
 			Vector ravok = (Vector) masterMap.get(masterKey);
 			if (ravok == null) {
@@ -1041,11 +1040,11 @@ public class SchedulingThread extends InternalSession
 									"Invalid lock escalation for already reserved sticky resource $1, job definition $2",
 										rId, se.pathString(sysEnv)));
 							}
-							ra.setLockmode(sysEnv, new Integer(raLockMode));
+							ra.setLockmode(sysEnv, Integer.valueOf(raLockMode));
 						}
 
 						int refCount = ra.getRefcount(sysEnv).intValue();
-						ra.setRefcount(sysEnv, new Integer(refCount + 1));
+						ra.setRefcount(sysEnv, Integer.valueOf(refCount + 1));
 						break;
 					}
 				}
@@ -1062,7 +1061,7 @@ public class SchedulingThread extends InternalSession
 							rr.getIsSticky(sysEnv),
 							rr.getStickyName(sysEnv),
 							stickyParentId,
-							new Integer(SDMSResourceAllocation.MASTER_REQUEST),
+							Integer.valueOf(SDMSResourceAllocation.MASTER_REQUEST),
 							null,
 							lock,
 							ONE);
@@ -1079,7 +1078,7 @@ public class SchedulingThread extends InternalSession
 							rr.getIsSticky(sysEnv),
 							rr.getStickyName(sysEnv),
 							stickyParentId,
-							new Integer(SDMSResourceAllocation.REQUEST),
+							Integer.valueOf(SDMSResourceAllocation.REQUEST),
 							rsmpId,
 							lock,
 							ONE);
@@ -1142,7 +1141,7 @@ public class SchedulingThread extends InternalSession
 			if(reserveSyncResources(sysEnv, sme, se, actVersion, sfp, resourceChain, rrvi)) {
 				resourcesReserved = true;
 				SDMSRunnableQueue rq = SDMSRunnableQueueTable.idx_smeId_scopeId_getUniqueForUpdate(sysEnv, new SDMSKey(smeId, sId));
-				rq.setState(sysEnv, new Integer(SDMSSubmittedEntity.RESOURCE_WAIT));
+				rq.setState(sysEnv, Integer.valueOf(SDMSSubmittedEntity.RESOURCE_WAIT));
 			}
 		}
 
@@ -1164,7 +1163,7 @@ public class SchedulingThread extends InternalSession
 					rq.delete(sysEnv);
 				}
 			}
-			sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.RESOURCE_WAIT));
+			sme.setState(sysEnv, Integer.valueOf(SDMSSubmittedEntity.RESOURCE_WAIT));
 		} else {
 			checkTimeout(sysEnv, sme, se, actVersion);
 		}
@@ -1303,7 +1302,7 @@ public class SchedulingThread extends InternalSession
 		if (sysEnv.maxWriter > 1)
 			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
 
-		sv = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, new Integer(SDMSSubmittedEntity.RESOURCE_WAIT), null, Integer.MAX_VALUE);
+		sv = SDMSSubmittedEntityTable.idx_state.getVectorForUpdate(sysEnv, Integer.valueOf(SDMSSubmittedEntity.RESOURCE_WAIT), null, Integer.MAX_VALUE);
 		doTrace(cEnv, "Number of Jobs in RESOURCE_WAIT : " + sv.size(), SEVERITY_DEBUG);
 
 		pc.setNow();
@@ -1360,7 +1359,7 @@ public class SchedulingThread extends InternalSession
 			HashMap sfp = (SDMSnpSrvrSRFootprintTable.idx_sId_getUnique(sysEnv, s.getId(sysEnv))).getFp(sysEnv);
 			if(reserveSysResources(sysEnv, sme, sfp, resourceChain, it)) {
 				resourcesReserved = true;
-				rq.setState(sysEnv, new Integer(SDMSSubmittedEntity.RUNNABLE));
+				rq.setState(sysEnv, Integer.valueOf(SDMSSubmittedEntity.RUNNABLE));
 				allocateAndReleaseResources(sysEnv, sme, s);
 				break;
 			}
@@ -1384,7 +1383,7 @@ public class SchedulingThread extends InternalSession
 					rq.delete(sysEnv);
 				}
 			}
-			sme.setState(sysEnv, new Integer(SDMSSubmittedEntity.RUNNABLE));
+			sme.setState(sysEnv, Integer.valueOf(SDMSSubmittedEntity.RUNNABLE));
 			sysEnv.notifier.addJobServerToNotify(s.getId(sysEnv));
 		} else {
 			checkTimeout(sysEnv, sme, se, actVersion);
@@ -1439,7 +1438,7 @@ public class SchedulingThread extends InternalSession
 			}
 
 			Integer jAmount;
-			if(rr == null)	jAmount = new Integer(0);
+			if(rr == null)	jAmount = Integer.valueOf(0);
 			else		jAmount = rr.getAmount(sysEnv);
 			if(sAmount == null)
 				continue;
@@ -1490,7 +1489,7 @@ public class SchedulingThread extends InternalSession
 			}
 
 			Integer jAmount;
-			if(rr == null)	jAmount = new Integer(0);
+			if(rr == null)	jAmount = Integer.valueOf(0);
 			else		jAmount = rr.getAmount(sysEnv);
 			if(sAmount == null)
 				continue;
@@ -1577,7 +1576,7 @@ public class SchedulingThread extends InternalSession
 				isSticky = rr.getIsSticky(sysEnv).booleanValue();
 				if(isSticky) {
 					stickyParent = ra.getStickyParent(sysEnv);
-					nStickyParent = new Long(- stickyParent.longValue());
+					nStickyParent = Long.valueOf(- stickyParent.longValue());
 					rrStickyName = rr.getStickyName(sysEnv);
 
 					try {
@@ -1600,7 +1599,7 @@ public class SchedulingThread extends InternalSession
 						throw new SDMSEscape();
 					}
 					if(mri.mustAllocate) {
-						mra.setAllocationType(sysEnv, new Integer(SDMSResourceAllocation.MASTER_RESERVATION));
+						mra.setAllocationType(sysEnv, Integer.valueOf(SDMSResourceAllocation.MASTER_RESERVATION));
 					}
 				}
 
@@ -1619,13 +1618,13 @@ public class SchedulingThread extends InternalSession
 					continue;
 				}
 
-				ra.setAllocationType(sysEnv, new Integer(SDMSResourceAllocation.RESERVATION));
+				ra.setAllocationType(sysEnv, Integer.valueOf(SDMSResourceAllocation.RESERVATION));
 
 				if(isSticky) {
 					int mAmount = mra.getAmount(sysEnv).intValue();
 					int raAmount = ra.getAmount(sysEnv).intValue();
 
-					mra.setAmount(sysEnv, new Integer(mAmount - raAmount));
+					mra.setAmount(sysEnv, Integer.valueOf(mAmount - raAmount));
 				}
 			}
 			if(!allocSucceeded) throw new SDMSEscape();
@@ -1718,31 +1717,31 @@ public class SchedulingThread extends InternalSession
 		}
 
 		ra = SDMSResourceAllocationTable.table.create(sysEnv,
-						rId, new Long(- sme.getMasterId(sysEnv)), nrId,
-						new Integer(amount),
-						new Integer(amount),
+						rId, Long.valueOf(- sme.getMasterId(sysEnv)), nrId,
+						Integer.valueOf(amount),
+						Integer.valueOf(amount),
 						rr.getKeepMode(sysEnv),
 						Boolean.TRUE,
 						null,
 						sme.getMasterId(sysEnv),
-						new Integer(SDMSResourceAllocation.MASTER_REQUEST),
+						Integer.valueOf(SDMSResourceAllocation.MASTER_REQUEST),
 						null,
-						new Integer(lockmode),
-						new Integer(refcount));
+						Integer.valueOf(lockmode),
+						Integer.valueOf(refcount));
 
 		return ra;
 	}
 
 	public MasterReservationInfo checkMasterReservation(SystemEnvironment sysEnv, SDMSSubmittedEntity sme,
 			SDMSResourceRequirement rr, Long stickyParent, SDMSResource r)
-			throws SDMSException
+		throws SDMSException
 	{
 		return checkMasterReservation(sysEnv, sme, rr, stickyParent, r, new Reservator(r.getId(sysEnv), sme.getId(sysEnv)));
 	}
 
 	public MasterReservationInfo checkMasterReservation(SystemEnvironment sysEnv, SDMSSubmittedEntity sme,
 			SDMSResourceRequirement rr, Long stickyParent, SDMSResource r, Reservator rsrv)
-			throws SDMSException
+		throws SDMSException
 	{
 		if (sysEnv.maxWriter > 1 && sysEnv.tx.mode == SDMSTransaction.READWRITE)
 			LockingSystem.lock(sysEnv, this, ObjectLock.EXCLUSIVE);
@@ -1756,7 +1755,7 @@ public class SchedulingThread extends InternalSession
 		SDMSResourceAllocation ra = null;
 		float factor = 1;
 		String rrStickyName = rr.getStickyName(sysEnv);
-		Long nStickyParent = new Long(- stickyParent.longValue());
+		Long nStickyParent = Long.valueOf(- stickyParent.longValue());
 
 		mri.stickyName = rrStickyName;
 		mri.stickyParent = stickyParent;
@@ -1855,7 +1854,7 @@ public class SchedulingThread extends InternalSession
 					throw new SDMSEscape();
 				}
 
-				ra.setAllocationType(sysEnv, new Integer(SDMSResourceAllocation.RESERVATION));
+				ra.setAllocationType(sysEnv, Integer.valueOf(SDMSResourceAllocation.RESERVATION));
 			}
 			if(!allocSucceeded) throw new SDMSEscape();
 			if(resourceChain != null) {
@@ -2193,7 +2192,7 @@ public class SchedulingThread extends InternalSession
 		SDMSScope s;
 		Vector v;
 
-		v = SDMSScopeTable.idx_type.getVector(sysEnv, new Integer(SDMSScope.SERVER));
+		v = SDMSScopeTable.idx_type.getVector(sysEnv, Integer.valueOf(SDMSScope.SERVER));
 		for(int j = 0; j < v.size(); j++) {
 			s = (SDMSScope) v.get(j);
 			SDMSnpSrvrSRFootprintTable.table.create(sysEnv, s.getId(sysEnv), null, getScopeFootprint(sysEnv, s));
@@ -2203,7 +2202,7 @@ public class SchedulingThread extends InternalSession
 			Vector rl = new Vector();
 			SDMSSubmittedEntity sme;
 			SDMSSchedulingEntity se;
-			v = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, new Integer(SDMSSubmittedEntity.DEPENDENCY_WAIT));
+			v = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, Integer.valueOf(SDMSSubmittedEntity.DEPENDENCY_WAIT));
 			for (int i = 0; i < v.size(); ++i) {
 				sme = (SDMSSubmittedEntity) v.get(i);
 				se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), sme.getSeVersion(sysEnv));
@@ -2211,7 +2210,7 @@ public class SchedulingThread extends InternalSession
 				if (sme.getOldState(sysEnv) != null)
 					rl.add(sme.getId(sysEnv));
 			}
-			v = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, new Integer(SDMSSubmittedEntity.SYNCHRONIZE_WAIT));
+			v = SDMSSubmittedEntityTable.idx_state.getVector(sysEnv, Integer.valueOf(SDMSSubmittedEntity.SYNCHRONIZE_WAIT));
 			for (int i = 0; i < v.size(); ++i) {
 				sme = (SDMSSubmittedEntity) v.get(i);
 				se = SDMSSchedulingEntityTable.getObject(sysEnv, sme.getSeId(sysEnv), sme.getSeVersion(sysEnv));
@@ -2262,7 +2261,7 @@ public class SchedulingThread extends InternalSession
 				needReSched = true;
 				break;
 			default:
-				throw new FatalException(new SDMSMessage(sysEnv, "03202252140", "Unknown change code $1", new Integer(change)));
+				throw new FatalException(new SDMSMessage(sysEnv, "03202252140", "Unknown change code $1", Integer.valueOf(change)));
 		}
 		needSched = true;
 	}
@@ -2278,7 +2277,7 @@ public class SchedulingThread extends InternalSession
 			case DELETE:
 				break;
 			default:
-				throw new FatalException(new SDMSMessage(sysEnv, "03203060018", "Unknown change code $1", new Integer(change)));
+				throw new FatalException(new SDMSMessage(sysEnv, "03203060018", "Unknown change code $1", Integer.valueOf(change)));
 		}
 		needSched = true;
 	}
@@ -2321,7 +2320,7 @@ public class SchedulingThread extends InternalSession
 				needSched = true;
 				break;
 			default:
-				throw new FatalException(new SDMSMessage(sysEnv, "03202252142", "Unknown change code $1", new Integer(change)));
+				throw new FatalException(new SDMSMessage(sysEnv, "03202252142", "Unknown change code $1", Integer.valueOf(change)));
 		}
 		needSched = true;
 	}
@@ -2363,7 +2362,7 @@ public class SchedulingThread extends InternalSession
 				needSched = true;
 				break;
 			default:
-				throw new FatalException(new SDMSMessage(sysEnv, "03202252317", "Unknown change code $1", new Integer(change)));
+				throw new FatalException(new SDMSMessage(sysEnv, "03202252317", "Unknown change code $1", Integer.valueOf(change)));
 		}
 	}
 
@@ -2546,7 +2545,7 @@ class Locklist
 {
 	private HashMap lpr;
 	private HashMap lpj;
-	static private final Long ZERO = new Long(0);
+	static private final Long ZERO = Long.valueOf(0);
 
 	public Locklist()
 	{

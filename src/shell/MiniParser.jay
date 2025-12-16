@@ -271,7 +271,7 @@ action:		DISCONNECT integer		{ discOnError = true; retVal = $2.intValue(); }
 	|	CONTINUE			{ discOnError = false; }
 
 integer:	INTEGER				{ if($1.longValue() <= Integer.MAX_VALUE)
-						  	$$ = new Integer ($1.intValue());
+						  	$$ = Integer.valueOf ($1.intValue());
 						  else {
 							String[] a = new String[1];
 							a[0] = "VALID INTEGER (Integer out of bounds)";

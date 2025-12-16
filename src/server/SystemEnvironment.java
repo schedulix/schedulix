@@ -475,7 +475,7 @@ public class SystemEnvironment implements Cloneable
 		getTriggerSoftLimit();
 		getTriggerHardLimit();
 
-			getAuditFile();
+		getAuditFile();
 
 		getSSLproperties();
 
@@ -702,7 +702,7 @@ public class SystemEnvironment implements Cloneable
 	}
 
 	private void parseSSTParameter(String sst)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		Vector<String> v = tokenizeSST(sst);
@@ -716,7 +716,7 @@ public class SystemEnvironment implements Cloneable
 	static final String CBRACKET = ")";
 	static final String COMMA = ",";
 	private int parseSSTEntry(Vector<String> v, int pos)
-	throws SDMSException
+		throws SDMSException
 	{
 
 		String tmp;
@@ -793,7 +793,7 @@ public class SystemEnvironment implements Cloneable
 			SDMSThread.doTrace(null, "Invalid syntax in " + props.getProperty(S_SHOWSTACKTRACE) + ": missing closing bracket", SDMSThread.SEVERITY_WARNING);
 			throw new SDMSException();
 		}
-		showStackTrace.put(nodeName, new Long(exceptionMask));
+		showStackTrace.put(nodeName, Long.valueOf(exceptionMask));
 
 		return pos;
 	}
@@ -1209,11 +1209,11 @@ public class SystemEnvironment implements Cloneable
 			SDMSSubmittedEntity.S_SDMSHOST		+ "," +
 			SDMSSubmittedEntity.S_SDMSPORT		+ "," +
 			SDMSSubmittedEntity.S_SEID		+ "," +
-		        SDMSSubmittedEntity.S_SEOWNER		+ "," +
+			SDMSSubmittedEntity.S_SEOWNER		+ "," +
 			SDMSSubmittedEntity.S_STARTTS		+ "," +
 			SDMSSubmittedEntity.S_STATE		+ "," +
-		        SDMSSubmittedEntity.S_SUBMITGROUP	+ "," +
-		        SDMSSubmittedEntity.S_SUBMITTER		+ "," +
+			SDMSSubmittedEntity.S_SUBMITGROUP	+ "," +
+			SDMSSubmittedEntity.S_SUBMITTER		+ "," +
 			SDMSSubmittedEntity.S_SUBMITTS		+ "," +
 			SDMSSubmittedEntity.S_SYNCTS		+ "," +
 			SDMSSubmittedEntity.S_SYSDATE		+ "," +
@@ -1383,7 +1383,7 @@ public class SystemEnvironment implements Cloneable
 
 	public Long randomLong()
 	{
-		return new Long(java.lang.Math.abs(random.nextLong()));
+		return Long.valueOf(java.lang.Math.abs(random.nextLong()));
 	}
 
 	public static synchronized int getTraceLevel()
@@ -1414,7 +1414,7 @@ public class SystemEnvironment implements Cloneable
 
 	public Long txTime()
 	{
-		return new Long(tx.startTime);
+		return Long.valueOf(tx.startTime);
 	}
 
 	public static final GregorianCalendar newGregorianCalendar()

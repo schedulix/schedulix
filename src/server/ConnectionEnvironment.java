@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -46,8 +46,8 @@ public class ConnectionEnvironment
 	public static final int ACTIVE    = 2;
 	public static final int COMMITTING = 3;
 	public static final int CONNECTED = 4;
-        public static final int PARSING = 5;
-        public static final int RENDERING = 6;
+	public static final int PARSING = 5;
+	public static final int RENDERING = 6;
 
 	public static final String stateNames[] = {
 		"IDLE", "QUEUED", "ACTIVE", "COMMITTING", "CONNECTED", "PARSING", "RENDERING"
@@ -135,7 +135,7 @@ public class ConnectionEnvironment
 	}
 	public String name()
 	{
-		return name != null ? name : new Integer (id).toString();
+		return name != null ? name : Integer.valueOf (id).toString();
 	}
 	public long start()
 	{

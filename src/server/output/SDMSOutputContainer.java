@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.output;
 
 import java.lang.*;
@@ -101,7 +99,6 @@ public class SDMSOutputContainer implements Serializable
 		while(i.hasNext()) {
 			Object o = i.next();
 			if(o == null) {
-
 				if (((SDMSOutputLabel)(desc.elementAt(idx))).length < 6) {
 					((SDMSOutputLabel)(desc.elementAt(idx))).length = 6;
 				}
@@ -142,7 +139,6 @@ public class SDMSOutputContainer implements Serializable
 			}
 			idx ++;
 		}
-
 		throw new RuntimeException("Name " + p_name + " not found in decriptor");
 	}
 
@@ -155,7 +151,7 @@ public class SDMSOutputContainer implements Serializable
 		if(c1 >= desc.size() || -c1 >= desc.size()) {
 			throw new FatalException(new SDMSMessage(env, "03117121557",
 						"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
-						new Integer(c1), new Integer(desc.size())));
+						Integer.valueOf(c1), Integer.valueOf(desc.size())));
 		}
 		return new occomp(env, a);
 	}
@@ -169,13 +165,13 @@ public class SDMSOutputContainer implements Serializable
 		if(c1 >= desc.size() || -c1 >= desc.size()) {
 			throw new FatalException(new SDMSMessage(env, "03201292045",
 						"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
-						new Integer(c1), new Integer(desc.size())));
+						Integer.valueOf(c1), Integer.valueOf(desc.size())));
 		}
 		a[1] = c2;
 		if(c2 >= desc.size() || -c2 >= desc.size()) {
 			throw new FatalException(new SDMSMessage(env, "03117121559",
 						"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
-						new Integer(c2), new Integer(desc.size())));
+						Integer.valueOf(c2), Integer.valueOf(desc.size())));
 		}
 		return new occomp(env, a);
 	}
@@ -189,7 +185,7 @@ public class SDMSOutputContainer implements Serializable
 			if(c[i] >= desc.size() || -c[i] >= desc.size()) {
 				throw new FatalException(new SDMSMessage(env, "03117121601",
 						"The number of the sortcolumn ($1) exceeds the number of columns ($2)",
-						new Integer(c[i]), new Integer(desc.size())));
+						Integer.valueOf(c[i]), Integer.valueOf(desc.size())));
 			}
 		}
 		return new occomp(env, c);

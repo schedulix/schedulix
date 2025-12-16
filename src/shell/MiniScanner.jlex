@@ -286,9 +286,9 @@ echooff =	{echo}{uscore}{off}
 
 <YYINITIAL>{number}+		{ if(!inStatement) {
 					try {
-						value = new Long(yytext());
+						value = Long.valueOf(yytext());
 					} catch (NumberFormatException nfe) {
-						value = new Long(0);
+						value = Long.valueOf(0);
 				  		// System.out.print("NAN ");
 						return MiniParser.NAN;
 					}

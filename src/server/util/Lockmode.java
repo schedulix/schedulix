@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -60,7 +60,7 @@ public class Lockmode
 		    m != S    &&
 		    m != SC   &&
 		    m != N) {
-			throw new CommonErrorException(new SDMSMessage(env, "03110181507", "Invalid Lockmode $1", new Integer(m)));
+			throw new CommonErrorException(new SDMSMessage(env, "03110181507", "Invalid Lockmode $1", Integer.valueOf(m)));
 		}
 		mode = m;
 	}
@@ -90,7 +90,7 @@ public class Lockmode
 		int rc = mode;
 		if(m == X || m == SX || m == S || m == SC || m == N) mode = m;
 		else {
-			throw new CommonErrorException(new SDMSMessage(env, "03308061033", "Invalid Lockmode $1", new Integer(m)));
+			throw new CommonErrorException(new SDMSMessage(env, "03308061033", "Invalid Lockmode $1", Integer.valueOf(m)));
 		}
 		return rc;
 	}
@@ -109,7 +109,7 @@ public class Lockmode
 				return Nolock;
 			default:
 				throw new FatalException(
-						new SDMSMessage(env, "03110181508", "Invalid internal State $1", new Integer(mode)));
+						new SDMSMessage(env, "03110181508", "Invalid internal State $1", Integer.valueOf(mode)));
 		}
 	}
 	public static boolean isCompatible(Lockmode l1, Lockmode l2)

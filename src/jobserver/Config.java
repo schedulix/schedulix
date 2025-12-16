@@ -68,9 +68,9 @@ public class Config
 	public static final String CONVERT_NEWLINE = "CONVERT_NEWLINE";
 	public static final String STARTTIME_JITTER = "STARTTIME_JITTER";
 
-	public static final Long NOREPLACE         = new Long(0);
-	public static final Long CRLF_TO_LF        = new Long(1);
-	public static final Long LF_TO_CRLF        = new Long(2);
+	public static final Long NOREPLACE         = Long.valueOf(0);
+	public static final Long CRLF_TO_LF        = Long.valueOf(1);
+	public static final Long LF_TO_CRLF        = Long.valueOf(2);
 
 	private static final String[] LONG_VALUES    = {REPO_PORT, TRACE_LEVEL, RECONNECT_DELAY, NOP_DELAY,
 	                                                NOTIFY_PORT, HTTP_PORT, CONVERT_NEWLINE, STARTTIME_JITTER
@@ -97,7 +97,7 @@ public class Config
 						   JOB_EXECUTOR, JOB_FILE_PREFIX, ENV_MAPPING, DYNAMIC,
 						   NOTIFY_PORT, HTTP_PORT, HTTP_HOST, HTTP_LOGENCODING, ONLINE_SERVER,
 						   NAME_PATTERN, KEYSTORE, TRUSTSTORE, KEYSTOREPW, TRUSTSTOREPW,
-	                                           USE_SSL, CREATE_WORKDIR, CONVERT_NEWLINE, STARTTIME_JITTER
+						   USE_SSL, CREATE_WORKDIR, CONVERT_NEWLINE, STARTTIME_JITTER
 						  };
 
 	private final File startupWorkdir;
@@ -118,21 +118,21 @@ public class Config
 							BOOTTIME,
 							ONLINE_SERVER,
 							CREATE_WORKDIR,
-	                                                HTTP_LOGENCODING,
-	                                                CONVERT_NEWLINE,
-	                                                STARTTIME_JITTER
+							HTTP_LOGENCODING,
+							CONVERT_NEWLINE,
+							STARTTIME_JITTER
 						};
 	public static final Object[] defaultValues = {	Boolean.FALSE,
 							Boolean.FALSE,
-							new Long (30),
-							new Long (5),
-							new Integer (Trace.DEFAULT),
+							Long.valueOf (30),
+							Long.valueOf (5),
+							Integer.valueOf (Trace.DEFAULT),
 							"NONE",
 							Boolean.TRUE,
 							Boolean.FALSE,
-	                                                "utf-8",
-	                                                new Long(0),
-	                                                new Long(5)
+							"utf-8",
+							Long.valueOf(0),
+							Long.valueOf(5)
 						};
 
 	public static boolean isWindows()
@@ -188,7 +188,7 @@ public class Config
 				return scanner.sval;
 
 			case StreamTokenizer.TT_NUMBER:
-				return new Long ((long) scanner.nval);
+				return Long.valueOf ((long) scanner.nval);
 
 			case StreamTokenizer.TT_EOL:
 			case StreamTokenizer.TT_EOF:
@@ -298,7 +298,7 @@ public class Config
 
 		if (Utils.isOneOf (keyStr, LONG_VALUES) && ! (value instanceof Long)) {
 			try {
-				value = new Long (value.toString());
+				value = Long.valueOf (value.toString());
 			}
 
 			catch (final NumberFormatException e) {
@@ -307,7 +307,7 @@ public class Config
 		}
 
 		else if (Utils.isOneOf (keyStr, BOOLEAN_VALUES) && ! (value instanceof Boolean))
-			value = new Boolean (value.toString());
+			value = Boolean.valueOf (value.toString());
 
 		else if (Utils.isOneOf (keyStr, FILE_VALUES) && ! (value instanceof File))
 			value = new File (value.toString());
@@ -341,7 +341,7 @@ public class Config
 		}
 
 		if (Utils.isOneOf (keyStr, SECOND_VALUES))
-			value = new Long (1000 * ((Long) value).longValue());
+			value = Long.valueOf (1000 * ((Long) value).longValue());
 
 		if (keyStr.equals (TRACE_LEVEL))
 			Trace.setLevel (((Long) value).intValue());
@@ -511,7 +511,7 @@ public class Config
 			while (scanner.nextToken() != StreamTokenizer.TT_EOF)
 				if (scanner.ttype == StreamTokenizer.TT_WORD) {
 					if (scanner.sval.toUpperCase().equals (key))
-						result.add (new Integer (scannerFile.getLineNumber()));
+						result.add (Integer.valueOf (scannerFile.getLineNumber()));
 
 					skipValue();
 					if (key.equals (ENV_MAPPING))
