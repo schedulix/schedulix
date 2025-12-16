@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -87,7 +87,7 @@ public class SDMSPrivilege
 							  EDIT|MONITOR|OPERATE|SUBMIT|USE|VIEW|GRANT|RESOURCE|
 							  EXECUTE|MANAGE_USER|MANAGE_GROUP|MANAGE_ESD|MANAGE_ESP|
 							  MANAGE_ESM|MANAGE_EST|MANAGE_RSD|MANAGE_RSP|MANAGE_RSM|
-	                MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL|MANAGE_NP;
+							  MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL|MANAGE_NP;
 
 	private final static long INVALID_BITS		= ~VALID_BITS;
 
@@ -96,16 +96,16 @@ public class SDMSPrivilege
 
 	public final static long MANAGE_ALL		= MANAGE_USER|MANAGE_GROUP|MANAGE_ESD|MANAGE_ESP|
 							  MANAGE_ESM|MANAGE_EST|MANAGE_RSD|MANAGE_RSP|MANAGE_RSM|
-	                MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL|MANAGE_NP;
+							  MANAGE_FP|MANAGE_ENV|MANAGE_SYS|MANAGE_SEL|MANAGE_NP;
 
 	public final static long MANAGE_PRIVS[] = 	{ MANAGE_USER, MANAGE_GROUP, MANAGE_ESD, MANAGE_ESP,
 							  MANAGE_ESM, MANAGE_EST, MANAGE_RSD, MANAGE_RSP, MANAGE_RSM,
-	                                                  MANAGE_FP, MANAGE_ENV, MANAGE_SYS, MANAGE_SEL, MANAGE_NP
-							};
+							  MANAGE_FP, MANAGE_ENV, MANAGE_SYS, MANAGE_SEL, MANAGE_NP
+							  };
 
 	public final static long NOPRIVS		= 0x0000000000000000L;
 
-	public final static Long SYSPRIVOBJID		= new Long(0);
+	public final static Long SYSPRIVOBJID		= Long.valueOf(0);
 
 	private long priv;
 
@@ -113,16 +113,16 @@ public class SDMSPrivilege
 
 	static
 	{
-		mapper.put(new Integer(Parser.VIEW),		new Long(SDMSPrivilege.VIEW));
-		mapper.put(new Integer(Parser.USE),		new Long(SDMSPrivilege.USE));
-		mapper.put(new Integer(Parser.EDIT),		new Long(SDMSPrivilege.EDIT));
-		mapper.put(new Integer(Parser.DROP),		new Long(SDMSPrivilege.DROP));
-		mapper.put(new Integer(Parser.SUBMIT),		new Long(SDMSPrivilege.SUBMIT));
-		mapper.put(new Integer(Parser.CREATE),		new Long(SDMSPrivilege.CREATE_CONTENT));
-		mapper.put(new Integer(Parser.MONITOR),		new Long(SDMSPrivilege.MONITOR));
-		mapper.put(new Integer(Parser.OPERATE),		new Long(SDMSPrivilege.OPERATE));
-		mapper.put(new Integer(Parser.RESOURCE),	new Long(SDMSPrivilege.RESOURCE));
-		mapper.put(new Integer(Parser.EXECUTE),		new Long(SDMSPrivilege.EXECUTE));
+		mapper.put(Integer.valueOf(Parser.VIEW),	Long.valueOf(SDMSPrivilege.VIEW));
+		mapper.put(Integer.valueOf(Parser.USE),		Long.valueOf(SDMSPrivilege.USE));
+		mapper.put(Integer.valueOf(Parser.EDIT),	Long.valueOf(SDMSPrivilege.EDIT));
+		mapper.put(Integer.valueOf(Parser.DROP),	Long.valueOf(SDMSPrivilege.DROP));
+		mapper.put(Integer.valueOf(Parser.SUBMIT),	Long.valueOf(SDMSPrivilege.SUBMIT));
+		mapper.put(Integer.valueOf(Parser.CREATE),	Long.valueOf(SDMSPrivilege.CREATE_CONTENT));
+		mapper.put(Integer.valueOf(Parser.MONITOR),	Long.valueOf(SDMSPrivilege.MONITOR));
+		mapper.put(Integer.valueOf(Parser.OPERATE),	Long.valueOf(SDMSPrivilege.OPERATE));
+		mapper.put(Integer.valueOf(Parser.RESOURCE),	Long.valueOf(SDMSPrivilege.RESOURCE));
+		mapper.put(Integer.valueOf(Parser.EXECUTE),	Long.valueOf(SDMSPrivilege.EXECUTE));
 	}
 
 	public SDMSPrivilege()
@@ -134,7 +134,6 @@ public class SDMSPrivilege
 		throws SDMSException
 	{
 		if((p & INVALID_BITS) != 0) {
-
 			throw new FatalException(new SDMSMessage(sysEnv, "03708061541", "Trying to use invalid privileges"));
 		}
 		priv = p;
@@ -149,7 +148,6 @@ public class SDMSPrivilege
 		throws SDMSException
 	{
 		if((p & INVALID_BITS) != 0)	{
-
 			throw new FatalException(new SDMSMessage(sysEnv, "03402101453", "Trying to use invalid privileges"));
 		}
 		priv |= p;
@@ -165,7 +163,6 @@ public class SDMSPrivilege
 		throws SDMSException
 	{
 		if((p & INVALID_BITS) != 0) {
-
 			throw new FatalException(new SDMSMessage(sysEnv, "03402101459", "Trying to use invalid privileges"));
 		}
 		priv &= ~p;
@@ -175,7 +172,6 @@ public class SDMSPrivilege
 		throws SDMSException
 	{
 		if((p & INVALID_BITS) != 0) {
-
 			throw new FatalException(new SDMSMessage(sysEnv, "03402111239", "Trying to use invalid privileges"));
 		}
 		priv = p;
@@ -237,7 +233,7 @@ public class SDMSPrivilege
 
 	public Long toLong()
 	{
-		return new Long(priv);
+		return Long.valueOf(priv);
 	}
 
 	public void merge(SDMSPrivilege p)

@@ -164,65 +164,65 @@ public class SmeVariableResolver extends VariableResolver
 
 	static
 	{
-		specialNames.put(S_JOBID,	new Integer(I_JOBID));
-		specialNames.put(S_SEID,	new Integer(I_SEID));
-		specialNames.put(S_MASTERID,	new Integer(I_MASTERID));
-		specialNames.put(S_KEY,		new Integer(I_KEY));
-		specialNames.put(S_PID,		new Integer(I_PID));
-		specialNames.put(S_LOGFILE,	new Integer(I_LOGFILE));
-		specialNames.put(S_ERRORLOG,	new Integer(I_ERRORLOG));
-		specialNames.put(S_WORKDIR,	new Integer(I_WORKDIR));
-		specialNames.put(S_SDMSHOST,	new Integer(I_SDMSHOST));
-		specialNames.put(S_SDMSPORT,	new Integer(I_SDMSPORT));
-		specialNames.put(S_JOBNAME,	new Integer(I_JOBNAME));
-		specialNames.put(S_JOBTAG,	new Integer(I_JOBTAG));
-		specialNames.put(S_TRNAME,	new Integer(I_TRNAME));
-		specialNames.put(S_TRTYPE,	new Integer(I_TRTYPE));
-		specialNames.put(S_TRORIGIN,	new Integer(I_TRORIGIN));
-		specialNames.put(S_TRORIGINID,	new Integer(I_TRORIGINID));
-		specialNames.put(S_TRORIGINJOBID, new Integer(I_TRORIGINJOBID));
-		specialNames.put(S_TRREASON,	new Integer(I_TRREASON));
-		specialNames.put(S_TRREASONID,	new Integer(I_TRREASONID));
-		specialNames.put(S_TRREASONJOBID, new Integer(I_TRREASONJOBID));
-		specialNames.put(S_TRBASE,	new Integer(I_TRBASE));
-		specialNames.put(S_TRBASEID,	new Integer(I_TRBASEID));
-		specialNames.put(S_TRBASEJOBID,	new Integer(I_TRBASEJOBID));
-		specialNames.put(S_TRSEQ,	new Integer(I_TRSEQ));
-		specialNames.put(S_TROSTATE,	new Integer(I_TROSTATE));
-		specialNames.put(S_TRNSTATE,	new Integer(I_TRNSTATE));
-		specialNames.put(S_TRWARNING,	new Integer(I_TRWARNING));
-		specialNames.put(S_SUBMITTS,	new Integer(I_SUBMITTS));
-		specialNames.put(S_STARTTS,	new Integer(I_STARTTS));
-		specialNames.put(S_EXPRUNTIME,	new Integer(I_EXPRUNTIME));
-		specialNames.put(S_EXPFINALTIME, new Integer(I_EXPFINALTIME));
-		specialNames.put(S_JOBSTATE,	new Integer(I_JOBSTATE));
-		specialNames.put(S_MERGEDSTATE,	new Integer(I_MERGEDSTATE));
-		specialNames.put(S_PARENTID,	new Integer(I_PARENTID));
-		specialNames.put(S_STATE,	new Integer(I_STATE));
-		specialNames.put(S_ISRESTARTABLE, new Integer(I_ISRESTARTABLE));
-		specialNames.put(S_SYNCTS,	new Integer(I_SYNCTS));
-		specialNames.put(S_RESOURCETS,	new Integer(I_RESOURCETS));
-		specialNames.put(S_RUNNABLETS,	new Integer(I_RUNNABLETS));
-		specialNames.put(S_FINISHTS,	new Integer(I_FINISHTS));
-		specialNames.put(S_SYSDATE,	new Integer(I_SYSDATE));
-		specialNames.put(S_WARNING,	new Integer(I_WARNING));
-		specialNames.put(S_RERUNSEQ,	new Integer(I_RERUNSEQ));
-		specialNames.put(S_SCOPENAME,	new Integer(I_SCOPENAME));
-		specialNames.put(S_IDLE_TIME,	new Integer(I_IDLE_TIME));
-		specialNames.put(S_SUSPEND_TIME,	new Integer(I_SUSPEND_TIME));
-		specialNames.put(S_DEPENDENCY_WAIT_TIME,	new Integer(I_DEPENDENCY_WAIT_TIME));
-		specialNames.put(S_SYNC_TIME,	new Integer(I_SYNC_TIME));
-		specialNames.put(S_RESOURCE_TIME,	new Integer(I_RESOURCE_TIME));
-		specialNames.put(S_JOBSERVER_TIME,	new Integer(I_JOBSERVER_TIME));
-		specialNames.put(S_RESTARTABLE_TIME,	new Integer(I_RESTARTABLE_TIME));
-		specialNames.put(S_CHILD_WAIT_TIME,	new Integer(I_CHILD_WAIT_TIME));
-		specialNames.put(S_PROCESS_TIME,	new Integer(I_PROCESS_TIME));
-		specialNames.put(S_ACTIVE_TIME,	new Integer(I_ACTIVE_TIME));
-		specialNames.put(S_IDLE_PCT,	new Integer(I_IDLE_PCT));
-		specialNames.put(S_SUBMITTER,	new Integer(I_SUBMITTER));
-		specialNames.put(S_SUBMITGROUP,	new Integer(I_SUBMITGROUP));
-		specialNames.put(S_ENVIRONMENT,	new Integer(I_ENVIRONMENT));
-		specialNames.put(S_SEOWNER,	new Integer(I_SEOWNER));
+		specialNames.put(S_JOBID,	Integer.valueOf(I_JOBID));
+		specialNames.put(S_SEID,	Integer.valueOf(I_SEID));
+		specialNames.put(S_MASTERID,	Integer.valueOf(I_MASTERID));
+		specialNames.put(S_KEY,		Integer.valueOf(I_KEY));
+		specialNames.put(S_PID,		Integer.valueOf(I_PID));
+		specialNames.put(S_LOGFILE,	Integer.valueOf(I_LOGFILE));
+		specialNames.put(S_ERRORLOG,	Integer.valueOf(I_ERRORLOG));
+		specialNames.put(S_WORKDIR,	Integer.valueOf(I_WORKDIR));
+		specialNames.put(S_SDMSHOST,	Integer.valueOf(I_SDMSHOST));
+		specialNames.put(S_SDMSPORT,	Integer.valueOf(I_SDMSPORT));
+		specialNames.put(S_JOBNAME,	Integer.valueOf(I_JOBNAME));
+		specialNames.put(S_JOBTAG,	Integer.valueOf(I_JOBTAG));
+		specialNames.put(S_TRNAME,	Integer.valueOf(I_TRNAME));
+		specialNames.put(S_TRTYPE,	Integer.valueOf(I_TRTYPE));
+		specialNames.put(S_TRORIGIN,	Integer.valueOf(I_TRORIGIN));
+		specialNames.put(S_TRORIGINID,	Integer.valueOf(I_TRORIGINID));
+		specialNames.put(S_TRORIGINJOBID, Integer.valueOf(I_TRORIGINJOBID));
+		specialNames.put(S_TRREASON,	Integer.valueOf(I_TRREASON));
+		specialNames.put(S_TRREASONID,	Integer.valueOf(I_TRREASONID));
+		specialNames.put(S_TRREASONJOBID, Integer.valueOf(I_TRREASONJOBID));
+		specialNames.put(S_TRBASE,	Integer.valueOf(I_TRBASE));
+		specialNames.put(S_TRBASEID,	Integer.valueOf(I_TRBASEID));
+		specialNames.put(S_TRBASEJOBID,	Integer.valueOf(I_TRBASEJOBID));
+		specialNames.put(S_TRSEQ,	Integer.valueOf(I_TRSEQ));
+		specialNames.put(S_TROSTATE,	Integer.valueOf(I_TROSTATE));
+		specialNames.put(S_TRNSTATE,	Integer.valueOf(I_TRNSTATE));
+		specialNames.put(S_TRWARNING,	Integer.valueOf(I_TRWARNING));
+		specialNames.put(S_SUBMITTS,	Integer.valueOf(I_SUBMITTS));
+		specialNames.put(S_STARTTS,	Integer.valueOf(I_STARTTS));
+		specialNames.put(S_EXPRUNTIME,	Integer.valueOf(I_EXPRUNTIME));
+		specialNames.put(S_EXPFINALTIME, Integer.valueOf(I_EXPFINALTIME));
+		specialNames.put(S_JOBSTATE,	Integer.valueOf(I_JOBSTATE));
+		specialNames.put(S_MERGEDSTATE,	Integer.valueOf(I_MERGEDSTATE));
+		specialNames.put(S_PARENTID,	Integer.valueOf(I_PARENTID));
+		specialNames.put(S_STATE,	Integer.valueOf(I_STATE));
+		specialNames.put(S_ISRESTARTABLE, Integer.valueOf(I_ISRESTARTABLE));
+		specialNames.put(S_SYNCTS,	Integer.valueOf(I_SYNCTS));
+		specialNames.put(S_RESOURCETS,	Integer.valueOf(I_RESOURCETS));
+		specialNames.put(S_RUNNABLETS,	Integer.valueOf(I_RUNNABLETS));
+		specialNames.put(S_FINISHTS,	Integer.valueOf(I_FINISHTS));
+		specialNames.put(S_SYSDATE,	Integer.valueOf(I_SYSDATE));
+		specialNames.put(S_WARNING,	Integer.valueOf(I_WARNING));
+		specialNames.put(S_RERUNSEQ,	Integer.valueOf(I_RERUNSEQ));
+		specialNames.put(S_SCOPENAME,	Integer.valueOf(I_SCOPENAME));
+		specialNames.put(S_IDLE_TIME,	Integer.valueOf(I_IDLE_TIME));
+		specialNames.put(S_SUSPEND_TIME,	Integer.valueOf(I_SUSPEND_TIME));
+		specialNames.put(S_DEPENDENCY_WAIT_TIME,	Integer.valueOf(I_DEPENDENCY_WAIT_TIME));
+		specialNames.put(S_SYNC_TIME,	Integer.valueOf(I_SYNC_TIME));
+		specialNames.put(S_RESOURCE_TIME,	Integer.valueOf(I_RESOURCE_TIME));
+		specialNames.put(S_JOBSERVER_TIME,	Integer.valueOf(I_JOBSERVER_TIME));
+		specialNames.put(S_RESTARTABLE_TIME,	Integer.valueOf(I_RESTARTABLE_TIME));
+		specialNames.put(S_CHILD_WAIT_TIME,	Integer.valueOf(I_CHILD_WAIT_TIME));
+		specialNames.put(S_PROCESS_TIME,	Integer.valueOf(I_PROCESS_TIME));
+		specialNames.put(S_ACTIVE_TIME,	Integer.valueOf(I_ACTIVE_TIME));
+		specialNames.put(S_IDLE_PCT,	Integer.valueOf(I_IDLE_PCT));
+		specialNames.put(S_SUBMITTER,	Integer.valueOf(I_SUBMITTER));
+		specialNames.put(S_SUBMITGROUP,	Integer.valueOf(I_SUBMITGROUP));
+		specialNames.put(S_ENVIRONMENT,	Integer.valueOf(I_ENVIRONMENT));
+		specialNames.put(S_SEOWNER,	Integer.valueOf(I_SEOWNER));
 	}
 
 	protected String getVariableValue(SystemEnvironment sysEnv, SDMSProxy thisObject, String key, boolean fastAccess, String mode, boolean triggercontext, long version, SDMSScope evalScope)
@@ -718,14 +718,14 @@ public class SmeVariableResolver extends VariableResolver
 						int processTime = endTs - dwTime.intValue();
 						switch(varno) {
 							case I_PROCESS_TIME:
-								return new Integer(processTime).toString();
+								return Integer.valueOf(processTime).toString();
 							case I_ACTIVE_TIME:
 							case I_IDLE_PCT:
 								Integer idleTime = thisSme.evaluateTime(sysEnv, thisSme.getIdleTime(sysEnv), thisSme.getIdleTs(sysEnv), -1);
 								if (varno == I_ACTIVE_TIME)
-									return new Integer(processTime  - idleTime.intValue()).toString();
+									return Integer.valueOf(processTime  - idleTime.intValue()).toString();
 								else if (processTime == 0) return emptyString;
-								return new Integer(idleTime.intValue() * 100 / processTime).toString();
+								return Integer.valueOf(idleTime.intValue() * 100 / processTime).toString();
 						}
 					}
 				case I_SUBMITTER:
@@ -962,15 +962,15 @@ public class SmeVariableResolver extends VariableResolver
 				int f = pd.getAggFunction(sysEnv).intValue();
 				switch(f) {
 					case SDMSParameterDefinition.AVG:
-						return (tmpcnt == 0 ? emptyString : new Double(tmpsum/tmpcnt).toString());
+						return (tmpcnt == 0 ? emptyString : Double.valueOf(tmpsum/tmpcnt).toString());
 					case SDMSParameterDefinition.COUNT:
-						return new Integer(tmpcnt).toString();
+						return Integer.valueOf(tmpcnt).toString();
 					case SDMSParameterDefinition.MIN:
-						return new Double(tmpmin).toString();
+						return Double.valueOf(tmpmin).toString();
 					case SDMSParameterDefinition.MAX:
-						return new Double(tmpmax).toString();
+						return Double.valueOf(tmpmax).toString();
 					case SDMSParameterDefinition.SUM:
-						return new Double(tmpsum).toString();
+						return Double.valueOf(tmpsum).toString();
 				}
 				break;
 		}

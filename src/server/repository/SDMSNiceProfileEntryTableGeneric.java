@@ -102,16 +102,16 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSNiceProfileEntryGeneric o = new SDMSNiceProfileEntryGeneric(env
-		                , p_npId
-		                , p_preference
-		                , p_folderId
-		                , p_isSuspended
-		                , p_renice
-		                , p_isActive
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_npId
+				, p_preference
+				, p_folderId
+				, p_isSuspended
+				, p_renice
+				, p_isActive
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                                               );
 
 		SDMSNiceProfileEntry p;
@@ -180,23 +180,23 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			npId = new Long (r.getLong(2));
-			preference = new Integer (r.getInt(3));
-			folderId = new Long (r.getLong(4));
+			id     = Long.valueOf (r.getLong(1));
+			npId = Long.valueOf (r.getLong(2));
+			preference = Integer.valueOf (r.getInt(3));
+			folderId = Long.valueOf (r.getLong(4));
 			if (r.wasNull()) folderId = null;
-			isSuspended = new Integer (r.getInt(5));
-			renice = new Integer (r.getInt(6));
-			isActive = new Boolean ((r.getInt(7) == 0 ? false : true));
-			creatorUId = new Long (r.getLong(8));
-			createTs = new Long (r.getLong(9));
-			changerUId = new Long (r.getLong(10));
-			changeTs = new Long (r.getLong(11));
+			isSuspended = Integer.valueOf (r.getInt(5));
+			renice = Integer.valueOf (r.getInt(6));
+			isActive = Boolean.valueOf ((r.getInt(7) == 0 ? false : true));
+			creatorUId = Long.valueOf (r.getLong(8));
+			createTs = Long.valueOf (r.getLong(9));
+			changerUId = Long.valueOf (r.getLong(10));
+			changeTs = Long.valueOf (r.getLong(11));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "NiceProfileEntry: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "NiceProfileEntry: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSNiceProfileEntryGeneric(id,
@@ -238,8 +238,13 @@ public class SDMSNiceProfileEntryTableGeneric extends SDMSTable
 		                                   " FROM " + squote + tableName() + equote +
 		                                   ""						  );
 		while(rset.next()) {
-			if(loadObject(env, rset)) ++loaded;
-			++read;
+			try {
+				if(loadObject(env, rset)) ++loaded;
+				++read;
+			} catch (Exception e) {
+				SDMSThread.doTrace(null, "Exception caught while loading table " + tableName() + ", ID = " + Long.valueOf (rset.getLong(1)), SDMSThread.SEVERITY_ERROR);
+				throw(e);
+			}
 		}
 		stmt.close();
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);

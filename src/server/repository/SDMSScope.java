@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -45,9 +45,9 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	public final static String __version = "@(#) $Id: SDMSScope.java,v 2.27.2.4 2013/03/19 17:16:52 ronald Exp $";
 	private final static VariableResolver SVR = new ScopeVariableResolver();
 
-	private final static Long lzero = new Long(0);
-	private final static Integer zero = new Integer(0);
-	private final static Float fzero = new Float(0);
+	private final static Long lzero = Long.valueOf(0);
+	private final static Integer zero = Integer.valueOf(0);
+	private final static Float fzero = Float.valueOf(0);
 
 	protected SDMSScope(SDMSObject p_object)
 	{
@@ -77,7 +77,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 
 		Integer type = getType(sysEnv);
 		SDMSScope f;
-		if (type.equals(new Integer(SDMSScope.SCOPE))) {
+		if (type.equals(Integer.valueOf(SDMSScope.SCOPE))) {
 			f = SDMSScopeTable.table.create(sysEnv,
 							name,
 							defaultGId,
@@ -91,7 +91,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 							null,
 							null,
 							null,
-							new Integer(0),
+							Integer.valueOf(0),
 							null,
 							null,
 							null,
@@ -109,7 +109,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 							Boolean.FALSE,
 							getIsEnabled(sysEnv),
 							Boolean.FALSE,
-							new Integer(SDMSScope.NOMINAL),
+							Integer.valueOf(SDMSScope.NOMINAL),
 							getPasswd(sysEnv),
 							getSalt(sysEnv),
 							getMethod(sysEnv),
@@ -163,7 +163,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 
 		ScopeConfig.copy(sysEnv, id, newId);
 		ScopeParameter.copy(sysEnv, id, newId);
-		if (type.equals(new Integer(SDMSScope.SERVER))) {
+		if (type.equals(Integer.valueOf(SDMSScope.SERVER))) {
 			SystemEnvironment.sched.notifyChange(sysEnv, f, SchedulingThread.CREATE);
 		}
 		return f;
@@ -252,7 +252,7 @@ public class SDMSScope extends SDMSScopeProxyGeneric
 	}
 
 	public boolean hasActiveJobs(SystemEnvironment sysEnv)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long myId = getId(sysEnv);
 		Vector jv = SDMSSubmittedEntityTable.idx_scopeId.getVector(sysEnv, myId,

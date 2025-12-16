@@ -402,7 +402,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			myInsert.setLong(11, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ExitStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ExitStateMapping: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -453,7 +453,7 @@ public class SDMSExitStateMappingGeneric extends SDMSObject
 			myUpdate.setLong(4, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ExitStateMapping: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ExitStateMapping: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

@@ -391,105 +391,105 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSSubmittedEntityGeneric o = new SDMSSubmittedEntityGeneric(env
-		                , p_accessKey
-		                , p_masterId
-		                , p_submitTag
-		                , p_unresolvedHandling
-		                , p_seId
-		                , p_childTag
-		                , p_seVersion
-		                , p_ownerId
-		                , p_parentId
-		                , p_scopeId
-		                , p_isStatic
-		                , p_isDisabled
-		                , p_oldState
-		                , p_mergeMode
-		                , p_state
-		                , p_jobEsdId
-		                , p_jobEsdPref
-		                , p_jobIsFinal
-		                , p_jobIsRestartable
-		                , p_finalEsdId
-		                , p_exitCode
-		                , p_commandline
-		                , p_rrCommandline
-		                , p_rerunSeq
-		                , p_isReplaced
-		                , p_isCancelled
-		                , p_baseSmeId
-		                , p_reasonSmeId
-		                , p_fireSmeId
-		                , p_fireSeId
-		                , p_trId
-		                , p_trSdIdOld
-		                , p_trSdIdNew
-		                , p_trSeq
-		                , p_workdir
-		                , p_logfile
-		                , p_errlogfile
-		                , p_pid
-		                , p_extPid
-		                , p_errorMsg
-		                , p_killId
-		                , p_killExitCode
-		                , p_isSuspended
-		                , p_isSuspendedLocal
-		                , p_priority
-		                , p_rawPriority
-		                , p_nice
-		                , p_npNice
-		                , p_minPriority
-		                , p_agingAmount
-		                , p_parentSuspended
-		                , p_childSuspended
-		                , p_warnCount
-		                , p_warnLink
-		                , p_submitTs
-		                , p_resumeTs
-		                , p_syncTs
-		                , p_resourceTs
-		                , p_runnableTs
-		                , p_startTs
-		                , p_finishTs
-		                , p_finalTs
-		                , p_cntSubmitted
-		                , p_cntDependencyWait
-		                , p_cntSynchronizeWait
-		                , p_cntResourceWait
-		                , p_cntRunnable
-		                , p_cntStarting
-		                , p_cntStarted
-		                , p_cntRunning
-		                , p_cntToKill
-		                , p_cntKilled
-		                , p_cntCancelled
-		                , p_cntFinished
-		                , p_cntFinal
-		                , p_cntBrokenActive
-		                , p_cntBrokenFinished
-		                , p_cntError
-		                , p_cntUnreachable
-		                , p_cntRestartable
-		                , p_cntWarn
-		                , p_cntPending
-		                , p_idleTs
-		                , p_idleTime
-		                , p_statisticTs
-		                , p_dependencyWaitTime
-		                , p_suspendTime
-		                , p_syncTime
-		                , p_resourceTime
-		                , p_jobserverTime
-		                , p_restartableTime
-		                , p_childWaitTime
-		                , p_opSusresTs
-		                , p_npeId
-		                , p_timeZone
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_accessKey
+				, p_masterId
+				, p_submitTag
+				, p_unresolvedHandling
+				, p_seId
+				, p_childTag
+				, p_seVersion
+				, p_ownerId
+				, p_parentId
+				, p_scopeId
+				, p_isStatic
+				, p_isDisabled
+				, p_oldState
+				, p_mergeMode
+				, p_state
+				, p_jobEsdId
+				, p_jobEsdPref
+				, p_jobIsFinal
+				, p_jobIsRestartable
+				, p_finalEsdId
+				, p_exitCode
+				, p_commandline
+				, p_rrCommandline
+				, p_rerunSeq
+				, p_isReplaced
+				, p_isCancelled
+				, p_baseSmeId
+				, p_reasonSmeId
+				, p_fireSmeId
+				, p_fireSeId
+				, p_trId
+				, p_trSdIdOld
+				, p_trSdIdNew
+				, p_trSeq
+				, p_workdir
+				, p_logfile
+				, p_errlogfile
+				, p_pid
+				, p_extPid
+				, p_errorMsg
+				, p_killId
+				, p_killExitCode
+				, p_isSuspended
+				, p_isSuspendedLocal
+				, p_priority
+				, p_rawPriority
+				, p_nice
+				, p_npNice
+				, p_minPriority
+				, p_agingAmount
+				, p_parentSuspended
+				, p_childSuspended
+				, p_warnCount
+				, p_warnLink
+				, p_submitTs
+				, p_resumeTs
+				, p_syncTs
+				, p_resourceTs
+				, p_runnableTs
+				, p_startTs
+				, p_finishTs
+				, p_finalTs
+				, p_cntSubmitted
+				, p_cntDependencyWait
+				, p_cntSynchronizeWait
+				, p_cntResourceWait
+				, p_cntRunnable
+				, p_cntStarting
+				, p_cntStarted
+				, p_cntRunning
+				, p_cntToKill
+				, p_cntKilled
+				, p_cntCancelled
+				, p_cntFinished
+				, p_cntFinal
+				, p_cntBrokenActive
+				, p_cntBrokenFinished
+				, p_cntError
+				, p_cntUnreachable
+				, p_cntRestartable
+				, p_cntWarn
+				, p_cntPending
+				, p_idleTs
+				, p_idleTime
+				, p_statisticTs
+				, p_dependencyWaitTime
+				, p_suspendTime
+				, p_syncTime
+				, p_resourceTime
+				, p_jobserverTime
+				, p_restartableTime
+				, p_childWaitTime
+				, p_opSusresTs
+				, p_npeId
+				, p_timeZone
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                                             );
 
 		SDMSSubmittedEntity p;
@@ -738,61 +738,61 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			accessKey = new Long (r.getLong(2));
-			masterId = new Long (r.getLong(3));
+			id     = Long.valueOf (r.getLong(1));
+			accessKey = Long.valueOf (r.getLong(2));
+			masterId = Long.valueOf (r.getLong(3));
 			submitTag = r.getString(4);
 			if (r.wasNull()) submitTag = null;
-			unresolvedHandling = new Integer (r.getInt(5));
+			unresolvedHandling = Integer.valueOf (r.getInt(5));
 			if (r.wasNull()) unresolvedHandling = null;
-			seId = new Long (r.getLong(6));
+			seId = Long.valueOf (r.getLong(6));
 			childTag = r.getString(7);
 			if (r.wasNull()) childTag = null;
-			seVersion = new Long (r.getLong(8));
-			ownerId = new Long (r.getLong(9));
-			parentId = new Long (r.getLong(10));
+			seVersion = Long.valueOf (r.getLong(8));
+			ownerId = Long.valueOf (r.getLong(9));
+			parentId = Long.valueOf (r.getLong(10));
 			if (r.wasNull()) parentId = null;
-			scopeId = new Long (r.getLong(11));
+			scopeId = Long.valueOf (r.getLong(11));
 			if (r.wasNull()) scopeId = null;
 			isStatic = new Boolean ((r.getInt(12) == 0 ? false : true));
 			isDisabled = new Boolean ((r.getInt(13) == 0 ? false : true));
-			oldState = new Integer (r.getInt(14));
+			oldState = Integer.valueOf (r.getInt(14));
 			if (r.wasNull()) oldState = null;
-			mergeMode = new Integer (r.getInt(15));
-			state = new Integer (r.getInt(16));
-			jobEsdId = new Long (r.getLong(17));
+			mergeMode = Integer.valueOf (r.getInt(15));
+			state = Integer.valueOf (r.getInt(16));
+			jobEsdId = Long.valueOf (r.getLong(17));
 			if (r.wasNull()) jobEsdId = null;
-			jobEsdPref = new Integer (r.getInt(18));
+			jobEsdPref = Integer.valueOf (r.getInt(18));
 			if (r.wasNull()) jobEsdPref = null;
 			jobIsFinal = new Boolean ((r.getInt(19) == 0 ? false : true));
 			jobIsRestartable = new Boolean ((r.getInt(20) == 0 ? false : true));
-			finalEsdId = new Long (r.getLong(21));
+			finalEsdId = Long.valueOf (r.getLong(21));
 			if (r.wasNull()) finalEsdId = null;
-			exitCode = new Integer (r.getInt(22));
+			exitCode = Integer.valueOf (r.getInt(22));
 			if (r.wasNull()) exitCode = null;
 			commandline = r.getString(23);
 			if (r.wasNull()) commandline = null;
 			rrCommandline = r.getString(24);
 			if (r.wasNull()) rrCommandline = null;
-			rerunSeq = new Integer (r.getInt(25));
+			rerunSeq = Integer.valueOf (r.getInt(25));
 			isReplaced = new Boolean ((r.getInt(26) == 0 ? false : true));
 			isCancelled = new Boolean ((r.getInt(27) == 0 ? false : true));
 			if (r.wasNull()) isCancelled = null;
-			baseSmeId = new Long (r.getLong(28));
+			baseSmeId = Long.valueOf (r.getLong(28));
 			if (r.wasNull()) baseSmeId = null;
-			reasonSmeId = new Long (r.getLong(29));
+			reasonSmeId = Long.valueOf (r.getLong(29));
 			if (r.wasNull()) reasonSmeId = null;
-			fireSmeId = new Long (r.getLong(30));
+			fireSmeId = Long.valueOf (r.getLong(30));
 			if (r.wasNull()) fireSmeId = null;
-			fireSeId = new Long (r.getLong(31));
+			fireSeId = Long.valueOf (r.getLong(31));
 			if (r.wasNull()) fireSeId = null;
-			trId = new Long (r.getLong(32));
+			trId = Long.valueOf (r.getLong(32));
 			if (r.wasNull()) trId = null;
-			trSdIdOld = new Long (r.getLong(33));
+			trSdIdOld = Long.valueOf (r.getLong(33));
 			if (r.wasNull()) trSdIdOld = null;
-			trSdIdNew = new Long (r.getLong(34));
+			trSdIdNew = Long.valueOf (r.getLong(34));
 			if (r.wasNull()) trSdIdNew = null;
-			trSeq = new Integer (r.getInt(35));
+			trSeq = Integer.valueOf (r.getInt(35));
 			workdir = r.getString(36);
 			if (r.wasNull()) workdir = null;
 			logfile = r.getString(37);
@@ -805,94 +805,94 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 			if (r.wasNull()) extPid = null;
 			errorMsg = r.getString(41);
 			if (r.wasNull()) errorMsg = null;
-			killId = new Long (r.getLong(42));
+			killId = Long.valueOf (r.getLong(42));
 			if (r.wasNull()) killId = null;
-			killExitCode = new Integer (r.getInt(43));
+			killExitCode = Integer.valueOf (r.getInt(43));
 			if (r.wasNull()) killExitCode = null;
-			isSuspended = new Integer (r.getInt(44));
+			isSuspended = Integer.valueOf (r.getInt(44));
 			isSuspendedLocal = new Boolean ((r.getInt(45) == 0 ? false : true));
 			if (r.wasNull()) isSuspendedLocal = null;
-			priority = new Integer (r.getInt(46));
-			rawPriority = new Integer (r.getInt(47));
-			nice = new Integer (r.getInt(48));
-			npNice = new Integer (r.getInt(49));
-			minPriority = new Integer (r.getInt(50));
-			agingAmount = new Integer (r.getInt(51));
-			parentSuspended = new Integer (r.getInt(52));
-			childSuspended = new Integer (r.getInt(53));
-			warnCount = new Integer (r.getInt(54));
-			warnLink = new Long (r.getLong(55));
+			priority = Integer.valueOf (r.getInt(46));
+			rawPriority = Integer.valueOf (r.getInt(47));
+			nice = Integer.valueOf (r.getInt(48));
+			npNice = Integer.valueOf (r.getInt(49));
+			minPriority = Integer.valueOf (r.getInt(50));
+			agingAmount = Integer.valueOf (r.getInt(51));
+			parentSuspended = Integer.valueOf (r.getInt(52));
+			childSuspended = Integer.valueOf (r.getInt(53));
+			warnCount = Integer.valueOf (r.getInt(54));
+			warnLink = Long.valueOf (r.getLong(55));
 			if (r.wasNull()) warnLink = null;
-			submitTs = new Long (r.getLong(56));
-			resumeTs = new Long (r.getLong(57));
+			submitTs = Long.valueOf (r.getLong(56));
+			resumeTs = Long.valueOf (r.getLong(57));
 			if (r.wasNull()) resumeTs = null;
-			syncTs = new Long (r.getLong(58));
+			syncTs = Long.valueOf (r.getLong(58));
 			if (r.wasNull()) syncTs = null;
-			resourceTs = new Long (r.getLong(59));
+			resourceTs = Long.valueOf (r.getLong(59));
 			if (r.wasNull()) resourceTs = null;
-			runnableTs = new Long (r.getLong(60));
+			runnableTs = Long.valueOf (r.getLong(60));
 			if (r.wasNull()) runnableTs = null;
-			startTs = new Long (r.getLong(61));
+			startTs = Long.valueOf (r.getLong(61));
 			if (r.wasNull()) startTs = null;
-			finishTs = new Long (r.getLong(62));
+			finishTs = Long.valueOf (r.getLong(62));
 			if (r.wasNull()) finishTs = null;
-			finalTs = new Long (r.getLong(63));
+			finalTs = Long.valueOf (r.getLong(63));
 			if (r.wasNull()) finalTs = null;
-			cntSubmitted = new Integer (r.getInt(64));
-			cntDependencyWait = new Integer (r.getInt(65));
-			cntSynchronizeWait = new Integer (r.getInt(66));
-			cntResourceWait = new Integer (r.getInt(67));
-			cntRunnable = new Integer (r.getInt(68));
-			cntStarting = new Integer (r.getInt(69));
-			cntStarted = new Integer (r.getInt(70));
-			cntRunning = new Integer (r.getInt(71));
-			cntToKill = new Integer (r.getInt(72));
-			cntKilled = new Integer (r.getInt(73));
-			cntCancelled = new Integer (r.getInt(74));
-			cntFinished = new Integer (r.getInt(75));
-			cntFinal = new Integer (r.getInt(76));
-			cntBrokenActive = new Integer (r.getInt(77));
-			cntBrokenFinished = new Integer (r.getInt(78));
-			cntError = new Integer (r.getInt(79));
-			cntUnreachable = new Integer (r.getInt(80));
-			cntRestartable = new Integer (r.getInt(81));
-			cntWarn = new Integer (r.getInt(82));
-			cntPending = new Integer (r.getInt(83));
-			idleTs = new Integer (r.getInt(84));
+			cntSubmitted = Integer.valueOf (r.getInt(64));
+			cntDependencyWait = Integer.valueOf (r.getInt(65));
+			cntSynchronizeWait = Integer.valueOf (r.getInt(66));
+			cntResourceWait = Integer.valueOf (r.getInt(67));
+			cntRunnable = Integer.valueOf (r.getInt(68));
+			cntStarting = Integer.valueOf (r.getInt(69));
+			cntStarted = Integer.valueOf (r.getInt(70));
+			cntRunning = Integer.valueOf (r.getInt(71));
+			cntToKill = Integer.valueOf (r.getInt(72));
+			cntKilled = Integer.valueOf (r.getInt(73));
+			cntCancelled = Integer.valueOf (r.getInt(74));
+			cntFinished = Integer.valueOf (r.getInt(75));
+			cntFinal = Integer.valueOf (r.getInt(76));
+			cntBrokenActive = Integer.valueOf (r.getInt(77));
+			cntBrokenFinished = Integer.valueOf (r.getInt(78));
+			cntError = Integer.valueOf (r.getInt(79));
+			cntUnreachable = Integer.valueOf (r.getInt(80));
+			cntRestartable = Integer.valueOf (r.getInt(81));
+			cntWarn = Integer.valueOf (r.getInt(82));
+			cntPending = Integer.valueOf (r.getInt(83));
+			idleTs = Integer.valueOf (r.getInt(84));
 			if (r.wasNull()) idleTs = null;
-			idleTime = new Integer (r.getInt(85));
+			idleTime = Integer.valueOf (r.getInt(85));
 			if (r.wasNull()) idleTime = null;
-			statisticTs = new Integer (r.getInt(86));
+			statisticTs = Integer.valueOf (r.getInt(86));
 			if (r.wasNull()) statisticTs = null;
-			dependencyWaitTime = new Integer (r.getInt(87));
+			dependencyWaitTime = Integer.valueOf (r.getInt(87));
 			if (r.wasNull()) dependencyWaitTime = null;
-			suspendTime = new Integer (r.getInt(88));
+			suspendTime = Integer.valueOf (r.getInt(88));
 			if (r.wasNull()) suspendTime = null;
-			syncTime = new Integer (r.getInt(89));
+			syncTime = Integer.valueOf (r.getInt(89));
 			if (r.wasNull()) syncTime = null;
-			resourceTime = new Integer (r.getInt(90));
+			resourceTime = Integer.valueOf (r.getInt(90));
 			if (r.wasNull()) resourceTime = null;
-			jobserverTime = new Integer (r.getInt(91));
+			jobserverTime = Integer.valueOf (r.getInt(91));
 			if (r.wasNull()) jobserverTime = null;
-			restartableTime = new Integer (r.getInt(92));
+			restartableTime = Integer.valueOf (r.getInt(92));
 			if (r.wasNull()) restartableTime = null;
-			childWaitTime = new Integer (r.getInt(93));
+			childWaitTime = Integer.valueOf (r.getInt(93));
 			if (r.wasNull()) childWaitTime = null;
-			opSusresTs = new Long (r.getLong(94));
+			opSusresTs = Long.valueOf (r.getLong(94));
 			if (r.wasNull()) opSusresTs = null;
-			npeId = new Long (r.getLong(95));
+			npeId = Long.valueOf (r.getLong(95));
 			if (r.wasNull()) npeId = null;
 			timeZone = r.getString(96);
 			if (r.wasNull()) timeZone = null;
-			creatorUId = new Long (r.getLong(97));
-			createTs = new Long (r.getLong(98));
-			changerUId = new Long (r.getLong(99));
-			changeTs = new Long (r.getLong(100));
+			creatorUId = Long.valueOf (r.getLong(97));
+			createTs = Long.valueOf (r.getLong(98));
+			changerUId = Long.valueOf (r.getLong(99));
+			changeTs = Long.valueOf (r.getLong(100));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "SubmittedEntity: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "SubmittedEntity: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSSubmittedEntityGeneric(id,
@@ -1114,8 +1114,13 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 		                                   " WHERE " + squote + tableName() + equote + ".ID = SME2LOAD.ID"
 		                                  );
 		while(rset.next()) {
-			if(loadObject(env, rset)) ++loaded;
-			++read;
+			try {
+				if(loadObject(env, rset)) ++loaded;
+				++read;
+			} catch (Exception e) {
+				SDMSThread.doTrace(null, "Exception caught while loading table " + tableName() + ", ID = " + Long.valueOf (rset.getLong(1)), SDMSThread.SEVERITY_ERROR);
+				throw(e);
+			}
 		}
 		stmt.close();
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);

@@ -340,7 +340,7 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 			myInsert.setLong (8, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "NiceProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "NiceProfile: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -366,7 +366,7 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "NiceProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "NiceProfile: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -410,7 +410,7 @@ public class SDMSNiceProfileGeneric extends SDMSObject
 			myUpdate.setLong(8, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "NiceProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "NiceProfile: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

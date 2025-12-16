@@ -38,7 +38,7 @@ import de.independit.scheduler.server.util.*;
 public abstract class SDMSProxy implements Comparable
 {
 	public static final String __version = "@(#) $Id: SDMSProxy.java,v 2.11.2.2 2013/03/16 11:47:20 dieter Exp $";
-	public static final Long ZERO = new Long(0);
+	public static final Long ZERO = Long.valueOf(0);
 
 	public SDMSObject  object;
 

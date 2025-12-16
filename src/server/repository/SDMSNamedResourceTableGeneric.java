@@ -111,17 +111,17 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSNamedResourceGeneric o = new SDMSNamedResourceGeneric(env
-		                , p_name
-		                , p_ownerId
-		                , p_parentId
-		                , p_usage
-		                , p_rspId
-		                , p_factor
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
-		                , p_inheritPrivs
+				, p_name
+				, p_ownerId
+				, p_parentId
+				, p_usage
+				, p_rspId
+				, p_factor
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
+				, p_inheritPrivs
 		                                                         );
 
 		SDMSNamedResource p;
@@ -192,26 +192,26 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
+			id     = Long.valueOf (r.getLong(1));
 			name = r.getString(2);
-			ownerId = new Long (r.getLong(3));
-			parentId = new Long (r.getLong(4));
+			ownerId = Long.valueOf (r.getLong(3));
+			parentId = Long.valueOf (r.getLong(4));
 			if (r.wasNull()) parentId = null;
-			usage = new Integer (r.getInt(5));
-			rspId = new Long (r.getLong(6));
+			usage = Integer.valueOf (r.getInt(5));
+			rspId = Long.valueOf (r.getLong(6));
 			if (r.wasNull()) rspId = null;
-			factor = new Float (r.getFloat(7));
+			factor = Float.valueOf (r.getFloat(7));
 			if (r.wasNull()) factor = null;
-			creatorUId = new Long (r.getLong(8));
-			createTs = new Long (r.getLong(9));
-			changerUId = new Long (r.getLong(10));
-			changeTs = new Long (r.getLong(11));
-			inheritPrivs = new Long (r.getLong(12));
+			creatorUId = Long.valueOf (r.getLong(8));
+			createTs = Long.valueOf (r.getLong(9));
+			changerUId = Long.valueOf (r.getLong(10));
+			changeTs = Long.valueOf (r.getLong(11));
+			inheritPrivs = Long.valueOf (r.getLong(12));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "NamedResource: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "NamedResource: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSNamedResourceGeneric(id,
@@ -255,8 +255,13 @@ public class SDMSNamedResourceTableGeneric extends SDMSTable
 		                                   " FROM " + squote + tableName() + equote +
 		                                   ""						  );
 		while(rset.next()) {
-			if(loadObject(env, rset)) ++loaded;
-			++read;
+			try {
+				if(loadObject(env, rset)) ++loaded;
+				++read;
+			} catch (Exception e) {
+				SDMSThread.doTrace(null, "Exception caught while loading table " + tableName() + ", ID = " + Long.valueOf (rset.getLong(1)), SDMSThread.SEVERITY_ERROR);
+				throw(e);
+			}
 		}
 		stmt.close();
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);

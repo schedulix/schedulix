@@ -144,28 +144,28 @@ public class SDMSScopeTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSScopeGeneric o = new SDMSScopeGeneric(env
-		                , p_name
-		                , p_ownerId
-		                , p_parentId
-		                , p_type
-		                , p_isTerminate
-		                , p_hasAlteredConfig
-		                , p_isSuspended
-		                , p_isEnabled
-		                , p_isRegistered
-		                , p_state
-		                , p_passwd
-		                , p_salt
-		                , p_method
-		                , p_pid
-		                , p_node
-		                , p_errmsg
-		                , p_lastActive
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
-		                , p_inheritPrivs
+				, p_name
+				, p_ownerId
+				, p_parentId
+				, p_type
+				, p_isTerminate
+				, p_hasAlteredConfig
+				, p_isSuspended
+				, p_isEnabled
+				, p_isRegistered
+				, p_state
+				, p_passwd
+				, p_salt
+				, p_method
+				, p_pid
+				, p_node
+				, p_errmsg
+				, p_lastActive
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
+				, p_inheritPrivs
 		                                         );
 
 		SDMSScope p;
@@ -262,47 +262,47 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
+			id     = Long.valueOf (r.getLong(1));
 			name = r.getString(2);
-			ownerId = new Long (r.getLong(3));
-			parentId = new Long (r.getLong(4));
+			ownerId = Long.valueOf (r.getLong(3));
+			parentId = Long.valueOf (r.getLong(4));
 			if (r.wasNull()) parentId = null;
-			type = new Integer (r.getInt(5));
-			isTerminate = new Boolean ((r.getInt(6) == 0 ? false : true));
+			type = Integer.valueOf (r.getInt(5));
+			isTerminate = Boolean.valueOf ((r.getInt(6) == 0 ? false : true));
 			if (r.wasNull()) isTerminate = null;
-			hasAlteredConfig = new Boolean ((r.getInt(7) == 0 ? false : true));
+			hasAlteredConfig = Boolean.valueOf ((r.getInt(7) == 0 ? false : true));
 			if (r.wasNull()) hasAlteredConfig = null;
-			isSuspended = new Boolean ((r.getInt(8) == 0 ? false : true));
+			isSuspended = Boolean.valueOf ((r.getInt(8) == 0 ? false : true));
 			if (r.wasNull()) isSuspended = null;
-			isEnabled = new Boolean ((r.getInt(9) == 0 ? false : true));
+			isEnabled = Boolean.valueOf ((r.getInt(9) == 0 ? false : true));
 			if (r.wasNull()) isEnabled = null;
-			isRegistered = new Boolean ((r.getInt(10) == 0 ? false : true));
+			isRegistered = Boolean.valueOf ((r.getInt(10) == 0 ? false : true));
 			if (r.wasNull()) isRegistered = null;
-			state = new Integer (r.getInt(11));
+			state = Integer.valueOf (r.getInt(11));
 			if (r.wasNull()) state = null;
 			passwd = r.getString(12);
 			if (r.wasNull()) passwd = null;
 			salt = r.getString(13);
 			if (r.wasNull()) salt = null;
-			method = new Integer (r.getInt(14));
+			method = Integer.valueOf (r.getInt(14));
 			pid = r.getString(15);
 			if (r.wasNull()) pid = null;
 			node = r.getString(16);
 			if (r.wasNull()) node = null;
 			errmsg = r.getString(17);
 			if (r.wasNull()) errmsg = null;
-			lastActive = new Long (r.getLong(18));
+			lastActive = Long.valueOf (r.getLong(18));
 			if (r.wasNull()) lastActive = null;
-			creatorUId = new Long (r.getLong(19));
-			createTs = new Long (r.getLong(20));
-			changerUId = new Long (r.getLong(21));
-			changeTs = new Long (r.getLong(22));
-			inheritPrivs = new Long (r.getLong(23));
+			creatorUId = Long.valueOf (r.getLong(19));
+			createTs = Long.valueOf (r.getLong(20));
+			changerUId = Long.valueOf (r.getLong(21));
+			changeTs = Long.valueOf (r.getLong(22));
+			inheritPrivs = Long.valueOf (r.getLong(23));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "Scope: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "Scope: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSScopeGeneric(id,
@@ -368,8 +368,13 @@ public class SDMSScopeTableGeneric extends SDMSTable
 		                                   " FROM " + squote + tableName() + equote +
 		                                   ""						  );
 		while(rset.next()) {
-			if(loadObject(env, rset)) ++loaded;
-			++read;
+			try {
+				if(loadObject(env, rset)) ++loaded;
+				++read;
+			} catch (Exception e) {
+				SDMSThread.doTrace(null, "Exception caught while loading table " + tableName() + ", ID = " + Long.valueOf (rset.getLong(1)), SDMSThread.SEVERITY_ERROR);
+				throw(e);
+			}
 		}
 		stmt.close();
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);

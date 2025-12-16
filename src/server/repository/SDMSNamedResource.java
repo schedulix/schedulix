@@ -178,7 +178,7 @@ public class SDMSNamedResource extends SDMSNamedResourceProxyGeneric
 
 			final String sic = (value == null ? value : '=' + value);
 
-			SDMSParameterDefinitionTable.table.create (sysEnv, id, name, t, new Integer(SDMSParameterDefinition.NONE), sic, Boolean.FALSE, null, null);
+			SDMSParameterDefinitionTable.table.create (sysEnv, id, name, t, Integer.valueOf(SDMSParameterDefinition.NONE), sic, Boolean.FALSE, null, null);
 		}
 	}
 
@@ -189,7 +189,7 @@ public class SDMSNamedResource extends SDMSNamedResourceProxyGeneric
 		String oldnm;
 		final Long id = getId(sysEnv);
 		int idx;
-		final Integer aggFunction = new Integer(SDMSParameterDefinition.NONE);
+		final Integer aggFunction = Integer.valueOf(SDMSParameterDefinition.NONE);
 		final Long linkPdId = null;
 
 		Vector act_parms = SDMSParameterDefinitionTable.idx_seId.getVector(sysEnv, id);

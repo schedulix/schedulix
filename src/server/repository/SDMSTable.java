@@ -72,48 +72,48 @@ public abstract class SDMSTable
 	}
 
 	public Iterator iterator (SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		return iterator (env, null, false );
 	}
 	public Iterator iteratorForUpdate (SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return iterator (env, null, false );
 	}
 
 	public Iterator iterator (SystemEnvironment env, boolean unlocked)
-	throws SDMSException
+		throws SDMSException
 	{
 		return iterator (env, null, unlocked);
 	}
 	public Iterator iteratorForUpdate (SystemEnvironment env, boolean unlocked)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return iterator (env, null, unlocked);
 	}
 
 	public Iterator iterator (SystemEnvironment env, SDMSFilter f)
-	throws SDMSException
+		throws SDMSException
 	{
 		return iterator (env, f, false);
 	}
 	public Iterator iteratorForUpdate (SystemEnvironment env, SDMSFilter f)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return iterator (env, f, false);
 	}
 	public Iterator iteratorForUpdate (SystemEnvironment env, SDMSFilter f, boolean unlocked)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return iterator(env, f, unlocked);
 	}
 	public Iterator iterator (SystemEnvironment env, SDMSFilter f, boolean unlocked)
-	throws SDMSException
+		throws SDMSException
 	{
 		int readLock = env.thread.readLock;
 		env.thread.readLock = ObjectLock.SHARED;
@@ -123,7 +123,7 @@ public abstract class SDMSTable
 		SDMSProxy p = null;
 		Object va[];
 		synchronized(hashMap) {
-		va = hashMap.values().toArray();
+			va = hashMap.values().toArray();
 		}
 		for (int i = 0; i < va.length; ++i) {
 			v = (SDMSVersions) va[i];
@@ -217,11 +217,11 @@ public abstract class SDMSTable
 	public abstract String[] columnNames();
 
 	public abstract String checkIndex(SDMSObject o)
-	throws SDMSException;
+		throws SDMSException;
 	protected abstract void index(SystemEnvironment env, SDMSObject o)
 		throws SDMSException;
 	protected abstract void index(SystemEnvironment env, SDMSObject o, long indexMember)
-	throws SDMSException;
+		throws SDMSException;
 
 	protected abstract void unIndex(SystemEnvironment env, SDMSObject o)
 		throws SDMSException;
@@ -249,7 +249,7 @@ public abstract class SDMSTable
 
 	}
 	public SDMSProxy getForUpdate (SystemEnvironment env, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return get(env, id);
@@ -303,7 +303,7 @@ public abstract class SDMSTable
 
 	}
 	public boolean existsForUpdate (SystemEnvironment env, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		env.thread.readLock = ObjectLock.EXCLUSIVE;
 		return exists(env, id);
@@ -369,10 +369,10 @@ public abstract class SDMSTable
 				if (vLowVersion < lowVersion) lowVersion = vLowVersion;
 			}
 		}
-		result.put(STAT_ID_COUNT, new Long(countIds));
-		result.put(STAT_VERSION_COUNT, new Long(countVersions));
-		result.put(STAT_LOW_VERSION, new Long(lowVersion));
-		result.put(STAT_MAX_VERSIONS, new Long(maxVersions));
+		result.put(STAT_ID_COUNT, Long.valueOf(countIds));
+		result.put(STAT_VERSION_COUNT, Long.valueOf(countVersions));
+		result.put(STAT_LOW_VERSION, Long.valueOf(lowVersion));
+		result.put(STAT_MAX_VERSIONS, Long.valueOf(maxVersions));
 
 		return result;
 	}

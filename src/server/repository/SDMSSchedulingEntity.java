@@ -40,8 +40,8 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 {
 
 	private final static VariableResolver SEVR = new SeVariableResolver();
-	private static final Integer zero = new Integer(0);
-	private static final Long lzero = new Long(0);
+	private static final Integer zero = Integer.valueOf(0);
+	private static final Long lzero = Long.valueOf(0);
 
 	protected SDMSSchedulingEntity(SDMSObject p_object)
 	{
@@ -184,7 +184,7 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 			esp.checkProfile(sysEnv);
 		}
 		if (suspended == null) {
-			suspended = new Integer(getSubmitSuspended(sysEnv) ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND);
+			suspended = Integer.valueOf(getSubmitSuspended(sysEnv) ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND);
 			if (suspended.intValue() == SDMSSubmittedEntity.SUSPEND) {
 				TimeZone evalTz = null;
 				if (timeZone == null)
@@ -196,81 +196,81 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		}
 		Long opSusresTs = null;
 		if (suspended.intValue() != SDMSSubmittedEntity.NOSUSPEND)
-			opSusresTs = new Long(-submitTs.longValue());
+			opSusresTs = Long.valueOf(-submitTs.longValue());
 
 		long seVersion = SDMSTransaction.drawVersion(sysEnv);
 
 		Integer prio = getPriority(sysEnv);
 		Integer rawPrio = zero;
-		Integer nice = (niceValue == null ? new Integer(0) : niceValue);
+		Integer nice = (niceValue == null ? Integer.valueOf(0) : niceValue);
 		switch(getType(sysEnv).intValue() ) {
 			case JOB:
 				if(prio == null) {
-					prio = new Integer(SchedulingThread.DEFAULT_PRIORITY + nice.intValue());
+					prio = Integer.valueOf(SchedulingThread.DEFAULT_PRIORITY + nice.intValue());
 				} else {
 					if(prio.intValue() >= SystemEnvironment.priorityLowerBound) {
-						prio = new Integer(prio.intValue() + nice.intValue());
+						prio = Integer.valueOf(prio.intValue() + nice.intValue());
 						if(prio.intValue() < SystemEnvironment.priorityLowerBound) {
-							prio = new Integer(SystemEnvironment.priorityLowerBound);
+							prio = Integer.valueOf(SystemEnvironment.priorityLowerBound);
 						}
 					}
-					rawPrio = new Integer(prio.intValue() * 100);
+					rawPrio = Integer.valueOf(prio.intValue() * 100);
 				}
 				break;
 			case BATCH:
 				if(prio != null) {
-					nice = new Integer(prio.intValue() + nice.intValue());
-					prio = new Integer(SchedulingThread.DEFAULT_PRIORITY);
+					nice = Integer.valueOf(prio.intValue() + nice.intValue());
+					prio = Integer.valueOf(SchedulingThread.DEFAULT_PRIORITY);
 				}
 				break;
 			case MILESTONE:
-				prio = new Integer(SchedulingThread.DEFAULT_PRIORITY);
+				prio = Integer.valueOf(SchedulingThread.DEFAULT_PRIORITY);
 				if (nice == null)
-					nice = new Integer(0);
+					nice = Integer.valueOf(0);
 				break;
 		}
 		Integer minEP = null;
-		minEP = new Integer(SystemEnvironment.priorityLowerBound);
+		minEP = Integer.valueOf(SystemEnvironment.priorityLowerBound);
 		Integer agingAmount = null;
 		Integer agingBase = null;
-		agingAmount = new Integer(SystemEnvironment.priorityDelay);
-		agingBase = new Integer(SDMSInterval.MINUTE);
+		agingAmount = Integer.valueOf(SystemEnvironment.priorityDelay);
+		agingBase = Integer.valueOf(SDMSInterval.MINUTE);
 		switch(agingBase.intValue()) {
 			case SDMSInterval.MINUTE:
 				break;
 			case SDMSInterval.HOUR:
-				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.HOUR_DUR_M));
+				agingAmount = Integer.valueOf((int) (agingAmount.intValue() * SDMSInterval.HOUR_DUR_M));
 				break;
 			case SDMSInterval.DAY:
-				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.DAY_DUR_M));
+				agingAmount = Integer.valueOf((int) (agingAmount.intValue() * SDMSInterval.DAY_DUR_M));
 				break;
 			case SDMSInterval.WEEK:
-				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.WEEK_DUR_M));
+				agingAmount = Integer.valueOf((int) (agingAmount.intValue() * SDMSInterval.WEEK_DUR_M));
 				break;
 			case SDMSInterval.MONTH:
-				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.MONTH_DUR_M));
+				agingAmount = Integer.valueOf((int) (agingAmount.intValue() * SDMSInterval.MONTH_DUR_M));
 				break;
 			case SDMSInterval.YEAR:
-				agingAmount = new Integer((int) (agingAmount.intValue() * SDMSInterval.YEAR_DUR_M));
+				agingAmount = Integer.valueOf((int) (agingAmount.intValue() * SDMSInterval.YEAR_DUR_M));
 				break;
 		}
-		agingBase = new Integer(SDMSInterval.MINUTE);
+		agingBase = Integer.valueOf(SDMSInterval.MINUTE);
 		final SDMSSubmittedEntity sme = SDMSSubmittedEntityTable.table.create(sysEnv,
 		                                sysEnv.randomLong(),
-		                                new Long(0),
+		                                Long.valueOf(0),
 		                                submitTag,
 		                                unresolvedHandling,
 		                                seId,
 		                                childTag,
-		                                new Long(seVersion),
+		                                Long.valueOf(seVersion),
 		                                ownerId,
 		                                null,
 		                                null,
 		                                Boolean.TRUE,
 		                                Boolean.FALSE,
 						null,
-		                                new Integer(SDMSSchedulingHierarchy.FAILURE),
-		                                new Integer(SDMSSubmittedEntity.SUBMITTED),
+		                                Integer.valueOf(SDMSSchedulingHierarchy.FAILURE),
+		                                Integer.valueOf(SDMSSubmittedEntity.SUBMITTED),
 		                                null,
 		                                null,
 		                                Boolean.FALSE,
@@ -376,12 +376,12 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 
 		sme.checkDependencies(sysEnv);
 
-		Long lTs = new Long (ts.getTime());
+		Long lTs = Long.valueOf (ts.getTime());
 		Long internalId;
 		if(sysEnv.cEnv.isUser())
 			internalId = sysEnv.cEnv.uid();
 		else
-			internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, new Long(0))).getId(sysEnv);
+			internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, Long.valueOf(0))).getId(sysEnv);
 
 		SystemEnvironment.sched.notifyChange(sysEnv, sme, SchedulingThread.SUBMIT);
 
@@ -396,8 +396,8 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		Date ts = new Date();
 		long seVersion = SDMSTransaction.drawVersion(sysEnv);
 
-		Integer prio = new Integer(SchedulingThread.DEFAULT_PRIORITY);
-		Integer nice = new Integer(0);
+		Integer prio = Integer.valueOf(SchedulingThread.DEFAULT_PRIORITY);
+		Integer nice = Integer.valueOf(0);
 
 		Long espId = getEspId(sysEnv);
 		SDMSExitState es;
@@ -413,25 +413,25 @@ public class SDMSSchedulingEntity extends SDMSSchedulingEntityProxyGeneric
 		}
 		SDMSSubmittedEntity sme = ((SDMSSubmittedEntityTable) SDMSSubmittedEntityTable.table).createErrorMaster(sysEnv,
 		                          seId,
-		                          new Long(seVersion),
+		                          Long.valueOf(seVersion),
 		                          ownerId,
 		                          esdId,
 		                          esdId,
 		                          errorMsg,
 		                          prio,
 		                          nice,
-		                          new Long (ts.getTime())
+		                          Long.valueOf (ts.getTime())
 		                                                                                                       );
 
 		Long smeId = sme.getId(sysEnv);
 		sme.setMasterId(sysEnv, smeId);
 
-		Long lTs = new Long (ts.getTime());
+		Long lTs = Long.valueOf (ts.getTime());
 		Long internalId;
 		if(sysEnv.cEnv.isUser())
 			internalId = sysEnv.cEnv.uid();
 		else
-			internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, new Long(0))).getId(sysEnv);
+			internalId = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSUser.INTERNAL, Long.valueOf(0))).getId(sysEnv);
 
 		sme.trigger(sysEnv, SDMSTrigger.IMMEDIATE_LOCAL);
 		sme.trigger(sysEnv, SDMSTrigger.IMMEDIATE_MERGE);

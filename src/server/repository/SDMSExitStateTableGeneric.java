@@ -113,19 +113,19 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSExitStateGeneric o = new SDMSExitStateGeneric(env
-		                , p_preference
-		                , p_isFinal
-		                , p_isRestartable
-		                , p_isUnreachable
-		                , p_isBroken
-		                , p_isBatchDefault
-		                , p_isDependencyDefault
-		                , p_espId
-		                , p_esdId
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_preference
+				, p_isFinal
+				, p_isRestartable
+				, p_isUnreachable
+				, p_isBroken
+				, p_isBatchDefault
+				, p_isDependencyDefault
+				, p_espId
+				, p_esdId
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                                 );
 
 		SDMSExitState p;
@@ -198,25 +198,25 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			preference = new Integer (r.getInt(2));
-			isFinal = new Boolean ((r.getInt(3) == 0 ? false : true));
-			isRestartable = new Boolean ((r.getInt(4) == 0 ? false : true));
-			isUnreachable = new Boolean ((r.getInt(5) == 0 ? false : true));
-			isBroken = new Boolean ((r.getInt(6) == 0 ? false : true));
-			isBatchDefault = new Boolean ((r.getInt(7) == 0 ? false : true));
-			isDependencyDefault = new Boolean ((r.getInt(8) == 0 ? false : true));
-			espId = new Long (r.getLong(9));
-			esdId = new Long (r.getLong(10));
-			creatorUId = new Long (r.getLong(11));
-			createTs = new Long (r.getLong(12));
-			changerUId = new Long (r.getLong(13));
-			changeTs = new Long (r.getLong(14));
+			id     = Long.valueOf (r.getLong(1));
+			preference = Integer.valueOf (r.getInt(2));
+			isFinal = Boolean.valueOf ((r.getInt(3) == 0 ? false : true));
+			isRestartable = Boolean.valueOf ((r.getInt(4) == 0 ? false : true));
+			isUnreachable = Boolean.valueOf ((r.getInt(5) == 0 ? false : true));
+			isBroken = Boolean.valueOf ((r.getInt(6) == 0 ? false : true));
+			isBatchDefault = Boolean.valueOf ((r.getInt(7) == 0 ? false : true));
+			isDependencyDefault = Boolean.valueOf ((r.getInt(8) == 0 ? false : true));
+			espId = Long.valueOf (r.getLong(9));
+			esdId = Long.valueOf (r.getLong(10));
+			creatorUId = Long.valueOf (r.getLong(11));
+			createTs = Long.valueOf (r.getLong(12));
+			changerUId = Long.valueOf (r.getLong(13));
+			changeTs = Long.valueOf (r.getLong(14));
 			validFrom = r.getLong(15);
 			validTo = r.getLong(16);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "ExitState: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "ExitState: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSExitStateGeneric(id,
@@ -264,12 +264,17 @@ public class SDMSExitStateTableGeneric extends SDMSTable
 		                                   ", VALID_FROM, VALID_TO " +
 		                                   " FROM " + squote + tableName() + equote +
 		                                   " WHERE VALID_TO >= " + (postgres ?
-		                                                   "CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
-		                                                   "" + env.lowestActiveVersion) +
+								"CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
+								"" + env.lowestActiveVersion) +
 		                                   ""						  );
 		while(rset.next()) {
-			if(loadObject(env, rset)) ++loaded;
-			++read;
+			try {
+				if(loadObject(env, rset)) ++loaded;
+				++read;
+			} catch (Exception e) {
+				SDMSThread.doTrace(null, "Exception caught while loading table " + tableName() + ", ID = " + Long.valueOf (rset.getLong(1)), SDMSThread.SEVERITY_ERROR);
+				throw(e);
+			}
 		}
 		stmt.close();
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);

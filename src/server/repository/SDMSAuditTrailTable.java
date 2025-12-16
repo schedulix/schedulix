@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -60,7 +60,7 @@ public class SDMSAuditTrailTable extends SDMSAuditTrailTableGeneric
 		throws SDMSException
 	{
 		if (env.checkFeature(SystemEnvironment.S_AUDITTRAIL)) {
-			return super.create(env ,p_userId ,p_ts , new Long(env.tx.txId), p_action ,p_objectType ,p_objectId ,p_originId ,p_isSetWarning ,p_actionInfo ,p_actionComment);
+			return super.create(env,p_userId,p_ts, Long.valueOf(env.tx.txId), p_action,p_objectType,p_objectId,p_originId,p_isSetWarning,p_actionInfo,p_actionComment);
 		} else return null;
 	}
 }

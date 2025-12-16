@@ -733,7 +733,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			myInsert.setLong (15, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "AuditTrail: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -759,7 +759,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "AuditTrail: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -820,7 +820,7 @@ public class SDMSAuditTrailGeneric extends SDMSObject
 			myUpdate.setLong(15, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "AuditTrail: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "AuditTrail: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

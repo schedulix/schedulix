@@ -100,10 +100,10 @@ public class SDMSEntityVariable extends SDMSEntityVariableProxyGeneric
 		int e = 1;
 		while (p_value.length() > 0) {
 			if (p_value.length() > SDMSExtentsProxyGeneric.getExtentMaxLength()) {
-				SDMSExtentsTable.table.create(env, getId(env), getSmeId(env), new Integer(e), p_value.substring(0, SDMSExtentsProxyGeneric.getExtentMaxLength()));
+				SDMSExtentsTable.table.create(env, getId(env), getSmeId(env), Integer.valueOf(e), p_value.substring(0, SDMSExtentsProxyGeneric.getExtentMaxLength()));
 				p_value = p_value.substring(SDMSExtentsProxyGeneric.getExtentMaxLength());
 			} else {
-				SDMSExtentsTable.table.create(env, getId(env), getSmeId(env), new Integer(e), p_value);
+				SDMSExtentsTable.table.create(env, getId(env), getSmeId(env), Integer.valueOf(e), p_value);
 				break;
 			}
 			e ++;

@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -46,7 +46,7 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 	}
 
 	private void deleteExtents(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long id = getId(env);
 		Vector v = SDMSVersionedExtentsTable.idx_oId.getVector(env, getId(env));
@@ -73,11 +73,11 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 			SDMSParameterDefinition pd = (SDMSParameterDefinition) v.get(i);
 			if (seIds.contains(pd.getSeId(env)))
 				continue;
-				throw new CommonErrorException(
-						new SDMSMessage(env, "03402082327",
-							"The parameter $1 is referenced by $2", getName(env), pd.getURL(env)
-						)
-				);
+			throw new CommonErrorException(
+				new SDMSMessage(env, "03402082327",
+						"The parameter $1 is referenced by $2", getName(env), pd.getURL(env)
+				)
+			);
 		}
 		if (getIsLong(env).booleanValue())
 			deleteExtents(env);
@@ -85,7 +85,7 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 	}
 
 	public String getDefaultValue (SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		String val = super.getDefaultValue (env);
 		if (getIsLong(env).booleanValue()) {
@@ -103,15 +103,15 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 	}
 
 	private void createExtents(SystemEnvironment env, String p_value)
-	throws SDMSException
+		throws SDMSException
 	{
 		int e = 1;
 		while (p_value.length() > 0) {
 			if (p_value.length() > SDMSVersionedExtentsProxyGeneric.getExtentMaxLength()) {
-				SDMSVersionedExtentsTable.table.create(env, getId(env), new Integer(e), p_value.substring(0, SDMSVersionedExtentsProxyGeneric.getExtentMaxLength()));
+				SDMSVersionedExtentsTable.table.create(env, getId(env), Integer.valueOf(e), p_value.substring(0, SDMSVersionedExtentsProxyGeneric.getExtentMaxLength()));
 				p_value = p_value.substring(SDMSVersionedExtentsProxyGeneric.getExtentMaxLength());
 			} else {
-				SDMSVersionedExtentsTable.table.create(env, getId(env), new Integer(e), p_value);
+				SDMSVersionedExtentsTable.table.create(env, getId(env), Integer.valueOf(e), p_value);
 				break;
 			}
 			e ++;
@@ -119,7 +119,7 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 	}
 
 	public void setDefaultValue (SystemEnvironment env, String p_defaultValue)
-	throws SDMSException
+		throws SDMSException
 	{
 		String oldValue = getDefaultValue(env);
 		if(p_defaultValue != null && p_defaultValue.equals(oldValue)) return;
@@ -167,20 +167,20 @@ public class SDMSParameterDefinition extends SDMSParameterDefinitionProxyGeneric
 	}
 
 	public	void setLinkPdId (SystemEnvironment env, Long p_linkPdId)
-	throws SDMSException
+		throws SDMSException
 	{
 		super.setLinkPdId(env, p_linkPdId);
 		checkRefCycle(env);
 	}
 
 	protected void checkRefCycle(SystemEnvironment env)
-	throws SDMSException
+		throws SDMSException
 	{
 		checkRefCycle(env, new HashSet<Long>());
 	}
 
 	protected void checkRefCycle(SystemEnvironment env, HashSet<Long> pdIds)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long linkPdId = getLinkPdId(env);
 		if (linkPdId == null)

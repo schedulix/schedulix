@@ -85,11 +85,11 @@ public class SDMSExitStateMappingProfileTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSExitStateMappingProfileGeneric o = new SDMSExitStateMappingProfileGeneric(env
-		                , p_name
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_name
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                                                             );
 
 		SDMSExitStateMappingProfile p;
@@ -145,17 +145,17 @@ public class SDMSExitStateMappingProfileTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
+			id     = Long.valueOf (r.getLong(1));
 			name = r.getString(2);
-			creatorUId = new Long (r.getLong(3));
-			createTs = new Long (r.getLong(4));
-			changerUId = new Long (r.getLong(5));
-			changeTs = new Long (r.getLong(6));
+			creatorUId = Long.valueOf (r.getLong(3));
+			createTs = Long.valueOf (r.getLong(4));
+			changerUId = Long.valueOf (r.getLong(5));
+			changeTs = Long.valueOf (r.getLong(6));
 			validFrom = r.getLong(7);
 			validTo = r.getLong(8);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "ExitStateMappingProfile: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "ExitStateMappingProfile: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSExitStateMappingProfileGeneric(id,
@@ -187,12 +187,17 @@ public class SDMSExitStateMappingProfileTableGeneric extends SDMSTable
 		                                   ", VALID_FROM, VALID_TO " +
 		                                   " FROM " + squote + tableName() + equote +
 		                                   " WHERE VALID_TO >= " + (postgres ?
-		                                                   "CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
-		                                                   "" + env.lowestActiveVersion) +
+								"CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
+								"" + env.lowestActiveVersion) +
 		                                   ""						  );
 		while(rset.next()) {
-			if(loadObject(env, rset)) ++loaded;
-			++read;
+			try {
+				if(loadObject(env, rset)) ++loaded;
+				++read;
+			} catch (Exception e) {
+				SDMSThread.doTrace(null, "Exception caught while loading table " + tableName() + ", ID = " + Long.valueOf (rset.getLong(1)), SDMSThread.SEVERITY_ERROR);
+				throw(e);
+			}
 		}
 		stmt.close();
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);

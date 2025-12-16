@@ -176,36 +176,36 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSTriggerGeneric o = new SDMSTriggerGeneric(env
-		                , p_name
-		                , p_fireId
-		                , p_objectType
-		                , p_seId
-		                , p_mainSeId
-		                , p_parentSeId
-		                , p_isActive
-		                , p_isInverse
-		                , p_action
-		                , p_type
-		                , p_isMaster
-		                , p_isSuspend
-		                , p_isCreate
-		                , p_isChange
-		                , p_isDelete
-		                , p_isGroup
-		                , p_resumeAt
-		                , p_resumeIn
-		                , p_resumeBase
-		                , p_isWarnOnLimit
-		                , p_limitState
-		                , p_maxRetry
-		                , p_submitOwnerId
-		                , p_condition
-		                , p_checkAmount
-		                , p_checkBase
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_name
+				, p_fireId
+				, p_objectType
+				, p_seId
+				, p_mainSeId
+				, p_parentSeId
+				, p_isActive
+				, p_isInverse
+				, p_action
+				, p_type
+				, p_isMaster
+				, p_isSuspend
+				, p_isCreate
+				, p_isChange
+				, p_isDelete
+				, p_isGroup
+				, p_resumeAt
+				, p_resumeIn
+				, p_resumeBase
+				, p_isWarnOnLimit
+				, p_limitState
+				, p_maxRetry
+				, p_submitOwnerId
+				, p_condition
+				, p_checkAmount
+				, p_checkBase
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                             );
 
 		SDMSTrigger p;
@@ -326,56 +326,56 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
+			id     = Long.valueOf (r.getLong(1));
 			name = r.getString(2);
-			fireId = new Long (r.getLong(3));
-			objectType = new Integer (r.getInt(4));
-			seId = new Long (r.getLong(5));
-			mainSeId = new Long (r.getLong(6));
+			fireId = Long.valueOf (r.getLong(3));
+			objectType = Integer.valueOf (r.getInt(4));
+			seId = Long.valueOf (r.getLong(5));
+			mainSeId = Long.valueOf (r.getLong(6));
 			if (r.wasNull()) mainSeId = null;
-			parentSeId = new Long (r.getLong(7));
+			parentSeId = Long.valueOf (r.getLong(7));
 			if (r.wasNull()) parentSeId = null;
-			isActive = new Boolean ((r.getInt(8) == 0 ? false : true));
-			isInverse = new Boolean ((r.getInt(9) == 0 ? false : true));
-			action = new Integer (r.getInt(10));
-			type = new Integer (r.getInt(11));
-			isMaster = new Boolean ((r.getInt(12) == 0 ? false : true));
-			isSuspend = new Boolean ((r.getInt(13) == 0 ? false : true));
-			isCreate = new Boolean ((r.getInt(14) == 0 ? false : true));
+			isActive = Boolean.valueOf ((r.getInt(8) == 0 ? false : true));
+			isInverse = Boolean.valueOf ((r.getInt(9) == 0 ? false : true));
+			action = Integer.valueOf (r.getInt(10));
+			type = Integer.valueOf (r.getInt(11));
+			isMaster = Boolean.valueOf ((r.getInt(12) == 0 ? false : true));
+			isSuspend = Boolean.valueOf ((r.getInt(13) == 0 ? false : true));
+			isCreate = Boolean.valueOf ((r.getInt(14) == 0 ? false : true));
 			if (r.wasNull()) isCreate = null;
-			isChange = new Boolean ((r.getInt(15) == 0 ? false : true));
+			isChange = Boolean.valueOf ((r.getInt(15) == 0 ? false : true));
 			if (r.wasNull()) isChange = null;
-			isDelete = new Boolean ((r.getInt(16) == 0 ? false : true));
+			isDelete = Boolean.valueOf ((r.getInt(16) == 0 ? false : true));
 			if (r.wasNull()) isDelete = null;
-			isGroup = new Boolean ((r.getInt(17) == 0 ? false : true));
+			isGroup = Boolean.valueOf ((r.getInt(17) == 0 ? false : true));
 			if (r.wasNull()) isGroup = null;
 			resumeAt = r.getString(18);
 			if (r.wasNull()) resumeAt = null;
-			resumeIn = new Integer (r.getInt(19));
+			resumeIn = Integer.valueOf (r.getInt(19));
 			if (r.wasNull()) resumeIn = null;
-			resumeBase = new Integer (r.getInt(20));
+			resumeBase = Integer.valueOf (r.getInt(20));
 			if (r.wasNull()) resumeBase = null;
-			isWarnOnLimit = new Boolean ((r.getInt(21) == 0 ? false : true));
-			limitState = new Long (r.getLong(22));
+			isWarnOnLimit = Boolean.valueOf ((r.getInt(21) == 0 ? false : true));
+			limitState = Long.valueOf (r.getLong(22));
 			if (r.wasNull()) limitState = null;
-			maxRetry = new Integer (r.getInt(23));
-			submitOwnerId = new Long (r.getLong(24));
+			maxRetry = Integer.valueOf (r.getInt(23));
+			submitOwnerId = Long.valueOf (r.getLong(24));
 			if (r.wasNull()) submitOwnerId = null;
 			condition = r.getString(25);
 			if (r.wasNull()) condition = null;
-			checkAmount = new Integer (r.getInt(26));
+			checkAmount = Integer.valueOf (r.getInt(26));
 			if (r.wasNull()) checkAmount = null;
-			checkBase = new Integer (r.getInt(27));
+			checkBase = Integer.valueOf (r.getInt(27));
 			if (r.wasNull()) checkBase = null;
-			creatorUId = new Long (r.getLong(28));
-			createTs = new Long (r.getLong(29));
-			changerUId = new Long (r.getLong(30));
-			changeTs = new Long (r.getLong(31));
+			creatorUId = Long.valueOf (r.getLong(28));
+			createTs = Long.valueOf (r.getLong(29));
+			changerUId = Long.valueOf (r.getLong(30));
+			changeTs = Long.valueOf (r.getLong(31));
 			validFrom = r.getLong(32);
 			validTo = r.getLong(33);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "Trigger: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "Trigger: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSTriggerGeneric(id,
@@ -457,12 +457,17 @@ public class SDMSTriggerTableGeneric extends SDMSTable
 		                                   ", VALID_FROM, VALID_TO " +
 		                                   " FROM " + squote + tableName() + equote +
 		                                   " WHERE VALID_TO >= " + (postgres ?
-		                                                   "CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
-		                                                   "" + env.lowestActiveVersion) +
+								"CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
+								"" + env.lowestActiveVersion) +
 		                                   ""						  );
 		while(rset.next()) {
-			if(loadObject(env, rset)) ++loaded;
-			++read;
+			try {
+				if(loadObject(env, rset)) ++loaded;
+				++read;
+			} catch (Exception e) {
+				SDMSThread.doTrace(null, "Exception caught while loading table " + tableName() + ", ID = " + Long.valueOf (rset.getLong(1)), SDMSThread.SEVERITY_ERROR);
+				throw(e);
+			}
 		}
 		stmt.close();
 		SDMSThread.doTrace(null, "Read " + read + ", Loaded " + loaded + " rows for " + tableName(), SDMSThread.SEVERITY_INFO);
