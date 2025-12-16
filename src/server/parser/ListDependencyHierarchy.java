@@ -160,11 +160,11 @@ public class ListDependencyHierarchy
 		throws SDMSException
 	{
 		if (sme.getState(sysEnv).intValue() != SDMSSubmittedEntity.DEPENDENCY_WAIT) {
-			return new Long(0);
+			return Long.valueOf(0);
 		}
 		final Vector deps = SDMSDependencyInstanceTable.idx_dependentId.getVector (sysEnv, sme.getId (sysEnv));
 
-		return new Long (deps == null ? 0 : deps.size());
+		return Long.valueOf (deps == null ? 0 : deps.size());
 	}
 
 	private final HashMap depsComp_nameHash = new HashMap();
@@ -327,7 +327,7 @@ public class ListDependencyHierarchy
 				row.add (asEsdString (sysEnv, sme.getJobEsdId (sysEnv), actVersion));
 				row.add (asEsdString (sysEnv, sme.getFinalEsdId (sysEnv), actVersion));
 				row.add (sme.getJobIsFinal (sysEnv));
-				row.add (visited ? new Long(0) : cntRequired (sysEnv, sme));
+				row.add (visited ? Long.valueOf(0) : cntRequired (sysEnv, sme));
 				row.add (sme.getCntRestartable (sysEnv));
 				row.add (sme.getCntSubmitted (sysEnv));
 				row.add (sme.getCntDependencyWait (sysEnv));
@@ -358,10 +358,10 @@ public class ListDependencyHierarchy
 				row.add (sme.getChildTag (sysEnv));
 
 				Vector c = SDMSHierarchyInstanceTable.idx_parentId.getVector (sysEnv, sme.getId (sysEnv));
-				row.add (new Integer (c.size()));
+				row.add (Integer.valueOf (c.size()));
 
 				c = SDMSDependencyInstanceTable.idx_dependentId.getVector (sysEnv, sme.getId (sysEnv));
-				row.add (new Integer (c.size()));
+				row.add (Integer.valueOf (c.size()));
 
 				final Vector dds_v = SDMSDependencyStateTable.idx_ddId.getVector (sysEnv, dd.getId (sysEnv), actVersion);
 				String sep = "";
@@ -396,7 +396,7 @@ public class ListDependencyHierarchy
 				row.add (empty);
 				row.add (empty);
 				row.add (empty);
-				row.add (new Long(0));
+				row.add (Long.valueOf(0));
 				row.add (empty);
 				row.add (empty);
 				row.add (empty);
@@ -426,9 +426,9 @@ public class ListDependencyHierarchy
 				row.add (di.getDependencyOperationAsString (sysEnv));
 				row.add (empty);
 
-				row.add (new Integer (0));
+				row.add (Integer.valueOf (0));
 
-				row.add (new Integer (0));
+				row.add (Integer.valueOf (0));
 
 				final Vector dds_v = SDMSDependencyStateTable.idx_ddId.getVector (sysEnv, dd.getId (sysEnv), actVersion);
 				String sep = "";
@@ -626,10 +626,10 @@ public class ListDependencyHierarchy
 		row.add (sme.getChildTag (sysEnv));
 
 		Vector c = SDMSHierarchyInstanceTable.idx_parentId.getVector (sysEnv, sme.getId (sysEnv));
-		row.add (new Integer (c.size()));
+		row.add (Integer.valueOf (c.size()));
 
 		c = SDMSDependencyInstanceTable.idx_dependentId.getVector (sysEnv, sme.getId (sysEnv));
-		row.add (new Integer (c.size()));
+		row.add (Integer.valueOf (c.size()));
 		row.add (empty);
 		row.add (sme.getIsSuspendedAsString (sysEnv));
 		row.add (sme.getParentSuspended (sysEnv));
@@ -650,6 +650,6 @@ public class ListDependencyHierarchy
 		}
 		result.setOutputContainer (table);
 
-		result.setFeedback (new SDMSMessage (sysEnv, "04205142204", "$1 Dependencies found", new Integer (table.lines)));
+		result.setFeedback (new SDMSMessage (sysEnv, "04205142204", "$1 Dependencies found", Integer.valueOf (table.lines)));
 	}
 }

@@ -28,7 +28,7 @@ package de.independit.scheduler.server.parser;
 import java.io.*;
 import java.util.*;
 import java.lang.*;
-import javax.xml.bind.DatatypeConverter;
+import java.util.Base64;
 
 import de.independit.scheduler.server.*;
 import de.independit.scheduler.server.util.*;
@@ -50,7 +50,7 @@ public class SSOConnect extends Connect
 	private String token;
 	private boolean firstTime;
 
-	private final static String ADMIN = "ASDMIN";
+	private final static String ADMIN = "ADMIN";
 	private final static String PUBLIC = "PUBLIC";
 	private final static String ISDEFAULT = "ISDEFAULT";
 	private final static String PROVIDER = "PROVIDER";
@@ -89,11 +89,11 @@ public class SSOConnect extends Connect
 			provider = (WindowsAuthProviderImpl)(sysEnv.cEnv.SSOInfo.get(PROVIDER));
 		}
 		try {
-			byteToken = DatatypeConverter.parseBase64Binary(token);
+			byteToken = Base64.getDecoder().decode(token);
 			serverContext = provider.acceptSecurityToken("server-connection", byteToken, "Negotiate");
 			byteToken = serverContext.getToken();
 			if (byteToken != null)
-				token = DatatypeConverter.printBase64Binary(byteToken);
+				token = Base64.getEncoder().encodeToString(byteToken);
 			else
 				token = "null";
 
@@ -142,7 +142,7 @@ public class SSOConnect extends Connect
 					isDefaultGroup = true;
 					name = name.substring(0,name.length() - ("_" + ISDEFAULT).length());
 				}
-					isBicsuiteUser = true;
+				isBicsuiteUser = true;
 				if (name.equals(namePrefix + "_" + PUBLIC)) {
 					continue;
 				}
@@ -165,7 +165,7 @@ public class SSOConnect extends Connect
 				}
 			}
 			if (!isBicsuiteUser)
-				throw new CommonErrorException(new SDMSMessage(sysEnv, "02709251459", "Permission denied"));
+				throw new CommonErrorException(new SDMSMessage(sysEnv, "02709251505", "Permission denied"));
 
 			if (SystemEnvironment.useAdGroups)
 				initUser(sysEnv, vGroups.toArray(new String[0]), false, SystemEnvironment.autoCreateUsers, SystemEnvironment.autoCreateGroups, defaultGroup);
@@ -179,7 +179,7 @@ public class SSOConnect extends Connect
 			desc.add("TOKEN");
 			data.add(token);
 		}
-		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv, "03205141302", "Connect"), desc, data);
+		d_container = new SDMSOutputContainer(sysEnv, new SDMSMessage (sysEnv, "03205141303", "Connect"), desc, data);
 		result.setOutputContainer(d_container);
 		result.setFeedback(new SDMSMessage(sysEnv, "03709191436", (firstTime ? "Connection in progress" : "Connected")));
 	}

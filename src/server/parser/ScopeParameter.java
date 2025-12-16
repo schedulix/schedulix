@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -38,11 +36,11 @@ public class ScopeParameter
 {
 	public static final String __version = "@(#) $Id: ScopeParameter.java,v 2.4.14.1 2013/03/14 10:24:47 ronald Exp $";
 
-	private static final Integer typeConstant     = new Integer (SDMSParameterDefinition.CONSTANT);
-	private static final Integer typeDynamic      = new Integer (SDMSParameterDefinition.DYNAMIC);
-	private static final Integer typeDynamicValue = new Integer (SDMSParameterDefinition.DYNAMICVALUE);
+	private static final Integer typeConstant     = Integer.valueOf (SDMSParameterDefinition.CONSTANT);
+	private static final Integer typeDynamic      = Integer.valueOf (SDMSParameterDefinition.DYNAMIC);
+	private static final Integer typeDynamicValue = Integer.valueOf (SDMSParameterDefinition.DYNAMICVALUE);
 
-	private static final Integer aggFunctionNone = new Integer (SDMSParameterDefinition.NONE);
+	private static final Integer aggFunctionNone = Integer.valueOf (SDMSParameterDefinition.NONE);
 
 	private static final void markAltered (final SystemEnvironment sysEnv, final Long sId)
 		throws SDMSException
@@ -228,7 +226,6 @@ public class ScopeParameter
 		size = list.size();
 		for (int i = 0; i < size; ++i) {
 			final String key = (String) list.get (i);
-
 			final String sic = '=' + (String) parms.get (key);
 
 			SDMSParameterDefinitionTable.table.create (sysEnv,
@@ -251,6 +248,5 @@ public class ScopeParameter
 
 	private ScopeParameter()
 	{
-
 	}
 }

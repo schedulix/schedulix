@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -45,7 +43,7 @@ public class AlterDistribution extends Node
 	private final Vector resList;
 	private boolean ignoreErrors;
 
-	private static final Integer zero = new Integer(0);
+	private static final Integer zero = Integer.valueOf(0);
 
 	public AlterDistribution(ObjectURL u, Vector v, Boolean r)
 	{

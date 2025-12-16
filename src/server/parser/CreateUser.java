@@ -76,7 +76,7 @@ public class CreateUser extends ManipUser
 				while (it.hasNext()) {
 					Long gId = (Long) it.next();
 					try {
-						SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
+						SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO, gId));
 						p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 					} catch (NotFoundException nfe) {
 					}
@@ -93,8 +93,8 @@ public class CreateUser extends ManipUser
 			Iterator i1 = v.iterator();
 			while (i1.hasNext()) {
 				SDMSUser u1 = (SDMSUser)i1.next();
-				if (!u1.getDeleteVersion(sysEnv).equals(new Long(0))) {
-					u1.setDeleteVersion(sysEnv, new Long(0));
+				if (!u1.getDeleteVersion(sysEnv).equals(Long.valueOf(0))) {
+					u1.setDeleteVersion(sysEnv, Long.valueOf(0));
 					try {
 						SDMSMemberTable.table.create(sysEnv, publicGId, u1.getId(sysEnv));
 					} catch (DuplicateKeyException dke) {
@@ -111,7 +111,7 @@ public class CreateUser extends ManipUser
 			}
 
 			try {
-				u = SDMSUserTable.table.create( sysEnv, user, passwd, salt, method, enable, defaultGId, connect_type, new Long(0));
+				u = SDMSUserTable.table.create( sysEnv, user, passwd, salt, method, enable, defaultGId, connect_type, Long.valueOf(0));
 			} catch (DuplicateKeyException dke) {
 				if(replace) {
 					try {
@@ -166,10 +166,10 @@ public class CreateUser extends ManipUser
 					if (o instanceof String) {
 						try {
 							SDMSUser eu = SDMSUserTable.idx_name_getUnique(sysEnv, (String) o);
-							if (!eu.getDeleteVersion(sysEnv).equals(new Long(0))) {
+							if (!eu.getDeleteVersion(sysEnv).equals(Long.valueOf(0))) {
 								throw new NotFoundException(new SDMSMessage(sysEnv, "03707311526", "User " + o.toString() + " not found"));
 							}
-							SDMSUserEquivTable.table.create(sysEnv, u.getId(sysEnv), new Integer(SDMSUserEquiv.USER), eu.getId(sysEnv));
+							SDMSUserEquivTable.table.create(sysEnv, u.getId(sysEnv), Integer.valueOf(SDMSUserEquiv.USER), eu.getId(sysEnv));
 						} catch (NotFoundException nfe) {
 							throw nfe;
 						}
@@ -180,7 +180,7 @@ public class CreateUser extends ManipUser
 								if (s.getType(sysEnv).intValue() != SDMSScope.SERVER) {
 									throw new NotFoundException(new SDMSMessage(sysEnv, "03707311527", "No job server " + o.toString() + " found"));
 								}
-								SDMSUserEquivTable.table.create(sysEnv, u.getId(sysEnv), new Integer(SDMSUserEquiv.SERVER), s.getId(sysEnv));
+								SDMSUserEquivTable.table.create(sysEnv, u.getId(sysEnv), Integer.valueOf(SDMSUserEquiv.SERVER), s.getId(sysEnv));
 							} catch (NotFoundException nfe) {
 
 							}

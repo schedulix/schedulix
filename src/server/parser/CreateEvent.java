@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -58,7 +56,6 @@ public class CreateEvent
 		try {
 			obj.resolve(sysEnv);
 		} catch (final NotFoundException nfe) {
-
 		}
 
 		if(!with.containsKey(ParseStr.S_ACTION)) {
@@ -67,7 +64,6 @@ public class CreateEvent
 		submit = (SubmitJob) with.get(ParseStr.S_ACTION);
 
 		final SDMSSchedulingEntity se = SDMSSchedulingEntityTable.get (sysEnv, submit.path, submit.name);
-
 		if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
 			throw new AccessViolationException(
 				new SDMSMessage(sysEnv, "03402131255", "Submit privilege on $1 missing", se.pathString(sysEnv))
@@ -82,7 +78,7 @@ public class CreateEvent
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, Long.valueOf(0))).getId(sysEnv);
 		}
 		se.checkSubmitForGroup(sysEnv, gId);
 

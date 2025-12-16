@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -78,7 +76,6 @@ public class DropGroup extends Node
 						"you cannot remove a user from his default group"));
 			}
 			if (uid.equals(sysEnv.cEnv.uid())) {
-
 				me = m;
 			} else
 				m.delete(sysEnv);
@@ -90,47 +87,38 @@ public class DropGroup extends Node
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
 					"02402181200", "One or more $1 still owned by group $2",
 					"Event", gName));
-
 		if (SDMSFolderTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
 					"02402181201", "One or more $1 still owned by group $2",
 					"Folder", gName));
-
 		if (SDMSIntervalTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
 					"02402181202", "One or more $1 still owned by group $2",
 					"Interval", gName));
-
 		if (SDMSNamedResourceTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
 					"02402181203", "One or more $1 still owned by group $2",
 					"NamedResource", gName));
-
 		if (SDMSScheduleTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
 					"02402181204", "One or more $1 still owned by group $2",
 					"Schedule", gName));
-
 		if (SDMSScheduledEventTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
 					"02402181205", "One or more $1 still owned by group $2",
 					"ScheduledEvent", gName));
-
 		if (SDMSSchedulingEntityTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
 					"02402181206", "One or more $1 still owned by group $2",
 					"SchedulingEntity", gName));
-
 		if (SDMSScopeTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
 					"02402181207", "One or more $1 still owned by group $2",
 					"Scope", gName));
-
 		if (SDMSSubmittedEntityTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
 					"02402181208", "One or more $1 still owned by group $2",
 					"SubmittedEntity", gName));
-
 		if (SDMSResourceTable.idx_ownerId.containsKey(sysEnv, gId))
 			throw new CommonErrorException(new SDMSMessage(sysEnv,
 					"02402270834", "One or more $1 still owned by group $2",
@@ -142,7 +130,7 @@ public class DropGroup extends Node
 
 		SDMSObjectCommentTable.dropComment (sysEnv, gId);
 
-		g.setDeleteVersion(sysEnv, new Long(sysEnv.tx.txId));
+		g.setDeleteVersion(sysEnv, Long.valueOf(sysEnv.tx.txId));
 
 		if (me != null) {
 			me.delete(sysEnv);

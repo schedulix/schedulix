@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -55,7 +53,6 @@ public class AlterExitStatProf extends Node
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-
 		SDMSExitStateProfile esp;
 		try {
 			esp = (SDMSExitStateProfile) url.resolve(sysEnv);
@@ -77,14 +74,11 @@ public class AlterExitStatProf extends Node
 		Long d_esmpId = null;
 		if (items.containsKey(ParseStr.S_DEFAULT_MAPPING)) {
 			String profile = (String)items.get(ParseStr.S_DEFAULT_MAPPING);
-
 			if (profile != null) {
 				d_esmpId = SDMSExitStateMappingProfileTable.idx_name_getUnique(sysEnv, profile).getId(sysEnv);
 			}
-
 			esp.setDefaultEsmpId(sysEnv, d_esmpId);
 		} else {
-
 			d_esmpId = esp.getDefaultEsmpId(sysEnv);
 		}
 
@@ -103,7 +97,6 @@ public class AlterExitStatProf extends Node
 	)
 		throws SDMSException
 	{
-
 		Iterator i = states.iterator();
 		SDMSExitState es;
 		while (i.hasNext()) {
@@ -120,7 +113,6 @@ public class AlterExitStatProf extends Node
 		throws SDMSException
 	{
 		int idx = 1;
-
 		Integer pref;
 		Boolean isFinal;
 		Boolean isRestartable;
@@ -129,17 +121,14 @@ public class AlterExitStatProf extends Node
 		boolean had_unreachable = false;
 		boolean had_broken = false;
 		boolean had_batchDefault = false;
-
 		Iterator i = espStates.iterator();
 		EspState espState;
 		while (i.hasNext()) {
 			espState = (EspState)i.next();
-
-			if (espState.type.equals(new Integer(SDMSExitState.FINAL)))
+			if (espState.type.equals(Integer.valueOf(SDMSExitState.FINAL)))
 				isFinal = Boolean.TRUE;
 			else isFinal = Boolean.FALSE;
-
-			if (espState.type.equals(new Integer(SDMSExitState.RESTARTABLE)))
+			if (espState.type.equals(Integer.valueOf(SDMSExitState.RESTARTABLE)))
 				isRestartable = Boolean.TRUE;
 			else isRestartable = Boolean.FALSE;
 
@@ -183,13 +172,10 @@ public class AlterExitStatProf extends Node
 						"A default exit state for dependencies must be defined FINAL"));
 				}
 			}
-
 			esd = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, espState.name);
 			esdId = esd.getId(sysEnv);
-
-			pref = new Integer (idx);
+			pref = Integer.valueOf (idx);
 			idx ++;
-
 			try {
 				SDMSExitStateTable.table.create (sysEnv, pref, isFinal, isRestartable, isUnreachable, isBroken, isBatchDefault, isDependencyDefault, espId, esdId);
 			} catch (DuplicateKeyException dke) {

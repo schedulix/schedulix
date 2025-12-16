@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -73,22 +71,15 @@ public class ListNamedResource extends Node
 	public Vector fillHeadInfo()
 	{
 		Vector desc = new Vector();
-
 		desc.add("ID");
 		desc.add("NAME");
 		desc.add("OWNER");
-
 		desc.add("USAGE");
-
 		desc.add("RESOURCE_STATE_PROFILE");
-
 		desc.add("FACTOR");
-
 		desc.add("SUBCATEGORIES");
-
 		desc.add("RESOURCES");
 		desc.add("PRIVS");
-
 		return desc;
 	}
 
@@ -103,7 +94,6 @@ public class ListNamedResource extends Node
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-
 		SDMSNamedResource nr;
 		if (path == null)
 			nr = SDMSNamedResourceTable.idx_parentId_name_getUnique(sysEnv, new SDMSKey(null, "RESOURCE"));
@@ -130,7 +120,7 @@ public class ListNamedResource extends Node
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(new SDMSMessage (sysEnv, "02111101415",
-				"$1 Named Resource(s) found", new Integer(d_container.lines)));
+				"$1 Named Resource(s) found", Integer.valueOf(d_container.lines)));
 	}
 
 	private void fillVector(SystemEnvironment sysEnv, SDMSNamedResource nr, Vector v)
@@ -161,8 +151,8 @@ public class ListNamedResource extends Node
 			if(tnr.getUsage(sysEnv).intValue() == SDMSNamedResource.CATEGORY)	subcat++;
 			else									res++;
 		}
-		v.add(new Integer(subcat));
-		v.add(new Integer(res));
+		v.add(Integer.valueOf(subcat));
+		v.add(Integer.valueOf(res));
 		v.add(nr.getPrivileges(sysEnv).toString());
 	}
 }

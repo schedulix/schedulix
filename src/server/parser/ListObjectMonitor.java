@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -59,11 +57,8 @@ public class ListObjectMonitor extends Node
 		desc.add("ID");
 		desc.add("NAME");
 		desc.add("OWNER");
-
 		desc.add("WATCH_TYPE");
-
 		desc.add("RECREATE");
-
 		desc.add("WATCHER");
 		desc.add("PRIVS");
 
@@ -75,7 +70,7 @@ public class ListObjectMonitor extends Node
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "02108241006", "$1 Object Type(s) found",
-					new Integer(d_container.lines)));
+					Integer.valueOf(d_container.lines)));
 	}
 
 }

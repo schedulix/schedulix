@@ -80,7 +80,7 @@ public class CreateJobDefinition extends ManipJobDefinition
 						name,
 						folderId,
 						gId,
-						new Integer(type),
+						Integer.valueOf(type),
 						runProgram,
 						rerunProgram,
 						killProgram,
@@ -132,7 +132,7 @@ public class CreateJobDefinition extends ManipJobDefinition
 		if((se.getPrivilegeMask() & lpriv) != lpriv) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03202061440", "Incompatible grant"));
 		}
-		se.setInheritPrivs(sysEnv, new Long(lpriv));
+		se.setInheritPrivs(sysEnv, Long.valueOf(lpriv));
 
 		if(dependencydeflist != null) {
 			Iterator i = dependencydeflist.iterator();

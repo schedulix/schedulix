@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -64,13 +62,12 @@ public class AlterComment extends Node
 		Vector texts = (Vector) with.get(ParseStr.S_TEXT);
 		if(texts == null) {
 			text = (String) with.get(ParseStr.S_URL);
-			infoType = new Integer(SDMSObjectComment.URL);
+			infoType = Integer.valueOf(SDMSObjectComment.URL);
 		} else {
-			infoType = new Integer(SDMSObjectComment.TEXT);
+			infoType = Integer.valueOf(SDMSObjectComment.TEXT);
 		}
 
 		if (texts == null && (text == null || text.equals(""))) {
-
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03808040831", "Comment cannot be empty. Use the drop command to delete comments"));
 		}
 
@@ -97,7 +94,7 @@ public class AlterComment extends Node
 					Vector entry = (Vector) texts.get(i);
 					tag = (String) entry.get(0);
 					text = (String) entry.get(1);
-					SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(i+1), tag, text);
+					SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, Integer.valueOf(i+1), tag, text);
 				}
 			}
 		} else {
@@ -106,7 +103,7 @@ public class AlterComment extends Node
 					oc = (SDMSObjectComment) ocv.get(i);
 					oc.delete(sysEnv);
 				}
-				SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(1), null, text);
+				SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, Integer.valueOf(1), null, text);
 			} else {
 				int i;
 				for (i = 0; i < ocv.size() && i < texts.size(); ++i) {
@@ -133,7 +130,7 @@ public class AlterComment extends Node
 					Vector entry = (Vector) texts.get(i);
 					tag = (String) entry.get(0);
 					text = (String) entry.get(1);
-					SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, new Integer(i+1), tag, text);
+					SDMSObjectCommentTable.table.create(sysEnv, obj.objId, obj.objType, infoType, Integer.valueOf(i+1), tag, text);
 				}
 			}
 		}

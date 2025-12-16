@@ -121,15 +121,15 @@ public class AlterResource extends ManipResource
 					dt.setMissingFieldsFromNow();
 				} else
 					dt.fixToMinDate();
-				rsdTime = new Long(dt.toDate().getTime());
+				rsdTime = Long.valueOf(dt.toDate().getTime());
 			} else {
-				rsdTime = new Long(System.currentTimeMillis());
+				rsdTime = Long.valueOf(System.currentTimeMillis());
 			}
 			r.setRsdTime(sysEnv, rsdTime);
 		}
 
 		if(groupname != null) {
-			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(groupname, new Long(0))).getId(sysEnv);
+			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(groupname, Long.valueOf(0))).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId);
 			r.setOwnerId(sysEnv, gId);
 		}
@@ -172,7 +172,7 @@ public class AlterResource extends ManipResource
 		}
 
 		if(groupname != null) {
-			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(groupname, new Long(0))).getId(sysEnv);
+			final Long gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(groupname, Long.valueOf(0))).getId(sysEnv);
 			ChownChecker.check(sysEnv, gId);
 			rt.setOwnerId(sysEnv, gId);
 		}

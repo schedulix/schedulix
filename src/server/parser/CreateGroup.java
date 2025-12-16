@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -69,10 +67,9 @@ public class CreateGroup extends ManipGroup
 			while (i.hasNext()) {
 				Long gId = (Long) i.next();
 				try {
-					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
+					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO, gId));
 					p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 				} catch (NotFoundException nfe) {
-
 				}
 			}
 			if (p.can(SDMSPrivilege.MANAGE_GROUP)) {
@@ -91,9 +88,9 @@ public class CreateGroup extends ManipGroup
 			}
 			while (i1.hasNext()) {
 				SDMSGroup g1 = (SDMSGroup)i1.next();
-				if (!g1.getDeleteVersion(sysEnv).equals(new Long(0))) {
+				if (!g1.getDeleteVersion(sysEnv).equals(Long.valueOf(0))) {
 					replace = true;
-					g1.setDeleteVersion(sysEnv, new Long(0));
+					g1.setDeleteVersion(sysEnv, Long.valueOf(0));
 					newGroupId = g1.getId(sysEnv);
 					SDMSMemberTable.table.create(sysEnv, newGroupId, myUId);
 					addedMe = true;
@@ -121,7 +118,7 @@ public class CreateGroup extends ManipGroup
 					setgid = true;
 				}
 
-				g = SDMSGroupTable.table.create( sysEnv, group, new Long(0));
+				g = SDMSGroupTable.table.create( sysEnv, group, Long.valueOf(0));
 			} catch (DuplicateKeyException dke) {
 				if (setgid) {
 					sysEnv.cEnv.popGid(sysEnv);
@@ -129,11 +126,10 @@ public class CreateGroup extends ManipGroup
 				}
 				if(replace) {
 					try {
-						AlterGroup ag = new AlterGroup(new ObjectURL(new Integer(Parser.GROUP), group), with, Boolean.FALSE);
+						AlterGroup ag = new AlterGroup(new ObjectURL(Integer.valueOf(Parser.GROUP), group), with, Boolean.FALSE);
 						ag.setEnv(env);
 						ag.go(sysEnv);
 						result = ag.result;
-
 						if (addedMe) sysEnv.cEnv.addGid(newGroupId);
 					} catch (SDMSException e) {
 						throw e;

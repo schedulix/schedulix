@@ -254,7 +254,7 @@ public class CreateInterval
 		} else {
 			final String gName = (String) with.get(ParseStr.S_GROUP);
 			gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(
-					sysEnv, new SDMSKey(gName, new Long(0))).getId(sysEnv);
+					sysEnv, new SDMSKey(gName, Long.valueOf(0))).getId(sysEnv);
 			if(!SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(gId, uId)) &&
 			   !SDMSMemberTable.idx_gId_uId.containsKey(sysEnv, new SDMSKey(SDMSObject.adminGId, uId))) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03312161745",
@@ -265,7 +265,7 @@ public class CreateInterval
 		try {
 			Long tmp_objId = null;
 			if (recursionLevel != 0)
-				tmp_objId = new Long(recursionLevel);
+				tmp_objId = Long.valueOf(recursionLevel);
 			ival = SDMSIntervalTable.table.create (sysEnv,
 			                                       obj.mappedName, gId, startTime, endTime, delay, baseInterval, baseIntervalMultiplier,
 			                                       duration, durationMultiplier, syncTime, isInverse, isMerge, embeddedIntervalId, obj.seId,
@@ -288,25 +288,25 @@ public class CreateInterval
 			ival.setEmbeddedIntervalId(sysEnv, embeddedInterval.getIvalId());
 			SDMSInterval embIval = embeddedInterval.getIval();
 			embIval.setObjId(sysEnv, ivalId);
-			embIval.setObjType(sysEnv, new Integer(SDMSInterval.INTERVAL));
+			embIval.setObjType(sysEnv, Integer.valueOf(SDMSInterval.INTERVAL));
 		}
 
 		if (with != null) {
 
 			if (with.containsKey (ParseStr.S_SELECTION)) {
 				switch (IntervalUtil.createSelections (sysEnv, ivalId, with)) {
-				case IntervalUtil.IGNORED_SECONDS:
-					secondsIgnore = true;
-					break;
-				case IntervalUtil.IGNORED_UPPER_RANGE:
-					ignoreUpperRange = true;
+					case IntervalUtil.IGNORED_SECONDS:
+						secondsIgnore = true;
+						break;
+					case IntervalUtil.IGNORED_UPPER_RANGE:
+						ignoreUpperRange = true;
 						break;
 				}
 			}
 
 			if (with.containsKey (ParseStr.S_FILTER)) {
 				duplicateFilterIgnore = IntervalUtil.createFilter (sysEnv, ivalId, with, obj.seId, recursionLevel + 1);
-				}
+			}
 
 			if (with.containsKey (ParseStr.S_DISPATCH)) {
 				IntervalUtil.createDispatcher (sysEnv, ivalId, with, recursionLevel + 1);

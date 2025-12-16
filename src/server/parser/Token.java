@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -50,14 +48,14 @@ public class Token
 	public Token(int t, String n, Object v)
 	{
 		textValue = n;
-		token = new Integer(t);
+		token = Integer.valueOf(t);
 		value = v;
 	}
 
 	public Token(int t, String n)
 	{
 		textValue = n;
-		token = new Integer(t);
+		token = Integer.valueOf(t);
 		value = n.toUpperCase();
 	}
 

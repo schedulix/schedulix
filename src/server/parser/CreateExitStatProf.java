@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -56,13 +54,12 @@ public class CreateExitStatProf extends Node
 		throws SDMSException
 	{
 		boolean gotFinalState = false;
-
 		SDMSExitStateProfile esp;
 		try {
 			esp = SDMSExitStateProfileTable.table.create (sysEnv, name, null, Boolean.TRUE);
 		} catch(DuplicateKeyException dke) {
 			if(replace) {
-				AlterExitStatProf aesp = new AlterExitStatProf(new ObjectURL(new Integer(Parser.EXIT_STATUS_PROFILE), name), items, Boolean.FALSE);
+				AlterExitStatProf aesp = new AlterExitStatProf(new ObjectURL(Integer.valueOf(Parser.EXIT_STATUS_PROFILE), name), items, Boolean.FALSE);
 				aesp.setEnv(env);
 				aesp.go(sysEnv);
 				result = aesp.result;
@@ -89,7 +86,7 @@ public class CreateExitStatProf extends Node
 		boolean had_broken = false;
 		boolean had_batchDefault = false;
 		while (i.hasNext()) {
-			pref = new Integer (idx);
+			pref = Integer.valueOf (idx);
 			idx ++;
 			esps = (EspState)i.next();
 
@@ -100,11 +97,11 @@ public class CreateExitStatProf extends Node
 			Boolean isBatchDefault = esps.batchDefault;
 			Boolean isDependencyDefault = esps.depDefault;
 
-			if (esps.type.equals(new Integer(SDMSExitState.FINAL))) {
+			if (esps.type.equals(Integer.valueOf(SDMSExitState.FINAL))) {
 				isFinal = Boolean.TRUE;
 				gotFinalState = true;
 			}
-			if (esps.type.equals(new Integer(SDMSExitState.RESTARTABLE))) {
+			if (esps.type.equals(Integer.valueOf(SDMSExitState.RESTARTABLE))) {
 				isRestartable = Boolean.TRUE;
 			}
 			if (isUnreachable.booleanValue()) {
@@ -143,7 +140,6 @@ public class CreateExitStatProf extends Node
 				}
 			}
 			esdId = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, esps.name).getId(sysEnv);
-
 			try {
 				SDMSExitStateTable.table.create (sysEnv, pref, isFinal, isRestartable, isUnreachable, isBroken, isBatchDefault, isDependencyDefault, espId, esdId);
 			} catch (DuplicateKeyException dke) {
@@ -161,9 +157,7 @@ public class CreateExitStatProf extends Node
 		String profile = (String) items.get(ParseStr.S_DEFAULT_MAPPING);
 		if (profile != null) {
 			d_esmpId = SDMSExitStateMappingProfileTable.idx_name_getUnique(sysEnv, profile).getId(sysEnv);
-
 			esp.validateMappingProfile(sysEnv, d_esmpId);
-
 			esp.setDefaultEsmpId (sysEnv, d_esmpId);
 		}
 

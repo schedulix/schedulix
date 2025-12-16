@@ -36,7 +36,7 @@ import de.independit.scheduler.server.util.*;
 public class AlterInterval
 	extends Node
 {
-	private static final Long ZERO = new Long(0);
+	private static final Long ZERO = Long.valueOf(0);
 
 	private final ObjectURL obj;
 	private final WithHash with;
@@ -227,7 +227,7 @@ public class AlterInterval
 					ci.go(sysEnv, 1);
 					SDMSInterval iv = ci.getIval();
 					iv.setObjId(sysEnv, ivalId);
-					iv.setObjType(sysEnv, new Integer(SDMSInterval.INTERVAL));
+					iv.setObjType(sysEnv, Integer.valueOf(SDMSInterval.INTERVAL));
 				}
 			}
 		}
@@ -254,11 +254,11 @@ public class AlterInterval
 				IntervalUtil.killDispatcher (sysEnv, ivalId);
 			}
 			switch (IntervalUtil.createSelections (sysEnv, ivalId, with)) {
-			case IntervalUtil.IGNORED_SECONDS:
-				secondsIgnore = true;
-				break;
-			case IntervalUtil.IGNORED_UPPER_RANGE:
-				ignoreUpperRange = true;
+				case IntervalUtil.IGNORED_SECONDS:
+					secondsIgnore = true;
+					break;
+				case IntervalUtil.IGNORED_UPPER_RANGE:
+					ignoreUpperRange = true;
 			}
 		}
 

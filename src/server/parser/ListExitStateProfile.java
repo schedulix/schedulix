@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -55,9 +53,7 @@ public class ListExitStateProfile extends Node
 
 		desc.add("ID");
 		desc.add("NAME");
-
 		desc.add("DEFAULT_ESM_NAME");
-
 		desc.add("IS_VALID");
 		desc.add("PRIVS");
 
@@ -94,13 +90,13 @@ public class ListExitStateProfile extends Node
 			d_container.addData(sysEnv, v);
 		}
 
-		Collections.sort(d_container.dataset , d_container.getComparator(sysEnv, 1));
+		Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, 1));
 
 		result.setOutputContainer(d_container);
 
 		result.setFeedback(
 			new SDMSMessage(sysEnv, "02111082031",
-				"$1 Exit State Profile(s) found", new Integer(d_container.lines)));
+				"$1 Exit State Profile(s) found", Integer.valueOf(d_container.lines)));
 	}
 }
 

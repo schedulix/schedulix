@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -49,9 +47,9 @@ public class Grant extends Node
 	private Boolean childrenOnly;
 	private int thisType;
 
-	private static final Integer SYSTEM = new Integer(SDMSGrant.SYSTEM);
-	private static final Long NOPRIVS = new Long(SDMSPrivilege.NOPRIVS);
-	private static final Long ZERO = new Long(0L);
+	private static final Integer SYSTEM = Integer.valueOf(SDMSGrant.SYSTEM);
+	private static final Long NOPRIVS = Long.valueOf(SDMSPrivilege.NOPRIVS);
+	private static final Long ZERO = Long.valueOf(0L);
 
 	public Grant(Boolean g, Long p, ObjectURL u, Vector grp, Boolean r, Boolean c)
 	{
@@ -125,8 +123,8 @@ public class Grant extends Node
 				return SDMSPrivilege.MANAGE_SYS;
 			case SDMSGrant.SELECT:
 				return SDMSPrivilege.MANAGE_SEL;
-		case SDMSGrant.NICE_PROFILE:
-			return SDMSPrivilege.MANAGE_NP;
+			case SDMSGrant.NICE_PROFILE:
+				return SDMSPrivilege.MANAGE_NP;
 		}
 		return SDMSPrivilege.NOPRIVS;
 	}
@@ -187,7 +185,6 @@ public class Grant extends Node
 		}
 		if((p.getPrivilegeMask() & lpriv) != lpriv) {
 			if (force) {
-
 				newPrivs = p.getPrivilegeMask() & lpriv;
 			} else {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03402240938", "Incompatible grant"));
@@ -206,11 +203,10 @@ public class Grant extends Node
 
 		for (int i = 0; i < gList.size(); i++) {
 			gId = (Long) gList.get(i);
-
 			try {
 				g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(oId, gId));
 			} catch (NotFoundException nfe) {
-				g = SDMSGrantTable.table.create(sysEnv, oId, gId, new Integer(thisType), NOPRIVS, null);
+				g = SDMSGrantTable.table.create(sysEnv, oId, gId, Integer.valueOf(thisType), NOPRIVS, null);
 			}
 			oldPrivs = g.getPrivs(sysEnv);
 			if(isGrant) {
@@ -222,7 +218,6 @@ public class Grant extends Node
 			if(pr.isEmpty()) {
 				g.delete(sysEnv);
 			} else {
-
 				g.setPrivs(sysEnv, pr.toLong());
 			}
 		}
@@ -251,12 +246,9 @@ public class Grant extends Node
 
 		for (int i = 0; i < gList.size(); i++) {
 			gId = (Long) gList.get(i);
-
 			try {
-
 				g = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(oId, gId));
 			} catch (NotFoundException nfe) {
-
 				g = SDMSGrantTable.table.create(sysEnv, oId, gId, SYSTEM, NOPRIVS, null);
 			}
 			Long oldPrivs = g.getPrivs(sysEnv);
@@ -267,7 +259,6 @@ public class Grant extends Node
 				pr.delPriv(sysEnv, lpriv);
 			}
 			if(pr.isEmpty()) {
-
 				g.delete(sysEnv);
 			} else {
 				g.setPrivs(sysEnv, pr.toLong());
@@ -294,7 +285,6 @@ public class Grant extends Node
 			checkObjectType (sysEnv, objectType);
 
 			if (
-
 				objectType != SDMSGrant.ENVIRONMENT
 			) {
 				sysEnv.checkFeatureAvailability(SystemEnvironment.S_GRANTS);

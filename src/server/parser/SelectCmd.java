@@ -127,11 +127,11 @@ public class SelectCmd extends Node
 	{
 		Long sId;
 		if(o instanceof Integer) {
-			sId = new Long (((Integer) o).intValue());
+			sId = Long.valueOf (((Integer) o).intValue());
 		} else if(o instanceof Long) {
 			sId = (Long) o;
 		} else if(o instanceof java.math.BigDecimal) {
-			sId = new Long (((java.math.BigDecimal) o).intValue());
+			sId = Long.valueOf (((java.math.BigDecimal) o).intValue());
 		} else {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03204250147",
 				"Type Error, Column is not an Id but a $1", o.getClass().getName()));
@@ -140,7 +140,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_folder(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFolder f;
 		Long id = objectToId(sysEnv, o);
@@ -153,7 +153,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_folder_raw(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSFolder f;
 		f = SDMSFolderTable.getObject(sysEnv, id);
@@ -161,7 +161,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_scope(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSScope s;
 		s = SDMSScopeTable.getObject(sysEnv, objectToId(sysEnv, o));
@@ -169,7 +169,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_job(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSchedulingEntity se;
 		Long id = objectToId(sysEnv, o);
@@ -182,7 +182,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_job_raw(SystemEnvironment sysEnv, Long id)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSchedulingEntity se;
 		se = SDMSSchedulingEntityTable.getObject(sysEnv, id);
@@ -190,7 +190,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_category(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSNamedResource nr;
 		nr = SDMSNamedResourceTable.getObject(sysEnv, objectToId(sysEnv, o));
@@ -198,7 +198,7 @@ public class SelectCmd extends Node
 	}
 
 	private PathVector convert_schedule(SystemEnvironment sysEnv, Object o)
-	throws SDMSException
+		throws SDMSException
 	{
 		SDMSSchedule sc;
 		sc = SDMSScheduleTable.getObject(sysEnv, objectToId(sysEnv, o));
@@ -206,7 +206,7 @@ public class SelectCmd extends Node
 	}
 
 	private String convert(SystemEnvironment sysEnv, Object o, int idx)
-	throws SDMSException
+		throws SDMSException
 	{
 		PathVector pv = null;
 		int quoted = cquote[idx];
@@ -252,7 +252,7 @@ public class SelectCmd extends Node
 		throws SDMSException
 	{
 		Long sgId = null;
-		Long ZERO = new Long(0);
+		Long ZERO = Long.valueOf(0);
 
 		if(!sysEnv.cEnv.gid().contains(SDMSObject.adminGId)) {
 			SDMSPrivilege p = new SDMSPrivilege();
@@ -260,7 +260,7 @@ public class SelectCmd extends Node
 			for(int i = 0; i < v.size(); i++) {
 				SDMSMember m = (SDMSMember) v.get(i);
 				try {
-					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , m.getGId(sysEnv)));
+					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO, m.getGId(sysEnv)));
 					p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 				} catch (NotFoundException nfe) {
 				}
@@ -322,13 +322,13 @@ public class SelectCmd extends Node
 				sca[i] = ((Integer) sv.get(i)).intValue();
 				if (sca[i] >= d_container.columns)
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03003081227",
-								"The sort column specified ($1) exceeds the number of columns in the output", new Integer(sca[i])));
+								"The sort column specified ($1) exceeds the number of columns in the output", Integer.valueOf(sca[i])));
 			}
 			Collections.sort(d_container.dataset, d_container.getComparator(sysEnv, sca));
 		}
 
 		result.setOutputContainer(d_container);
-		result.setFeedback(new SDMSMessage(sysEnv, "03204112153", "$1 Row(s) selected", new Integer(read)));
+		result.setFeedback(new SDMSMessage(sysEnv, "03204112153", "$1 Row(s) selected", Integer.valueOf(read)));
 	}
 }
 

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -94,14 +92,14 @@ public class AlterExitStateMapping extends Node
 				}
 				esm = SDMSExitStateMappingTable.table.create (
 						sysEnv, esmpId, esd.getId(sysEnv),
-						new Integer(exitCode), new Integer (esmMap.from().intValue() - 1));
+						Integer.valueOf(exitCode), Integer.valueOf (esmMap.from().intValue() - 1));
 			}
 			idx = idx + 1;
 			exitCode = esmMap.from().intValue();
 			esd = SDMSExitStateDefinitionTable.idx_name_getUnique(sysEnv, esmMap.name());
 		}
 		esm = SDMSExitStateMappingTable.table.create (sysEnv,
-			esmpId, esd.getId(sysEnv), new Integer(exitCode), new Integer(Integer.MAX_VALUE));
+			esmpId, esd.getId(sysEnv), Integer.valueOf(exitCode), Integer.valueOf(Integer.MAX_VALUE));
 
 		SDMSExitStateProfile esp;
 		Vector v = SDMSExitStateProfileTable.idx_defaultEsmpId.getVector(sysEnv, esmpId);

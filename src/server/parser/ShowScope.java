@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -61,35 +59,21 @@ public class ShowScope extends ShowCommented
 	private void fillHeader(SystemEnvironment sysEnv, Vector desc)
 		throws SDMSException
 	{
-
 		desc.add("ID");
 		desc.add("NAME");
 		desc.add("OWNER");
-
 		desc.add("TYPE");
-
 		desc.add("INHERIT_PRIVS");
-
 		desc.add("IS_TERMINATE");
-
 		desc.add("IS_SUSPENDED");
-
 		desc.add("IS_ENABLED");
-
 		desc.add("IS_REGISTERED");
-
 		desc.add("IS_CONNECTED");
-
 		desc.add("HAS_ALTERED_CONFIG");
-
 		desc.add("STATE");
-
 		desc.add("PID");
-
 		desc.add("NODE");
-
 		desc.add("IDLE");
-
 		desc.add("ERRMSG");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
@@ -98,15 +82,10 @@ public class ShowScope extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("RESOURCES");
-
 		desc.add("CONFIG");
-
 		desc.add("CONFIG_ENVMAPPING");
-
 		desc.add("PARAMETERS");
-
 	}
 
 	public void go(SystemEnvironment sysEnv)
@@ -135,12 +114,12 @@ public class ShowScope extends ShowCommented
 		v.add(s.getIsSuspended(sysEnv));
 		v.add(s.getIsEnabled(sysEnv));
 		v.add(s.getIsRegistered(sysEnv));
-		v.add(new Boolean(s.isConnected(sysEnv)));
+		v.add(Boolean.valueOf(s.isConnected(sysEnv)));
 		v.add(s.getHasAlteredConfig(sysEnv));
 		v.add(s.getState(sysEnv));
 		v.add(s.getPid(sysEnv));
 		v.add(s.getNode(sysEnv));
-		v.add(new Long(s.getIdle(sysEnv)));
+		v.add(Long.valueOf(s.getIdle(sysEnv)));
 		v.add(s.getErrmsg(sysEnv));
 		v.add(getCommentContainer(sysEnv, sId));
 		v.add(getCommentInfoType(sysEnv, sId));
@@ -177,39 +156,26 @@ public class ShowScope extends ShowCommented
 	private void add_resources(SystemEnvironment sysEnv, SDMSScope s, Vector v)
 		throws SDMSException
 	{
-
 		ResourceTreeLister rtl = new ResourceTreeLister(sysEnv, null, s.getId(sysEnv));
-
 		Vector roots = new Vector();
 		roots.add(SDMSNamedResourceTable.idx_parentId_name.getUnique(sysEnv, new SDMSKey (null, "RESOURCE")));
-
 		v.add(rtl.list(sysEnv, roots, resourceExpandList));
 	}
 
 	private void fillConfigHeaders(SystemEnvironment sysEnv, Vector cfgDesc, Vector envDesc)
 		throws SDMSException
 	{
-
 		cfgDesc.add ("KEY");
-
 		cfgDesc.add ("VALUE");
-
 		cfgDesc.add ("LOCAL");
-
 		cfgDesc.add ("ANCESTOR_SCOPE");
-
 		cfgDesc.add ("ANCESTOR_VALUE");
 
 		envDesc.add ("KEY");
-
 		envDesc.add ("VALUE");
-
 		envDesc.add ("LOCAL");
-
 		envDesc.add ("ANCESTOR_SCOPE");
-
 		envDesc.add ("ANCESTOR_VALUE");
-
 	}
 
 	private void collectConfig (SystemEnvironment sysEnv, final Vector v)
@@ -272,7 +238,7 @@ public class ShowScope extends ShowCommented
 						final Vector row = new Vector();
 						row.add (key);
 						row.add (cfgValue);
-						row.add (new Boolean (isLocal));
+						row.add (Boolean.valueOf (isLocal));
 						row.add (getScopePath (sysEnv, isLocal ? ancestId : scopeId));
 						row.add (isLocal ? ancestVal : cfgValue);
 
@@ -284,7 +250,6 @@ public class ShowScope extends ShowCommented
 		for (int i = 0; i < Config.ALL_VALUES.length; ++i) {
 			String key = Config.ALL_VALUES[i];
 			if (!keysIssued.contains(key)) {
-
 				Object value = null;
 				for (int j = 0; j < Config.defaultKeys.length; ++j) {
 					if (key.equals(Config.defaultKeys[j])) {
@@ -343,7 +308,7 @@ public class ShowScope extends ShowCommented
 			final Vector row = new Vector();
 			row.add (envKey);
 			row.add (envValue);
-			row.add (new Boolean (isLocal));
+			row.add (Boolean.valueOf (isLocal));
 			row.add (getScopePath (sysEnv, isLocal ? ancestId : scopeId));
 			row.add (isLocal ? ancestVal : envValue);
 

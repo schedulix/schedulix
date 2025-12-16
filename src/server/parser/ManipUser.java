@@ -56,7 +56,7 @@ public abstract class ManipUser extends Node
 	protected Integer connect_type;
 	protected Vector userEquiv = null;
 
-	protected final static Long ZERO = new Long(0L);
+	protected final static Long ZERO = Long.valueOf(0L);
 	protected final static int MD5LENGTH = 35;
 
 	public ManipUser(ObjectURL u, WithHash w)
@@ -68,7 +68,7 @@ public abstract class ManipUser extends Node
 		grouplist = new Vector();
 		addlist = new Vector();
 		dellist = new Vector();
-		method = new Integer(SDMSUser.SHA256);
+		method = Integer.valueOf(SDMSUser.SHA256);
 	}
 
 	public ManipUser(String u, WithHash w)
@@ -80,7 +80,7 @@ public abstract class ManipUser extends Node
 		grouplist = new Vector();
 		addlist = new Vector();
 		dellist = new Vector();
-		method = new Integer(SDMSUser.SHA256);
+		method = Integer.valueOf(SDMSUser.SHA256);
 	}
 
 	public abstract void go(SystemEnvironment sysEnv)
@@ -104,7 +104,7 @@ public abstract class ManipUser extends Node
 	{
 		SDMSGroup g;
 
-		g = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSGroup.PUBLIC, new Long(0)));
+		g = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(SDMSGroup.PUBLIC, Long.valueOf(0)));
 		publicGId = g.getId(sysEnv);
 
 		if(withEvaluated) return;
@@ -124,7 +124,7 @@ public abstract class ManipUser extends Node
 				salt = (String) v.get(1);
 
 				if (passwd.length() == MD5LENGTH)
-					method = new Integer(SDMSUser.MD5);
+					method = Integer.valueOf(SDMSUser.MD5);
 			} else
 				throw new CommonErrorException (new SDMSMessage (sysEnv, "04312181625", "Both " + ParseStr.S_PASSWORD + " and " + ParseStr.S_RAWPASSWORD + " are not allowed"));
 
@@ -134,7 +134,7 @@ public abstract class ManipUser extends Node
 			enable = (Boolean) with.get(ParseStr.S_ENABLE);
 
 		if(with.containsKey(ParseStr.S_DEFAULTGROUP)) {
-			g = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) with.get(ParseStr.S_DEFAULTGROUP), new Long(0)));
+			g = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) with.get(ParseStr.S_DEFAULTGROUP), Long.valueOf(0)));
 			defaultGId = g.getId(sysEnv);
 		} else {
 			defaultGId = null;
@@ -145,7 +145,7 @@ public abstract class ManipUser extends Node
 			Vector v = (Vector) with.get(ParseStr.S_GROUPLIST);
 			Long gId;
 			for(int i = 0; i < v.size(); i++) {
-				gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) v.get(i), new Long(0))).getId(sysEnv);
+				gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) v.get(i), Long.valueOf(0))).getId(sysEnv);
 				if(!gId.equals(defaultGId))
 					grouplist.add(gId);
 			}
@@ -154,7 +154,7 @@ public abstract class ManipUser extends Node
 		if (with.containsKey(ParseStr.S_CONNECT)) {
 			connect_type = (Integer) with.get(ParseStr.S_CONNECT);
 		} else {
-			connect_type = new Integer(SDMSUser.PLAIN);
+			connect_type = Integer.valueOf(SDMSUser.PLAIN);
 		}
 
 		if (with.containsKey(ParseStr.S_EQUIVALENT)) {
@@ -165,7 +165,7 @@ public abstract class ManipUser extends Node
 			Vector v = (Vector) with.get(ParseStr.S_ADDGROUP);
 			Long gId;
 			for(int i = 0; i < v.size(); i++) {
-				gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) v.get(i), new Long(0))).getId(sysEnv);
+				gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) v.get(i), Long.valueOf(0))).getId(sysEnv);
 				addlist.add(gId);
 			}
 		}
@@ -174,7 +174,7 @@ public abstract class ManipUser extends Node
 			Vector v = (Vector) with.get(ParseStr.S_DELGROUP);
 			Long gId;
 			for(int i = 0; i < v.size(); i++) {
-				gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) v.get(i), new Long(0))).getId(sysEnv);
+				gId = SDMSGroupTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey((String) v.get(i), Long.valueOf(0))).getId(sysEnv);
 				dellist.add(gId);
 			}
 		}

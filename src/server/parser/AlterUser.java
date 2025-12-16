@@ -67,7 +67,7 @@ public class AlterUser extends ManipUser
 
 		try {
 			if (url == null)
-				u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(user, new Long(0)));
+				u = SDMSUserTable.idx_name_deleteVersion_getUnique(sysEnv, new SDMSKey(user, Long.valueOf(0)));
 			else
 				u = (SDMSUser) url.resolve(sysEnv);
 		} catch (NotFoundException nfe) {
@@ -88,7 +88,7 @@ public class AlterUser extends ManipUser
 			while (i.hasNext()) {
 				Long gId = (Long) i.next();
 				try {
-					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO , gId));
+					SDMSGrant gr = SDMSGrantTable.idx_objectId_gId_getUnique(sysEnv, new SDMSKey(ZERO, gId));
 					p.addPriv(sysEnv, gr.getPrivs(sysEnv).longValue());
 				} catch (NotFoundException nfe) {
 				}
@@ -335,10 +335,10 @@ public class AlterUser extends ManipUser
 						if (o instanceof String) {
 							try {
 								SDMSUser eu = SDMSUserTable.idx_name_getUnique(sysEnv, (String) o);
-								if (!eu.getDeleteVersion(sysEnv).equals(new Long(0))) {
+								if (!eu.getDeleteVersion(sysEnv).equals(Long.valueOf(0))) {
 									throw new NotFoundException(new SDMSMessage(sysEnv, "03707311522", "User " + o.toString() + " not found"));
 								}
-								SDMSUserEquivTable.table.create(sysEnv, u.getId(sysEnv), new Integer(SDMSUserEquiv.USER), eu.getId(sysEnv));
+								SDMSUserEquivTable.table.create(sysEnv, u.getId(sysEnv), Integer.valueOf(SDMSUserEquiv.USER), eu.getId(sysEnv));
 							} catch (NotFoundException nfe) {
 								throw nfe;
 							}
@@ -349,7 +349,7 @@ public class AlterUser extends ManipUser
 									if (s.getType(sysEnv).intValue() != SDMSScope.SERVER) {
 										throw new NotFoundException(new SDMSMessage(sysEnv, "03707311523", "No job server " + o.toString() + " found"));
 									}
-									SDMSUserEquivTable.table.create(sysEnv, u.getId(sysEnv), new Integer(SDMSUserEquiv.SERVER), s.getId(sysEnv));
+									SDMSUserEquivTable.table.create(sysEnv, u.getId(sysEnv), Integer.valueOf(SDMSUserEquiv.SERVER), s.getId(sysEnv));
 								} catch (NotFoundException nfe) {
 									throw nfe;
 								}

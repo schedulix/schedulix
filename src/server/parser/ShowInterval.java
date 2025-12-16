@@ -397,7 +397,7 @@ public class ShowInterval
 	{
 		SDMSInterval ival = SDMSIntervalTable.getObject(sysEnv, ivalId);
 		SDMSInterval embeddedInterval = null;
-		Integer iLevel = new Integer(level);
+		Integer iLevel = Integer.valueOf(level);
 		Vector row = new Vector();
 
 		row.add (ivalId);
@@ -530,7 +530,7 @@ public class ShowInterval
 	{
 		SDMSIntervalDispatcher dr = SDMSIntervalDispatcherTable.getObject(sysEnv, drId);
 		Vector row = new Vector();
-		Integer iLevel = new Integer(level);
+		Integer iLevel = Integer.valueOf(level);
 
 		row.add (drId);
 		row.add (iLevel);

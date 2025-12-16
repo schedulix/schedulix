@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -48,7 +46,7 @@ public class EsmMap
 	public EsmMap(String n)
 	{
 		name = n;
-		from = new Integer(Integer.MIN_VALUE);
+		from = Integer.valueOf(Integer.MIN_VALUE);
 	}
 
 	public String name()

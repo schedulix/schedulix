@@ -25,8 +25,8 @@ public class Parser
 	private static final String patternString = "^[-!#%&(-,/0-9=?@A-Z_a-z|]([- !#%&(-,/0-9=?@A-Z_a-z|]*[-!#%&(-,/0-9=?@A-Z_a-z|])?$";
 	private final Pattern identifierPattern = Pattern.compile(patternString);
 
-	private final static Integer PLUS_ONE		= new Integer(1);
-	private final static Integer MINUS_ONE		= new Integer(-1);
+	private final static Integer PLUS_ONE		= Integer.valueOf(1);
+	private final static Integer MINUS_ONE		= Integer.valueOf(-1);
 
 	private boolean inStatement = false;
 
@@ -2283,20 +2283,20 @@ job_type:		JOB							{ $$ = ParseStr.I_JOB; }
 	|		MILESTONE						{ $$ = ParseStr.I_MILESTONE; }
 	|		BATCH							{ $$ = ParseStr.I_BATCH; }
 
-opttrunc:									{ $$ = new Boolean(SDMSSchedulingEntity.NOTRUNC); }
+opttrunc:									{ $$ = Boolean.valueOf(SDMSSchedulingEntity.NOTRUNC); }
 	|		trunc							{ $$ = $1; }
 
-trunc:			TRUNC							{ $$ = new Boolean(SDMSSchedulingEntity.TRUNC); }
+trunc:			TRUNC							{ $$ = Boolean.valueOf(SDMSSchedulingEntity.TRUNC); }
 			//D:DEFAULT
-	|		NOTRUNC							{ $$ = new Boolean(SDMSSchedulingEntity.NOTRUNC); }
+	|		NOTRUNC							{ $$ = Boolean.valueOf(SDMSSchedulingEntity.NOTRUNC); }
 
-suspend:		SUSPEND							{ $$ = new WithItem(ParseStr.S_SUSPEND, new Boolean(SDMSSchedulingEntity.SUSPEND)); }
+suspend:		SUSPEND							{ $$ = new WithItem(ParseStr.S_SUSPEND, Boolean.valueOf(SDMSSchedulingEntity.SUSPEND)); }
 			//D:DEFAULT
-	|		NOSUSPEND						{ $$ = new WithItem(ParseStr.S_SUSPEND, new Boolean(SDMSSchedulingEntity.NOSUSPEND)); }
+	|		NOSUSPEND						{ $$ = new WithItem(ParseStr.S_SUSPEND, Boolean.valueOf(SDMSSchedulingEntity.NOSUSPEND)); }
 
-master:			MASTER							{ $$ = new Boolean(SDMSSchedulingEntity.MASTER); }
+master:			MASTER							{ $$ = Boolean.valueOf(SDMSSchedulingEntity.MASTER); }
 			//D:DEFAULT
-	|		NOMASTER						{ $$ = new Boolean(SDMSSchedulingEntity.NOMASTER); }
+	|		NOMASTER						{ $$ = Boolean.valueOf(SDMSSchedulingEntity.NOMASTER); }
 
 			//D:DEFAULT
 allany:			ALL							{ $$ = ParseStr.I_ALL; }
@@ -2363,8 +2363,8 @@ jcd_item:		folderpath '.' jobname					{ final WithHash w = new WithHash();
 	|		ALIAS '=' NONE						{ $$ = new WithItem(ParseStr.map($1.token), null); }
 	|		enable							{ $$ = new WithItem(ParseStr.S_ENABLE, $1); }
 
-staticdynamic:		STATIC							{ $$ = new Boolean(SDMSSchedulingHierarchy.STATIC); }
-	|		DYNAMIC							{ $$ = new Boolean(SDMSSchedulingHierarchy.DYNAMIC); }
+staticdynamic:		STATIC							{ $$ = Boolean.valueOf(SDMSSchedulingHierarchy.STATIC); }
+	|		DYNAMIC							{ $$ = Boolean.valueOf(SDMSSchedulingHierarchy.DYNAMIC); }
 
 			//D:DEFAULT
 job_childdef_suspend:	CHILDSUSPEND						{ $$ = ParseStr.I_SH_CHILDSUSPEND; }
@@ -3627,7 +3627,7 @@ privilege:	VIEW								{ $$ = SDMSPrivilege.map($1.token); }
 	|	EXECUTE								{ $$ = SDMSPrivilege.map($1.token); }
 
 privilege_list:	privilege							{ $$ = $1; }
-	|	privilege_list ',' privilege					{ $$ = new Long($1.longValue() | $3.longValue()); }
+	|	privilege_list ',' privilege					{ $$ = Long.valueOf($1.longValue() | $3.longValue()); }
 
 gr_cascforce:									{ $$ = null; }
 	|	CASCADE								{ $$ = Boolean.TRUE; }
@@ -3947,10 +3947,10 @@ om_parameterlist:	om_parameteritem					{ $$ = new WithHash(); $<WithHash>$.addIt
 om_parameteritem:	parametername '=' STRING	 			{ $$ = new WithItem($1, $3.textValue); }
 	|		parametername '=' DEFAULT	 			{ $$ = new WithItem($1, null); }
 
-om_recreate:		NONE							{ $$ = new Integer(0 /* SDMSObjectMonitor.NONE */);   }
+om_recreate:		NONE							{ $$ = Integer.valueOf(0 /* SDMSObjectMonitor.NONE */);   }
 			//D:DEFAULT
-	|		CREATE							{ $$ = new Integer(1 /* SDMSObjectMonitor.CREATE */); }
-	|		CHANGE							{ $$ = new Integer(2 /* SDMSObjectMonitor.CHANGE */); }
+	|		CREATE							{ $$ = Integer.valueOf(1 /* SDMSObjectMonitor.CREATE */); }
+	|		CHANGE							{ $$ = Integer.valueOf(2 /* SDMSObjectMonitor.CHANGE */); }
 
 
 //D:NT-ALIAS = instancelist
@@ -4500,7 +4500,7 @@ longg:		INTEGER								{ $$ = (Long) $1.value; }
 
 //D:NT=PARM
 integer:	INTEGER								{ if(((Long) $1.value).longValue() <= Integer.MAX_VALUE)
-											$$ = new Integer (((Long) $1.value).intValue());
+											$$ = Integer.valueOf (((Long) $1.value).intValue());
 										  else {
 											yyerror(ParseStr.S_SYNTAX_ERROR, new String[]{"VALID INTEGER (Integer out of bounds)"});
 											$$ = PLUS_ONE;
@@ -4517,7 +4517,7 @@ opt_integer:	integer								{ $$ = $1; }
 //D:NT=PARM
 signed_integer:	integer								{ $$ = $1; }
 	|	'+' integer							{ $$ = $2; }
-	|	'-' integer							{ $$ = new Integer(- $2.intValue()); }
+	|	'-' integer							{ $$ = Integer.valueOf(- $2.intValue()); }
 
 opt_signed_integer:	signed_integer						{ $$ = $1; }
 		//D:DEFAULT
@@ -4526,7 +4526,7 @@ opt_signed_integer:	signed_integer						{ $$ = $1; }
 //D:NT=PARM
 signed_float:	FLOAT								{ $$ = (Float) $1.value; }
 	|	'+' FLOAT							{ $$ = (Float) $2.value; }
-	|	'-' FLOAT							{ $$ = new Float(- ((Float) $2.value).floatValue()); }
+	|	'-' FLOAT							{ $$ = Float.valueOf(- ((Float) $2.value).floatValue()); }
 
 //D:NT=PARM
 number:		signed_float							{ $$ = $1; }

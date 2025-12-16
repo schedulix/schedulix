@@ -320,7 +320,7 @@ public class ShowSubmitted extends Node
 		data.add(sme.getMasterId(sysEnv));
 		data.add(sme.getEffectiveTimeZoneName(sysEnv));
 		data.add(sme.getChildTag(sysEnv));
-		data.add(new Long(actVersion));
+		data.add(Long.valueOf(actVersion));
 		group = SDMSGroupTable.getObject(sysEnv, sme.getOwnerId(sysEnv));
 		data.add(group.getName(sysEnv));
 		data.add(sme.getParentId(sysEnv));
@@ -393,7 +393,7 @@ public class ShowSubmitted extends Node
 		data.add(sme.getAgingAmount(sysEnv));
 		data.add("MINUTES");
 		if(se.getType(sysEnv).intValue() == SDMSSchedulingEntity.JOB) {
-			data.add(new Integer(SystemEnvironment.sched.getDynPriority(sysEnv, sme)));
+			data.add(Integer.valueOf(SystemEnvironment.sched.getDynPriority(sysEnv, sme)));
 		} else {
 			data.add(null);
 		}
@@ -484,12 +484,12 @@ public class ShowSubmitted extends Node
 		else
 			endTs = (int)((sysEnv.cEnv.last() - submitTs.longValue()) / 1000);
 		int processTime = endTs - dwTime.intValue();
-		data.add(new Integer (processTime));
-		data.add(new Integer(processTime - idleTime.intValue()));
+		data.add(Integer.valueOf (processTime));
+		data.add(Integer.valueOf(processTime - idleTime.intValue()));
 		if (processTime == 0)
 			data.add("");
 		else
-			data.add(new Integer(idleTime.intValue() * 100 / processTime));
+			data.add(Integer.valueOf(idleTime.intValue() * 100 / processTime));
 
 		data.add(childContainer(sysEnv, smeId));
 		data.add(parentContainer(sysEnv, smeId));
@@ -918,7 +918,7 @@ public class ShowSubmitted extends Node
 				}
 
 				Vector c = SDMSHierarchyInstanceTable.idx_parentId.getVector(sysEnv, sme.getId(sysEnv));
-				c_data.add(new Integer(c.size()));
+				c_data.add(Integer.valueOf(c.size()));
 
 				c_data.add(di.getIgnoreAsString(sysEnv));
 				c_data.add(sme.getChildSuspended(sysEnv));
@@ -1002,7 +1002,7 @@ public class ShowSubmitted extends Node
 
 			case SDMSSubmittedEntity.SUBMITTED:
 				resources = new HashSet();
-				Vector sv = SDMSScopeTable.idx_type.getVector(sysEnv, new Integer(SDMSScope.SERVER));
+				Vector sv = SDMSScopeTable.idx_type.getVector(sysEnv, Integer.valueOf(SDMSScope.SERVER));
 				size = sv.size();
 				for(int i = 0; i < size; i++) {
 					SDMSScope s = (SDMSScope) sv.get(i);
@@ -1084,7 +1084,7 @@ public class ShowSubmitted extends Node
 				for(int i = 0; i < size; i++) {
 					resourceList.add(((SDMSResourceAllocation) rav.get(i)).getRId(sysEnv));
 				}
-				rav = SDMSResourceAllocationTable.idx_smeId.getVector(sysEnv, new Long(- smeId.longValue()));
+				rav = SDMSResourceAllocationTable.idx_smeId.getVector(sysEnv, Long.valueOf(- smeId.longValue()));
 				size = rav.size();
 				for(int i = 0; i < size; i++) {
 					resourceList.add(((SDMSResourceAllocation) rav.get(i)).getRId(sysEnv));
@@ -1157,7 +1157,7 @@ public class ShowSubmitted extends Node
 		return c_container;
 	}
 	private	SDMSOutputContainer runs (SystemEnvironment sysEnv, SDMSSubmittedEntity sme)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector c_desc = new Vector();
 		c_desc.add("RERUN_SEQ");
@@ -1191,7 +1191,7 @@ public class ShowSubmitted extends Node
 
 		c_data = new Vector();
 		rrSeq = sme.getRerunSeq(sysEnv);
-		c_data.add(new Integer(rrSeq));
+		c_data.add(Integer.valueOf(rrSeq));
 		scopeId = sme.getScopeId(sysEnv);
 		if(scopeId != null) {
 			try {
@@ -1260,7 +1260,7 @@ public class ShowSubmitted extends Node
 
 			c_data = new Vector();
 			rrSeq = s.getRerunSeq(sysEnv);
-			c_data.add(new Integer(rrSeq));
+			c_data.add(Integer.valueOf(rrSeq));
 			scopeId = s.getScopeId(sysEnv);
 			if(scopeId != null) {
 				try {
@@ -1481,7 +1481,7 @@ class SsResourceScopeFormatter implements Formatter
 		v.add(null);
 		v.add(null);
 		v.add(null);
-		v.add(new Boolean(s.isConnected(sysEnv)));
+		v.add(Boolean.valueOf(s.isConnected(sysEnv)));
 		v.add(null);
 		v.add(null);
 		v.add(null);
@@ -1614,24 +1614,24 @@ class SsResourceScopeFormatter implements Formatter
 			try {
 				ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(sysEnv, new SDMSKey(smeId, rId, rr.getStickyName(sysEnv)));
 				if(ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.ALLOCATION) {
-					v.add(new Integer(0));
+					v.add(Integer.valueOf(0));
 					v.add(ra.getAmount(sysEnv));
 					v.add(ra.getLockmodeAsString(sysEnv));
 				} else if(ra.getAllocationType(sysEnv).intValue() == SDMSResourceAllocation.RESERVATION) {
 					v.add(ra.getAmount(sysEnv));
-					v.add(new Integer(0));
+					v.add(Integer.valueOf(0));
 					v.add(ra.getLockmodeAsString(sysEnv));
 				} else {
-					v.add(new Integer(0));
-					v.add(new Integer(0));
+					v.add(Integer.valueOf(0));
+					v.add(Integer.valueOf(0));
 					v.add(null);
 				}
 
 			} catch (NotFoundException nfe) {
 				try {
-					ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(sysEnv, new SDMSKey(new Long(- smeId.longValue()), rId, rr.getStickyName(sysEnv)));
+					ra = SDMSResourceAllocationTable.idx_smeId_rId_stickyName_getUnique(sysEnv, new SDMSKey(Long.valueOf(- smeId.longValue()), rId, rr.getStickyName(sysEnv)));
 					v.add(ra.getAmount(sysEnv));
-					v.add(new Integer(0));
+					v.add(Integer.valueOf(0));
 					v.add(ra.getLockmodeAsString(sysEnv));
 				} catch (NotFoundException nfe2) {
 					ra = null;
