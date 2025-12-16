@@ -276,7 +276,7 @@ public class SDMSExitStateDefinitionGeneric extends SDMSObject
 			myInsert.setLong(8, Long.MAX_VALUE);
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ExitStateDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "ExitStateDefinition: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -327,7 +327,7 @@ public class SDMSExitStateDefinitionGeneric extends SDMSObject
 			myUpdate.setLong(4, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ExitStateDefinition: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181956", "ExitStateDefinition: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

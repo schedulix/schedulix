@@ -90,12 +90,12 @@ public class SDMSIntervalHierarchyTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSIntervalHierarchyGeneric o = new SDMSIntervalHierarchyGeneric(env
-		                , p_childId
-		                , p_parentId
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_childId
+				, p_parentId
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                                                 );
 
 		SDMSIntervalHierarchy p;
@@ -154,18 +154,18 @@ public class SDMSIntervalHierarchyTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			childId = new Long (r.getLong(2));
-			parentId = new Long (r.getLong(3));
-			creatorUId = new Long (r.getLong(4));
-			createTs = new Long (r.getLong(5));
-			changerUId = new Long (r.getLong(6));
-			changeTs = new Long (r.getLong(7));
+			id     = Long.valueOf (r.getLong(1));
+			childId = Long.valueOf (r.getLong(2));
+			parentId = Long.valueOf (r.getLong(3));
+			creatorUId = Long.valueOf (r.getLong(4));
+			createTs = Long.valueOf (r.getLong(5));
+			changerUId = Long.valueOf (r.getLong(6));
+			changeTs = Long.valueOf (r.getLong(7));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "IntervalHierarchy: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "IntervalHierarchy: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSIntervalHierarchyGeneric(id,

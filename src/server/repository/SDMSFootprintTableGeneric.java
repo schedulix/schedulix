@@ -85,11 +85,11 @@ public class SDMSFootprintTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSFootprintGeneric o = new SDMSFootprintGeneric(env
-		                , p_name
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_name
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                                 );
 
 		SDMSFootprint p;
@@ -145,17 +145,17 @@ public class SDMSFootprintTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
+			id     = Long.valueOf (r.getLong(1));
 			name = r.getString(2);
-			creatorUId = new Long (r.getLong(3));
-			createTs = new Long (r.getLong(4));
-			changerUId = new Long (r.getLong(5));
-			changeTs = new Long (r.getLong(6));
+			creatorUId = Long.valueOf (r.getLong(3));
+			createTs = Long.valueOf (r.getLong(4));
+			changerUId = Long.valueOf (r.getLong(5));
+			changeTs = Long.valueOf (r.getLong(6));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "Footprint: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "Footprint: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSFootprintGeneric(id,

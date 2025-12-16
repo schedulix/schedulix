@@ -50,35 +50,35 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 	{
 		switch (t1.token.intValue()) {
 			case Parser.RERUN:
-				return new Integer(RERUN);
+				return Integer.valueOf(RERUN);
 			case Parser.CANCEL:
-				return new Integer(CANCEL);
+				return Integer.valueOf(CANCEL);
 			case Parser.SUSPEND:
-				return new Integer(SUSPEND);
+				return Integer.valueOf(SUSPEND);
 			case Parser.RESUME:
-				return new Integer(RESUME);
+				return Integer.valueOf(RESUME);
 			case Parser.KILL:
-				return new Integer(KILL);
+				return Integer.valueOf(KILL);
 			case Parser.COMMENT:
-				return new Integer(COMMENT_JOB);
+				return Integer.valueOf(COMMENT_JOB);
 			case Parser.SUBMIT:
-				return new Integer(SUBMITTED);
+				return Integer.valueOf(SUBMITTED);
 			case Parser.RESTARTABLE:
-				return new Integer(JOB_RESTARTABLE);
+				return Integer.valueOf(JOB_RESTARTABLE);
 			case Parser.RENICE:
-				return new Integer(RENICE);
+				return Integer.valueOf(RENICE);
 			case Parser.TIMEOUT:
-				return new Integer(TIMEOUT);
+				return Integer.valueOf(TIMEOUT);
 			case Parser.UNREACHABLE:
-				return new Integer(JOB_UNREACHABLE);
+				return Integer.valueOf(JOB_UNREACHABLE);
 			case Parser.IGNORE_DEPENDENCY:
-				return new Integer(IGNORE_DEPENDENCY);
+				return Integer.valueOf(IGNORE_DEPENDENCY);
 			case Parser.DISABLE:
-				return new Integer(DISABLE);
+				return Integer.valueOf(DISABLE);
 			case Parser.ENABLE:
-				return new Integer(ENABLE);
+				return Integer.valueOf(ENABLE);
 			case Parser.CLONE:
-				return new Integer(CLONE);
+				return Integer.valueOf(CLONE);
 		}
 		return null;
 	}
@@ -87,47 +87,47 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 	{
 		switch (t1.token.intValue()) {
 			case Parser.RERUN:
-				return new Integer(RERUN_RECURSIVE);
+				return Integer.valueOf(RERUN_RECURSIVE);
 			case Parser.CLONE:
-				return new Integer(CLONE);
+				return Integer.valueOf(CLONE);
 			case Parser.SET:
 				switch (t2.token.intValue()) {
 					case Parser.STATUS:
-						return new Integer(SET_STATE);
+						return Integer.valueOf(SET_STATE);
 					case Parser.EXIT_STATUS:
-						return new Integer(SET_EXIT_STATE);
+						return Integer.valueOf(SET_EXIT_STATE);
 					case Parser.WARNING:
-						return new Integer(SET_WARNING);
+						return Integer.valueOf(SET_WARNING);
 					case Parser.RESOURCE_STATUS:
-						return new Integer(SET_RESOURCE_STATE);
+						return Integer.valueOf(SET_RESOURCE_STATE);
 					case Parser.PARAMETERS:
-						return new Integer(SET_PARAMETERS);
+						return Integer.valueOf(SET_PARAMETERS);
 				}
 				return null;
 			case Parser.IGNORE:
 				switch (t2.token.intValue()) {
 					case Parser.RESOURCE:
-						return new Integer(IGNORE_RESOURCE);
+						return Integer.valueOf(IGNORE_RESOURCE);
 					case Parser.NAMED_RESOURCE:
-						return new Integer(IGNORE_NAMED_RESOURCE);
+						return Integer.valueOf(IGNORE_NAMED_RESOURCE);
 				}
 				return null;
 			case Parser.TRIGGER:
 				switch (t2.token.intValue()) {
 					case Parser.FAILURE:
-						return new Integer(TRIGGER_FAILED);
+						return Integer.valueOf(TRIGGER_FAILED);
 					case Parser.SUBMIT:
-						return new Integer(TRIGGER_SUBMIT);
+						return Integer.valueOf(TRIGGER_SUBMIT);
 				}
 				return null;
 			case Parser.CHANGE:
-				return new Integer(CHANGE_PRIORITY);
+				return Integer.valueOf(CHANGE_PRIORITY);
 			case Parser.SUBMIT:
-				return new Integer(SUBMIT_SUSPENDED);
+				return Integer.valueOf(SUBMIT_SUSPENDED);
 			case Parser.CLEAR:
-				return new Integer(CLEAR_WARNING);
+				return Integer.valueOf(CLEAR_WARNING);
 			case Parser.IGNORE_DEPENDENCY:
-				return new Integer(IGNORE_DEP_RECURSIVE);
+				return Integer.valueOf(IGNORE_DEP_RECURSIVE);
 		}
 		return null;
 	}
@@ -136,11 +136,11 @@ public class SDMSAuditTrail extends SDMSAuditTrailProxyGeneric
 	{
 		switch (t1.token.intValue()) {
 			case Parser.CLONE:
-				return new Integer(CLONE);
+				return Integer.valueOf(CLONE);
 			case Parser.SET:
-				return new Integer(SET_RESOURCE_STATE);
+				return Integer.valueOf(SET_RESOURCE_STATE);
 			case Parser.JOB:
-				return new Integer(JOB_IN_ERROR);
+				return Integer.valueOf(JOB_IN_ERROR);
 		}
 		return null;
 	}

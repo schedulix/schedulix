@@ -41,7 +41,7 @@ public class SDMSRepository
 	private HashMap tables;
 	private Iterator tableIterator = null;
 	private SDMSException loaderException = null;
-	private Integer lockObject = new Integer(0);
+	private Object lockObject = new Object();
 	private long lowestActiveVersion = Long.MAX_VALUE;
 
 	private static int tableCount = 0;
@@ -105,8 +105,8 @@ public class SDMSRepository
 			                                   " WHERE ID = MASTER_ID" +
 			                                   "   AND (" + squote + "STATE" + equote + " NOT IN (" + SDMSSubmittedEntity.CANCELLED + "," + SDMSSubmittedEntity.FINAL + ") OR" +
 			                                   "       FINAL_TS >= " + (postgres ?
-			                                                   "	   CAST (\'" + lowestActiveDate + "\' AS DECIMAL)" :
-			                                                   "	   " + lowestActiveDate) + ")" +
+								"	   CAST (\'" + lowestActiveDate + "\' AS DECIMAL)" :
+								"	   " + lowestActiveDate) + ")" +
 			                                   " ORDER BY SE_ID, SUBMIT_TS DESC");
 			int insctr = 0;
 			while(rset.next()) {

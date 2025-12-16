@@ -44,9 +44,9 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 
 	private final static VariableResolver FVR = new FolderVariableResolver();
 
-	private final static Long lzero = new Long(0);
-	private final static Integer zero = new Integer(0);
-	private final static Float fzero = new Float(0);
+	private final static Long lzero = Long.valueOf(0);
+	private final static Integer zero = Integer.valueOf(0);
+	private final static Float fzero = Float.valueOf(0);
 
 	protected SDMSFolder(SDMSObject p_object)
 	{
@@ -161,7 +161,7 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	}
 
 	public void collectSeIds (SystemEnvironment sysEnv, HashSet<Long> seIds, HashSet<Long> keeplist)
-	throws SDMSException
+		throws SDMSException
 	{
 		Long id = getId(sysEnv);
 		Vector v_se = SDMSSchedulingEntityTable.idx_folderId.getVector(sysEnv, id);
@@ -189,7 +189,7 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	}
 
 	public void deleteCascade(SystemEnvironment sysEnv, HashSet keeplist)
-	throws SDMSException
+		throws SDMSException
 	{
 		Vector v_sf = SDMSFolderTable.idx_parentId.getVector(sysEnv, getId(sysEnv));
 		Iterator i_sf = v_sf.iterator();
@@ -297,7 +297,7 @@ public class SDMSFolder extends SDMSFolderProxyGeneric
 	}
 
 	public String pathString(SystemEnvironment sysEnv, long version, HashMap pathCache)
-	throws SDMSException
+		throws SDMSException
 	{
 		if (pathCache == null)
 			return pathString(sysEnv, version);

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -62,7 +61,7 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 		if (newActive) {
 			if (activeTs == null) {
 				Date dts = new Date();
-				activeTs = new Long (dts.getTime());
+				activeTs = Long.valueOf (dts.getTime());
 			}
 			setActiveTs(sysEnv, activeTs);
 			activate(sysEnv, activeTs.longValue());
@@ -147,11 +146,8 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 	throws SDMSException
 	{
 		String comment = "Renice caused by activation of Nice Profile " + getName(sysEnv);
-
 		Vector npe_v = getSortedEntries(sysEnv);
-
 		Vector m_v = getMasters(sysEnv,activeTs);
-
 		Iterator m_i = m_v.iterator();
 		while (m_i.hasNext()) {
 			SDMSSubmittedEntity sme = (SDMSSubmittedEntity)(m_i.next());
@@ -166,7 +162,7 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 			}
 			nice += npe.getRenice(sysEnv).intValue();
 			if (nice != oldNice) {
-				sme.renice(sysEnv, null, new Integer(nice), comment);
+				sme.renice(sysEnv, null, Integer.valueOf(nice), comment);
 			}
 			sme.setNpeId(sysEnv, npe.getId(sysEnv));
 			int npeIsSuspended = npe.getIsSuspended(sysEnv).intValue();
@@ -176,11 +172,11 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 			if (opSusresTs != null)
 				srts = opSusresTs.longValue();
 			Date dts = new Date();
-			Long ts = new Long (dts.getTime());
+			Long ts = Long.valueOf (dts.getTime());
 			if (npeIsSuspended == SDMSNiceProfileEntry.NOSUSPEND) {
 				if (smeIsSuspended != SDMSSubmittedEntity.NOSUSPEND && srts >= 0) {
-					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, new Integer(SDMSAuditTrail.RESUME),
-					                                 new Integer(SDMSAuditTrail.JOB), sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
+					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, Integer.valueOf(SDMSAuditTrail.RESUME),
+					                                 Integer.valueOf(SDMSAuditTrail.JOB), sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
 					                                 "Resume caused by activation of Nice Profile " + getName(sysEnv));
 
 					sme.resume(sysEnv, true, false);
@@ -193,8 +189,8 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 						admin = true;
 						stradm = "Admin ";
 					}
-					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, new Integer(SDMSAuditTrail.SUSPEND),
-					                                 new Integer(SDMSAuditTrail.JOB), sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
+					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, Integer.valueOf(SDMSAuditTrail.SUSPEND),
+					                                 Integer.valueOf(SDMSAuditTrail.JOB), sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
 					                                 stradm + "Suspend caused by activation of Nice Profile " + getName(sysEnv));
 
 					sme.suspend(sysEnv, false, admin, false);
@@ -275,13 +271,9 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 	throws SDMSException
 	{
 		String comment = "Renice caused by deactivation of Nice Profile " + getName(sysEnv);
-
 		Vector npe_v = getSortedEntries(sysEnv);
-
 		Vector m_v = getNicedMasters(sysEnv, npe_v);
-
 		Vector panp_v = getPreviousActiveNiceProfiles(sysEnv);
-
 		HashMap npe_map = new HashMap();
 		Iterator m_i = m_v.iterator();
 		while (m_i.hasNext()) {
@@ -317,7 +309,7 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 				sme.setNpeId(sysEnv, null);
 
 			if (nice != oldNice) {
-				sme.renice(sysEnv, null, new Integer(nice), comment);
+				sme.renice(sysEnv, null, Integer.valueOf(nice), comment);
 			}
 			int smeIsSuspended = sme.getIsSuspended(sysEnv).intValue();
 			Long opSusresTs = sme.getOpSusresTs(sysEnv);
@@ -325,19 +317,18 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 			if (opSusresTs != null)
 				srts = opSusresTs.longValue();
 			Date dts = new Date();
-			Long ts = new Long (dts.getTime());
+			Long ts = Long.valueOf (dts.getTime());
 			if (srts > oldNpActivteTs)
 				npeIsSuspended = SDMSNiceProfileEntry.NOSUSPEND;
 			if (npeIsSuspended == SDMSNiceProfileEntry.NOSUSPEND) {
 				if (smeIsSuspended != SDMSSubmittedEntity.NOSUSPEND && srts >= 0) {
-					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, new Integer(SDMSAuditTrail.RESUME),
-					                                 new Integer(SDMSAuditTrail.JOB), sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
+					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, Integer.valueOf(SDMSAuditTrail.RESUME),
+					                                 Integer.valueOf(SDMSAuditTrail.JOB), sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
 					                                 "Resume caused by deactivation of Nice Profile " + getName(sysEnv));
 
 					sme.resume(sysEnv, true, false);
 				}
 			} else {
-
 				if (smeIsSuspended != npeIsSuspended && srts < oldNpActivteTs) {
 					boolean admin = false;
 					String stradm = "";
@@ -345,8 +336,8 @@ public class SDMSNiceProfile extends SDMSNiceProfileProxyGeneric
 						admin = true;
 						stradm = "Admin ";
 					}
-					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, new Integer(SDMSAuditTrail.SUSPEND),
-					                                 new Integer(SDMSAuditTrail.JOB), sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
+					SDMSAuditTrailTable.table.create(sysEnv, sysEnv.cEnv.uid(), ts, Integer.valueOf(SDMSAuditTrail.SUSPEND),
+					                                 Integer.valueOf(SDMSAuditTrail.JOB), sme.getId(sysEnv), sme.getId(sysEnv), Boolean.FALSE, null,
 					                                 stradm + "Suspend caused by deactivation of Nice Profile " + getName(sysEnv));
 
 					sme.suspend(sysEnv, false, admin, false);
@@ -372,7 +363,6 @@ class NpeComparator implements Comparator
 		try {
 			return npe1.getPreference(sysEnv).compareTo(npe2.getPreference(sysEnv));
 		} catch (SDMSException e) {
-
 			return 0;
 		}
 	}
@@ -384,7 +374,6 @@ class NicedMastersFilter implements SDMSFilter
 
 	public NicedMastersFilter (SystemEnvironment sysEnv, Vector npe_v)  throws SDMSException
 	{
-
 		hs = new HashSet();
 		Iterator npe_i = npe_v.iterator();
 		while (npe_i.hasNext()) {

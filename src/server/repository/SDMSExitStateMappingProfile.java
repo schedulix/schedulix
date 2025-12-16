@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -49,7 +48,6 @@ public class SDMSExitStateMappingProfile extends SDMSExitStateMappingProfileProx
 	public Long map(SystemEnvironment sysEnv, int exitCode, long version)
 	throws SDMSException
 	{
-
 		Long esdId = null;
 		Long esmpId = getId(sysEnv);
 		Vector v_esm = SDMSExitStateMappingTable.idx_esmpId.getVector(sysEnv, esmpId, version);
@@ -62,10 +60,9 @@ public class SDMSExitStateMappingProfile extends SDMSExitStateMappingProfileProx
 			}
 		}
 		if (esdId == null) {
-
 			throw new FatalException(new SDMSMessage(sysEnv, "02201111620",
 			                         "Invalid Exit State Mapping Profile $1 does not map exit code $2",
-			                         esmpId, new Integer(exitCode)));
+			                         esmpId, Integer.valueOf(exitCode)));
 		}
 		return esdId;
 	}

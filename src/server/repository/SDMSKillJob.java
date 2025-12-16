@@ -46,11 +46,11 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 	public static final String S_SDMSPORT	= "SDMSPORT";
 
 	public static final HashSet specialNames = new HashSet( Arrays.asList(new String[] {
-	                        S_JOBID,
-	                        S_KILLJOBID,
-	                        S_SDMSHOST,
-	                        S_SDMSPORT
-	                }) );
+				S_JOBID,
+				S_KILLJOBID,
+				S_SDMSHOST,
+				S_SDMSPORT
+		}) );
 
 	protected SDMSKillJob(SDMSObject p_object)
 	{
@@ -78,7 +78,7 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 	public void setToError(SystemEnvironment sysEnv, String msg)
 	throws SDMSException
 	{
-		setState(sysEnv, new Integer(ERROR));
+		setState(sysEnv, Integer.valueOf(ERROR));
 		setErrorMsg(sysEnv, msg);
 	}
 
@@ -89,7 +89,7 @@ public class SDMSKillJob extends SDMSKillJobProxyGeneric
 		int newState = state.intValue();
 
 		Date dts = new Date();
-		Long ts = new Long (dts.getTime());
+		Long ts = Long.valueOf (dts.getTime());
 
 		if (newState == STARTING) {
 			synchronized(sysEnv.jidsStarting) {

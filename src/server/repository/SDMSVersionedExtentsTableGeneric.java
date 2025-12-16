@@ -91,13 +91,13 @@ public class SDMSVersionedExtentsTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSVersionedExtentsGeneric o = new SDMSVersionedExtentsGeneric(env
-		                , p_oId
-		                , p_sequence
-		                , p_extent
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_oId
+				, p_sequence
+				, p_extent
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                                               );
 
 		SDMSVersionedExtents p;
@@ -154,19 +154,19 @@ public class SDMSVersionedExtentsTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			oId = new Long (r.getLong(2));
-			sequence = new Integer (r.getInt(3));
+			id     = Long.valueOf (r.getLong(1));
+			oId = Long.valueOf (r.getLong(2));
+			sequence = Integer.valueOf (r.getInt(3));
 			extent = r.getString(4);
-			creatorUId = new Long (r.getLong(5));
-			createTs = new Long (r.getLong(6));
-			changerUId = new Long (r.getLong(7));
-			changeTs = new Long (r.getLong(8));
+			creatorUId = Long.valueOf (r.getLong(5));
+			createTs = Long.valueOf (r.getLong(6));
+			changerUId = Long.valueOf (r.getLong(7));
+			changeTs = Long.valueOf (r.getLong(8));
 			validFrom = r.getLong(9);
 			validTo = r.getLong(10);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "VersionedExtents: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "VersionedExtents: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSVersionedExtentsGeneric(id,
@@ -202,8 +202,8 @@ public class SDMSVersionedExtentsTableGeneric extends SDMSTable
 		                                   ", VALID_FROM, VALID_TO " +
 		                                   " FROM " + squote + tableName() + equote +
 		                                   " WHERE VALID_TO >= " + (postgres ?
-		                                                   "CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
-		                                                   "" + env.lowestActiveVersion) +
+								"CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
+								"" + env.lowestActiveVersion) +
 		                                   ""						  );
 		while(rset.next()) {
 			try {

@@ -137,25 +137,25 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSSchedulingHierarchyGeneric o = new SDMSSchedulingHierarchyGeneric(env
-		                , p_seParentId
-		                , p_seChildId
-		                , p_aliasName
-		                , p_isStatic
-		                , p_isDisabled
-		                , p_priority
-		                , p_suspend
-		                , p_resumeAt
-		                , p_resumeIn
-		                , p_resumeBase
-		                , p_mergeMode
-		                , p_estpId
-		                , p_intId
-		                , p_enableCondition
-		                , p_enableMode
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_seParentId
+				, p_seChildId
+				, p_aliasName
+				, p_isStatic
+				, p_isDisabled
+				, p_priority
+				, p_suspend
+				, p_resumeAt
+				, p_resumeIn
+				, p_resumeBase
+				, p_mergeMode
+				, p_estpId
+				, p_intId
+				, p_enableCondition
+				, p_enableMode
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                                                     );
 
 		SDMSSchedulingHierarchy p;
@@ -252,40 +252,40 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			seParentId = new Long (r.getLong(2));
+			id     = Long.valueOf (r.getLong(1));
+			seParentId = Long.valueOf (r.getLong(2));
 			if (r.wasNull()) seParentId = null;
-			seChildId = new Long (r.getLong(3));
+			seChildId = Long.valueOf (r.getLong(3));
 			if (r.wasNull()) seChildId = null;
 			aliasName = r.getString(4);
 			if (r.wasNull()) aliasName = null;
-			isStatic = new Boolean ((r.getInt(5) == 0 ? false : true));
-			isDisabled = new Boolean ((r.getInt(6) == 0 ? false : true));
-			priority = new Integer (r.getInt(7));
-			suspend = new Integer (r.getInt(8));
+			isStatic = Boolean.valueOf ((r.getInt(5) == 0 ? false : true));
+			isDisabled = Boolean.valueOf ((r.getInt(6) == 0 ? false : true));
+			priority = Integer.valueOf (r.getInt(7));
+			suspend = Integer.valueOf (r.getInt(8));
 			resumeAt = r.getString(9);
 			if (r.wasNull()) resumeAt = null;
-			resumeIn = new Integer (r.getInt(10));
+			resumeIn = Integer.valueOf (r.getInt(10));
 			if (r.wasNull()) resumeIn = null;
-			resumeBase = new Integer (r.getInt(11));
+			resumeBase = Integer.valueOf (r.getInt(11));
 			if (r.wasNull()) resumeBase = null;
-			mergeMode = new Integer (r.getInt(12));
-			estpId = new Long (r.getLong(13));
+			mergeMode = Integer.valueOf (r.getInt(12));
+			estpId = Long.valueOf (r.getLong(13));
 			if (r.wasNull()) estpId = null;
-			intId = new Long (r.getLong(14));
+			intId = Long.valueOf (r.getLong(14));
 			if (r.wasNull()) intId = null;
 			enableCondition = r.getString(15);
 			if (r.wasNull()) enableCondition = null;
-			enableMode = new Integer (r.getInt(16));
-			creatorUId = new Long (r.getLong(17));
-			createTs = new Long (r.getLong(18));
-			changerUId = new Long (r.getLong(19));
-			changeTs = new Long (r.getLong(20));
+			enableMode = Integer.valueOf (r.getInt(16));
+			creatorUId = Long.valueOf (r.getLong(17));
+			createTs = Long.valueOf (r.getLong(18));
+			changerUId = Long.valueOf (r.getLong(19));
+			changeTs = Long.valueOf (r.getLong(20));
 			validFrom = r.getLong(21);
 			validTo = r.getLong(22);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "SchedulingHierarchy: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "SchedulingHierarchy: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSSchedulingHierarchyGeneric(id,
@@ -345,8 +345,8 @@ public class SDMSSchedulingHierarchyTableGeneric extends SDMSTable
 		                                   ", VALID_FROM, VALID_TO " +
 		                                   " FROM " + squote + tableName() + equote +
 		                                   " WHERE VALID_TO >= " + (postgres ?
-		                                                   "CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
-		                                                   "" + env.lowestActiveVersion) +
+								"CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
+								"" + env.lowestActiveVersion) +
 		                                   ""						  );
 		while(rset.next()) {
 			try {

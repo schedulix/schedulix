@@ -46,18 +46,18 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 
 	static
 	{
-		mapper.put(new Integer(Parser.IMMEDIATE_LOCAL),		new Integer(SDMSTrigger.IMMEDIATE_LOCAL));
-		mapper.put(new Integer(Parser.IMMEDIATE_MERGE),		new Integer(SDMSTrigger.IMMEDIATE_MERGE));
-		mapper.put(new Integer(Parser.BEFORE_FINAL),		new Integer(SDMSTrigger.BEFORE_FINAL));
-		mapper.put(new Integer(Parser.AFTER_FINAL),		new Integer(SDMSTrigger.AFTER_FINAL));
-		mapper.put(new Integer(Parser.FINISH_CHILD),		new Integer(SDMSTrigger.FINISH_CHILD));
-		mapper.put(new Integer(Parser.UNTIL_FINISHED),		new Integer(SDMSTrigger.UNTIL_FINISHED));
-		mapper.put(new Integer(Parser.UNTIL_FINAL),		new Integer(SDMSTrigger.UNTIL_FINAL));
-		mapper.put(new Integer(Parser.WARNING),			new Integer(SDMSTrigger.WARNING));
+		mapper.put(Integer.valueOf(Parser.IMMEDIATE_LOCAL),		Integer.valueOf(SDMSTrigger.IMMEDIATE_LOCAL));
+		mapper.put(Integer.valueOf(Parser.IMMEDIATE_MERGE),		Integer.valueOf(SDMSTrigger.IMMEDIATE_MERGE));
+		mapper.put(Integer.valueOf(Parser.BEFORE_FINAL),		Integer.valueOf(SDMSTrigger.BEFORE_FINAL));
+		mapper.put(Integer.valueOf(Parser.AFTER_FINAL),		Integer.valueOf(SDMSTrigger.AFTER_FINAL));
+		mapper.put(Integer.valueOf(Parser.FINISH_CHILD),		Integer.valueOf(SDMSTrigger.FINISH_CHILD));
+		mapper.put(Integer.valueOf(Parser.UNTIL_FINISHED),		Integer.valueOf(SDMSTrigger.UNTIL_FINISHED));
+		mapper.put(Integer.valueOf(Parser.UNTIL_FINAL),		Integer.valueOf(SDMSTrigger.UNTIL_FINAL));
+		mapper.put(Integer.valueOf(Parser.WARNING),			Integer.valueOf(SDMSTrigger.WARNING));
 
-		mapper.put(new Integer(Parser.CREATE),			new Integer(SDMSTrigger.CREATE));
-		mapper.put(new Integer(Parser.CHANGE),			new Integer(SDMSTrigger.CHANGE));
-		mapper.put(new Integer(Parser.DELETE),			new Integer(SDMSTrigger.DELETE));
+		mapper.put(Integer.valueOf(Parser.CREATE),			Integer.valueOf(SDMSTrigger.CREATE));
+		mapper.put(Integer.valueOf(Parser.CHANGE),			Integer.valueOf(SDMSTrigger.CHANGE));
+		mapper.put(Integer.valueOf(Parser.DELETE),			Integer.valueOf(SDMSTrigger.DELETE));
 	}
 
 	protected SDMSTrigger(SDMSObject p_object)
@@ -205,7 +205,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 					break;
 			}
 
-			tq.setNextTriggerTime(sysEnv, new Long(now + checkAmount));
+			tq.setNextTriggerTime(sysEnv, Long.valueOf(now + checkAmount));
 		}
 		int maxTrSeq = 0;
 		Vector v_f_sme;
@@ -215,7 +215,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			} else {
 				if (action != RERUN) {
 					v_f_sme = SDMSSubmittedEntityTable.idx_fireSmeId_trId.getVector(sysEnv,
-					                new SDMSKey(id, trId));
+					          	new SDMSKey(id, trId));
 					maxTrSeq = v_f_sme.size();
 				} else {
 					maxTrSeq = thisSme.getRerunSeq(sysEnv);
@@ -278,14 +278,14 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			conditionOK = checkCondition(sysEnv, thisSme, tq);
 		} catch(CommonErrorException cee) {
 			java.util.Date dts = new java.util.Date();
-			Long ts = new Long (dts.getTime());
+			Long ts = Long.valueOf (dts.getTime());
 			boolean doTrigger = true;
 		}
 
-		if(tq != null) tq.setTimesChecked(sysEnv, new Integer(tq.getTimesChecked(sysEnv).intValue() + 1));
+		if(tq != null) tq.setTimesChecked(sysEnv, Integer.valueOf(tq.getTimesChecked(sysEnv).intValue() + 1));
 		if(conditionOK) {
 
-			Integer trSeq = new Integer(maxTrSeq + 1);
+			Integer trSeq = Integer.valueOf(maxTrSeq + 1);
 			if (action == SUBMIT) {
 				sme = triggerSubmit(sysEnv, thisSme, trSeq, trigger_type);
 				if(sme == null) return fired;
@@ -330,7 +330,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		throws SDMSException
 	{
 		java.util.Date dts = new java.util.Date();
-		Long ts = new Long (dts.getTime());
+		Long ts = Long.valueOf (dts.getTime());
 		Long trId = getId(sysEnv);
 
 		SDMSSubmittedEntity sme;
@@ -394,7 +394,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 			Boolean suspend = getIsSuspend(sysEnv);
 			Integer doSuspend;
 			if (suspend.booleanValue() == false) doSuspend = null;
-			else				     doSuspend = new Integer(SDMSSubmittedEntity.SUSPEND);
+			else				     doSuspend = Integer.valueOf(SDMSSubmittedEntity.SUSPEND);
 			if(isMasterTrigger) {
 				final SDMSSchedulingEntity thisSe = SDMSSchedulingEntityTable.getObject(sysEnv, thisSme.getSeId(sysEnv), seVersion);
 				final SDMSSubmittedEntity masterSme = SDMSSubmittedEntityTable.getObject(sysEnv, thisSme.getMasterId(sysEnv));
@@ -403,7 +403,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 						      doSuspend,
 						      null,
 						      getSubmitOwnerId(sysEnv),
-						      new Integer(0),
+						      Integer.valueOf(0),
 				                      "Triggered by " + thisSe.pathString(sysEnv, seVersion) + "(" + getName(sysEnv) + "), Job " + thisSme.getId(sysEnv).toString(),
 				                      masterSme.getTimeZone(sysEnv));
 			} else {
@@ -496,10 +496,10 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				SDMSSchedulingEntity se = SDMSSchedulingEntityTable.getObject(sysEnv, getSeId(sysEnv));
 				sme = se.submitMaster(sysEnv,
 							null,
-							new Integer(getIsSuspend(sysEnv).booleanValue() ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
+							Integer.valueOf(getIsSuspend(sysEnv).booleanValue() ? SDMSSubmittedEntity.SUSPEND : SDMSSubmittedEntity.NOSUSPEND),
 							null,
 							getSubmitOwnerId(sysEnv),
-							new Integer(0),
+							Integer.valueOf(0),
 							"Triggered by Resource " + r.getId(sysEnv).toString() + "(" + getName(sysEnv) + ")",
 							null );
 
@@ -515,7 +515,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 				sme.setTrId(sysEnv, getId(sysEnv));
 				sme.setTrSdIdOld(sysEnv, oldRsdId);
 				sme.setTrSdIdNew(sysEnv, newRsdId);
-				sme.setTrSeq(sysEnv, new Integer(0));
+				sme.setTrSeq(sysEnv, Integer.valueOf(0));
 				Long resumeTs = null;
 				if (getIsSuspend(sysEnv).booleanValue()) {
 					Long submitTs = sme.getSubmitTs(sysEnv);
@@ -537,7 +537,7 @@ public class SDMSTrigger extends SDMSTriggerProxyGeneric
 		sme.setTrId(sysEnv, getId(sysEnv));
 		sme.setTrSdIdOld(sysEnv, null);
 		sme.setTrSdIdNew(sysEnv, null);
-		sme.setTrSeq(sysEnv, new Integer(0));
+		sme.setTrSeq(sysEnv, Integer.valueOf(0));
 		Long resumeTs = null;
 		if (getIsSuspend(sysEnv).booleanValue()) {
 			Long submitTs = sme.getSubmitTs(sysEnv);

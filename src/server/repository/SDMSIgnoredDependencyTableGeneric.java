@@ -90,12 +90,12 @@ public class SDMSIgnoredDependencyTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSIgnoredDependencyGeneric o = new SDMSIgnoredDependencyGeneric(env
-		                , p_shId
-		                , p_ddName
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_shId
+				, p_ddName
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                                                 );
 
 		SDMSIgnoredDependency p;
@@ -154,18 +154,18 @@ public class SDMSIgnoredDependencyTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			shId = new Long (r.getLong(2));
+			id     = Long.valueOf (r.getLong(1));
+			shId = Long.valueOf (r.getLong(2));
 			ddName = r.getString(3);
-			creatorUId = new Long (r.getLong(4));
-			createTs = new Long (r.getLong(5));
-			changerUId = new Long (r.getLong(6));
-			changeTs = new Long (r.getLong(7));
+			creatorUId = Long.valueOf (r.getLong(4));
+			createTs = Long.valueOf (r.getLong(5));
+			changerUId = Long.valueOf (r.getLong(6));
+			changeTs = Long.valueOf (r.getLong(7));
 			validFrom = r.getLong(8);
 			validTo = r.getLong(9);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "IgnoredDependency: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "IgnoredDependency: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSIgnoredDependencyGeneric(id,
@@ -199,8 +199,8 @@ public class SDMSIgnoredDependencyTableGeneric extends SDMSTable
 		                                   ", VALID_FROM, VALID_TO " +
 		                                   " FROM " + squote + tableName() + equote +
 		                                   " WHERE VALID_TO >= " + (postgres ?
-		                                                   "CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
-		                                                   "" + env.lowestActiveVersion) +
+								"CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
+								"" + env.lowestActiveVersion) +
 		                                   ""						  );
 		while(rset.next()) {
 			try {

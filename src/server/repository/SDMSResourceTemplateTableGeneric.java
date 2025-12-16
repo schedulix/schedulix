@@ -111,17 +111,17 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSResourceTemplateGeneric o = new SDMSResourceTemplateGeneric(env
-		                , p_nrId
-		                , p_seId
-		                , p_ownerId
-		                , p_rsdId
-		                , p_RequestableAmount
-		                , p_amount
-		                , p_isOnline
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_nrId
+				, p_seId
+				, p_ownerId
+				, p_rsdId
+				, p_RequestableAmount
+				, p_amount
+				, p_isOnline
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                                               );
 
 		SDMSResourceTemplate p;
@@ -186,26 +186,26 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			nrId = new Long (r.getLong(2));
-			seId = new Long (r.getLong(3));
-			ownerId = new Long (r.getLong(4));
-			rsdId = new Long (r.getLong(5));
+			id     = Long.valueOf (r.getLong(1));
+			nrId = Long.valueOf (r.getLong(2));
+			seId = Long.valueOf (r.getLong(3));
+			ownerId = Long.valueOf (r.getLong(4));
+			rsdId = Long.valueOf (r.getLong(5));
 			if (r.wasNull()) rsdId = null;
-			RequestableAmount = new Integer (r.getInt(6));
+			RequestableAmount = Integer.valueOf (r.getInt(6));
 			if (r.wasNull()) RequestableAmount = null;
-			amount = new Integer (r.getInt(7));
+			amount = Integer.valueOf (r.getInt(7));
 			if (r.wasNull()) amount = null;
-			isOnline = new Boolean ((r.getInt(8) == 0 ? false : true));
-			creatorUId = new Long (r.getLong(9));
-			createTs = new Long (r.getLong(10));
-			changerUId = new Long (r.getLong(11));
-			changeTs = new Long (r.getLong(12));
+			isOnline = Boolean.valueOf ((r.getInt(8) == 0 ? false : true));
+			creatorUId = Long.valueOf (r.getLong(9));
+			createTs = Long.valueOf (r.getLong(10));
+			changerUId = Long.valueOf (r.getLong(11));
+			changeTs = Long.valueOf (r.getLong(12));
 			validFrom = r.getLong(13);
 			validTo = r.getLong(14);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "ResourceTemplate: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "ResourceTemplate: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSResourceTemplateGeneric(id,
@@ -249,8 +249,8 @@ public class SDMSResourceTemplateTableGeneric extends SDMSTable
 		                                   ", VALID_FROM, VALID_TO " +
 		                                   " FROM " + squote + tableName() + equote +
 		                                   " WHERE VALID_TO >= " + (postgres ?
-		                                                   "CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
-		                                                   "" + env.lowestActiveVersion) +
+								"CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
+								"" + env.lowestActiveVersion) +
 		                                   ""						  );
 		while(rset.next()) {
 			try {

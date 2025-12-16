@@ -96,14 +96,14 @@ public class SDMSExtentsTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSExtentsGeneric o = new SDMSExtentsGeneric(env
-		                , p_oId
-		                , p_smeId
-		                , p_sequence
-		                , p_extent
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_oId
+				, p_smeId
+				, p_sequence
+				, p_extent
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                             );
 
 		SDMSExtents p;
@@ -162,20 +162,20 @@ public class SDMSExtentsTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
-			oId = new Long (r.getLong(2));
-			smeId = new Long (r.getLong(3));
-			sequence = new Integer (r.getInt(4));
+			id     = Long.valueOf (r.getLong(1));
+			oId = Long.valueOf (r.getLong(2));
+			smeId = Long.valueOf (r.getLong(3));
+			sequence = Integer.valueOf (r.getInt(4));
 			extent = r.getString(5);
-			creatorUId = new Long (r.getLong(6));
-			createTs = new Long (r.getLong(7));
-			changerUId = new Long (r.getLong(8));
-			changeTs = new Long (r.getLong(9));
+			creatorUId = Long.valueOf (r.getLong(6));
+			createTs = Long.valueOf (r.getLong(7));
+			changerUId = Long.valueOf (r.getLong(8));
+			changeTs = Long.valueOf (r.getLong(9));
 			validFrom = 0;
 			validTo = Long.MAX_VALUE;
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "Extents: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "Extents: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSExtentsGeneric(id,

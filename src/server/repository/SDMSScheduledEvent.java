@@ -131,7 +131,7 @@ public class SDMSScheduledEvent extends SDMSScheduledEventProxyGeneric
 	{
 		final Integer horizon = getCalendarHorizon(sysEnv);
 		if (horizon == null) {
-			return new Integer(SystemEnvironment.defCalHorizon);
+			return Integer.valueOf(SystemEnvironment.defCalHorizon);
 		}
 		return horizon;
 	}

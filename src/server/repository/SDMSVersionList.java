@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -68,7 +66,7 @@ public class SDMSVersionList
 		for(i = versionList.size() - 1; i >= 0; --i) {
 			if(((Long) versionList.get(i)).longValue() <= v) break;
 		}
-		versionList.insertElementAt(new Long(v), i+1);
+		versionList.insertElementAt(Long.valueOf(v), i+1);
 	}
 
 	public synchronized int remove( long v)

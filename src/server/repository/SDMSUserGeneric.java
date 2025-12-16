@@ -592,7 +592,7 @@ public class SDMSUserGeneric extends SDMSObject
 			myInsert.setLong (13, changeTs.longValue());
 			myInsert.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110181954", "User: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -618,7 +618,7 @@ public class SDMSUserGeneric extends SDMSObject
 			myDelete.setLong(1, id.longValue());
 			myDelete.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182002", "User: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 
@@ -672,7 +672,7 @@ public class SDMSUserGeneric extends SDMSObject
 			myUpdate.setLong(13, id.longValue());
 			myUpdate.executeUpdate();
 		} catch(SQLException sqle) {
-			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "User: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new SDMSSQLException(new SDMSMessage(env, "01110182006", "User: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 	}
 

@@ -39,8 +39,8 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 {
 
 	public final static String __version = "@(#) $Id: SDMSSubmittedEntityTable.java,v 2.22.2.2 2013/03/22 14:48:03 ronald Exp $";
-	static Long lzero = new Long(0);
-	static Integer zero = new Integer(0);
+	static Long lzero = Long.valueOf(0);
+	static Integer zero = Integer.valueOf(0);
 	static Float fzero = new Float(0);
 
 	public SDMSSubmittedEntityTable(SystemEnvironment env)
@@ -254,10 +254,10 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		}
 
 		int cnt = env.tx.smeCtr.intValue() + 1;
-		env.tx.smeCtr = new Integer(cnt);
+		env.tx.smeCtr = Integer.valueOf(cnt);
 		Vector v = SDMSResourceTemplateTable.idx_seId.getVector(env, p_seId, seVersion);
 		final java.util.Date dts = new java.util.Date();
-		final Long ts = new Long (dts.getTime());
+		final Long ts = Long.valueOf (dts.getTime());
 		for(int i = 0; i < v.size(); i++) {
 			final SDMSResourceTemplate rt = (SDMSResourceTemplate) v.get(i);
 			final Long nrId = rt.getNrId(env);
@@ -265,7 +265,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 			final SDMSResource r = SDMSResourceTable.table.create(env, rt.getNrId(env), smeId, p_masterId, p_ownerId, null, null,
 			                       null, rt.getRsdId(env), ts, rt.getAmount(env), rt.getRequestableAmount(env),
 			                       rt.getAmount(env), rt.getAmount(env), rt.getIsOnline(env), nr.getFactor(env),
-			                       null, null, new Integer(10), fzero, fzero, fzero, fzero, lzero, lzero);
+			                       null, null, Integer.valueOf(10), fzero, fzero, fzero, fzero, lzero, lzero);
 			Vector tv = SDMSTemplateVariableTable.idx_rtId.getVector(env, rt.getId(env), seVersion);
 			for(int j = 0; j < tv.size(); j++) {
 				final SDMSTemplateVariable t = (SDMSTemplateVariable) tv.get(j);
@@ -294,9 +294,9 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 	{
 		SDMSSubmittedEntity sme = super.create(env
 		                                       ,env.randomLong()
-		                                       ,new Long(0)
+		                                       ,Long.valueOf(0)
 		                                       ,null
-		                                       ,new Integer(SDMSDependencyDefinition.ERROR)
+		                                       ,Integer.valueOf(SDMSDependencyDefinition.ERROR)
 		                                       ,p_seId
 		                                       ,null
 		                                       ,p_seVersion
@@ -306,8 +306,8 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       ,Boolean.TRUE
 		                                       ,Boolean.FALSE
 		                                       ,null
-		                                       ,new Integer(SDMSSchedulingHierarchy.FAILURE)
-		                                       ,new Integer(SDMSSubmittedEntity.ERROR)
+		                                       ,Integer.valueOf(SDMSSchedulingHierarchy.FAILURE)
+		                                       ,Integer.valueOf(SDMSSubmittedEntity.ERROR)
 		                                       ,p_jobEsdId
 		                                       ,zero
 		                                       ,Boolean.FALSE
@@ -335,7 +335,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		                                       ,p_errorMsg
 		                                       ,null
 		                                       ,null
-		                                       ,new Integer(SDMSSubmittedEntity.NOSUSPEND)
+		                                       ,Integer.valueOf(SDMSSubmittedEntity.NOSUSPEND)
 		                                       ,Boolean.FALSE
 		                                       ,p_priority
 		                                       ,p_priority
@@ -372,7 +372,7 @@ public class SDMSSubmittedEntityTable extends SDMSSubmittedEntityTableGeneric
 		sme.setMasterId(env, smeId);
 
 		int cnt = env.tx.smeCtr.intValue() + 1;
-		env.tx.smeCtr = new Integer(cnt);
+		env.tx.smeCtr = Integer.valueOf(cnt);
 
 		return sme;
 	}

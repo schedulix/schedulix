@@ -56,7 +56,7 @@ public class SDMSTransaction
 	public long subTxCheckPoint = 0;
 
 	public HashMap txData = new HashMap();
-	public Integer smeCtr = new Integer(0);
+	public Integer smeCtr = Integer.valueOf(0);
 	private Stack ctrStack = new Stack();
 	private Stack clStack = new Stack();
 	public Stack lockStack = new Stack();
@@ -285,7 +285,7 @@ public class SDMSTransaction
 		touchList = new HashSet();
 		if (traceSubTx)
 			SDMSThread.doTrace(null, "Starting subtransaction", SDMSThread.SEVERITY_ERROR);
-		subTxCheckPoints.push(new Long(subTxCheckPoint));
+		subTxCheckPoints.push(Long.valueOf(subTxCheckPoint));
 		subTxCheckPoint = env.newLockCp();
 	}
 
@@ -417,7 +417,7 @@ public class SDMSTransaction
 
 	private static int dmpctr = 0;
 	public void dumpTouchList(SystemEnvironment sysEnv, String msg)
-	throws SDMSException
+		throws SDMSException
 	{
 		dmpctr++;
 		if (touchList == null) {

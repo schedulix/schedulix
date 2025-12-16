@@ -204,46 +204,46 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 
 		env.tx.beginSubTransaction(env);
 		SDMSSchedulingEntityGeneric o = new SDMSSchedulingEntityGeneric(env
-		                , p_name
-		                , p_folderId
-		                , p_ownerId
-		                , p_type
-		                , p_runProgram
-		                , p_rerunProgram
-		                , p_killProgram
-		                , p_workdir
-		                , p_logfile
-		                , p_truncLog
-		                , p_errlogfile
-		                , p_truncErrlog
-		                , p_expectedRuntime
-		                , p_expectedFinaltime
-		                , p_getExpectedRuntime
-		                , p_priority
-		                , p_minPriority
-		                , p_agingAmount
-		                , p_agingBase
-		                , p_submitSuspended
-		                , p_resumeAt
-		                , p_resumeIn
-		                , p_resumeBase
-		                , p_masterSubmittable
-		                , p_timeoutAmount
-		                , p_timeoutBase
-		                , p_timeoutStateId
-		                , p_sameNode
-		                , p_gangSchedule
-		                , p_dependencyOperation
-		                , p_esmpId
-		                , p_espId
-		                , p_qaId
-		                , p_neId
-		                , p_fpId
-		                , p_inheritPrivs
-		                , p_creatorUId
-		                , p_createTs
-		                , p_changerUId
-		                , p_changeTs
+				, p_name
+				, p_folderId
+				, p_ownerId
+				, p_type
+				, p_runProgram
+				, p_rerunProgram
+				, p_killProgram
+				, p_workdir
+				, p_logfile
+				, p_truncLog
+				, p_errlogfile
+				, p_truncErrlog
+				, p_expectedRuntime
+				, p_expectedFinaltime
+				, p_getExpectedRuntime
+				, p_priority
+				, p_minPriority
+				, p_agingAmount
+				, p_agingBase
+				, p_submitSuspended
+				, p_resumeAt
+				, p_resumeIn
+				, p_resumeBase
+				, p_masterSubmittable
+				, p_timeoutAmount
+				, p_timeoutBase
+				, p_timeoutStateId
+				, p_sameNode
+				, p_gangSchedule
+				, p_dependencyOperation
+				, p_esmpId
+				, p_espId
+				, p_qaId
+				, p_neId
+				, p_fpId
+				, p_inheritPrivs
+				, p_creatorUId
+				, p_createTs
+				, p_changerUId
+				, p_changeTs
 		                                                               );
 
 		SDMSSchedulingEntity p;
@@ -388,11 +388,11 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		long validTo;
 
 		try {
-			id     = new Long (r.getLong(1));
+			id     = Long.valueOf (r.getLong(1));
 			name = r.getString(2);
-			folderId = new Long (r.getLong(3));
-			ownerId = new Long (r.getLong(4));
-			type = new Integer (r.getInt(5));
+			folderId = Long.valueOf (r.getLong(3));
+			ownerId = Long.valueOf (r.getLong(4));
+			type = Integer.valueOf (r.getInt(5));
 			runProgram = r.getString(6);
 			if (r.wasNull()) runProgram = null;
 			rerunProgram = r.getString(7);
@@ -403,64 +403,64 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 			if (r.wasNull()) workdir = null;
 			logfile = r.getString(10);
 			if (r.wasNull()) logfile = null;
-			truncLog = new Boolean ((r.getInt(11) == 0 ? false : true));
+			truncLog = Boolean.valueOf ((r.getInt(11) == 0 ? false : true));
 			if (r.wasNull()) truncLog = null;
 			errlogfile = r.getString(12);
 			if (r.wasNull()) errlogfile = null;
-			truncErrlog = new Boolean ((r.getInt(13) == 0 ? false : true));
+			truncErrlog = Boolean.valueOf ((r.getInt(13) == 0 ? false : true));
 			if (r.wasNull()) truncErrlog = null;
-			expectedRuntime = new Integer (r.getInt(14));
+			expectedRuntime = Integer.valueOf (r.getInt(14));
 			if (r.wasNull()) expectedRuntime = null;
-			expectedFinaltime = new Integer (r.getInt(15));
+			expectedFinaltime = Integer.valueOf (r.getInt(15));
 			if (r.wasNull()) expectedFinaltime = null;
 			getExpectedRuntime = r.getString(16);
 			if (r.wasNull()) getExpectedRuntime = null;
-			priority = new Integer (r.getInt(17));
-			minPriority = new Integer (r.getInt(18));
+			priority = Integer.valueOf (r.getInt(17));
+			minPriority = Integer.valueOf (r.getInt(18));
 			if (r.wasNull()) minPriority = null;
-			agingAmount = new Integer (r.getInt(19));
+			agingAmount = Integer.valueOf (r.getInt(19));
 			if (r.wasNull()) agingAmount = null;
-			agingBase = new Integer (r.getInt(20));
+			agingBase = Integer.valueOf (r.getInt(20));
 			if (r.wasNull()) agingBase = null;
-			submitSuspended = new Boolean ((r.getInt(21) == 0 ? false : true));
+			submitSuspended = Boolean.valueOf ((r.getInt(21) == 0 ? false : true));
 			resumeAt = r.getString(22);
 			if (r.wasNull()) resumeAt = null;
-			resumeIn = new Integer (r.getInt(23));
+			resumeIn = Integer.valueOf (r.getInt(23));
 			if (r.wasNull()) resumeIn = null;
-			resumeBase = new Integer (r.getInt(24));
+			resumeBase = Integer.valueOf (r.getInt(24));
 			if (r.wasNull()) resumeBase = null;
-			masterSubmittable = new Boolean ((r.getInt(25) == 0 ? false : true));
-			timeoutAmount = new Integer (r.getInt(26));
+			masterSubmittable = Boolean.valueOf ((r.getInt(25) == 0 ? false : true));
+			timeoutAmount = Integer.valueOf (r.getInt(26));
 			if (r.wasNull()) timeoutAmount = null;
-			timeoutBase = new Integer (r.getInt(27));
+			timeoutBase = Integer.valueOf (r.getInt(27));
 			if (r.wasNull()) timeoutBase = null;
-			timeoutStateId = new Long (r.getLong(28));
+			timeoutStateId = Long.valueOf (r.getLong(28));
 			if (r.wasNull()) timeoutStateId = null;
-			sameNode = new Boolean ((r.getInt(29) == 0 ? false : true));
+			sameNode = Boolean.valueOf ((r.getInt(29) == 0 ? false : true));
 			if (r.wasNull()) sameNode = null;
-			gangSchedule = new Boolean ((r.getInt(30) == 0 ? false : true));
+			gangSchedule = Boolean.valueOf ((r.getInt(30) == 0 ? false : true));
 			if (r.wasNull()) gangSchedule = null;
-			dependencyOperation = new Integer (r.getInt(31));
-			esmpId = new Long (r.getLong(32));
+			dependencyOperation = Integer.valueOf (r.getInt(31));
+			esmpId = Long.valueOf (r.getLong(32));
 			if (r.wasNull()) esmpId = null;
-			espId = new Long (r.getLong(33));
+			espId = Long.valueOf (r.getLong(33));
 			if (r.wasNull()) espId = null;
-			qaId = new Long (r.getLong(34));
+			qaId = Long.valueOf (r.getLong(34));
 			if (r.wasNull()) qaId = null;
-			neId = new Long (r.getLong(35));
+			neId = Long.valueOf (r.getLong(35));
 			if (r.wasNull()) neId = null;
-			fpId = new Long (r.getLong(36));
+			fpId = Long.valueOf (r.getLong(36));
 			if (r.wasNull()) fpId = null;
-			inheritPrivs = new Long (r.getLong(37));
-			creatorUId = new Long (r.getLong(38));
-			createTs = new Long (r.getLong(39));
-			changerUId = new Long (r.getLong(40));
-			changeTs = new Long (r.getLong(41));
+			inheritPrivs = Long.valueOf (r.getLong(37));
+			creatorUId = Long.valueOf (r.getLong(38));
+			createTs = Long.valueOf (r.getLong(39));
+			changerUId = Long.valueOf (r.getLong(40));
+			changeTs = Long.valueOf (r.getLong(41));
 			validFrom = r.getLong(42);
 			validTo = r.getLong(43);
 		} catch(SQLException sqle) {
 			SDMSThread.doTrace(null, "SQL Error : " + sqle.getMessage(), SDMSThread.SEVERITY_ERROR);
-			throw new FatalException(new SDMSMessage(env, "01110182045", "SchedulingEntity: $1 $2", new Integer(sqle.getErrorCode()), sqle.getMessage()));
+			throw new FatalException(new SDMSMessage(env, "01110182045", "SchedulingEntity: $1 $2", Integer.valueOf(sqle.getErrorCode()), sqle.getMessage()));
 		}
 		if(validTo < env.lowestActiveVersion) return null;
 		return new SDMSSchedulingEntityGeneric(id,
@@ -562,8 +562,8 @@ public class SDMSSchedulingEntityTableGeneric extends SDMSTable
 		                                   ", VALID_FROM, VALID_TO " +
 		                                   " FROM " + squote + tableName() + equote +
 		                                   " WHERE VALID_TO >= " + (postgres ?
-		                                                   "CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
-		                                                   "" + env.lowestActiveVersion) +
+								"CAST (\'" + env.lowestActiveVersion + "\' AS DECIMAL)" :
+								"" + env.lowestActiveVersion) +
 		                                   ""						  );
 		while(rset.next()) {
 			try {
