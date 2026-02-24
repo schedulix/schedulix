@@ -46,6 +46,7 @@ public class SeNameFilter extends Filter
 		throws SDMSException
 	{
 		super();
+		seName = s;
 
 		int i,j;
 		char c, ct;
@@ -60,7 +61,11 @@ public class SeNameFilter extends Filter
 			if (s.contains("%")) {
 				replaceUnderscore = false;
 			} else {
-				pattern = Pattern.compile(s);
+				try {
+					pattern = Pattern.compile(seName);
+				} catch (PatternSyntaxException pse) {
+					throw new CommonErrorException(new SDMSMessage(sysEnv, "03310071127", "Error in regular expression"));
+				}
 				return;
 			}
 		}
