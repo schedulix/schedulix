@@ -1,1 +1,34 @@
-/home/ronald/SDMS-master/SDMS/src/capi/Makefile.dist
+#
+# Makefile
+#
+# Copyright (C) 2016 independIT Integrative Technologies GmbH
+#
+
+JSSTUB_OBJS=jsstub.o jsstubParseConfig.o jsstubDonut.o sdms_api.o
+SDMS_TEST_OBJS=sdms_api.o sdms_test.o
+HFILES=sdms_api.h sdms_api_internal.h jsstub.h
+JSSTUB=jsstub
+SDMS_TEST=sdms_test
+
+all: $(JSSTUB) $(SDMS_TEST)
+
+clean:
+	rm -f *.o $(JSSTUB) $(SDMS_TEST)
+
+new: clean all
+
+CXXFLAGS += -g -fno-exceptions -Wall -Wshadow -Wpointer-arith \
+        -Wwrite-strings -Wstrict-prototypes \
+        -Wmissing-declarations -Wnested-externs
+
+CXXFLAGS += -DLINUX -Winline
+
+
+.c.o: $(HFILES)
+	$(CC) $(CXXFLAGS) -I . -c $< 
+
+$(JSSTUB): $(JSSTUB_OBJS)
+	$(CC) $(JSSTUB_OBJS) -o $(JSSTUB)
+
+$(SDMS_TEST): $(SDMS_TEST_OBJS)
+	$(CC) $(SDMS_TEST_OBJS) -o $(SDMS_TEST)
