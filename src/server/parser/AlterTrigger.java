@@ -128,26 +128,24 @@ public class AlterTrigger extends ManipTrigger
 		Long checkSeId = null;
 		folderpath = (Vector) with.get(ParseStr.S_SUBMIT);
 		if((folderpath != null) && (iaction == SDMSTrigger.SUBMIT)) {
+			Long oldFireId = t.getFireId(sysEnv);
+			Long oldSeId = t.getSeId(sysEnv);
 			String n = (String) folderpath.remove(folderpath.size() -1);
 			se = SDMSSchedulingEntityTable.get(sysEnv, folderpath, n);
 			if (isInverse.booleanValue()) {
 				fireId = se.getId(sysEnv);
 				seId = t.getSeId(sysEnv);
 				se = SDMSSchedulingEntityTable.getObject(sysEnv, seId);
-				if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
-					throw new AccessViolationException(
-					        new SDMSMessage(sysEnv, "03511251420", "Submit privilege on $1 missing", se.pathString(sysEnv))
-					);
 			} else {
-				if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
-					throw new AccessViolationException(
-						new SDMSMessage(sysEnv, "03402131605", "Submit privilege on $1 missing", se.pathString(sysEnv))
-					);
-
 				seId = se.getId(sysEnv);
 				fireId = t.getFireId(sysEnv);
 				checkSeId = seId;
 			}
+			if (!(oldFireId.equals(fireId) && oldSeId.equals(seId)))
+				if(!se.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
+					throw new AccessViolationException(
+					        new SDMSMessage(sysEnv, "03402131605", "Submit privilege on $1 missing", se.pathString(sysEnv))
+					);
 		} else {
 			if ((folderpath == null) && with.containsKey(ParseStr.S_RERUN)) {
 				seId = t.getFireId(sysEnv);

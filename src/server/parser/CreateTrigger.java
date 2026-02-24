@@ -50,6 +50,7 @@ public class CreateTrigger extends ManipTrigger
 	protected boolean replace;
 
 	protected Long fireId = null;
+	protected SDMSSchedulingEntity triggerJob;
 
 	protected int oType;
 
@@ -70,7 +71,6 @@ public class CreateTrigger extends ManipTrigger
 		objectType = Integer.valueOf(oType);
 		SDMSSchedulingEntity fireJob = SDMSSchedulingEntityTable.get(sysEnv, objpath, null);
 		fireId = fireJob.getId(sysEnv);
-		SDMSSchedulingEntity triggerJob;
 		SDMSSchedulingEntity mainJob = null;
 		SDMSSchedulingEntity parentJob = null;
 
@@ -101,10 +101,6 @@ public class CreateTrigger extends ManipTrigger
 		folderpath = (Vector) with.get(ParseStr.S_SUBMIT);
 		if((folderpath != null) && (iaction == SDMSTrigger.SUBMIT)) {
 			triggerJob = SDMSSchedulingEntityTable.get(sysEnv, folderpath, null);
-			if(!triggerJob.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
-				throw new AccessViolationException(
-					new SDMSMessage(sysEnv, "03402131550", "Submit privilege on $1 missing", triggerJob.pathString(sysEnv))
-				);
 			seId = triggerJob.getId(sysEnv);
 			action = SDMSConstants.TR_SUBMIT;
 			iaction = SDMSTrigger.SUBMIT;
@@ -269,7 +265,6 @@ public class CreateTrigger extends ManipTrigger
 	private void checkResourceCommonWith(SystemEnvironment sysEnv, SDMSNamedResource nr)
 	throws SDMSException
 	{
-		SDMSSchedulingEntity triggerJob;
 		if(nr.getUsage(sysEnv).intValue() != SDMSNamedResource.SYNCHRONIZING) {
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03206250058", "Trigger can only be defined for synchronizing resources"));
 		}
@@ -295,10 +290,6 @@ public class CreateTrigger extends ManipTrigger
 		folderpath = (Vector) with.get(ParseStr.S_SUBMIT);
 		if(folderpath != null) {
 			triggerJob = SDMSSchedulingEntityTable.get(sysEnv, folderpath, null);
-			if(!triggerJob.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
-				throw new AccessViolationException(
-				        new SDMSMessage(sysEnv, "03402131546", "Submit privilege on $1 missing", triggerJob.pathString(sysEnv))
-				);
 			seId = triggerJob.getId(sysEnv);
 		} else	{
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03206210035", "Submit is mandatory"));
@@ -468,18 +459,18 @@ public class CreateTrigger extends ManipTrigger
 			}
 		}
 
-		try {
-			sysEnv.tx.beginSubTransaction(sysEnv);
-
-			t = SDMSTriggerTable.table.create(sysEnv, name, fireId, objectType, seId, mainSeId, parentSeId, active, isInverse, action,
-							triggertype, isMaster, isSuspend, isCreate, isChange, isDelete, isGroup,
-							resumeAt, resumeIn, resumeBase, isWarnOnLimit, limitState, maxRetry, gId, condition,
-							checkAmount, checkBase);
-			checkUniqueness(sysEnv, name, fireId, seId, isInverse);
-			sysEnv.tx.commitSubTransaction(sysEnv);
-		} catch(DuplicateKeyException dke) {
-			sysEnv.tx.rollbackSubTransaction(sysEnv);
-			if(replace) {
+		if(replace) {
+			Vector v;
+			if (isInverse.booleanValue())
+				v = SDMSTriggerTable.idx_seId_name.getVector(sysEnv, new SDMSKey(fireId, name));
+			else
+				v = SDMSTriggerTable.idx_fireId_name.getVector(sysEnv, new SDMSKey(fireId, name));
+			int i;
+			for (i = 0; i < v.size(); ++i) {
+				t = (SDMSTrigger) v.get(i);
+				if (t.getIsInverse(sysEnv).equals(isInverse)) break;
+			}
+			if (i < v.size()) {
 				Long fId = fireId;
 				if ((Boolean) with.get(ParseStr.S_INVERSE))
 					fId = seId;
@@ -488,13 +479,20 @@ public class CreateTrigger extends ManipTrigger
 				at.go(sysEnv);
 				result = at.result;
 				return;
-			} else {
-				throw dke;
 			}
-		} catch (Exception e) {
-			sysEnv.tx.rollbackSubTransaction(sysEnv);
-			throw e;
 		}
+
+		if(!triggerJob.checkPrivileges(sysEnv, SDMSPrivilege.SUBMIT))
+			throw new AccessViolationException(
+			        new SDMSMessage(sysEnv, "03402131550", "Submit privilege on $1 missing", triggerJob.pathString(sysEnv))
+			);
+
+		t = SDMSTriggerTable.table.create(sysEnv, name, fireId, objectType, seId, mainSeId, parentSeId, active, isInverse, action,
+		                                  triggertype, isMaster, isSuspend, isCreate, isChange, isDelete, isGroup,
+		                                  resumeAt, resumeIn, resumeBase, isWarnOnLimit, limitState, maxRetry, gId, condition,
+		                                  checkAmount, checkBase);
+
+		checkUniqueness(sysEnv, name, fireId, seId, isInverse);
 		t.checkConditionSyntax(sysEnv);
 
 		if (with.containsKey(ParseStr.S_PARAMETERS)) {
