@@ -1044,7 +1044,7 @@ public abstract class ManipJobDefinition extends Node
 						resolveMode,
 						expiredAmount,
 						expiredBase,
-				        	selectCondition
+						selectCondition
 				);
 			} catch (DuplicateKeyException dke) {
 				if(processError) {

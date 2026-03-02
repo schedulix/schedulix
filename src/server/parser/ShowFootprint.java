@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -63,7 +61,6 @@ public class ShowFootprint extends ShowCommented
 		Long fpId = fp.getId(sysEnv);
 
 		desc.add("ID");
-
 		desc.add("NAME");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
@@ -72,9 +69,7 @@ public class ShowFootprint extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("RESOURCES");
-
 		desc.add("JOB_DEFINITIONS");
 
 		Vector data = new Vector();
@@ -117,13 +112,9 @@ public class ShowFootprint extends ShowCommented
 		SDMSResourceRequirement rr;
 
 		Vector c_desc = new Vector();
-
 		c_desc.add("ID");
-
 		c_desc.add("RESOURCE_NAME");
-
 		c_desc.add("AMOUNT");
-
 		c_desc.add("KEEP_MODE");
 
 		SDMSOutputContainer c_container = new SDMSOutputContainer(sysEnv, null, c_desc);
@@ -158,7 +149,6 @@ public class ShowFootprint extends ShowCommented
 		fl.setSortColumns(sc);
 
 		Vector j_v = SDMSSchedulingEntityTable.idx_fpId.getVector(sysEnv, fpId);
-
 		fl.setObjectsToList(j_v);
 
 		SDMSOutputContainer s_container = fl.list(sysEnv);
@@ -178,16 +168,11 @@ class SfSeFormatter implements Formatter
 	public Vector fillHeadInfo()
 	{
 		Vector j_desc = new Vector();
-
 		j_desc.add("ID");
-
 		j_desc.add("SE_PATH");
-
 		j_desc.add("TYPE");
-
 		j_desc.add("HAS_CHILDREN");
 		j_desc.add("PRIVS");
-
 		return j_desc;
 	}
 

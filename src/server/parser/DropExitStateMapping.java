@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -72,7 +70,6 @@ public class DropExitStateMapping extends Node
 				((SDMSExitStateProfile)(v.elementAt(0))).getName(sysEnv) ));
 
 		}
-
 		Vector se_v = SDMSSchedulingEntityTable.idx_esmpId.getVector(sysEnv, esmpId);
 		if (se_v.size() != 0) {
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "02112171836",

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -74,17 +72,14 @@ public class CopyFolder extends Node
 		if (newName == null) {
 			try {
 				p = SDMSFolderTable.getFolder(sysEnv, name2);
-
 				name = null;
 				keepName = true;
-
 			} catch(NotFoundException nfe) {
 				if (urlVector.size() > 1) {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03203131151", "It isn't possible to copy multiple sources to one target"));
 				}
 				name = (String) name2.remove(name2.size() -1);
 				p = SDMSFolderTable.getFolder(sysEnv, name2);
-
 			}
 		} else {
 			if (urlVector.size() > 1) {
@@ -123,21 +118,18 @@ public class CopyFolder extends Node
 					throw new DuplicateKeyException(new SDMSMessage(sysEnv, "02204160938", "Object with name $1 already exists within $2",
 						name, parent.pathString(sysEnv)));
 				}
-
 				if (SDMSFolderTable.idx_parentId_name.containsKey(sysEnv, new SDMSKey(npId, name))) {
 					throw new DuplicateKeyException(new SDMSMessage(sysEnv, "03112191224", "Object with name $1 already exists within $2",
 						name, parent.pathString(sysEnv)));
 				}
 
 				if(npId.equals(myId)) {
-
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "02204160936", "A Folder cannot be copied below itself"));
 				}
 				Long id;
 				p = parent;
 				while((id = p.getParentId(sysEnv)) != null) {
 					if(id.equals(myId)) {
-
 						throw new CommonErrorException(new SDMSMessage(sysEnv, "02204160937", "A Folder cannot be copied below itself"));
 					}
 					p = SDMSFolderTable.getObject(sysEnv, id);

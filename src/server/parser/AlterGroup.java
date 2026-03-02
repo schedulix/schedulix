@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -74,7 +72,6 @@ public class AlterGroup extends ManipGroup
 		if(with.containsKey(ParseStr.S_USERLIST)) {
 			Vector oldusers = SDMSMemberTable.idx_gId.getVector(sysEnv, gId);
 			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId) && !userlist.contains(myUId)) {
-
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03104151448",
 								"You cannot remove yourself from a group"));
 			}
@@ -106,7 +103,6 @@ public class AlterGroup extends ManipGroup
 				try {
 					SDMSMemberTable.table.create(sysEnv, gId, uId);
 				} catch (DuplicateKeyException dke) {
-
 				}
 			}
 		}
@@ -115,7 +111,6 @@ public class AlterGroup extends ManipGroup
 			SDMSMember m;
 			Long uId;
 			if (!sysEnv.cEnv.gid().contains(SDMSObject.adminGId) && dellist.contains(myUId)) {
-
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03104151447",
 								"You cannot remove yourself from a group"));
 			}
@@ -127,7 +122,6 @@ public class AlterGroup extends ManipGroup
 						m = SDMSMemberTable.idx_gId_uId_getUnique(sysEnv, new SDMSKey(gId, uId));
 						m.delete(sysEnv);
 					} catch (NotFoundException nfe) {
-
 					}
 				} else {
 					throw new CommonErrorException(new SDMSMessage(sysEnv, "03312102202",

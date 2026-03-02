@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -55,7 +53,6 @@ public class AlterRsp extends Node
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-
 		SDMSResourceStateProfile rsp;
 		try {
 			rsp = SDMSResourceStateProfileTable.idx_name_getUnique (sysEnv, name);
@@ -74,7 +71,6 @@ public class AlterRsp extends Node
 
 		Vector states = (Vector) with.get(ParseStr.S_STATUS);
 		if(states == null) {
-
 		} else {
 			Iterator i;
 			SDMSResourceState rs;
@@ -91,7 +87,6 @@ public class AlterRsp extends Node
 			while (i.hasNext()) {
 				rsn = (String)i.next();
 				rsdId = SDMSResourceStateDefinitionTable.idx_name_getUnique(sysEnv, rsn).getId(sysEnv);
-
 				try {
 					SDMSResourceStateTable.table.create (sysEnv, rsdId, rspId);
 				} catch (DuplicateKeyException dke) {

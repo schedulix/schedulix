@@ -754,8 +754,8 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 			if (r.wasNull()) parentId = null;
 			scopeId = Long.valueOf (r.getLong(11));
 			if (r.wasNull()) scopeId = null;
-			isStatic = new Boolean ((r.getInt(12) == 0 ? false : true));
-			isDisabled = new Boolean ((r.getInt(13) == 0 ? false : true));
+			isStatic = Boolean.valueOf ((r.getInt(12) == 0 ? false : true));
+			isDisabled = Boolean.valueOf ((r.getInt(13) == 0 ? false : true));
 			oldState = Integer.valueOf (r.getInt(14));
 			if (r.wasNull()) oldState = null;
 			mergeMode = Integer.valueOf (r.getInt(15));
@@ -764,8 +764,8 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 			if (r.wasNull()) jobEsdId = null;
 			jobEsdPref = Integer.valueOf (r.getInt(18));
 			if (r.wasNull()) jobEsdPref = null;
-			jobIsFinal = new Boolean ((r.getInt(19) == 0 ? false : true));
-			jobIsRestartable = new Boolean ((r.getInt(20) == 0 ? false : true));
+			jobIsFinal = Boolean.valueOf ((r.getInt(19) == 0 ? false : true));
+			jobIsRestartable = Boolean.valueOf ((r.getInt(20) == 0 ? false : true));
 			finalEsdId = Long.valueOf (r.getLong(21));
 			if (r.wasNull()) finalEsdId = null;
 			exitCode = Integer.valueOf (r.getInt(22));
@@ -775,8 +775,8 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 			rrCommandline = r.getString(24);
 			if (r.wasNull()) rrCommandline = null;
 			rerunSeq = Integer.valueOf (r.getInt(25));
-			isReplaced = new Boolean ((r.getInt(26) == 0 ? false : true));
-			isCancelled = new Boolean ((r.getInt(27) == 0 ? false : true));
+			isReplaced = Boolean.valueOf ((r.getInt(26) == 0 ? false : true));
+			isCancelled = Boolean.valueOf ((r.getInt(27) == 0 ? false : true));
 			if (r.wasNull()) isCancelled = null;
 			baseSmeId = Long.valueOf (r.getLong(28));
 			if (r.wasNull()) baseSmeId = null;
@@ -810,7 +810,7 @@ public class SDMSSubmittedEntityTableGeneric extends SDMSTable
 			killExitCode = Integer.valueOf (r.getInt(43));
 			if (r.wasNull()) killExitCode = null;
 			isSuspended = Integer.valueOf (r.getInt(44));
-			isSuspendedLocal = new Boolean ((r.getInt(45) == 0 ? false : true));
+			isSuspendedLocal = Boolean.valueOf ((r.getInt(45) == 0 ? false : true));
 			if (r.wasNull()) isSuspendedLocal = null;
 			priority = Integer.valueOf (r.getInt(46));
 			rawPriority = Integer.valueOf (r.getInt(47));

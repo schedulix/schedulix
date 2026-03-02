@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -150,7 +149,6 @@ public class ResourceVariableResolver extends VariableResolver
 		throws SDMSException
 	{
 		SDMSResource thisResource = (SDMSResource) thisObject;
-
 		Long linkId = thisResource.getLinkId(sysEnv);
 		while (linkId != null) {
 			thisResource = SDMSResourceTable.getObject(sysEnv, linkId);
@@ -185,6 +183,5 @@ public class ResourceVariableResolver extends VariableResolver
 
 	public ResourceVariableResolver()
 	{
-
 	}
 }

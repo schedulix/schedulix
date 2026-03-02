@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -70,7 +70,6 @@ public abstract class InternalSession extends SDMSThread
 		cEnv.setMe(this);
 		try {
 			env.dbConnection = Server.connectToDB(env);
-
 			cEnv.setGid(env, new Vector());
 			cEnv.gid().add(SDMSObject.adminGId);
 			cEnv.setUid(SDMSObject.internalUId);
@@ -126,7 +125,6 @@ public abstract class InternalSession extends SDMSThread
 			try {
 				post(getNode(INITIALIZE));
 			} catch (SDMSException e) {
-
 			}
 			while(run) {
 				try {
@@ -135,7 +133,6 @@ public abstract class InternalSession extends SDMSThread
 					if (!isSuspended)
 						post(getNode(NORMAL));
 				} catch (SDMSException e) {
-
 				}
 				long now = new java.util.Date().getTime();
 				while (doWait) {

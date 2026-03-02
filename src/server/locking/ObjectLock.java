@@ -56,7 +56,6 @@ public class ObjectLock
 	private static ObjectLock unusedLocks = null;
 
 	protected int id;
-
 	public Object object = null;
 	protected SDMSThread thread = null;
 	protected SyncLock syncLock;
@@ -100,7 +99,6 @@ public class ObjectLock
 
 		lockUsed--;
 		if (objectLock.notify) {
-
 			lockDiscarded++;
 			lockHWMdelta++;
 			return;
@@ -112,7 +110,6 @@ public class ObjectLock
 		objectLock.prev = null;
 		if (reUseLocks) {
 			objectLock.next = unusedLocks;
-
 			unusedLocks = objectLock;
 			if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_FREE)) != 0)
 				objectLock.freeStackTrace = getStackTrace();
@@ -142,7 +139,6 @@ public class ObjectLock
 
 	private void initialize(SDMSThread thread, Object object, int mode, long createCp)
 	{
-
 		if (object == null) throw new RuntimeException();
 		this.object = object;
 		this.thread = thread;
@@ -150,7 +146,6 @@ public class ObjectLock
 		this.next = null;
 		this.prev = null;
 		this.createCp = createCp;
-
 		wait = false;
 		waiting = false;
 		escalated = false;

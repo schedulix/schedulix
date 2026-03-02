@@ -74,7 +74,6 @@ public class CleanupFolder
 
 			}
 		}
-
 		HashSet keeplist = new HashSet();
 		it = kl.iterator();
 		while (it.hasNext()) {

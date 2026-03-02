@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -67,13 +65,10 @@ public class MoveFolder extends Node
 
 		try {
 			p = SDMSFolderTable.getFolder(sysEnv, name2);
-
 			name = f.getName(sysEnv);
-
 		} catch(NotFoundException nfe) {
 			name = (String) name2.remove(name2.size() - 1);
 			p = SDMSFolderTable.getFolder(sysEnv, name2);
-
 		}
 
 		npId = p.getId(sysEnv);
@@ -91,13 +86,11 @@ public class MoveFolder extends Node
 		}
 
 		if(npId.equals(myId)) {
-
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03201291020", "A Folder cannot be moved below itself"));
 		}
 		Long id;
 		while((id = p.getParentId(sysEnv)) != null) {
 			if(id.equals(myId)) {
-
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03201291021", "A Folder cannot be moved below itself"));
 			}
 			p = SDMSFolderTable.getObject(sysEnv, id);

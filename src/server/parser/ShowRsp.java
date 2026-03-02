@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -65,7 +63,6 @@ public class ShowRsp extends ShowCommented
 
 		desc.add("ID");
 		desc.add("NAME");
-
 		desc.add("INITIAL_STATE");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
@@ -74,7 +71,6 @@ public class ShowRsp extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("STATES");
 
 		Vector data = new Vector();
@@ -111,9 +107,7 @@ public class ShowRsp extends ShowCommented
 		data.add(rsp.getPrivileges(sysEnv).toString());
 
 		Vector r_desc = new Vector();
-
 		r_desc.add("ID");
-
 		r_desc.add("RSD_NAME");
 		r_desc.add("PRIVS");
 

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -77,17 +75,14 @@ public class ReassureJob extends JobDistribution
 	private void search_job(SystemEnvironment sysEnv, SDMSScope s, Vector desc, Vector data)
 		throws SDMSException
 	{
-
 		SDMSSubmittedEntity sme;
 		SDMSKillJob kj = null;
 		try {
 			sme = SDMSSubmittedEntityTable.getObject(sysEnv, jobId);
 		} catch (NotFoundException nfe) {
-
 			try {
 				kj = SDMSKillJobTable.getObject(sysEnv, jobId);
 			} catch(NotFoundException nfekj) {
-
 				data.add(RepoIface.CMD_DISPOSE);
 				return;
 			}
@@ -101,23 +96,19 @@ public class ReassureJob extends JobDistribution
 	private void process_job(SystemEnvironment sysEnv, SDMSScope s, SDMSSubmittedEntity sme, Vector desc, Vector data)
 		throws SDMSException
 	{
-
 		int status = sme.getState(sysEnv).intValue();
 		if(status != SDMSSubmittedEntity.STARTING && status != SDMSSubmittedEntity.STARTED) {
-
 			data.add("DISPOSE");
 			return;
 		}
 		Long sId = sme.getScopeId(sysEnv);
 		if(sId == null || !sId.equals(s.getId(sysEnv))) {
-
 			data.add("DISPOSE");
 			return;
 		}
 
 		sysEnv.tx.beginSubTransaction(sysEnv);
 		if(! startJob(sysEnv, sme, s, desc, data)) {
-
 		}
 	}
 
@@ -127,20 +118,17 @@ public class ReassureJob extends JobDistribution
 
 		int status = kj.getState(sysEnv).intValue();
 		if(status != SDMSSubmittedEntity.STARTING && status != SDMSSubmittedEntity.STARTED) {
-
 			data.add("DISPOSE");
 			return;
 		}
 		Long sId = kj.getScopeId(sysEnv);
 		if(sId == null || !sId.equals(s.getId(sysEnv))) {
-
 			data.add("DISPOSE");
 			return;
 		}
 
 		sysEnv.tx.beginSubTransaction(sysEnv);
 		if(! startKillJob(sysEnv, kj, s, desc, data)) {
-
 		}
 	}
 

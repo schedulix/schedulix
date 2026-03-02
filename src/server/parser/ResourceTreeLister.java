@@ -50,7 +50,6 @@ public class ResourceTreeLister extends TreeLister
 		Long scopeId = sId;
 		namedResources = new HashMap();
 		formatter = new SsRFormatter(namedResources);
-
 		while (scopeId != null) {
 			Vector rv = SDMSResourceTable.idx_scopeId.getVector(sysEnv, scopeId);
 			for(int i = 0; i < rv.size(); ++i) {

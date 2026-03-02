@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -62,9 +60,7 @@ public class ShowNiceProfile extends ShowCommented
 
 		desc.add("ID");
 		desc.add("NAME");
-
 		desc.add("IS_ACTIVE");
-
 		desc.add("ACTIVE_TS");
 
 		desc.add("COMMENT");
@@ -74,7 +70,6 @@ public class ShowNiceProfile extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("ENTRIES");
 
 		Vector data = new Vector();
@@ -108,21 +103,13 @@ public class ShowNiceProfile extends ShowCommented
 		data.add(np.getPrivileges(sysEnv).toString());
 
 		Vector r_desc = new Vector();
-
 		r_desc.add("ID");
-
 		r_desc.add("PREFERENCE");
-
 		r_desc.add("FOLDER_ID");
-
 		r_desc.add("FOLDER_NAME");
-
 		r_desc.add("FOLDER_TYPE");
-
 		r_desc.add("ACTIVE");
-
 		r_desc.add("RENICE");
-
 		r_desc.add("IS_SUSPENDED");
 
 		SDMSOutputContainer s_container = new SDMSOutputContainer(sysEnv, null, r_desc);

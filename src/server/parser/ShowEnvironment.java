@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -69,7 +67,6 @@ public class ShowEnvironment extends ShowCommented
 		Long neId = ne.getId(sysEnv);
 
 		desc.add("ID");
-
 		desc.add("NAME");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
@@ -78,9 +75,7 @@ public class ShowEnvironment extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("RESOURCES");
-
 		desc.add("JOB_DEFINITIONS");
 
 		Vector data = new Vector();
@@ -108,11 +103,8 @@ public class ShowEnvironment extends ShowCommented
 		data.add(ne.getPrivileges(sysEnv).toString());
 
 		Vector r_desc = new Vector();
-
 		r_desc.add("ID");
-
 		r_desc.add("NR_NAME");
-
 		r_desc.add("CONDITION");
 		r_desc.add("PRIVS");
 
@@ -167,7 +159,6 @@ public class ShowEnvironment extends ShowCommented
 			if (f.checkPrivileges(sysEnv, SDMSPrivilege.VIEW))
 				nj_v.add(f);
 		}
-
 		fl.setObjectsToList(nj_v);
 
 		SDMSOutputContainer s_container = fl.list(sysEnv);
@@ -193,18 +184,12 @@ class SeSeFormatter implements Formatter
 	public Vector fillHeadInfo()
 	{
 		Vector j_desc = new Vector();
-
 		j_desc.add("ID");
-
 		j_desc.add("SE_PATH");
-
 		j_desc.add("TYPE");
-
 		j_desc.add("ENV");
-
 		j_desc.add("HAS_CHILDREN");
 		j_desc.add("PRIVS");
-
 		return j_desc;
 	}
 

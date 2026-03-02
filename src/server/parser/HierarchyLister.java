@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -196,7 +194,6 @@ public abstract class HierarchyLister
 			for(j = v.size() - 1; j >= 0; j--) {
 				SDMSProxy p = (SDMSProxy) v.get(j);
 				pId = p.getId(sysEnv);
-
 				if(!rendered.contains(pId)) {
 					objectsToRender.addElement(p);
 					parentSet.add(pId);
@@ -206,7 +203,6 @@ public abstract class HierarchyLister
 					break;
 			}
 			if(j < 0) {
-
 				pId = o.getId(sysEnv);
 				if(!rendered.contains(pId)) {
 					objectsToRender.addElement(o);

@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -55,7 +55,6 @@ public class GarbageThread extends InternalSession
 		super(name);
 		NR = 1234322;
 		initThread(env, f, NR, name, SystemEnvironment.gcWakeupInterval*60*1000);
-
 		preserveTime = SystemEnvironment.preserveTime;
 		maxPreserveTime = SystemEnvironment.maxPreserveTime;
 	}
@@ -172,7 +171,6 @@ public class GarbageThread extends InternalSession
 		}
 
 		long purgeLow = sysEnv.roTxList.first(sysEnv);
-
 		long first = sysEnv.seVersionList.first(sysEnv);
 		if (first > purgeLow)
 			first = purgeLow;
@@ -212,7 +210,6 @@ class DoGarbage extends Node
 				SystemEnvironment.garb.collect(sysEnv);
 				break;
 			case INITIALIZE:
-
 				break;
 		}
 	}

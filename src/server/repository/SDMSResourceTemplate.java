@@ -47,6 +47,7 @@ public class SDMSResourceTemplate extends SDMSResourceTemplateProxyGeneric
 	{
 		super(p_object);
 	}
+
 	public String getName(SystemEnvironment sysEnv)
 	throws SDMSException
 	{

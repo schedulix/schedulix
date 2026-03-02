@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.util.*;
@@ -61,18 +59,14 @@ public class ShowEvent
 		evtId = evt.getId (sysEnv);
 
 		Vector desc = new Vector();
-
 		desc.add ("ID");
-
 		desc.add ("NAME");
 		desc.add ("OWNER");
-
 		desc.add ("SCHEDULING_ENTITY");
 		desc.add ("CREATOR");
 		desc.add ("CREATE_TIME");
 		desc.add ("CHANGER");
 		desc.add ("CHANGE_TIME");
-
 		desc.add ("PARAMETERS");
 		desc.add ("PRIVS");
 		desc.add ("COMMENT");
@@ -128,11 +122,8 @@ public class ShowEvent
 	throws SDMSException
 	{
 		final Vector desc = new Vector();
-
 		desc.add ("ID");
-
 		desc.add ("KEY");
-
 		desc.add ("VALUE");
 
 		final SDMSOutputContainer table = new SDMSOutputContainer (sysEnv, "List of Event Parameters", desc);

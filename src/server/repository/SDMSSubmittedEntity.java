@@ -556,8 +556,8 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 		int state = sme.getState(sysEnv).intValue();
 
 		if (state != SDMSSubmittedEntity.DEPENDENCY_WAIT) {
-				throw new CommonErrorException (new SDMSMessage (sysEnv, "03908251740",
-								"Cannot enable a submitted entity that is not in DEPENDENCY WAIT state"));
+			throw new CommonErrorException (new SDMSMessage (sysEnv, "03908251740",
+							"Cannot enable a submitted entity that is not in DEPENDENCY WAIT state"));
 		}
 		sme.setIsDisabled(sysEnv, Boolean.FALSE);
 		sme.setState(sysEnv, SDMSSubmittedEntity.SUBMITTED);
@@ -1179,11 +1179,11 @@ public class SDMSSubmittedEntity extends SDMSSubmittedEntityProxyGeneric
 				SDMSSubmittedEntity rSme = null;
 				Long dMasterId = dSme.getMasterId(sysEnv);
 				if (resolveMode != SDMSDependencyDefinition.EXTERNAL)
-				rSme = dSme.getNearestSubmittedEntity (sysEnv, seId,
-								       false,
-								       false,
-								       true
-					);
+					rSme = dSme.getNearestSubmittedEntity (sysEnv, seId,
+									       false,
+									       false,
+									       true
+						);
 				if (rSme == null && resolveMode != SDMSDependencyDefinition.INTERNAL)
 					rSme = dSme.getExternalSubmittedEntity (sysEnv, dd);
 				if (rSme == null)

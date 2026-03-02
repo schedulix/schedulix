@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,7 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 package de.independit.scheduler.server.repository;
 
@@ -49,7 +48,6 @@ public class SDMSResourceRequirement extends SDMSResourceRequirementProxyGeneric
 	public void delete(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-
 		Vector act_rrs = SDMSResourceReqStatesTable.idx_rrId.getVector(sysEnv, getId(sysEnv));
 		for(int i = 0; i < act_rrs.size(); i++) {
 			SDMSResourceReqStates rrs = (SDMSResourceReqStates) act_rrs.get(i);
@@ -137,7 +135,6 @@ public class SDMSResourceRequirement extends SDMSResourceRequirementProxyGeneric
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304101619",
 					"For setting a resource state, an exclusive lock is required ($1)", nr.pathString(sysEnv)));
 			}
-
 			if(rspId == null) {
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "03304110944",
 					"Resource $1 doesn't have a state profile", nr.pathString(sysEnv)));

@@ -249,7 +249,6 @@ public class CheckSum
 		try {
 			sha = MessageDigest.getInstance("SHA-256");
 		} catch(NoSuchAlgorithmException nsae) {
-
 			return msg;
 		}
 		sha.update(msg);
@@ -311,7 +310,6 @@ public class CheckSum
 
 	private CheckSum()
 	{
-
 	}
 }
 

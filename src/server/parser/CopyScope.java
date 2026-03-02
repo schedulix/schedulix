@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -76,13 +74,10 @@ public class CopyScope extends Node
 		if (newName == null) {
 			try {
 				p = SDMSScopeTable.getScope(sysEnv, name2);
-
 				name = f.getName(sysEnv);
-
 			} catch(NotFoundException nfe) {
 				name = (String) name2.remove(name2.size() -1);
 				p = SDMSScopeTable.getScope(sysEnv, name2);
-
 			}
 		} else {
 			p = SDMSScopeTable.getObject(sysEnv, opId);
@@ -99,13 +94,11 @@ public class CopyScope extends Node
 		myId = f.getId(sysEnv);
 
 		if(npId.equals(myId)) {
-
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "02204171912", "A Scope cannot be copied below itself"));
 		}
 		Long id;
 		while((id = p.getParentId(sysEnv)) != null) {
 			if(id.equals(myId)) {
-
 				throw new CommonErrorException(new SDMSMessage(sysEnv, "02204171913", "A Scope cannot be copied below itself"));
 			}
 			p = SDMSScopeTable.getObject(sysEnv, id);

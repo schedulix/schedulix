@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -59,21 +57,13 @@ public class ShowComment extends Node
 		final Date d = new Date();
 
 		desc.add("ID");
-
 		desc.add("TAG");
-
 		desc.add("COMMENT");
-
 		desc.add("COMMENTTYPE");
-
 		desc.add("CREATOR");
-
 		desc.add("CREATE_TIME");
-
 		desc.add("CHANGER");
-
 		desc.add("CHANGE_TIME");
-
 		desc.add("PRIVS");
 
 		Long objId = null;

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -60,23 +58,14 @@ public class ShowObjectMonitor extends ShowCommented
 		Vector desc = new Vector();
 
 		desc.add("ID");
-
 		desc.add("NAME");
-
 		desc.add("OWNER");
-
 		desc.add("WATCH_TYPE");
-
 		desc.add("RECREATE");
-
 		desc.add("WATCHER");
-
 		desc.add("DELETE_AMOUNT");
-
 		desc.add("DELETE_BASE");
-
 		desc.add("EVENT_DELETE_AMOUNT");
-
 		desc.add("EVENT_DELETE_BASE");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
@@ -85,9 +74,7 @@ public class ShowObjectMonitor extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("PARAMETERS");
-
 		desc.add("INSTANCES");
 
 		Vector data = new Vector();

@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -77,7 +76,6 @@ class CalendarComparator implements Comparator
 			st1 = cal1.getStarttime(sysEnv);
 			st2 = cal2.getStarttime(sysEnv);
 		} catch (SDMSException e) {
-
 			throw new ClassCastException(e.toString());
 		}
 		return st1.compareTo(st2);
@@ -99,7 +97,6 @@ class CalendarComparator implements Comparator
 			st1 = cal1.getStarttime(sysEnv);
 			st2 = cal2.getStarttime(sysEnv);
 		} catch (SDMSException e) {
-
 			throw new ClassCastException(e.toString());
 		}
 		return st1.equals(st2);

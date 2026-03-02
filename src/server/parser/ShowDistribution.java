@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -59,29 +57,17 @@ public class ShowDistribution extends ShowCommented
 		Vector desc = new Vector();
 
 		desc.add("ID");
-
 		desc.add("NAME");
-
 		desc.add("POOLNAME");
-
 		desc.add("SCOPENAME");
-
 		desc.add("IS_ACTIVE");
-
 		desc.add("COMMENT");
-
 		desc.add("COMMENTTYPE");
-
 		desc.add("CREATOR");
-
 		desc.add("CREATE_TIME");
-
 		desc.add("CHANGER");
-
 		desc.add("CHANGE_TIME");
-
 		desc.add("PRIVS");
-
 		desc.add("RESOURCES");
 
 		Vector data = new Vector();

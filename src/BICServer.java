@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,7 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 package de.independit.scheduler;
 
@@ -74,11 +73,9 @@ public class BICServer
 				String attrValue = a.getValue(attrName);
 				SDMSThread.doTrace(null, attrName + " : " + attrValue, SDMSThread.SEVERITY_INFO);
 			}
-
 			programLevel=a.getValue("Level");
 
 		} catch (Exception e) {
-
 			SDMSThread.doTrace(null, e.toString(), SDMSThread.SEVERITY_INFO);
 		}
 
@@ -106,14 +103,14 @@ public class BICServer
 
 		for(i = 0; i < argv.length; i++) {
 			if(argv[i].toLowerCase().equals(ADMIN_OPTION)) {
-				SDMSThread.doTrace(null, "Server will start in admin mode, logins disabled" , SDMSThread.SEVERITY_INFO);
+				SDMSThread.doTrace(null, "Server will start in admin mode, logins disabled", SDMSThread.SEVERITY_INFO);
 				if(gotAdmin) {
 					SDMSThread.doTrace(null, "Duplicate option: " + ADMIN_OPTION, SDMSThread.SEVERITY_INFO);
 				}
 				adminMode = true;
 				gotAdmin = true;
 			} else if(argv[i].toLowerCase().equals(PROTECT_OPTION)) {
-				SDMSThread.doTrace(null, "Server will start in protected mode, logins and internal threads disabled" ,
+				SDMSThread.doTrace(null, "Server will start in protected mode, logins and internal threads disabled",
 							SDMSThread.SEVERITY_INFO);
 				if(gotProtect) {
 					SDMSThread.doTrace(null, "Duplicate option: " + PROTECT_OPTION, SDMSThread.SEVERITY_INFO);
@@ -146,6 +143,5 @@ public class BICServer
 
 	private BICServer()
 	{
-
 	}
 }

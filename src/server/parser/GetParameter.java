@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -83,7 +81,6 @@ public class GetParameter extends Node
 		try {
 			s = sme.getVariableValue(sysEnv, name, false, mode);
 		} catch (NotFoundException nfe) {
-
 			throw new NotFoundException(new SDMSMessage(sysEnv, "03209231453", "Couldn't resolve Parameter $1", name));
 		}
 		v.add(s);

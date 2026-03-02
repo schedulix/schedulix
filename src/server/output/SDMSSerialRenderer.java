@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.output;
 
 import java.lang.*;
@@ -60,18 +58,15 @@ public class SDMSSerialRenderer extends SDMSOutputRenderer
 	public void render(PrintStream ostream, SDMSOutput p_output) throws FatalException
 	{
 		try {
-
 			if (p_output.container != null) {
 				cleanContainer(p_output.container);
 			}
-
 			if (p_output.feedback != null) {
 				p_output.feedback = p_output.feedback.toString();
 			}
 
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream (ostream);
 			objectOutputStream.writeObject(p_output);
-
 			objectOutputStream.flush();
 		} catch (Exception e) {
 			errorCode = "02111032117";
@@ -85,9 +80,7 @@ public class SDMSSerialRenderer extends SDMSOutputRenderer
 		if (p_container.title != null) {
 			p_container.title = p_container.title.toString();
 		}
-
 		if (p_container.columns == 0) {
-
 			Vector v = (Vector)(p_container.dataset.elementAt(0));
 			Iterator i = v.iterator();
 			while (i.hasNext()) {

@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -70,7 +68,6 @@ public class DropRsp extends Node
 		Vector v = SDMSNamedResourceTable.idx_rspId.getVector(sysEnv, rspId);
 
 		if(v.size()>0) {
-
 			throw new CommonErrorException (new SDMSMessage (sysEnv, "03201212212",
 					"Resource State Profile is profile for Named Resource $1",
 					((SDMSNamedResource)(v.elementAt(0))).getName(sysEnv) ));

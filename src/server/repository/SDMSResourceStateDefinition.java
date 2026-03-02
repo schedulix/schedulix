@@ -24,7 +24,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package de.independit.scheduler.server.repository;
 
 import java.io.*;
@@ -49,7 +48,6 @@ public class SDMSResourceStateDefinition extends SDMSResourceStateDefinitionProx
 	public void delete(SystemEnvironment sysEnv)
 	throws SDMSException
 	{
-
 		Long rsdId = getId(sysEnv);
 		Vector v = SDMSResourceStateTable.idx_rsdId.getVector(sysEnv, rsdId);
 		if (v.size() > 0) {

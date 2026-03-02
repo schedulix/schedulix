@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -64,7 +62,6 @@ public class ShowExitStatusDef extends ShowCommented
 		Long esdId = esd.getId(sysEnv);
 
 		desc.add("ID");
-
 		desc.add("NAME");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");

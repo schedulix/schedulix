@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -72,7 +70,6 @@ public class DropEnvironment extends Node
 			throw new CommonErrorException(new SDMSMessage(sysEnv, "03201222321",
 				"Environment in use by Scheduling Entity $1", se.pathString(sysEnv)));
 		}
-
 		v = SDMSFolderTable.idx_envId.getVector(sysEnv, neId);
 		if(v.size() > 0) {
 			SDMSFolder f = (SDMSFolder) v.get(0);

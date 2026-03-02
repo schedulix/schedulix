@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -66,7 +64,6 @@ public class ShowRsm extends ShowCommented
 		rsmpId = rsmp.getId(sysEnv);
 
 		desc.add("ID");
-
 		desc.add("NAME");
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
@@ -75,7 +72,6 @@ public class ShowRsm extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("MAPPINGS");
 
 		Vector data = new Vector();
@@ -102,11 +98,8 @@ public class ShowRsm extends ShowCommented
 		data.add(rsmp.getPrivileges(sysEnv).toString());
 
 		Vector r_desc = new Vector();
-
 		r_desc.add("ESD_NAME");
-
 		r_desc.add("RSD_FROM");
-
 		r_desc.add("RSD_TO");
 
 		SDMSOutputContainer r_container = new SDMSOutputContainer(sysEnv, null, r_desc);

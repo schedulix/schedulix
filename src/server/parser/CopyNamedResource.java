@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -79,13 +77,10 @@ public class CopyNamedResource extends Node
 		if (newName == null) {
 			try {
 				p = SDMSNamedResourceTable.getNamedResource(sysEnv, path2);
-
 				name = src.getName(sysEnv);
-
 			} catch(NotFoundException nfe) {
 				name = (String) path2.remove(path2.size() -1);
 				p = SDMSNamedResourceTable.getNamedResource(sysEnv, path2);
-
 			}
 		} else {
 			p = SDMSNamedResourceTable.getObject(sysEnv, opId);

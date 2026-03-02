@@ -41,13 +41,10 @@ public class SyncLock
 	protected void doWait(SystemEnvironment sysEnv)
 	throws DeadlockException, InterruptedException
 	{
-
 		if (lock.wait) {
 			if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_WAIT_AND_NOTIFY)) != 0)
 				System.out.println(Thread.currentThread().getName() + ":doWait() on " + lock.objectToShortString());
-
 			lock.waiting = true;
-
 			if (LockingSystem.DEADLOCK_TIMEOUT_MS == 0) {
 				boolean tryAgain = false;
 				try {
@@ -57,7 +54,6 @@ public class SyncLock
 						System.out.println(Thread.currentThread().getName() + ":doWait() Deadlock[1] on " + toString());
 					throw de;
 				} catch (NotMyDeadlockException nmde) {
-
 					tryAgain = true;
 				}
 				if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_WAIT_AND_NOTIFY)) != 0)
@@ -101,7 +97,6 @@ public class SyncLock
 								System.out.println(Thread.currentThread().getName() + ":doWait() Deadlock[3] on " + toString());
 							throw de;
 						} catch (NotMyDeadlockException nmde) {
-
 							deadlockDetect = true;
 						}
 					}
@@ -122,7 +117,6 @@ public class SyncLock
 			                   ":Entering doNotify() Thread " + lock.thread.getName() + toString());
 
 		if (lock.notify) {
-
 			if (lock.waiting) {
 				if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_WAIT_AND_NOTIFY)) != 0)
 					System.out.println(Thread.currentThread().getName() +
@@ -132,13 +126,11 @@ public class SyncLock
 					System.out.println(Thread.currentThread().getName() +
 					                   ":Leaving doNotify() after notify()");
 			} else {
-
 				if ((LockingSystem.debug & (LockingSystem.DEBUG_ALL | LockingSystem.DEBUG_WAIT_AND_NOTIFY)) != 0)
 					System.out.println(Thread.currentThread().getName() +
 					                   ":Leaving doNotify() on waiting = false");
 			}
-		lock.notify = false;
-
+			lock.notify = false;
 		}
 	}
 

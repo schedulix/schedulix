@@ -162,7 +162,6 @@ public class LockingSystem
 	public static void releaseSubTxLocks(SystemEnvironment sysEnv, long checkPoint)
 	throws FatalException
 	{
-
 		notifyLocks(sysEnv, LockingSystemSynchronized.releaseSubTxLocks(sysEnv, checkPoint));
 	}
 
@@ -182,7 +181,6 @@ public class LockingSystem
 	{
 		if (locks == null) return;
 		Iterator<ObjectLock> i = locks.iterator();
-
 		while (i.hasNext()) {
 			ObjectLock lock = i.next();
 			lock.syncLock.doNotify(sysEnv);

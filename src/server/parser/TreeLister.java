@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -69,13 +67,9 @@ public abstract class TreeLister implements Comparator
 	public SDMSOutputContainer list(SystemEnvironment sysEnv, Vector rootObjects, HashSet expandList)
 		throws SDMSException
 	{
-
 		Vector objs = (Vector)rootObjects.clone();
-
 		Collections.sort(objs, this);
-
 		SDMSOutputContainer container = new SDMSOutputContainer(sysEnv, title, getDesc());
-
 		Iterator i = objs.iterator();
 		while (i.hasNext()) {
 			SDMSProxy o = (SDMSProxy)i.next();
@@ -87,9 +81,7 @@ public abstract class TreeLister implements Comparator
 	protected void render(SystemEnvironment sysEnv, SDMSOutputContainer container, SDMSProxy o, HashSet expandList)
 		throws SDMSException
 	{
-
 		container.addData(sysEnv, format(sysEnv, o));
-
 		Long id = o.getId(sysEnv);
 		if (expandList == null || expandList.contains(id)) {
 			Vector children = getChildren(sysEnv, o);

@@ -146,7 +146,6 @@ public class ObjectFilter
 				} else if(((String) w.key).equals(ParseStr.S_ENABLE)) {
 					item.addElement(new SmeDisabledFilter(sysEnv, (Boolean) w.value));
 				} else {
-
 				}
 			}
 			subFilter.addElement(item);

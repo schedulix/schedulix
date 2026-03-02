@@ -90,44 +90,44 @@ public class App
 	{
 		boolean uo = this.userOnly();
 
-		addOption("h", "host"    , "Host",     HOST    , null, "hostname"  , true ,
+		addOption("h", "host", "Host",     HOST, null, "hostname", true,
 		          "BICsuite!server Host");
-		addOption("p", "port"    , "Port",     PORT    , "2506", "portnumber", false ,
+		addOption("p", "port", "Port",     PORT, "2506", "portnumber", false,
 		          "BICsuite!server Port (defaults to 2506)");
-		addOption("a", "auth"    , "Auhentication",     AUTH    , BASIC, "authcode", false ,
+		addOption("a", "auth", "Auhentication",     AUTH, BASIC, "authcode", false,
 		          "User Authentication Method (defaults to 'BASIC') allowed are 'BASIC','WINSSO'");
-		addOption("P", "spn"    , "SPN",     SPN    , null, "spn", false ,
+		addOption("P", "spn", "SPN",     SPN, null, "spn", false,
 		          "Service Pricipal Name of BICsuite service when using WINSSO Authentication");
-		addOption("u", "user"    , "User",     USER    , null, "username"  , uo,
+		addOption("u", "user", "User",     USER, null, "username", uo,
 		          "Username (user or jid must be specified)");
-		addOption("w", "pass"    , "Password", PASS    , null, "password"  , uo,
+		addOption("w", "pass", "Password", PASS, null, "password", uo,
 		          "Password (must be specified if user is specified)");
 		if (!uo) {
-			addOption("j", "jid"     , null,      JID     , null, "jobid"     , false,
+			addOption("j", "jid", null,      JID, null, "jobid", false,
 			          "Job Id (user or jid must be specified)");
-			addOption("k", "key"     , null,      KEY     , null, "jobkey"    , false,
+			addOption("k", "key", null,      KEY, null, "jobkey", false,
 			          "Job Key (must be specified if user is not specified)");
 		}
-		addOption("s", "silent"  , "Silent",   SILENT  , null, null	, false,
+		addOption("s", "silent", "Silent",   SILENT, null, null	, false,
 		          "[No] (error) messages, feedbacks and additional messages are printed");
-		addOption("v", "verbose" , "Verbose",  VERBOSE , null, null	, false,
+		addOption("v", "verbose", "Verbose",  VERBOSE, null, null	, false,
 		          "[No] commands are printed");
 		if (this.canRetry()) {
-			addOption("t", "timeout" , "Timeout", TIMEOUT , null, "minutes"   , false,
+			addOption("t", "timeout", "Timeout", TIMEOUT, null, "minutes", false,
 				  "Number of minutes to retry on connection problems." +
 				  " 0 disables retry (default is wait forever)");
-			addOption("c", "cycle"   , "Cycle",   CYCLE   , "1" , "minutes"   , false,
+			addOption("c", "cycle", "Cycle",   CYCLE, "1", "minutes", false,
 				  "Number of minutes to wait between retries." +
 				  " Minimal value and default is 1 minute");
 		}
-		addOption("ini",   "ini"  , null,		 INI     , null, "inifile", false, "Use inifile for configuration of standard options");
-		addOption("tls",   "tls"  , "TLS",		TLS     , null, null, false, "Use SSL/TLS Connection");
-		addOption(null,    "help" , null,		 HELP    , null, null, false, "Displays this help");
-		addOption(null,     null  , "KeyStore",	   KEYSTORE, null, "keystore", false, "Keystore to use for TLS/SSL encrypted communication");
-		addOption(null,     null  , "TrustStore",	 TRUSTSTORE, null, "truststore", false, "Truststore to use for TLS/SSL encrypted communication");
-		addOption(null,     null  , "KeyStorePassword",   KEYSTOREPW, null, "keystorepw", false, "Keystore password to use for TLS/SSL encrypted communication");
-		addOption(null,     null  , "TrustStorePassword", TRUSTSTOREPW, null, "truststorepw", false, "Truststore password to use for TLS/SSL encrypted communication");
-		addOption(null,    "info" , "Info",	       INFO,     null, "sessioninfo", false, "Additional information for identifying the session");
+		addOption("ini", "ini", null,		INI, null, "inifile", false, "Use inifile for configuration of standard options");
+		addOption("tls", "tls", "TLS",		TLS, null, null, false, "Use SSL/TLS Connection");
+		addOption(null,  "help", null,		HELP, null, null, false, "Displays this help");
+		addOption(null,  null, "KeyStore",	KEYSTORE, null, "keystore", false, "Keystore to use for TLS/SSL encrypted communication");
+		addOption(null,  null, "TrustStore",	TRUSTSTORE, null, "truststore", false, "Truststore to use for TLS/SSL encrypted communication");
+		addOption(null,  null, "KeyStorePassword",   KEYSTOREPW, null, "keystorepw", false, "Keystore password to use for TLS/SSL encrypted communication");
+		addOption(null,  null, "TrustStorePassword", TRUSTSTOREPW, null, "truststorepw", false, "Truststore password to use for TLS/SSL encrypted communication");
+		addOption(null,  "info", "Info",	INFO,     null, "sessioninfo", false, "Additional information for identifying the session");
 	}
 
 	private boolean validateStandardOptions()
@@ -432,22 +432,22 @@ public class App
 		}
 		if (options.isSet(INI)) {
 			inifile = options.getValue(INI);
-			options.evaluateInifile(inifile, false , ignoreKeys);
+			options.evaluateInifile(inifile, false, ignoreKeys);
 		}
 		inifile = System.getenv("HOME");
 		if (inifile  != null) {
-			options.evaluateInifile(inifile + "/.sdmshrc", true , ignoreKeys);
+			options.evaluateInifile(inifile + "/.sdmshrc", true, ignoreKeys);
 		}
 		inifile = System.getenv("BICSUITECONFIG");
 		if (inifile != null) {
-			options.evaluateInifile(inifile + "/sdmshrc", true , ignoreKeys);
+			options.evaluateInifile(inifile + "/sdmshrc", true, ignoreKeys);
 		} else {
 			inifile = System.getenv("BICSUITEHOME");
 			if (inifile == null) {
 				if (!silent) System.err.println("BICSUITEHOME is not set");
 				return (1);
 			}
-			options.evaluateInifile(inifile + "/etc/sdmshrc", true , ignoreKeys);
+			options.evaluateInifile(inifile + "/etc/sdmshrc", true, ignoreKeys);
 		}
 
 		silent = (options.getOption(SILENT)).bvalue;

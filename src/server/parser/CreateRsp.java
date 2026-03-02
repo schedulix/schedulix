@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -55,7 +53,6 @@ public class CreateRsp extends Node
 	public void go(SystemEnvironment sysEnv)
 		throws SDMSException
 	{
-
 		SDMSResourceStateProfile rsp;
 		try {
 			rsp = SDMSResourceStateProfileTable.table.create (sysEnv, name, null);
@@ -85,7 +82,6 @@ public class CreateRsp extends Node
 		while (i.hasNext()) {
 			rs = (String)i.next();
 			rsdId = SDMSResourceStateDefinitionTable.idx_name_getUnique(sysEnv, rs).getId(sysEnv);
-
 			try {
 				SDMSResourceStateTable.table.create (sysEnv, rsdId, rspId);
 			} catch (DuplicateKeyException dke) {

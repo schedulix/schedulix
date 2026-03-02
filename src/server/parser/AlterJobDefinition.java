@@ -289,7 +289,7 @@ public class AlterJobDefinition extends ManipJobDefinition
 				}
 
 				if(wh.containsKey(ParseStr.S_ENABLE))
-					isDisabled = new Boolean(!((Boolean) wh.get(ParseStr.S_ENABLE)).booleanValue());
+					isDisabled = Boolean.valueOf(!((Boolean) wh.get(ParseStr.S_ENABLE)).booleanValue());
 				else
 					isDisabled = null;
 

@@ -9,10 +9,10 @@ mailto:contact@independit.de
 
 This file is part of schedulix
 
-schedulix is free software: 
-you can redistribute it and/or modify it under the terms of the 
-GNU Affero General Public License as published by the 
-Free Software Foundation, either version 3 of the License, 
+schedulix is free software:
+you can redistribute it and/or modify it under the terms of the
+GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,7 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 package de.independit.scheduler.jobserver.jexecutor;
 
@@ -118,7 +117,6 @@ public abstract class Jexecutor
 	protected int checkArgs(String[] args)
 		throws IllegalArgumentException, RuntimeException
 	{
-
 		if (args.length >= 1 && (args[0].equals("--version") || args[0].equals("-v"))) {
 			argsType = ARGS_VERSION;
 			return ARGS_VERSION;
@@ -129,7 +127,6 @@ public abstract class Jexecutor
 		}
 		if (args.length == 2 || args.length == 3) {
 			if (args.length == 2) {
-
 				taskfileName = args[1];
 			} else {
 				how = args[0].charAt(0);

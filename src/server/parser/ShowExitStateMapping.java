@@ -23,8 +23,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 package de.independit.scheduler.server.parser;
 
 import java.io.*;
@@ -64,9 +62,7 @@ public class ShowExitStateMapping extends ShowCommented
 		Long esmpId = esmp.getId(sysEnv);
 
 		desc.add("ID");
-
 		desc.add("NAME");
-
 		desc.add("COMMENT");
 		desc.add("COMMENTTYPE");
 		desc.add("CREATOR");
@@ -74,7 +70,6 @@ public class ShowExitStateMapping extends ShowCommented
 		desc.add("CHANGER");
 		desc.add("CHANGE_TIME");
 		desc.add("PRIVS");
-
 		desc.add("RANGES");
 
 		Vector data = new Vector();
@@ -101,11 +96,8 @@ public class ShowExitStateMapping extends ShowCommented
 		data.add(esmp.getPrivileges(sysEnv).toString());
 
 		Vector r_desc = new Vector();
-
 		r_desc.add("ECR_START");
-
 		r_desc.add("ECR_END");
-
 		r_desc.add("ESD_NAME");
 
 		SDMSOutputContainer r_container = new SDMSOutputContainer(sysEnv, null, r_desc);
